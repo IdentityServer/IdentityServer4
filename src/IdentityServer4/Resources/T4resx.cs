@@ -1,7 +1,7 @@
 ﻿
 #pragma warning disable 1591
 
-namespace IdentityServer3.Core.Resources
+namespace IdentityServer4.Core.Resources
 {
 	public class EventIds
 	{

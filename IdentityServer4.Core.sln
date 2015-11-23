@@ -14,6 +14,10 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Host", "src\Host\Host.xproj
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "IdentityServer4", "src\IdentityServer4\IdentityServer4.xproj", "{84F3B97E-7505-4DB3-9433-ECBF55DBCC2A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{1177250B-F7F9-49E6-A5E1-268D94A6B801}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "UnitTests", "test\UnitTests\UnitTests.xproj", "{284751DC-FC1C-4D94-9811-A3D2372B3955}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,6 +32,10 @@ Global
 		{84F3B97E-7505-4DB3-9433-ECBF55DBCC2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84F3B97E-7505-4DB3-9433-ECBF55DBCC2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84F3B97E-7505-4DB3-9433-ECBF55DBCC2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{284751DC-FC1C-4D94-9811-A3D2372B3955}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{284751DC-FC1C-4D94-9811-A3D2372B3955}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{284751DC-FC1C-4D94-9811-A3D2372B3955}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{284751DC-FC1C-4D94-9811-A3D2372B3955}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -35,5 +43,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{AF5C45D8-DB6A-43B6-8EC9-3910BD8B9CA1} = {6CB739A6-597A-4392-A253-3CFC222F306E}
 		{84F3B97E-7505-4DB3-9433-ECBF55DBCC2A} = {6CB739A6-597A-4392-A253-3CFC222F306E}
+		{284751DC-FC1C-4D94-9811-A3D2372B3955} = {1177250B-F7F9-49E6-A5E1-268D94A6B801}
 	EndGlobalSection
 EndGlobal
