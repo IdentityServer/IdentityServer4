@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+using Microsoft.Extensions.PlatformAbstractions;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 
@@ -23,8 +24,10 @@ namespace IdentityServer4.Tests
     {
         public static X509Certificate2 Load()
         {
+            var cert = PlatformServices.Default.Application.ApplicationBasePath + "\\idsrv3test.pfx";
+
             // todo
-            return new X509Certificate2("");
+            return new X509Certificate2(cert, "idsrv3test");
 
             //var assembly = typeof(TestCert).Assembly;
             //using (var stream = assembly.GetManifestResourceStream("IdentityServer4.Tests.idsrv3test.pfx"))

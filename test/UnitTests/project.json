@@ -4,7 +4,7 @@
   },
   "dependencies": {
     "IdentityServer4": "",
-    "xunit.runner.aspnet": "2.0.0-aspnet-*",
+    "xunit.runner.aspnet": "2.0.0-aspnet-rc2-15917",
     "FluentAssertions": "4.0.1"
   },
   "commands": {
