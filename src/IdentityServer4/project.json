@@ -1,10 +1,15 @@
 ﻿{
-  "version": "1.0.0-*",
+  "version": "1.0.0-alpha1",
   "description": "IdentityServer4",
   "authors": [ "Brock Allen & Dominick Baier" ],
   "tags": [ "" ],
   "projectUrl": "",
   "licenseUrl": "",
+
+  "dependencies": {
+    "Newtonsoft.Json": "7.0.1",
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-final"
+  },
 
   "frameworks": {
     "net451": { },
@@ -12,9 +17,14 @@
       "dependencies": {
         "Microsoft.CSharp": "4.0.1-beta-23516",
         "System.Collections": "4.0.11-beta-23516",
+        "System.Collections.Specialized": "4.0.1-beta-23516",
         "System.Linq": "4.0.1-beta-23516",
         "System.Runtime": "4.0.21-beta-23516",
-        "System.Threading": "4.0.11-beta-23516"
+        "System.Threading": "4.0.11-beta-23516",
+        "System.Net.Http": "4.0.1-beta-23516",
+        "System.Security.Claims": "4.0.1-beta-23516",
+        "System.Security.Cryptography.X509Certificates": "4.0.0-beta-23516",
+        "System.Security.Cryptography.Algorithms": "4.0.0-beta-23225"
       }
     }
   }
