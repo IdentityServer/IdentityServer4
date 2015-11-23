@@ -31,7 +31,7 @@ namespace IdentityServer4.Core.Extensions
         {
             var evt = new Event<LoginDetails>(
                 EventConstants.Categories.Authentication,
-                Resources.Events.PreLoginSuccess,
+                "Pre-Login Success",
                 EventTypes.Success, 
                 EventConstants.Ids.PreLoginSuccess,
                 new LoginDetails {
@@ -50,7 +50,7 @@ namespace IdentityServer4.Core.Extensions
         {
             var evt = new Event<LoginDetails>(
                 EventConstants.Categories.Authentication,
-                Resources.Events.PreLoginFailure,
+                "Pre-Login Failure",
                 EventTypes.Failure,
                 EventConstants.Ids.PreLoginFailure,
                 new LoginDetails
@@ -68,7 +68,7 @@ namespace IdentityServer4.Core.Extensions
         {
             var evt = new Event<LocalLoginDetails>(
                 EventConstants.Categories.Authentication,
-                Resources.Events.LocalLoginSuccess,
+                "Local Login Success",
                 EventTypes.Success,
                 EventConstants.Ids.LocalLoginSuccess,
                 new LocalLoginDetails
@@ -89,7 +89,7 @@ namespace IdentityServer4.Core.Extensions
         {
             var evt = new Event<LocalLoginDetails>(
                 EventConstants.Categories.Authentication,
-                Resources.Events.LocalLoginFailure,
+                "Local Login Failure",
                 EventTypes.Failure,
                 EventConstants.Ids.LocalLoginFailure,
                 new LocalLoginDetails
@@ -108,7 +108,7 @@ namespace IdentityServer4.Core.Extensions
         {
             var evt = new Event<ExternalLoginDetails>(
                 EventConstants.Categories.Authentication,
-                Resources.Events.ExternalLoginSuccess,
+                "External Login Success",
                 EventTypes.Success,
                 EventConstants.Ids.ExternalLoginSuccess,
                 new ExternalLoginDetails
@@ -130,7 +130,7 @@ namespace IdentityServer4.Core.Extensions
         {
             var evt = new Event<ExternalLoginDetails>(
                 EventConstants.Categories.Authentication,
-                Resources.Events.ExternalLoginFailure,
+                "External Login Failure",
                 EventTypes.Failure,
                 EventConstants.Ids.ExternalLoginFailure,
                 new ExternalLoginDetails
@@ -149,7 +149,7 @@ namespace IdentityServer4.Core.Extensions
         {
             var evt = new Event<object>(
                EventConstants.Categories.Authentication,
-               Resources.Events.ExternalLoginError,
+               "External Login Error",
                EventTypes.Error,
                EventConstants.Ids.ExternalLoginError,
                error);
@@ -162,7 +162,7 @@ namespace IdentityServer4.Core.Extensions
         {
             var evt = new Event<LocalLoginDetails>(
                 EventConstants.Categories.Authentication,
-                Resources.Events.ResourceOwnerFlowLoginSuccess,
+                "Resource Owner Flow Login Success",
                 EventTypes.Success,
                 EventConstants.Ids.ResourceOwnerFlowLoginSuccess,
                 new LocalLoginDetails
@@ -180,7 +180,7 @@ namespace IdentityServer4.Core.Extensions
         {
             var evt = new Event<LocalLoginDetails>(
                 EventConstants.Categories.Authentication,
-                Resources.Events.ResourceOwnerFlowLoginFailure,
+                "Resource Owner Flow Login Failure",
                 EventTypes.Failure,
                 EventConstants.Ids.ResourceOwnerFlowLoginFailure,
                 new LocalLoginDetails
@@ -198,7 +198,7 @@ namespace IdentityServer4.Core.Extensions
         {
             var evt = new Event<LoginDetails>(
                 EventConstants.Categories.Authentication,
-                Resources.Events.PartialLoginComplete,
+                "Partial Login Complete",
                 EventTypes.Information,
                 EventConstants.Ids.PartialLoginComplete,
                 new LoginDetails
@@ -217,7 +217,7 @@ namespace IdentityServer4.Core.Extensions
         {
             var evt = new Event<LogoutDetails>(
                 EventConstants.Categories.Authentication,
-                Resources.Events.LogoutEvent,
+                "Logout",
                 EventTypes.Information,
                 EventConstants.Ids.Logout,
                 new LogoutDetails
@@ -235,7 +235,7 @@ namespace IdentityServer4.Core.Extensions
         {
             var evt = new Event<CspReportDetails>(
                 EventConstants.Categories.Information,
-                Resources.Events.CspReport,
+                "Content Security Policy (CSP) Report",
                 EventTypes.Information,
                 EventConstants.Ids.CspReport);
 
@@ -273,7 +273,7 @@ namespace IdentityServer4.Core.Extensions
         {
             var evt = new Event<ClientPermissionsRevokedDetails>(
                 EventConstants.Categories.Information,
-                Resources.Events.ClientPermissionsRevoked,
+                "Client Permissions Revoked",
                 EventTypes.Information,
                 EventConstants.Ids.ClientPermissionRevoked,
                 new ClientPermissionsRevokedDetails

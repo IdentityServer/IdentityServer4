@@ -452,7 +452,7 @@ namespace IdentityServer4.Core.Validation
 
             if (authnResult == null || authnResult.IsError || authnResult.IsPartialSignIn)
             {
-                var error = Resources.Messages.InvalidUsernameOrPassword;
+                var error = "invalid_username_or_password";
                 if (authnResult != null && authnResult.IsError)
                 {
                     error = authnResult.ErrorMessage;
