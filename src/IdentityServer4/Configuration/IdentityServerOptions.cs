@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-using IdentityServer4.Core.Logging;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;

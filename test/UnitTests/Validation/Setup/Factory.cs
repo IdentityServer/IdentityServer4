@@ -31,6 +31,11 @@ namespace IdentityServer4.Tests.Validation
             return new InMemoryClientStore(TestClients.Get());
         }
 
+        public static ScopeValidator CreateScopeValidator(IScopeStore store)
+        {
+            return new ScopeValidator(store, new LoggerFactory());
+        }
+
         public static TokenRequestValidator CreateTokenRequestValidator(
             IdentityServerOptions options = null,
             IScopeStore scopes = null,
