@@ -18,7 +18,6 @@ using FluentAssertions;
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Services;
 using IdentityServer4.Core.Services.InMemory;
-using IdentityServer4.Core.Validation;
 using IdentityServer4.Core.Extensions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -26,7 +25,7 @@ using Xunit;
 
 namespace IdentityServer4.Tests.Validation
 {
-    
+
     public class ScopeValidation
     {
         const string Category = "Scope Validation";
