@@ -7,13 +7,22 @@
   "licenseUrl": "",
 
   "dependencies": {
-    "Newtonsoft.Json": "7.0.1",
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-final",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final",
+    "Microsoft.AspNet.Http.Abstractions": "1.0.0-rc1-final",
+    
+
+    "Newtonsoft.Json": "7.0.1",
     "IdentityModel": "2.0.0-alpha1"
   },
 
   "frameworks": {
-    "net451": { },
+    "net451": {
+      "dependencies": {
+        "System.IdentityModel.Tokens.Jwt": "4.0.2.205111437"
+      }
+    },
+
     "dotnet5.4": {
       "dependencies": {
         "Microsoft.CSharp": "4.0.1-beta-23516",
@@ -25,7 +34,8 @@
         "System.Net.Http": "4.0.1-beta-23516",
         "System.Security.Claims": "4.0.1-beta-23516",
         "System.Security.Cryptography.X509Certificates": "4.0.0-beta-23516",
-        "System.Security.Cryptography.Algorithms": "4.0.0-beta-23225"
+        "System.Security.Cryptography.Algorithms": "4.0.0-beta-23225",
+        "System.IdentityModel.Tokens.Jwt": "5.0.0-rc1-211161024"
       }
     }
   }

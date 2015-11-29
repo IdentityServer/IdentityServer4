@@ -37,26 +37,9 @@ namespace IdentityServer4.Core.Configuration
             this.Endpoints = new EndpointOptions();
             this.AuthenticationOptions = new AuthenticationOptions();
             this.CspOptions = new CspOptions();
-            this.LoggingOptions = new LoggingOptions();
             this.EventsOptions = new EventsOptions();
             this.EnableWelcomePage = true;
             this.InputLengthRestrictions = new InputLengthRestrictions();
-        }
-
-        internal void Validate()
-        {            
-            if (AuthenticationOptions == null)
-            {
-                throw new ArgumentException("AuthenticationOptions is missing");
-            }
-            if (CspOptions == null)
-            {
-                throw new ArgumentException("CspOptions is missing");
-            }
-            if (Endpoints == null)
-            {
-                throw new ArgumentException("Endpoints is missing");
-            }
         }
 
         /// <summary>
@@ -74,12 +57,6 @@ namespace IdentityServer4.Core.Configuration
         /// Unique name of this server instance, e.g. https://myissuer.com
         /// </value>
         public string IssuerUri { get; set; }
-
-        // todo: remove in 3.0.0
-        // added as a temporary measure since we need someplace to hold the calculated 
-        // IssuerUri from the first request for the scenarios where the newer GetIdentityServerIssuerUri
-        // extension method is not being used
-        internal string DynamicallyCalculatedIssuerUri { get; set; }
 
         /// <summary>
         /// Gets or sets the X.509 certificate (and corresponding private key) for signing security tokens.
@@ -114,24 +91,6 @@ namespace IdentityServer4.Core.Configuration
         public string PublicOrigin { get; set; }
 
         /// <summary>
-        /// Gets or sets the identity server factory.
-        /// </summary>
-        /// <value>
-        /// The factory.
-        /// </value>
-        // obsolete
-        //public IdentityServerServiceFactory Factory { get; set; }
-
-        /// <summary>
-        /// Gets or sets the data protector.
-        /// </summary>
-        /// <value>
-        /// The data protector.
-        /// </value>
-        // obsolete
-        //public IDataProtector DataProtector { get; set; }
-
-        /// <summary>
         /// Gets or sets the endpoint configuration.
         /// </summary>
         /// <value>
@@ -148,15 +107,6 @@ namespace IdentityServer4.Core.Configuration
         public AuthenticationOptions AuthenticationOptions { get; set; }
 
         /// <summary>
-        /// Gets or sets the plugin configuration.
-        /// </summary>
-        /// <value>
-        /// The plugin configuration.
-        /// </value>
-        // todo
-        //public Action<IAppBuilder, IdentityServerOptions> PluginConfiguration { get; set; }
-
-        /// <summary>
         /// Gets or sets the protocol logout urls.
         /// </summary>
         /// <value>
@@ -171,14 +121,6 @@ namespace IdentityServer4.Core.Configuration
         /// The CSP options.
         /// </value>
         public CspOptions CspOptions { get; set; }
-
-        /// <summary>
-        /// Gets or sets the diagnostics options.
-        /// </summary>
-        /// <value>
-        /// The diagnostics options.
-        /// </value>
-        public LoggingOptions LoggingOptions { get; set; }
 
         /// <summary>
         /// Gets or sets the events options.

@@ -1,10 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using IdentityServer4.Core.Services;
+using Microsoft.AspNet.Http;
+using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.Endpoints
 {
-    public class TokenEndpoint
+    public class TokenEndpoint : IEndpoint
     {
-        public Task ProcessAsync()
+        public Task ProcessAsync(HttpContext context)
         {
             // read input params
 
