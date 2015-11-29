@@ -45,6 +45,25 @@ namespace IdentityServer4.Core.Extensions
             return input.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToList();
         }
 
+        public static List<string> ParseScopesString(this string scopes)
+        {
+            if (scopes.IsMissing())
+            {
+                return null;
+            }
+
+            scopes = scopes.Trim();
+            var parsedScopes = scopes.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Distinct().ToList();
+
+            if (parsedScopes.Any())
+            {
+                parsedScopes.Sort();
+                return parsedScopes;
+            }
+
+            return null;
+        }
+
         [DebuggerStepThrough]
         public static bool IsMissing(this string value)
         {

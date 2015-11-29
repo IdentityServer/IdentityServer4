@@ -658,7 +658,7 @@ namespace IdentityServer4.Core.Validation
                 return false;
             }
 
-            var requestedScopes = ScopeValidator.ParseScopesString(scopes);
+            var requestedScopes = scopes.ParseScopesString();
 
             if (requestedScopes == null)
             {

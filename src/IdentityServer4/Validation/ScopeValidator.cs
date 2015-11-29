@@ -24,11 +24,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
-#pragma warning disable 1591
-
 namespace IdentityServer4.Core.Validation
 {
-    [EditorBrowsable(EditorBrowsableState.Never)]
     public class ScopeValidator
     {
         private readonly ILogger _logger;
@@ -51,25 +48,6 @@ namespace IdentityServer4.Core.Validation
             _store = store;
         }
 
-        public static List<string> ParseScopesString(string scopes)
-        {
-            if (scopes.IsMissing())
-            {
-                return null;
-            }
-
-            scopes = scopes.Trim();
-            var parsedScopes = scopes.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Distinct().ToList();
-
-            if (parsedScopes.Any())
-            {
-                parsedScopes.Sort();
-                return parsedScopes;
-            }
-
-            return null;
-        }
-
         public void SetConsentedScopes(IEnumerable<string> consentedScopes)
         {
             consentedScopes = consentedScopes ?? Enumerable.Empty<string>();
@@ -87,13 +65,13 @@ namespace IdentityServer4.Core.Validation
 
                 if (scopeDetail == null)
                 {
-                    _logger.LogError("Invalid scope: " + requestedScope);
+                    _logger.LogError("Invalid scope: {requestedScope}", requestedScope);
                     return false;
                 }
 
                 if (scopeDetail.Enabled == false)
                 {
-                    _logger.LogError("Scope disabled: " + requestedScope);
+                    _logger.LogError("Scope disabled: {requestedScope}", requestedScope);
                     return false;
                 }
 
@@ -130,7 +108,7 @@ namespace IdentityServer4.Core.Validation
             {
                 if (!client.AllowedScopes.Contains(scope))
                 {
-                    _logger.LogError("Requested scope not allowed: " + scope);
+                    _logger.LogError("Requested scope not allowed: {scope}", scope);
                     return false;
                 }
             }

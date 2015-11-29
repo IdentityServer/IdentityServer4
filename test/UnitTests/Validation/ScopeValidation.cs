@@ -19,6 +19,7 @@ using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Services;
 using IdentityServer4.Core.Services.InMemory;
 using IdentityServer4.Core.Validation;
+using IdentityServer4.Core.Extensions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
@@ -89,7 +90,7 @@ namespace IdentityServer4.Tests.Validation
         [Trait("Category", Category)]
         public void Parse_Scopes_with_Empty_Scope_List()
         {
-            var scopes = ScopeValidator.ParseScopesString("");
+            var scopes = "".ParseScopesString();
 
             scopes.Should().BeNull();
         }
@@ -98,7 +99,7 @@ namespace IdentityServer4.Tests.Validation
         [Trait("Category", Category)]
         public void Parse_Scopes_with_Sorting()
         {
-            var scopes = ScopeValidator.ParseScopesString("scope3 scope2 scope1");
+            var scopes = "scope3 scope2 scope1".ParseScopesString();
 
             scopes.Count.Should().Be(3);
 
@@ -111,7 +112,7 @@ namespace IdentityServer4.Tests.Validation
         [Trait("Category", Category)]
         public void Parse_Scopes_with_Extra_Spaces()
         {
-            var scopes = ScopeValidator.ParseScopesString("   scope3     scope2     scope1   ");
+            var scopes = "   scope3     scope2     scope1   ".ParseScopesString();
 
             scopes.Count.Should().Be(3);
 
@@ -124,7 +125,7 @@ namespace IdentityServer4.Tests.Validation
         [Trait("Category", Category)]
         public void Parse_Scopes_with_Duplicate_Scope()
         {
-            var scopes = ScopeValidator.ParseScopesString("scope2 scope1 scope2");
+            var scopes = "scope2 scope1 scope2".ParseScopesString();
 
             scopes.Count.Should().Be(2);
 
@@ -136,7 +137,7 @@ namespace IdentityServer4.Tests.Validation
         [Trait("Category", Category)]
         public async Task All_Scopes_Valid()
         {
-            var scopes = ScopeValidator.ParseScopesString("openid email resource1 resource2");
+            var scopes = "openid email resource1 resource2".ParseScopesString();
             
             var validator = Factory.CreateScopeValidator(_store);
             var result = await validator.AreScopesValidAsync(scopes);
@@ -148,7 +149,7 @@ namespace IdentityServer4.Tests.Validation
         [Trait("Category", Category)]
         public async Task Invalid_Scope()
         {
-            var scopes = ScopeValidator.ParseScopesString("openid email resource1 resource2 unknown");
+            var scopes = "openid email resource1 resource2 unknown".ParseScopesString();
 
             var validator = Factory.CreateScopeValidator(_store);
             var result = await validator.AreScopesValidAsync(scopes);
@@ -160,7 +161,7 @@ namespace IdentityServer4.Tests.Validation
         [Trait("Category", Category)]
         public async Task Disabled_Scope()
         {
-            var scopes = ScopeValidator.ParseScopesString("openid email resource1 resource2 disabled");
+            var scopes = "openid email resource1 resource2 disabled".ParseScopesString();
 
             var validator = Factory.CreateScopeValidator(_store);
             var result = await validator.AreScopesValidAsync(scopes);
@@ -172,7 +173,7 @@ namespace IdentityServer4.Tests.Validation
         [Trait("Category", Category)]
         public void All_Scopes_Allowed_For_Unrestricted_Client()
         {
-            var scopes = ScopeValidator.ParseScopesString("openid email resource1 resource2");
+            var scopes = "openid email resource1 resource2".ParseScopesString();
 
             var validator = Factory.CreateScopeValidator(_store);
             var result = validator.AreScopesAllowed(_unrestrictedClient, scopes);
@@ -184,7 +185,7 @@ namespace IdentityServer4.Tests.Validation
         [Trait("Category", Category)]
         public void All_Scopes_Allowed_For_Restricted_Client()
         {
-            var scopes = ScopeValidator.ParseScopesString("openid resource1");
+            var scopes = "openid resource1".ParseScopesString();
 
             var validator = Factory.CreateScopeValidator(_store);
             var result = validator.AreScopesAllowed(_restrictedClient, scopes);
@@ -196,7 +197,7 @@ namespace IdentityServer4.Tests.Validation
         [Trait("Category", Category)]
         public void Restricted_Scopes()
         {
-            var scopes = ScopeValidator.ParseScopesString("openid email resource1 resource2");
+            var scopes = "openid email resource1 resource2".ParseScopesString();
 
             var validator = Factory.CreateScopeValidator(_store);
             var result = validator.AreScopesAllowed(_restrictedClient, scopes);
@@ -208,7 +209,7 @@ namespace IdentityServer4.Tests.Validation
         [Trait("Category", Category)]
         public async Task Contains_Resource_and_Identity_Scopes()
         {
-            var scopes = ScopeValidator.ParseScopesString("openid email resource1 resource2");
+            var scopes = "openid email resource1 resource2".ParseScopesString();
 
             var validator = Factory.CreateScopeValidator(_store);
             var result = await validator.AreScopesValidAsync(scopes);
@@ -222,7 +223,7 @@ namespace IdentityServer4.Tests.Validation
         [Trait("Category", Category)]
         public async Task Contains_Resource_Scopes_Only()
         {
-            var scopes = ScopeValidator.ParseScopesString("resource1 resource2");
+            var scopes = "resource1 resource2".ParseScopesString();
 
             var validator = Factory.CreateScopeValidator(_store);
             var result = await validator.AreScopesValidAsync(scopes);
@@ -236,7 +237,7 @@ namespace IdentityServer4.Tests.Validation
         [Trait("Category", Category)]
         public async Task Contains_Identity_Scopes_Only()
         {
-            var scopes = ScopeValidator.ParseScopesString("openid email");
+            var scopes = "openid email".ParseScopesString();
 
             var validator = Factory.CreateScopeValidator(_store);
             var result = await validator.AreScopesValidAsync(scopes);
