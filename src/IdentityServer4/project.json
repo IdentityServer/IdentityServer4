@@ -19,7 +19,7 @@
   "frameworks": {
     "net451": {
       "dependencies": {
-        "System.IdentityModel.Tokens.Jwt": "4.0.2.205111437"
+        "System.IdentityModel.Tokens.Jwt": "4.0.2.202250711"
       }
     },
 

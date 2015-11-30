@@ -49,7 +49,7 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final",
           "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-final",
           "Newtonsoft.Json": "7.0.1",
-          "System.IdentityModel.Tokens.Jwt": "4.0.2.205111437"
+          "System.IdentityModel.Tokens.Jwt": "4.0.2.202250711"
         }
       },
       "Microsoft.AspNet.Http.Abstractions/1.0.0-rc1-final": {
@@ -249,7 +249,7 @@
           "lib/net45/Newtonsoft.Json.dll": {}
         }
       },
-      "System.IdentityModel.Tokens.Jwt/4.0.2.205111437": {
+      "System.IdentityModel.Tokens.Jwt/4.0.2.202250711": {
         "type": "package",
         "compile": {
           "lib/net45/System.IdentityModel.Tokens.Jwt.dll": {}
@@ -1684,7 +1684,7 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final",
           "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-final",
           "Newtonsoft.Json": "7.0.1",
-          "System.IdentityModel.Tokens.Jwt": "4.0.2.205111437"
+          "System.IdentityModel.Tokens.Jwt": "4.0.2.202250711"
         }
       },
       "Microsoft.AspNet.Http.Abstractions/1.0.0-rc1-final": {
@@ -1884,7 +1884,7 @@
           "lib/net45/Newtonsoft.Json.dll": {}
         }
       },
-      "System.IdentityModel.Tokens.Jwt/4.0.2.205111437": {
+      "System.IdentityModel.Tokens.Jwt/4.0.2.202250711": {
         "type": "package",
         "compile": {
           "lib/net45/System.IdentityModel.Tokens.Jwt.dll": {}
@@ -2050,7 +2050,7 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final",
           "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-final",
           "Newtonsoft.Json": "7.0.1",
-          "System.IdentityModel.Tokens.Jwt": "4.0.2.205111437"
+          "System.IdentityModel.Tokens.Jwt": "4.0.2.202250711"
         }
       },
       "Microsoft.AspNet.Http.Abstractions/1.0.0-rc1-final": {
@@ -2250,7 +2250,7 @@
           "lib/net45/Newtonsoft.Json.dll": {}
         }
       },
-      "System.IdentityModel.Tokens.Jwt/4.0.2.205111437": {
+      "System.IdentityModel.Tokens.Jwt/4.0.2.202250711": {
         "type": "package",
         "compile": {
           "lib/net45/System.IdentityModel.Tokens.Jwt.dll": {}
@@ -7256,15 +7256,15 @@
         "System.IdentityModel.Tokens.nuspec"
       ]
     },
-    "System.IdentityModel.Tokens.Jwt/4.0.2.205111437": {
+    "System.IdentityModel.Tokens.Jwt/4.0.2.202250711": {
       "type": "package",
       "serviceable": true,
-      "sha512": "Bw+rzgMliOs1p1qmW/NVc79B6YDU4dR9nD/oJCLDahYzYg0OFXAKV+s92dZ6NCNiJM0elRLnFJ/2BoXvzYFH4A==",
+      "sha512": "ei0sheOswuu6f6hXYu5xTU2FVaAAfWzL9hJuGere2IwJZzmRBxe8B0xCfjX3yq3TbcsqRFx6KfdHdSY2AXbIpw==",
       "files": [
         "lib/net45/System.IdentityModel.Tokens.Jwt.dll",
         "lib/net45/System.IdentityModel.Tokens.Jwt.Xml",
-        "System.IdentityModel.Tokens.Jwt.4.0.2.205111437.nupkg",
-        "System.IdentityModel.Tokens.Jwt.4.0.2.205111437.nupkg.sha512",
+        "System.IdentityModel.Tokens.Jwt.4.0.2.202250711.nupkg",
+        "System.IdentityModel.Tokens.Jwt.4.0.2.202250711.nupkg.sha512",
         "System.IdentityModel.Tokens.Jwt.nuspec"
       ]
     },
