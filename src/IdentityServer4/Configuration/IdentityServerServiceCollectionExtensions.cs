@@ -14,7 +14,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class IdentityServerServiceCollectionExtensions
     {
-        private static void AddIdentityServer(IServiceCollection services, Action<IdentityServerOptions> setupAction = null)
+        public static void AddIdentityServer(this IServiceCollection services, Action<IdentityServerOptions> setupAction = null)
         {
             var options = new IdentityServerOptions();
 

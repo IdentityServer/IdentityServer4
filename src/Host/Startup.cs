@@ -9,6 +9,7 @@ namespace IdentityServer4.Core
     {
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddIdentityServer();
         }
 
         public void Configure(IApplicationBuilder app)
