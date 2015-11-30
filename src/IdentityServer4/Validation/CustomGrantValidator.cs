@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.Validation
 {
-    internal class CustomGrantValidator
+    public class CustomGrantValidator
     {
         private readonly IEnumerable<ICustomGrantValidator> _validators;
         

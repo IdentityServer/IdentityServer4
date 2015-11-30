@@ -1,5 +1,6 @@
 ﻿using IdentityServer4.Core.Configuration;
 using IdentityServer4.Core.Endpoints;
+using IdentityServer4.Core.Models;
 using IdentityServer4.Core.ResponseHandling;
 using IdentityServer4.Core.Services;
 using IdentityServer4.Core.Services.Default;
@@ -14,7 +15,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class IdentityServerServiceCollectionExtensions
     {
-        public static void AddIdentityServer(this IServiceCollection services, Action<IdentityServerOptions> setupAction = null)
+        public static IServiceCollection AddIdentityServer(this IServiceCollection services, Action<IdentityServerOptions> setupAction = null)
         {
             var options = new IdentityServerOptions();
 
@@ -33,18 +34,38 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<ITokenService, DefaultTokenService>();
             services.AddTransient<ITokenSigningService, DefaultTokenSigningService>();
             services.AddTransient<IAuthorizationCodeStore, InMemoryAuthorizationCodeStore>();
-            
+            services.AddTransient<IRefreshTokenStore, InMemoryRefreshTokenStore>();
 
             // endpoints
-            services.AddTransient<IEndpoint, TokenEndpoint>();
+            services.AddTransient<TokenEndpoint>();
 
             // validators
             services.AddTransient<TokenRequestValidator>();
             services.AddTransient<ScopeValidator>();
+            services.AddTransient<CustomGrantValidator>();
 
             // response handlers
             services.AddTransient<TokenResponseGenerator>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddInMemoryUserService(this IServiceCollection services, List<InMemoryUser> users)
+        {
+            var userService = new InMemoryUserService(users);
+            return services.AddSingleton<IUserService>(prov => userService);
+        }
+
+        public static IServiceCollection AddInMemoryClientStore(this IServiceCollection services, IEnumerable<Client> clients)
+        {
+            var clientStore = new InMemoryClientStore(clients);
+            return services.AddSingleton<IClientStore>(prov => clientStore);
+        }
+
+        public static IServiceCollection AddInMemoryScopeStore(this IServiceCollection services, IEnumerable<Scope> scopes)
+        {
+            var scopeStore = new InMemoryScopeStore(scopes);
+            return services.AddSingleton<IScopeStore>(prov => scopeStore);
         }
     }
 }
-
