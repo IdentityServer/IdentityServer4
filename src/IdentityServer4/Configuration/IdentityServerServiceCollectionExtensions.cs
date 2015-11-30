@@ -3,6 +3,7 @@ using IdentityServer4.Core.Endpoints;
 using IdentityServer4.Core.ResponseHandling;
 using IdentityServer4.Core.Services;
 using IdentityServer4.Core.Services.Default;
+using IdentityServer4.Core.Services.InMemory;
 using IdentityServer4.Core.Validation;
 using System;
 using System.Collections.Generic;
@@ -29,6 +30,10 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<IEventService, DefaultEventService>();
             services.AddTransient<ICustomGrantValidator, NopCustomGrantValidator>();
             services.AddTransient<ICustomRequestValidator, DefaultCustomRequestValidator>();
+            services.AddTransient<ITokenService, DefaultTokenService>();
+            services.AddTransient<ITokenSigningService, DefaultTokenSigningService>();
+            services.AddTransient<IAuthorizationCodeStore, InMemoryAuthorizationCodeStore>();
+            //services.AddTransient<IRefreshTokenService, InMemoryRefreshTokenStore>();
 
             // endpoints
             services.AddTransient<IEndpoint, TokenEndpoint>();
