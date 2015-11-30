@@ -33,7 +33,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<ITokenService, DefaultTokenService>();
             services.AddTransient<ITokenSigningService, DefaultTokenSigningService>();
             services.AddTransient<IAuthorizationCodeStore, InMemoryAuthorizationCodeStore>();
-            //services.AddTransient<IRefreshTokenService, InMemoryRefreshTokenStore>();
+            
 
             // endpoints
             services.AddTransient<IEndpoint, TokenEndpoint>();
