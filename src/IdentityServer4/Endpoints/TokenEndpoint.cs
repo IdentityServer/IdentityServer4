@@ -22,6 +22,8 @@ namespace IdentityServer4.Core.Endpoints
         {
             _logger.LogVerbose("Start token request.");
 
+            var client = _clientValidator.ValidateAsync(context);
+
             // read input params
 
             // send to validator

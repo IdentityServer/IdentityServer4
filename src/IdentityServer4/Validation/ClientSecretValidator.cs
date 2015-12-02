@@ -32,7 +32,6 @@ namespace IdentityServer4.Core.Validation
         private readonly IEventService _events;
         private readonly IEnumerable<ISecretParser> _parsers;
         private readonly IEnumerable<ISecretValidator> _validators;
-        private readonly IHttpContextAccessor _contextAccessor;
 
         public ClientSecretValidator(IClientStore clients, IEnumerable<ISecretParser> parsers, IEnumerable<ISecretValidator> validators, IHttpContextAccessor contextAccessor, IEventService events, ILoggerFactory loggerFactory)
         {
@@ -40,11 +39,10 @@ namespace IdentityServer4.Core.Validation
             _parsers = parsers;
             _validators = validators;
             _events = events;
-            _contextAccessor = contextAccessor;
             _logger = loggerFactory.CreateLogger<ClientSecretValidator>();
         }
 
-        public async Task<ClientSecretValidationResult> ValidateAsync()
+        public async Task<ClientSecretValidationResult> ValidateAsync(HttpContext context)
         {
             _logger.LogVerbose("Start client validation");
 
@@ -57,7 +55,7 @@ namespace IdentityServer4.Core.Validation
             ParsedSecret parsedSecret = null;
             foreach (var parser in _parsers)
             {
-                parsedSecret = await parser.ParseAsync(_contextAccessor.HttpContext);
+                parsedSecret = await parser.ParseAsync(context);
                 if (parsedSecret != null)
                 {
                     _logger.LogVerbose("Parser found client secret: {parser}", parser.GetType().Name);
