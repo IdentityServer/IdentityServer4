@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using IdentityServer4.Core;
 
-namespace IdentityServer3.Core.Validation
+namespace IdentityServer4.Core.Validation
 {
     /// <summary>
     /// Parses a POST body for secrets
@@ -51,9 +51,15 @@ namespace IdentityServer3.Core.Validation
         /// <returns>
         /// A parsed secret
         /// </returns>
-        public async Task<ParsedSecret> ParseAsync(HttpContext context)
+        public Task<ParsedSecret> ParseAsync(HttpContext context)
         {
             _logger.LogVerbose("Start parsing for secret in post body");
+
+            if (!context.Request.HasFormContentType)
+            {
+                _logger.LogWarning("Content type is not a form");
+                return Task.FromResult<ParsedSecret>(null);
+            }
 
             var body = context.Request.Form;
 
@@ -68,7 +74,7 @@ namespace IdentityServer3.Core.Validation
                         secret.Length > _options.InputLengthRestrictions.ClientSecret)
                     {
                         _logger.LogWarning("Client ID or secret exceeds maximum lenght.");
-                        return null;
+                        return Task.FromResult<ParsedSecret>(null);
                     }
 
                     var parsedSecret = new ParsedSecret
@@ -78,12 +84,12 @@ namespace IdentityServer3.Core.Validation
                         Type = Constants.ParsedSecretTypes.SharedSecret
                     };
 
-                    return parsedSecret;
+                    return Task.FromResult(parsedSecret);
                 }
             }
 
             _logger.LogVerbose("No secret in post body found");
-            return null;
+            return Task.FromResult<ParsedSecret>(null);
         }
     }
 }

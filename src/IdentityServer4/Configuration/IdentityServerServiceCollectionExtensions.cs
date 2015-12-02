@@ -1,4 +1,4 @@
-﻿using IdentityServer3.Core.Validation;
+﻿using IdentityServer4.Core.Validation;
 using IdentityServer4.Core.Configuration;
 using IdentityServer4.Core.Endpoints;
 using IdentityServer4.Core.Models;

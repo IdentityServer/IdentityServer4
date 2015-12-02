@@ -24,9 +24,8 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
-using IdentityServer4.Core;
 
-namespace IdentityServer3.Core.Validation
+namespace IdentityServer4.Core.Validation
 {
     /// <summary>
     /// Parses a Basic Authentication header
@@ -40,9 +39,10 @@ namespace IdentityServer3.Core.Validation
         /// Creates the parser with a reference to identity server options
         /// </summary>
         /// <param name="options">IdentityServer options</param>
-        public BasicAuthenticationSecretParser(IdentityServerOptions options)
+        public BasicAuthenticationSecretParser(IdentityServerOptions options, ILoggerFactory loggerFactory)
         {
             _options = options;
+            _logger = loggerFactory.CreateLogger<BasicAuthenticationSecretParser>();
         }
 
         /// <summary>
