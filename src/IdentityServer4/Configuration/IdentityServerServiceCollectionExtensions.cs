@@ -1,4 +1,5 @@
-﻿using IdentityServer4.Core.Configuration;
+﻿using IdentityServer3.Core.Validation;
+using IdentityServer4.Core.Configuration;
 using IdentityServer4.Core.Endpoints;
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.ResponseHandling;
@@ -8,8 +9,6 @@ using IdentityServer4.Core.Services.InMemory;
 using IdentityServer4.Core.Validation;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -35,6 +34,14 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<ITokenSigningService, DefaultTokenSigningService>();
             services.AddTransient<IAuthorizationCodeStore, InMemoryAuthorizationCodeStore>();
             services.AddTransient<IRefreshTokenStore, InMemoryRefreshTokenStore>();
+            services.AddTransient<ClientSecretValidator>();
+
+            // secret parsers
+            services.AddTransient<ISecretParser, BasicAuthenticationSecretParser>();
+            services.AddTransient<ISecretParser, PostBodySecretParser>();
+
+            // secret validators
+            services.AddTransient<ISecretValidator, HashedSharedSecretValidator>();
 
             // endpoints
             services.AddTransient<TokenEndpoint>();

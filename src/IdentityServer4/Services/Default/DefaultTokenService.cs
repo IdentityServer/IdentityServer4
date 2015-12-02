@@ -17,9 +17,7 @@
 using IdentityModel;
 using IdentityServer4.Core.Configuration;
 using IdentityServer4.Core.Extensions;
-using IdentityServer4.Core.Logging;
 using IdentityServer4.Core.Models;
-using IdentityServer4.Core.Validation;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;

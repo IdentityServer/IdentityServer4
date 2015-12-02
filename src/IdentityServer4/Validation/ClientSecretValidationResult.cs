@@ -15,21 +15,20 @@
  */
 
 using IdentityServer4.Core.Models;
-using Microsoft.AspNet.Http;
-using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Services
+namespace IdentityServer4.Core.Validation
 {
     /// <summary>
-    /// A service for parsing secrets found on the environment
+    /// Validation result for client validation
     /// </summary>
-    public interface ISecretParser
+    public class ClientSecretValidationResult : ValidationResult
     {
         /// <summary>
-        /// Tries to find a secret on the environment that can be used for authentication
+        /// Gets or sets the client.
         /// </summary>
-        /// <param name="environment">The environment.</param>
-        /// <returns>A parsed secret</returns>
-        Task<ParsedSecret> ParseAsync(HttpContext context);
+        /// <value>
+        /// The client.
+        /// </value>
+        public Client Client { get; set; }
     }
 }

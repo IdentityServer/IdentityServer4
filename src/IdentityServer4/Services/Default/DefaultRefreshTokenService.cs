@@ -16,7 +16,6 @@
 
 using IdentityModel;
 using IdentityServer4.Core.Extensions;
-using IdentityServer4.Core.Logging;
 using IdentityServer4.Core.Models;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
