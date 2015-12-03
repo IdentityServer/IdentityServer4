@@ -17,6 +17,7 @@
 using IdentityServer4.Core;
 using IdentityServer4.Core.Models;
 using Microsoft.AspNet.Http;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Net;
 using System.Net.Http;
@@ -27,8 +28,6 @@ namespace IdentityServer4.Core.Results
 {
     internal class TokenResult : IResult
     {
-        //private readonly static ILog Logger = LogProvider.GetCurrentClassLogger();
-
         public TokenResponse TokenResponse { get; set; }
 
         public TokenResult(TokenResponse response)
@@ -36,7 +35,7 @@ namespace IdentityServer4.Core.Results
             TokenResponse = response;
         }
 
-        public async Task ExecuteAsync(HttpContext context)
+        public async Task ExecuteAsync(HttpContext context, ILogger logger)
         {
             var dto = new TokenResponseDto
             {
@@ -49,7 +48,7 @@ namespace IdentityServer4.Core.Results
 
             await context.Response.WriteJsonAsync(dto);
 
-            //Logger.Info("Returning token response.");
+            logger.LogInformation("Returning token response.");
         }
 
         internal class TokenResponseDto

@@ -38,7 +38,7 @@ namespace IdentityServer4.Core
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole(LogLevel.Verbose, true);
-            loggerFactory.AddDebug();
+            loggerFactory.AddDebug(LogLevel.Verbose);
 
             app.UseIISPlatformHandler();
             app.UseDeveloperExceptionPage();

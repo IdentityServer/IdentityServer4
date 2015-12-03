@@ -9,6 +9,7 @@ namespace IdentityServer4.Core.Configuration
     public class IdentityServerMiddleware
     {
         private readonly ILogger _logger;
+        private readonly ILoggerFactory _loggerFactory;
         private readonly RequestDelegate _next;
         private readonly IdentityServerOptions _options;
 
@@ -17,6 +18,7 @@ namespace IdentityServer4.Core.Configuration
             _next = next;
             _options = options;
             _logger = loggerFactory.CreateLogger<IdentityServerMiddleware>();
+            _loggerFactory = loggerFactory;
         }
 
         public async Task Invoke(HttpContext context)
@@ -32,7 +34,7 @@ namespace IdentityServer4.Core.Configuration
 
                     if (result != null)
                     {
-                        await result.ExecuteAsync(context);
+                        await result.ExecuteAsync(context, _loggerFactory.CreateLogger(result.GetType().FullName));
                     }
 
                     return;

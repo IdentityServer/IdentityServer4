@@ -23,14 +23,25 @@ namespace IdentityServer4.Core.Endpoints
         {
             _logger.LogVerbose("Start token request.");
 
+            // validate HTTP
+            if (context.Request.Method != "POST" || !context.Request.HasFormContentType)
+            {
+                // todo logging
+                return new TokenErrorResult(Constants.TokenErrors.InvalidRequest);
+            }
+
+            // validate client
             var clientResult = await _clientValidator.ValidateAsync(context);
 
             if (clientResult.Client == null)
             {
-                return new TokenErrorResult("invalid_client");
+                return new TokenErrorResult(Constants.TokenErrors.InvalidClient);
             }
-
-            // read input params
+            
+            // validate request
+            var requestResult = await _requestValidator.ValidateRequestAsync(
+                context.Request.Form.AsNameValueCollection(), 
+                clientResult.Client);
 
             // send to validator
 
