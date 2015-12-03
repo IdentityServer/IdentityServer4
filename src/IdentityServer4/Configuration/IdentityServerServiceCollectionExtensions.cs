@@ -6,7 +6,6 @@ using IdentityServer4.Core.ResponseHandling;
 using IdentityServer4.Core.Services;
 using IdentityServer4.Core.Services.Default;
 using IdentityServer4.Core.Services.InMemory;
-using IdentityServer4.Core.Validation;
 using System;
 using System.Collections.Generic;
 

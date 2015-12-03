@@ -28,7 +28,13 @@ namespace IdentityServer4.Core.Configuration
 
                 if (endpoint != null)
                 {
-                    await endpoint.ProcessAsync(context);
+                    var result = await endpoint.ProcessAsync(context);
+
+                    if (result != null)
+                    {
+                        await result.ExecuteAsync(context);
+                    }
+
                     return;
                 }
             }

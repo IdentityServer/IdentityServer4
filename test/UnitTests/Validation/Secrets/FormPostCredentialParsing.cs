@@ -21,7 +21,6 @@ using IdentityServer4.Core.Validation;
 using Microsoft.AspNet.Http.Internal;
 using Microsoft.Extensions.Logging;
 using System.IO;
-using System.Linq;
 using System.Text;
 using Xunit;
 
