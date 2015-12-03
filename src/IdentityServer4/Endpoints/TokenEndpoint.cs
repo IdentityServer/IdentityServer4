@@ -1,4 +1,5 @@
-﻿using IdentityServer4.Core.Results;
+﻿using IdentityServer4.Core.ResponseHandling;
+using IdentityServer4.Core.Results;
 using IdentityServer4.Core.Validation;
 using Microsoft.AspNet.Http;
 using Microsoft.Extensions.Logging;
@@ -11,11 +12,13 @@ namespace IdentityServer4.Core.Endpoints
         private readonly ClientSecretValidator _clientValidator;
         private readonly ILogger _logger;
         private readonly TokenRequestValidator _requestValidator;
+        private readonly TokenResponseGenerator _responseGenerator;
 
-        public TokenEndpoint(TokenRequestValidator requestValidator, ClientSecretValidator clientValidator, ILoggerFactory loggerFactory)
+        public TokenEndpoint(TokenRequestValidator requestValidator, ClientSecretValidator clientValidator, TokenResponseGenerator responseGenerator, ILoggerFactory loggerFactory)
         {
             _requestValidator = requestValidator;
             _clientValidator = clientValidator;
+            _responseGenerator = responseGenerator;
             _logger = loggerFactory.CreateLogger<TokenEndpoint>();
         }
 
@@ -43,13 +46,16 @@ namespace IdentityServer4.Core.Endpoints
                 context.Request.Form.AsNameValueCollection(), 
                 clientResult.Client);
 
-            // send to validator
+            if (requestResult.IsError)
+            {
+                return new TokenErrorResult(requestResult.Error, requestResult.ErrorDescription);
+            }
 
-            // send validation result to response generator
+            // create response
+            var response = await _responseGenerator.ProcessAsync(_requestValidator.ValidatedRequest);
 
-            // write out response
-
-            return null;
+            // return result
+            return new TokenResult(response);
         }
     }
 }
