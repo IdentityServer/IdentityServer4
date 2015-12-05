@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 
-using IdentityServer4.Core;
 using IdentityServer4.Core.Models;
 using Microsoft.AspNet.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System.Net;
-using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.Results

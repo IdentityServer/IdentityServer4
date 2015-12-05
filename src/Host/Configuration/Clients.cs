@@ -9,6 +9,9 @@ namespace Host.Configuration
         {
             return new List<Client>
             {
+                ///////////////////////////////////////////
+                // Console Client Credentials Flow Sample
+                //////////////////////////////////////////
                 new Client
                 {
                     ClientId = "client",
@@ -21,9 +24,28 @@ namespace Host.Configuration
 
                     AllowedScopes = new List<string>
                     {
-                        "api1"
+                        "api1", "api2"
                     }
-                }
+                },
+
+                ///////////////////////////////////////////
+                // Console Resource Owner Flow Sample
+                //////////////////////////////////////////
+                new Client
+                {
+                    ClientId = "roclient",
+                    ClientSecrets = new List<Secret>
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    Flow = Flows.ResourceOwner,
+
+                    AllowedScopes = new List<string>
+                    {
+                        "api1", "api2"
+                    }
+                },
             };
         }
     }

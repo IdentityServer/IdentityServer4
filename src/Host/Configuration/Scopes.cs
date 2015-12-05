@@ -13,6 +13,11 @@ namespace Host.Configuration
                 {
                     Name = "api1",
                     Type = ScopeType.Resource
+                },
+                new Scope
+                {
+                    Name = "api2",
+                    Type = ScopeType.Resource
                 }
             };
         }

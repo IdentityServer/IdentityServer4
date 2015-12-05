@@ -25,24 +25,22 @@ namespace IdentityServer4.Core
 
             services.AddIdentityServer(options =>
             {
-                options.RequireSsl = false;
-                options.IssuerUri = "https://issuer";
                 options.SigningCertificate = cert;
+                options.IssuerUri = "https://idsrv4";
             });
 
-            services.AddInMemoryClientStore(Clients.Get());
-            services.AddInMemoryScopeStore(Scopes.Get());
-            services.AddInMemoryUserService(new List<InMemoryUser>());
+            services.AddInMemoryClients(Clients.Get());
+            services.AddInMemoryScopes(Scopes.Get());
+            services.AddInMemoryUsers(Users.Get());
         }
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddConsole(LogLevel.Verbose, true);
+            loggerFactory.AddConsole(LogLevel.Verbose);
             loggerFactory.AddDebug(LogLevel.Verbose);
 
-            app.UseIISPlatformHandler();
             app.UseDeveloperExceptionPage();
-
+            app.UseIISPlatformHandler();
             app.UseIdentityServer();
         }
 

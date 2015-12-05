@@ -59,19 +59,19 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
-        public static IServiceCollection AddInMemoryUserService(this IServiceCollection services, List<InMemoryUser> users)
+        public static IServiceCollection AddInMemoryUsers(this IServiceCollection services, List<InMemoryUser> users)
         {
             var userService = new InMemoryUserService(users);
             return services.AddSingleton<IUserService>(prov => userService);
         }
 
-        public static IServiceCollection AddInMemoryClientStore(this IServiceCollection services, IEnumerable<Client> clients)
+        public static IServiceCollection AddInMemoryClients(this IServiceCollection services, IEnumerable<Client> clients)
         {
             var clientStore = new InMemoryClientStore(clients);
             return services.AddSingleton<IClientStore>(prov => clientStore);
         }
 
-        public static IServiceCollection AddInMemoryScopeStore(this IServiceCollection services, IEnumerable<Scope> scopes)
+        public static IServiceCollection AddInMemoryScopes(this IServiceCollection services, IEnumerable<Scope> scopes)
         {
             var scopeStore = new InMemoryScopeStore(scopes);
             return services.AddSingleton<IScopeStore>(prov => scopeStore);

@@ -23,7 +23,7 @@ namespace IdentityServer4.Core.Configuration
 
         public async Task Invoke(HttpContext context)
         {
-            if (context.Request.Path.StartsWithSegments(new PathString("/token")))
+            if (context.Request.Path.StartsWithSegments(new PathString("/connect/token")))
             {
                 var obj = context.ApplicationServices.GetService(typeof(TokenEndpoint));
                 var endpoint = obj as IEndpoint;
