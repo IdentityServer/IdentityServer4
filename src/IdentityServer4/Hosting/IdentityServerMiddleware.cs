@@ -1,10 +1,11 @@
-﻿using IdentityServer4.Core.Endpoints;
+﻿using IdentityServer4.Core.Configuration;
+using IdentityServer4.Core.Endpoints;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Configuration
+namespace IdentityServer4.Core.Hosting
 {
     public class IdentityServerMiddleware
     {
