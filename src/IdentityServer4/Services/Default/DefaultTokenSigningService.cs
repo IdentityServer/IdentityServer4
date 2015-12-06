@@ -24,6 +24,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens;
+using IdentityModel;
 
 #if DOTNET5_4
 using System.IdentityModel.Tokens.Jwt;
@@ -99,18 +100,19 @@ namespace IdentityServer4.Core.Services.Default
         /// <returns>The JWT header</returns>
         protected virtual JwtHeader CreateHeader(Token token, SecurityKey key)
         {
+            JwtHeader header = null;
+
 #if DOTNET5_4
-            var header = new JwtHeader(new SigningCredentials(key, SecurityAlgorithms.RsaSha256Signature));
+            header = new JwtHeader(new SigningCredentials(key, SecurityAlgorithms.RsaSha256Signature));
 #elif NET451
-            var header = new JwtHeader(new SigningCredentials(key, SecurityAlgorithms.RsaSha256Signature, SecurityAlgorithms.Sha256Digest));
-#else
-            System.IdentityModel.Tokens.Jwt.JwtHeader header = null;
+            header = new JwtHeader(new SigningCredentials(key, SecurityAlgorithms.RsaSha256Signature, SecurityAlgorithms.Sha256Digest));
+
+            var x509key = key as X509SecurityKey;
+            if (x509key != null)
+            {
+                header.Add("kid", Base64Url.Encode(x509key.Certificate.GetCertHash()));
+            }
 #endif
-            //var x509credential = credential as X509SigningCredentials;
-            //if (x509credential != null)
-            //{
-            //    header.Add("kid", Base64Url.Encode(x509credential.Certificate.GetCertHash()));
-            //}
 
             return header;
         }

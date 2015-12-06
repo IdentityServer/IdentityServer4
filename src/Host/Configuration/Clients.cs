@@ -43,7 +43,7 @@ namespace Host.Configuration
 
                     AllowedScopes = new List<string>
                     {
-                        "api1", "api2"
+                        "api1", "api2", StandardScopes.OfflineAccess.Name
                     }
                 },
             };

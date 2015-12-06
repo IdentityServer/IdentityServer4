@@ -9,6 +9,8 @@ namespace Host.Configuration
         {
             return new List<Scope>
             {
+                StandardScopes.OfflineAccess,
+
                 new Scope
                 {
                     Name = "api1",
