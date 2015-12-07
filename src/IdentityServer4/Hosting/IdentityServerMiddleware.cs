@@ -24,22 +24,27 @@ namespace IdentityServer4.Core.Hosting
 
         public async Task Invoke(HttpContext context)
         {
+            IEndpoint endpoint = null;
+
             if (context.Request.Path.StartsWithSegments(new PathString("/connect/token")))
             {
-                var obj = context.ApplicationServices.GetService(typeof(TokenEndpoint));
-                var endpoint = obj as IEndpoint;
+                endpoint = context.ApplicationServices.GetService(typeof(TokenEndpoint)) as IEndpoint;
+            }
+            else if (context.Request.Path.StartsWithSegments(new PathString("/.well-known")))
+            {
+                endpoint = context.ApplicationServices.GetService(typeof(DiscoveryEndpoint)) as IEndpoint;
+            }
 
-                if (endpoint != null)
+            if (endpoint != null)
+            {
+                var result = await endpoint.ProcessAsync(context);
+
+                if (result != null)
                 {
-                    var result = await endpoint.ProcessAsync(context);
-
-                    if (result != null)
-                    {
-                        await result.ExecuteAsync(context, _loggerFactory.CreateLogger(result.GetType().FullName));
-                    }
-
-                    return;
+                    await result.ExecuteAsync(context, _loggerFactory.CreateLogger(result.GetType().FullName));
                 }
+
+                return;
             }
 
             await _next(context);

@@ -1,4 +1,6 @@
 ﻿using IdentityServer4.Core;
+using IdentityServer4.Core.Configuration;
+using IdentityServer4.Core.Extensions;
 using System;
 
 namespace Microsoft.AspNet.Http
@@ -42,6 +44,24 @@ namespace Microsoft.AspNet.Http
         public static string GetIdentityServerBaseUrl(this HttpContext context)
         {
             return context.GetIdentityServerHost() + context.GetIdentityServerBasePath();
+        }
+
+        public static string GetIdentityServerIssuerUri(this HttpContext context)
+        {
+            if (context == null) throw new ArgumentNullException("context");
+
+            var options = context.ApplicationServices.GetService(typeof(IdentityServerOptions)) as IdentityServerOptions;
+
+            // if they've explicitly configured a URI then use it,
+            // otherwise dynamically calculate it
+            var uri = options.IssuerUri;
+            if (uri.IsMissing())
+            {
+                uri = context.GetIdentityServerBaseUrl();
+                if (uri.EndsWith("/")) uri = uri.Substring(0, uri.Length - 1);
+            }
+
+            return uri;
         }
     }
 }

@@ -796,16 +796,16 @@
           "lib/dotnet5.4/System.Security.Cryptography.Cng.dll": {}
         }
       },
-      "System.Security.Cryptography.Csp/4.0.0-beta-23516": {
+      "System.Security.Cryptography.Csp/4.0.0-beta-23225": {
         "type": "package",
         "dependencies": {
           "System.IO": "4.0.0",
           "System.Runtime": "4.0.0",
-          "System.Security.Cryptography.Algorithms": "4.0.0-beta-23516",
-          "System.Security.Cryptography.Primitives": "4.0.0-beta-23516"
+          "System.Security.Cryptography.Algorithms": "4.0.0-beta-23225",
+          "System.Security.Cryptography.Primitives": "4.0.0-beta-23225"
         },
         "compile": {
-          "ref/dotnet5.1/System.Security.Cryptography.Csp.dll": {}
+          "ref/dotnet/System.Security.Cryptography.Csp.dll": {}
         }
       },
       "System.Security.Cryptography.Encoding/4.0.0-beta-23516": {
@@ -2044,16 +2044,16 @@
           "lib/dotnet5.4/System.Security.Cryptography.Cng.dll": {}
         }
       },
-      "System.Security.Cryptography.Csp/4.0.0-beta-23516": {
+      "System.Security.Cryptography.Csp/4.0.0-beta-23225": {
         "type": "package",
         "dependencies": {
           "System.IO": "4.0.0",
           "System.Runtime": "4.0.0",
-          "System.Security.Cryptography.Algorithms": "4.0.0-beta-23516",
-          "System.Security.Cryptography.Primitives": "4.0.0-beta-23516"
+          "System.Security.Cryptography.Algorithms": "4.0.0-beta-23225",
+          "System.Security.Cryptography.Primitives": "4.0.0-beta-23225"
         },
         "compile": {
-          "ref/dotnet5.1/System.Security.Cryptography.Csp.dll": {}
+          "ref/dotnet/System.Security.Cryptography.Csp.dll": {}
         }
       },
       "System.Security.Cryptography.Encoding/4.0.0-beta-23516": {
@@ -3024,16 +3024,16 @@
           "lib/dotnet5.4/System.Security.Cryptography.Cng.dll": {}
         }
       },
-      "System.Security.Cryptography.Csp/4.0.0-beta-23516": {
+      "System.Security.Cryptography.Csp/4.0.0-beta-23225": {
         "type": "package",
         "dependencies": {
           "System.IO": "4.0.0",
           "System.Runtime": "4.0.0",
-          "System.Security.Cryptography.Algorithms": "4.0.0-beta-23516",
-          "System.Security.Cryptography.Primitives": "4.0.0-beta-23516"
+          "System.Security.Cryptography.Algorithms": "4.0.0-beta-23225",
+          "System.Security.Cryptography.Primitives": "4.0.0-beta-23225"
         },
         "compile": {
-          "ref/dotnet5.1/System.Security.Cryptography.Csp.dll": {}
+          "ref/dotnet/System.Security.Cryptography.Csp.dll": {}
         }
       },
       "System.Security.Cryptography.Encoding/4.0.0-beta-23516": {
@@ -5157,10 +5157,10 @@
         "System.Security.Cryptography.Cng.nuspec"
       ]
     },
-    "System.Security.Cryptography.Csp/4.0.0-beta-23516": {
+    "System.Security.Cryptography.Csp/4.0.0-beta-23225": {
       "type": "package",
       "serviceable": true,
-      "sha512": "CaZ6gsDZTfm1Arce5fFoRNnNdAp2/jFAYJg+UaoluaDbjLh2iyK8JmSd5GIbTH55M1FRb6phn+uHFC9UtUfStA==",
+      "sha512": "0DJq6Ju6Bo77cMRi8S94uNhkUtpRG6OKUA7EL7qR+Vls31eMtHzG7b8AumxvUDn2dDZLAOyTnIK9Dr+/O5gJFw==",
       "files": [
         "lib/DNXCore50/System.Security.Cryptography.Csp.dll",
         "lib/MonoAndroid10/_._",
@@ -5168,14 +5168,14 @@
         "lib/net46/System.Security.Cryptography.Csp.dll",
         "lib/xamarinios10/_._",
         "lib/xamarinmac20/_._",
-        "ref/dotnet5.1/System.Security.Cryptography.Csp.dll",
+        "ref/dotnet/System.Security.Cryptography.Csp.dll",
         "ref/MonoAndroid10/_._",
         "ref/MonoTouch10/_._",
         "ref/net46/System.Security.Cryptography.Csp.dll",
         "ref/xamarinios10/_._",
         "ref/xamarinmac20/_._",
-        "System.Security.Cryptography.Csp.4.0.0-beta-23516.nupkg",
-        "System.Security.Cryptography.Csp.4.0.0-beta-23516.nupkg.sha512",
+        "System.Security.Cryptography.Csp.4.0.0-beta-23225.nupkg",
+        "System.Security.Cryptography.Csp.4.0.0-beta-23225.nupkg.sha512",
         "System.Security.Cryptography.Csp.nuspec"
       ]
     },
@@ -5665,6 +5665,7 @@
       "System.Security.Claims >= 4.0.1-beta-23516",
       "System.Security.Cryptography.X509Certificates >= 4.0.0-beta-23516",
       "System.Security.Cryptography.Algorithms >= 4.0.0-beta-23225",
+      "System.Security.Cryptography.Csp >= 4.0.0-beta-23225",
       "System.IdentityModel.Tokens.Jwt >= 5.0.0-rc1-211161024"
     ]
   }

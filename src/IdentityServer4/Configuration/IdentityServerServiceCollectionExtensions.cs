@@ -46,6 +46,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // endpoints
             services.AddTransient<TokenEndpoint>();
+            services.AddTransient<DiscoveryEndpoint>();
 
             // validators
             services.AddTransient<TokenRequestValidator>();
