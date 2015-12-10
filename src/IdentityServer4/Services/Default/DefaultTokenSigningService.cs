@@ -38,9 +38,9 @@ namespace IdentityServer4.Core.Services.Default
     public class DefaultTokenSigningService : ITokenSigningService
     {
         /// <summary>
-        /// The identity server options
+        /// The signing key service
         /// </summary>
-        protected readonly IdentityServerOptions _options;
+        private readonly ISigningKeyService _keyService;
 
         static DefaultTokenSigningService()
         {
@@ -51,9 +51,9 @@ namespace IdentityServer4.Core.Services.Default
         /// Initializes a new instance of the <see cref="DefaultTokenSigningService"/> class.
         /// </summary>
         /// <param name="options">The options.</param>
-        public DefaultTokenSigningService(IdentityServerOptions options)
+        public DefaultTokenSigningService(ISigningKeyService keyService)
         {
-            _options = options;
+            _keyService = keyService;
         }
 
         /// <summary>
@@ -65,29 +65,10 @@ namespace IdentityServer4.Core.Services.Default
         /// </returns>
         public virtual async Task<string> SignTokenAsync(Token token)
         {
-            var key = await GetSigningKeyAsync();
-            return await CreateJsonWebToken(token, key);
-        }
+            var key = new X509SecurityKey(await _keyService.GetSigningKeyAsync());
 
-        /// <summary>
-        /// Retrieves the signing credential (override to load key from alternative locations)
-        /// </summary>
-        /// <returns>The signing credential</returns>
-        protected virtual Task<SecurityKey> GetSigningKeyAsync()
-        {
-            return Task.FromResult<SecurityKey>(new X509SecurityKey(_options.SigningCertificate));
-        }
-
-        /// <summary>
-        /// Creates the json web token.
-        /// </summary>
-        /// <param name="token">The token.</param>
-        /// <param name="credentials">The credentials.</param>
-        /// <returns>The signed JWT</returns>
-        protected virtual async Task<string> CreateJsonWebToken(Token token, SecurityKey key)
-        {
-            var header = CreateHeader(token, key);
-            var payload = CreatePayload(token);
+            var header = await CreateHeaderAsync(token, key);
+            var payload = await CreatePayloadAsync(token);
 
             return await SignAsync(new JwtSecurityToken(header, payload));
         }
@@ -98,7 +79,7 @@ namespace IdentityServer4.Core.Services.Default
         /// <param name="token">The token.</param>
         /// <param name="credential">The credentials.</param>
         /// <returns>The JWT header</returns>
-        protected virtual JwtHeader CreateHeader(Token token, SecurityKey key)
+        protected virtual async Task<JwtHeader> CreateHeaderAsync(Token token, SecurityKey key)
         {
             JwtHeader header = null;
 
@@ -110,7 +91,7 @@ namespace IdentityServer4.Core.Services.Default
             var x509key = key as X509SecurityKey;
             if (x509key != null)
             {
-                header.Add("kid", Base64Url.Encode(x509key.Certificate.GetCertHash()));
+                header.Add("kid", await _keyService.GetKidAsync(x509key.Certificate));
             }
 #endif
 
@@ -122,7 +103,7 @@ namespace IdentityServer4.Core.Services.Default
         /// </summary>
         /// <param name="token">The token.</param>
         /// <returns>The JWT payload</returns>
-        protected virtual JwtPayload CreatePayload(Token token)
+        protected virtual Task<JwtPayload> CreatePayloadAsync(Token token)
         {
             var payload = new JwtPayload(
                 token.Issuer,
@@ -197,7 +178,7 @@ namespace IdentityServer4.Core.Services.Default
                 throw new Exception(String.Format("Unsupported JSON type for claim types: {0}", unsupportedJsonClaimTypes.Aggregate((x, y) => x + ", " + y)));
             }
 
-            return payload;
+            return Task.FromResult(payload);
         }
 
         /// <summary>

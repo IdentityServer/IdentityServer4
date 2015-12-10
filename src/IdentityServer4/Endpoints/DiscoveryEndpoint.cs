@@ -1,4 +1,6 @@
-﻿using IdentityServer4.Core.Configuration;
+﻿using IdentityModel;
+using IdentityServer4.Core.Configuration;
+using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Results;
 using IdentityServer4.Core.Services;
@@ -8,23 +10,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using IdentityServer4.Core.Extensions;
-using IdentityModel;
-using System.Security.Cryptography;
 
 namespace IdentityServer4.Core.Endpoints
 {
     public class DiscoveryEndpoint : IEndpoint
     {
+        private readonly ISigningKeyService _keyService;
         private readonly ILogger _logger;
         private IdentityServerOptions _options;
         private readonly IScopeStore _scopes;
 
-        public DiscoveryEndpoint(IdentityServerOptions options, IScopeStore scopes, ILogger<DiscoveryEndpoint> logger)
+        public DiscoveryEndpoint(IdentityServerOptions options, IScopeStore scopes, ILogger<DiscoveryEndpoint> logger, ISigningKeyService keyService)
         {
             _options = options;
             _scopes = scopes;
             _logger = logger;
+            _keyService = keyService;
         }
 
         public Task<IResult> ProcessAsync(HttpContext context)
@@ -128,12 +129,12 @@ namespace IdentityServer4.Core.Endpoints
             return new DiscoveryDocumentResult(document);
         }
 
-        private Task<IResult> ExecuteJwksAsync(HttpContext context)
+        private async Task<IResult> ExecuteJwksAsync(HttpContext context)
         {
             _logger.LogVerbose("Start key discovery request");
 
             var webKeys = new List<JsonWebKey>();
-            foreach (var pubKey in _options.PublicKeysForMetadata)
+            foreach (var pubKey in await _keyService.GetPublicKeysAsync())
             {
                 if (pubKey != null)
                 {
@@ -150,7 +151,7 @@ namespace IdentityServer4.Core.Endpoints
                     {
                         kty = "RSA",
                         use = "sig",
-                        kid = thumbprint,
+                        kid = await _keyService.GetKidAsync(pubKey),
                         x5t = thumbprint,
                         //e = exponent,
                         //n = modulus,
@@ -161,7 +162,7 @@ namespace IdentityServer4.Core.Endpoints
                 }
             }
 
-            return Task.FromResult<IResult>(new JsonWebKeysResult(webKeys));
+            return new JsonWebKeysResult(webKeys);
         }
     }
 }
