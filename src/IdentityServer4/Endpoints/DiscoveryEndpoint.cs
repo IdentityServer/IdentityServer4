@@ -1,6 +1,7 @@
 ﻿using IdentityModel;
 using IdentityServer4.Core.Configuration;
 using IdentityServer4.Core.Extensions;
+using IdentityServer4.Core.Hosting;
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Results;
 using IdentityServer4.Core.Services;
@@ -15,17 +16,19 @@ namespace IdentityServer4.Core.Endpoints
 {
     public class DiscoveryEndpoint : IEndpoint
     {
+        private readonly IdentityServerContext _context;
         private readonly ISigningKeyService _keyService;
         private readonly ILogger _logger;
-        private IdentityServerOptions _options;
+        private readonly IdentityServerOptions _options;
         private readonly IScopeStore _scopes;
 
-        public DiscoveryEndpoint(IdentityServerOptions options, IScopeStore scopes, ILogger<DiscoveryEndpoint> logger, ISigningKeyService keyService)
+        public DiscoveryEndpoint(IdentityServerOptions options, IdentityServerContext context, IScopeStore scopes, ILogger<DiscoveryEndpoint> logger, ISigningKeyService keyService)
         {
             _options = options;
             _scopes = scopes;
             _logger = logger;
             _keyService = keyService;
+            _context = context;
         }
 
         public Task<IResult> ProcessAsync(HttpContext context)
@@ -51,7 +54,7 @@ namespace IdentityServer4.Core.Endpoints
         {
             _logger.LogVerbose("Start discovery request");
 
-            var baseUrl = context.GetIdentityServerBaseUrl().EnsureTrailingSlash();
+            var baseUrl = _context.GetIdentityServerBaseUrl().EnsureTrailingSlash();
             var scopes = await _scopes.GetScopesAsync(publicOnly: true);
 
             var claims = new List<string>();
@@ -70,7 +73,7 @@ namespace IdentityServer4.Core.Endpoints
 
             var document = new DiscoveryDocument
             {
-                issuer = context.GetIdentityServerIssuerUri(),
+                issuer = _context.GetIssuerUri(),
                 scopes_supported = scopes.Where(s => s.ShowInDiscoveryDocument).Select(s => s.Name).ToArray(),
                 claims_supported = claims.Distinct().ToArray(),
                 response_types_supported = Constants.SupportedResponseTypes.ToArray(),

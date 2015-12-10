@@ -8,6 +8,7 @@ using IdentityServer4.Core.Services.Default;
 using IdentityServer4.Core.Services.InMemory;
 using System;
 using System.Collections.Generic;
+using IdentityServer4.Core.Hosting;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -24,6 +25,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // configuration
             services.AddInstance(options);
+            services.AddTransient<IdentityServerContext>();
 
             // core services (hard coded for now)
             services.AddTransient<IEventService, DefaultEventService>();

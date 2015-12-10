@@ -1,29 +1,30 @@
 ﻿using IdentityServer4.Core;
 using IdentityServer4.Core.Configuration;
 using IdentityServer4.Core.Extensions;
+using IdentityServer4.Core.Hosting;
 using System;
 
-namespace Microsoft.AspNet.Http
+namespace IdentityServer4.Core.Hosting
 {
-    public static class HttpContextExtensions
+    public static class IdentityServerContextExtensions
     {
-        public static void SetIdentityServerHost(this HttpContext context, string value)
+        public static void SetHost(this IdentityServerContext context, string value)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            context.Items[Constants.OwinEnvironment.IdentityServerHost] = value;
+            context.HttpContext.Items[Constants.OwinEnvironment.IdentityServerHost] = value;
         }
 
-        public static void SetIdentityServerBasePath(this HttpContext context, string value)
+        public static void SetBasePath(this IdentityServerContext context, string value)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            context.Items[Constants.OwinEnvironment.IdentityServerBasePath] = value;
+            context.HttpContext.Items[Constants.OwinEnvironment.IdentityServerBasePath] = value;
         }
 
-        public static string GetIdentityServerHost(this HttpContext context)
+        public static string GetHost(this IdentityServerContext context)
         {
-            return context.Items[Constants.OwinEnvironment.IdentityServerHost] as string;
+            return context.HttpContext.Items[Constants.OwinEnvironment.IdentityServerHost] as string;
         }
 
         /// <summary>
@@ -31,9 +32,9 @@ namespace Microsoft.AspNet.Http
         /// </summary>
         /// <param name="env">The OWIN environment.</param>
         /// <returns></returns>
-        public static string GetIdentityServerBasePath(this HttpContext context)
+        public static string GetBasePath(this IdentityServerContext context)
         {
-            return context.Items[Constants.OwinEnvironment.IdentityServerBasePath] as string;
+            return context.HttpContext.Items[Constants.OwinEnvironment.IdentityServerBasePath] as string;
         }
 
         /// <summary>
@@ -41,16 +42,16 @@ namespace Microsoft.AspNet.Http
         /// </summary>
         /// <param name="env">The OWIN environment.</param>
         /// <returns></returns>
-        public static string GetIdentityServerBaseUrl(this HttpContext context)
+        public static string GetIdentityServerBaseUrl(this IdentityServerContext context)
         {
-            return context.GetIdentityServerHost() + context.GetIdentityServerBasePath();
+            return context.GetHost() + context.GetBasePath();
         }
 
-        public static string GetIdentityServerIssuerUri(this HttpContext context)
+        public static string GetIssuerUri(this IdentityServerContext context)
         {
             if (context == null) throw new ArgumentNullException("context");
 
-            var options = context.ApplicationServices.GetService(typeof(IdentityServerOptions)) as IdentityServerOptions;
+            var options = context.HttpContext.ApplicationServices.GetService(typeof(IdentityServerOptions)) as IdentityServerOptions;
 
             // if they've explicitly configured a URI then use it,
             // otherwise dynamically calculate it

@@ -8,12 +8,14 @@ namespace IdentityServer4.Core.Hosting
 {
     public class BaseUrlMiddleware
     {
+        private readonly IdentityServerContext _context;
         private readonly RequestDelegate _next;
         private readonly IdentityServerOptions _options;
 
-        public BaseUrlMiddleware(RequestDelegate next, IdentityServerOptions options)
+        public BaseUrlMiddleware(RequestDelegate next, IdentityServerContext context, IdentityServerOptions options)
         {
             _next = next;
+            _context = context;
             _options = options;
         }
 
@@ -27,8 +29,8 @@ namespace IdentityServer4.Core.Hosting
                 origin = context.Request.Scheme + "://" + request.Host.Value;
             }
 
-            context.SetIdentityServerHost(origin);
-            context.SetIdentityServerBasePath(request.PathBase.Value.RemoveTrailingSlash());
+            _context.SetHost(origin);
+            _context.SetBasePath(request.PathBase.Value.RemoveTrailingSlash());
 
             await _next(context);
         }
