@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.Endpoints
 {
+    // todo: no caching
     public class TokenEndpoint : IEndpoint
     {
         private readonly ClientSecretValidator _clientValidator;

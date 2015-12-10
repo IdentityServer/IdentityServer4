@@ -52,7 +52,7 @@ namespace IdentityServer4.Core.Validation
 
         private readonly TokenValidationLog _log;
         
-        public TokenValidator(IdentityServerOptions options, IdentityServerContext context, IClientStore clients, ITokenHandleStore tokenHandles, ICustomTokenValidator customValidator, ISigningKeyService keyService)
+        public TokenValidator(IdentityServerOptions options, IdentityServerContext context, IClientStore clients, ITokenHandleStore tokenHandles, ICustomTokenValidator customValidator, ISigningKeyService keyService, ILogger<TokenValidator> logger)
         {
             _options = options;
             _context = context;
@@ -60,6 +60,7 @@ namespace IdentityServer4.Core.Validation
             _tokenHandles = tokenHandles;
             _customValidator = customValidator;
             _keyService = keyService;
+            _logger = logger;
 
             _log = new TokenValidationLog();
         }

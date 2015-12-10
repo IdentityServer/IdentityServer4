@@ -316,12 +316,12 @@ namespace IdentityServer4.Core
             public const string InsufficientScope = "insufficient_scope";
         }
 
-        public static Dictionary<string, HttpStatusCode> ProtectedResourceErrorStatusCodes = new Dictionary<string, HttpStatusCode>
+        public static Dictionary<string, int> ProtectedResourceErrorStatusCodes = new Dictionary<string, int>
         {
-            { ProtectedResourceErrors.InvalidToken,      HttpStatusCode.Unauthorized },
-            { ProtectedResourceErrors.ExpiredToken,      HttpStatusCode.Unauthorized },
-            { ProtectedResourceErrors.InvalidRequest,    HttpStatusCode.BadRequest },
-            { ProtectedResourceErrors.InsufficientScope, HttpStatusCode.Forbidden },
+            { ProtectedResourceErrors.InvalidToken,      401 },
+            { ProtectedResourceErrors.ExpiredToken,      401 },
+            { ProtectedResourceErrors.InvalidRequest,    400 },
+            { ProtectedResourceErrors.InsufficientScope, 403 },
         };
         
         public static readonly Dictionary<string, IEnumerable<string>> ScopeToClaimsMapping = new Dictionary<string, IEnumerable<string>>
