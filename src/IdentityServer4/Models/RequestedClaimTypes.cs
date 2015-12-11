@@ -19,7 +19,7 @@ using System.Linq;
 
 namespace IdentityServer4.Core.Models
 {
-    internal class RequestedClaimTypes
+    public class RequestedClaimTypes
     {
         public RequestedClaimTypes()
         {

@@ -130,7 +130,7 @@ namespace IdentityServer4.Tests.Validation
                 customValidator: new DefaultCustomTokenValidator(
                     users: users,
                     clients: clients,
-                    loggerFactory: new LoggerFactory()),
+                    logger: new Logger<DefaultCustomTokenValidator>(new LoggerFactory())),
                 keyService: new DefaultSigningKeyService(options),
                 logger: logger,
                 context: idsrvContext);

@@ -17,7 +17,7 @@
 
 namespace IdentityServer4.Core.Validation
 {
-    internal class BearerTokenUsageValidationResult
+    public class BearerTokenUsageValidationResult
     {
         public bool TokenFound { get; set; }
         public string Token { get; set; }

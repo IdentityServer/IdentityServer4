@@ -9,6 +9,8 @@ namespace Host.Configuration
         {
             return new List<Scope>
             {
+                StandardScopes.OpenId,
+                StandardScopes.Email,
                 StandardScopes.OfflineAccess,
 
                 new Scope

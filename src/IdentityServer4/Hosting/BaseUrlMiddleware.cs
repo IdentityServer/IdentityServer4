@@ -8,29 +8,25 @@ namespace IdentityServer4.Core.Hosting
 {
     public class BaseUrlMiddleware
     {
-        private readonly IdentityServerContext _context;
         private readonly RequestDelegate _next;
-        private readonly IdentityServerOptions _options;
-
-        public BaseUrlMiddleware(RequestDelegate next, IdentityServerContext context, IdentityServerOptions options)
+        
+        public BaseUrlMiddleware(RequestDelegate next)
         {
             _next = next;
-            _context = context;
-            _options = options;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, IdentityServerContext idsrvContext)
         {
             var request = context.Request;
 
-            var origin = _options.PublicOrigin;
+            var origin = idsrvContext.Options.PublicOrigin;
             if (origin.IsMissing())
             {
                 origin = context.Request.Scheme + "://" + request.Host.Value;
             }
 
-            _context.SetHost(origin);
-            _context.SetBasePath(request.PathBase.Value.RemoveTrailingSlash());
+            idsrvContext.SetHost(origin);
+            idsrvContext.SetBasePath(request.PathBase.Value.RemoveTrailingSlash());
 
             await _next(context);
         }

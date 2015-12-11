@@ -207,6 +207,15 @@ namespace IdentityServer4.Core.Validation
         private async Task<TokenValidationResult> ValidateJwtAsync(string jwt, string audience, IEnumerable<X509Certificate2> signingCertificates, bool validateLifetime = true)
         {
             var handler = new JwtSecurityTokenHandler();
+
+            // todo
+#if NET451
+            JwtSecurityTokenHandler.InboundClaimTypeMap.Clear();
+#elif DOTNET5_4
+            handler.InboundClaimTypeMap.Clear();
+#endif
+
+
             //{
             //    Configuration =
             //        new SecurityTokenHandlerConfiguration

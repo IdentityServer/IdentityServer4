@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.Validation
 {
-    internal class BearerTokenUsageValidator
+    public class BearerTokenUsageValidator
     {
         public async Task<BearerTokenUsageValidationResult> ValidateAsync(HttpContext context)
         {

@@ -39,6 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<ITokenHandleStore, InMemoryTokenHandleStore>();
             services.AddTransient<IRefreshTokenService, DefaultRefreshTokenService>();
             services.AddTransient<ISigningKeyService, DefaultSigningKeyService>();
+            services.AddTransient<ICustomTokenValidator, DefaultCustomTokenValidator>();
 
             // secret parsers
             services.AddTransient<ISecretParser, BasicAuthenticationSecretParser>();
@@ -50,15 +51,19 @@ namespace Microsoft.Extensions.DependencyInjection
             // endpoints
             services.AddTransient<TokenEndpoint>();
             services.AddTransient<DiscoveryEndpoint>();
+            services.AddTransient<UserInfoEndpoint>();
 
             // validators
             services.AddTransient<TokenRequestValidator>();
             services.AddTransient<ScopeValidator>();
             services.AddTransient<CustomGrantValidator>();
             services.AddTransient<ClientSecretValidator>();
+            services.AddTransient<TokenValidator>();
+            services.AddTransient<BearerTokenUsageValidator>();
 
             // response handlers
             services.AddTransient<TokenResponseGenerator>();
+            services.AddTransient<UserInfoResponseGenerator>();
 
             return services;
         }

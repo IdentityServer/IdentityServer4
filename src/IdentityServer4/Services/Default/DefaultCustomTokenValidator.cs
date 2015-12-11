@@ -50,9 +50,9 @@ namespace IdentityServer4.Core.Services.Default
         /// </summary>
         /// <param name="users">The users store.</param>
         /// <param name="clients">The client store.</param>
-        public DefaultCustomTokenValidator(IUserService users, IClientStore clients, ILoggerFactory loggerFactory)
+        public DefaultCustomTokenValidator(IUserService users, IClientStore clients, ILogger<DefaultCustomTokenValidator> logger)
         {
-            _logger = loggerFactory.CreateLogger<DefaultCustomTokenValidator>();
+            _logger = logger;
             _users = users;
             _clients = clients;
         }

@@ -23,7 +23,7 @@ namespace IdentityServer4.Core.Endpoints
         private readonly BearerTokenUsageValidator _tokenUsageValidator;
         private readonly TokenValidator _tokenValidator;
 
-        internal UserInfoEndpoint(IdentityServerOptions options, TokenValidator tokenValidator, UserInfoResponseGenerator generator, BearerTokenUsageValidator tokenUsageValidator, IEventService events, ILogger<UserInfoEndpoint> logger)
+        public UserInfoEndpoint(IdentityServerOptions options, TokenValidator tokenValidator, UserInfoResponseGenerator generator, BearerTokenUsageValidator tokenUsageValidator, IEventService events, ILogger<UserInfoEndpoint> logger)
         {
             _options = options;
             _tokenValidator = tokenValidator;
@@ -36,7 +36,7 @@ namespace IdentityServer4.Core.Endpoints
         // todo: no caching
         public async Task<IResult> ProcessAsync(HttpContext context)
         {
-            if (context.Request.Method != "GET" || context.Request.Method != "POST")
+            if (context.Request.Method != "GET" && context.Request.Method != "POST")
             {
                 return new StatusCodeResult(405);
             }

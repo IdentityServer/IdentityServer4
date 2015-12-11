@@ -34,6 +34,10 @@ namespace IdentityServer4.Core.Hosting
             {
                 endpoint = context.ApplicationServices.GetService(typeof(DiscoveryEndpoint)) as IEndpoint;
             }
+            else if (context.Request.Path.StartsWithSegments(new PathString("/connect/userinfo")))
+            {
+                endpoint = context.ApplicationServices.GetService(typeof(UserInfoEndpoint)) as IEndpoint;
+            }
 
             if (endpoint != null)
             {

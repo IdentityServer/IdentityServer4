@@ -26,7 +26,7 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.ResponseHandling
 {
-    internal class UserInfoResponseGenerator
+    public class UserInfoResponseGenerator
     {
         private readonly ILogger _logger;
         private readonly IUserService _users;
