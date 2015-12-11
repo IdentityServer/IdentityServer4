@@ -51,11 +51,11 @@ namespace IdentityServer4.Core.Hosting
         {
             if (context == null) throw new ArgumentNullException("context");
 
-            var options = context.HttpContext.ApplicationServices.GetService(typeof(IdentityServerOptions)) as IdentityServerOptions;
+            //var options = context.HttpContext.ApplicationServices.GetService(typeof(IdentityServerOptions)) as IdentityServerOptions;
 
             // if they've explicitly configured a URI then use it,
             // otherwise dynamically calculate it
-            var uri = options.IssuerUri;
+            var uri = context.Options.IssuerUri;
             if (uri.IsMissing())
             {
                 uri = context.GetIdentityServerBaseUrl();

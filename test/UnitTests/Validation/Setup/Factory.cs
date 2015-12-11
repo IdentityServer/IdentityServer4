@@ -21,6 +21,8 @@ using IdentityServer4.Core.Services.InMemory;
 using IdentityServer4.Core.Validation;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using IdentityServer4.Core.Hosting;
+using Microsoft.AspNet.Http.Internal;
 
 namespace IdentityServer4.Tests.Validation
 {
@@ -98,110 +100,42 @@ namespace IdentityServer4.Tests.Validation
                 new LoggerFactory());
         }
 
-        //public static AuthorizeRequestValidator CreateAuthorizeRequestValidator(
-        //    IdentityServerOptions options = null,
-        //    IScopeStore scopes = null,
-        //    IClientStore clients = null,
-        //    IUserService users = null,
-        //    ICustomRequestValidator customValidator = null,
-        //    IRedirectUriValidator uriValidator = null,
-        //    ScopeValidator scopeValidator = null,
-        //    IDictionary<string, object> environment = null)
-        //{
-        //    if (options == null)
-        //    {
-        //        options = TestIdentityServerOptions.Create();
-        //    }
+        internal static ITokenSigningService CreateDefaultTokenSigningService()
+        {
+            return new DefaultTokenSigningService(new DefaultSigningKeyService(TestIdentityServerOptions.Create()));
+        }
 
-        //    if (scopes == null)
-        //    {
-        //        scopes = new InMemoryScopeStore(TestScopes.Get());
-        //    }
 
-        //    if (clients == null)
-        //    {
-        //        clients = new InMemoryClientStore(TestClients.Get());
-        //    }
 
-        //    if (customValidator == null)
-        //    {
-        //        customValidator = new DefaultCustomRequestValidator();
-        //    }
+        public static TokenValidator CreateTokenValidator(ITokenHandleStore tokenStore = null, IUserService users = null)
+        {
+            if (users == null)
+            {
+                users = new TestUserService();
+            }
 
-        //    if (uriValidator == null)
-        //    {
-        //        uriValidator = new DefaultRedirectUriValidator();
-        //    }
+            var clients = CreateClientStore();
+            var options = TestIdentityServerOptions.Create();
 
-        //    if (scopeValidator == null)
-        //    {
-        //        scopeValidator = new ScopeValidator(scopes);
-        //    }
+            var accessor = new HttpContextAccessor();
+            accessor.HttpContext = new DefaultHttpContext();
+            var idsrvContext = new IdentityServerContext(accessor, options);
 
-        //    var mockSessionCookie = new Mock<SessionCookie>((IOwinContext)null, (IdentityServerOptions)null);
-        //    mockSessionCookie.CallBase = false;
-        //    mockSessionCookie.Setup(x => x.GetSessionId()).Returns((string)null);
+            var logger = new Logger<TokenValidator>(new LoggerFactory());
 
-        //    return new AuthorizeRequestValidator(options, clients, customValidator, uriValidator, scopeValidator, mockSessionCookie.Object);
+            var validator = new TokenValidator(
+                options: options,
+                clients: clients,
+                tokenHandles: tokenStore,
+                customValidator: new DefaultCustomTokenValidator(
+                    users: users,
+                    clients: clients,
+                    loggerFactory: new LoggerFactory()),
+                keyService: new DefaultSigningKeyService(options),
+                logger: logger,
+                context: idsrvContext);
 
-        //}
-
-        //public static TokenValidator CreateTokenValidator(ITokenHandleStore tokenStore = null, IUserService users = null)
-        //{
-        //    if (users == null)
-        //    {
-        //        users = new TestUserService();
-        //    }
-
-        //    var clients = CreateClientStore();
-        //    var options = TestIdentityServerOptions.Create();
-        //    options.Factory = new IdentityServerServiceFactory();
-        //    var context = CreateOwinContext(options, clients, users);
-
-        //    var validator = new TokenValidator(
-        //        options: options,
-        //        clients: clients,
-        //        tokenHandles: tokenStore,
-        //        customValidator: new DefaultCustomTokenValidator(
-        //            users: users,
-        //            clients: clients),
-        //        owinEnvironment: new OwinEnvironmentService(context));
-
-        //    return validator;
-        //}
-
-        //public static IOwinContext CreateOwinContext(IdentityServerOptions options, IClientStore clients, IUserService users)
-        //{
-        //    options.Factory = options.Factory ?? new IdentityServerServiceFactory();
-        //    if (users != null)
-        //    {
-        //        options.Factory.UserService = new Registration<IUserService>(users);
-        //    }
-        //    if (options.Factory.UserService == null)
-        //    {
-        //        options.Factory.UseInMemoryUsers(new List<InMemoryUser>());
-        //    }
-
-        //    if (clients != null)
-        //    {
-        //        options.Factory.ClientStore = new Registration<IClientStore>(clients);
-        //    }
-        //    if (options.Factory.ClientStore == null)
-        //    {
-        //        options.Factory.UseInMemoryClients(new List<Client>());
-        //    }
-
-        //    if (options.Factory.ScopeStore == null)
-        //    {
-        //        options.Factory.UseInMemoryScopes(new List<Scope>());
-        //    }
-
-        //    var container = AutofacConfig.Configure(options);
-
-        //    var context = new OwinContext();
-        //    context.Set(Autofac.Integration.Owin.Constants.OwinLifetimeScopeKey, container);
-
-        //    return context;
-        //}
+            return validator;
+        }
     }
 }

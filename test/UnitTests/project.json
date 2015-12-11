@@ -14,8 +14,14 @@
   },
   "frameworks": {
     "dnx451": {
+      "dependencies": {
+        "System.IdentityModel.Tokens.Jwt": "4.0.2.202250711"
+      }
     },
     "dnxcore50": {
+      "dependencies": {
+        "System.IdentityModel.Tokens.Jwt": "5.0.0-rc1-211161024"
+      }
     }
   }
 }
