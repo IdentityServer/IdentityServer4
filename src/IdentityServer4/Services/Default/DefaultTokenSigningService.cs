@@ -92,6 +92,7 @@ namespace IdentityServer4.Core.Services.Default
             if (x509key != null)
             {
                 header.Add("kid", await _keyService.GetKidAsync(x509key.Certificate));
+                header.Add("x5t", await _keyService.GetKidAsync(x509key.Certificate));
             }
 #endif
 

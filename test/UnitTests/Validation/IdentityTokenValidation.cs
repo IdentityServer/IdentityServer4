@@ -49,10 +49,12 @@ namespace IdentityServer4.Tests.Validation
         public async Task Valid_IdentityToken_DefaultKeyType()
         {
             var signer = Factory.CreateDefaultTokenSigningService();
-            var jwt = await signer.SignTokenAsync(TokenFactory.CreateIdentityToken("roclient", "valid"));
-            var validator = Factory.CreateTokenValidator();
+            var token = TokenFactory.CreateIdentityToken("roclient", "valid");
+            var jwt = await signer.SignTokenAsync(token);
 
+            var validator = Factory.CreateTokenValidator();
             var result = await validator.ValidateIdentityTokenAsync(jwt, "roclient");
+
             result.IsError.Should().BeFalse();
         }
 
