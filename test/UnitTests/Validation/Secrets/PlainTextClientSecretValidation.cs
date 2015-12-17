@@ -31,7 +31,7 @@ namespace IdentityServer4.Tests.Validation.Secrets
     {
         const string Category = "Secrets - PlainText Shared Secret Validation";
 
-        ISecretValidator _validator = new PlainTextSharedSecretValidator(new LoggerFactory());
+        ISecretValidator _validator = new PlainTextSharedSecretValidator(new Logger<PlainTextSharedSecretValidator>(new LoggerFactory()));
         IClientStore _clients = new InMemoryClientStore(ClientValidationTestClients.Get());
 
         [Fact]
@@ -118,24 +118,6 @@ namespace IdentityServer4.Tests.Validation.Secrets
 
             var result = await _validator.ValidateAsync(client.ClientSecrets, secret);
 
-            result.Success.Should().BeFalse();
-        }
-
-        [Fact]
-        [Trait("Category", Category)]
-        public async Task Expired_Secret()
-        {
-            var clientId = "multiple_secrets_no_protection";
-            var client = await _clients.FindClientByIdAsync(clientId);
-
-            var secret = new ParsedSecret
-            {
-                Id = clientId,
-                Credential = "expired",
-                Type = Constants.ParsedSecretTypes.SharedSecret
-            };
-
-            var result = await _validator.ValidateAsync(client.ClientSecrets, secret);
             result.Success.Should().BeFalse();
         }
 

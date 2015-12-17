@@ -32,9 +32,9 @@ namespace IdentityServer4.Core.Validation
     {
         private readonly ILogger _logger;
 
-        public HashedSharedSecretValidator(ILoggerFactory loggerFactory)
+        public HashedSharedSecretValidator(ILogger<HashedSharedSecretValidator> logger)
         {
-            _logger = loggerFactory.CreateLogger<HashedSharedSecretValidator>();
+            _logger = logger;
         }
 
         /// <summary>
@@ -75,13 +75,6 @@ namespace IdentityServer4.Core.Validation
                 if (secret.Type != Constants.SecretTypes.SharedSecret)
                 {
                     _logger.LogDebug("Skipping secret: {description}, secret is not of type {type}.", secretDescription, Constants.SecretTypes.SharedSecret);
-                    continue;
-                }
-
-                // check if client secret is still valid
-                if (secret.Expiration.HasExpired())
-                {
-                    _logger.LogDebug("Skipping secret: {description}, secret is expired.", secretDescription);
                     continue;
                 }
 

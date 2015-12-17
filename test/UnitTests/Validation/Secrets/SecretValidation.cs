@@ -27,12 +27,21 @@ using Xunit;
 
 namespace IdentityServer4.Tests.Validation.Secrets
 {
-    public class HashedSharedSecretValidation
+    public class SecretValidation
     {
-        const string Category = "Secrets - Hashed Shared Secret Validation";
+        const string Category = "Secrets - Secret Validator";
 
-        ISecretValidator _validator = new HashedSharedSecretValidator(new Logger<HashedSharedSecretValidator>(new LoggerFactory()));
+        ISecretValidator _hashedSecretValidator = new HashedSharedSecretValidator(new Logger<HashedSharedSecretValidator>(new LoggerFactory()));
         IClientStore _clients = new InMemoryClientStore(ClientValidationTestClients.Get());
+        SecretValidator _validator;
+
+        public SecretValidation()
+        {
+            _validator = new SecretValidator(new[]
+            {
+                _hashedSecretValidator
+            }, new Logger<SecretValidator>(new LoggerFactory()));
+        }
 
         [Fact]
         [Trait("Category", Category)]
@@ -48,7 +57,7 @@ namespace IdentityServer4.Tests.Validation.Secrets
                 Type = Constants.ParsedSecretTypes.SharedSecret
             };
 
-            var result = await _validator.ValidateAsync(client.ClientSecrets, secret);
+            var result = await _validator.ValidateAsync(secret, client.ClientSecrets);
 
             result.Success.Should().BeTrue();
         }
@@ -67,7 +76,7 @@ namespace IdentityServer4.Tests.Validation.Secrets
                 Type = "invalid"
             };
 
-            var result = await _validator.ValidateAsync(client.ClientSecrets, secret);
+            var result = await _validator.ValidateAsync(secret, client.ClientSecrets);
 
             result.Success.Should().BeFalse();
         }
@@ -86,19 +95,19 @@ namespace IdentityServer4.Tests.Validation.Secrets
                 Type = Constants.ParsedSecretTypes.SharedSecret
             };
 
-            var result = await _validator.ValidateAsync(client.ClientSecrets, secret);
+            var result = await _validator.ValidateAsync(secret, client.ClientSecrets);
             result.Success.Should().BeTrue();
 
             secret.Credential = "foobar";
-            result = await _validator.ValidateAsync(client.ClientSecrets, secret);
+            result = await _validator.ValidateAsync(secret, client.ClientSecrets);
             result.Success.Should().BeTrue();
 
             secret.Credential = "quux";
-            result = await _validator.ValidateAsync(client.ClientSecrets, secret);
+            result = await _validator.ValidateAsync(secret, client.ClientSecrets);
             result.Success.Should().BeTrue();
 
             secret.Credential = "notexpired";
-            result = await _validator.ValidateAsync(client.ClientSecrets, secret);
+            result = await _validator.ValidateAsync(secret, client.ClientSecrets);
             result.Success.Should().BeTrue();
         }
 
@@ -116,8 +125,26 @@ namespace IdentityServer4.Tests.Validation.Secrets
                 Type = Constants.ParsedSecretTypes.SharedSecret
             };
 
-            var result = await _validator.ValidateAsync(client.ClientSecrets, secret);
+            var result = await _validator.ValidateAsync(secret, client.ClientSecrets);
 
+            result.Success.Should().BeFalse();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task Expired_Secret()
+        {
+            var clientId = "multiple_secrets_hashed";
+            var client = await _clients.FindClientByIdAsync(clientId);
+
+            var secret = new ParsedSecret
+            {
+                Id = clientId,
+                Credential = "expired",
+                Type = Constants.ParsedSecretTypes.SharedSecret
+            };
+
+            var result = await _validator.ValidateAsync(secret, client.ClientSecrets);
             result.Success.Should().BeFalse();
         }
 
@@ -135,7 +162,7 @@ namespace IdentityServer4.Tests.Validation.Secrets
                 Type = Constants.ParsedSecretTypes.SharedSecret
             };
 
-            var result = await _validator.ValidateAsync(client.ClientSecrets, secret);
+            var result = await _validator.ValidateAsync(secret, client.ClientSecrets);
             result.Success.Should().BeFalse();
         }
 
@@ -151,8 +178,8 @@ namespace IdentityServer4.Tests.Validation.Secrets
                 Id = clientId,
                 Type = Constants.ParsedSecretTypes.SharedSecret
             };
-
-            Func<Task> act = () => _validator.ValidateAsync(client.ClientSecrets, secret);
+            
+            Func<Task> act = () => _validator.ValidateAsync(secret, client.ClientSecrets);
 
             act.ShouldThrow<ArgumentException>();
         }
