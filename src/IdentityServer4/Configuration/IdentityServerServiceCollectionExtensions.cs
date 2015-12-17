@@ -42,10 +42,12 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<ICustomTokenValidator, DefaultCustomTokenValidator>();
 
             // secret parsers
+            services.AddTransient<SecretParser>();
             services.AddTransient<ISecretParser, BasicAuthenticationSecretParser>();
             services.AddTransient<ISecretParser, PostBodySecretParser>();
 
             // secret validators
+            services.AddTransient<SecretValidator>();
             services.AddTransient<ISecretValidator, HashedSharedSecretValidator>();
 
             // endpoints

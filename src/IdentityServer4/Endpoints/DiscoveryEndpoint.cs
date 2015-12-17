@@ -22,9 +22,10 @@ namespace IdentityServer4.Core.Endpoints
         private readonly ISigningKeyService _keyService;
         private readonly ILogger _logger;
         private readonly IdentityServerOptions _options;
+        private readonly SecretParser _parsers;
         private readonly IScopeStore _scopes;
 
-        public DiscoveryEndpoint(IdentityServerOptions options, IdentityServerContext context, IScopeStore scopes, ILogger<DiscoveryEndpoint> logger, ISigningKeyService keyService, CustomGrantValidator customGrants)
+        public DiscoveryEndpoint(IdentityServerOptions options, IdentityServerContext context, IScopeStore scopes, ILogger<DiscoveryEndpoint> logger, ISigningKeyService keyService, CustomGrantValidator customGrants, SecretParser parsers)
         {
             _options = options;
             _scopes = scopes;
@@ -32,6 +33,7 @@ namespace IdentityServer4.Core.Endpoints
             _keyService = keyService;
             _context = context;
             _customGrants = customGrants;
+            _parsers = parsers;
         }
 
         public Task<IResult> ProcessAsync(HttpContext context)
@@ -131,7 +133,7 @@ namespace IdentityServer4.Core.Endpoints
             // token endpoint authentication methods
             if (_options.DiscoveryOptions.ShowTokenEndpointAuthenticationMethods)
             {
-                document.token_endpoint_auth_methods_supported = new[] { Constants.TokenEndpointAuthenticationMethods.PostBody, Constants.TokenEndpointAuthenticationMethods.BasicAuthentication };
+                document.token_endpoint_auth_methods_supported = _parsers.GetAvailableAuthenticationMethods().ToArray();
             }
 
             // endpoints

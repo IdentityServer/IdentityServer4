@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.Validation
 {
-    internal class SecretParser
+    public class SecretParser
     {
         private readonly ILogger _logger;
         private readonly IEnumerable<ISecretParser> _parsers;
