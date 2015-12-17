@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
 using System.Collections.Generic;
+using System.IO;
 using System.Security.Cryptography.X509Certificates;
 
 namespace IdentityServer4.Core
@@ -21,12 +22,14 @@ namespace IdentityServer4.Core
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var cert = new X509Certificate2(_environment.ApplicationBasePath + "\\idsrv3test.pfx", "idsrv3test");
+            var cert = new X509Certificate2(Path.Combine(_environment.ApplicationBasePath, "idsrv3test.pfx"), "idsrv3test");
 
             services.AddIdentityServer(options =>
             {
                 options.SigningCertificate = cert;
                 options.IssuerUri = "https://idsrv4";
+
+                options.DiscoveryOptions.CustomEntries.Add("foo", "bar");
             });
 
             services.AddInMemoryClients(Clients.Get());

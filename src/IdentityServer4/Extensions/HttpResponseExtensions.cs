@@ -14,7 +14,11 @@ namespace Microsoft.AspNet.Http
         public static async Task WriteJsonAsync(this HttpResponse response, object o)
         { 
             var json = JsonConvert.SerializeObject(o, settings);
+            await response.WriteJsonAsync(json);
+        }
 
+        public static async Task WriteJsonAsync(this HttpResponse response, string json)
+        {
             response.ContentType = "application/json";
             await response.WriteAsync(json);
         }

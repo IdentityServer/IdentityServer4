@@ -31,14 +31,15 @@ namespace IdentityServer4.Core.Configuration
         {
             SiteName = Constants.IdentityServerName;
 
-            this.ProtocolLogoutUrls = new List<string>();
-            this.RequireSsl = true;
-            this.Endpoints = new EndpointOptions();
-            this.AuthenticationOptions = new AuthenticationOptions();
-            this.CspOptions = new CspOptions();
-            this.EventsOptions = new EventsOptions();
-            this.EnableWelcomePage = true;
-            this.InputLengthRestrictions = new InputLengthRestrictions();
+            ProtocolLogoutUrls = new List<string>();
+            RequireSsl = true;
+            Endpoints = new EndpointOptions();
+            AuthenticationOptions = new AuthenticationOptions();
+            CspOptions = new CspOptions();
+            EventsOptions = new EventsOptions();
+            EnableWelcomePage = true;
+            InputLengthRestrictions = new InputLengthRestrictions();
+            DiscoveryOptions = new DiscoveryOptions();
         }
 
         /// <summary>
@@ -96,6 +97,14 @@ namespace IdentityServer4.Core.Configuration
         /// The endpoints configuration.
         /// </value>
         public EndpointOptions Endpoints { get; set; }
+
+        /// <summary>
+        /// Gets or sets the discovery endpoint configuration.
+        /// </summary>
+        /// <value>
+        /// The discovery endpoint configuration.
+        /// </value>
+        public DiscoveryOptions DiscoveryOptions { get; set; }
 
         /// <summary>
         /// Gets or sets the authentication options.

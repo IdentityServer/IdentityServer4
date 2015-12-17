@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Services;
 using System;
 using System.Collections.Generic;
@@ -35,7 +36,7 @@ namespace IdentityServer4.Core.Validation
 
         public IEnumerable<string> GetAvailableGrantTypes()
         {
-            return _validators.Select(v => v.GrantType);
+            return _validators.Where(v => v.GrantType.IsPresent()).Select(v => v.GrantType);
         }
 
         public async Task<CustomGrantValidationResult> ValidateAsync(ValidatedTokenRequest request)
