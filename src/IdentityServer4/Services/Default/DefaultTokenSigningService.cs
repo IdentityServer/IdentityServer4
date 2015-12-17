@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-using IdentityServer4.Core.Configuration;
 using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Models;
 using Newtonsoft.Json.Linq;
@@ -24,7 +23,6 @@ using System.Threading.Tasks;
 using System.Linq;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens;
-using IdentityModel;
 
 #if DOTNET5_4
 using System.IdentityModel.Tokens.Jwt;

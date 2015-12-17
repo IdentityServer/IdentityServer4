@@ -1,11 +1,9 @@
 ﻿using Host.Configuration;
-using IdentityServer4.Core.Services.InMemory;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
-using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 
@@ -44,6 +42,7 @@ namespace IdentityServer4.Core
 
             app.UseDeveloperExceptionPage();
             app.UseIISPlatformHandler();
+
             app.UseIdentityServer();
         }
 

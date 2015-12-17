@@ -1,5 +1,4 @@
-﻿using IdentityServer4.Core.Configuration;
-using IdentityServer4.Core.Hosting;
+﻿using IdentityServer4.Core.Hosting;
 
 namespace Microsoft.AspNet.Builder
 {

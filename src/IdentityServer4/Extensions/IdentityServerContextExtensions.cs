@@ -1,7 +1,4 @@
-﻿using IdentityServer4.Core;
-using IdentityServer4.Core.Configuration;
-using IdentityServer4.Core.Extensions;
-using IdentityServer4.Core.Hosting;
+﻿using IdentityServer4.Core.Extensions;
 using System;
 
 namespace IdentityServer4.Core.Hosting

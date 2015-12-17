@@ -16,7 +16,6 @@
 
 using FluentAssertions;
 using IdentityServer4.Core;
-using IdentityServer4.Core.Services.Default;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens;
 using System.Threading.Tasks;
@@ -28,7 +27,7 @@ using System.IdentityModel.Tokens.Jwt;
 
 namespace IdentityServer4.Tests.Validation
 {
-    
+
     public class IdentityTokenValidation
     {
         const string Category = "Identity token validation";

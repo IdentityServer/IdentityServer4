@@ -1,5 +1,4 @@
-﻿using IdentityServer4.Core.Configuration;
-using IdentityServer4.Core.Extensions;
+﻿using IdentityServer4.Core.Extensions;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
 using System.Threading.Tasks;

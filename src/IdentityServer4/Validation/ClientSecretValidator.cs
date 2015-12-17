@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Services;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Events;
