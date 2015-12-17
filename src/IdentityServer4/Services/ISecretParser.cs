@@ -31,5 +31,10 @@ namespace IdentityServer4.Core.Services
         /// <param name="environment">The environment.</param>
         /// <returns>A parsed secret</returns>
         Task<ParsedSecret> ParseAsync(HttpContext context);
+
+        /// <summary>
+        /// Returns the authentication method name that this parser implements
+        /// </summary>
+        string AuthenticationMethod { get; }
     }
 }

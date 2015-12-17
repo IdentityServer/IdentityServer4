@@ -45,6 +45,14 @@ namespace IdentityServer4.Core.Validation
             _logger = loggerFactory.CreateLogger<BasicAuthenticationSecretParser>();
         }
 
+        public string AuthenticationMethod
+        {
+            get
+            {
+                return Constants.TokenEndpointAuthenticationMethods.BasicAuthentication;
+            }
+        }
+
         /// <summary>
         /// Tries to find a secret on the environment that can be used for authentication
         /// </summary>

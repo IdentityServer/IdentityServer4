@@ -22,6 +22,7 @@ using Microsoft.AspNet.Http;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using System.Linq;
+using System;
 
 namespace IdentityServer4.Core.Validation
 {
@@ -41,6 +42,14 @@ namespace IdentityServer4.Core.Validation
         {
             _logger = loggerFactory.CreateLogger<PostBodySecretParser>();
             _options = options;
+        }
+
+        public string AuthenticationMethod
+        {
+            get
+            {
+                return Constants.TokenEndpointAuthenticationMethods.PostBody;
+            }
         }
 
         /// <summary>
