@@ -30,7 +30,7 @@ namespace IdentityServer4.Core.Hosting
             {
                 endpoint = context.ApplicationServices.GetService(typeof(TokenEndpoint)) as IEndpoint;
             }
-            else if (context.Request.Path.StartsWithSegments(new PathString("/.well-known")))
+            else if (context.Request.Path.StartsWithSegments(new PathString("/.well-known/openid-configuration")))
             {
                 endpoint = context.ApplicationServices.GetService(typeof(DiscoveryEndpoint)) as IEndpoint;
             }

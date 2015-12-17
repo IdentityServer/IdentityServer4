@@ -649,7 +649,7 @@ namespace IdentityServer4.Core
                 public const string Consent = "connect/consent";
                 public const string SwitchUser = "connect/switch";
                 public const string DiscoveryConfiguration = ".well-known/openid-configuration";
-                public const string DiscoveryWebKeys = ".well-known/jwks";
+                public const string DiscoveryWebKeys = DiscoveryConfiguration + "/jwks";
                 public const string Token = "connect/token";
                 public const string Revocation = "connect/revocation";
                 public const string UserInfo = "connect/userinfo";
