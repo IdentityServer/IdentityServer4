@@ -50,6 +50,27 @@ namespace Host.Configuration
                         "api1", "api2"
                     }
                 },
+
+                ///////////////////////////////////////////
+                // Introspection Client Sample
+                //////////////////////////////////////////
+                new Client
+                {
+                    ClientId = "roclient.reference",
+                    ClientSecrets = new List<Secret>
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    Flow = Flows.ResourceOwner,
+
+                    AllowedScopes = new List<string>
+                    {
+                        "api1", "api2"
+                    },
+
+                    AccessTokenType = AccessTokenType.Reference
+                },
             };
         }
     }

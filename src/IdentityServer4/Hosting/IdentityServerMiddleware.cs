@@ -38,6 +38,10 @@ namespace IdentityServer4.Core.Hosting
             {
                 endpoint = context.ApplicationServices.GetService(typeof(UserInfoEndpoint)) as IEndpoint;
             }
+            else if (context.Request.Path.StartsWithSegments(new PathString("/connect/introspect")))
+            {
+                endpoint = context.ApplicationServices.GetService(typeof(IntrospectionEndpoint)) as IEndpoint;
+            }
 
             if (endpoint != null)
             {

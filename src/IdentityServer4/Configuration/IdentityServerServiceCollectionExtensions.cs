@@ -33,14 +33,16 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<ICustomRequestValidator, DefaultCustomRequestValidator>();
             services.AddTransient<ITokenService, DefaultTokenService>();
             services.AddTransient<ITokenSigningService, DefaultTokenSigningService>();
-            services.AddTransient<IAuthorizationCodeStore, InMemoryAuthorizationCodeStore>();
-            services.AddTransient<IRefreshTokenStore, InMemoryRefreshTokenStore>();
             services.AddTransient<IClaimsProvider, DefaultClaimsProvider>();
-            services.AddTransient<ITokenHandleStore, InMemoryTokenHandleStore>();
             services.AddTransient<IRefreshTokenService, DefaultRefreshTokenService>();
             services.AddTransient<ISigningKeyService, DefaultSigningKeyService>();
             services.AddTransient<ICustomTokenValidator, DefaultCustomTokenValidator>();
 
+            // transient stores
+            services.AddSingleton<IAuthorizationCodeStore, InMemoryAuthorizationCodeStore>();
+            services.AddSingleton<IRefreshTokenStore, InMemoryRefreshTokenStore>();
+            services.AddSingleton<ITokenHandleStore, InMemoryTokenHandleStore>();
+            
             // secret parsers
             services.AddTransient<SecretParser>();
             services.AddTransient<ISecretParser, BasicAuthenticationSecretParser>();
@@ -54,6 +56,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<TokenEndpoint>();
             services.AddTransient<DiscoveryEndpoint>();
             services.AddTransient<UserInfoEndpoint>();
+            services.AddTransient<IntrospectionEndpoint>();
 
             // validators
             services.AddTransient<TokenRequestValidator>();
@@ -62,10 +65,13 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<ClientSecretValidator>();
             services.AddTransient<TokenValidator>();
             services.AddTransient<BearerTokenUsageValidator>();
+            services.AddTransient<ScopeSecretValidator>();
+            services.AddTransient<IntrospectionRequestValidator>();
 
             // response handlers
             services.AddTransient<TokenResponseGenerator>();
             services.AddTransient<UserInfoResponseGenerator>();
+            services.AddTransient<IntrospectionResponseGenerator>();
 
             return services;
         }

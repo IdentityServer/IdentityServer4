@@ -16,7 +16,14 @@ namespace Host.Configuration
                 new Scope
                 {
                     Name = "api1",
-                    Type = ScopeType.Resource
+                    Type = ScopeType.Resource,
+
+                    ScopeSecrets = new List<Secret>
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    AllowUnrestrictedIntrospection = true
                 },
                 new Scope
                 {
