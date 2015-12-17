@@ -30,14 +30,14 @@ namespace IdentityServer4.Core.Validation
         private readonly ILogger _logger;
         private readonly IClientStore _clients;
         private readonly IEventService _events;
-        private readonly IEnumerable<ISecretParser> _parsers;
-        private readonly IEnumerable<ISecretValidator> _validators;
+        private readonly SecretValidator _validator;
+        private readonly SecretParser _parser;
 
-        public ClientSecretValidator(IClientStore clients, IEnumerable<ISecretParser> parsers, IEnumerable<ISecretValidator> validators, IHttpContextAccessor contextAccessor, IEventService events, ILoggerFactory loggerFactory)
+        public ClientSecretValidator(IClientStore clients, SecretParser parser, SecretValidator validator, IEventService events, ILoggerFactory loggerFactory)
         {
             _clients = clients;
-            _parsers = parsers;
-            _validators = validators;
+            _parser = parser;
+            _validator = validator;
             _events = events;
             _logger = loggerFactory.CreateLogger<ClientSecretValidator>();
         }
@@ -51,20 +51,7 @@ namespace IdentityServer4.Core.Validation
                 IsError = true
             };
 
-            // see if a registered parser finds a secret on the request
-            ParsedSecret parsedSecret = null;
-            foreach (var parser in _parsers)
-            {
-                parsedSecret = await parser.ParseAsync(context);
-                if (parsedSecret != null)
-                {
-                    _logger.LogVerbose("Parser found client secret: {parser}", parser.GetType().Name);
-                    _logger.LogInformation("Client secret id found: {id}", parsedSecret.Id);
-
-                    break;
-                }
-            }
-
+            var parsedSecret = await _parser.ParseAsync(context);
             if (parsedSecret == null)
             {
                 await RaiseFailureEvent("unknown", "No client id or secret found");
@@ -79,34 +66,29 @@ namespace IdentityServer4.Core.Validation
             {
                 await RaiseFailureEvent(parsedSecret.Id, "Unknown client");
 
-                _logger.LogWarning("No client with that id found. aborting");
+                _logger.LogInformation("No client with that id found. aborting");
                 return fail;
             }
 
-            // see if a registered validator can validate the secret
-            foreach (var validator in _validators)
+            var result = await _validator.ValidateAsync(parsedSecret, client.ClientSecrets);
+
+            if (result.Success)
             {
-                var secretValidationResult = await validator.ValidateAsync(client.ClientSecrets, parsedSecret);
+                _logger.LogInformation("Client validation success");
 
-                if (secretValidationResult.Success)
+                var success = new ClientSecretValidationResult
                 {
-                    _logger.LogVerbose("Secret validator success: {validator}", validator.GetType().Name);
-                    _logger.LogInformation("Client validation success");
+                    IsError = false,
+                    Client = client
+                };
 
-                    var success = new ClientSecretValidationResult
-                    {
-                        IsError = false,
-                        Client = client
-                    };
-
-                    await RaiseSuccessEvent(client.ClientId);
-                    return success;
-                }
+                await RaiseSuccessEvent(client.ClientId);
+                return success;
             }
 
             await RaiseFailureEvent(client.ClientId, "Invalid client secret");
-            _logger.LogWarning("Client validation failed.");
-            
+            _logger.LogWarning("Client validation failed client {clientId}.", client.ClientId);
+
             return fail;
         }
 
