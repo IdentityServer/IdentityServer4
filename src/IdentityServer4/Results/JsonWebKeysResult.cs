@@ -17,7 +17,7 @@ namespace IdentityServer4.Core.Results
         
         public Task ExecuteAsync(HttpContext context, ILogger logger)
         {
-            return context.Response.WriteJsonAsync(WebKeys);
+            return context.Response.WriteJsonAsync(new { keys = WebKeys });
         }
     }
 }
