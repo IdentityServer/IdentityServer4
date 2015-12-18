@@ -196,3 +196,4 @@ FakesAssemblies/
 
 # ASP.NET 5
 project.lock.json
+nuget.exe
