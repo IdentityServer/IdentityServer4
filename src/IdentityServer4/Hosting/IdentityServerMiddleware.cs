@@ -4,6 +4,7 @@ using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
+using static IdentityServer4.Core.Constants;
 
 namespace IdentityServer4.Core.Hosting
 {
@@ -41,6 +42,10 @@ namespace IdentityServer4.Core.Hosting
             else if (context.Request.Path.StartsWithSegments(new PathString("/connect/introspect")))
             {
                 endpoint = context.ApplicationServices.GetService(typeof(IntrospectionEndpoint)) as IEndpoint;
+            }
+            else if (context.Request.Path.StartsWithSegments(new PathString("/" + RoutePaths.Oidc.Authorize)))
+            {
+                endpoint = context.ApplicationServices.GetService(typeof(AuthorizeEndpoint)) as IEndpoint;
             }
 
             if (endpoint != null)
