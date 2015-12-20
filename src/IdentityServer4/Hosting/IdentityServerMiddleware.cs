@@ -2,6 +2,7 @@
 using IdentityServer4.Core.Endpoints;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using static IdentityServer4.Core.Constants;
@@ -13,41 +14,19 @@ namespace IdentityServer4.Core.Hosting
         private readonly ILogger _logger;
         private readonly ILoggerFactory _loggerFactory;
         private readonly RequestDelegate _next;
-        private readonly IdentityServerOptions _options;
 
-        public IdentityServerMiddleware(RequestDelegate next, IdentityServerOptions options, ILoggerFactory loggerFactory)
+        public IdentityServerMiddleware(RequestDelegate next, ILoggerFactory loggerFactory)
         {
             _next = next;
-            _options = options;
             _logger = loggerFactory.CreateLogger<IdentityServerMiddleware>();
             _loggerFactory = loggerFactory;
         }
 
         public async Task Invoke(HttpContext context)
         {
-            IEndpoint endpoint = null;
+            var router = context.RequestServices.GetRequiredService<IEndpointRouter>();
 
-            if (context.Request.Path.StartsWithSegments(new PathString("/connect/token")))
-            {
-                endpoint = context.ApplicationServices.GetService(typeof(TokenEndpoint)) as IEndpoint;
-            }
-            else if (context.Request.Path.StartsWithSegments(new PathString("/.well-known/openid-configuration")))
-            {
-                endpoint = context.ApplicationServices.GetService(typeof(DiscoveryEndpoint)) as IEndpoint;
-            }
-            else if (context.Request.Path.StartsWithSegments(new PathString("/connect/userinfo")))
-            {
-                endpoint = context.ApplicationServices.GetService(typeof(UserInfoEndpoint)) as IEndpoint;
-            }
-            else if (context.Request.Path.StartsWithSegments(new PathString("/connect/introspect")))
-            {
-                endpoint = context.ApplicationServices.GetService(typeof(IntrospectionEndpoint)) as IEndpoint;
-            }
-            else if (context.Request.Path.StartsWithSegments(new PathString("/" + RoutePaths.Oidc.Authorize)))
-            {
-                endpoint = context.ApplicationServices.GetService(typeof(AuthorizeEndpoint)) as IEndpoint;
-            }
-
+            var endpoint = router.Find(context);
             if (endpoint != null)
             {
                 var result = await endpoint.ProcessAsync(context);

@@ -9,6 +9,7 @@ using IdentityServer4.Core.Services.InMemory;
 using System;
 using System.Collections.Generic;
 using IdentityServer4.Core.Hosting;
+using IdentityServer4.Core;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -53,11 +54,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<ISecretValidator, HashedSharedSecretValidator>();
 
             // endpoints
-            services.AddTransient<TokenEndpoint>();
-            services.AddTransient<DiscoveryEndpoint>();
-            services.AddTransient<UserInfoEndpoint>();
-            services.AddTransient<IntrospectionEndpoint>();
-            services.AddTransient<AuthorizeEndpoint>();
+            ConfigureEndpoints(services, options);
 
             // validators
             services.AddTransient<TokenRequestValidator>();
@@ -93,6 +90,43 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var scopeStore = new InMemoryScopeStore(scopes);
             return services.AddSingleton<IScopeStore>(prov => scopeStore);
+        }
+
+        private static void ConfigureEndpoints(IServiceCollection services, IdentityServerOptions options)
+        {
+            var map = GetRouterMap(options);
+            services.AddInstance<IEndpointRouter>(new EndpointRouter(map));
+            foreach (var item in map)
+            {
+                services.AddTransient(item.Value);
+            }
+        }
+
+        private static IDictionary<string, Type> GetRouterMap(IdentityServerOptions options)
+        {
+            var map = new Dictionary<string, Type>();
+
+            if (options.Endpoints.EnableTokenEndpoint)
+            {
+                map.Add(Constants.RoutePaths.Oidc.Token, typeof(TokenEndpoint));
+            }
+            if (options.Endpoints.EnableDiscoveryEndpoint)
+            {
+                map.Add(Constants.RoutePaths.Oidc.DiscoveryConfiguration, typeof(DiscoveryEndpoint));
+            }
+            if (options.Endpoints.EnableUserInfoEndpoint)
+            {
+                map.Add(Constants.RoutePaths.Oidc.UserInfo, typeof(UserInfoEndpoint));
+            }
+            if (options.Endpoints.EnableIntrospectionEndpoint)
+            {
+                map.Add(Constants.RoutePaths.Oidc.Introspection, typeof(IntrospectionEndpoint));
+            }
+            if (options.Endpoints.EnableAuthorizeEndpoint)
+            {
+                map.Add(Constants.RoutePaths.Oidc.Authorize, typeof(AuthorizeEndpoint));
+            }
+            return map;
         }
     }
 }
