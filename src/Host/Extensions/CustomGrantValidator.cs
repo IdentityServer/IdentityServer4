@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2014, 2015 Dominick Baier, Brock Allen
+ * Copyright 2014 Dominick Baier, Brock Allen
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,33 @@
  * limitations under the License.
  */
 
+using IdentityServer4.Core.Services;
 using IdentityServer4.Core.Validation;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Services.Default
+namespace Host.Extensions
 {
-    internal class NopCustomGrantValidator : ICustomGrantValidator
+    public class CustomGrantValidator : ICustomGrantValidator
     {
         public Task<CustomGrantValidationResult> ValidateAsync(ValidatedTokenRequest request)
         {
-            return Task.FromResult<CustomGrantValidationResult>(null);
+            var credential = request.Raw.Get("custom_credential");
+
+            if (credential != null)
+            {
+                // valid credential
+                return Task.FromResult(new CustomGrantValidationResult("818727", "custom"));
+            }
+            else
+            {
+                // custom error message
+                return Task.FromResult(new CustomGrantValidationResult("invalid custom credential"));
+            }
         }
 
         public string GrantType
         {
-            get { return ""; }
+            get { return "custom"; }
         }
     }
 }

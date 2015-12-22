@@ -52,6 +52,30 @@ namespace Host.Configuration
                 },
 
                 ///////////////////////////////////////////
+                // Console Client Credentials Flow Sample
+                //////////////////////////////////////////
+                new Client
+                {
+                    ClientId = "client.custom",
+                    ClientSecrets = new List<Secret>
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    Flow = Flows.Custom,
+                    
+                    AllowedCustomGrantTypes = new List<string>
+                    {
+                        "custom"
+                    },
+
+                    AllowedScopes = new List<string>
+                    {
+                        "api1", "api2"
+                    }
+                },
+
+                ///////////////////////////////////////////
                 // Introspection Client Sample
                 //////////////////////////////////////////
                 new Client

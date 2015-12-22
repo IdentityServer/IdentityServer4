@@ -16,6 +16,7 @@
 
 using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Services;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,34 +26,52 @@ namespace IdentityServer4.Core.Validation
 {
     public class CustomGrantValidator
     {
+        private readonly ILogger _logger;
         private readonly IEnumerable<ICustomGrantValidator> _validators;
         
-        public CustomGrantValidator(IEnumerable<ICustomGrantValidator> validators)
+        public CustomGrantValidator(IEnumerable<ICustomGrantValidator> validators, ILogger<CustomGrantValidator> logger)
         {
-            if (validators == null) throw new ArgumentNullException("validators");
+            if (validators == null)
+            {
+                _validators = Enumerable.Empty<ICustomGrantValidator>();
+            }
+            else
+            {
+                _validators = validators;
+            }
 
-            _validators = validators;
+            _logger = logger;
         }
 
         public IEnumerable<string> GetAvailableGrantTypes()
         {
-            return _validators.Where(v => v.GrantType.IsPresent()).Select(v => v.GrantType);
+            return _validators.Select(v => v.GrantType);
         }
 
         public async Task<CustomGrantValidationResult> ValidateAsync(ValidatedTokenRequest request)
         {
             var validator = _validators.FirstOrDefault(v => v.GrantType.Equals(request.GrantType, StringComparison.Ordinal));
 
-            if (validator != null)
+            if (validator == null)
+            {
+                return new CustomGrantValidationResult
+                {
+                    IsError = true,
+                    Error = "No validator found for grant type"
+                };
+            }
+
+            try
             {
                 return await validator.ValidateAsync(request);
             }
-            else
+            catch (Exception e)
             {
-                return new CustomGrantValidationResult 
-                { 
-                    IsError = true, 
-                    ErrorDescription = "No validator found for grant type" 
+                _logger.LogError("Grant validation error", e);
+                return new CustomGrantValidationResult
+                {
+                    IsError = true,
+                    Error = "Grant validation error",
                 };
             }
         }

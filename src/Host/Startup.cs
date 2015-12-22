@@ -1,4 +1,5 @@
 ﻿using Host.Configuration;
+using Host.Extensions;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,7 +8,7 @@ using Microsoft.Extensions.PlatformAbstractions;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 
-namespace IdentityServer4.Core
+namespace Host
 {
     public class Startup
     {
@@ -33,6 +34,8 @@ namespace IdentityServer4.Core
             builder.AddInMemoryClients(Clients.Get());
             builder.AddInMemoryScopes(Scopes.Get());
             builder.AddInMemoryUsers(Users.Get());
+
+            builder.AddCustomGrantValidator<CustomGrantValidator>();
         }
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)

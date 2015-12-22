@@ -71,11 +71,11 @@ namespace IdentityServer4.Tests.Validation
             CustomGrantValidator aggregateCustomValidator;
             if (customGrantValidators == null)
             {
-                aggregateCustomValidator = new CustomGrantValidator(new [] { new TestGrantValidator() });
+                aggregateCustomValidator = new CustomGrantValidator(new [] { new TestGrantValidator() }, new Logger<CustomGrantValidator>(new LoggerFactory()));
             }
             else
             {
-                aggregateCustomValidator = new CustomGrantValidator(customGrantValidators);
+                aggregateCustomValidator = new CustomGrantValidator(customGrantValidators, new Logger<CustomGrantValidator>(new LoggerFactory()));
             }
                 
             if (refreshTokens == null)

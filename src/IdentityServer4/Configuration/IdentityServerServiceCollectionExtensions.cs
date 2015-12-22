@@ -100,7 +100,6 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddCoreServices(this IServiceCollection services)
         {
             services.TryAddTransient<IEventService, DefaultEventService>();
-            services.TryAddTransient<ICustomGrantValidator, NopCustomGrantValidator>();
             services.TryAddTransient<ICustomRequestValidator, DefaultCustomRequestValidator>();
             services.TryAddTransient<ITokenService, DefaultTokenService>();
             services.TryAddTransient<ITokenSigningService, DefaultTokenSigningService>();
