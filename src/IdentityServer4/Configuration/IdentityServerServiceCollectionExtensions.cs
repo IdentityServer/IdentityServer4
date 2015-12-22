@@ -6,6 +6,7 @@ using IdentityServer4.Core.Services;
 using IdentityServer4.Core.Services.Default;
 using IdentityServer4.Core.Services.InMemory;
 using IdentityServer4.Core.Validation;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -21,57 +22,94 @@ namespace Microsoft.Extensions.DependencyInjection
                 setupAction(options);
             }
 
-            // configuration
             services.AddInstance(options);
             services.AddTransient<IdentityServerContext>();
 
-            // core services (hard coded for now)
-            services.AddTransient<IEventService, DefaultEventService>();
-            services.AddTransient<ICustomGrantValidator, NopCustomGrantValidator>();
-            services.AddTransient<ICustomRequestValidator, DefaultCustomRequestValidator>();
-            services.AddTransient<ITokenService, DefaultTokenService>();
-            services.AddTransient<ITokenSigningService, DefaultTokenSigningService>();
-            services.AddTransient<IClaimsProvider, DefaultClaimsProvider>();
-            services.AddTransient<IRefreshTokenService, DefaultRefreshTokenService>();
-            services.AddTransient<ISigningKeyService, DefaultSigningKeyService>();
-            services.AddTransient<ICustomTokenValidator, DefaultCustomTokenValidator>();
+            services.AddEndpoints();
+            services.AddValidators();
+            services.AddResponseGenerators();
 
-            // transient stores
-            services.AddSingleton<IAuthorizationCodeStore, InMemoryAuthorizationCodeStore>();
-            services.AddSingleton<IRefreshTokenStore, InMemoryRefreshTokenStore>();
-            services.AddSingleton<ITokenHandleStore, InMemoryTokenHandleStore>();
+            services.AddSecretParsers();
+            services.AddSecretValidators();
+
+            services.AddInMemoryTransientStores();
+            services.AddCoreServices();
             
-            // secret parsers
-            services.AddTransient<SecretParser>();
-            services.AddTransient<ISecretParser, BasicAuthenticationSecretParser>();
-            services.AddTransient<ISecretParser, PostBodySecretParser>();
-
-            // secret validators
-            services.AddTransient<SecretValidator>();
-            services.AddTransient<ISecretValidator, HashedSharedSecretValidator>();
-
-            // endpoints
-            services.AddTransient<TokenEndpoint>();
-            services.AddTransient<DiscoveryEndpoint>();
-            services.AddTransient<UserInfoEndpoint>();
-            services.AddTransient<IntrospectionEndpoint>();
-
-            // validators
-            services.AddTransient<TokenRequestValidator>();
-            services.AddTransient<ScopeValidator>();
-            services.AddTransient<CustomGrantValidator>();
-            services.AddTransient<ClientSecretValidator>();
-            services.AddTransient<TokenValidator>();
-            services.AddTransient<BearerTokenUsageValidator>();
-            services.AddTransient<ScopeSecretValidator>();
-            services.AddTransient<IntrospectionRequestValidator>();
-
-            // response handlers
-            services.AddTransient<TokenResponseGenerator>();
-            services.AddTransient<UserInfoResponseGenerator>();
-            services.AddTransient<IntrospectionResponseGenerator>();
-
             return new IdentityServerBuilder(services);
+        }
+
+        public static IServiceCollection AddEndpoints(this IServiceCollection services)
+        {
+            services.TryAddTransient<TokenEndpoint>();
+            services.TryAddTransient<DiscoveryEndpoint>();
+            services.TryAddTransient<UserInfoEndpoint>();
+            services.TryAddTransient<IntrospectionEndpoint>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddValidators(this IServiceCollection services)
+        {
+            services.TryAddTransient<TokenRequestValidator>();
+            services.TryAddTransient<ScopeValidator>();
+            services.TryAddTransient<CustomGrantValidator>();
+            services.TryAddTransient<ClientSecretValidator>();
+            services.TryAddTransient<TokenValidator>();
+            services.TryAddTransient<BearerTokenUsageValidator>();
+            services.TryAddTransient<ScopeSecretValidator>();
+            services.TryAddTransient<IntrospectionRequestValidator>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddResponseGenerators(this IServiceCollection services)
+        {
+            services.TryAddTransient<TokenResponseGenerator>();
+            services.TryAddTransient<UserInfoResponseGenerator>();
+            services.TryAddTransient<IntrospectionResponseGenerator>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddSecretParsers(this IServiceCollection services)
+        {
+            services.TryAddTransient<SecretParser>();
+            services.TryAddTransient<ISecretParser, BasicAuthenticationSecretParser>();
+            services.TryAddTransient<ISecretParser, PostBodySecretParser>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddSecretValidators(this IServiceCollection services)
+        {
+            services.TryAddTransient<SecretValidator>();
+            services.TryAddTransient<ISecretValidator, HashedSharedSecretValidator>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddInMemoryTransientStores(this IServiceCollection services)
+        {
+            services.TryAddSingleton<IAuthorizationCodeStore, InMemoryAuthorizationCodeStore>();
+            services.TryAddSingleton<IRefreshTokenStore, InMemoryRefreshTokenStore>();
+            services.TryAddSingleton<ITokenHandleStore, InMemoryTokenHandleStore>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddCoreServices(this IServiceCollection services)
+        {
+            services.TryAddTransient<IEventService, DefaultEventService>();
+            services.TryAddTransient<ICustomGrantValidator, NopCustomGrantValidator>();
+            services.TryAddTransient<ICustomRequestValidator, DefaultCustomRequestValidator>();
+            services.TryAddTransient<ITokenService, DefaultTokenService>();
+            services.TryAddTransient<ITokenSigningService, DefaultTokenSigningService>();
+            services.TryAddTransient<IClaimsProvider, DefaultClaimsProvider>();
+            services.TryAddTransient<IRefreshTokenService, DefaultRefreshTokenService>();
+            services.TryAddTransient<ISigningKeyService, DefaultSigningKeyService>();
+            services.TryAddTransient<ICustomTokenValidator, DefaultCustomTokenValidator>();
+
+            return services;
         }
     }
 }
