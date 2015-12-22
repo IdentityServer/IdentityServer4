@@ -1,20 +1,18 @@
-﻿using IdentityServer4.Core.Validation;
-using IdentityServer4.Core.Configuration;
+﻿using IdentityServer4.Core.Configuration;
 using IdentityServer4.Core.Endpoints;
-using IdentityServer4.Core.Models;
+using IdentityServer4.Core.Hosting;
 using IdentityServer4.Core.ResponseHandling;
 using IdentityServer4.Core.Services;
 using IdentityServer4.Core.Services.Default;
 using IdentityServer4.Core.Services.InMemory;
+using IdentityServer4.Core.Validation;
 using System;
-using System.Collections.Generic;
-using IdentityServer4.Core.Hosting;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class IdentityServerServiceCollectionExtensions
     {
-        public static IServiceCollection AddIdentityServer(this IServiceCollection services, Action<IdentityServerOptions> setupAction = null)
+        public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services, Action<IdentityServerOptions> setupAction = null)
         {
             var options = new IdentityServerOptions();
 
@@ -73,25 +71,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<UserInfoResponseGenerator>();
             services.AddTransient<IntrospectionResponseGenerator>();
 
-            return services;
-        }
-
-        public static IServiceCollection AddInMemoryUsers(this IServiceCollection services, List<InMemoryUser> users)
-        {
-            var userService = new InMemoryUserService(users);
-            return services.AddSingleton<IUserService>(prov => userService);
-        }
-
-        public static IServiceCollection AddInMemoryClients(this IServiceCollection services, IEnumerable<Client> clients)
-        {
-            var clientStore = new InMemoryClientStore(clients);
-            return services.AddSingleton<IClientStore>(prov => clientStore);
-        }
-
-        public static IServiceCollection AddInMemoryScopes(this IServiceCollection services, IEnumerable<Scope> scopes)
-        {
-            var scopeStore = new InMemoryScopeStore(scopes);
-            return services.AddSingleton<IScopeStore>(prov => scopeStore);
+            return new IdentityServerBuilder(services);
         }
     }
 }

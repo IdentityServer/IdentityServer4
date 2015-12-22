@@ -22,7 +22,7 @@ namespace IdentityServer4.Core
         {
             var cert = new X509Certificate2(Path.Combine(_environment.ApplicationBasePath, "idsrv3test.pfx"), "idsrv3test");
 
-            services.AddIdentityServer(options =>
+            var builder = services.AddIdentityServer(options =>
             {
                 options.SigningCertificate = cert;
                 options.IssuerUri = "https://idsrv4";
@@ -30,9 +30,9 @@ namespace IdentityServer4.Core
                 options.DiscoveryOptions.CustomEntries.Add("foo", "bar");
             });
 
-            services.AddInMemoryClients(Clients.Get());
-            services.AddInMemoryScopes(Scopes.Get());
-            services.AddInMemoryUsers(Users.Get());
+            builder.AddInMemoryClients(Clients.Get());
+            builder.AddInMemoryScopes(Scopes.Get());
+            builder.AddInMemoryUsers(Users.Get());
         }
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
