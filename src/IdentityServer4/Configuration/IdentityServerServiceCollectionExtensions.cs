@@ -8,6 +8,7 @@ using IdentityServer4.Core.Services.InMemory;
 using IdentityServer4.Core.Validation;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
+using System.Collections.Generic;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -74,9 +75,12 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddSecretParsers(this IServiceCollection services)
         {
             services.TryAddTransient<SecretParser>();
-            services.TryAddTransient<ISecretParser, BasicAuthenticationSecretParser>();
-            services.TryAddTransient<ISecretParser, PostBodySecretParser>();
-
+            services.TryAddEnumerable(new List<ServiceDescriptor>
+            {
+                new ServiceDescriptor(typeof(ISecretParser), typeof(BasicAuthenticationSecretParser), ServiceLifetime.Transient),
+                new ServiceDescriptor(typeof(ISecretParser), typeof(PostBodySecretParser), ServiceLifetime.Transient),
+            });
+            
             return services;
         }
 
