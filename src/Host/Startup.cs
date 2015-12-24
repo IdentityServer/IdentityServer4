@@ -1,4 +1,5 @@
 ﻿using Host.Configuration;
+using Host.Extensions;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,7 +8,7 @@ using Microsoft.Extensions.PlatformAbstractions;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 
-namespace IdentityServer4.Core
+namespace Host
 {
     public class Startup
     {
@@ -22,7 +23,7 @@ namespace IdentityServer4.Core
         {
             var cert = new X509Certificate2(Path.Combine(_environment.ApplicationBasePath, "idsrv3test.pfx"), "idsrv3test");
 
-            services.AddIdentityServer(options =>
+            var builder = services.AddIdentityServer(options =>
             {
                 options.SigningCertificate = cert;
                 options.IssuerUri = "https://idsrv4";
@@ -30,9 +31,11 @@ namespace IdentityServer4.Core
                 options.DiscoveryOptions.CustomEntries.Add("foo", "bar");
             });
 
-            services.AddInMemoryClients(Clients.Get());
-            services.AddInMemoryScopes(Scopes.Get());
-            services.AddInMemoryUsers(Users.Get());
+            builder.AddInMemoryClients(Clients.Get());
+            builder.AddInMemoryScopes(Scopes.Get());
+            builder.AddInMemoryUsers(Users.Get());
+
+            builder.AddCustomGrantValidator<CustomGrantValidator>();
         }
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
