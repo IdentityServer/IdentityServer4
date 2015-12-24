@@ -24,13 +24,13 @@ namespace IdentityServer4.Core.Endpoints
         private readonly IEventService _events;
         private readonly ILogger _logger;
         private readonly IdentityServerContext _context;
-        private readonly AuthorizeRequestValidator _validator;
+        private readonly IAuthorizeRequestValidator _validator;
 
         public AuthorizeEndpoint(
             IEventService events, 
             ILogger<AuthorizeEndpoint> logger,
             IdentityServerContext context,
-            AuthorizeRequestValidator validator)
+            IAuthorizeRequestValidator validator)
         {
             _events = events;
             _logger = logger;

@@ -29,7 +29,7 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.Validation
 {
-    internal class AuthorizeRequestValidator
+    internal class AuthorizeRequestValidator : IAuthorizeRequestValidator
     {
         private readonly IdentityServerOptions _options;
         private readonly IClientStore _clients;
@@ -115,7 +115,7 @@ namespace IdentityServer4.Core.Validation
             return Valid(request);
         }
 
-        public async Task<AuthorizeRequestValidationResult> ValidateClientAsync(ValidatedAuthorizeRequest request)
+        async Task<AuthorizeRequestValidationResult> ValidateClientAsync(ValidatedAuthorizeRequest request)
         {
             //////////////////////////////////////////////////////////
             // client_id must be present
