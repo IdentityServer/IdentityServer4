@@ -75,6 +75,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IServiceCollection AddValidators(this IServiceCollection services)
         {
+            services.TryAddTransient<AuthorizeRequestValidator>();
             services.TryAddTransient<TokenRequestValidator>();
             services.TryAddTransient<ScopeValidator>();
             services.TryAddTransient<CustomGrantValidator>();
@@ -83,6 +84,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<BearerTokenUsageValidator>();
             services.TryAddTransient<ScopeSecretValidator>();
             services.TryAddTransient<IntrospectionRequestValidator>();
+            services.TryAddTransient<IRedirectUriValidator, DefaultRedirectUriValidator>();
 
             return services;
         }

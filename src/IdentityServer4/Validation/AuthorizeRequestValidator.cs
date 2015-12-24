@@ -39,7 +39,13 @@ namespace IdentityServer4.Core.Validation
         //private readonly SessionCookie _sessionCookie;
         private readonly ILogger<AuthorizeRequestValidator> _logger;
 
-        public AuthorizeRequestValidator(IdentityServerOptions options, IClientStore clients, ICustomRequestValidator customValidator, IRedirectUriValidator uriValidator, ScopeValidator scopeValidator, ILogger<AuthorizeRequestValidator> logger)
+        public AuthorizeRequestValidator(
+            IdentityServerOptions options, 
+            IClientStore clients, 
+            ICustomRequestValidator customValidator, 
+            IRedirectUriValidator uriValidator, 
+            ScopeValidator scopeValidator, 
+            ILogger<AuthorizeRequestValidator> logger)
         {
             _options = options;
             _clients = clients;

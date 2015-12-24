@@ -633,6 +633,10 @@ namespace IdentityServer4.Core
 
         public static class RoutePaths
         {
+            // TODO: new
+            public const string Error = "/ui/error";
+
+            // TODO: old
             public const string Welcome = "";
             public const string Login = "login";
             public const string LoginExternal = "external";

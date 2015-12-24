@@ -1,4 +1,6 @@
-﻿using IdentityServer4.Core.Services.InMemory;
+﻿using Microsoft.AspNet.Http;
+using IdentityServer4.Core;
+using IdentityServer4.Core.Services.InMemory;
 using Microsoft.AspNet.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.PlatformAbstractions;
@@ -32,6 +34,11 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
         public void Configure(IApplicationBuilder app)
         {
             app.UseIdentityServer();
+
+            app.Map(Constants.RoutePaths.Error, path =>
+            {
+                path.Run(ctx => ctx.Response.WriteAsync("<h1>error</h1>"));
+            });
         }
     }
 }

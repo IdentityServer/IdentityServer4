@@ -1,5 +1,6 @@
 ﻿using IdentityServer4.Core.Configuration;
 using IdentityServer4.Core.Endpoints;
+using IdentityServer4.Core.Results;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,7 +37,12 @@ namespace IdentityServer4.Core.Hosting
                     await result.ExecuteAsync(context, _loggerFactory.CreateLogger(result.GetType().FullName));
                 }
 
-                return;
+                // if we see the IPipelineResult marker, then we want to execute the next middleware
+                // so we don't want to terminte the pipeline here
+                if (result != null && (result is IPipelineResult) == false)
+                {
+                    return;
+                }
             }
 
             await _next(context);
