@@ -32,13 +32,13 @@ namespace IdentityServer4.Core.Services.Default
         /// The validation result
         /// </returns>
         // todo
-        //public Task<AuthorizeRequestValidationResult> ValidateAuthorizeRequestAsync(ValidatedAuthorizeRequest request)
-        //{
-        //    return Task.FromResult(new AuthorizeRequestValidationResult
-        //    {
-        //        IsError = false
-        //    });
-        //}
+        public Task<AuthorizeRequestValidationResult> ValidateAuthorizeRequestAsync(ValidatedAuthorizeRequest request)
+        {
+            return Task.FromResult(new AuthorizeRequestValidationResult
+            {
+                IsError = false
+            });
+        }
 
         /// <summary>
         /// Custom validation logic for the token request.

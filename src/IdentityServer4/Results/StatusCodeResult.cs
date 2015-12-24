@@ -1,12 +1,18 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
 using Microsoft.Extensions.Logging;
+using System.Net;
 
 namespace IdentityServer4.Core.Results
 {
     public class StatusCodeResult : IResult
     {
         public int StatusCode { get; private set; }
+
+        public StatusCodeResult(HttpStatusCode statusCode)
+        {
+            StatusCode = (int)statusCode;
+        }
 
         public StatusCodeResult(int statusCode)
         {

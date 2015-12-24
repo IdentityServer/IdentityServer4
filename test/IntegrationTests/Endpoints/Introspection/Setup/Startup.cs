@@ -29,6 +29,7 @@ namespace IdentityServer4.Tests.Endpoints.Introspection
             {
                 options.SigningCertificate = cert;
                 options.IssuerUri = "https://idsrv4";
+                options.Endpoints.EnableAuthorizeEndpoint = false;
             });
 
             services.AddInMemoryClients(Clients.Get());

@@ -23,6 +23,9 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddWebEncoders();
+            services.AddDataProtection();
+
             services.AddIdentityServer(options =>
             {
                 options.SigningCertificate = _environment.LoadSigningCert();
@@ -33,7 +36,7 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
             services.AddInMemoryUsers(new List<InMemoryUser>());
         }
 
-        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app)
         {
             app.UseIdentityServer();
         }

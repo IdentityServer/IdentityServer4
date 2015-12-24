@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 namespace IdentityServer4.Core.Configuration
 {
     /// <summary>
@@ -33,8 +32,20 @@ namespace IdentityServer4.Core.Configuration
             EnablePostSignOutAutoRedirect = false;
             PostSignOutAutoRedirectDelay = 0;
             RequireAuthenticatedUserForSignOutMessage = false;
-            CookieOptions = new CookieOptions();
+            //CookieOptions = new CookieOptions();
             SignInMessageThreshold = Constants.SignInMessageThreshold;
+
+            //PrimaryAuthenticationScheme = Constants.PrimaryAuthenticationType;
+        }
+
+        // new
+        public string PrimaryAuthenticationScheme { get; set; }
+        internal string EffectivePrimaryAuthenticationScheme
+        {
+            get
+            {
+                return PrimaryAuthenticationScheme ?? Constants.PrimaryAuthenticationType;
+            }
         }
 
         /// <summary>
@@ -61,7 +72,7 @@ namespace IdentityServer4.Core.Configuration
         /// <value>
         /// The cookie options.
         /// </value>
-        public CookieOptions CookieOptions { get; set; }
+        //public CookieOptions CookieOptions { get; set; }
 
         /// <summary>
         /// Gets or sets the login page links.

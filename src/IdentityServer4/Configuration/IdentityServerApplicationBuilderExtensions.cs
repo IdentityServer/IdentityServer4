@@ -6,6 +6,7 @@ namespace Microsoft.AspNet.Builder
     {
         public static IApplicationBuilder UseIdentityServer(this IApplicationBuilder app)
         {
+            app.ConfigureCookies();
             app.UseMiddleware<BaseUrlMiddleware>();
             app.UseMiddleware<IdentityServerMiddleware>();
             

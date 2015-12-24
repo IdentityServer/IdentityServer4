@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.TestHost;
+﻿using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.TestHost;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -20,8 +21,9 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
 
         public AuthorizeTests()
         {
-            var server = new TestServer(TestServer.CreateBuilder()
-                                .UseStartup<Startup>());
+            var builder = TestServer.CreateBuilder()
+                .UseStartup<Startup>();
+            var server = new TestServer(builder);
 
             _handler = server.CreateHandler();
             _client = server.CreateClient();

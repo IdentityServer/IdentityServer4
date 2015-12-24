@@ -30,7 +30,7 @@ namespace IdentityServer4.Core.Services
         /// <param name="request">The validated request.</param>
         /// <returns>The validation result</returns>
         // postpone
-        //Task<AuthorizeRequestValidationResult> ValidateAuthorizeRequestAsync(ValidatedAuthorizeRequest request);
+        Task<AuthorizeRequestValidationResult> ValidateAuthorizeRequestAsync(ValidatedAuthorizeRequest request);
 
         /// <summary>
         /// Custom validation logic for the token request.
