@@ -1,5 +1,7 @@
 ﻿using IdentityServer4.Core.Extensions;
 using System;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.Hosting
 {
@@ -60,6 +62,11 @@ namespace IdentityServer4.Core.Hosting
             }
 
             return uri;
+        }
+
+        internal static async Task<ClaimsPrincipal> GetIdentityServerUserAsync(this IdentityServerContext context)
+        {
+            return await context.HttpContext.Authentication.AuthenticateAsync(context.Options.AuthenticationOptions.EffectivePrimaryAuthenticationScheme);
         }
     }
 }

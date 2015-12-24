@@ -13,6 +13,7 @@ using System.Collections.Specialized;
 using System.Net;
 using System.Security.Claims;
 using IdentityServer4.Core.Configuration;
+using IdentityServer4.Core.Hosting;
 
 namespace IdentityServer4.Core.Endpoints
 {
@@ -20,16 +21,16 @@ namespace IdentityServer4.Core.Endpoints
     {
         private readonly IEventService _events;
         private readonly ILogger _logger;
-        private readonly IdentityServerOptions _options;
+        private readonly IdentityServerContext _context;
 
         public AuthorizeEndpoint(
             IEventService events, 
             ILogger<AuthorizeEndpoint> logger,
-            IdentityServerOptions options)
+            IdentityServerContext context)
         {
             _events = events;
             _logger = logger;
-            _options = options;
+            _context = context;
         }
 
         public async Task<IResult> ProcessAsync(HttpContext context)
@@ -42,7 +43,7 @@ namespace IdentityServer4.Core.Endpoints
             _logger.LogInformation("Start Authorize Request");
 
             var values = context.Request.Query.AsNameValueCollection();
-            var user = await context.Authentication.AuthenticateAsync(_options.AuthenticationOptions.EffectivePrimaryAuthenticationScheme);
+            var user = await _context.GetIdentityServerUserAsync();
             var result = await ProcessRequestAsync(values, user);
 
             _logger.LogInformation("End Authorize Request");

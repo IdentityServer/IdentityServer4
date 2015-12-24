@@ -1,4 +1,5 @@
-﻿using IdentityServer4.Core.Configuration;
+﻿using System;
+using IdentityServer4.Core.Configuration;
 using Microsoft.AspNet.Http;
 
 namespace IdentityServer4.Core.Hosting
