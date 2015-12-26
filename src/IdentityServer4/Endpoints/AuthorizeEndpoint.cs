@@ -16,6 +16,7 @@ using IdentityServer4.Core.Configuration;
 using IdentityServer4.Core.Hosting;
 using IdentityServer4.Core.Events;
 using IdentityServer4.Core.Models;
+using IdentityServer4.Core.ViewModels;
 
 namespace IdentityServer4.Core.Endpoints
 {
@@ -25,17 +26,20 @@ namespace IdentityServer4.Core.Endpoints
         private readonly ILogger _logger;
         private readonly IdentityServerContext _context;
         private readonly IAuthorizeRequestValidator _validator;
+        private readonly ILocalizationService _localizationService;
 
         public AuthorizeEndpoint(
             IEventService events, 
             ILogger<AuthorizeEndpoint> logger,
             IdentityServerContext context,
-            IAuthorizeRequestValidator validator)
+            IAuthorizeRequestValidator validator,
+            ILocalizationService localizationService)
         {
             _events = events;
             _logger = logger;
             _context = context;
             _validator = validator;
+            _localizationService = localizationService;
         }
 
         public async Task<IResult> ProcessAsync(HttpContext context)
@@ -72,40 +76,29 @@ namespace IdentityServer4.Core.Endpoints
 
             if (result.IsError)
             {
-                return await this.AuthorizeErrorAsync(
-                    result.ErrorType,
-                    result.Error,
-                    result.ValidatedRequest);
+                return await this.AuthorizeErrorAsync(result);
             }
 
             return null;
         }
 
-        async Task<IResult> AuthorizeErrorAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request)
+        async Task<IResult> AuthorizeErrorAsync(AuthorizeRequestValidationResult result)
         {
-            await RaiseFailureEventAsync(error);
+            await RaiseFailureEventAsync(result.Error);
 
             // show error message to user
-            if (errorType == ErrorTypes.User)
+            if (result.ErrorType == ErrorTypes.User)
             {
-                return new ErrorPageResult(error);
-
-                //var env = Request.GetOwinEnvironment();
-                //var errorModel = new ErrorViewModel
-                //{
-                //    RequestId = env.GetRequestId(),
-                //    SiteName = _options.SiteName,
-                //    SiteUrl = env.GetIdentityServerBaseUrl(),
-                //    CurrentUser = env.GetCurrentUserDisplayName(),
-                //    LogoutUrl = env.GetIdentityServerLogoutUrl(),
-                //    ErrorMessage = LookupErrorMessage(error)
-                //};
-
-                //var errorResult = new ErrorActionResult(_viewService, errorModel);
-                return null;
+                var errorModel = new ErrorViewModel
+                {
+                    RequestId = _context.GetRequestId(),
+                    ErrorCode = result.Error,
+                    ErrorMessage = LookupErrorMessage(result.Error)
+                };
+                return new ErrorPageResult(errorModel);
             }
 
-            return new ClientErrorResult();
+            return new AuthorizeResult();
 
             //// return error to client
             //var response = new AuthorizeResponse
@@ -131,6 +124,16 @@ namespace IdentityServer4.Core.Endpoints
         private async Task RaiseFailureEventAsync(string error)
         {
             await _events.RaiseFailureEndpointEventAsync(EventConstants.EndpointNames.Authorize, error);
+        }
+
+        private string LookupErrorMessage(string error)
+        {
+            var msg = _localizationService.GetMessage(error);
+            if (msg.IsMissing())
+            {
+                msg = error;
+            }
+            return msg;
         }
     }
 }

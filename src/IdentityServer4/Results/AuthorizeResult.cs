@@ -7,9 +7,9 @@ using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.Core.Results
 {
-    public class ClientErrorResult : IResult
+    public class AuthorizeResult : IResult
     {
-        public ClientErrorResult()
+        public AuthorizeResult()
         {
         }
 

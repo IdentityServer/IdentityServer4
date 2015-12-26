@@ -68,5 +68,14 @@ namespace IdentityServer4.Core.Hosting
         {
             return await context.HttpContext.Authentication.AuthenticateAsync(context.Options.AuthenticationOptions.EffectivePrimaryAuthenticationScheme);
         }
+
+        internal static void SetRequestId(this IdentityServerContext context, string id)
+        {
+            context.HttpContext.Items["idsvr.requestid"] = id;
+        }
+        internal static string GetRequestId(this IdentityServerContext context)
+        {
+            return context.HttpContext.Items["idsvr.requestid"] as string;
+        }
     }
 }

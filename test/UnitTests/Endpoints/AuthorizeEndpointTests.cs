@@ -48,18 +48,21 @@ namespace IdentityServer4.Tests.Endpoints
         {
             var accessor = new HttpContextAccessor();
             accessor.HttpContext = _httpContext;
-            var ctx = new IdentityServerContext(accessor, _options);
+            _context = new IdentityServerContext(accessor, _options);
 
             _subject = new AuthorizeEndpoint(
                 _mockEventService, 
                 _fakeLogger, 
-                ctx,
-                new StubAuthorizeRequestValidator(_requestValidationResult));
+                _context,
+                new StubAuthorizeRequestValidator(_requestValidationResult),
+                _stubLocalizationService);
         }
 
         MockEventService _mockEventService = new MockEventService();
         ILogger<AuthorizeEndpoint> _fakeLogger = new FakeLogger<AuthorizeEndpoint>();
+        StubLocalizationService _stubLocalizationService = new StubLocalizationService();
 
+        IdentityServerContext _context;
         IdentityServerOptions _options = new IdentityServerOptions();
         DefaultHttpContext _httpContext = new DefaultHttpContext();
         AuthorizeRequestValidationResult _requestValidationResult = new AuthorizeRequestValidationResult();
@@ -78,16 +81,22 @@ namespace IdentityServer4.Tests.Endpoints
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task authorize_request_validation_failure_with_user_error_should_display_error_page()
+        public async Task authorize_request_validation_failure_with_user_error_should_display_error_page_with_error_view_model()
         {
             _requestValidationResult.IsError = true;
             _requestValidationResult.ErrorType = ErrorTypes.User;
+            _requestValidationResult.Error = "foo";
+            _stubLocalizationService.Result = "foo error message";
+            _context.SetRequestId("56789");
 
             var param = new NameValueCollection();
             var result = await _subject.ProcessRequestAsync(param, null);
 
             var error_result = result as ErrorPageResult;
             error_result.Should().NotBeNull();
+            error_result.Model.RequestId.Should().Be("56789");
+            error_result.Model.ErrorCode.Should().Be("foo");
+            error_result.Model.ErrorMessage.Should().Be("foo error message");
         }
 
         [Fact]
@@ -100,8 +109,7 @@ namespace IdentityServer4.Tests.Endpoints
             var param = new NameValueCollection();
             var result = await _subject.ProcessRequestAsync(param, null);
 
-            var error_result = result as ClientErrorResult;
-            error_result.Should().NotBeNull();
+            result.Should().BeOfType<AuthorizeResult>();
         }
 
         [Fact]

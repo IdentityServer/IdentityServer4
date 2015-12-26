@@ -4,13 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
 using Microsoft.Extensions.Logging;
+using IdentityServer4.Core.ViewModels;
 
 namespace IdentityServer4.Core.Results
 {
-    public class ErrorPageResult : PipelineResult
+    public class ErrorPageResult : PipelineResult<ErrorViewModel>
     {
-        public ErrorPageResult(string errorMessage)
-            : base(Constants.RoutePaths.Error, errorMessage)
+        public ErrorPageResult(ErrorViewModel model)
+            : base(Constants.RoutePaths.Error, model)
         {
         }
     }

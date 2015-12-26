@@ -7,11 +7,11 @@ using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.Core.Results
 {
-    public class PipelineResult : IResult, IPipelineResult
+    public class PipelineResult<TModel> : IResult, IPipelineResult
     {
         private readonly PathString _path;
 
-        public object Model { get; set; }
+        public TModel Model { get; set; }
 
         public PipelineResult(string path)
         {
@@ -23,7 +23,7 @@ namespace IdentityServer4.Core.Results
             _path = new PathString(path);
         }
 
-        public PipelineResult(string path, object model)
+        public PipelineResult(string path, TModel model)
             : this(path)
         {
             Model = model;
@@ -33,17 +33,27 @@ namespace IdentityServer4.Core.Results
         {
             logger.LogVerbose("Changing request path to: {0}", _path.ToString());
             context.Request.Path = _path;
-            var model = GetModel();
-            if (model != null)
+
+            EnsureModel();
+            if (Model != null)
             {
-                context.Items["idsvr.pipelineresult.model." + model.GetType()] = model;
+                context.Items["idsvr.pipelineresult.model." + Model.GetType()] = Model;
             }
+
             return Task.FromResult(0);
         }
 
-        protected virtual object GetModel()
+        protected virtual TModel GetModel()
         {
             return Model;
+        }
+
+        void EnsureModel()
+        {
+            if (Model == null)
+            {
+                Model = GetModel();
+            }
         }
     }
 }
