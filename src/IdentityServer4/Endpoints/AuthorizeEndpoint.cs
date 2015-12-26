@@ -56,7 +56,7 @@ namespace IdentityServer4.Core.Endpoints
             return result;
         }
 
-        public async Task<IResult> ProcessRequestAsync(NameValueCollection parameters, ClaimsPrincipal user)
+        internal async Task<IResult> ProcessRequestAsync(NameValueCollection parameters, ClaimsPrincipal user)
         {
             if (user != null)
             {
@@ -85,11 +85,11 @@ namespace IdentityServer4.Core.Endpoints
         {
             await RaiseFailureEventAsync(error);
 
-            return new ErrorPageResult(error);
-
             // show error message to user
             if (errorType == ErrorTypes.User)
             {
+                return new ErrorPageResult(error);
+
                 //var env = Request.GetOwinEnvironment();
                 //var errorModel = new ErrorViewModel
                 //{
@@ -104,6 +104,8 @@ namespace IdentityServer4.Core.Endpoints
                 //var errorResult = new ErrorActionResult(_viewService, errorModel);
                 return null;
             }
+
+            return new ClientErrorResult();
 
             //// return error to client
             //var response = new AuthorizeResponse

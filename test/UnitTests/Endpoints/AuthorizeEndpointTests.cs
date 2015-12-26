@@ -27,6 +27,9 @@ using System.Collections.Specialized;
 using System.Security.Claims;
 using IdentityServer4.Core.Validation;
 using IdentityServer4.Core.Results;
+using IdentityServer4.Core.Services;
+using Microsoft.Extensions.Logging;
+using IdentityServer4.Core.Events;
 
 namespace IdentityServer4.Tests.Endpoints
 {
@@ -38,16 +41,24 @@ namespace IdentityServer4.Tests.Endpoints
 
         public AuthorizeEndpointTests()
         {
+            Init();
+        }
+
+        public void Init()
+        {
             var accessor = new HttpContextAccessor();
             accessor.HttpContext = _httpContext;
             var ctx = new IdentityServerContext(accessor, _options);
 
             _subject = new AuthorizeEndpoint(
-                new FakeEventService(), 
-                new FakeLogger<AuthorizeEndpoint>(), 
+                _mockEventService, 
+                _fakeLogger, 
                 ctx,
                 new StubAuthorizeRequestValidator(_requestValidationResult));
         }
+
+        MockEventService _mockEventService = new MockEventService();
+        ILogger<AuthorizeEndpoint> _fakeLogger = new FakeLogger<AuthorizeEndpoint>();
 
         IdentityServerOptions _options = new IdentityServerOptions();
         DefaultHttpContext _httpContext = new DefaultHttpContext();
@@ -55,7 +66,7 @@ namespace IdentityServer4.Tests.Endpoints
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task POST_returns_405()
+        public async Task post_to_entry_point_returns_405()
         {
             _httpContext.Request.Method = "POST";
             var result = await _subject.ProcessAsync(_httpContext);
@@ -63,6 +74,52 @@ namespace IdentityServer4.Tests.Endpoints
             var statusCode = result as StatusCodeResult;
             statusCode.Should().NotBeNull();
             statusCode.StatusCode.Should().Be(405);
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task authorize_request_validation_failure_with_user_error_should_display_error_page()
+        {
+            _requestValidationResult.IsError = true;
+            _requestValidationResult.ErrorType = ErrorTypes.User;
+
+            var param = new NameValueCollection();
+            var result = await _subject.ProcessRequestAsync(param, null);
+
+            var error_result = result as ErrorPageResult;
+            error_result.Should().NotBeNull();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task authorize_request_validation_failure_with_client_error_should_return_to_client()
+        {
+            _requestValidationResult.IsError = true;
+            _requestValidationResult.ErrorType = ErrorTypes.Client;
+
+            var param = new NameValueCollection();
+            var result = await _subject.ProcessRequestAsync(param, null);
+
+            var error_result = result as ClientErrorResult;
+            error_result.Should().NotBeNull();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task authorize_request_validation_failure_raises_failed_endpoint_event()
+        {
+            _requestValidationResult.IsError = true;
+            _requestValidationResult.ErrorType = ErrorTypes.Client;
+            _requestValidationResult.Error = "some error";
+
+            var param = new NameValueCollection();
+            var result = await _subject.ProcessRequestAsync(param, null);
+
+            var evt = _mockEventService.AssertEventWasRaised<Event<EndpointDetail>>();
+            evt.EventType.Should().Be(EventTypes.Failure);
+            evt.Id.Should().Be(EventConstants.Ids.EndpointFailure);
+            evt.Message.Should().Be("some error");
+            evt.Details.EndpointName.Should().Be(EventConstants.EndpointNames.Authorize);
         }
     }
 }
