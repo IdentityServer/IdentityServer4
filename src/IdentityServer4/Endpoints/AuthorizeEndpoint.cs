@@ -85,7 +85,26 @@ namespace IdentityServer4.Core.Endpoints
                 return await AuthorizeErrorAsync(result.ErrorType, result.Error, result.ValidatedRequest);
             }
 
+            var request = result.ValidatedRequest;
 
+            var loginInteraction = await _interactionGenerator.ProcessLoginAsync(request, user);
+            if (loginInteraction.IsError)
+            {
+                return await this.AuthorizeErrorAsync(
+                    loginInteraction.Error.ErrorType,
+                    loginInteraction.Error.Error,
+                    request);
+            }
+            //if (loginInteraction.IsLogin)
+            //{
+            //    return this.RedirectToLogin(loginInteraction.SignInMessage, request.Raw);
+            //}
+
+            //// user must be authenticated at this point
+            //if (!User.Identity.IsAuthenticated)
+            //{
+            //    throw new InvalidOperationException("User is not authenticated");
+            //}
 
             return null;
         }

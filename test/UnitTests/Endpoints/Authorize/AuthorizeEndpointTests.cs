@@ -51,6 +51,7 @@ namespace UnitTests.Endpoints.Authorize
             accessor.HttpContext = _httpContext;
             _context = new IdentityServerContext(accessor, _options);
 
+            _stubAuthorizeRequestValidator.Result.IsError = false;
             _stubAuthorizeRequestValidator.Result.ValidatedRequest = new ValidatedAuthorizeRequest()
             {
                 RedirectUri = "http://client/callback",
@@ -173,6 +174,25 @@ namespace UnitTests.Endpoints.Authorize
             evt.Id.Should().Be(EventConstants.Ids.EndpointFailure);
             evt.Message.Should().Be("some error");
             evt.Details.EndpointName.Should().Be(EventConstants.EndpointNames.Authorize);
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task login_interaction_produces_error_show_error_page()
+        {
+            _stubInteractionGenerator.LoginResponse.Error = new AuthorizeError
+            {
+                ErrorType = ErrorTypes.User,
+                Error = "some error",
+            };
+
+            var param = new NameValueCollection();
+            var result = await _subject.ProcessRequestAsync(param, null);
+
+            result.Should().BeOfType<ErrorPageResult>();
+            var error_result = (ErrorPageResult)result;
+            error_result.Model.ReturnInfo.Should().BeNull();
+            error_result.Model.ErrorCode.Should().Be("some error");
         }
     }
 }
