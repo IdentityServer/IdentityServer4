@@ -19,40 +19,54 @@ using System.Collections.Specialized;
 namespace IdentityServer4.Core.ViewModels
 {
     /// <summary>
-    /// Models the data for the error page.
+    /// Models the information and mechanisms for allowing a user to return to a client application.
     /// </summary>
-    public class ErrorViewModel
+    public class ClientReturnInfo
     {
         /// <summary>
-        /// Gets or sets the error code.
+        /// The identifier for the client application the user will be sent to.
         /// </summary>
         /// <value>
-        /// The error code.
+        /// The Client Id.
         /// </value>
-        public string ErrorCode { get; set; }
+        public string ClientId { get; set; }
 
         /// <summary>
-        /// Gets or sets the error message.
+        /// The name of the client the user will be sent to.
         /// </summary>
         /// <value>
-        /// The error message.
+        /// The client name.
         /// </value>
-        public string ErrorMessage { get; set; }
+        public string ClientName { get; set; }
 
         /// <summary>
-        /// The per-request identifier. This can be used to display to the end user and can be used in diagnostics.
+        /// The Uri of the client where the user can be returned.
         /// </summary>
         /// <value>
-        /// The request identifier.
+        /// The return Uri.
         /// </value>
-        public string RequestId { get; set; }
+        public string Uri { get; set; }
 
         /// <summary>
-        /// Information about the client where a user is allowed to navigate after the error page is displayed.
+        /// The HTML-encoded values for the POST body to be used if IsPost is true. 
         /// </summary>
         /// <value>
-        /// The return information.
+        /// The POST body.
         /// </value>
-        public ClientReturnInfo ReturnInfo { get; set; }
+        public string PostBody { get; set; }
+
+        /// <summary>
+        /// Value that indicates if the return must be performed via a POST, rather than a redirect with GET.
+        /// </summary>
+        /// <value>
+        /// The IsPost flag.
+        /// </value>
+        public bool IsPost
+        {
+            get
+            {
+                return PostBody != null;
+            }
+        }
     }
 }
