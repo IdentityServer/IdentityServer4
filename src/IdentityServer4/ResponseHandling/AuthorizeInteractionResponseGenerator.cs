@@ -190,50 +190,50 @@ namespace IdentityServer4.Core.ResponseHandling
             return new LoginInteractionResponse();
         }
 
-        //public Task<LoginInteractionResponse> ProcessClientLoginAsync(ValidatedAuthorizeRequest request)
-        //{
-        //    // check idp restrictions
-        //    var currentIdp = request.Subject.GetIdentityProvider();
-        //    if (request.Client.IdentityProviderRestrictions != null && request.Client.IdentityProviderRestrictions.Any())
-        //    {
-        //        if (!request.Client.IdentityProviderRestrictions.Contains(currentIdp))
-        //        {
-        //            var response = new LoginInteractionResponse
-        //            {
-        //                SignInMessage = _signIn
-        //            };
+        public Task<LoginInteractionResponse> ProcessClientLoginAsync(ValidatedAuthorizeRequest request)
+        {
+            // check idp restrictions
+            var currentIdp = request.Subject.GetIdentityProvider();
+            if (request.Client.IdentityProviderRestrictions != null && request.Client.IdentityProviderRestrictions.Any())
+            {
+                if (!request.Client.IdentityProviderRestrictions.Contains(currentIdp))
+                {
+                    var response = new LoginInteractionResponse
+                    {
+                        SignInMessage = _signIn
+                    };
 
-        //            Logger.WarnFormat("User is logged in with idp: {0}, but idp not in client restriction list.", currentIdp); 
-                    
-        //            return Task.FromResult(response);
-        //        }
-        //    }
+                    _logger.LogWarning("User is logged in with idp: {0}, but idp not in client restriction list.", currentIdp);
 
-        //    // check if idp is local and local logins are not allowed
-        //    if (currentIdp == Constants.BuiltInIdentityProvider)
-        //    {
-        //        if (_options.AuthenticationOptions.EnableLocalLogin == false || 
-        //            request.Client.EnableLocalLogin == false)
-        //        {
-        //            var response = new LoginInteractionResponse
-        //            {
-        //                SignInMessage = _signIn
-        //            };
+                    return Task.FromResult(response);
+                }
+            }
 
-        //            Logger.Warn("User is logged in with local idp, but local logins not enabled.");
-                    
-        //            return Task.FromResult(response);
-        //        }
-        //    }
+            // check if idp is local and local logins are not allowed
+            if (currentIdp == Constants.BuiltInIdentityProvider)
+            {
+                if (_options.AuthenticationOptions.EnableLocalLogin == false ||
+                    request.Client.EnableLocalLogin == false)
+                {
+                    var response = new LoginInteractionResponse
+                    {
+                        SignInMessage = _signIn
+                    };
 
-        //    return Task.FromResult(new LoginInteractionResponse());
-        //}
+                    _logger.LogWarning("User is logged in with local idp, but local logins not enabled.");
+
+                    return Task.FromResult(response);
+                }
+            }
+
+            return Task.FromResult(new LoginInteractionResponse());
+        }
 
         //public async Task<ConsentInteractionResponse> ProcessConsentAsync(ValidatedAuthorizeRequest request, UserConsent consent = null)
         //{
         //    if (request == null) throw new ArgumentNullException("request");
 
-        //    if (request.PromptMode != null && 
+        //    if (request.PromptMode != null &&
         //        request.PromptMode != Constants.PromptModes.None &&
         //        request.PromptMode != Constants.PromptModes.Consent)
         //    {
@@ -244,7 +244,7 @@ namespace IdentityServer4.Core.ResponseHandling
 
         //    if (consentRequired && request.PromptMode == Constants.PromptModes.None)
         //    {
-        //        Logger.Info("Prompt=none requested, but consent is required.");
+        //        _logger.LogInformation("Prompt=none requested, but consent is required.");
 
         //        return new ConsentInteractionResponse
         //        {
@@ -278,11 +278,12 @@ namespace IdentityServer4.Core.ResponseHandling
         //            {
         //                // no need to show consent screen again
         //                // build access denied error to return to client
-        //                response.Error = new AuthorizeError { 
+        //                response.Error = new AuthorizeError
+        //                {
         //                    ErrorType = ErrorTypes.Client,
         //                    Error = Constants.AuthorizeErrors.AccessDenied,
         //                    ResponseMode = request.ResponseMode,
-        //                    ErrorUri = request.RedirectUri, 
+        //                    ErrorUri = request.RedirectUri,
         //                    State = request.State
         //                };
         //            }
@@ -307,12 +308,12 @@ namespace IdentityServer4.Core.ResponseHandling
         //                        // remember what user actually selected
         //                        scopes = request.ValidatedScopes.GrantedScopes.Select(x => x.Name);
         //                    }
-                            
+
         //                    await _consent.UpdateConsentAsync(request.Client, request.Subject, scopes);
         //                }
         //            }
         //        }
-                
+
         //        return response;
         //    }
 

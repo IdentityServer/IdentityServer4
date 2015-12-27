@@ -35,7 +35,7 @@ namespace IdentityServer4.Core.ResponseHandling
     interface IAuthorizeInteractionResponseGenerator
     {
         Task<LoginInteractionResponse> ProcessLoginAsync(ValidatedAuthorizeRequest request, ClaimsPrincipal user);
-        //Task<LoginInteractionResponse> ProcessClientLoginAsync(ValidatedAuthorizeRequest request);
+        Task<LoginInteractionResponse> ProcessClientLoginAsync(ValidatedAuthorizeRequest request);
         //Task<ConsentInteractionResponse> ProcessConsentAsync(ValidatedAuthorizeRequest request, UserConsent consent = null);
     }
 }

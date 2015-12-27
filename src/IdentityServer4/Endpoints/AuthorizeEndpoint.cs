@@ -82,7 +82,10 @@ namespace IdentityServer4.Core.Endpoints
             var result = await _validator.ValidateAsync(parameters, user);
             if (result.IsError)
             {
-                return await AuthorizeErrorAsync(result.ErrorType, result.Error, result.ValidatedRequest);
+                return await AuthorizeErrorAsync(
+                    result.ErrorType, 
+                    result.Error, 
+                    result.ValidatedRequest);
             }
 
             var request = result.ValidatedRequest;
@@ -95,16 +98,43 @@ namespace IdentityServer4.Core.Endpoints
                     loginInteraction.Error.Error,
                     request);
             }
-            //if (loginInteraction.IsLogin)
+            if (loginInteraction.IsLogin)
+            {
+                return RedirectToLogin(loginInteraction.SignInMessage, request.Raw);
+            }
+
+            // user must be authenticated at this point
+            if (!user.Identity.IsAuthenticated)
+            {
+                throw new InvalidOperationException("User is not authenticated");
+            }
+
+            request.Subject = user;
+
+            // now that client configuration is loaded, we can do further validation
+            loginInteraction = await _interactionGenerator.ProcessClientLoginAsync(request);
+            if (loginInteraction.IsLogin)
+            {
+                return RedirectToLogin(loginInteraction.SignInMessage, request.Raw);
+            }
+
+            //var consentInteraction = await _interactionGenerator.ProcessConsentAsync(request, consent);
+
+            //if (consentInteraction.IsError)
             //{
-            //    return this.RedirectToLogin(loginInteraction.SignInMessage, request.Raw);
+            //    return await this.AuthorizeErrorAsync(
+            //        consentInteraction.Error.ErrorType,
+            //        consentInteraction.Error.Error,
+            //        request);
             //}
 
-            //// user must be authenticated at this point
-            //if (!User.Identity.IsAuthenticated)
+            //if (consentInteraction.IsConsent)
             //{
-            //    throw new InvalidOperationException("User is not authenticated");
+            //    Logger.Info("Showing consent screen");
+            //    return CreateConsentResult(request, consent, request.Raw, consentInteraction.ConsentError);
             //}
+
+            //return await CreateAuthorizeResponseAsync(request);
 
             return null;
         }
@@ -167,6 +197,15 @@ namespace IdentityServer4.Core.Endpoints
                 msg = error;
             }
             return msg;
+        }
+
+        IResult RedirectToLogin(SignInMessage message, NameValueCollection parameters)
+        {
+            var url = _context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.RoutePaths.Oidc.Authorize;
+            url.AddQueryString(parameters.ToQueryString());
+            message.ReturnUrl = url;
+            
+            return new LoginRedirectResult(message);
         }
     }
 }

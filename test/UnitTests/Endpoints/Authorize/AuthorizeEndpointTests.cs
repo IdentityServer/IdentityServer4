@@ -31,6 +31,7 @@ using IdentityServer4.Core.Services;
 using Microsoft.Extensions.Logging;
 using IdentityServer4.Core.Events;
 using IdentityServer4.Core.Models;
+using IdentityServer4.Core;
 
 namespace UnitTests.Endpoints.Authorize
 {
@@ -62,7 +63,8 @@ namespace UnitTests.Endpoints.Authorize
                 {
                     ClientId = "client",
                     ClientName = "Test Client"
-                }
+                },
+                Raw = _params
             };
 
             _subject = new AuthorizeEndpoint(
@@ -75,6 +77,8 @@ namespace UnitTests.Endpoints.Authorize
                 new FakeHtmlEncoder());
         }
 
+        NameValueCollection _params = new NameValueCollection();
+        ClaimsPrincipal _user = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
         IdentityServerContext _context;
         IdentityServerOptions _options = new IdentityServerOptions();
         DefaultHttpContext _httpContext = new DefaultHttpContext();
@@ -87,7 +91,7 @@ namespace UnitTests.Endpoints.Authorize
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task post_to_entry_point_returns_405()
+        public async Task post_to_entry_point_should_return_405()
         {
             _httpContext.Request.Method = "POST";
             var result = await _subject.ProcessAsync(_httpContext);
@@ -107,8 +111,7 @@ namespace UnitTests.Endpoints.Authorize
             _stubLocalizationService.Result = "foo error message";
             _context.SetRequestId("56789");
 
-            var param = new NameValueCollection();
-            var result = await _subject.ProcessRequestAsync(param, null);
+            var result = await _subject.ProcessRequestAsync(_params, _user);
 
             result.Should().BeOfType<ErrorPageResult>();
             var error_result = (ErrorPageResult)result;
@@ -123,8 +126,7 @@ namespace UnitTests.Endpoints.Authorize
         {
             _stubAuthorizeRequestValidator.Result.IsError = true;
 
-            var param = new NameValueCollection();
-            var result = await _subject.ProcessRequestAsync(param, null);
+            var result = await _subject.ProcessRequestAsync(_params, _user);
 
             result.Should().BeOfType<ErrorPageResult>();
         }
@@ -145,8 +147,7 @@ namespace UnitTests.Endpoints.Authorize
                 ClientName = "Foo Client"
             };
 
-            var param = new NameValueCollection();
-            var result = await _subject.ProcessRequestAsync(param, null);
+            var result = await _subject.ProcessRequestAsync(_params, _user);
 
             var error_result = (ErrorPageResult)result;
             error_result.Model.ReturnInfo.Should().NotBeNull();
@@ -160,14 +161,13 @@ namespace UnitTests.Endpoints.Authorize
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task authorize_request_validation_failure_raises_failed_endpoint_event()
+        public async Task authorize_request_validation_failure_should_raise_failed_endpoint_event()
         {
             _stubAuthorizeRequestValidator.Result.IsError = true;
             _stubAuthorizeRequestValidator.Result.ErrorType = ErrorTypes.Client;
             _stubAuthorizeRequestValidator.Result.Error = "some error";
 
-            var param = new NameValueCollection();
-            var result = await _subject.ProcessRequestAsync(param, null);
+            var result = await _subject.ProcessRequestAsync(_params, _user);
 
             var evt = _mockEventService.AssertEventWasRaised<Event<EndpointDetail>>();
             evt.EventType.Should().Be(EventTypes.Failure);
@@ -178,7 +178,7 @@ namespace UnitTests.Endpoints.Authorize
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task login_interaction_produces_error_show_error_page()
+        public async Task login_interaction_produces_error_should_show_error_page()
         {
             _stubInteractionGenerator.LoginResponse.Error = new AuthorizeError
             {
@@ -186,13 +186,41 @@ namespace UnitTests.Endpoints.Authorize
                 Error = "some error",
             };
 
-            var param = new NameValueCollection();
-            var result = await _subject.ProcessRequestAsync(param, null);
+            var result = await _subject.ProcessRequestAsync(_params, _user);
 
             result.Should().BeOfType<ErrorPageResult>();
             var error_result = (ErrorPageResult)result;
             error_result.Model.ReturnInfo.Should().BeNull();
             error_result.Model.ErrorCode.Should().Be("some error");
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task login_interaction_produces_login_result_should_trigger_login()
+        {
+            var msg = new SignInMessage { };
+            _stubInteractionGenerator.LoginResponse.SignInMessage = msg;
+
+            var result = await _subject.ProcessRequestAsync(_params, _user);
+
+            result.Should().BeOfType<LoginRedirectResult>();
+            var redirect = (LoginRedirectResult)result;
+            redirect.SignInMessage.Should().BeSameAs(msg);
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task client_login_interaction_produces_login_result_should_trigger_login()
+        {
+            var msg = new SignInMessage { };
+            _stubInteractionGenerator.ClientLoginResponse.SignInMessage = msg;
+
+            var param = new NameValueCollection();
+            var result = await _subject.ProcessRequestAsync(param, _user);
+
+            result.Should().BeOfType<LoginRedirectResult>();
+            var redirect = (LoginRedirectResult)result;
+            redirect.SignInMessage.Should().BeSameAs(msg);
         }
     }
 }
