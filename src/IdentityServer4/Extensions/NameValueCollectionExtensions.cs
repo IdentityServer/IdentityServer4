@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+using Microsoft.Extensions.WebEncoders;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Net;
@@ -52,22 +54,21 @@ namespace IdentityServer4.Core.Extensions
             return builder.ToString();
         }
 
-        // todo
-        //public static string ToFormPost(this NameValueCollection collection)
-        //{
-        //    var builder = new StringBuilder(128);
-        //    const string inputFieldFormat = "<input type=\"hidden\" name=\"{0}\" value=\"{1}\" />\n";
+        public static string ToFormPost(this NameValueCollection collection, IHtmlEncoder encoder)
+        {
+            var builder = new StringBuilder(128);
+            const string inputFieldFormat = "<input type=\"hidden\" name=\"{0}\" value=\"{1}\" />\n";
 
-        //    foreach (string name in collection)
-        //    {
-        //        var values = collection.GetValues(name);
-        //        var value = values.First();
-        //        value = Microsoft.Security.Application.Encoder.HtmlEncode(value);
-        //        builder.AppendFormat(inputFieldFormat, name, value);
-        //    }
+            foreach (string name in collection)
+            {
+                var values = collection.GetValues(name);
+                var value = values.First();
+                value = encoder.HtmlEncode(value);
+                builder.AppendFormat(inputFieldFormat, name, value);
+            }
 
-        //    return builder.ToString();
-        //}
+            return builder.ToString();
+        }
 
 
         public static Dictionary<string, string> ToDictionary(this NameValueCollection collection)

@@ -137,6 +137,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<IRefreshTokenService, DefaultRefreshTokenService>();
             services.TryAddTransient<ISigningKeyService, DefaultSigningKeyService>();
             services.TryAddTransient<ICustomTokenValidator, DefaultCustomTokenValidator>();
+            services.TryAddTransient<ILocalizationService, DefaultLocalizationService>();
 
             return services;
         }

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+using System.Collections.Specialized;
+
 namespace IdentityServer4.Core.ViewModels
 {
     /// <summary>
@@ -44,5 +46,23 @@ namespace IdentityServer4.Core.ViewModels
         /// The request identifier.
         /// </value>
         public string RequestId { get; set; }
+
+        public ClientReturnInfo ReturnInfo { get; set; }
+    }
+
+    public class ClientReturnInfo
+    {
+        public string ClientId { get; set; }
+        public string ClientName { get; set; }
+        public string Uri { get; set; }
+        public string PostBody { get; set; }
+
+        public bool IsPost
+        {
+            get
+            {
+                return PostBody != null;
+            }
+        }
     }
 }

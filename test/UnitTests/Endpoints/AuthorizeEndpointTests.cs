@@ -30,6 +30,7 @@ using IdentityServer4.Core.Results;
 using IdentityServer4.Core.Services;
 using Microsoft.Extensions.Logging;
 using IdentityServer4.Core.Events;
+using IdentityServer4.Core.Models;
 
 namespace IdentityServer4.Tests.Endpoints
 {
@@ -50,12 +51,15 @@ namespace IdentityServer4.Tests.Endpoints
             accessor.HttpContext = _httpContext;
             _context = new IdentityServerContext(accessor, _options);
 
+            _requestValidationResult.ValidatedRequest = _validatedAuthorizeRequest;
+
             _subject = new AuthorizeEndpoint(
                 _mockEventService, 
                 _fakeLogger, 
                 _context,
                 new StubAuthorizeRequestValidator(_requestValidationResult),
-                _stubLocalizationService);
+                _stubLocalizationService,
+                new FakeHtmlEncoder());
         }
 
         MockEventService _mockEventService = new MockEventService();
@@ -65,7 +69,22 @@ namespace IdentityServer4.Tests.Endpoints
         IdentityServerContext _context;
         IdentityServerOptions _options = new IdentityServerOptions();
         DefaultHttpContext _httpContext = new DefaultHttpContext();
-        AuthorizeRequestValidationResult _requestValidationResult = new AuthorizeRequestValidationResult();
+        AuthorizeRequestValidationResult _requestValidationResult = new AuthorizeRequestValidationResult()
+        {
+            IsError = false,
+        };
+        ValidatedAuthorizeRequest _validatedAuthorizeRequest = new ValidatedAuthorizeRequest()
+        {
+            RedirectUri = "http://client/callback",
+            State = "123",
+            ResponseMode = "fragment",
+            ClientId = "client",
+            Client = new Client
+            {
+                ClientId = "client",
+                ClientName = "Test Client"
+            }
+        };
 
         [Fact]
         [Trait("Category", Category)]
@@ -92,8 +111,8 @@ namespace IdentityServer4.Tests.Endpoints
             var param = new NameValueCollection();
             var result = await _subject.ProcessRequestAsync(param, null);
 
-            var error_result = result as ErrorPageResult;
-            error_result.Should().NotBeNull();
+            result.Should().BeOfType<ErrorPageResult>();
+            var error_result = (ErrorPageResult)result;
             error_result.Model.RequestId.Should().Be("56789");
             error_result.Model.ErrorCode.Should().Be("foo");
             error_result.Model.ErrorMessage.Should().Be("foo error message");
@@ -101,15 +120,43 @@ namespace IdentityServer4.Tests.Endpoints
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task authorize_request_validation_failure_with_client_error_should_return_to_client()
+        public async Task authorize_request_validation_failure_with_client_error_should_display_error_page()
         {
             _requestValidationResult.IsError = true;
-            _requestValidationResult.ErrorType = ErrorTypes.Client;
 
             var param = new NameValueCollection();
             var result = await _subject.ProcessRequestAsync(param, null);
 
-            result.Should().BeOfType<AuthorizeResult>();
+            result.Should().BeOfType<ErrorPageResult>();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task authorize_request_validation_failure_error_page_should_contain_return_info()
+        {
+            _requestValidationResult.IsError = true;
+            _requestValidationResult.ErrorType = ErrorTypes.Client;
+            _validatedAuthorizeRequest.RedirectUri = "http://client/callback";
+            _validatedAuthorizeRequest.State = "123";
+            _validatedAuthorizeRequest.ResponseMode = "fragment";
+            _validatedAuthorizeRequest.ClientId = "foo_client";
+            _validatedAuthorizeRequest.Client = new Client
+            {
+                ClientId = "foo_client",
+                ClientName = "Foo Client"
+            };
+
+            var param = new NameValueCollection();
+            var result = await _subject.ProcessRequestAsync(param, null);
+
+            var error_result = (ErrorPageResult)result;
+            error_result.Model.ReturnInfo.Should().NotBeNull();
+            error_result.Model.ReturnInfo.ClientId.Should().Be("foo_client");
+            error_result.Model.ReturnInfo.ClientName.Should().Be("Foo Client");
+            var parts = error_result.Model.ReturnInfo.Uri.Split('#');
+            parts.Length.Should().Be(2);
+            parts[0].Should().Be("http://client/callback");
+            parts[1].Should().Contain("state=123");
         }
 
         [Fact]

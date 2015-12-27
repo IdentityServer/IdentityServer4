@@ -7,15 +7,12 @@ using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.Core.Results
 {
-    public class AuthorizeResult : IResult
+    public abstract class AuthorizeResult : IResult
     {
         public AuthorizeResult()
         {
         }
 
-        public Task ExecuteAsync(HttpContext context, ILogger logger)
-        {
-            return Task.FromResult(0);
-        }
+        public abstract Task ExecuteAsync(HttpContext context, ILogger logger);
     }
 }

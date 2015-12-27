@@ -17,6 +17,7 @@ using IdentityServer4.Core.Hosting;
 using IdentityServer4.Core.Events;
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.ViewModels;
+using Microsoft.Extensions.WebEncoders;
 
 namespace IdentityServer4.Core.Endpoints
 {
@@ -27,19 +28,22 @@ namespace IdentityServer4.Core.Endpoints
         private readonly IdentityServerContext _context;
         private readonly IAuthorizeRequestValidator _validator;
         private readonly ILocalizationService _localizationService;
+        private readonly IHtmlEncoder _encoder;
 
         public AuthorizeEndpoint(
             IEventService events, 
             ILogger<AuthorizeEndpoint> logger,
             IdentityServerContext context,
             IAuthorizeRequestValidator validator,
-            ILocalizationService localizationService)
+            ILocalizationService localizationService,
+            IHtmlEncoder encoder)
         {
             _events = events;
             _logger = logger;
             _context = context;
             _validator = validator;
             _localizationService = localizationService;
+            _encoder = encoder;
         }
 
         public async Task<IResult> ProcessAsync(HttpContext context)
@@ -76,49 +80,55 @@ namespace IdentityServer4.Core.Endpoints
 
             if (result.IsError)
             {
-                return await this.AuthorizeErrorAsync(result);
+                return await AuthorizeErrorAsync(result.ErrorType, result.Error, result.ValidatedRequest);
             }
 
             return null;
         }
 
-        async Task<IResult> AuthorizeErrorAsync(AuthorizeRequestValidationResult result)
+        async Task<IResult> AuthorizeErrorAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request)
         {
-            await RaiseFailureEventAsync(result.Error);
+            await RaiseFailureEventAsync(error);
 
-            // show error message to user
-            if (result.ErrorType == ErrorTypes.User)
+            var errorModel = new ErrorViewModel
             {
-                var errorModel = new ErrorViewModel
+                RequestId = _context.GetRequestId(),
+                ErrorCode = error,
+                ErrorMessage = LookupErrorMessage(error)
+            };
+
+            // if this is a client error, we need to build up the 
+            // response back to the client, and provide it in the 
+            // error view model so the UI can build the link/form
+            if (errorType == ErrorTypes.Client)
+            {
+                errorModel.ReturnInfo = new ClientReturnInfo
                 {
-                    RequestId = _context.GetRequestId(),
-                    ErrorCode = result.Error,
-                    ErrorMessage = LookupErrorMessage(result.Error)
+                    ClientId = request.ClientId,
+                    ClientName = request.Client.ClientName,
                 };
-                return new ErrorPageResult(errorModel);
+
+                var response = new AuthorizeResponse
+                {
+                    Request = request,
+                    IsError = true,
+                    Error = error,
+                    State = request.State,
+                    RedirectUri = request.RedirectUri
+                };
+
+                if (request.ResponseMode == Constants.ResponseModes.FormPost)
+                {
+                    errorModel.ReturnInfo.Uri = request.RedirectUri;
+                    errorModel.ReturnInfo.PostBody = AuthorizeFormPostResult.BuildFormBody(response, _encoder);
+                }
+                else
+                {
+                    errorModel.ReturnInfo.Uri = request.RedirectUri = AuthorizeRedirectResult.BuildUri(response);
+                }
             }
 
-            return new AuthorizeResult();
-
-            //// return error to client
-            //var response = new AuthorizeResponse
-            //{
-            //    Request = request,
-
-            //    IsError = true,
-            //    Error = error,
-            //    State = request.State,
-            //    RedirectUri = request.RedirectUri
-            //};
-
-            //if (request.ResponseMode == Constants.ResponseModes.FormPost)
-            //{
-            //    return new AuthorizeFormPostResult(response, Request);
-            //}
-            //else
-            //{
-            //    return new AuthorizeRedirectResult(response, _options);
-            //}
+            return new ErrorPageResult(errorModel);
         }
 
         private async Task RaiseFailureEventAsync(string error)

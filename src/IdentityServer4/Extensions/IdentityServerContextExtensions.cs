@@ -71,11 +71,11 @@ namespace IdentityServer4.Core.Hosting
 
         internal static void SetRequestId(this IdentityServerContext context, string id)
         {
-            context.HttpContext.Items["idsvr.requestid"] = id;
+            context.HttpContext.TraceIdentifier = id;
         }
         internal static string GetRequestId(this IdentityServerContext context)
         {
-            return context.HttpContext.Items["idsvr.requestid"] as string;
+            return context.HttpContext.TraceIdentifier;
         }
     }
 }
