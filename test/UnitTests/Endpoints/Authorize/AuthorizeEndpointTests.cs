@@ -32,7 +32,7 @@ using Microsoft.Extensions.Logging;
 using IdentityServer4.Core.Events;
 using IdentityServer4.Core.Models;
 
-namespace IdentityServer4.Tests.Endpoints
+namespace UnitTests.Endpoints.Authorize
 {
     public class AuthorizeEndpointTests
     {
@@ -51,40 +51,38 @@ namespace IdentityServer4.Tests.Endpoints
             accessor.HttpContext = _httpContext;
             _context = new IdentityServerContext(accessor, _options);
 
-            _requestValidationResult.ValidatedRequest = _validatedAuthorizeRequest;
+            _stubAuthorizeRequestValidator.Result.ValidatedRequest = new ValidatedAuthorizeRequest()
+            {
+                RedirectUri = "http://client/callback",
+                State = "123",
+                ResponseMode = "fragment",
+                ClientId = "client",
+                Client = new Client
+                {
+                    ClientId = "client",
+                    ClientName = "Test Client"
+                }
+            };
 
             _subject = new AuthorizeEndpoint(
                 _mockEventService, 
                 _fakeLogger, 
                 _context,
-                new StubAuthorizeRequestValidator(_requestValidationResult),
+                _stubAuthorizeRequestValidator,
+                _stubInteractionGenerator,
                 _stubLocalizationService,
                 new FakeHtmlEncoder());
         }
 
-        MockEventService _mockEventService = new MockEventService();
-        ILogger<AuthorizeEndpoint> _fakeLogger = new FakeLogger<AuthorizeEndpoint>();
-        StubLocalizationService _stubLocalizationService = new StubLocalizationService();
-
         IdentityServerContext _context;
         IdentityServerOptions _options = new IdentityServerOptions();
         DefaultHttpContext _httpContext = new DefaultHttpContext();
-        AuthorizeRequestValidationResult _requestValidationResult = new AuthorizeRequestValidationResult()
-        {
-            IsError = false,
-        };
-        ValidatedAuthorizeRequest _validatedAuthorizeRequest = new ValidatedAuthorizeRequest()
-        {
-            RedirectUri = "http://client/callback",
-            State = "123",
-            ResponseMode = "fragment",
-            ClientId = "client",
-            Client = new Client
-            {
-                ClientId = "client",
-                ClientName = "Test Client"
-            }
-        };
+
+        MockEventService _mockEventService = new MockEventService();
+        ILogger<AuthorizeEndpoint> _fakeLogger = new FakeLogger<AuthorizeEndpoint>();
+        StubLocalizationService _stubLocalizationService = new StubLocalizationService();
+        StubAuthorizeRequestValidator _stubAuthorizeRequestValidator = new StubAuthorizeRequestValidator();
+        StubAuthorizeInteractionResponseGenerator _stubInteractionGenerator = new StubAuthorizeInteractionResponseGenerator();
 
         [Fact]
         [Trait("Category", Category)]
@@ -102,9 +100,9 @@ namespace IdentityServer4.Tests.Endpoints
         [Trait("Category", Category)]
         public async Task authorize_request_validation_failure_with_user_error_should_display_error_page_with_error_view_model()
         {
-            _requestValidationResult.IsError = true;
-            _requestValidationResult.ErrorType = ErrorTypes.User;
-            _requestValidationResult.Error = "foo";
+            _stubAuthorizeRequestValidator.Result.IsError = true;
+            _stubAuthorizeRequestValidator.Result.ErrorType = ErrorTypes.User;
+            _stubAuthorizeRequestValidator.Result.Error = "foo";
             _stubLocalizationService.Result = "foo error message";
             _context.SetRequestId("56789");
 
@@ -122,7 +120,7 @@ namespace IdentityServer4.Tests.Endpoints
         [Trait("Category", Category)]
         public async Task authorize_request_validation_failure_with_client_error_should_display_error_page()
         {
-            _requestValidationResult.IsError = true;
+            _stubAuthorizeRequestValidator.Result.IsError = true;
 
             var param = new NameValueCollection();
             var result = await _subject.ProcessRequestAsync(param, null);
@@ -134,13 +132,13 @@ namespace IdentityServer4.Tests.Endpoints
         [Trait("Category", Category)]
         public async Task authorize_request_validation_failure_error_page_should_contain_return_info()
         {
-            _requestValidationResult.IsError = true;
-            _requestValidationResult.ErrorType = ErrorTypes.Client;
-            _validatedAuthorizeRequest.RedirectUri = "http://client/callback";
-            _validatedAuthorizeRequest.State = "123";
-            _validatedAuthorizeRequest.ResponseMode = "fragment";
-            _validatedAuthorizeRequest.ClientId = "foo_client";
-            _validatedAuthorizeRequest.Client = new Client
+            _stubAuthorizeRequestValidator.Result.IsError = true;
+            _stubAuthorizeRequestValidator.Result.ErrorType = ErrorTypes.Client;
+            _stubAuthorizeRequestValidator.Result.ValidatedRequest.RedirectUri = "http://client/callback";
+            _stubAuthorizeRequestValidator.Result.ValidatedRequest.State = "123";
+            _stubAuthorizeRequestValidator.Result.ValidatedRequest.ResponseMode = "fragment";
+            _stubAuthorizeRequestValidator.Result.ValidatedRequest.ClientId = "foo_client";
+            _stubAuthorizeRequestValidator.Result.ValidatedRequest.Client = new Client
             {
                 ClientId = "foo_client",
                 ClientName = "Foo Client"
@@ -163,9 +161,9 @@ namespace IdentityServer4.Tests.Endpoints
         [Trait("Category", Category)]
         public async Task authorize_request_validation_failure_raises_failed_endpoint_event()
         {
-            _requestValidationResult.IsError = true;
-            _requestValidationResult.ErrorType = ErrorTypes.Client;
-            _requestValidationResult.Error = "some error";
+            _stubAuthorizeRequestValidator.Result.IsError = true;
+            _stubAuthorizeRequestValidator.Result.ErrorType = ErrorTypes.Client;
+            _stubAuthorizeRequestValidator.Result.Error = "some error";
 
             var param = new NameValueCollection();
             var result = await _subject.ProcessRequestAsync(param, null);

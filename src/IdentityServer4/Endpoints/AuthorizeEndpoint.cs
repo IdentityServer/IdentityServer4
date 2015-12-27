@@ -27,6 +27,7 @@ namespace IdentityServer4.Core.Endpoints
         private readonly ILogger _logger;
         private readonly IdentityServerContext _context;
         private readonly IAuthorizeRequestValidator _validator;
+        private readonly IAuthorizeInteractionResponseGenerator _interactionGenerator;
         private readonly ILocalizationService _localizationService;
         private readonly IHtmlEncoder _encoder;
 
@@ -35,6 +36,7 @@ namespace IdentityServer4.Core.Endpoints
             ILogger<AuthorizeEndpoint> logger,
             IdentityServerContext context,
             IAuthorizeRequestValidator validator,
+            IAuthorizeInteractionResponseGenerator interactionGenerator,
             ILocalizationService localizationService,
             IHtmlEncoder encoder)
         {
@@ -42,6 +44,7 @@ namespace IdentityServer4.Core.Endpoints
             _logger = logger;
             _context = context;
             _validator = validator;
+            _interactionGenerator = interactionGenerator;
             _localizationService = localizationService;
             _encoder = encoder;
         }
@@ -77,11 +80,12 @@ namespace IdentityServer4.Core.Endpoints
 
             // validate request
             var result = await _validator.ValidateAsync(parameters, user);
-
             if (result.IsError)
             {
                 return await AuthorizeErrorAsync(result.ErrorType, result.Error, result.ValidatedRequest);
             }
+
+
 
             return null;
         }

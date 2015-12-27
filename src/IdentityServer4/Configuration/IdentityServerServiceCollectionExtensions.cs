@@ -94,6 +94,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<TokenResponseGenerator>();
             services.TryAddTransient<UserInfoResponseGenerator>();
             services.TryAddTransient<IntrospectionResponseGenerator>();
+            services.TryAddTransient<IAuthorizeInteractionResponseGenerator, AuthorizeInteractionResponseGenerator>();
 
             return services;
         }
@@ -123,6 +124,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddSingleton<IAuthorizationCodeStore, InMemoryAuthorizationCodeStore>();
             services.TryAddSingleton<IRefreshTokenStore, InMemoryRefreshTokenStore>();
             services.TryAddSingleton<ITokenHandleStore, InMemoryTokenHandleStore>();
+            services.TryAddSingleton<IConsentStore, InMemoryConsentStore>();
 
             return services;
         }
@@ -138,6 +140,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<ISigningKeyService, DefaultSigningKeyService>();
             services.TryAddTransient<ICustomTokenValidator, DefaultCustomTokenValidator>();
             services.TryAddTransient<ILocalizationService, DefaultLocalizationService>();
+            services.TryAddTransient<IConsentService, DefaultConsentService>();
 
             return services;
         }
