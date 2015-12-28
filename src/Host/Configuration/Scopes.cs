@@ -21,9 +21,7 @@ namespace Host.Configuration
                     ScopeSecrets = new List<Secret>
                     {
                         new Secret("secret".Sha256())
-                    },
-
-                    AllowUnrestrictedIntrospection = true
+                    }
                 },
                 new Scope
                 {
