@@ -52,8 +52,7 @@ namespace UnitTests.Endpoints.Authorize
             accessor.HttpContext = _httpContext;
             _context = new IdentityServerContext(accessor, _options);
 
-            _stubAuthorizeRequestValidator.Result.IsError = false;
-            _stubAuthorizeRequestValidator.Result.ValidatedRequest = new ValidatedAuthorizeRequest()
+            _validatedAuthorizeRequest = new ValidatedAuthorizeRequest()
             {
                 RedirectUri = "http://client/callback",
                 State = "123",
@@ -66,6 +65,10 @@ namespace UnitTests.Endpoints.Authorize
                 },
                 Raw = _params
             };
+
+            _stubAuthorizeRequestValidator.Result.IsError = false;
+            _stubAuthorizeRequestValidator.Result.ValidatedRequest = _validatedAuthorizeRequest;
+            _stubResponseGenerator.Response.Request = _validatedAuthorizeRequest;
 
             _clientListCookie = new ClientListCookie(_context);
 
@@ -87,6 +90,7 @@ namespace UnitTests.Endpoints.Authorize
         IdentityServerOptions _options = new IdentityServerOptions();
         DefaultHttpContext _httpContext = new DefaultHttpContext();
         ClientListCookie _clientListCookie;
+        ValidatedAuthorizeRequest _validatedAuthorizeRequest;
 
         MockEventService _mockEventService = new MockEventService();
         ILogger<AuthorizeEndpoint> _fakeLogger = new FakeLogger<AuthorizeEndpoint>();
@@ -221,12 +225,69 @@ namespace UnitTests.Endpoints.Authorize
             var msg = new SignInMessage { };
             _stubInteractionGenerator.ClientLoginResponse.SignInMessage = msg;
 
-            var param = new NameValueCollection();
-            var result = await _subject.ProcessAuthorizeRequestAsync(param, _user);
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user);
 
             result.Should().BeOfType<LoginRedirectResult>();
             var redirect = (LoginRedirectResult)result;
             redirect.SignInMessage.Should().BeSameAs(msg);
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task successful_authorization_request_should_generate_authorization_result()
+        {
+            _stubResponseGenerator.Response.IdentityToken = "foo";
+            _stubResponseGenerator.Response.AccessToken = "bar";
+            _stubResponseGenerator.Response.State = "789";
+
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user);
+
+            result.Should().BeAssignableTo<AuthorizeResult>();
+            var authorize_result = (AuthorizeResult)result;
+            authorize_result.Response.IdentityToken.Should().Be("foo");
+            authorize_result.Response.AccessToken.Should().Be("bar");
+            authorize_result.Response.State.Should().Be("789");
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task response_mode_fragment_should_generate_authorization_redirect_result()
+        {
+            _validatedAuthorizeRequest.ResponseMode = "fragment";
+
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user);
+
+            result.Should().BeOfType<AuthorizeRedirectResult>();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task response_mode_query_should_generate_authorization_redirect_result()
+        {
+            _validatedAuthorizeRequest.ResponseMode = "query";
+
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user);
+
+            result.Should().BeOfType<AuthorizeRedirectResult>();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task response_mode_formpost_should_generate_authorization_redirect_result()
+        {
+            _validatedAuthorizeRequest.ResponseMode = "form_post";
+
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user);
+
+            result.Should().BeOfType<AuthorizeFormPostResult>();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task unknown_response_mode_should_throw()
+        {
+            _validatedAuthorizeRequest.ResponseMode = "foo";
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await _subject.ProcessAuthorizeRequestAsync(_params, _user));
         }
     }
 }

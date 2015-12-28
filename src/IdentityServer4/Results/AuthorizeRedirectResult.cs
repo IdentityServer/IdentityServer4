@@ -11,11 +11,9 @@ namespace IdentityServer4.Core.Results
 {
     class AuthorizeRedirectResult : AuthorizeResult
     {
-        private readonly AuthorizeResponse _response;
-
         public AuthorizeRedirectResult(AuthorizeResponse response)
+            : base(response)
         {
-            _response = response;
         }
 
         internal static string BuildUri(AuthorizeResponse response)
@@ -43,7 +41,7 @@ namespace IdentityServer4.Core.Results
 
         public override Task ExecuteAsync(HttpContext context, ILogger logger)
         {
-            context.Response.Redirect(BuildUri(_response));
+            context.Response.Redirect(BuildUri(Response));
             return Task.FromResult(0);
         }
     }

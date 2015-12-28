@@ -12,12 +12,11 @@ namespace IdentityServer4.Core.Results
 {
     class AuthorizeFormPostResult : AuthorizeResult
     {
-        private readonly AuthorizeResponse _response;
         private readonly IHtmlEncoder _encoder;
 
         public AuthorizeFormPostResult(AuthorizeResponse response, IHtmlEncoder encoder)
+            : base(response)
         {
-            _response = response;
             _encoder = encoder;
         }
 

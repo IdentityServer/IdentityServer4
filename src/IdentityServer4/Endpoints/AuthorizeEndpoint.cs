@@ -169,7 +169,7 @@ namespace IdentityServer4.Core.Endpoints
 
             //return await CreateAuthorizeResponseAsync(request);
 
-            return null;
+            return await CreateAuthorizeResponseAsync(request);
         }
 
         private async Task<IResult> CreateAuthorizeResponseAsync(ValidatedAuthorizeRequest request)
