@@ -67,14 +67,18 @@ namespace UnitTests.Endpoints.Authorize
                 Raw = _params
             };
 
+            _clientListCookie = new ClientListCookie(_context);
+
             _subject = new AuthorizeEndpoint(
                 _mockEventService, 
                 _fakeLogger, 
                 _context,
+                _stubResponseGenerator,
                 _stubAuthorizeRequestValidator,
                 _stubInteractionGenerator,
                 _stubLocalizationService,
-                new FakeHtmlEncoder());
+                new FakeHtmlEncoder(),
+                _clientListCookie);
         }
 
         NameValueCollection _params = new NameValueCollection();
@@ -82,10 +86,12 @@ namespace UnitTests.Endpoints.Authorize
         IdentityServerContext _context;
         IdentityServerOptions _options = new IdentityServerOptions();
         DefaultHttpContext _httpContext = new DefaultHttpContext();
+        ClientListCookie _clientListCookie;
 
         MockEventService _mockEventService = new MockEventService();
         ILogger<AuthorizeEndpoint> _fakeLogger = new FakeLogger<AuthorizeEndpoint>();
         StubLocalizationService _stubLocalizationService = new StubLocalizationService();
+        StubAuthorizeResponseGenerator _stubResponseGenerator = new StubAuthorizeResponseGenerator();
         StubAuthorizeRequestValidator _stubAuthorizeRequestValidator = new StubAuthorizeRequestValidator();
         StubAuthorizeInteractionResponseGenerator _stubInteractionGenerator = new StubAuthorizeInteractionResponseGenerator();
 
@@ -111,7 +117,7 @@ namespace UnitTests.Endpoints.Authorize
             _stubLocalizationService.Result = "foo error message";
             _context.SetRequestId("56789");
 
-            var result = await _subject.ProcessRequestAsync(_params, _user);
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user);
 
             result.Should().BeOfType<ErrorPageResult>();
             var error_result = (ErrorPageResult)result;
@@ -126,7 +132,7 @@ namespace UnitTests.Endpoints.Authorize
         {
             _stubAuthorizeRequestValidator.Result.IsError = true;
 
-            var result = await _subject.ProcessRequestAsync(_params, _user);
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user);
 
             result.Should().BeOfType<ErrorPageResult>();
         }
@@ -147,7 +153,7 @@ namespace UnitTests.Endpoints.Authorize
                 ClientName = "Foo Client"
             };
 
-            var result = await _subject.ProcessRequestAsync(_params, _user);
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user);
 
             var error_result = (ErrorPageResult)result;
             error_result.Model.ReturnInfo.Should().NotBeNull();
@@ -167,7 +173,7 @@ namespace UnitTests.Endpoints.Authorize
             _stubAuthorizeRequestValidator.Result.ErrorType = ErrorTypes.Client;
             _stubAuthorizeRequestValidator.Result.Error = "some error";
 
-            var result = await _subject.ProcessRequestAsync(_params, _user);
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user);
 
             var evt = _mockEventService.AssertEventWasRaised<Event<EndpointDetail>>();
             evt.EventType.Should().Be(EventTypes.Failure);
@@ -186,7 +192,7 @@ namespace UnitTests.Endpoints.Authorize
                 Error = "some error",
             };
 
-            var result = await _subject.ProcessRequestAsync(_params, _user);
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user);
 
             result.Should().BeOfType<ErrorPageResult>();
             var error_result = (ErrorPageResult)result;
@@ -201,7 +207,7 @@ namespace UnitTests.Endpoints.Authorize
             var msg = new SignInMessage { };
             _stubInteractionGenerator.LoginResponse.SignInMessage = msg;
 
-            var result = await _subject.ProcessRequestAsync(_params, _user);
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user);
 
             result.Should().BeOfType<LoginRedirectResult>();
             var redirect = (LoginRedirectResult)result;
@@ -216,7 +222,7 @@ namespace UnitTests.Endpoints.Authorize
             _stubInteractionGenerator.ClientLoginResponse.SignInMessage = msg;
 
             var param = new NameValueCollection();
-            var result = await _subject.ProcessRequestAsync(param, _user);
+            var result = await _subject.ProcessAuthorizeRequestAsync(param, _user);
 
             result.Should().BeOfType<LoginRedirectResult>();
             var redirect = (LoginRedirectResult)result;

@@ -15,14 +15,10 @@
  */
 
 using IdentityServer4.Core.Validation;
-using System.ComponentModel;
-
-#pragma warning disable 1591
 
 namespace IdentityServer4.Core.Models
 {
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public class AuthorizeResponse
+    class AuthorizeResponse
     {
         public ValidatedAuthorizeRequest Request { get; set; }
         public string RedirectUri { get; set; }

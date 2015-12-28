@@ -14,28 +14,23 @@
  * limitations under the License.
  */
 
-using IdentityServer4.Core.Configuration;
+using IdentityModel;
 using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Logging;
 using IdentityServer4.Core.Models;
-using IdentityServer4.Core.Resources;
 using IdentityServer4.Core.Services;
 using IdentityServer4.Core.Validation;
-using IdentityServer4.Core.ViewModels;
 using System;
 using System.ComponentModel;
 using System.Linq;
-using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
-
-#pragma warning disable 1591
 
 namespace IdentityServer4.Core.ResponseHandling
 {
-    interface IAuthorizeInteractionResponseGenerator
+    interface IAuthorizeResponseGenerator
     {
-        Task<LoginInteractionResponse> ProcessLoginAsync(ValidatedAuthorizeRequest request, ClaimsPrincipal user);
-        Task<LoginInteractionResponse> ProcessClientLoginAsync(ValidatedAuthorizeRequest request);
-        Task<ConsentInteractionResponse> ProcessConsentAsync(ValidatedAuthorizeRequest request, UserConsentMessage consent = null);
+        Task<AuthorizeResponse> CreateResponseAsync(ValidatedAuthorizeRequest request);
     }
 }

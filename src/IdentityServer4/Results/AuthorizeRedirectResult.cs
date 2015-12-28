@@ -9,7 +9,7 @@ using IdentityServer4.Core.Extensions;
 
 namespace IdentityServer4.Core.Results
 {
-    public class AuthorizeRedirectResult : AuthorizeResult
+    class AuthorizeRedirectResult : AuthorizeResult
     {
         private readonly AuthorizeResponse _response;
 
@@ -18,7 +18,7 @@ namespace IdentityServer4.Core.Results
             _response = response;
         }
 
-        public static string BuildUri(AuthorizeResponse response)
+        internal static string BuildUri(AuthorizeResponse response)
         {
             var uri = response.RedirectUri;
             var query = response.ToNameValueCollection().ToQueryString();

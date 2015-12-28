@@ -229,95 +229,95 @@ namespace IdentityServer4.Core.ResponseHandling
             return Task.FromResult(new LoginInteractionResponse());
         }
 
-        //public async Task<ConsentInteractionResponse> ProcessConsentAsync(ValidatedAuthorizeRequest request, UserConsent consent = null)
-        //{
-        //    if (request == null) throw new ArgumentNullException("request");
+        public async Task<ConsentInteractionResponse> ProcessConsentAsync(ValidatedAuthorizeRequest request, UserConsentMessage consent = null)
+        {
+            if (request == null) throw new ArgumentNullException("request");
 
-        //    if (request.PromptMode != null &&
-        //        request.PromptMode != Constants.PromptModes.None &&
-        //        request.PromptMode != Constants.PromptModes.Consent)
-        //    {
-        //        throw new ArgumentException("Invalid PromptMode");
-        //    }
+            if (request.PromptMode != null &&
+                request.PromptMode != Constants.PromptModes.None &&
+                request.PromptMode != Constants.PromptModes.Consent)
+            {
+                throw new ArgumentException("Invalid PromptMode");
+            }
 
-        //    var consentRequired = await _consent.RequiresConsentAsync(request.Client, request.Subject, request.RequestedScopes);
+            var consentRequired = await _consent.RequiresConsentAsync(request.Client, request.Subject, request.RequestedScopes);
 
-        //    if (consentRequired && request.PromptMode == Constants.PromptModes.None)
-        //    {
-        //        _logger.LogInformation("Prompt=none requested, but consent is required.");
+            if (consentRequired && request.PromptMode == Constants.PromptModes.None)
+            {
+                _logger.LogInformation("Prompt=none requested, but consent is required.");
 
-        //        return new ConsentInteractionResponse
-        //        {
-        //            Error = new AuthorizeError
-        //            {
-        //                ErrorType = ErrorTypes.Client,
-        //                Error = Constants.AuthorizeErrors.InteractionRequired,
-        //                ResponseMode = request.ResponseMode,
-        //                ErrorUri = request.RedirectUri,
-        //                State = request.State
-        //            }
-        //        };
-        //    }
+                return new ConsentInteractionResponse
+                {
+                    Error = new AuthorizeError
+                    {
+                        ErrorType = ErrorTypes.Client,
+                        Error = Constants.AuthorizeErrors.InteractionRequired,
+                        ResponseMode = request.ResponseMode,
+                        ErrorUri = request.RedirectUri,
+                        State = request.State
+                    }
+                };
+            }
 
-        //    if (request.PromptMode == Constants.PromptModes.Consent || consentRequired)
-        //    {
-        //        var response = new ConsentInteractionResponse();
+            if (request.PromptMode == Constants.PromptModes.Consent || consentRequired)
+            {
+                var response = new ConsentInteractionResponse();
 
-        //        // did user provide consent
-        //        if (consent == null)
-        //        {
-        //            // user was not yet shown conset screen
-        //            response.IsConsent = true;
-        //        }
-        //        else
-        //        {
-        //            request.WasConsentShown = true;
+                // did user provide consent
+                if (consent == null)
+                {
+                    // user was not yet shown conset screen
+                    response.IsConsent = true;
+                }
+                else
+                {
+                    request.WasConsentShown = true;
 
-        //            // user was shown consent -- did they say yes or no
-        //            if (consent.WasConsentGranted == false)
-        //            {
-        //                // no need to show consent screen again
-        //                // build access denied error to return to client
-        //                response.Error = new AuthorizeError
-        //                {
-        //                    ErrorType = ErrorTypes.Client,
-        //                    Error = Constants.AuthorizeErrors.AccessDenied,
-        //                    ResponseMode = request.ResponseMode,
-        //                    ErrorUri = request.RedirectUri,
-        //                    State = request.State
-        //                };
-        //            }
-        //            else
-        //            {
-        //                // they said yes, set scopes they chose
-        //                request.ValidatedScopes.SetConsentedScopes(consent.ScopedConsented);
+                    // user was shown consent -- did they say yes or no
+                    if (consent.Granted == false)
+                    {
+                        // no need to show consent screen again
+                        // build access denied error to return to client
+                        response.Error = new AuthorizeError
+                        {
+                            ErrorType = ErrorTypes.Client,
+                            Error = Constants.AuthorizeErrors.AccessDenied,
+                            ResponseMode = request.ResponseMode,
+                            ErrorUri = request.RedirectUri,
+                            State = request.State
+                        };
+                    }
+                    else
+                    {
+                        // they said yes, set scopes they chose
+                        request.ValidatedScopes.SetConsentedScopes(consent.ScopesConsented);
 
-        //                if (!request.ValidatedScopes.GrantedScopes.Any())
-        //                {
-        //                    // they said yes, but didn't pick any scopes
-        //                    // show consent again and provide error message
-        //                    response.IsConsent = true;
-        //                    response.ConsentError = _localizationService.GetMessage(MessageIds.MustSelectAtLeastOnePermission);
-        //                }
-        //                else if (request.Client.AllowRememberConsent)
-        //                {
-        //                    // remember consent
-        //                    var scopes = Enumerable.Empty<string>();
-        //                    if (consent.RememberConsent)
-        //                    {
-        //                        // remember what user actually selected
-        //                        scopes = request.ValidatedScopes.GrantedScopes.Select(x => x.Name);
-        //                    }
+                        if (!request.ValidatedScopes.GrantedScopes.Any())
+                        {
+                            // they said yes, but didn't pick any scopes
+                            // show consent again and provide error message
+                            response.IsConsent = true;
+                            response.ConsentError = _localizationService.GetMessage(nameof(Messages.MustSelectAtLeastOnePermission));
+                        }
+                        else if (request.Client.AllowRememberConsent)
+                        {
+                            // remember consent
+                            var scopes = Enumerable.Empty<string>();
+                            if (consent.RememberConsent)
+                            {
+                                // remember what user actually selected
+                                scopes = request.ValidatedScopes.GrantedScopes.Select(x => x.Name);
+                            }
 
-        //                    await _consent.UpdateConsentAsync(request.Client, request.Subject, scopes);
-        //                }
-        //            }
-        //        }
+                            await _consent.UpdateConsentAsync(request.Client, request.Subject, scopes);
+                        }
+                    }
+                }
 
-        //        return response;
-        //    }
+                return response;
+            }
 
-        //    return new ConsentInteractionResponse();
-        //}
+            return new ConsentInteractionResponse();
+        }
     }
 }

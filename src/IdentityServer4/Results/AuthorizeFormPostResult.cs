@@ -10,7 +10,7 @@ using Microsoft.Extensions.WebEncoders;
 
 namespace IdentityServer4.Core.Results
 {
-    public class AuthorizeFormPostResult : AuthorizeResult
+    class AuthorizeFormPostResult : AuthorizeResult
     {
         private readonly AuthorizeResponse _response;
         private readonly IHtmlEncoder _encoder;
@@ -21,7 +21,7 @@ namespace IdentityServer4.Core.Results
             _encoder = encoder;
         }
 
-        public static string BuildFormBody(AuthorizeResponse response, IHtmlEncoder encoder)
+        internal static string BuildFormBody(AuthorizeResponse response, IHtmlEncoder encoder)
         {
             return response.ToNameValueCollection().ToFormPost(encoder);
         }

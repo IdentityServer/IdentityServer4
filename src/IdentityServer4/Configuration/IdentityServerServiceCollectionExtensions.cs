@@ -36,7 +36,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddInMemoryTransientStores();
             services.AddCoreServices();
-            
+            services.AddHostServices();
+
             return new IdentityServerBuilder(services);
         }
 
@@ -95,6 +96,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<UserInfoResponseGenerator>();
             services.TryAddTransient<IntrospectionResponseGenerator>();
             services.TryAddTransient<IAuthorizeInteractionResponseGenerator, AuthorizeInteractionResponseGenerator>();
+            services.TryAddTransient<IAuthorizeResponseGenerator, AuthorizeResponseGenerator>();
 
             return services;
         }
@@ -141,6 +143,13 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<ICustomTokenValidator, DefaultCustomTokenValidator>();
             services.TryAddTransient<ILocalizationService, DefaultLocalizationService>();
             services.TryAddTransient<IConsentService, DefaultConsentService>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddHostServices(this IServiceCollection services)
+        {
+            services.TryAddTransient<ClientListCookie>();
 
             return services;
         }

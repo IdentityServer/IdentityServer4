@@ -18,6 +18,7 @@ using IdentityServer4.Core.Events;
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.ViewModels;
 using Microsoft.Extensions.WebEncoders;
+using IdentityServer4.Core.Resources;
 
 namespace IdentityServer4.Core.Endpoints
 {
@@ -26,27 +27,33 @@ namespace IdentityServer4.Core.Endpoints
         private readonly IEventService _events;
         private readonly ILogger _logger;
         private readonly IdentityServerContext _context;
+        private readonly IAuthorizeResponseGenerator _responseGenerator;
         private readonly IAuthorizeRequestValidator _validator;
         private readonly IAuthorizeInteractionResponseGenerator _interactionGenerator;
         private readonly ILocalizationService _localizationService;
         private readonly IHtmlEncoder _encoder;
+        private readonly ClientListCookie _clientListCookie;
 
         public AuthorizeEndpoint(
             IEventService events, 
             ILogger<AuthorizeEndpoint> logger,
             IdentityServerContext context,
+            IAuthorizeResponseGenerator responseGenerator,
             IAuthorizeRequestValidator validator,
             IAuthorizeInteractionResponseGenerator interactionGenerator,
             ILocalizationService localizationService,
-            IHtmlEncoder encoder)
+            IHtmlEncoder encoder,
+            ClientListCookie clientListCookie)
         {
             _events = events;
             _logger = logger;
             _context = context;
+            _responseGenerator = responseGenerator;
             _validator = validator;
             _interactionGenerator = interactionGenerator;
             _localizationService = localizationService;
             _encoder = encoder;
+            _clientListCookie = clientListCookie;
         }
 
         public async Task<IResult> ProcessAsync(HttpContext context)
@@ -60,14 +67,41 @@ namespace IdentityServer4.Core.Endpoints
 
             var values = context.Request.Query.AsNameValueCollection();
             var user = await _context.GetIdentityServerUserAsync();
-            var result = await ProcessRequestAsync(values, user);
+            var result = await ProcessAuthorizeRequestAsync(values, user);
 
             _logger.LogInformation("End Authorize Request. Result type: {0}", result?.GetType().ToString() ?? "-none-");
 
             return result;
         }
 
-        internal async Task<IResult> ProcessRequestAsync(NameValueCollection parameters, ClaimsPrincipal user)
+        //public async Task<IResult> AuthorizePostConsentAsync(HttpContext context)
+        //{
+        //    if (context.Request.Method != "GET")
+        //    {
+        //        return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
+        //    }
+
+        //    _logger.LogInformation("Start Authorize Request (after consent)");
+
+        //    var values = context.Request.Query.AsNameValueCollection();
+        //    var consentId = values["consentId"];
+        //    if (consentId.IsMissing())
+        //    {
+        //        _logger.LogError("Consent Id parameter is missing");
+        //        return await AuthorizeErrorAsync(ErrorTypes.User, _localizationService.GetMessage(nameof(Messages.UnexpectedError)), null);
+        //    }
+
+        //    var consent = 
+
+        //    var user = await _context.GetIdentityServerUserAsync();
+        //    var result = await ProcessAuthorizeRequestAsync(values, user);
+
+        //    _logger.LogInformation("End Authorize Request. Result type: {0}", result?.GetType().ToString() ?? "-none-");
+
+        //    return result;
+        //}
+
+        internal async Task<IResult> ProcessAuthorizeRequestAsync(NameValueCollection parameters, ClaimsPrincipal user)
         {
             if (user != null)
             {
@@ -118,8 +152,7 @@ namespace IdentityServer4.Core.Endpoints
                 return RedirectToLogin(loginInteraction.SignInMessage, request.Raw);
             }
 
-            //var consentInteraction = await _interactionGenerator.ProcessConsentAsync(request, consent);
-
+            //var consentInteraction = await _interactionGenerator.ProcessConsentAsync(request, null);
             //if (consentInteraction.IsError)
             //{
             //    return await this.AuthorizeErrorAsync(
@@ -137,6 +170,42 @@ namespace IdentityServer4.Core.Endpoints
             //return await CreateAuthorizeResponseAsync(request);
 
             return null;
+        }
+
+        private async Task<IResult> CreateAuthorizeResponseAsync(ValidatedAuthorizeRequest request)
+        {
+            var response = await _responseGenerator.CreateResponseAsync(request);
+
+            if (request.ResponseMode == Constants.ResponseModes.Query ||
+                request.ResponseMode == Constants.ResponseModes.Fragment)
+            {
+                _logger.LogDebug("Adding client {0} to client list cookie for subject {1}", request.ClientId, request.Subject.GetSubjectId());
+                _clientListCookie.AddClient(request.ClientId);
+
+                await RaiseSuccessEventAsync();
+                return new AuthorizeRedirectResult(response);
+            }
+
+            if (request.ResponseMode == Constants.ResponseModes.FormPost)
+            {
+                _logger.LogDebug("Adding client {0} to client list cookie for subject {1}", request.ClientId, request.Subject.GetSubjectId());
+                _clientListCookie.AddClient(request.ClientId);
+
+                await RaiseSuccessEventAsync();
+                return new AuthorizeFormPostResult(response, _encoder);
+            }
+
+            _logger.LogError("Unsupported response mode. Aborting.");
+            throw new InvalidOperationException("Unsupported response mode");
+        }
+
+        IResult RedirectToLogin(SignInMessage message, NameValueCollection parameters)
+        {
+            var url = _context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.RoutePaths.Oidc.Authorize;
+            url.AddQueryString(parameters.ToQueryString());
+            message.ReturnUrl = url;
+
+            return new LoginRedirectResult(message);
         }
 
         async Task<IResult> AuthorizeErrorAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request)
@@ -184,6 +253,11 @@ namespace IdentityServer4.Core.Endpoints
             return new ErrorPageResult(errorModel);
         }
 
+        private async Task RaiseSuccessEventAsync()
+        {
+            await _events.RaiseSuccessfulEndpointEventAsync(EventConstants.EndpointNames.Authorize);
+        }
+
         private async Task RaiseFailureEventAsync(string error)
         {
             await _events.RaiseFailureEndpointEventAsync(EventConstants.EndpointNames.Authorize, error);
@@ -197,15 +271,6 @@ namespace IdentityServer4.Core.Endpoints
                 msg = error;
             }
             return msg;
-        }
-
-        IResult RedirectToLogin(SignInMessage message, NameValueCollection parameters)
-        {
-            var url = _context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.RoutePaths.Oidc.Authorize;
-            url.AddQueryString(parameters.ToQueryString());
-            message.ReturnUrl = url;
-            
-            return new LoginRedirectResult(message);
         }
     }
 }
