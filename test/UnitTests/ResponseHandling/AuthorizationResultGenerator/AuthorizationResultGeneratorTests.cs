@@ -12,13 +12,13 @@ using Xunit;
 
 namespace UnitTests.ResponseHandling
 {
-    public class PageResultGeneratorTests
+    public class AuthorizationResultGeneratorTests
     {
         const string Category = "Authorize Endpoint";
 
-        PageResultGenerator _subject;
+        AuthorizationResultGenerator _subject;
 
-        public PageResultGeneratorTests()
+        public AuthorizationResultGeneratorTests()
         {
             Init();
         }
@@ -31,7 +31,7 @@ namespace UnitTests.ResponseHandling
 
             _clientListCookie = new ClientListCookie(_context);
 
-            _subject = new PageResultGenerator(
+            _subject = new AuthorizationResultGenerator(
                 _fakeLogger,
                 _context,
                 _stubLocalizationService,
@@ -39,7 +39,7 @@ namespace UnitTests.ResponseHandling
                 _clientListCookie);
         }
 
-        ILogger<PageResultGenerator> _fakeLogger = new FakeLogger<PageResultGenerator>();
+        ILogger<AuthorizationResultGenerator> _fakeLogger = new FakeLogger<AuthorizationResultGenerator>();
         IdentityServerOptions _options = new IdentityServerOptions();
         DefaultHttpContext _httpContext = new DefaultHttpContext();
         IdentityServerContext _context;

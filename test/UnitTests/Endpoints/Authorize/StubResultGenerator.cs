@@ -9,7 +9,7 @@ using IdentityServer4.Core.Validation;
 
 namespace UnitTests.Endpoints.Authorize
 {
-    class StubResultGenerator : IResultGenerator
+    class StubResultGenerator : IAuthorizationResultGenerator
     {
         public IResult AuthorizeResult { get; set; } = new AuthorizeRedirectResult(null);
         public IResult ConsentResult { get; set; } = new ConsentPageResult();

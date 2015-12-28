@@ -14,24 +14,16 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.ResponseHandling
 {
-    interface IResultGenerator
+    class AuthorizationResultGenerator : IAuthorizationResultGenerator
     {
-        Task<IResult> CreateErrorResultAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request);
-        Task<IResult> CreateLoginResultAsync(SignInMessage message);
-        Task<IResult> CreateConsentResultAsync();
-        Task<IResult> CreateAuthorizeResultAsync(AuthorizeResponse response);
-    }
-
-    class PageResultGenerator : IResultGenerator
-    {
-        private readonly ILogger<PageResultGenerator> _logger;
+        private readonly ILogger<AuthorizationResultGenerator> _logger;
         private readonly IdentityServerContext _context;
         private readonly ILocalizationService _localizationService;
         private readonly IHtmlEncoder _encoder;
         private readonly ClientListCookie _clientListCookie;
 
-        public PageResultGenerator(
-            ILogger<PageResultGenerator> logger,
+        public AuthorizationResultGenerator(
+            ILogger<AuthorizationResultGenerator> logger,
             IdentityServerContext context,
             ILocalizationService localizationService,
             IHtmlEncoder encoder,
