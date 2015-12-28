@@ -106,14 +106,20 @@ namespace IdentityServer4.Core.ResponseHandling
                     RedirectUri = request.RedirectUri
                 };
 
-                if (request.ResponseMode == Constants.ResponseModes.FormPost)
+                if (request.ResponseMode == Constants.ResponseModes.Query ||
+                         request.ResponseMode == Constants.ResponseModes.Fragment)
+                {
+                    errorModel.ReturnInfo.Uri = request.RedirectUri = AuthorizeRedirectResult.BuildUri(response);
+                }
+                else if (request.ResponseMode == Constants.ResponseModes.FormPost)
                 {
                     errorModel.ReturnInfo.Uri = request.RedirectUri;
                     errorModel.ReturnInfo.PostBody = AuthorizeFormPostResult.BuildFormBody(response, _encoder);
                 }
                 else
                 {
-                    errorModel.ReturnInfo.Uri = request.RedirectUri = AuthorizeRedirectResult.BuildUri(response);
+                    _logger.LogError("Unsupported response mode.");
+                    throw new InvalidOperationException("Unsupported response mode");
                 }
             }
 
@@ -146,7 +152,7 @@ namespace IdentityServer4.Core.ResponseHandling
                 return Task.FromResult<IResult>(new AuthorizeFormPostResult(response, _encoder));
             }
 
-            _logger.LogError("Unsupported response mode. Aborting.");
+            _logger.LogError("Unsupported response mode.");
             throw new InvalidOperationException("Unsupported response mode");
         }
     }

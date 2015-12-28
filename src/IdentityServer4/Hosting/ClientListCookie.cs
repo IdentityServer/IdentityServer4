@@ -44,7 +44,7 @@ namespace IdentityServer4.Core.Hosting
             SetClients(null);
         }
 
-        public void AddClient(string clientId)
+        public virtual void AddClient(string clientId)
         {
             if (_context.Options.Endpoints.EnableEndSessionEndpoint)
             {
