@@ -67,7 +67,7 @@ namespace IdentityServer4.Core.Endpoints
 
             var values = context.Request.Query.AsNameValueCollection();
             var user = await _context.GetIdentityServerUserAsync();
-            var result = await ProcessAuthorizeRequestAsync(values, user);
+            var result = await ProcessAuthorizeRequestAsync(values, user, null);
 
             _logger.LogInformation("End Authorize Request. Result type: {0}", result?.GetType().ToString() ?? "-none-");
 
@@ -101,7 +101,7 @@ namespace IdentityServer4.Core.Endpoints
         //    return result;
         //}
 
-        internal async Task<IResult> ProcessAuthorizeRequestAsync(NameValueCollection parameters, ClaimsPrincipal user)
+        internal async Task<IResult> ProcessAuthorizeRequestAsync(NameValueCollection parameters, ClaimsPrincipal user, UserConsentResponseMessage consent)
         {
             if (user != null)
             {
@@ -152,22 +152,19 @@ namespace IdentityServer4.Core.Endpoints
                 return RedirectToLogin(loginInteraction.SignInMessage, request.Raw);
             }
 
-            //var consentInteraction = await _interactionGenerator.ProcessConsentAsync(request, null);
-            //if (consentInteraction.IsError)
-            //{
-            //    return await this.AuthorizeErrorAsync(
-            //        consentInteraction.Error.ErrorType,
-            //        consentInteraction.Error.Error,
-            //        request);
-            //}
-
-            //if (consentInteraction.IsConsent)
-            //{
-            //    Logger.Info("Showing consent screen");
-            //    return CreateConsentResult(request, consent, request.Raw, consentInteraction.ConsentError);
-            //}
-
-            //return await CreateAuthorizeResponseAsync(request);
+            var consentInteraction = await _interactionGenerator.ProcessConsentAsync(request, consent);
+            if (consentInteraction.IsError)
+            {
+                return await AuthorizeErrorAsync(
+                    consentInteraction.Error.ErrorType,
+                    consentInteraction.Error.Error,
+                    request);
+            }
+            if (consentInteraction.IsConsent)
+            {
+                _logger.LogInformation("Showing consent screen");
+                return CreateConsentResult(request, consent, request.Raw, consentInteraction.ConsentError);
+            }
 
             return await CreateAuthorizeResponseAsync(request);
         }
@@ -205,7 +202,42 @@ namespace IdentityServer4.Core.Endpoints
             url.AddQueryString(parameters.ToQueryString());
             message.ReturnUrl = url;
 
-            return new LoginRedirectResult(message);
+            return new LoginPageResult(message);
+        }
+
+        private IResult CreateConsentResult(ValidatedAuthorizeRequest validatedRequest, UserConsentResponseMessage consent, NameValueCollection requestParameters, string errorMessage)
+        {
+            return new ConsentPageResult();
+
+            //string loginWithDifferentAccountUrl = null;
+            //if (validatedRequest.HasIdpAcrValue() == false)
+            //{
+            //    loginWithDifferentAccountUrl = Url.Route(Constants.RouteNames.Oidc.SwitchUser, null)
+            //        .AddQueryString(requestParameters.ToQueryString());
+            //}
+
+            //var env = Request.GetOwinEnvironment();
+            //var consentModel = new ConsentViewModel
+            //{
+            //    RequestId = env.GetRequestId(),
+            //    SiteName = _options.SiteName,
+            //    SiteUrl = env.GetIdentityServerBaseUrl(),
+            //    ErrorMessage = errorMessage,
+            //    CurrentUser = env.GetCurrentUserDisplayName(),
+            //    LogoutUrl = env.GetIdentityServerLogoutUrl(),
+            //    ClientName = validatedRequest.Client.ClientName,
+            //    ClientUrl = validatedRequest.Client.ClientUri,
+            //    ClientLogoUrl = validatedRequest.Client.LogoUri,
+            //    IdentityScopes = validatedRequest.GetIdentityScopes(this._localizationService),
+            //    ResourceScopes = validatedRequest.GetResourceScopes(this._localizationService),
+            //    AllowRememberConsent = validatedRequest.Client.AllowRememberConsent,
+            //    RememberConsent = consent == null || consent.RememberConsent,
+            //    LoginWithDifferentAccountUrl = loginWithDifferentAccountUrl,
+            //    ConsentUrl = Url.Route(Constants.RouteNames.Oidc.Consent, null).AddQueryString(requestParameters.ToQueryString()),
+            //    AntiForgery = _antiForgeryToken.GetAntiForgeryToken()
+            //};
+
+            //return new ConsentActionResult(_viewService, consentModel, validatedRequest);
         }
 
         async Task<IResult> AuthorizeErrorAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request)

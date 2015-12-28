@@ -36,6 +36,6 @@ namespace IdentityServer4.Core.ResponseHandling
     {
         Task<LoginInteractionResponse> ProcessLoginAsync(ValidatedAuthorizeRequest request, ClaimsPrincipal user);
         Task<LoginInteractionResponse> ProcessClientLoginAsync(ValidatedAuthorizeRequest request);
-        Task<ConsentInteractionResponse> ProcessConsentAsync(ValidatedAuthorizeRequest request, UserConsentMessage consent = null);
+        Task<ConsentInteractionResponse> ProcessConsentAsync(ValidatedAuthorizeRequest request, UserConsentResponseMessage consent = null);
     }
 }

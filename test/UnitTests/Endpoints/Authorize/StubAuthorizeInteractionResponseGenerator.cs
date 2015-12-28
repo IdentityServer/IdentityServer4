@@ -25,7 +25,7 @@ namespace UnitTests.Endpoints.Authorize
             return Task.FromResult(ClientLoginResponse);
         }
 
-        public Task<ConsentInteractionResponse> ProcessConsentAsync(ValidatedAuthorizeRequest request, UserConsentMessage consent = null)
+        public Task<ConsentInteractionResponse> ProcessConsentAsync(ValidatedAuthorizeRequest request, UserConsentResponseMessage consent = null)
         {
             return Task.FromResult(ConsentResponse);
         }

@@ -15,6 +15,7 @@
  */
 
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 
 namespace IdentityServer4.Core.Models
@@ -22,7 +23,7 @@ namespace IdentityServer4.Core.Models
     /// <summary>
     /// Models the data submitted from the conset page.
     /// </summary>
-    public class UserConsentMessage : Message
+    public class UserConsentResponseMessage : Message
     {
         /// <summary>
         /// Gets if consent was granted.
@@ -39,14 +40,6 @@ namespace IdentityServer4.Core.Models
         }
 
         /// <summary>
-        /// Gets or sets the scopes requested.
-        /// </summary>
-        /// <value>
-        /// The scopes requested.
-        /// </value>
-        public string[] ScopesRequested { get; set; }
-        
-        /// <summary>
         /// Gets or sets the scopes consented to.
         /// </summary>
         /// <value>
@@ -61,5 +54,23 @@ namespace IdentityServer4.Core.Models
         ///   <c>true</c> if consent is to be remembered; otherwise, <c>false</c>.
         /// </value>
         public bool RememberConsent { get; set; }
+
+        public NameValueCollection RequestParameters { get; set; }
+    }
+
+    /// <summary>
+    /// Models the data submitted from the conset page.
+    /// </summary>
+    public class UserConsentRequestMessage : Message
+    {
+        /// <summary>
+        /// Gets or sets the scopes requested.
+        /// </summary>
+        /// <value>
+        /// The scopes requested.
+        /// </value>
+        public string[] ScopesRequested { get; set; }
+
+        public NameValueCollection RequestParameters { get; set; }
     }
 }

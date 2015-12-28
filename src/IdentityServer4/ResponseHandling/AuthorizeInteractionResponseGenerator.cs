@@ -229,7 +229,7 @@ namespace IdentityServer4.Core.ResponseHandling
             return Task.FromResult(new LoginInteractionResponse());
         }
 
-        public async Task<ConsentInteractionResponse> ProcessConsentAsync(ValidatedAuthorizeRequest request, UserConsentMessage consent = null)
+        public async Task<ConsentInteractionResponse> ProcessConsentAsync(ValidatedAuthorizeRequest request, UserConsentResponseMessage consent = null)
         {
             if (request == null) throw new ArgumentNullException("request");
 

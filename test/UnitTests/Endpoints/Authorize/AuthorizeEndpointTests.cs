@@ -121,7 +121,7 @@ namespace UnitTests.Endpoints.Authorize
             _stubLocalizationService.Result = "foo error message";
             _context.SetRequestId("56789");
 
-            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user);
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
             result.Should().BeOfType<ErrorPageResult>();
             var error_result = (ErrorPageResult)result;
@@ -136,7 +136,7 @@ namespace UnitTests.Endpoints.Authorize
         {
             _stubAuthorizeRequestValidator.Result.IsError = true;
 
-            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user);
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
             result.Should().BeOfType<ErrorPageResult>();
         }
@@ -157,7 +157,7 @@ namespace UnitTests.Endpoints.Authorize
                 ClientName = "Foo Client"
             };
 
-            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user);
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
             var error_result = (ErrorPageResult)result;
             error_result.Model.ReturnInfo.Should().NotBeNull();
@@ -177,7 +177,7 @@ namespace UnitTests.Endpoints.Authorize
             _stubAuthorizeRequestValidator.Result.ErrorType = ErrorTypes.Client;
             _stubAuthorizeRequestValidator.Result.Error = "some error";
 
-            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user);
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
             var evt = _mockEventService.AssertEventWasRaised<Event<EndpointDetail>>();
             evt.EventType.Should().Be(EventTypes.Failure);
@@ -196,7 +196,7 @@ namespace UnitTests.Endpoints.Authorize
                 Error = "some error",
             };
 
-            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user);
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
             result.Should().BeOfType<ErrorPageResult>();
             var error_result = (ErrorPageResult)result;
@@ -211,10 +211,10 @@ namespace UnitTests.Endpoints.Authorize
             var msg = new SignInMessage { };
             _stubInteractionGenerator.LoginResponse.SignInMessage = msg;
 
-            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user);
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
-            result.Should().BeOfType<LoginRedirectResult>();
-            var redirect = (LoginRedirectResult)result;
+            result.Should().BeOfType<LoginPageResult>();
+            var redirect = (LoginPageResult)result;
             redirect.SignInMessage.Should().BeSameAs(msg);
         }
 
@@ -225,22 +225,50 @@ namespace UnitTests.Endpoints.Authorize
             var msg = new SignInMessage { };
             _stubInteractionGenerator.ClientLoginResponse.SignInMessage = msg;
 
-            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user);
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
-            result.Should().BeOfType<LoginRedirectResult>();
-            var redirect = (LoginRedirectResult)result;
+            result.Should().BeOfType<LoginPageResult>();
+            var redirect = (LoginPageResult)result;
             redirect.SignInMessage.Should().BeSameAs(msg);
         }
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task successful_authorization_request_should_generate_authorization_result()
+        public async Task interaction_generator_consent_produces_error_should_show_error_page()
+        {
+            _stubInteractionGenerator.ConsentResponse.Error = new AuthorizeError
+            {
+                Error = "foo",
+                ErrorType = ErrorTypes.User,
+            };
+
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
+
+            result.Should().BeOfType<ErrorPageResult>();
+            var error_page = (ErrorPageResult)result;
+            error_page.Model.ErrorCode.Should().Be("foo");
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task interaction_generator_consent_produces_consent_should_show_consent_page()
+        {
+            _stubInteractionGenerator.ConsentResponse.IsConsent = true;
+
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
+
+            result.Should().BeOfType<ConsentPageResult>();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task successful_authorization_request_should_generate_authorize_result()
         {
             _stubResponseGenerator.Response.IdentityToken = "foo";
             _stubResponseGenerator.Response.AccessToken = "bar";
             _stubResponseGenerator.Response.State = "789";
 
-            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user);
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
             result.Should().BeAssignableTo<AuthorizeResult>();
             var authorize_result = (AuthorizeResult)result;
@@ -251,43 +279,43 @@ namespace UnitTests.Endpoints.Authorize
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task response_mode_fragment_should_generate_authorization_redirect_result()
+        public async Task response_mode_fragment_should_generate_authorize_redirect_result()
         {
             _validatedAuthorizeRequest.ResponseMode = "fragment";
 
-            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user);
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
             result.Should().BeOfType<AuthorizeRedirectResult>();
         }
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task response_mode_query_should_generate_authorization_redirect_result()
+        public async Task response_mode_query_should_generate_authorize_redirect_result()
         {
             _validatedAuthorizeRequest.ResponseMode = "query";
 
-            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user);
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
             result.Should().BeOfType<AuthorizeRedirectResult>();
         }
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task response_mode_formpost_should_generate_authorization_redirect_result()
+        public async Task response_mode_formpost_should_generate_authorize_redirect_result()
         {
             _validatedAuthorizeRequest.ResponseMode = "form_post";
 
-            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user);
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
             result.Should().BeOfType<AuthorizeFormPostResult>();
         }
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task unknown_response_mode_should_throw()
+        public async Task unknown_response_mode_on_validated_authorize_request_should_throw()
         {
             _validatedAuthorizeRequest.ResponseMode = "foo";
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await _subject.ProcessAuthorizeRequestAsync(_params, _user));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await _subject.ProcessAuthorizeRequestAsync(_params, _user, null));
         }
     }
 }

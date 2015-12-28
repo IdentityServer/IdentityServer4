@@ -9,11 +9,11 @@ using IdentityServer4.Core.Models;
 
 namespace IdentityServer4.Core.Results
 {
-    public class LoginRedirectResult : IResult
+    public class LoginPageResult : IResult
     {
         public SignInMessage SignInMessage { get; private set; }
 
-        public LoginRedirectResult(SignInMessage message)
+        public LoginPageResult(SignInMessage message)
         {
             SignInMessage = message;
         }
