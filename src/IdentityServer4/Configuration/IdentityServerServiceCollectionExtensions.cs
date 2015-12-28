@@ -97,6 +97,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<IntrospectionResponseGenerator>();
             services.TryAddTransient<IAuthorizeInteractionResponseGenerator, AuthorizeInteractionResponseGenerator>();
             services.TryAddTransient<IAuthorizeResponseGenerator, AuthorizeResponseGenerator>();
+            services.TryAddTransient<IResultGenerator, PageResultGenerator>();
 
             return services;
         }

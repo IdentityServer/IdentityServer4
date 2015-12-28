@@ -70,18 +70,14 @@ namespace UnitTests.Endpoints.Authorize
             _stubAuthorizeRequestValidator.Result.ValidatedRequest = _validatedAuthorizeRequest;
             _stubResponseGenerator.Response.Request = _validatedAuthorizeRequest;
 
-            _clientListCookie = new ClientListCookie(_context);
-
             _subject = new AuthorizeEndpoint(
-                _mockEventService, 
-                _fakeLogger, 
+                _mockEventService,
+                _fakeLogger,
                 _context,
                 _stubResponseGenerator,
                 _stubAuthorizeRequestValidator,
                 _stubInteractionGenerator,
-                _stubLocalizationService,
-                new FakeHtmlEncoder(),
-                _clientListCookie);
+                _stubResultGenerator);
         }
 
         NameValueCollection _params = new NameValueCollection();
@@ -89,21 +85,21 @@ namespace UnitTests.Endpoints.Authorize
         IdentityServerContext _context;
         IdentityServerOptions _options = new IdentityServerOptions();
         DefaultHttpContext _httpContext = new DefaultHttpContext();
-        ClientListCookie _clientListCookie;
         ValidatedAuthorizeRequest _validatedAuthorizeRequest;
 
         MockEventService _mockEventService = new MockEventService();
         ILogger<AuthorizeEndpoint> _fakeLogger = new FakeLogger<AuthorizeEndpoint>();
-        StubLocalizationService _stubLocalizationService = new StubLocalizationService();
         StubAuthorizeResponseGenerator _stubResponseGenerator = new StubAuthorizeResponseGenerator();
         StubAuthorizeRequestValidator _stubAuthorizeRequestValidator = new StubAuthorizeRequestValidator();
         StubAuthorizeInteractionResponseGenerator _stubInteractionGenerator = new StubAuthorizeInteractionResponseGenerator();
+        StubResultGenerator _stubResultGenerator = new StubResultGenerator();
 
         [Fact]
         [Trait("Category", Category)]
         public async Task post_to_entry_point_should_return_405()
         {
             _httpContext.Request.Method = "POST";
+
             var result = await _subject.ProcessAsync(_httpContext);
 
             var statusCode = result as StatusCodeResult;
@@ -113,26 +109,7 @@ namespace UnitTests.Endpoints.Authorize
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task authorize_request_validation_failure_with_user_error_should_display_error_page_with_error_view_model()
-        {
-            _stubAuthorizeRequestValidator.Result.IsError = true;
-            _stubAuthorizeRequestValidator.Result.ErrorType = ErrorTypes.User;
-            _stubAuthorizeRequestValidator.Result.Error = "foo";
-            _stubLocalizationService.Result = "foo error message";
-            _context.SetRequestId("56789");
-
-            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
-
-            result.Should().BeOfType<ErrorPageResult>();
-            var error_result = (ErrorPageResult)result;
-            error_result.Model.RequestId.Should().Be("56789");
-            error_result.Model.ErrorCode.Should().Be("foo");
-            error_result.Model.ErrorMessage.Should().Be("foo error message");
-        }
-
-        [Fact]
-        [Trait("Category", Category)]
-        public async Task authorize_request_validation_failure_with_client_error_should_display_error_page()
+        public async Task authorize_request_validation_produces_error_should_display_error_page()
         {
             _stubAuthorizeRequestValidator.Result.IsError = true;
 
@@ -143,35 +120,7 @@ namespace UnitTests.Endpoints.Authorize
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task authorize_request_validation_failure_error_page_should_contain_return_info()
-        {
-            _stubAuthorizeRequestValidator.Result.IsError = true;
-            _stubAuthorizeRequestValidator.Result.ErrorType = ErrorTypes.Client;
-            _stubAuthorizeRequestValidator.Result.ValidatedRequest.RedirectUri = "http://client/callback";
-            _stubAuthorizeRequestValidator.Result.ValidatedRequest.State = "123";
-            _stubAuthorizeRequestValidator.Result.ValidatedRequest.ResponseMode = "fragment";
-            _stubAuthorizeRequestValidator.Result.ValidatedRequest.ClientId = "foo_client";
-            _stubAuthorizeRequestValidator.Result.ValidatedRequest.Client = new Client
-            {
-                ClientId = "foo_client",
-                ClientName = "Foo Client"
-            };
-
-            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
-
-            var error_result = (ErrorPageResult)result;
-            error_result.Model.ReturnInfo.Should().NotBeNull();
-            error_result.Model.ReturnInfo.ClientId.Should().Be("foo_client");
-            error_result.Model.ReturnInfo.ClientName.Should().Be("Foo Client");
-            var parts = error_result.Model.ReturnInfo.Uri.Split('#');
-            parts.Length.Should().Be(2);
-            parts[0].Should().Be("http://client/callback");
-            parts[1].Should().Contain("state=123");
-        }
-
-        [Fact]
-        [Trait("Category", Category)]
-        public async Task authorize_request_validation_failure_should_raise_failed_endpoint_event()
+        public async Task authorize_request_validation_produces_error_should_raise_failed_endpoint_event()
         {
             _stubAuthorizeRequestValidator.Result.IsError = true;
             _stubAuthorizeRequestValidator.Result.ErrorType = ErrorTypes.Client;
@@ -190,63 +139,78 @@ namespace UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task login_interaction_produces_error_should_show_error_page()
         {
-            _stubInteractionGenerator.LoginResponse.Error = new AuthorizeError
-            {
-                ErrorType = ErrorTypes.User,
-                Error = "some error",
-            };
+            _stubInteractionGenerator.LoginResponse.Error = new AuthorizeError { };
 
             var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
             result.Should().BeOfType<ErrorPageResult>();
-            var error_result = (ErrorPageResult)result;
-            error_result.Model.ReturnInfo.Should().BeNull();
-            error_result.Model.ErrorCode.Should().Be("some error");
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task login_interaction_produces_error_should_raise_failed_endpoint_event()
+        {
+            _stubInteractionGenerator.LoginResponse.Error = new AuthorizeError {
+                Error = "some_error",
+            };
+
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
+
+            var evt = _mockEventService.AssertEventWasRaised<Event<EndpointDetail>>();
+            evt.EventType.Should().Be(EventTypes.Failure);
+            evt.Id.Should().Be(EventConstants.Ids.EndpointFailure);
+            evt.Message.Should().Be("some_error");
+            evt.Details.EndpointName.Should().Be(EventConstants.EndpointNames.Authorize);
         }
 
         [Fact]
         [Trait("Category", Category)]
         public async Task login_interaction_produces_login_result_should_trigger_login()
         {
-            var msg = new SignInMessage { };
-            _stubInteractionGenerator.LoginResponse.SignInMessage = msg;
+            _stubInteractionGenerator.LoginResponse.SignInMessage = new SignInMessage { };
 
             var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
             result.Should().BeOfType<LoginPageResult>();
-            var redirect = (LoginPageResult)result;
-            redirect.SignInMessage.Should().BeSameAs(msg);
         }
 
         [Fact]
         [Trait("Category", Category)]
         public async Task client_login_interaction_produces_login_result_should_trigger_login()
         {
-            var msg = new SignInMessage { };
-            _stubInteractionGenerator.ClientLoginResponse.SignInMessage = msg;
+            _stubInteractionGenerator.ClientLoginResponse.SignInMessage = new SignInMessage { };
 
             var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
             result.Should().BeOfType<LoginPageResult>();
-            var redirect = (LoginPageResult)result;
-            redirect.SignInMessage.Should().BeSameAs(msg);
         }
 
         [Fact]
         [Trait("Category", Category)]
         public async Task interaction_generator_consent_produces_error_should_show_error_page()
         {
-            _stubInteractionGenerator.ConsentResponse.Error = new AuthorizeError
-            {
-                Error = "foo",
-                ErrorType = ErrorTypes.User,
-            };
+            _stubInteractionGenerator.ConsentResponse.Error = new AuthorizeError { };
 
             var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
             result.Should().BeOfType<ErrorPageResult>();
-            var error_page = (ErrorPageResult)result;
-            error_page.Model.ErrorCode.Should().Be("foo");
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task interaction_generator_consent_produces_error_should_raise_failed_endpoint_event()
+        {
+            _stubInteractionGenerator.ConsentResponse.Error = new AuthorizeError {
+                Error = "bar_error"
+            };
+
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
+
+            var evt = _mockEventService.AssertEventWasRaised<Event<EndpointDetail>>();
+            evt.EventType.Should().Be(EventTypes.Failure);
+            evt.Id.Should().Be(EventConstants.Ids.EndpointFailure);
+            evt.Message.Should().Be("bar_error");
+            evt.Details.EndpointName.Should().Be(EventConstants.EndpointNames.Authorize);
         }
 
         [Fact]
@@ -264,58 +228,9 @@ namespace UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task successful_authorization_request_should_generate_authorize_result()
         {
-            _stubResponseGenerator.Response.IdentityToken = "foo";
-            _stubResponseGenerator.Response.AccessToken = "bar";
-            _stubResponseGenerator.Response.State = "789";
-
             var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
             result.Should().BeAssignableTo<AuthorizeResult>();
-            var authorize_result = (AuthorizeResult)result;
-            authorize_result.Response.IdentityToken.Should().Be("foo");
-            authorize_result.Response.AccessToken.Should().Be("bar");
-            authorize_result.Response.State.Should().Be("789");
-        }
-
-        [Fact]
-        [Trait("Category", Category)]
-        public async Task response_mode_fragment_should_generate_authorize_redirect_result()
-        {
-            _validatedAuthorizeRequest.ResponseMode = "fragment";
-
-            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
-
-            result.Should().BeOfType<AuthorizeRedirectResult>();
-        }
-
-        [Fact]
-        [Trait("Category", Category)]
-        public async Task response_mode_query_should_generate_authorize_redirect_result()
-        {
-            _validatedAuthorizeRequest.ResponseMode = "query";
-
-            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
-
-            result.Should().BeOfType<AuthorizeRedirectResult>();
-        }
-
-        [Fact]
-        [Trait("Category", Category)]
-        public async Task response_mode_formpost_should_generate_authorize_redirect_result()
-        {
-            _validatedAuthorizeRequest.ResponseMode = "form_post";
-
-            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
-
-            result.Should().BeOfType<AuthorizeFormPostResult>();
-        }
-
-        [Fact]
-        [Trait("Category", Category)]
-        public async Task unknown_response_mode_on_validated_authorize_request_should_throw()
-        {
-            _validatedAuthorizeRequest.ResponseMode = "foo";
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await _subject.ProcessAuthorizeRequestAsync(_params, _user, null));
         }
     }
 }

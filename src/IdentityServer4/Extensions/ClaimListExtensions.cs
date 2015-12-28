@@ -70,7 +70,7 @@ namespace IdentityServer4.Core.Extensions
                 {
                     return JsonConvert.DeserializeObject(claim.Value);
                 }
-                catch (Exception ex)
+                catch (Exception /*ex*/)
                 {
                     // todo
                     //Logger.ErrorException("Exception while deserializing address claim", ex);
