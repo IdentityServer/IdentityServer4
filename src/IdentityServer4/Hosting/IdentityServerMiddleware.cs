@@ -21,11 +21,8 @@ namespace IdentityServer4.Core.Hosting
             _logger = logger;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, IEndpointRouter router, IdentityServerContext idSvrContext)
         {
-            var router = context.RequestServices.GetRequiredService<IEndpointRouter>();
-            var idSvrContext = context.RequestServices.GetRequiredService<IdentityServerContext>();
-
             var endpoint = router.Find(context);
             if (endpoint != null)
             {

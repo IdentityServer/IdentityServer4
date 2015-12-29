@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.Hosting
 {
-    interface IEndpointRouter
+    public interface IEndpointRouter
     {
         // TODO: does this need to be async?
         IEndpoint Find(HttpContext context);
