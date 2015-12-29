@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Extensions;
 using Microsoft.Extensions.WebEncoders;
+using IdentityServer4.Core.Hosting;
 
 namespace IdentityServer4.Core.Results
 {
@@ -43,9 +44,9 @@ namespace IdentityServer4.Core.Results
             return uri;
         }
 
-        public override Task ExecuteAsync(HttpContext context, ILogger logger)
+        public override Task ExecuteAsync(IdentityServerContext context)
         {
-            context.Response.Redirect(BuildUri(Response, _encoder));
+            context.HttpContext.Response.Redirect(BuildUri(Response, _encoder));
             return Task.FromResult(0);
         }
     }

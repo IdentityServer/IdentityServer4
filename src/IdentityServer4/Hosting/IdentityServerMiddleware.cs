@@ -13,28 +13,27 @@ namespace IdentityServer4.Core.Hosting
     public class IdentityServerMiddleware
     {
         private readonly ILogger _logger;
-        private readonly ILoggerFactory _loggerFactory;
         private readonly RequestDelegate _next;
 
-        public IdentityServerMiddleware(RequestDelegate next, ILoggerFactory loggerFactory)
+        public IdentityServerMiddleware(RequestDelegate next, ILogger<IdentityServerMiddleware> logger)
         {
             _next = next;
-            _logger = loggerFactory.CreateLogger<IdentityServerMiddleware>();
-            _loggerFactory = loggerFactory;
+            _logger = logger;
         }
 
         public async Task Invoke(HttpContext context)
         {
             var router = context.RequestServices.GetRequiredService<IEndpointRouter>();
+            var idSvrContext = context.RequestServices.GetRequiredService<IdentityServerContext>();
 
             var endpoint = router.Find(context);
             if (endpoint != null)
             {
-                var result = await endpoint.ProcessAsync(context);
+                var result = await endpoint.ProcessAsync(idSvrContext);
 
                 if (result != null)
                 {
-                    await result.ExecuteAsync(context, _loggerFactory.CreateLogger(result.GetType().FullName));
+                    await result.ExecuteAsync(idSvrContext);
                 }
 
                 // if we see the IPipelineResult marker, then we want to execute the next middleware

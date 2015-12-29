@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+using IdentityServer4.Core.Hosting;
 using IdentityServer4.Core.Models;
 using Microsoft.AspNet.Http;
 using Microsoft.Extensions.Logging;
@@ -21,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.Results
 {
-    internal class TokenResult : IResult
+    internal class TokenResult : IEndpointResult
     {
         public TokenResponse TokenResponse { get; set; }
 
@@ -30,7 +31,7 @@ namespace IdentityServer4.Core.Results
             TokenResponse = response;
         }
 
-        public async Task ExecuteAsync(HttpContext context, ILogger logger)
+        public async Task ExecuteAsync(IdentityServerContext context)
         {
             var dto = new TokenResponseDto
             {
@@ -41,9 +42,7 @@ namespace IdentityServer4.Core.Results
                 token_type = Constants.TokenTypes.Bearer
             };
 
-            await context.Response.WriteJsonAsync(dto);
-
-            logger.LogInformation("Returning token response.");
+            await context.HttpContext.Response.WriteJsonAsync(dto);
         }
 
         internal class TokenResponseDto

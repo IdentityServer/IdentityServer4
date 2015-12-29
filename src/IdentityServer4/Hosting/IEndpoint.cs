@@ -2,10 +2,10 @@
 using Microsoft.AspNet.Http;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Endpoints
+namespace IdentityServer4.Core.Hosting
 {
     public interface IEndpoint
     {
-        Task<IResult> ProcessAsync(HttpContext context);
+        Task<IEndpointResult> ProcessAsync(IdentityServerContext context);
     }
 }

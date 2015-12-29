@@ -13,27 +13,27 @@ namespace UnitTests.Endpoints.Authorize
 {
     class StubResultGenerator : IAuthorizationResultGenerator
     {
-        public IResult AuthorizeResult { get; set; } = new AuthorizeRedirectResult(null, new FakeUrlEncoder());
-        public IResult ConsentResult { get; set; } = new ConsentPageResult();
-        public IResult LoginResult { get; set; } = new LoginPageResult("http://server/login?id=x");
-        public IResult ErrorResult { get; set; } = new ErrorPageResult(null);
+        public IEndpointResult AuthorizeResult { get; set; } = new AuthorizeRedirectResult(null, new FakeUrlEncoder());
+        public IEndpointResult ConsentResult { get; set; } = new ConsentPageResult();
+        public IEndpointResult LoginResult { get; set; } = new LoginPageResult("http://server/login?id=x");
+        public IEndpointResult ErrorResult { get; set; } = new ErrorPageResult(null);
 
-        public Task<IResult> CreateAuthorizeResultAsync(AuthorizeResponse response)
+        public Task<IEndpointResult> CreateAuthorizeResultAsync(AuthorizeResponse response)
         {
             return Task.FromResult(AuthorizeResult);
         }
 
-        public Task<IResult> CreateConsentResultAsync()
+        public Task<IEndpointResult> CreateConsentResultAsync()
         {
             return Task.FromResult(ConsentResult);
         }
 
-        public Task<IResult> CreateErrorResultAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request)
+        public Task<IEndpointResult> CreateErrorResultAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request)
         {
             return Task.FromResult(ErrorResult);
         }
 
-        public Task<IResult> CreateLoginResultAsync(SignInMessage message)
+        public Task<IEndpointResult> CreateLoginResultAsync(SignInMessage message)
         {
             return Task.FromResult(LoginResult);
         }

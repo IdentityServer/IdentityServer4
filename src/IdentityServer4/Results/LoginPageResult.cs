@@ -1,10 +1,11 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
 using Microsoft.Extensions.Logging;
+using IdentityServer4.Core.Hosting;
 
 namespace IdentityServer4.Core.Results
 {
-    public class LoginPageResult : IResult
+    public class LoginPageResult : IEndpointResult
     {
         public string Url { get; set; }
 
@@ -13,9 +14,9 @@ namespace IdentityServer4.Core.Results
             Url = url;
         }
 
-        public Task ExecuteAsync(HttpContext context, ILogger logger)
+        public Task ExecuteAsync(IdentityServerContext context)
         {
-            context.Response.Redirect(Url);
+            context.HttpContext.Response.Redirect(Url);
             return Task.FromResult(0);
         }
     }

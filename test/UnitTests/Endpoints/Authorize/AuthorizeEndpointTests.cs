@@ -94,7 +94,7 @@ namespace UnitTests.Endpoints.Authorize
         {
             _context.HttpContext.Request.Method = "POST";
 
-            var result = await _subject.ProcessAsync(_context.HttpContext);
+            var result = await _subject.ProcessAsync(_context);
 
             var statusCode = result as StatusCodeResult;
             statusCode.Should().NotBeNull();

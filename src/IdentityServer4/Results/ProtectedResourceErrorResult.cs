@@ -19,10 +19,11 @@ using Microsoft.AspNet.Http;
 using Microsoft.Extensions.Logging;
 using IdentityServer4.Core.Extensions;
 using Microsoft.Extensions.Primitives;
+using IdentityServer4.Core.Hosting;
 
 namespace IdentityServer4.Core.Results
 {
-    internal class ProtectedResourceErrorResult : IResult
+    internal class ProtectedResourceErrorResult : IEndpointResult
     {
         public string Error;
         public string ErrorDescription;
@@ -33,13 +34,13 @@ namespace IdentityServer4.Core.Results
             ErrorDescription = errorDescription;
         }
 
-        public Task ExecuteAsync(HttpContext context, ILogger logger)
+        public Task ExecuteAsync(IdentityServerContext context)
         {
-            context.Response.StatusCode = 401;
+            context.HttpContext.Response.StatusCode = 401;
 
             if (Constants.ProtectedResourceErrorStatusCodes.ContainsKey(Error))
             {
-                context.Response.StatusCode = Constants.ProtectedResourceErrorStatusCodes[Error];
+                context.HttpContext.Response.StatusCode = Constants.ProtectedResourceErrorStatusCodes[Error];
             }
 
             var parameter = string.Format("error=\"{0}\"", Error);
@@ -49,8 +50,8 @@ namespace IdentityServer4.Core.Results
                     parameter, ErrorDescription);
             }
 
-            context.Response.Headers.Add("WwwAuthentication", new StringValues("Bearer"));
-            logger.LogInformation("Returning error: " + Error);
+            context.HttpContext.Response.Headers.Add("WwwAuthentication", new StringValues("Bearer"));
+            //TODO logger.LogInformation("Returning error: " + Error);
 
             return Task.FromResult(0);
         }

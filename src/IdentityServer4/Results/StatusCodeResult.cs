@@ -2,10 +2,11 @@
 using Microsoft.AspNet.Http;
 using Microsoft.Extensions.Logging;
 using System.Net;
+using IdentityServer4.Core.Hosting;
 
 namespace IdentityServer4.Core.Results
 {
-    public class StatusCodeResult : IResult
+    public class StatusCodeResult : IEndpointResult
     {
         public int StatusCode { get; private set; }
 
@@ -19,9 +20,9 @@ namespace IdentityServer4.Core.Results
             StatusCode = statusCode;
         }
 
-        public Task ExecuteAsync(HttpContext context, ILogger logger)
+        public Task ExecuteAsync(IdentityServerContext context)
         {
-            context.Response.StatusCode = StatusCode;
+            context.HttpContext.Response.StatusCode = StatusCode;
 
             return Task.FromResult(0);
         }

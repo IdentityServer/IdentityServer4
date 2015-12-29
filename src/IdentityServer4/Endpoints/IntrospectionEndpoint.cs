@@ -9,6 +9,7 @@ using IdentityServer4.Core.ResponseHandling;
 using IdentityServer4.Core.Services;
 using Microsoft.Extensions.Logging;
 using IdentityServer4.Core.Extensions;
+using IdentityServer4.Core.Hosting;
 
 namespace IdentityServer4.Core.Endpoints
 {
@@ -29,22 +30,22 @@ namespace IdentityServer4.Core.Endpoints
             _logger = logger;
         }
 
-        public async Task<IResult> ProcessAsync(HttpContext context)
+        public async Task<IEndpointResult> ProcessAsync(IdentityServerContext context)
         {
             // validate HTTP
-            if (context.Request.Method != "POST")
+            if (context.HttpContext.Request.Method != "POST")
             {
                 return new StatusCodeResult(405);
             }
 
-            var scopeResult = await _scopeSecretValidator.ValidateAsync(context);
+            var scopeResult = await _scopeSecretValidator.ValidateAsync(context.HttpContext);
             if (scopeResult.Scope == null)
             {
                 _logger.LogWarning("Scope unauthorized to call introspection endpoint. aborting.");
                 return new StatusCodeResult(401);
             }
 
-            var parameters = context.Request.Form.AsNameValueCollection();
+            var parameters = context.HttpContext.Request.Form.AsNameValueCollection();
 
             var validationResult = await _requestValidator.ValidateAsync(parameters, scopeResult.Scope);
             var response = await _generator.ProcessAsync(validationResult, scopeResult.Scope);

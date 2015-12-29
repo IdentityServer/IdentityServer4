@@ -4,10 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
 using Microsoft.Extensions.Logging;
+using IdentityServer4.Core.Hosting;
 
 namespace IdentityServer4.Core.Results
 {
-    public class IntrospectionResult : IResult
+    public class IntrospectionResult : IEndpointResult
     {
         public Dictionary<string, object> Result { get; private set; }
 
@@ -16,11 +17,9 @@ namespace IdentityServer4.Core.Results
             Result = result;
         }
         
-        public Task ExecuteAsync(HttpContext context, ILogger logger)
+        public Task ExecuteAsync(IdentityServerContext context)
         {
-            logger.LogInformation("Returning introspection response.");
-
-            return context.Response.WriteJsonAsync(Result);
+            return context.HttpContext.Response.WriteJsonAsync(Result);
         }
     }
 }

@@ -36,26 +36,26 @@ namespace IdentityServer4.Core.Endpoints
             _parsers = parsers;
         }
 
-        public Task<IResult> ProcessAsync(HttpContext context)
+        public Task<IEndpointResult> ProcessAsync(IdentityServerContext context)
         {
             // validate HTTP
-            if (context.Request.Method != "GET")
+            if (context.HttpContext.Request.Method != "GET")
             {
                 // todo
                 // return bad request or 405 ?
             }
 
-            if (context.Request.Path.Value.EndsWith("/jwks"))
+            if (context.HttpContext.Request.Path.Value.EndsWith("/jwks"))
             {
-                return ExecuteJwksAsync(context);
+                return ExecuteJwksAsync(context.HttpContext);
             }
             else
             {
-                return ExecuteDiscoDocAsync(context);
+                return ExecuteDiscoDocAsync(context.HttpContext);
             }
         }
 
-        private async Task<IResult> ExecuteDiscoDocAsync(HttpContext context)
+        private async Task<IEndpointResult> ExecuteDiscoDocAsync(HttpContext context)
         {
             _logger.LogVerbose("Start discovery request");
 
@@ -191,7 +191,7 @@ namespace IdentityServer4.Core.Endpoints
             return new DiscoveryDocumentResult(document, _options.DiscoveryOptions.CustomEntries); 
         }
 
-        private async Task<IResult> ExecuteJwksAsync(HttpContext context)
+        private async Task<IEndpointResult> ExecuteJwksAsync(HttpContext context)
         {
             _logger.LogVerbose("Start key discovery request");
 

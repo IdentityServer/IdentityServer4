@@ -1,4 +1,5 @@
-﻿using IdentityServer4.Core.Models;
+﻿using IdentityServer4.Core.Hosting;
+using IdentityServer4.Core.Models;
 using Microsoft.AspNet.Http;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.Results
 {
-    public class JsonWebKeysResult : IResult
+    public class JsonWebKeysResult : IEndpointResult
     {
         public IEnumerable<JsonWebKey> WebKeys { get; private set; }
 
@@ -15,9 +16,9 @@ namespace IdentityServer4.Core.Results
             WebKeys = webKeys;
         }
         
-        public Task ExecuteAsync(HttpContext context, ILogger logger)
+        public Task ExecuteAsync(IdentityServerContext context)
         {
-            return context.Response.WriteJsonAsync(new { keys = WebKeys });
+            return context.HttpContext.Response.WriteJsonAsync(new { keys = WebKeys });
         }
     }
 }

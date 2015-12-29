@@ -9,6 +9,7 @@ using IdentityServer4.Core.ResponseHandling;
 using Microsoft.Extensions.Logging;
 using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Events;
+using IdentityServer4.Core.Hosting;
 
 namespace IdentityServer4.Core.Endpoints
 {
@@ -32,16 +33,16 @@ namespace IdentityServer4.Core.Endpoints
         }
 
         // todo: no caching
-        public async Task<IResult> ProcessAsync(HttpContext context)
+        public async Task<IEndpointResult> ProcessAsync(IdentityServerContext context)
         {
-            if (context.Request.Method != "GET" && context.Request.Method != "POST")
+            if (context.HttpContext.Request.Method != "GET" && context.HttpContext.Request.Method != "POST")
             {
                 return new StatusCodeResult(405);
             }
 
             _logger.LogVerbose("Start userinfo request");
 
-            var tokenUsageResult = await _tokenUsageValidator.ValidateAsync(context);
+            var tokenUsageResult = await _tokenUsageValidator.ValidateAsync(context.HttpContext);
             if (tokenUsageResult.TokenFound == false)
             {
                 var error = "No token found.";
@@ -76,7 +77,7 @@ namespace IdentityServer4.Core.Endpoints
             return new UserInfoResult(payload);
         }
 
-        private IResult Error(string error, string description = null)
+        private IEndpointResult Error(string error, string description = null)
         {
             return new ProtectedResourceErrorResult(error, description);
         }

@@ -18,10 +18,11 @@ using Microsoft.AspNet.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
+using IdentityServer4.Core.Hosting;
 
 namespace IdentityServer4.Core.Results
 {
-    internal class TokenErrorResult : IResult
+    internal class TokenErrorResult : IEndpointResult
     {
         public string Error { get; internal set; }
         public string ErrorDescription { get; internal set; }
@@ -37,7 +38,7 @@ namespace IdentityServer4.Core.Results
             ErrorDescription = errorDescription;
         }
 
-        public async Task ExecuteAsync(HttpContext context, ILogger logger)
+        public async Task ExecuteAsync(IdentityServerContext context)
         {
             var dto = new ErrorDto
             {
@@ -45,10 +46,8 @@ namespace IdentityServer4.Core.Results
                 error_description = ErrorDescription
             };
 
-            context.Response.StatusCode = 400;
-            await context.Response.WriteJsonAsync(dto);
-
-            logger.LogVerbose("Returning token request error response.");
+            context.HttpContext.Response.StatusCode = 400;
+            await context.HttpContext.Response.WriteJsonAsync(dto);
         }
 
         internal class ErrorDto

@@ -18,10 +18,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
 using Microsoft.Extensions.Logging;
+using IdentityServer4.Core.Hosting;
 
 namespace IdentityServer4.Core.Results
 {
-    internal class UserInfoResult : IResult
+    internal class UserInfoResult : IEndpointResult
     {
         public Dictionary<string, object> Claims;
 
@@ -30,11 +31,9 @@ namespace IdentityServer4.Core.Results
             Claims = claims;
         }
 
-        public async Task ExecuteAsync(HttpContext context, ILogger logger)
+        public async Task ExecuteAsync(IdentityServerContext context)
         {
-            await context.Response.WriteJsonAsync(Claims);
-
-            logger.LogInformation("Returning userinfo response.");
+            await context.HttpContext.Response.WriteJsonAsync(Claims);
         }
     }
 }

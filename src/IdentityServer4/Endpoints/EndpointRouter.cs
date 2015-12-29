@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.Http;
+﻿using IdentityServer4.Core.Hosting;
+using Microsoft.AspNet.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;

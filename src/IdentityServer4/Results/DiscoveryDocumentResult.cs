@@ -1,4 +1,5 @@
-﻿using IdentityServer4.Core.Models;
+﻿using IdentityServer4.Core.Hosting;
+using IdentityServer4.Core.Models;
 using Microsoft.AspNet.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.Results
 {
-    public class DiscoveryDocumentResult : IResult
+    public class DiscoveryDocumentResult : IEndpointResult
     {
         public DiscoveryDocument Document { get; private set; }
         public Dictionary<string, object> CustomEntries { get; private set; }
@@ -20,7 +21,7 @@ namespace IdentityServer4.Core.Results
             CustomEntries = customEntries;
         }
         
-        public Task ExecuteAsync(HttpContext context, ILogger logger)
+        public Task ExecuteAsync(IdentityServerContext context)
         {
             if (CustomEntries != null && CustomEntries.Any())
             {
@@ -36,11 +37,11 @@ namespace IdentityServer4.Core.Results
 
                     jobject.Add(new JProperty(item.Key, item.Value));
 
-                    return context.Response.WriteJsonAsync(jobject);
+                    return context.HttpContext.Response.WriteJsonAsync(jobject);
                 }
             }
 
-            return context.Response.WriteJsonAsync(Document);
+            return context.HttpContext.Response.WriteJsonAsync(Document);
         }
     }
 }

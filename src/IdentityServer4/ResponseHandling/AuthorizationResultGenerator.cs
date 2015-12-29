@@ -42,9 +42,9 @@ namespace IdentityServer4.Core.ResponseHandling
             _clientListCookie = clientListCookie;
         }
 
-        public Task<IResult> CreateConsentResultAsync()
+        public Task<IEndpointResult> CreateConsentResultAsync()
         {
-            return Task.FromResult<IResult>(new ConsentPageResult());
+            return Task.FromResult<IEndpointResult>(new ConsentPageResult());
 
             //string loginWithDifferentAccountUrl = null;
             //if (validatedRequest.HasIdpAcrValue() == false)
@@ -77,7 +77,7 @@ namespace IdentityServer4.Core.ResponseHandling
             //return new ConsentActionResult(_viewService, consentModel, validatedRequest);
         }
 
-        public async Task<IResult> CreateErrorResultAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request)
+        public async Task<IEndpointResult> CreateErrorResultAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request)
         {
             var msg = _localizationService.GetMessage(error);
             if (msg.IsMissing())
@@ -137,7 +137,7 @@ namespace IdentityServer4.Core.ResponseHandling
             return new ErrorPageResult(errorModel);
         }
 
-        public async Task<IResult> CreateLoginResultAsync(SignInMessage message)
+        public async Task<IEndpointResult> CreateLoginResultAsync(SignInMessage message)
         {
             var id = await _signInMessageStore.WriteAsync(message);
 
@@ -147,7 +147,7 @@ namespace IdentityServer4.Core.ResponseHandling
             return new LoginPageResult(url);
         }
 
-        public Task<IResult> CreateAuthorizeResultAsync(AuthorizeResponse response)
+        public Task<IEndpointResult> CreateAuthorizeResultAsync(AuthorizeResponse response)
         {
             var request = response.Request;
 
@@ -157,7 +157,7 @@ namespace IdentityServer4.Core.ResponseHandling
                 _logger.LogDebug("Adding client {0} to client list cookie for subject {1}", request.ClientId, request.Subject.GetSubjectId());
                 _clientListCookie.AddClient(request.ClientId);
 
-                return Task.FromResult<IResult>(new AuthorizeRedirectResult(response, _urlEncoder));
+                return Task.FromResult<IEndpointResult>(new AuthorizeRedirectResult(response, _urlEncoder));
             }
 
             if (request.ResponseMode == Constants.ResponseModes.FormPost)
@@ -165,7 +165,7 @@ namespace IdentityServer4.Core.ResponseHandling
                 _logger.LogDebug("Adding client {0} to client list cookie for subject {1}", request.ClientId, request.Subject.GetSubjectId());
                 _clientListCookie.AddClient(request.ClientId);
 
-                return Task.FromResult<IResult>(new AuthorizeFormPostResult(response, _htmlEncoder));
+                return Task.FromResult<IEndpointResult>(new AuthorizeFormPostResult(response, _htmlEncoder));
             }
 
             _logger.LogError("Unsupported response mode.");

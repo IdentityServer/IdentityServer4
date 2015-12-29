@@ -1,4 +1,5 @@
-﻿using IdentityServer4.Core.ResponseHandling;
+﻿using IdentityServer4.Core.Hosting;
+using IdentityServer4.Core.ResponseHandling;
 using IdentityServer4.Core.Results;
 using IdentityServer4.Core.Validation;
 using Microsoft.AspNet.Http;
@@ -23,19 +24,19 @@ namespace IdentityServer4.Core.Endpoints
             _logger = loggerFactory.CreateLogger<TokenEndpoint>();
         }
 
-        public async Task<IResult> ProcessAsync(HttpContext context)
+        public async Task<IEndpointResult> ProcessAsync(IdentityServerContext context)
         {
             _logger.LogVerbose("Start token request.");
 
             // validate HTTP
-            if (context.Request.Method != "POST" || !context.Request.HasFormContentType)
+            if (context.HttpContext.Request.Method != "POST" || !context.HttpContext.Request.HasFormContentType)
             {
                 // todo logging
                 return new TokenErrorResult(Constants.TokenErrors.InvalidRequest);
             }
 
             // validate client
-            var clientResult = await _clientValidator.ValidateAsync(context);
+            var clientResult = await _clientValidator.ValidateAsync(context.HttpContext);
 
             if (clientResult.Client == null)
             {
@@ -44,7 +45,7 @@ namespace IdentityServer4.Core.Endpoints
             
             // validate request
             var requestResult = await _requestValidator.ValidateRequestAsync(
-                context.Request.Form.AsNameValueCollection(), 
+                context.HttpContext.Request.Form.AsNameValueCollection(), 
                 clientResult.Client);
 
             if (requestResult.IsError)

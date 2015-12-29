@@ -16,9 +16,9 @@ namespace IdentityServer4.Core.ResponseHandling
 {
     interface IAuthorizationResultGenerator
     {
-        Task<IResult> CreateErrorResultAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request);
-        Task<IResult> CreateLoginResultAsync(SignInMessage message);
-        Task<IResult> CreateConsentResultAsync();
-        Task<IResult> CreateAuthorizeResultAsync(AuthorizeResponse response);
+        Task<IEndpointResult> CreateErrorResultAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request);
+        Task<IEndpointResult> CreateLoginResultAsync(SignInMessage message);
+        Task<IEndpointResult> CreateConsentResultAsync();
+        Task<IEndpointResult> CreateAuthorizeResultAsync(AuthorizeResponse response);
     }
 }

@@ -4,10 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
 using Microsoft.Extensions.Logging;
+using IdentityServer4.Core.Hosting;
 
 namespace IdentityServer4.Core.Results
 {
-    public class PipelineResult<TModel> : IResult, IPipelineResult
+    public class PipelineResult<TModel> : IEndpointResult, IPipelineResult
     {
         private readonly PathString _path;
 
@@ -29,15 +30,14 @@ namespace IdentityServer4.Core.Results
             Model = model;
         }
 
-        public Task ExecuteAsync(HttpContext context, ILogger logger)
+        public Task ExecuteAsync(IdentityServerContext context)
         {
-            logger.LogVerbose("Changing request path to: {0}", _path.ToString());
-            context.Request.Path = _path;
+            context.HttpContext.Request.Path = _path;
 
             EnsureModel();
             if (Model != null)
             {
-                context.Items["idsvr.pipelineresult.model." + Model.GetType()] = Model;
+                context.HttpContext.Items["idsvr.pipelineresult.model." + Model.GetType()] = Model;
             }
 
             return Task.FromResult(0);

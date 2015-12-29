@@ -48,16 +48,16 @@ namespace IdentityServer4.Core.Endpoints
             _urlEncoder = urlEncoder;
         }
 
-        public async Task<IResult> ProcessAsync(HttpContext context)
+        public async Task<IEndpointResult> ProcessAsync(IdentityServerContext context)
         {
-            if (context.Request.Method != "GET")
+            if (context.HttpContext.Request.Method != "GET")
             {
                 return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
             }
 
             _logger.LogInformation("Start Authorize Request");
 
-            var values = context.Request.Query.AsNameValueCollection();
+            var values = context.HttpContext.Request.Query.AsNameValueCollection();
             var user = await _context.GetIdentityServerUserAsync();
             var result = await ProcessAuthorizeRequestAsync(values, user, null);
 
@@ -66,7 +66,7 @@ namespace IdentityServer4.Core.Endpoints
             return result;
         }
 
-        internal async Task<IResult> ProcessAuthorizeRequestAsync(NameValueCollection parameters, ClaimsPrincipal user, UserConsentResponseMessage consent)
+        internal async Task<IEndpointResult> ProcessAuthorizeRequestAsync(NameValueCollection parameters, ClaimsPrincipal user, UserConsentResponseMessage consent)
         {
             if (user != null)
             {
@@ -134,7 +134,7 @@ namespace IdentityServer4.Core.Endpoints
             return await SuccessfulAuthorizationAsync(request);
         }
 
-        private async Task<IResult> SuccessfulAuthorizationAsync(ValidatedAuthorizeRequest request)
+        private async Task<IEndpointResult> SuccessfulAuthorizationAsync(ValidatedAuthorizeRequest request)
         {
             var response = await _responseGenerator.CreateResponseAsync(request);
             var result = await _resultGenerator.CreateAuthorizeResultAsync(response);
@@ -144,7 +144,7 @@ namespace IdentityServer4.Core.Endpoints
             return result;
         }
 
-        async Task<IResult> LoginAsync(SignInMessage message, NameValueCollection parameters)
+        async Task<IEndpointResult> LoginAsync(SignInMessage message, NameValueCollection parameters)
         {
             var url = _context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.RoutePaths.Oidc.Authorize;
             url.AddQueryString(parameters.ToQueryString(_urlEncoder));
@@ -153,12 +153,12 @@ namespace IdentityServer4.Core.Endpoints
             return await _resultGenerator.CreateLoginResultAsync(message);
         }
 
-        private async Task<IResult> ConsentAsync(ValidatedAuthorizeRequest validatedRequest, UserConsentResponseMessage consent, NameValueCollection requestParameters, string errorMessage)
+        private async Task<IEndpointResult> ConsentAsync(ValidatedAuthorizeRequest validatedRequest, UserConsentResponseMessage consent, NameValueCollection requestParameters, string errorMessage)
         {
             return await _resultGenerator.CreateConsentResultAsync();
         }
 
-        async Task<IResult> ErrorAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request)
+        async Task<IEndpointResult> ErrorAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request)
         {
             await RaiseFailureEventAsync(error);
 

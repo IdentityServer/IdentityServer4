@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
 using Microsoft.Extensions.Logging;
 using IdentityServer4.Core.Models;
+using IdentityServer4.Core.Hosting;
 
 namespace IdentityServer4.Core.Results
 {
-    abstract class AuthorizeResult : IResult
+    abstract class AuthorizeResult : IEndpointResult
     {
         public AuthorizeResponse Response { get; private set; }
 
@@ -17,6 +18,6 @@ namespace IdentityServer4.Core.Results
             Response = response;
         }
 
-        public abstract Task ExecuteAsync(HttpContext context, ILogger logger);
+        public abstract Task ExecuteAsync(IdentityServerContext context);
     }
 }
