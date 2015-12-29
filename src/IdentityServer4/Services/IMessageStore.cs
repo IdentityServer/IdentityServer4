@@ -9,8 +9,8 @@ namespace IdentityServer4.Core.Services
     public interface IMessageStore<TMessage>
         where TMessage : Message
     {
-        Task<string> Write(TMessage message);
-        Task<TMessage> Read(string id);
-        Task Delete(string id);
+        Task<string> WriteAsync(TMessage message);
+        Task<TMessage> ReadAsync(string id);
+        Task DeleteAsync(string id);
     }
 }

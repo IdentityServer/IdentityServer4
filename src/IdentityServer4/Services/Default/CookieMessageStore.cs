@@ -17,18 +17,18 @@ namespace IdentityServer4.Core.Services.Default
             _cookie = cookie;
         }
 
-        public Task Delete(string id)
+        public Task DeleteAsync(string id)
         {
             _cookie.Clear(id);
             return Task.FromResult(0);
         }
 
-        public Task<TMessage> Read(string id)
+        public Task<TMessage> ReadAsync(string id)
         {
             return Task.FromResult(_cookie.Read(id));
         }
 
-        public Task<string> Write(TMessage message)
+        public Task<string> WriteAsync(TMessage message)
         {
             return Task.FromResult(_cookie.Write(message));
         }

@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Results;
 using IdentityServer4.Core.Validation;
+using IdentityServer4.Core.Hosting;
+using UnitTests.Common;
 
 namespace UnitTests.Endpoints.Authorize
 {
@@ -13,7 +15,7 @@ namespace UnitTests.Endpoints.Authorize
     {
         public IResult AuthorizeResult { get; set; } = new AuthorizeRedirectResult(null);
         public IResult ConsentResult { get; set; } = new ConsentPageResult();
-        public IResult LoginResult { get; set; } = new LoginPageResult(null);
+        public IResult LoginResult { get; set; } = new LoginPageResult("http://server/login?id=x");
         public IResult ErrorResult { get; set; } = new ErrorPageResult(null);
 
         public Task<IResult> CreateAuthorizeResultAsync(AuthorizeResponse response)

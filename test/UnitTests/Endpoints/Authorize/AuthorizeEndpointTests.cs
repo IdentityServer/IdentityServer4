@@ -20,14 +20,10 @@ using System.Threading.Tasks;
 using Xunit;
 using UnitTests.Common;
 using IdentityServer4.Core.Hosting;
-using Microsoft.AspNet.Http.Internal;
-using IdentityServer4.Core.Configuration;
-using System;
 using System.Collections.Specialized;
 using System.Security.Claims;
 using IdentityServer4.Core.Validation;
 using IdentityServer4.Core.Results;
-using IdentityServer4.Core.Services;
 using Microsoft.Extensions.Logging;
 using IdentityServer4.Core.Events;
 using IdentityServer4.Core.Models;
@@ -48,9 +44,7 @@ namespace UnitTests.Endpoints.Authorize
 
         public void Init()
         {
-            var accessor = new HttpContextAccessor();
-            accessor.HttpContext = _httpContext;
-            _context = new IdentityServerContext(accessor, _options);
+            _context = IdentityServerContextHelper.Create();
 
             _validatedAuthorizeRequest = new ValidatedAuthorizeRequest()
             {
@@ -82,9 +76,8 @@ namespace UnitTests.Endpoints.Authorize
 
         NameValueCollection _params = new NameValueCollection();
         ClaimsPrincipal _user = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
+
         IdentityServerContext _context;
-        IdentityServerOptions _options = new IdentityServerOptions();
-        DefaultHttpContext _httpContext = new DefaultHttpContext();
         ValidatedAuthorizeRequest _validatedAuthorizeRequest;
 
         MockEventService _mockEventService = new MockEventService();
@@ -98,9 +91,9 @@ namespace UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task post_to_entry_point_should_return_405()
         {
-            _httpContext.Request.Method = "POST";
+            _context.HttpContext.Request.Method = "POST";
 
-            var result = await _subject.ProcessAsync(_httpContext);
+            var result = await _subject.ProcessAsync(_context.HttpContext);
 
             var statusCode = result as StatusCodeResult;
             statusCode.Should().NotBeNull();

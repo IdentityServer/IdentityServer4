@@ -1,25 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
 using Microsoft.Extensions.Logging;
-using IdentityServer4.Core.ViewModels;
-using IdentityServer4.Core.Models;
 
 namespace IdentityServer4.Core.Results
 {
     public class LoginPageResult : IResult
     {
-        public SignInMessage SignInMessage { get; private set; }
+        public string Url { get; set; }
 
-        public LoginPageResult(SignInMessage message)
+        public LoginPageResult(string url)
         {
-            SignInMessage = message;
+            Url = url;
         }
 
         public Task ExecuteAsync(HttpContext context, ILogger logger)
         {
+            context.Response.Redirect(Url);
             return Task.FromResult(0);
         }
     }

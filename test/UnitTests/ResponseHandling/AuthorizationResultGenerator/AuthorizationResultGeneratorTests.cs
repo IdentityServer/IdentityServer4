@@ -30,10 +30,6 @@ namespace UnitTests.ResponseHandling
 
         public void Init()
         {
-            var accessor = new HttpContextAccessor();
-            accessor.HttpContext = _httpContext;
-            _context = new IdentityServerContext(accessor, _options);
-
             _mockClientListCookie = new MockClientListCookie(_context);
 
             _subject = new AuthorizationResultGenerator(
@@ -41,28 +37,28 @@ namespace UnitTests.ResponseHandling
                 _context,
                 _stubLocalizationService,
                 new FakeHtmlEncoder(),
+                _mockMessageStore,
                 _mockClientListCookie);
         }
 
         ILogger<AuthorizationResultGenerator> _fakeLogger = new FakeLogger<AuthorizationResultGenerator>();
-        IdentityServerOptions _options = new IdentityServerOptions();
-        DefaultHttpContext _httpContext = new DefaultHttpContext();
-        IdentityServerContext _context;
+        IdentityServerContext _context = IdentityServerContextHelper.Create();
         MockClientListCookie _mockClientListCookie;
+        MockMessageStore<SignInMessage> _mockMessageStore = new MockMessageStore<SignInMessage>();
+        StubLocalizationService _stubLocalizationService = new StubLocalizationService();
 
         ValidatedAuthorizeRequest _validatedRequest = new ValidatedAuthorizeRequest
         {
             ResponseMode = "fragment",
             ClientId = "client_id",
             Subject = IdentityServerPrincipal.Create("bob", "Bob Loblaw"),
-            Client = new IdentityServer4.Core.Models.Client
+            Client = new Client
             {
                 ClientId = "client_id",
                 ClientName = "Test Client"
             }
         };
 
-        StubLocalizationService _stubLocalizationService = new StubLocalizationService();
 
         [Fact]
         [Trait("Category", Category)]
@@ -254,9 +250,30 @@ namespace UnitTests.ResponseHandling
         [Trait("Category", Category)]
         public async Task CreateLoginResultAsync_should_return_login_result()
         {
-            var result = await _subject.CreateLoginResultAsync(new IdentityServer4.Core.Models.SignInMessage());
+            var result = await _subject.CreateLoginResultAsync(new SignInMessage());
 
             result.Should().BeAssignableTo<LoginPageResult>();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task CreateLoginResultAsync_should_store_signin_message()
+        {
+            _mockMessageStore.Messages.Count.Should().Be(0);
+
+            await _subject.CreateLoginResultAsync(new SignInMessage());
+
+            _mockMessageStore.Messages.Count.Should().Be(1);
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task CreateLoginResultAsync_should_generate_redirect_with_signin_message_id()
+        {
+            var result = (LoginPageResult)await _subject.CreateLoginResultAsync(new SignInMessage());
+
+            var id = _mockMessageStore.Messages.First().Key;
+            result.Url.Should().Contain("id=" + id);
         }
     }
 }

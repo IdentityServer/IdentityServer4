@@ -20,6 +20,7 @@ namespace IdentityServer4.Core.ResponseHandling
         private readonly IdentityServerContext _context;
         private readonly ILocalizationService _localizationService;
         private readonly IHtmlEncoder _encoder;
+        private readonly IMessageStore<SignInMessage> _signInMessageStore;
         private readonly ClientListCookie _clientListCookie;
 
         public AuthorizationResultGenerator(
@@ -27,12 +28,14 @@ namespace IdentityServer4.Core.ResponseHandling
             IdentityServerContext context,
             ILocalizationService localizationService,
             IHtmlEncoder encoder,
+            IMessageStore<SignInMessage> signInMessageStore,
             ClientListCookie clientListCookie)
         {
             _logger = logger;
             _context = context;
             _localizationService = localizationService;
             _encoder = encoder;
+            _signInMessageStore = signInMessageStore;
             _clientListCookie = clientListCookie;
         }
 
@@ -110,6 +113,7 @@ namespace IdentityServer4.Core.ResponseHandling
                     ClientId = request.ClientId,
                     ClientName = request.Client.ClientName,
                 };
+
                 if (request.ResponseMode == Constants.ResponseModes.Query ||
                          request.ResponseMode == Constants.ResponseModes.Fragment)
                 {
@@ -130,10 +134,14 @@ namespace IdentityServer4.Core.ResponseHandling
             return new ErrorPageResult(errorModel);
         }
 
-        public Task<IResult> CreateLoginResultAsync(SignInMessage message)
+        public async Task<IResult> CreateLoginResultAsync(SignInMessage message)
         {
+            var id = await _signInMessageStore.WriteAsync(message);
 
-            return Task.FromResult<IResult>(new LoginPageResult(message));
+            var url = _context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.RoutePaths.Login;
+            url += url.AddQueryString("id=" + id);
+
+            return new LoginPageResult(url);
         }
 
         public Task<IResult> CreateAuthorizeResultAsync(AuthorizeResponse response)
