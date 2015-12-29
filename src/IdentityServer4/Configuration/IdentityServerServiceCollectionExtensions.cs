@@ -145,8 +145,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<ICustomTokenValidator, DefaultCustomTokenValidator>();
             services.TryAddTransient<ILocalizationService, DefaultLocalizationService>();
             services.TryAddTransient<IConsentService, DefaultConsentService>();
-            services.TryAddTransient<IMessageStore<SignInMessage>, CookieMessageStore<SignInMessage>>();
-            services.TryAddTransient<IMessageStore<SignOutMessage>, CookieMessageStore<SignOutMessage>>();
+            services.TryAddTransient(typeof(IMessageStore<>), typeof(CookieMessageStore<>));
 
             return services;
         }
@@ -154,8 +153,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddHostServices(this IServiceCollection services)
         {
             services.TryAddTransient<ClientListCookie>();
-            services.TryAddTransient<MessageCookie<SignInMessage>>();
-            services.TryAddTransient<MessageCookie<SignOutMessage>>();
+            services.TryAddTransient(typeof(MessageCookie<>));
 
             return services;
         }
