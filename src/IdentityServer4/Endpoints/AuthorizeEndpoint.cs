@@ -25,7 +25,7 @@ namespace IdentityServer4.Core.Endpoints
         private readonly IAuthorizeResponseGenerator _responseGenerator;
         private readonly IAuthorizeRequestValidator _validator;
         private readonly IAuthorizeInteractionResponseGenerator _interactionGenerator;
-        private readonly IAuthorizationResultGenerator _resultGenerator;
+        private readonly IAuthorizeEndpointResultGenerator _resultGenerator;
         private readonly IUrlEncoder _urlEncoder;
 
         public AuthorizeEndpoint(
@@ -35,7 +35,7 @@ namespace IdentityServer4.Core.Endpoints
             IAuthorizeResponseGenerator responseGenerator,
             IAuthorizeRequestValidator validator,
             IAuthorizeInteractionResponseGenerator interactionGenerator,
-            IAuthorizationResultGenerator resultGenerator,
+            IAuthorizeEndpointResultGenerator resultGenerator,
             IUrlEncoder urlEncoder)
         {
             _events = events;

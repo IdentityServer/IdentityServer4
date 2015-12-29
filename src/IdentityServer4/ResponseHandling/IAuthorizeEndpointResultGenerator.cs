@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.ResponseHandling
 {
-    interface IAuthorizationResultGenerator
+    interface IAuthorizeEndpointResultGenerator
     {
         Task<IEndpointResult> CreateErrorResultAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request);
         Task<IEndpointResult> CreateLoginResultAsync(SignInMessage message);

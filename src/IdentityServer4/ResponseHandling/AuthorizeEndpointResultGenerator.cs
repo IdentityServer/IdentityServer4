@@ -14,9 +14,9 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.ResponseHandling
 {
-    class AuthorizationResultGenerator : IAuthorizationResultGenerator
+    class AuthorizeEndpointResultGenerator : IAuthorizeEndpointResultGenerator
     {
-        private readonly ILogger<AuthorizationResultGenerator> _logger;
+        private readonly ILogger<AuthorizeEndpointResultGenerator> _logger;
         private readonly IdentityServerContext _context;
         private readonly ILocalizationService _localizationService;
         private readonly IHtmlEncoder _htmlEncoder;
@@ -24,8 +24,8 @@ namespace IdentityServer4.Core.ResponseHandling
         private readonly IMessageStore<SignInMessage> _signInMessageStore;
         private readonly ClientListCookie _clientListCookie;
 
-        public AuthorizationResultGenerator(
-            ILogger<AuthorizationResultGenerator> logger,
+        public AuthorizeEndpointResultGenerator(
+            ILogger<AuthorizeEndpointResultGenerator> logger,
             IdentityServerContext context,
             ILocalizationService localizationService,
             IHtmlEncoder htmlEncoder,
@@ -141,10 +141,7 @@ namespace IdentityServer4.Core.ResponseHandling
         {
             var id = await _signInMessageStore.WriteAsync(message);
 
-            var url = _context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.RoutePaths.Login;
-            url += url.AddQueryString("id=" + id);
-
-            return new LoginPageResult(url);
+            return new LoginPageResult(id);
         }
 
         public Task<IEndpointResult> CreateAuthorizeResultAsync(AuthorizeResponse response)

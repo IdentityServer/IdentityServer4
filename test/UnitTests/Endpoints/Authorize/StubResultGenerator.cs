@@ -11,7 +11,7 @@ using UnitTests.Common;
 
 namespace UnitTests.Endpoints.Authorize
 {
-    class StubResultGenerator : IAuthorizationResultGenerator
+    class StubResultGenerator : IAuthorizeEndpointResultGenerator
     {
         public IEndpointResult AuthorizeResult { get; set; } = new AuthorizeRedirectResult(null, new FakeUrlEncoder());
         public IEndpointResult ConsentResult { get; set; } = new ConsentPageResult();

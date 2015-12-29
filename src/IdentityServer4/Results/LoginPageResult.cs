@@ -2,21 +2,25 @@
 using Microsoft.AspNet.Http;
 using Microsoft.Extensions.Logging;
 using IdentityServer4.Core.Hosting;
+using IdentityServer4.Core.Extensions;
 
 namespace IdentityServer4.Core.Results
 {
     public class LoginPageResult : IEndpointResult
     {
-        public string Url { get; set; }
+        public string Id { get; set; }
 
-        public LoginPageResult(string url)
+        public LoginPageResult(string id)
         {
-            Url = url;
+            Id = id;
         }
 
         public Task ExecuteAsync(IdentityServerContext context)
         {
-            context.HttpContext.Response.Redirect(Url);
+            var url = context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.RoutePaths.Login;
+            url += url.AddQueryString("id=" + Id);
+
+            context.HttpContext.Response.Redirect(url);
             return Task.FromResult(0);
         }
     }

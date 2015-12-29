@@ -21,7 +21,7 @@ namespace UnitTests.ResponseHandling
     {
         const string Category = "Authorize Endpoint";
 
-        AuthorizationResultGenerator _subject;
+        AuthorizeEndpointResultGenerator _subject;
 
         public AuthorizationResultGeneratorTests()
         {
@@ -32,7 +32,7 @@ namespace UnitTests.ResponseHandling
         {
             _mockClientListCookie = new MockClientListCookie(_context);
 
-            _subject = new AuthorizationResultGenerator(
+            _subject = new AuthorizeEndpointResultGenerator(
                 _fakeLogger,
                 _context,
                 _stubLocalizationService,
@@ -42,7 +42,7 @@ namespace UnitTests.ResponseHandling
                 _mockClientListCookie);
         }
 
-        ILogger<AuthorizationResultGenerator> _fakeLogger = new FakeLogger<AuthorizationResultGenerator>();
+        ILogger<AuthorizeEndpointResultGenerator> _fakeLogger = new FakeLogger<AuthorizeEndpointResultGenerator>();
         IdentityServerContext _context = IdentityServerContextHelper.Create();
         MockClientListCookie _mockClientListCookie;
         MockMessageStore<SignInMessage> _mockMessageStore = new MockMessageStore<SignInMessage>();
@@ -274,7 +274,7 @@ namespace UnitTests.ResponseHandling
             var result = (LoginPageResult)await _subject.CreateLoginResultAsync(new SignInMessage());
 
             var id = _mockMessageStore.Messages.First().Key;
-            result.Url.Should().Contain("id=" + id);
+            result.Id.Should().Be(id);
         }
     }
 }
