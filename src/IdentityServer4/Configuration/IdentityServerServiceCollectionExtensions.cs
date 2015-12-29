@@ -2,6 +2,7 @@
 using IdentityServer4.Core.Configuration;
 using IdentityServer4.Core.Endpoints;
 using IdentityServer4.Core.Hosting;
+using IdentityServer4.Core.Models;
 using IdentityServer4.Core.ResponseHandling;
 using IdentityServer4.Core.Services;
 using IdentityServer4.Core.Services.Default;
@@ -151,6 +152,8 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddHostServices(this IServiceCollection services)
         {
             services.TryAddTransient<ClientListCookie>();
+            services.TryAddTransient<MessageCookie<SignInMessage>>();
+            services.TryAddTransient<MessageCookie<SignOutMessage>>();
 
             return services;
         }
