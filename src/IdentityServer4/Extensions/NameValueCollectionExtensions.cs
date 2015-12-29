@@ -26,7 +26,7 @@ namespace IdentityServer4.Core.Extensions
 {
     internal static class NameValueCollectionExtensions
     {
-        public static string ToQueryString(this NameValueCollection collection)
+        public static string ToQueryString(this NameValueCollection collection, IUrlEncoder encoder)
         {
             if (collection.Count == 0)
             {
@@ -46,7 +46,7 @@ namespace IdentityServer4.Core.Extensions
                 {
                     foreach (string value in values)
                     {
-                        first = AppendNameValuePair(builder, first, true, name, value);
+                        first = AppendNameValuePair(builder, first, true, name, encoder.UrlEncode(value));
                     }
                 }
             }

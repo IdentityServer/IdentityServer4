@@ -13,7 +13,7 @@ namespace UnitTests.Endpoints.Authorize
 {
     class StubResultGenerator : IAuthorizationResultGenerator
     {
-        public IResult AuthorizeResult { get; set; } = new AuthorizeRedirectResult(null);
+        public IResult AuthorizeResult { get; set; } = new AuthorizeRedirectResult(null, new FakeUrlEncoder());
         public IResult ConsentResult { get; set; } = new ConsentPageResult();
         public IResult LoginResult { get; set; } = new LoginPageResult("http://server/login?id=x");
         public IResult ErrorResult { get; set; } = new ErrorPageResult(null);

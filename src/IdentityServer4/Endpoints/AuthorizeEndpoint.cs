@@ -13,6 +13,7 @@ using System.Security.Claims;
 using IdentityServer4.Core.Hosting;
 using IdentityServer4.Core.Events;
 using IdentityServer4.Core.Models;
+using Microsoft.Extensions.WebEncoders;
 
 namespace IdentityServer4.Core.Endpoints
 {
@@ -25,6 +26,7 @@ namespace IdentityServer4.Core.Endpoints
         private readonly IAuthorizeRequestValidator _validator;
         private readonly IAuthorizeInteractionResponseGenerator _interactionGenerator;
         private readonly IAuthorizationResultGenerator _resultGenerator;
+        private readonly IUrlEncoder _urlEncoder;
 
         public AuthorizeEndpoint(
             IEventService events, 
@@ -33,7 +35,8 @@ namespace IdentityServer4.Core.Endpoints
             IAuthorizeResponseGenerator responseGenerator,
             IAuthorizeRequestValidator validator,
             IAuthorizeInteractionResponseGenerator interactionGenerator,
-            IAuthorizationResultGenerator resultGenerator)
+            IAuthorizationResultGenerator resultGenerator,
+            IUrlEncoder urlEncoder)
         {
             _events = events;
             _logger = logger;
@@ -42,6 +45,7 @@ namespace IdentityServer4.Core.Endpoints
             _validator = validator;
             _interactionGenerator = interactionGenerator;
             _resultGenerator = resultGenerator;
+            _urlEncoder = urlEncoder;
         }
 
         public async Task<IResult> ProcessAsync(HttpContext context)
@@ -143,7 +147,7 @@ namespace IdentityServer4.Core.Endpoints
         async Task<IResult> LoginAsync(SignInMessage message, NameValueCollection parameters)
         {
             var url = _context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.RoutePaths.Oidc.Authorize;
-            url.AddQueryString(parameters.ToQueryString());
+            url.AddQueryString(parameters.ToQueryString(_urlEncoder));
             message.ReturnUrl = url;
 
             return await _resultGenerator.CreateLoginResultAsync(message);

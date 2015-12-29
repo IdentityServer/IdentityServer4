@@ -71,7 +71,8 @@ namespace UnitTests.Endpoints.Authorize
                 _stubResponseGenerator,
                 _stubAuthorizeRequestValidator,
                 _stubInteractionGenerator,
-                _stubResultGenerator);
+                _stubResultGenerator,
+                new FakeUrlEncoder());
         }
 
         NameValueCollection _params = new NameValueCollection();

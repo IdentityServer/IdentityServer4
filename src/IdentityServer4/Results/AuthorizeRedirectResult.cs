@@ -6,20 +6,24 @@ using Microsoft.AspNet.Http;
 using Microsoft.Extensions.Logging;
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Extensions;
+using Microsoft.Extensions.WebEncoders;
 
 namespace IdentityServer4.Core.Results
 {
     class AuthorizeRedirectResult : AuthorizeResult
     {
-        public AuthorizeRedirectResult(AuthorizeResponse response)
+        private readonly IUrlEncoder _encoder;
+
+        public AuthorizeRedirectResult(AuthorizeResponse response, IUrlEncoder urlEncoder)
             : base(response)
         {
+            _encoder = urlEncoder;
         }
 
-        internal static string BuildUri(AuthorizeResponse response)
+        internal static string BuildUri(AuthorizeResponse response, IUrlEncoder encoder)
         {
             var uri = response.RedirectUri;
-            var query = response.ToNameValueCollection().ToQueryString();
+            var query = response.ToNameValueCollection().ToQueryString(encoder);
 
             if (response.Request.ResponseMode == Constants.ResponseModes.Query)
             {
@@ -41,7 +45,7 @@ namespace IdentityServer4.Core.Results
 
         public override Task ExecuteAsync(HttpContext context, ILogger logger)
         {
-            context.Response.Redirect(BuildUri(Response));
+            context.Response.Redirect(BuildUri(Response, _encoder));
             return Task.FromResult(0);
         }
     }

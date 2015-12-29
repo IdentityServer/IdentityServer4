@@ -28,8 +28,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-#pragma warning disable 1591
-
 namespace IdentityServer4.Core.ResponseHandling
 {
     interface IAuthorizeInteractionResponseGenerator
