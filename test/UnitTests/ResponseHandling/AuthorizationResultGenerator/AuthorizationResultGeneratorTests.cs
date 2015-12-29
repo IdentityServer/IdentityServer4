@@ -162,8 +162,19 @@ namespace UnitTests.ResponseHandling
         {
             _validatedRequest.ResponseMode = "unknown";
 
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => 
+            await Assert.ThrowsAsync<InvalidOperationException>(async () =>
                 await _subject.CreateErrorResultAsync(ErrorTypes.Client, "error", _validatedRequest));
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task CreateErrorResultAsync_client_error_with_prompt_mode_none_should_return_authorize_result()
+        {
+            _validatedRequest.PromptMode = "none";
+
+            var result = await _subject.CreateErrorResultAsync(ErrorTypes.Client, "foo", _validatedRequest);
+
+            result.Should().BeAssignableTo<AuthorizeResult>();
         }
 
         [Fact]

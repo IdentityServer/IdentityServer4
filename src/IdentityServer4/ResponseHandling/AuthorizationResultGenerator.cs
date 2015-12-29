@@ -71,7 +71,7 @@ namespace IdentityServer4.Core.ResponseHandling
             //return new ConsentActionResult(_viewService, consentModel, validatedRequest);
         }
 
-        public Task<IResult> CreateErrorResultAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request)
+        public async Task<IResult> CreateErrorResultAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request)
         {
             var msg = _localizationService.GetMessage(error);
             if (msg.IsMissing())
@@ -91,12 +91,6 @@ namespace IdentityServer4.Core.ResponseHandling
             // error view model so the UI can build the link/form
             if (errorType == ErrorTypes.Client)
             {
-                errorModel.ReturnInfo = new ClientReturnInfo
-                {
-                    ClientId = request.ClientId,
-                    ClientName = request.Client.ClientName,
-                };
-
                 var response = new AuthorizeResponse
                 {
                     Request = request,
@@ -106,6 +100,16 @@ namespace IdentityServer4.Core.ResponseHandling
                     RedirectUri = request.RedirectUri
                 };
 
+                if (request.PromptMode == Constants.PromptModes.None)
+                {
+                    return await CreateAuthorizeResultAsync(response);
+                }
+
+                errorModel.ReturnInfo = new ClientReturnInfo
+                {
+                    ClientId = request.ClientId,
+                    ClientName = request.Client.ClientName,
+                };
                 if (request.ResponseMode == Constants.ResponseModes.Query ||
                          request.ResponseMode == Constants.ResponseModes.Fragment)
                 {
@@ -123,11 +127,12 @@ namespace IdentityServer4.Core.ResponseHandling
                 }
             }
 
-            return Task.FromResult<IResult>(new ErrorPageResult(errorModel));
+            return new ErrorPageResult(errorModel);
         }
 
         public Task<IResult> CreateLoginResultAsync(SignInMessage message)
         {
+
             return Task.FromResult<IResult>(new LoginPageResult(message));
         }
 
