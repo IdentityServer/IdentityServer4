@@ -145,6 +145,8 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<ICustomTokenValidator, DefaultCustomTokenValidator>();
             services.TryAddTransient<ILocalizationService, DefaultLocalizationService>();
             services.TryAddTransient<IConsentService, DefaultConsentService>();
+            services.TryAddTransient<IMessageStore<SignInMessage>, CookieMessageStore<SignInMessage>>();
+            services.TryAddTransient<IMessageStore<SignOutMessage>, CookieMessageStore<SignOutMessage>>();
 
             return services;
         }
