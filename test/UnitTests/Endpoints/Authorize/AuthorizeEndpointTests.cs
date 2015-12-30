@@ -57,7 +57,8 @@ namespace UnitTests.Endpoints.Authorize
                     ClientId = "client",
                     ClientName = "Test Client"
                 },
-                Raw = _params
+                Raw = _params,
+                Subject = _user
             };
 
             _stubAuthorizeRequestValidator.Result.IsError = false;

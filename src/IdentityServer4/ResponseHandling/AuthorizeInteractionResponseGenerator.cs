@@ -52,9 +52,9 @@ namespace IdentityServer4.Core.ResponseHandling
             _localizationService = localizationService;
         }
 
-        public async Task<InteractionResponse> ProcessInteractionAsync(ValidatedAuthorizeRequest request, ClaimsPrincipal user, UserConsent consent = null)
+        public async Task<InteractionResponse> ProcessInteractionAsync(ValidatedAuthorizeRequest request, UserConsent consent = null)
         {
-            var result = await ProcessLoginAsync(request, user);
+            var result = await ProcessLoginAsync(request);
             if (result.IsLogin || result.IsError)
             {
                 return result;
@@ -63,7 +63,7 @@ namespace IdentityServer4.Core.ResponseHandling
             return await ProcessConsentAsync(request, consent);
         }
 
-        internal async Task<InteractionResponse> ProcessLoginAsync(ValidatedAuthorizeRequest request, ClaimsPrincipal user)
+        internal async Task<InteractionResponse> ProcessLoginAsync(ValidatedAuthorizeRequest request)
         {
             if (request.PromptMode == Constants.PromptModes.Login)
             {
@@ -77,14 +77,14 @@ namespace IdentityServer4.Core.ResponseHandling
             }
 
             // unauthenticated user
-            var isAuthenticated = user.Identity.IsAuthenticated;
+            var isAuthenticated = request.Subject.Identity.IsAuthenticated;
             
             // user de-activated
             bool isActive = false;
 
             if (isAuthenticated)
             {
-                var isActiveCtx = new IsActiveContext(user, request.Client);
+                var isActiveCtx = new IsActiveContext(request.Subject, request.Client);
                 await _users.IsActiveAsync(isActiveCtx);
                 
                 isActive = isActiveCtx.IsActive;
@@ -117,7 +117,7 @@ namespace IdentityServer4.Core.ResponseHandling
             }
 
             // check current idp
-            var currentIdp = user.GetIdentityProvider();
+            var currentIdp = request.Subject.GetIdentityProvider();
 
             // check if idp login hint matches current provider
             var idp = request.GetIdP();
@@ -135,7 +135,7 @@ namespace IdentityServer4.Core.ResponseHandling
             // check authentication freshness
             if (request.MaxAge.HasValue)
             {
-                var authTime = user.GetAuthenticationTime();
+                var authTime = request.Subject.GetAuthenticationTime();
                 if (DateTimeOffsetHelper.UtcNow > authTime.AddSeconds(request.MaxAge.Value))
                 {
                     _logger.LogInformation("Requested MaxAge exceeded.");
@@ -143,9 +143,6 @@ namespace IdentityServer4.Core.ResponseHandling
                     return new InteractionResponse() { IsLogin = true };
                 }
             }
-
-            // update validated request with user
-            request.Subject = user;
 
             // check idp restrictions
             if (request.Client.IdentityProviderRestrictions != null && request.Client.IdentityProviderRestrictions.Any())

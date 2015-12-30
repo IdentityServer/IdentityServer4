@@ -145,7 +145,7 @@ namespace IdentityServer4.Core.Endpoints
             var request = result.ValidatedRequest;
 
             // determine user interaction
-            var interactionResult = await _interactionGenerator.ProcessInteractionAsync(request, user);
+            var interactionResult = await _interactionGenerator.ProcessInteractionAsync(request);
             if (interactionResult.IsError)
             {
                 return await ErrorPageAsync(
