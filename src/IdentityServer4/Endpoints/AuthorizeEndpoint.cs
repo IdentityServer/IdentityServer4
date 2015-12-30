@@ -26,7 +26,6 @@ namespace IdentityServer4.Core.Endpoints
         private readonly IAuthorizeRequestValidator _validator;
         private readonly IAuthorizeInteractionResponseGenerator _interactionGenerator;
         private readonly IAuthorizeEndpointResultGenerator _resultGenerator;
-        private readonly IUrlEncoder _urlEncoder;
 
         public AuthorizeEndpoint(
             IEventService events, 
@@ -35,8 +34,7 @@ namespace IdentityServer4.Core.Endpoints
             IAuthorizeResponseGenerator responseGenerator,
             IAuthorizeRequestValidator validator,
             IAuthorizeInteractionResponseGenerator interactionGenerator,
-            IAuthorizeEndpointResultGenerator resultGenerator,
-            IUrlEncoder urlEncoder)
+            IAuthorizeEndpointResultGenerator resultGenerator)
         {
             _events = events;
             _logger = logger;
@@ -45,7 +43,6 @@ namespace IdentityServer4.Core.Endpoints
             _validator = validator;
             _interactionGenerator = interactionGenerator;
             _resultGenerator = resultGenerator;
-            _urlEncoder = urlEncoder;
         }
 
         public async Task<IEndpointResult> ProcessAsync(IdentityServerContext context)
@@ -147,7 +144,7 @@ namespace IdentityServer4.Core.Endpoints
         async Task<IEndpointResult> LoginAsync(SignInMessage message, NameValueCollection parameters)
         {
             var url = _context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.RoutePaths.Oidc.Authorize;
-            url.AddQueryString(parameters.ToQueryString(_urlEncoder));
+            url.AddQueryString(parameters.ToQueryString());
             message.ReturnUrl = url;
 
             return await _resultGenerator.CreateLoginResultAsync(message);

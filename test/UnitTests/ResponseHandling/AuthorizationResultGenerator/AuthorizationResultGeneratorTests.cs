@@ -33,8 +33,6 @@ namespace UnitTests.ResponseHandling
                 _fakeLogger,
                 _context,
                 _stubLocalizationService,
-                new FakeHtmlEncoder(),
-                new FakeUrlEncoder(),
                 _mockMessageStore,
                 _mockClientListCookie);
         }

@@ -17,8 +17,6 @@ namespace IdentityServer4.Core.ResponseHandling
         private readonly ILogger<AuthorizeEndpointResultGenerator> _logger;
         private readonly IdentityServerContext _context;
         private readonly ILocalizationService _localizationService;
-        private readonly IHtmlEncoder _htmlEncoder;
-        private readonly IUrlEncoder _urlEncoder;
         private readonly IMessageStore<SignInMessage> _signInMessageStore;
         private readonly ClientListCookie _clientListCookie;
 
@@ -26,16 +24,12 @@ namespace IdentityServer4.Core.ResponseHandling
             ILogger<AuthorizeEndpointResultGenerator> logger,
             IdentityServerContext context,
             ILocalizationService localizationService,
-            IHtmlEncoder htmlEncoder,
-            IUrlEncoder urlEncoder,
             IMessageStore<SignInMessage> signInMessageStore,
             ClientListCookie clientListCookie)
         {
             _logger = logger;
             _context = context;
             _localizationService = localizationService;
-            _htmlEncoder = htmlEncoder;
-            _urlEncoder = urlEncoder;
             _signInMessageStore = signInMessageStore;
             _clientListCookie = clientListCookie;
         }
@@ -118,12 +112,12 @@ namespace IdentityServer4.Core.ResponseHandling
                 if (request.ResponseMode == Constants.ResponseModes.Query ||
                     request.ResponseMode == Constants.ResponseModes.Fragment)
                 {
-                    errorModel.ReturnInfo.Uri = request.RedirectUri = AuthorizeRedirectResult.BuildUri(response, _urlEncoder);
+                    errorModel.ReturnInfo.Uri = request.RedirectUri = AuthorizeRedirectResult.BuildUri(response);
                 }
                 else if (request.ResponseMode == Constants.ResponseModes.FormPost)
                 {
                     errorModel.ReturnInfo.Uri = request.RedirectUri;
-                    errorModel.ReturnInfo.PostBody = AuthorizeFormPostResult.BuildFormBody(response, _htmlEncoder);
+                    errorModel.ReturnInfo.PostBody = AuthorizeFormPostResult.BuildFormBody(response);
                 }
                 else
                 {
@@ -152,7 +146,7 @@ namespace IdentityServer4.Core.ResponseHandling
                 _logger.LogDebug("Adding client {0} to client list cookie for subject {1}", request.ClientId, request.Subject.GetSubjectId());
                 _clientListCookie.AddClient(request.ClientId);
 
-                return Task.FromResult<IEndpointResult>(new AuthorizeRedirectResult(response, _urlEncoder));
+                return Task.FromResult<IEndpointResult>(new AuthorizeRedirectResult(response));
             }
 
             if (request.ResponseMode == Constants.ResponseModes.FormPost)
@@ -160,7 +154,7 @@ namespace IdentityServer4.Core.ResponseHandling
                 _logger.LogDebug("Adding client {0} to client list cookie for subject {1}", request.ClientId, request.Subject.GetSubjectId());
                 _clientListCookie.AddClient(request.ClientId);
 
-                return Task.FromResult<IEndpointResult>(new AuthorizeFormPostResult(response, _htmlEncoder));
+                return Task.FromResult<IEndpointResult>(new AuthorizeFormPostResult(response));
             }
 
             _logger.LogError("Unsupported response mode.");

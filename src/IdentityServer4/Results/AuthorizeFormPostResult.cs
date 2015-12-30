@@ -8,17 +8,14 @@ namespace IdentityServer4.Core.Results
 {
     class AuthorizeFormPostResult : AuthorizeResult
     {
-        private readonly IHtmlEncoder _encoder;
-
-        public AuthorizeFormPostResult(AuthorizeResponse response, IHtmlEncoder encoder)
+        public AuthorizeFormPostResult(AuthorizeResponse response)
             : base(response)
         {
-            _encoder = encoder;
         }
 
-        internal static string BuildFormBody(AuthorizeResponse response, IHtmlEncoder encoder)
+        internal static string BuildFormBody(AuthorizeResponse response)
         {
-            return response.ToNameValueCollection().ToFormPost(encoder);
+            return response.ToNameValueCollection().ToFormPost();
         }
 
         public override Task ExecuteAsync(IdentityServerContext context)

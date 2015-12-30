@@ -26,7 +26,7 @@ namespace IdentityServer4.Core.Extensions
 {
     internal static class NameValueCollectionExtensions
     {
-        public static string ToQueryString(this NameValueCollection collection, IUrlEncoder encoder)
+        public static string ToQueryString(this NameValueCollection collection)
         {
             if (collection.Count == 0)
             {
@@ -46,7 +46,7 @@ namespace IdentityServer4.Core.Extensions
                 {
                     foreach (string value in values)
                     {
-                        first = AppendNameValuePair(builder, first, true, name, encoder.UrlEncode(value));
+                        first = AppendNameValuePair(builder, first, true, name, UrlEncoder.Default.UrlEncode(value));
                     }
                 }
             }
@@ -54,7 +54,7 @@ namespace IdentityServer4.Core.Extensions
             return builder.ToString();
         }
 
-        public static string ToFormPost(this NameValueCollection collection, IHtmlEncoder encoder)
+        public static string ToFormPost(this NameValueCollection collection)
         {
             var builder = new StringBuilder(128);
             const string inputFieldFormat = "<input type=\"hidden\" name=\"{0}\" value=\"{1}\" />\n";
@@ -63,7 +63,7 @@ namespace IdentityServer4.Core.Extensions
             {
                 var values = collection.GetValues(name);
                 var value = values.First();
-                value = encoder.HtmlEncode(value);
+                value = HtmlEncoder.Default.HtmlEncode(value);
                 builder.AppendFormat(inputFieldFormat, name, value);
             }
 

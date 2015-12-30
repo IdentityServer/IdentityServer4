@@ -9,7 +9,7 @@ namespace UnitTests.Endpoints.Authorize
 {
     class StubResultGenerator : IAuthorizeEndpointResultGenerator
     {
-        public IEndpointResult AuthorizeResult { get; set; } = new AuthorizeRedirectResult(null, new FakeUrlEncoder());
+        public IEndpointResult AuthorizeResult { get; set; } = new AuthorizeRedirectResult(null);
         public IEndpointResult ConsentResult { get; set; } = new ConsentPageResult();
         public IEndpointResult LoginResult { get; set; } = new LoginPageResult("http://server/login?id=x");
         public IEndpointResult ErrorResult { get; set; } = new ErrorPageResult(null);

@@ -8,18 +8,15 @@ namespace IdentityServer4.Core.Results
 {
     class AuthorizeRedirectResult : AuthorizeResult
     {
-        private readonly IUrlEncoder _encoder;
-
-        public AuthorizeRedirectResult(AuthorizeResponse response, IUrlEncoder urlEncoder)
+        public AuthorizeRedirectResult(AuthorizeResponse response)
             : base(response)
         {
-            _encoder = urlEncoder;
         }
 
-        internal static string BuildUri(AuthorizeResponse response, IUrlEncoder encoder)
+        internal static string BuildUri(AuthorizeResponse response)
         {
             var uri = response.RedirectUri;
-            var query = response.ToNameValueCollection().ToQueryString(encoder);
+            var query = response.ToNameValueCollection().ToQueryString();
 
             if (response.Request.ResponseMode == Constants.ResponseModes.Query)
             {
@@ -41,7 +38,7 @@ namespace IdentityServer4.Core.Results
 
         public override Task ExecuteAsync(IdentityServerContext context)
         {
-            context.HttpContext.Response.Redirect(BuildUri(Response, _encoder));
+            context.HttpContext.Response.Redirect(BuildUri(Response));
             return Task.FromResult(0);
         }
     }
