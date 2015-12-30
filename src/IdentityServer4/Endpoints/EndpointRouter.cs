@@ -1,4 +1,5 @@
-﻿using IdentityServer4.Core.Hosting;
+﻿using IdentityServer4.Core.Extensions;
+using IdentityServer4.Core.Hosting;
 using Microsoft.AspNet.Http;
 using System;
 using System.Collections.Generic;
@@ -23,12 +24,7 @@ namespace IdentityServer4.Core.Endpoints
             IEndpoint endpoint = null;
             foreach(var key in _map.Keys)
             {
-                var path = key;
-                if (!path.StartsWith("/"))
-                {
-                    path = "/" + path;
-                };
-
+                var path = key.EnsureLeadingSlash();
                 if (context.Request.Path.StartsWithSegments(path))
                 {
                     endpoint = context.ApplicationServices.GetService(_map[key]) as IEndpoint;

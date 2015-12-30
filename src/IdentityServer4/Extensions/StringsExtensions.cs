@@ -91,6 +91,16 @@ namespace IdentityServer4.Core.Extensions
             return !string.IsNullOrWhiteSpace(value);
         }
 
+        public static string EnsureLeadingSlash(this string url)
+        {
+            if (!url.StartsWith("/"))
+            {
+                return "/" + url;
+            }
+
+            return url;
+        }
+
         public static string EnsureTrailingSlash(this string url)
         {
             if (!url.EndsWith("/"))
