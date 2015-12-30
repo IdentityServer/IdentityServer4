@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Results;
@@ -14,6 +15,7 @@ using IdentityServer4.Core.Hosting;
 using IdentityServer4.Core.Events;
 using IdentityServer4.Core.Models;
 using Microsoft.Extensions.WebEncoders;
+using IdentityServer4.Core.Resources;
 
 namespace IdentityServer4.Core.Endpoints
 {
@@ -26,6 +28,7 @@ namespace IdentityServer4.Core.Endpoints
         private readonly IAuthorizeRequestValidator _validator;
         private readonly IAuthorizeInteractionResponseGenerator _interactionGenerator;
         private readonly IAuthorizeEndpointResultGenerator _resultGenerator;
+        private readonly IMessageStore<UserConsentResponseMessage> _consentMessageStore;
 
         public AuthorizeEndpoint(
             IEventService events, 
@@ -34,7 +37,8 @@ namespace IdentityServer4.Core.Endpoints
             IAuthorizeResponseGenerator responseGenerator,
             IAuthorizeRequestValidator validator,
             IAuthorizeInteractionResponseGenerator interactionGenerator,
-            IAuthorizeEndpointResultGenerator resultGenerator)
+            IAuthorizeEndpointResultGenerator resultGenerator,
+            IMessageStore<UserConsentResponseMessage> consentMessageStore)
         {
             _events = events;
             _logger = logger;
@@ -43,6 +47,7 @@ namespace IdentityServer4.Core.Endpoints
             _validator = validator;
             _interactionGenerator = interactionGenerator;
             _resultGenerator = resultGenerator;
+            _consentMessageStore = consentMessageStore;
         }
 
         public async Task<IEndpointResult> ProcessAsync(IdentityServerContext context)
@@ -52,11 +57,62 @@ namespace IdentityServer4.Core.Endpoints
                 return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
             }
 
+            if (context.HttpContext.Request.Path == Constants.RoutePaths.Oidc.Authorize.EnsureLeadingSlash())
+            {
+                return await ProcessAuthorizeAsync(context);
+            }
+
+            if (context.HttpContext.Request.Path == Constants.RoutePaths.Oidc.AuthorizeWithConsent.EnsureLeadingSlash())
+            {
+                return await ProcessAuthorizeWithConsentAsync(context);
+            }
+
+            return new StatusCodeResult(HttpStatusCode.NotFound);
+        }
+
+        async Task<IEndpointResult> ProcessAuthorizeAsync(IdentityServerContext context)
+        {
             _logger.LogInformation("Start Authorize Request");
 
             var values = context.HttpContext.Request.Query.AsNameValueCollection();
             var user = await _context.GetIdentityServerUserAsync();
             var result = await ProcessAuthorizeRequestAsync(values, user, null);
+
+            _logger.LogInformation("End Authorize Request. Result type: {0}", result?.GetType().ToString() ?? "-none-");
+
+            return result;
+        }
+
+        internal async Task<IEndpointResult> ProcessAuthorizeWithConsentAsync(IdentityServerContext context)
+        {
+            _logger.LogInformation("Start Authorize Request (with consent)");
+
+            if (!context.HttpContext.Request.Query.ContainsKey("id"))
+            {
+                _logger.LogWarning("id query parameter is missing.");
+                return await ErrorPageAsync(ErrorTypes.User, nameof(Messages.UnexpectedError), null);
+            }
+
+            var id = context.HttpContext.Request.Query["id"].First();
+            var consent = await _consentMessageStore.ReadAsync(id);
+            if (consent == null)
+            {
+                _logger.LogWarning("consent message is missing.");
+                return await ErrorPageAsync(ErrorTypes.User, nameof(Messages.UnexpectedError), null);
+            }
+            if (consent.AuthorizeRequestParameters == null)
+            {
+                _logger.LogWarning("consent message is missing AuthorizeRequestParameters data.");
+                return await ErrorPageAsync(ErrorTypes.User, nameof(Messages.UnexpectedError), null);
+            }
+            if (consent.Consent == null)
+            {
+                _logger.LogWarning("consent message is missing Consent data.");
+                return await ErrorPageAsync(ErrorTypes.User, nameof(Messages.UnexpectedError), null);
+            }
+
+            var user = await _context.GetIdentityServerUserAsync();
+            var result = await ProcessAuthorizeRequestAsync(consent.AuthorizeRequestParameters, user, consent.Consent);
 
             _logger.LogInformation("End Authorize Request. Result type: {0}", result?.GetType().ToString() ?? "-none-");
 
@@ -78,7 +134,7 @@ namespace IdentityServer4.Core.Endpoints
             var result = await _validator.ValidateAsync(parameters, user);
             if (result.IsError)
             {
-                return await ErrorAsync(
+                return await ErrorPageAsync(
                     result.ErrorType, 
                     result.Error, 
                     result.ValidatedRequest);
@@ -89,14 +145,14 @@ namespace IdentityServer4.Core.Endpoints
             var loginInteraction = await _interactionGenerator.ProcessLoginAsync(request, user);
             if (loginInteraction.IsError)
             {
-                return await ErrorAsync(
+                return await ErrorPageAsync(
                     loginInteraction.Error.ErrorType,
                     loginInteraction.Error.Error,
                     request);
             }
             if (loginInteraction.IsLogin)
             {
-                return await LoginAsync(loginInteraction.SignInMessage, request.Raw);
+                return await LoginPageAsync(loginInteraction.SignInMessage, request.Raw);
             }
 
             // user must be authenticated at this point
@@ -111,13 +167,13 @@ namespace IdentityServer4.Core.Endpoints
             loginInteraction = await _interactionGenerator.ProcessClientLoginAsync(request);
             if (loginInteraction.IsLogin)
             {
-                return await LoginAsync(loginInteraction.SignInMessage, request.Raw);
+                return await LoginPageAsync(loginInteraction.SignInMessage, request.Raw);
             }
 
             var consentInteraction = await _interactionGenerator.ProcessConsentAsync(request, consent);
             if (consentInteraction.IsError)
             {
-                return await ErrorAsync(
+                return await ErrorPageAsync(
                     consentInteraction.Error.ErrorType,
                     consentInteraction.Error.Error,
                     request);
@@ -125,7 +181,7 @@ namespace IdentityServer4.Core.Endpoints
             if (consentInteraction.IsConsent)
             {
                 _logger.LogInformation("Showing consent screen");
-                return await ConsentAsync(request, consent, request.Raw, consentInteraction.ConsentError);
+                return await ConsentPageAsync(request, consent, request.Raw, consentInteraction.ConsentError);
             }
 
             return await SuccessfulAuthorizationAsync(request);
@@ -141,7 +197,7 @@ namespace IdentityServer4.Core.Endpoints
             return result;
         }
 
-        async Task<IEndpointResult> LoginAsync(SignInMessage message, NameValueCollection parameters)
+        async Task<IEndpointResult> LoginPageAsync(SignInMessage message, NameValueCollection parameters)
         {
             var url = _context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.RoutePaths.Oidc.Authorize;
             url.AddQueryString(parameters.ToQueryString());
@@ -150,12 +206,12 @@ namespace IdentityServer4.Core.Endpoints
             return await _resultGenerator.CreateLoginResultAsync(message);
         }
 
-        private async Task<IEndpointResult> ConsentAsync(ValidatedAuthorizeRequest validatedRequest, UserConsent consent, NameValueCollection requestParameters, string errorMessage)
+        private async Task<IEndpointResult> ConsentPageAsync(ValidatedAuthorizeRequest validatedRequest, UserConsent consent, NameValueCollection requestParameters, string errorMessage)
         {
             return await _resultGenerator.CreateConsentResultAsync();
         }
 
-        async Task<IEndpointResult> ErrorAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request)
+        async Task<IEndpointResult> ErrorPageAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request)
         {
             await RaiseFailureEventAsync(error);
 

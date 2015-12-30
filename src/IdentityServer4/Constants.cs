@@ -649,6 +649,9 @@ namespace IdentityServer4.Core
             public static class Oidc
             {
                 public const string Authorize = "connect/authorize";
+                // new
+                public const string AuthorizeWithConsent = "connect/authorize/consent";
+
                 public const string Consent = "connect/consent";
                 public const string SwitchUser = "connect/switch";
                 public const string DiscoveryConfiguration = ".well-known/openid-configuration";

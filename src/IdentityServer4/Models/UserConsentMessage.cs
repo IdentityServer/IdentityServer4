@@ -60,6 +60,12 @@ namespace IdentityServer4.Core.Models
     /// </summary>
     public class UserConsentResponseMessage : Message
     {
+        public UserConsentResponseMessage()
+        {
+            Consent = new UserConsent();
+            AuthorizeRequestParameters = new NameValueCollection();
+        }
+
         public UserConsent Consent { get; set; }
         public NameValueCollection AuthorizeRequestParameters { get; set; }
     }

@@ -71,6 +71,11 @@ namespace IdentityServer4.Core.ResponseHandling
 
         public async Task<IEndpointResult> CreateErrorResultAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request)
         {
+            if (errorType == ErrorTypes.Client && request == null)
+            {
+                throw new ArgumentNullException(nameof(request), "Request must be passed when error type is Client.");
+            }
+
             var msg = _localizationService.GetMessage(error);
             if (msg.IsMissing())
             {
