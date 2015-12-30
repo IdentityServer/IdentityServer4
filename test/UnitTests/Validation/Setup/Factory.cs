@@ -105,7 +105,60 @@ namespace IdentityServer4.Tests.Validation
             return new DefaultTokenSigningService(new DefaultSigningKeyService(TestIdentityServerOptions.Create()));
         }
 
+        public static AuthorizeRequestValidator CreateAuthorizeRequestValidator(
+            IdentityServerOptions options = null,
+            IScopeStore scopes = null,
+            IClientStore clients = null,
+            IUserService users = null,
+            ICustomRequestValidator customValidator = null,
+            IRedirectUriValidator uriValidator = null,
+            ScopeValidator scopeValidator = null,
+            IDictionary<string, object> environment = null)
+        {
+            if (options == null)
+            {
+                options = TestIdentityServerOptions.Create();
+            }
 
+            if (scopes == null)
+            {
+                scopes = new InMemoryScopeStore(TestScopes.Get());
+            }
+
+            if (clients == null)
+            {
+                clients = new InMemoryClientStore(TestClients.Get());
+            }
+
+            if (customValidator == null)
+            {
+                customValidator = new DefaultCustomRequestValidator();
+            }
+
+            if (uriValidator == null)
+            {
+                uriValidator = new DefaultRedirectUriValidator();
+            }
+
+            if (scopeValidator == null)
+            {
+                scopeValidator = new ScopeValidator(scopes, new LoggerFactory());
+            }
+
+            //var mockSessionCookie = new Mock<SessionCookie>((IOwinContext)null, (IdentityServerOptions)null);
+            //mockSessionCookie.CallBase = false;
+            //mockSessionCookie.Setup(x => x.GetSessionId()).Returns((string)null);
+
+            return new AuthorizeRequestValidator(
+                options, 
+                clients, 
+                customValidator, 
+                uriValidator, 
+                scopeValidator, 
+                new Logger<AuthorizeRequestValidator>(new LoggerFactory())
+            );
+
+        }
 
         public static TokenValidator CreateTokenValidator(ITokenHandleStore tokenStore = null, IUserService users = null)
         {
