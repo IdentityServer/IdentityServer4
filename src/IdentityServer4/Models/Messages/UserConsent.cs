@@ -55,48 +55,4 @@ namespace IdentityServer4.Core.Models
         /// </value>
         public bool RememberConsent { get; set; }
     }
-
-    /// <summary>
-    /// Models the message returned from the consent page.
-    /// </summary>
-    public class UserConsentResponseMessage : Message
-    {
-        public UserConsentResponseMessage()
-        {
-            Consent = new UserConsent();
-            AuthorizeRequestParameters = new NameValueCollection();
-        }
-
-        public UserConsent Consent { get; set; }
-        public NameValueCollection AuthorizeRequestParameters { get; set; }
-    }
-
-    /// <summary>
-    /// Models the data submitted from the conset page.
-    /// </summary>
-    public class UserConsentRequestMessage : Message
-    {
-        public UserConsentRequestMessage()
-        {
-        }
-
-        public UserConsentRequestMessage(ValidatedAuthorizeRequest request, NameValueCollection parameters)
-        {
-            this.ClientId = request.ClientId;
-            this.ScopesRequested = request.RequestedScopes.ToArray();
-            AuthorizeRequestParameters = parameters;
-        }
-
-        public string ClientId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the scopes requested.
-        /// </summary>
-        /// <value>
-        /// The scopes requested.
-        /// </value>
-        public string[] ScopesRequested { get; set; }
-
-        public NameValueCollection AuthorizeRequestParameters { get; set; }
-    }
 }

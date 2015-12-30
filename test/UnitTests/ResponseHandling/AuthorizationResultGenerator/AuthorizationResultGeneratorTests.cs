@@ -36,6 +36,7 @@ namespace UnitTests.ResponseHandling
                 _stubLocalizationService,
                 _mockSignInMessageStore,
                 _mockConsentRequestMessageStore,
+                _mockErrorMessageStore, 
                 _mockClientListCookie);
         }
 
@@ -44,6 +45,7 @@ namespace UnitTests.ResponseHandling
         MockClientListCookie _mockClientListCookie;
         MockMessageStore<SignInMessage> _mockSignInMessageStore = new MockMessageStore<SignInMessage>();
         MockMessageStore<UserConsentRequestMessage> _mockConsentRequestMessageStore = new MockMessageStore<UserConsentRequestMessage>();
+        MockMessageStore<IdentityServer4.Core.Models.ErrorMessage> _mockErrorMessageStore = new MockMessageStore<IdentityServer4.Core.Models.ErrorMessage>();
         StubLocalizationService _stubLocalizationService = new StubLocalizationService();
 
         ValidatedAuthorizeRequest _validatedRequest = new ValidatedAuthorizeRequest
@@ -68,9 +70,10 @@ namespace UnitTests.ResponseHandling
 
             var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(ErrorTypes.User, "error", _validatedRequest));
 
-            result.Model.ErrorCode.Should().Be("error");
-            result.Model.ErrorMessage.Should().Be("translation");
-            result.Model.RequestId.Should().Be("555");
+            var model = _mockErrorMessageStore.Messages[result.Id];
+            model.ErrorCode.Should().Be("error");
+            model.ErrorDescription.Should().Be("translation");
+            model.RequestId.Should().Be("555");
         }
 
         [Fact]
@@ -81,7 +84,8 @@ namespace UnitTests.ResponseHandling
 
             var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(ErrorTypes.User, "error", _validatedRequest));
 
-            result.Model.ErrorMessage.Should().Be("error");
+            var model = _mockErrorMessageStore.Messages[result.Id];
+            model.ErrorDescription.Should().Be("error");
         }
 
         [Fact]
@@ -90,7 +94,8 @@ namespace UnitTests.ResponseHandling
         {
             var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(ErrorTypes.User, "error", _validatedRequest));
 
-            result.Model.ReturnInfo.Should().BeNull();
+            var model = _mockErrorMessageStore.Messages[result.Id];
+            model.ReturnInfo.Should().BeNull();
         }
 
         [Fact]
@@ -101,9 +106,10 @@ namespace UnitTests.ResponseHandling
 
             var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(ErrorTypes.Client, "error", _validatedRequest));
 
-            result.Model.ReturnInfo.Should().NotBeNull();
-            result.Model.ReturnInfo.ClientId.Should().Be("client_id");
-            result.Model.ReturnInfo.ClientName.Should().Be("Test Client");
+            var model = _mockErrorMessageStore.Messages[result.Id];
+            model.ReturnInfo.Should().NotBeNull();
+            model.ReturnInfo.ClientId.Should().Be("client_id");
+            model.ReturnInfo.ClientName.Should().Be("Test Client");
         }
 
         [Fact]
@@ -116,9 +122,10 @@ namespace UnitTests.ResponseHandling
 
             var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(ErrorTypes.Client, "error", _validatedRequest));
 
-            result.Model.ReturnInfo.IsPost.Should().BeTrue();
-            result.Model.ReturnInfo.Uri.Should().Be("http://client/callback");
-            result.Model.ReturnInfo.PostBody.Should().NotBeNull();
+            var model = _mockErrorMessageStore.Messages[result.Id];
+            model.ReturnInfo.IsPost.Should().BeTrue();
+            model.ReturnInfo.Uri.Should().Be("http://client/callback");
+            model.ReturnInfo.PostBody.Should().NotBeNull();
         }
 
         [Fact]
@@ -131,9 +138,10 @@ namespace UnitTests.ResponseHandling
 
             var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(ErrorTypes.Client, "error", _validatedRequest));
 
-            result.Model.ReturnInfo.IsPost.Should().BeFalse();
-            result.Model.ReturnInfo.Uri.Should().StartWith("http://client/callback#");
-            result.Model.ReturnInfo.Uri.Should().Contain("state=123");
+            var model = _mockErrorMessageStore.Messages[result.Id];
+            model.ReturnInfo.IsPost.Should().BeFalse();
+            model.ReturnInfo.Uri.Should().StartWith("http://client/callback#");
+            model.ReturnInfo.Uri.Should().Contain("state=123");
         }
 
         [Fact]
@@ -146,9 +154,10 @@ namespace UnitTests.ResponseHandling
 
             var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(ErrorTypes.Client, "error", _validatedRequest));
 
-            result.Model.ReturnInfo.IsPost.Should().BeFalse();
-            result.Model.ReturnInfo.Uri.Should().StartWith("http://client/callback?");
-            result.Model.ReturnInfo.Uri.Should().Contain("state=123");
+            var model = _mockErrorMessageStore.Messages[result.Id];
+            model.ReturnInfo.IsPost.Should().BeFalse();
+            model.ReturnInfo.Uri.Should().StartWith("http://client/callback?");
+            model.ReturnInfo.Uri.Should().Contain("state=123");
         }
 
         [Fact]

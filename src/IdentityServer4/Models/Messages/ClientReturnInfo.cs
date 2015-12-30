@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-
-namespace IdentityServer4.Core.ViewModels
+namespace IdentityServer4.Core.Models
 {
     /// <summary>
     /// Models the information and mechanisms for allowing a user to return to a client application.

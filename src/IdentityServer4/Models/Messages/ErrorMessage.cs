@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ 
+using IdentityServer4.Core.Models;
 
-
-namespace IdentityServer4.Core.ViewModels
+namespace IdentityServer4.Core.Models
 {
     /// <summary>
     /// Models the data for the error page.
     /// </summary>
-    public class ErrorViewModel
+    public class ErrorMessage : Message
     {
         /// <summary>
         /// Gets or sets the error code.
@@ -36,7 +37,7 @@ namespace IdentityServer4.Core.ViewModels
         /// <value>
         /// The error message.
         /// </value>
-        public string ErrorMessage { get; set; }
+        public string ErrorDescription { get; set; }
 
         /// <summary>
         /// The per-request identifier. This can be used to display to the end user and can be used in diagnostics.

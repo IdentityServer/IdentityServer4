@@ -1,4 +1,5 @@
-﻿using IdentityServer4.Core.Models;
+﻿using IdentityServer4.Core.Hosting;
+using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Results;
 using IdentityServer4.Core.Validation;
 using System.Collections.Specialized;

@@ -1,11 +1,13 @@
-﻿using IdentityServer4.Core.ViewModels;
+﻿using System;
+using System.Threading.Tasks;
+using IdentityServer4.Core.Hosting;
 
 namespace IdentityServer4.Core.Results
 {
-    public class ErrorPageResult : PipelineResult<ErrorViewModel>
+    public class ErrorPageResult : RedirectToPageResult
     {
-        public ErrorPageResult(ErrorViewModel model)
-            : base(Constants.RoutePaths.Error, model)
+        public ErrorPageResult(string id)
+            : base(Constants.RoutePaths.Error, id)
         {
         }
     }

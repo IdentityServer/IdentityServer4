@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
+using IdentityServer4.Core.Validation;
+using System.Collections.Specialized;
+using System.Linq;
+
 namespace IdentityServer4.Core.Models
 {
-    abstract class InteractionResponse
+    /// <summary>
+    /// Models the message returned from the consent page.
+    /// </summary>
+    public class UserConsentResponseMessage : Message
     {
-        public bool IsError { get { return Error != null; } }
-        public AuthorizeError Error { get; set; }
-    }
+        public UserConsentResponseMessage()
+        {
+            Consent = new UserConsent();
+            AuthorizeRequestParameters = new NameValueCollection();
+        }
 
-    class LoginInteractionResponse : InteractionResponse
-    {
-        public bool IsLogin { get { return SignInMessage != null; } }
-        public SignInMessage SignInMessage { get; set; }
-    }
-
-    class ConsentInteractionResponse : InteractionResponse
-    {
-        public bool IsConsent { get; set; }
+        public UserConsent Consent { get; set; }
+        public NameValueCollection AuthorizeRequestParameters { get; set; }
     }
 }

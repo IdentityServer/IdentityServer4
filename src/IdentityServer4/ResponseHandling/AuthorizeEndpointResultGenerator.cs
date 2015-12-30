@@ -4,7 +4,6 @@ using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Results;
 using IdentityServer4.Core.Services;
 using IdentityServer4.Core.Validation;
-using IdentityServer4.Core.ViewModels;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.WebEncoders;
 using System;
@@ -19,8 +18,9 @@ namespace IdentityServer4.Core.ResponseHandling
         private readonly IdentityServerContext _context;
         private readonly ILocalizationService _localizationService;
         private readonly IMessageStore<SignInMessage> _signInMessageStore;
-        private readonly ClientListCookie _clientListCookie;
         private readonly IMessageStore<UserConsentRequestMessage> _consentRequestStore;
+        private readonly IMessageStore<ErrorMessage> _errorMessageStore;
+        private readonly ClientListCookie _clientListCookie;
 
         public AuthorizeEndpointResultGenerator(
             ILogger<AuthorizeEndpointResultGenerator> logger,
@@ -28,6 +28,7 @@ namespace IdentityServer4.Core.ResponseHandling
             ILocalizationService localizationService,
             IMessageStore<SignInMessage> signInMessageStore,
             IMessageStore<UserConsentRequestMessage> consentRequestStore,
+            IMessageStore<ErrorMessage> errorMessageStore,
             ClientListCookie clientListCookie)
         {
             _logger = logger;
@@ -35,6 +36,7 @@ namespace IdentityServer4.Core.ResponseHandling
             _localizationService = localizationService;
             _signInMessageStore = signInMessageStore;
             _consentRequestStore = consentRequestStore;
+            _errorMessageStore = errorMessageStore;
             _clientListCookie = clientListCookie;
         }
 
@@ -44,9 +46,14 @@ namespace IdentityServer4.Core.ResponseHandling
             return new LoginPageResult(id);
         }
 
-        public async Task<IEndpointResult> CreateConsentResultAsync(ValidatedAuthorizeRequest validatedRequest, NameValueCollection parameters)
+        public async Task<IEndpointResult> CreateConsentResultAsync(ValidatedAuthorizeRequest request, NameValueCollection parameters)
         {
-            var message = new UserConsentRequestMessage(validatedRequest, parameters);
+            var message = new UserConsentRequestMessage()
+            {
+                ClientId = request.ClientId,
+                ScopesRequested = request.RequestedScopes.ToArray(),
+                AuthorizeRequestParameters = parameters
+            };
             var id = await _consentRequestStore.WriteAsync(message);
             return new ConsentPageResult(id);
         }
@@ -64,11 +71,11 @@ namespace IdentityServer4.Core.ResponseHandling
                 msg = error;
             }
 
-            var errorModel = new ErrorViewModel
+            var errorModel = new ErrorMessage
             {
                 RequestId = _context.GetRequestId(),
                 ErrorCode = error,
-                ErrorMessage = msg
+                ErrorDescription = msg
             };
 
             // if this is a client error, we need to build up the 
@@ -113,7 +120,8 @@ namespace IdentityServer4.Core.ResponseHandling
                 }
             }
 
-            return new ErrorPageResult(errorModel);
+            var id = await _errorMessageStore.WriteAsync(errorModel);
+            return new ErrorPageResult(id);
         }
 
         public Task<IEndpointResult> CreateAuthorizeResultAsync(AuthorizeResponse response)

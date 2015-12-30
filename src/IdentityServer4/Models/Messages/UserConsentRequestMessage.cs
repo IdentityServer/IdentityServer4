@@ -14,22 +14,27 @@
  * limitations under the License.
  */
 
+using IdentityServer4.Core.Validation;
+using System.Collections.Specialized;
+using System.Linq;
+
 namespace IdentityServer4.Core.Models
 {
-    abstract class InteractionResponse
+    /// <summary>
+    /// Models the data submitted from the conset page.
+    /// </summary>
+    public class UserConsentRequestMessage : Message
     {
-        public bool IsError { get { return Error != null; } }
-        public AuthorizeError Error { get; set; }
-    }
+        public string ClientId { get; set; }
 
-    class LoginInteractionResponse : InteractionResponse
-    {
-        public bool IsLogin { get { return SignInMessage != null; } }
-        public SignInMessage SignInMessage { get; set; }
-    }
+        /// <summary>
+        /// Gets or sets the scopes requested.
+        /// </summary>
+        /// <value>
+        /// The scopes requested.
+        /// </value>
+        public string[] ScopesRequested { get; set; }
 
-    class ConsentInteractionResponse : InteractionResponse
-    {
-        public bool IsConsent { get; set; }
+        public NameValueCollection AuthorizeRequestParameters { get; set; }
     }
 }

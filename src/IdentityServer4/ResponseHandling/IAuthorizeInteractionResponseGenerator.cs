@@ -16,7 +16,6 @@
 
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Validation;
-using IdentityServer4.Core.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

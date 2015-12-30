@@ -29,12 +29,7 @@ namespace IdentityServer4.Core.Hosting
                     await result.ExecuteAsync(idSvrContext);
                 }
 
-                // if we see the IPipelineResult marker, then we want to execute the next middleware
-                // so we don't want to terminte the pipeline here
-                if (result != null && (result is IPipelineResult) == false)
-                {
-                    return;
-                }
+                return;
             }
 
             await _next(context);

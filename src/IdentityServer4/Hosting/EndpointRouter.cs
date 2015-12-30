@@ -4,7 +4,7 @@ using Microsoft.AspNet.Http;
 using System;
 using System.Collections.Generic;
 
-namespace IdentityServer4.Core.Endpoints
+namespace IdentityServer4.Core.Hosting
 {
     class EndpointRouter : IEndpointRouter
     {
