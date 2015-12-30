@@ -189,9 +189,9 @@ namespace UnitTests.Endpoints.Authorize
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task login_interaction_produces_error_should_show_error_page()
+        public async Task interaction_produces_error_should_show_error_page()
         {
-            _stubInteractionGenerator.LoginResponse.Error = new AuthorizeError { };
+            _stubInteractionGenerator.Response.Error = new AuthorizeError { };
 
             var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
@@ -200,9 +200,9 @@ namespace UnitTests.Endpoints.Authorize
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task login_interaction_produces_error_should_raise_failed_endpoint_event()
+        public async Task interaction_produces_error_should_raise_failed_endpoint_event()
         {
-            _stubInteractionGenerator.LoginResponse.Error = new AuthorizeError {
+            _stubInteractionGenerator.Response.Error = new AuthorizeError {
                 Error = "some_error",
             };
 
@@ -217,9 +217,9 @@ namespace UnitTests.Endpoints.Authorize
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task login_interaction_produces_login_result_should_trigger_login()
+        public async Task interaction_produces_login_result_should_trigger_login()
         {
-            _stubInteractionGenerator.LoginResponse.IsLogin = true;
+            _stubInteractionGenerator.Response.IsLogin = true;
 
             var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
@@ -228,37 +228,9 @@ namespace UnitTests.Endpoints.Authorize
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task interaction_generator_consent_produces_error_should_show_error_page()
-        {
-            _stubInteractionGenerator.ConsentResponse.Error = new AuthorizeError { };
-
-            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
-
-            result.Should().BeOfType<ErrorPageResult>();
-        }
-
-        [Fact]
-        [Trait("Category", Category)]
-        public async Task interaction_generator_consent_produces_error_should_raise_failed_endpoint_event()
-        {
-            _stubInteractionGenerator.ConsentResponse.Error = new AuthorizeError {
-                Error = "bar_error"
-            };
-
-            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
-
-            var evt = _mockEventService.AssertEventWasRaised<Event<EndpointDetail>>();
-            evt.EventType.Should().Be(EventTypes.Failure);
-            evt.Id.Should().Be(EventConstants.Ids.EndpointFailure);
-            evt.Message.Should().Be("bar_error");
-            evt.Details.EndpointName.Should().Be(EventConstants.EndpointNames.Authorize);
-        }
-
-        [Fact]
-        [Trait("Category", Category)]
         public async Task interaction_generator_consent_produces_consent_should_show_consent_page()
         {
-            _stubInteractionGenerator.ConsentResponse.IsConsent = true;
+            _stubInteractionGenerator.Response.IsConsent = true;
 
             var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 

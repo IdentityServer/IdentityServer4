@@ -76,6 +76,7 @@ namespace IdentityServer4.Core.Endpoints
 
             var values = context.HttpContext.Request.Query.AsNameValueCollection();
             var user = await _context.GetIdentityServerUserAsync();
+
             var result = await ProcessAuthorizeRequestAsync(values, user, null);
 
             _logger.LogInformation("End Authorize Request. Result type: {0}", result?.GetType().ToString() ?? "-none-");
@@ -143,44 +144,32 @@ namespace IdentityServer4.Core.Endpoints
 
             var request = result.ValidatedRequest;
 
-            var loginInteraction = await _interactionGenerator.ProcessLoginAsync(request, user);
-            if (loginInteraction.IsError)
+            // determine user interaction
+            var interactionResult = await _interactionGenerator.ProcessInteractionAsync(request, user);
+            if (interactionResult.IsError)
             {
                 return await ErrorPageAsync(
-                    loginInteraction.Error.ErrorType,
-                    loginInteraction.Error.Error,
+                    interactionResult.Error.ErrorType,
+                    interactionResult.Error.Error,
                     request);
             }
-            if (loginInteraction.IsLogin)
+            if (interactionResult.IsLogin)
             {
                 return await LoginPageAsync(request);
             }
-
-            // user must be authenticated at this point
-            if (!user.Identity.IsAuthenticated)
+            if (interactionResult.IsConsent)
             {
-                throw new InvalidOperationException("User is not authenticated");
-            }
-
-            var consentInteraction = await _interactionGenerator.ProcessConsentAsync(request, consent);
-            if (consentInteraction.IsError)
-            {
-                return await ErrorPageAsync(
-                    consentInteraction.Error.ErrorType,
-                    consentInteraction.Error.Error,
-                    request);
-            }
-            if (consentInteraction.IsConsent)
-            {
-                _logger.LogInformation("Showing consent screen");
                 return await ConsentPageAsync(request);
             }
 
+            // issue response
             return await SuccessfulAuthorizationAsync(request);
         }
 
         private async Task<IEndpointResult> SuccessfulAuthorizationAsync(ValidatedAuthorizeRequest request)
         {
+            _logger.LogInformation("Issuing successful authorization response");
+
             var response = await _responseGenerator.CreateResponseAsync(request);
             var result = await _resultGenerator.CreateAuthorizeResultAsync(response);
 
@@ -191,16 +180,20 @@ namespace IdentityServer4.Core.Endpoints
 
         async Task<IEndpointResult> LoginPageAsync(ValidatedAuthorizeRequest request)
         {
+            _logger.LogInformation("Showing login page");
             return await _resultGenerator.CreateLoginResultAsync(request);
         }
 
         private async Task<IEndpointResult> ConsentPageAsync(ValidatedAuthorizeRequest validatedRequest)
         {
+            _logger.LogInformation("Showing consent page");
             return await _resultGenerator.CreateConsentResultAsync(validatedRequest);
         }
 
         async Task<IEndpointResult> ErrorPageAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request)
         {
+            _logger.LogInformation("Showing error page");
+
             await RaiseFailureEventAsync(error);
 
             return await _resultGenerator.CreateErrorResultAsync(

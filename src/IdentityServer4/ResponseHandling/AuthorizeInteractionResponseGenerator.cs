@@ -52,7 +52,18 @@ namespace IdentityServer4.Core.ResponseHandling
             _localizationService = localizationService;
         }
 
-        public async Task<LoginInteractionResponse> ProcessLoginAsync(ValidatedAuthorizeRequest request, ClaimsPrincipal user)
+        public async Task<InteractionResponse> ProcessInteractionAsync(ValidatedAuthorizeRequest request, ClaimsPrincipal user, UserConsent consent = null)
+        {
+            var result = await ProcessLoginAsync(request, user);
+            if (result.IsLogin || result.IsError)
+            {
+                return result;
+            }
+
+            return await ProcessConsentAsync(request, consent);
+        }
+
+        internal async Task<InteractionResponse> ProcessLoginAsync(ValidatedAuthorizeRequest request, ClaimsPrincipal user)
         {
             if (request.PromptMode == Constants.PromptModes.Login)
             {
@@ -62,7 +73,7 @@ namespace IdentityServer4.Core.ResponseHandling
 
                 _logger.LogInformation("Redirecting to login page because of prompt=login");
 
-                return new LoginInteractionResponse() { IsLogin = true };
+                return new InteractionResponse() { IsLogin = true };
             }
 
             // unauthenticated user
@@ -89,7 +100,7 @@ namespace IdentityServer4.Core.ResponseHandling
                 {
                     _logger.LogInformation("prompt=none was requested but user is not authenticated/active.");
 
-                    return new LoginInteractionResponse
+                    return new InteractionResponse
                     {
                         Error = new AuthorizeError
                         {
@@ -102,7 +113,7 @@ namespace IdentityServer4.Core.ResponseHandling
                     };
                 }
 
-                return new LoginInteractionResponse() { IsLogin = true };
+                return new InteractionResponse() { IsLogin = true };
             }
 
             // check current idp
@@ -117,7 +128,7 @@ namespace IdentityServer4.Core.ResponseHandling
                     _logger.LogInformation("Current IdP is not the requested IdP. Redirecting to login");
                     _logger.LogInformation("Current: {0} -- Requested: {1}", currentIdp, idp);
 
-                    return new LoginInteractionResponse() { IsLogin = true };
+                    return new InteractionResponse() { IsLogin = true };
                 }
             }
 
@@ -129,7 +140,7 @@ namespace IdentityServer4.Core.ResponseHandling
                 {
                     _logger.LogInformation("Requested MaxAge exceeded.");
 
-                    return new LoginInteractionResponse() { IsLogin = true };
+                    return new InteractionResponse() { IsLogin = true };
                 }
             }
 
@@ -142,7 +153,7 @@ namespace IdentityServer4.Core.ResponseHandling
                 if (!request.Client.IdentityProviderRestrictions.Contains(currentIdp))
                 {
                     _logger.LogWarning("User is logged in with idp: {0}, but idp not in client restriction list.", currentIdp);
-                    return new LoginInteractionResponse() { IsLogin = true };
+                    return new InteractionResponse() { IsLogin = true };
                 }
             }
 
@@ -153,14 +164,14 @@ namespace IdentityServer4.Core.ResponseHandling
                     request.Client.EnableLocalLogin == false)
                 {
                     _logger.LogWarning("User is logged in with local idp, but local logins not enabled.");
-                    return new LoginInteractionResponse() { IsLogin = true };
+                    return new InteractionResponse() { IsLogin = true };
                 }
             }
 
-            return new LoginInteractionResponse();
+            return new InteractionResponse();
         }
 
-        public async Task<ConsentInteractionResponse> ProcessConsentAsync(ValidatedAuthorizeRequest request, UserConsent consent = null)
+        internal async Task<InteractionResponse> ProcessConsentAsync(ValidatedAuthorizeRequest request, UserConsent consent = null)
         {
             if (request == null) throw new ArgumentNullException("request");
 
@@ -177,7 +188,7 @@ namespace IdentityServer4.Core.ResponseHandling
             {
                 _logger.LogInformation("Prompt=none requested, but consent is required.");
 
-                return new ConsentInteractionResponse
+                return new InteractionResponse
                 {
                     Error = new AuthorizeError
                     {
@@ -192,7 +203,7 @@ namespace IdentityServer4.Core.ResponseHandling
 
             if (request.PromptMode == Constants.PromptModes.Consent || consentRequired)
             {
-                var response = new ConsentInteractionResponse();
+                var response = new InteractionResponse();
 
                 // did user provide consent
                 if (consent == null)
@@ -241,7 +252,7 @@ namespace IdentityServer4.Core.ResponseHandling
                 return response;
             }
 
-            return new ConsentInteractionResponse();
+            return new InteractionResponse();
         }
     }
 }

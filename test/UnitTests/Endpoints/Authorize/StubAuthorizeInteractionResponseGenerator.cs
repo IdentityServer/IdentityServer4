@@ -3,22 +3,17 @@ using System.Threading.Tasks;
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Validation;
 using System.Security.Claims;
+using System;
 
 namespace UnitTests.Endpoints.Authorize
 {
     class StubAuthorizeInteractionResponseGenerator : IAuthorizeInteractionResponseGenerator
     {
-        internal LoginInteractionResponse LoginResponse { get; set; } = new LoginInteractionResponse();
-        internal ConsentInteractionResponse ConsentResponse { get; set; } = new ConsentInteractionResponse();
+        internal InteractionResponse Response { get; set; } = new InteractionResponse();
 
-        public Task<LoginInteractionResponse> ProcessLoginAsync(ValidatedAuthorizeRequest request, ClaimsPrincipal user)
+        public Task<InteractionResponse> ProcessInteractionAsync(ValidatedAuthorizeRequest request, ClaimsPrincipal user, UserConsent consent = null)
         {
-            return Task.FromResult(LoginResponse);
-        }
-
-        public Task<ConsentInteractionResponse> ProcessConsentAsync(ValidatedAuthorizeRequest request, UserConsent consent = null)
-        {
-            return Task.FromResult(ConsentResponse);
+            return Task.FromResult(Response);
         }
     }
 }

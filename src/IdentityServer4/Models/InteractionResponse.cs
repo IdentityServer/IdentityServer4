@@ -16,19 +16,11 @@
 
 namespace IdentityServer4.Core.Models
 {
-    abstract class InteractionResponse
-    {
-        public bool IsError { get { return Error != null; } }
-        public AuthorizeError Error { get; set; }
-    }
-
-    class LoginInteractionResponse : InteractionResponse
+    class InteractionResponse
     {
         public bool IsLogin { get; set; }
-    }
-
-    class ConsentInteractionResponse : InteractionResponse
-    {
         public bool IsConsent { get; set; }
+        public bool IsError { get { return Error != null; } }
+        public AuthorizeError Error { get; set; }
     }
 }
