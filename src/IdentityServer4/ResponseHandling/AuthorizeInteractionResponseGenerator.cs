@@ -33,16 +33,19 @@ namespace IdentityServer4.Core.ResponseHandling
     class AuthorizeInteractionResponseGenerator : IAuthorizeInteractionResponseGenerator
     {
         private readonly ILogger<AuthorizeInteractionResponseGenerator> _logger;
-        private readonly SignInMessage _signIn;
         private readonly IdentityServerOptions _options;
         private readonly IConsentService _consent;
         private readonly IUserService _users;
         private readonly ILocalizationService _localizationService;
 
-        public AuthorizeInteractionResponseGenerator(ILogger<AuthorizeInteractionResponseGenerator> logger, IdentityServerOptions options, IConsentService consent, IUserService users, ILocalizationService localizationService)
+        public AuthorizeInteractionResponseGenerator(
+            ILogger<AuthorizeInteractionResponseGenerator> logger, 
+            IdentityServerOptions options, 
+            IConsentService consent, 
+            IUserService users, 
+            ILocalizationService localizationService)
         {
             _logger = logger;
-            _signIn = new SignInMessage();
             _options = options;
             _consent = consent;
             _users = users;
@@ -51,52 +54,6 @@ namespace IdentityServer4.Core.ResponseHandling
 
         public async Task<LoginInteractionResponse> ProcessLoginAsync(ValidatedAuthorizeRequest request, ClaimsPrincipal user)
         {
-            // let the login page know the client requesting authorization
-            _signIn.ClientId = request.ClientId;
-            
-            // pass through display mode to signin service
-            if (request.DisplayMode.IsPresent())
-            {
-                _signIn.DisplayMode = request.DisplayMode;
-            }
-
-            // pass through ui locales to signin service
-            if (request.UiLocales.IsPresent())
-            {
-                _signIn.UiLocales = request.UiLocales;
-            }
-
-            // pass through login_hint
-            if (request.LoginHint.IsPresent())
-            {
-                _signIn.LoginHint = request.LoginHint;
-            }
-
-            // process acr values
-            var acrValues = request.AuthenticationContextReferenceClasses.Distinct().ToList();
-            
-            // look for well-known acr value -- idp
-            var idp = acrValues.FirstOrDefault(x => x.StartsWith(Constants.KnownAcrValues.HomeRealm));
-            if (idp.IsPresent())
-            {
-                _signIn.IdP = idp.Substring(Constants.KnownAcrValues.HomeRealm.Length);
-                acrValues.Remove(idp);
-            }
-
-            // look for well-known acr value -- tenant
-            var tenant = acrValues.FirstOrDefault(x => x.StartsWith(Constants.KnownAcrValues.Tenant));
-            if (tenant.IsPresent())
-            {
-                _signIn.Tenant = tenant.Substring(Constants.KnownAcrValues.Tenant.Length);
-                acrValues.Remove(tenant);
-            }
-
-            // pass through any remaining acr values
-            if (acrValues.Any())
-            {
-                _signIn.AcrValues = acrValues;
-            }
-
             if (request.PromptMode == Constants.PromptModes.Login)
             {
                 // remove prompt so when we redirect back in from login page
@@ -105,15 +62,11 @@ namespace IdentityServer4.Core.ResponseHandling
 
                 _logger.LogInformation("Redirecting to login page because of prompt=login");
 
-                return new LoginInteractionResponse
-                {
-                    SignInMessage = _signIn
-                };
+                return new LoginInteractionResponse() { IsLogin = true };
             }
 
             // unauthenticated user
             var isAuthenticated = user.Identity.IsAuthenticated;
-            if (!isAuthenticated) _logger.LogInformation("User is not authenticated. Redirecting to login.");
             
             // user de-activated
             bool isActive = false;
@@ -123,16 +76,18 @@ namespace IdentityServer4.Core.ResponseHandling
                 var isActiveCtx = new IsActiveContext(user, request.Client);
                 await _users.IsActiveAsync(isActiveCtx);
                 
-                isActive = isActiveCtx.IsActive; 
-                if (!isActive) _logger.LogInformation("User is not active. Redirecting to login.");
+                isActive = isActiveCtx.IsActive;
             }
 
             if (!isAuthenticated || !isActive)
             {
+                if (!isAuthenticated) _logger.LogInformation("User is not authenticated.");
+                else if (!isActive) _logger.LogInformation("User is not active.");
+
                 // prompt=none means user must be signed in already
                 if (request.PromptMode == Constants.PromptModes.None)
                 {
-                    _logger.LogInformation("prompt=none was requested. But user is not authenticated.");
+                    _logger.LogInformation("prompt=none was requested but user is not authenticated/active.");
 
                     return new LoginInteractionResponse
                     {
@@ -147,27 +102,22 @@ namespace IdentityServer4.Core.ResponseHandling
                     };
                 }
 
-                return new LoginInteractionResponse
-                {
-                    SignInMessage = _signIn
-                };
+                return new LoginInteractionResponse() { IsLogin = true };
             }
 
             // check current idp
             var currentIdp = user.GetIdentityProvider();
 
             // check if idp login hint matches current provider
-            if (_signIn.IdP.IsPresent())
+            var idp = request.GetIdP();
+            if (idp.IsPresent())
             {
-                if (_signIn.IdP != currentIdp)
+                if (idp != currentIdp)
                 {
                     _logger.LogInformation("Current IdP is not the requested IdP. Redirecting to login");
-                    _logger.LogInformation("Current: {0} -- Requested: {1}", currentIdp, _signIn.IdP);
+                    _logger.LogInformation("Current: {0} -- Requested: {1}", currentIdp, idp);
 
-                    return new LoginInteractionResponse
-                    {
-                        SignInMessage = _signIn
-                    };
+                    return new LoginInteractionResponse() { IsLogin = true };
                 }
             }
 
@@ -177,34 +127,22 @@ namespace IdentityServer4.Core.ResponseHandling
                 var authTime = user.GetAuthenticationTime();
                 if (DateTimeOffsetHelper.UtcNow > authTime.AddSeconds(request.MaxAge.Value))
                 {
-                    _logger.LogInformation("Requested MaxAge exceeded. Redirecting to login");
+                    _logger.LogInformation("Requested MaxAge exceeded.");
 
-                    return new LoginInteractionResponse
-                    {
-                        SignInMessage = _signIn
-                    };
+                    return new LoginInteractionResponse() { IsLogin = true };
                 }
             }
 
-            return new LoginInteractionResponse();
-        }
+            // update validated request with user
+            request.Subject = user;
 
-        public Task<LoginInteractionResponse> ProcessClientLoginAsync(ValidatedAuthorizeRequest request)
-        {
             // check idp restrictions
-            var currentIdp = request.Subject.GetIdentityProvider();
             if (request.Client.IdentityProviderRestrictions != null && request.Client.IdentityProviderRestrictions.Any())
             {
                 if (!request.Client.IdentityProviderRestrictions.Contains(currentIdp))
                 {
-                    var response = new LoginInteractionResponse
-                    {
-                        SignInMessage = _signIn
-                    };
-
                     _logger.LogWarning("User is logged in with idp: {0}, but idp not in client restriction list.", currentIdp);
-
-                    return Task.FromResult(response);
+                    return new LoginInteractionResponse() { IsLogin = true };
                 }
             }
 
@@ -214,18 +152,12 @@ namespace IdentityServer4.Core.ResponseHandling
                 if (_options.AuthenticationOptions.EnableLocalLogin == false ||
                     request.Client.EnableLocalLogin == false)
                 {
-                    var response = new LoginInteractionResponse
-                    {
-                        SignInMessage = _signIn
-                    };
-
                     _logger.LogWarning("User is logged in with local idp, but local logins not enabled.");
-
-                    return Task.FromResult(response);
+                    return new LoginInteractionResponse() { IsLogin = true };
                 }
             }
 
-            return Task.FromResult(new LoginInteractionResponse());
+            return new LoginInteractionResponse();
         }
 
         public async Task<ConsentInteractionResponse> ProcessConsentAsync(ValidatedAuthorizeRequest request, UserConsent consent = null)

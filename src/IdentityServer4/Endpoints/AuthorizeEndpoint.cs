@@ -112,6 +112,7 @@ namespace IdentityServer4.Core.Endpoints
             }
 
             var user = await _context.GetIdentityServerUserAsync();
+
             var result = await ProcessAuthorizeRequestAsync(consent.AuthorizeRequestParameters, user, consent.Consent);
 
             _logger.LogInformation("End Authorize Request. Result type: {0}", result?.GetType().ToString() ?? "-none-");
@@ -152,22 +153,13 @@ namespace IdentityServer4.Core.Endpoints
             }
             if (loginInteraction.IsLogin)
             {
-                return await LoginPageAsync(loginInteraction.SignInMessage, request.Raw);
+                return await LoginPageAsync(request);
             }
 
             // user must be authenticated at this point
             if (!user.Identity.IsAuthenticated)
             {
                 throw new InvalidOperationException("User is not authenticated");
-            }
-
-            request.Subject = user;
-
-            // now that client configuration is loaded, we can do further validation
-            loginInteraction = await _interactionGenerator.ProcessClientLoginAsync(request);
-            if (loginInteraction.IsLogin)
-            {
-                return await LoginPageAsync(loginInteraction.SignInMessage, request.Raw);
             }
 
             var consentInteraction = await _interactionGenerator.ProcessConsentAsync(request, consent);
@@ -181,7 +173,7 @@ namespace IdentityServer4.Core.Endpoints
             if (consentInteraction.IsConsent)
             {
                 _logger.LogInformation("Showing consent screen");
-                return await ConsentPageAsync(request, request.Raw);
+                return await ConsentPageAsync(request);
             }
 
             return await SuccessfulAuthorizationAsync(request);
@@ -197,18 +189,14 @@ namespace IdentityServer4.Core.Endpoints
             return result;
         }
 
-        async Task<IEndpointResult> LoginPageAsync(SignInMessage message, NameValueCollection parameters)
+        async Task<IEndpointResult> LoginPageAsync(ValidatedAuthorizeRequest request)
         {
-            var url = _context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.RoutePaths.Oidc.Authorize;
-            url.AddQueryString(parameters.ToQueryString());
-            message.ReturnUrl = url;
-
-            return await _resultGenerator.CreateLoginResultAsync(message);
+            return await _resultGenerator.CreateLoginResultAsync(request);
         }
 
-        private async Task<IEndpointResult> ConsentPageAsync(ValidatedAuthorizeRequest validatedRequest, NameValueCollection parameters)
+        private async Task<IEndpointResult> ConsentPageAsync(ValidatedAuthorizeRequest validatedRequest)
         {
-            return await _resultGenerator.CreateConsentResultAsync(validatedRequest, parameters);
+            return await _resultGenerator.CreateConsentResultAsync(validatedRequest);
         }
 
         async Task<IEndpointResult> ErrorPageAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request)

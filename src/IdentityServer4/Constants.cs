@@ -271,6 +271,8 @@ namespace IdentityServer4.Core
         {
             public const string HomeRealm = "idp:";
             public const string Tenant = "tenant:";
+
+            public static readonly string[] All = { HomeRealm, Tenant };
         }
 
         public static class AuthorizeErrors

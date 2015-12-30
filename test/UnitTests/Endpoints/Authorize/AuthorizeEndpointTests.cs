@@ -219,18 +219,7 @@ namespace UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task login_interaction_produces_login_result_should_trigger_login()
         {
-            _stubInteractionGenerator.LoginResponse.SignInMessage = new SignInMessage { };
-
-            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
-
-            result.Should().BeOfType<LoginPageResult>();
-        }
-
-        [Fact]
-        [Trait("Category", Category)]
-        public async Task client_login_interaction_produces_login_result_should_trigger_login()
-        {
-            _stubInteractionGenerator.ClientLoginResponse.SignInMessage = new SignInMessage { };
+            _stubInteractionGenerator.LoginResponse.IsLogin = true;
 
             var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 

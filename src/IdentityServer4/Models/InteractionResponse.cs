@@ -24,8 +24,7 @@ namespace IdentityServer4.Core.Models
 
     class LoginInteractionResponse : InteractionResponse
     {
-        public bool IsLogin { get { return SignInMessage != null; } }
-        public SignInMessage SignInMessage { get; set; }
+        public bool IsLogin { get; set; }
     }
 
     class ConsentInteractionResponse : InteractionResponse

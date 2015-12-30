@@ -10,8 +10,8 @@ namespace IdentityServer4.Core.ResponseHandling
     interface IAuthorizeEndpointResultGenerator
     {
         Task<IEndpointResult> CreateErrorResultAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request);
-        Task<IEndpointResult> CreateLoginResultAsync(SignInMessage message);
-        Task<IEndpointResult> CreateConsentResultAsync(ValidatedAuthorizeRequest validatedRequest, NameValueCollection parameters);
+        Task<IEndpointResult> CreateLoginResultAsync(ValidatedAuthorizeRequest request);
+        Task<IEndpointResult> CreateConsentResultAsync(ValidatedAuthorizeRequest validatedRequest);
         Task<IEndpointResult> CreateAuthorizeResultAsync(AuthorizeResponse response);
     }
 }

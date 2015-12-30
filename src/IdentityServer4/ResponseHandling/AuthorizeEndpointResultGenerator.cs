@@ -7,6 +7,7 @@ using IdentityServer4.Core.Validation;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.WebEncoders;
 using System;
+using System.Linq;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 
@@ -40,19 +41,69 @@ namespace IdentityServer4.Core.ResponseHandling
             _clientListCookie = clientListCookie;
         }
 
-        public async Task<IEndpointResult> CreateLoginResultAsync(SignInMessage message)
+        public async Task<IEndpointResult> CreateLoginResultAsync(ValidatedAuthorizeRequest request)
         {
+            var message = new SignInMessage();
+
+            // build return URL to return to authorization
+            var url = _context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.RoutePaths.Oidc.Authorize;
+            url.AddQueryString(request.Raw.ToQueryString());
+            message.ReturnUrl = url;
+
+            // let the login page know the client requesting authorization
+            message.ClientId = request.ClientId;
+
+            // pass through display mode to signin service
+            if (request.DisplayMode.IsPresent())
+            {
+                message.DisplayMode = request.DisplayMode;
+            }
+
+            // pass through ui locales to signin service
+            if (request.UiLocales.IsPresent())
+            {
+                message.UiLocales = request.UiLocales;
+            }
+
+            // pass through login_hint
+            if (request.LoginHint.IsPresent())
+            {
+                message.LoginHint = request.LoginHint;
+            }
+
+            // look for well-known acr value -- idp
+            var idp = request.GetIdP();
+            if (idp.IsPresent())
+            {
+                message.IdP = idp;
+            }
+
+            // look for well-known acr value -- tenant
+            var tenant = request.GetTenant();
+            if (tenant.IsPresent())
+            {
+                message.Tenant = tenant;
+            }
+
+            // process acr values
+            var acrValues = request.GetAcrValues();
+            if (acrValues.Any())
+            {
+                message.AcrValues = acrValues;
+            }
+
             var id = await _signInMessageStore.WriteAsync(message);
+
             return new LoginPageResult(id);
         }
 
-        public async Task<IEndpointResult> CreateConsentResultAsync(ValidatedAuthorizeRequest request, NameValueCollection parameters)
+        public async Task<IEndpointResult> CreateConsentResultAsync(ValidatedAuthorizeRequest request)
         {
             var message = new UserConsentRequestMessage()
             {
                 ClientId = request.ClientId,
                 ScopesRequested = request.RequestedScopes.ToArray(),
-                AuthorizeRequestParameters = parameters
+                AuthorizeRequestParameters = request.Raw
             };
             var id = await _consentRequestStore.WriteAsync(message);
             return new ConsentPageResult(id);

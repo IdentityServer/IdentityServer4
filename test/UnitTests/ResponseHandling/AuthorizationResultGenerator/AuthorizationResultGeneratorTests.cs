@@ -57,7 +57,8 @@ namespace UnitTests.ResponseHandling
             {
                 ClientId = "client_id",
                 ClientName = "Test Client"
-            }
+            },
+            Raw = new NameValueCollection()
         };
 
 
@@ -258,7 +259,7 @@ namespace UnitTests.ResponseHandling
         [Trait("Category", Category)]
         public async Task CreateLoginResultAsync_should_return_login_result()
         {
-            var result = await _subject.CreateLoginResultAsync(new SignInMessage());
+            var result = await _subject.CreateLoginResultAsync(_validatedRequest);
 
             result.Should().BeAssignableTo<LoginPageResult>();
         }
@@ -269,7 +270,7 @@ namespace UnitTests.ResponseHandling
         {
             _mockSignInMessageStore.Messages.Count.Should().Be(0);
 
-            await _subject.CreateLoginResultAsync(new SignInMessage());
+            await _subject.CreateLoginResultAsync(_validatedRequest);
 
             _mockSignInMessageStore.Messages.Count.Should().Be(1);
         }
@@ -278,7 +279,7 @@ namespace UnitTests.ResponseHandling
         [Trait("Category", Category)]
         public async Task CreateLoginResultAsync_should_generate_redirect_with_signin_message_id()
         {
-            var result = (LoginPageResult)await _subject.CreateLoginResultAsync(new SignInMessage());
+            var result = (LoginPageResult)await _subject.CreateLoginResultAsync(_validatedRequest);
 
             var id = _mockSignInMessageStore.Messages.First().Key;
             result.Id.Should().Be(id);
@@ -289,9 +290,11 @@ namespace UnitTests.ResponseHandling
         [Trait("Category", Category)]
         public async Task CreateConsentResultAsync_should_return_consent_result()
         {
-            var request = new ValidatedAuthorizeRequest();
-            var parameters = new NameValueCollection();
-            var result = await _subject.CreateConsentResultAsync(request, parameters);
+            var request = new ValidatedAuthorizeRequest()
+            {
+                Raw = new NameValueCollection()
+            };
+            var result = await _subject.CreateConsentResultAsync(request);
 
             result.Should().BeAssignableTo<ConsentPageResult>();
         }
@@ -302,9 +305,11 @@ namespace UnitTests.ResponseHandling
         {
             _mockConsentRequestMessageStore.Messages.Count.Should().Be(0);
 
-            var request = new ValidatedAuthorizeRequest();
-            var parameters = new NameValueCollection();
-            var result = await _subject.CreateConsentResultAsync(request, parameters);
+            var request = new ValidatedAuthorizeRequest()
+            {
+                Raw = new NameValueCollection()
+            };
+            var result = await _subject.CreateConsentResultAsync(request);
 
             _mockConsentRequestMessageStore.Messages.Count.Should().Be(1);
         }
@@ -313,9 +318,11 @@ namespace UnitTests.ResponseHandling
         [Trait("Category", Category)]
         public async Task CreateConsentResultAsync_should_generate_redirect_with_consent_message_id()
         {
-            var request = new ValidatedAuthorizeRequest();
-            var parameters = new NameValueCollection();
-            var result = (ConsentPageResult)await _subject.CreateConsentResultAsync(request, parameters);
+            var request = new ValidatedAuthorizeRequest()
+            {
+                Raw = new NameValueCollection()
+            };
+            var result = (ConsentPageResult)await _subject.CreateConsentResultAsync(request);
 
             var id = _mockConsentRequestMessageStore.Messages.First().Key;
             result.Id.Should().Be(id);

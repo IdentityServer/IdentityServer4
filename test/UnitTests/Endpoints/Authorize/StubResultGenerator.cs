@@ -14,14 +14,14 @@ namespace UnitTests.Endpoints.Authorize
         public IEndpointResult AuthorizeResult { get; set; } = new AuthorizeRedirectResult(null);
         public IEndpointResult ConsentResult { get; set; } = new ConsentPageResult("consent_id");
         public IEndpointResult LoginResult { get; set; } = new LoginPageResult("login_id");
-        public IEndpointResult ErrorResult { get; set; } = new ErrorPageResult(null);
+        public IEndpointResult ErrorResult { get; set; } = new ErrorPageResult("error_id");
 
         public Task<IEndpointResult> CreateAuthorizeResultAsync(AuthorizeResponse response)
         {
             return Task.FromResult(AuthorizeResult);
         }
 
-        public Task<IEndpointResult> CreateConsentResultAsync(ValidatedAuthorizeRequest validatedRequest, NameValueCollection parameters)
+        public Task<IEndpointResult> CreateConsentResultAsync(ValidatedAuthorizeRequest validatedRequest)
         {
             return Task.FromResult(ConsentResult);
         }
@@ -31,7 +31,7 @@ namespace UnitTests.Endpoints.Authorize
             return Task.FromResult(ErrorResult);
         }
 
-        public Task<IEndpointResult> CreateLoginResultAsync(SignInMessage message)
+        public Task<IEndpointResult> CreateLoginResultAsync(ValidatedAuthorizeRequest request)
         {
             return Task.FromResult(LoginResult);
         }
