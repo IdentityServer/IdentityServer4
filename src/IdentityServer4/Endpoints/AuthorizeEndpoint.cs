@@ -181,7 +181,7 @@ namespace IdentityServer4.Core.Endpoints
             if (consentInteraction.IsConsent)
             {
                 _logger.LogInformation("Showing consent screen");
-                return await ConsentPageAsync(request, consent, request.Raw, consentInteraction.ConsentError);
+                return await ConsentPageAsync(request, request.Raw);
             }
 
             return await SuccessfulAuthorizationAsync(request);
@@ -206,9 +206,9 @@ namespace IdentityServer4.Core.Endpoints
             return await _resultGenerator.CreateLoginResultAsync(message);
         }
 
-        private async Task<IEndpointResult> ConsentPageAsync(ValidatedAuthorizeRequest validatedRequest, UserConsent consent, NameValueCollection requestParameters, string errorMessage)
+        private async Task<IEndpointResult> ConsentPageAsync(ValidatedAuthorizeRequest validatedRequest, NameValueCollection parameters)
         {
-            return await _resultGenerator.CreateConsentResultAsync();
+            return await _resultGenerator.CreateConsentResultAsync(validatedRequest, parameters);
         }
 
         async Task<IEndpointResult> ErrorPageAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request)

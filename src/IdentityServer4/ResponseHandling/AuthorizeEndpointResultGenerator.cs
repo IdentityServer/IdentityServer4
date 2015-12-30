@@ -8,6 +8,7 @@ using IdentityServer4.Core.ViewModels;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.WebEncoders;
 using System;
+using System.Collections.Specialized;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.ResponseHandling
@@ -19,54 +20,35 @@ namespace IdentityServer4.Core.ResponseHandling
         private readonly ILocalizationService _localizationService;
         private readonly IMessageStore<SignInMessage> _signInMessageStore;
         private readonly ClientListCookie _clientListCookie;
+        private readonly IMessageStore<UserConsentRequestMessage> _consentRequestStore;
 
         public AuthorizeEndpointResultGenerator(
             ILogger<AuthorizeEndpointResultGenerator> logger,
             IdentityServerContext context,
             ILocalizationService localizationService,
             IMessageStore<SignInMessage> signInMessageStore,
+            IMessageStore<UserConsentRequestMessage> consentRequestStore,
             ClientListCookie clientListCookie)
         {
             _logger = logger;
             _context = context;
             _localizationService = localizationService;
             _signInMessageStore = signInMessageStore;
+            _consentRequestStore = consentRequestStore;
             _clientListCookie = clientListCookie;
         }
 
-        public Task<IEndpointResult> CreateConsentResultAsync()
+        public async Task<IEndpointResult> CreateLoginResultAsync(SignInMessage message)
         {
-            return Task.FromResult<IEndpointResult>(new ConsentPageResult());
+            var id = await _signInMessageStore.WriteAsync(message);
+            return new LoginPageResult(id);
+        }
 
-            //string loginWithDifferentAccountUrl = null;
-            //if (validatedRequest.HasIdpAcrValue() == false)
-            //{
-            //    loginWithDifferentAccountUrl = Url.Route(Constants.RouteNames.Oidc.SwitchUser, null)
-            //        .AddQueryString(requestParameters.ToQueryString());
-            //}
-
-            //var env = Request.GetOwinEnvironment();
-            //var consentModel = new ConsentViewModel
-            //{
-            //    RequestId = env.GetRequestId(),
-            //    SiteName = _options.SiteName,
-            //    SiteUrl = env.GetIdentityServerBaseUrl(),
-            //    ErrorMessage = errorMessage,
-            //    CurrentUser = env.GetCurrentUserDisplayName(),
-            //    LogoutUrl = env.GetIdentityServerLogoutUrl(),
-            //    ClientName = validatedRequest.Client.ClientName,
-            //    ClientUrl = validatedRequest.Client.ClientUri,
-            //    ClientLogoUrl = validatedRequest.Client.LogoUri,
-            //    IdentityScopes = validatedRequest.GetIdentityScopes(this._localizationService),
-            //    ResourceScopes = validatedRequest.GetResourceScopes(this._localizationService),
-            //    AllowRememberConsent = validatedRequest.Client.AllowRememberConsent,
-            //    RememberConsent = consent == null || consent.RememberConsent,
-            //    LoginWithDifferentAccountUrl = loginWithDifferentAccountUrl,
-            //    ConsentUrl = Url.Route(Constants.RouteNames.Oidc.Consent, null).AddQueryString(requestParameters.ToQueryString()),
-            //    AntiForgery = _antiForgeryToken.GetAntiForgeryToken()
-            //};
-
-            //return new ConsentActionResult(_viewService, consentModel, validatedRequest);
+        public async Task<IEndpointResult> CreateConsentResultAsync(ValidatedAuthorizeRequest validatedRequest, NameValueCollection parameters)
+        {
+            var message = new UserConsentRequestMessage(validatedRequest, parameters);
+            var id = await _consentRequestStore.WriteAsync(message);
+            return new ConsentPageResult(id);
         }
 
         public async Task<IEndpointResult> CreateErrorResultAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request)
@@ -132,13 +114,6 @@ namespace IdentityServer4.Core.ResponseHandling
             }
 
             return new ErrorPageResult(errorModel);
-        }
-
-        public async Task<IEndpointResult> CreateLoginResultAsync(SignInMessage message)
-        {
-            var id = await _signInMessageStore.WriteAsync(message);
-
-            return new LoginPageResult(id);
         }
 
         public Task<IEndpointResult> CreateAuthorizeResultAsync(AuthorizeResponse response)

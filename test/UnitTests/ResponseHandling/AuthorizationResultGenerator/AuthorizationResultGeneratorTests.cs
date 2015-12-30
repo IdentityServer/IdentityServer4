@@ -7,6 +7,7 @@ using IdentityServer4.Core.Results;
 using IdentityServer4.Core.Validation;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using UnitTests.Common;
@@ -33,14 +34,16 @@ namespace UnitTests.ResponseHandling
                 _fakeLogger,
                 _context,
                 _stubLocalizationService,
-                _mockMessageStore,
+                _mockSignInMessageStore,
+                _mockConsentRequestMessageStore,
                 _mockClientListCookie);
         }
 
         ILogger<AuthorizeEndpointResultGenerator> _fakeLogger = new FakeLogger<AuthorizeEndpointResultGenerator>();
         IdentityServerContext _context = IdentityServerContextHelper.Create();
         MockClientListCookie _mockClientListCookie;
-        MockMessageStore<SignInMessage> _mockMessageStore = new MockMessageStore<SignInMessage>();
+        MockMessageStore<SignInMessage> _mockSignInMessageStore = new MockMessageStore<SignInMessage>();
+        MockMessageStore<UserConsentRequestMessage> _mockConsentRequestMessageStore = new MockMessageStore<UserConsentRequestMessage>();
         StubLocalizationService _stubLocalizationService = new StubLocalizationService();
 
         ValidatedAuthorizeRequest _validatedRequest = new ValidatedAuthorizeRequest
@@ -255,11 +258,11 @@ namespace UnitTests.ResponseHandling
         [Trait("Category", Category)]
         public async Task CreateLoginResultAsync_should_store_signin_message()
         {
-            _mockMessageStore.Messages.Count.Should().Be(0);
+            _mockSignInMessageStore.Messages.Count.Should().Be(0);
 
             await _subject.CreateLoginResultAsync(new SignInMessage());
 
-            _mockMessageStore.Messages.Count.Should().Be(1);
+            _mockSignInMessageStore.Messages.Count.Should().Be(1);
         }
 
         [Fact]
@@ -268,7 +271,44 @@ namespace UnitTests.ResponseHandling
         {
             var result = (LoginPageResult)await _subject.CreateLoginResultAsync(new SignInMessage());
 
-            var id = _mockMessageStore.Messages.First().Key;
+            var id = _mockSignInMessageStore.Messages.First().Key;
+            result.Id.Should().Be(id);
+        }
+
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task CreateConsentResultAsync_should_return_consent_result()
+        {
+            var request = new ValidatedAuthorizeRequest();
+            var parameters = new NameValueCollection();
+            var result = await _subject.CreateConsentResultAsync(request, parameters);
+
+            result.Should().BeAssignableTo<ConsentPageResult>();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task CreateConsentResultAsync_should_store_consent_request_message()
+        {
+            _mockConsentRequestMessageStore.Messages.Count.Should().Be(0);
+
+            var request = new ValidatedAuthorizeRequest();
+            var parameters = new NameValueCollection();
+            var result = await _subject.CreateConsentResultAsync(request, parameters);
+
+            _mockConsentRequestMessageStore.Messages.Count.Should().Be(1);
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task CreateConsentResultAsync_should_generate_redirect_with_consent_message_id()
+        {
+            var request = new ValidatedAuthorizeRequest();
+            var parameters = new NameValueCollection();
+            var result = (ConsentPageResult)await _subject.CreateConsentResultAsync(request, parameters);
+
+            var id = _mockConsentRequestMessageStore.Messages.First().Key;
             result.Id.Should().Be(id);
         }
     }

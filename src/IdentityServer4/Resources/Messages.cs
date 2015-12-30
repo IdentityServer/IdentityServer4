@@ -16,7 +16,6 @@ namespace IdentityServer4.Core.Resources
         public const string InvalidUsernameOrPassword = "Invalid username or password";
         public const string MissingClientId = "client_id is missing";
         public const string MissingToken = "Token is missing";
-        public const string MustSelectAtLeastOnePermission = "Must select at least one permission.";
         public const string NoExternalProvider = "The external login provider was not provided.";
         public const string NoMatchingExternalAccount = "Invalid Account";
         public const string NoSignInCookie = "There is an error determining which application you are signing into.Return to the application and try again.";

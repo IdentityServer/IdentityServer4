@@ -4,14 +4,15 @@ using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Results;
 using IdentityServer4.Core.Validation;
 using UnitTests.Common;
+using System.Collections.Specialized;
 
 namespace UnitTests.Endpoints.Authorize
 {
     class StubResultGenerator : IAuthorizeEndpointResultGenerator
     {
         public IEndpointResult AuthorizeResult { get; set; } = new AuthorizeRedirectResult(null);
-        public IEndpointResult ConsentResult { get; set; } = new ConsentPageResult();
-        public IEndpointResult LoginResult { get; set; } = new LoginPageResult("http://server/login?id=x");
+        public IEndpointResult ConsentResult { get; set; } = new ConsentPageResult("consent_id");
+        public IEndpointResult LoginResult { get; set; } = new LoginPageResult("login_id");
         public IEndpointResult ErrorResult { get; set; } = new ErrorPageResult(null);
 
         public Task<IEndpointResult> CreateAuthorizeResultAsync(AuthorizeResponse response)
@@ -19,7 +20,7 @@ namespace UnitTests.Endpoints.Authorize
             return Task.FromResult(AuthorizeResult);
         }
 
-        public Task<IEndpointResult> CreateConsentResultAsync()
+        public Task<IEndpointResult> CreateConsentResultAsync(ValidatedAuthorizeRequest validatedRequest, NameValueCollection parameters)
         {
             return Task.FromResult(ConsentResult);
         }

@@ -33,6 +33,5 @@ namespace IdentityServer4.Core.Models
     class ConsentInteractionResponse : InteractionResponse
     {
         public bool IsConsent { get; set; }
-        public string ConsentError { get; set; }
     }
 }

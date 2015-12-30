@@ -16,9 +16,10 @@ namespace IdentityServer4.Core.Results
         public Task ExecuteAsync(IdentityServerContext context)
         {
             var url = context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.RoutePaths.Login;
-            url += url.AddQueryString("id=" + Id);
+            url = url.AddQueryString("id=" + Id);
 
             context.HttpContext.Response.Redirect(url);
+
             return Task.FromResult(0);
         }
     }

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+using IdentityServer4.Core.Validation;
 using System.Collections.Specialized;
 using System.Linq;
 
@@ -75,8 +76,18 @@ namespace IdentityServer4.Core.Models
     /// </summary>
     public class UserConsentRequestMessage : Message
     {
+        public UserConsentRequestMessage()
+        {
+        }
+
+        public UserConsentRequestMessage(ValidatedAuthorizeRequest request, NameValueCollection parameters)
+        {
+            this.ClientId = request.ClientId;
+            this.ScopesRequested = request.RequestedScopes.ToArray();
+            AuthorizeRequestParameters = parameters;
+        }
+
         public string ClientId { get; set; }
-        public string ClientName { get; set; }
 
         /// <summary>
         /// Gets or sets the scopes requested.
@@ -85,5 +96,7 @@ namespace IdentityServer4.Core.Models
         /// The scopes requested.
         /// </value>
         public string[] ScopesRequested { get; set; }
+
+        public NameValueCollection AuthorizeRequestParameters { get; set; }
     }
 }

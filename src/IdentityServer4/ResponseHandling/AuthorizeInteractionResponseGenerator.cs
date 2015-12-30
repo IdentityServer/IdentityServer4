@@ -291,14 +291,7 @@ namespace IdentityServer4.Core.ResponseHandling
                         // they said yes, set scopes they chose
                         request.ValidatedScopes.SetConsentedScopes(consent.ScopesConsented);
 
-                        if (!request.ValidatedScopes.GrantedScopes.Any())
-                        {
-                            // they said yes, but didn't pick any scopes
-                            // show consent again and provide error message
-                            response.IsConsent = true;
-                            response.ConsentError = _localizationService.GetMessage(nameof(Messages.MustSelectAtLeastOnePermission));
-                        }
-                        else if (request.Client.AllowRememberConsent)
+                        if (request.Client.AllowRememberConsent)
                         {
                             // remember consent
                             var scopes = Enumerable.Empty<string>();
