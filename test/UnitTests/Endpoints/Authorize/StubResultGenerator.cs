@@ -1,12 +1,8 @@
 ﻿using IdentityServer4.Core.ResponseHandling;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Results;
 using IdentityServer4.Core.Validation;
-using IdentityServer4.Core.Hosting;
 using UnitTests.Common;
 
 namespace UnitTests.Endpoints.Authorize

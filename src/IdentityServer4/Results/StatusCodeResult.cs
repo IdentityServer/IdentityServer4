@@ -1,6 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.AspNet.Http;
-using Microsoft.Extensions.Logging;
 using System.Net;
 using IdentityServer4.Core.Hosting;
 

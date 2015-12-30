@@ -1,12 +1,8 @@
-﻿using IdentityServer4.Core.Configuration;
-using IdentityServer4.Core.Endpoints;
-using IdentityServer4.Core.Results;
+﻿using IdentityServer4.Core.Results;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
-using static IdentityServer4.Core.Constants;
 
 namespace IdentityServer4.Core.Hosting
 {

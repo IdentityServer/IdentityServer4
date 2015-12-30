@@ -8,8 +8,6 @@ using IdentityServer4.Core.ViewModels;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.WebEncoders;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.ResponseHandling

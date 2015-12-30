@@ -1,5 +1,4 @@
 ﻿using IdentityServer4.Core.Results;
-using Microsoft.AspNet.Http;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.Hosting

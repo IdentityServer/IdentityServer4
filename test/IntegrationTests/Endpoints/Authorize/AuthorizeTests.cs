@@ -1,13 +1,9 @@
-﻿using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.TestHost;
-using System.Collections.Generic;
+﻿using Microsoft.AspNet.TestHost;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 using FluentAssertions;
 using System.Net;
-using IdentityModel.Client;
-using System.Linq;
 
 namespace IdentityServer4.Tests.Endpoints.Authorize
 {

@@ -14,17 +14,8 @@
  * limitations under the License.
  */
 
-using IdentityModel;
-using IdentityServer4.Core.Extensions;
-using IdentityServer4.Core.Logging;
 using IdentityServer4.Core.Models;
-using IdentityServer4.Core.Services;
 using IdentityServer4.Core.Validation;
-using System;
-using System.ComponentModel;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.ResponseHandling

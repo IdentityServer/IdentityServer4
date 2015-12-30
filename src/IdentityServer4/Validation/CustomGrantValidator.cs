@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Services;
 using Microsoft.Extensions.Logging;
 using System;

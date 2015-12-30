@@ -15,8 +15,6 @@
  */
 
 using System.Threading.Tasks;
-using Microsoft.AspNet.Http;
-using Microsoft.Extensions.Logging;
 using IdentityServer4.Core.Extensions;
 using Microsoft.Extensions.Primitives;
 using IdentityServer4.Core.Hosting;

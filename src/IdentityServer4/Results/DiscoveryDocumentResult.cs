@@ -1,7 +1,6 @@
 ﻿using IdentityServer4.Core.Hosting;
 using IdentityServer4.Core.Models;
 using Microsoft.AspNet.Http;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;

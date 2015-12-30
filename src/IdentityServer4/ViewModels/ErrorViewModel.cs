@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-using System.Collections.Specialized;
 
 namespace IdentityServer4.Core.ViewModels
 {

@@ -17,7 +17,6 @@
 using Microsoft.AspNet.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Microsoft.Extensions.Logging;
 using IdentityServer4.Core.Hosting;
 
 namespace IdentityServer4.Core.Results

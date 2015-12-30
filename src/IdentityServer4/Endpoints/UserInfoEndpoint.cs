@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Core.Results;
-using Microsoft.AspNet.Http;
 using IdentityServer4.Core.Configuration;
 using IdentityServer4.Core.Validation;
 using IdentityServer4.Core.Services;

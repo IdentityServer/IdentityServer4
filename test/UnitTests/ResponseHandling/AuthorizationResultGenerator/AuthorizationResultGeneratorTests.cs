@@ -1,15 +1,12 @@
 ﻿using FluentAssertions;
 using IdentityServer4.Core;
-using IdentityServer4.Core.Configuration;
 using IdentityServer4.Core.Hosting;
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.ResponseHandling;
 using IdentityServer4.Core.Results;
 using IdentityServer4.Core.Validation;
-using Microsoft.AspNet.Http.Internal;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnitTests.Common;

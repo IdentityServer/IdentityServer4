@@ -2,7 +2,6 @@
 using IdentityServer4.Core.Configuration;
 using IdentityServer4.Core.Endpoints;
 using IdentityServer4.Core.Hosting;
-using IdentityServer4.Core.Models;
 using IdentityServer4.Core.ResponseHandling;
 using IdentityServer4.Core.Services;
 using IdentityServer4.Core.Services.Default;

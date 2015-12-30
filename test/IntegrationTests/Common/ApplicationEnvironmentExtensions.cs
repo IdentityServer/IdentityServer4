@@ -1,10 +1,5 @@
-﻿using Microsoft.Extensions.PlatformAbstractions;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 
 namespace Microsoft.Extensions.PlatformAbstractions
 {

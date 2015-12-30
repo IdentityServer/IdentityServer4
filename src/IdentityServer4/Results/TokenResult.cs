@@ -17,7 +17,6 @@
 using IdentityServer4.Core.Hosting;
 using IdentityServer4.Core.Models;
 using Microsoft.AspNet.Http;
-using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.Results
