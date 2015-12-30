@@ -20,9 +20,9 @@ using System.Linq;
 namespace IdentityServer4.Core.Models
 {
     /// <summary>
-    /// Models the data submitted from the conset page.
+    /// Models the user's response to the consent screen.
     /// </summary>
-    public class UserConsentResponseMessage : Message
+    public class UserConsent
     {
         /// <summary>
         /// Gets if consent was granted.
@@ -53,8 +53,15 @@ namespace IdentityServer4.Core.Models
         ///   <c>true</c> if consent is to be remembered; otherwise, <c>false</c>.
         /// </value>
         public bool RememberConsent { get; set; }
+    }
 
-        public NameValueCollection RequestParameters { get; set; }
+    /// <summary>
+    /// Models the message returned from the consent page.
+    /// </summary>
+    public class UserConsentResponseMessage : Message
+    {
+        public UserConsent Consent { get; set; }
+        public NameValueCollection AuthorizeRequestParameters { get; set; }
     }
 
     /// <summary>
@@ -62,6 +69,9 @@ namespace IdentityServer4.Core.Models
     /// </summary>
     public class UserConsentRequestMessage : Message
     {
+        public string ClientId { get; set; }
+        public string ClientName { get; set; }
+
         /// <summary>
         /// Gets or sets the scopes requested.
         /// </summary>
@@ -69,7 +79,5 @@ namespace IdentityServer4.Core.Models
         /// The scopes requested.
         /// </value>
         public string[] ScopesRequested { get; set; }
-
-        public NameValueCollection RequestParameters { get; set; }
     }
 }

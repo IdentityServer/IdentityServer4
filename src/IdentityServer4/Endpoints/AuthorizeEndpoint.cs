@@ -66,7 +66,7 @@ namespace IdentityServer4.Core.Endpoints
             return result;
         }
 
-        internal async Task<IEndpointResult> ProcessAuthorizeRequestAsync(NameValueCollection parameters, ClaimsPrincipal user, UserConsentResponseMessage consent)
+        internal async Task<IEndpointResult> ProcessAuthorizeRequestAsync(NameValueCollection parameters, ClaimsPrincipal user, UserConsent consent)
         {
             if (user != null)
             {
@@ -153,7 +153,7 @@ namespace IdentityServer4.Core.Endpoints
             return await _resultGenerator.CreateLoginResultAsync(message);
         }
 
-        private async Task<IEndpointResult> ConsentAsync(ValidatedAuthorizeRequest validatedRequest, UserConsentResponseMessage consent, NameValueCollection requestParameters, string errorMessage)
+        private async Task<IEndpointResult> ConsentAsync(ValidatedAuthorizeRequest validatedRequest, UserConsent consent, NameValueCollection requestParameters, string errorMessage)
         {
             return await _resultGenerator.CreateConsentResultAsync();
         }

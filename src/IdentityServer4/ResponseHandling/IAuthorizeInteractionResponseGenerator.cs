@@ -16,6 +16,11 @@
 
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Validation;
+using IdentityServer4.Core.ViewModels;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -25,6 +30,6 @@ namespace IdentityServer4.Core.ResponseHandling
     {
         Task<LoginInteractionResponse> ProcessLoginAsync(ValidatedAuthorizeRequest request, ClaimsPrincipal user);
         Task<LoginInteractionResponse> ProcessClientLoginAsync(ValidatedAuthorizeRequest request);
-        Task<ConsentInteractionResponse> ProcessConsentAsync(ValidatedAuthorizeRequest request, UserConsentResponseMessage consent = null);
+        Task<ConsentInteractionResponse> ProcessConsentAsync(ValidatedAuthorizeRequest request, UserConsent consent = null);
     }
 }

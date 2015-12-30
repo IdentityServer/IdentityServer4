@@ -22,6 +22,8 @@ using IdentityServer4.Core.Services;
 using IdentityServer4.Core.Validation;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -226,7 +228,7 @@ namespace IdentityServer4.Core.ResponseHandling
             return Task.FromResult(new LoginInteractionResponse());
         }
 
-        public async Task<ConsentInteractionResponse> ProcessConsentAsync(ValidatedAuthorizeRequest request, UserConsentResponseMessage consent = null)
+        public async Task<ConsentInteractionResponse> ProcessConsentAsync(ValidatedAuthorizeRequest request, UserConsent consent = null)
         {
             if (request == null) throw new ArgumentNullException("request");
 
