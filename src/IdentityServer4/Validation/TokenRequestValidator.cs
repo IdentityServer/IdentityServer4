@@ -42,14 +42,6 @@ namespace IdentityServer4.Core.Validation
 
         private ValidatedTokenRequest _validatedRequest;
 
-        public ValidatedTokenRequest ValidatedRequest
-        {
-            get
-            {
-                return _validatedRequest;
-            }
-        }
-
         public TokenRequestValidator(IdentityServerOptions options, IAuthorizationCodeStore authorizationCodes, IRefreshTokenStore refreshTokens, IUserService users, CustomGrantValidator customGrantValidator, ICustomRequestValidator customRequestValidator, ScopeValidator scopeValidator, IEventService events, ILoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<TokenRequestValidator>();
@@ -690,29 +682,17 @@ namespace IdentityServer4.Core.Validation
 
         private TokenRequestValidationResult Valid()
         {
-            return new TokenRequestValidationResult
-            {
-                IsError = false
-            };
+            return new TokenRequestValidationResult(_validatedRequest);
         }
 
         private TokenRequestValidationResult Invalid(string error)
         {
-            return new TokenRequestValidationResult
-            {
-                IsError = true,
-                Error = error
-            };
+            return new TokenRequestValidationResult(error);
         }
 
         private TokenRequestValidationResult Invalid(string error, string errorDescription)
         {
-            return new TokenRequestValidationResult
-            {
-                IsError = true,
-                Error = error,
-                ErrorDescription = errorDescription
-            };
+            return new TokenRequestValidationResult(error, errorDescription);
         }
 
         private void LogError(string message)

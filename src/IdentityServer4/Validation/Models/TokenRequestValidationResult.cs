@@ -20,5 +20,20 @@ namespace IdentityServer4.Core.Validation
     /// Validation result for token requests
     /// </summary>
     public class TokenRequestValidationResult : ValidationResult
-    { }
+    {
+        public TokenRequestValidationResult(ValidatedTokenRequest validatedRequest)
+        {
+            IsError = false;
+            ValidatedRequest = validatedRequest;
+        }
+
+        public TokenRequestValidationResult(string error, string errorDescription = null)
+        {
+            IsError = true;
+            Error = error;
+            ErrorDescription = errorDescription;
+        }
+
+        public ValidatedTokenRequest ValidatedRequest { get; }
+    }
 }

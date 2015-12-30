@@ -49,10 +49,7 @@ namespace IdentityServer4.Core.Services.Default
         /// </returns>
         public Task<TokenRequestValidationResult> ValidateTokenRequestAsync(ValidatedTokenRequest request)
         {
-            return Task.FromResult(new TokenRequestValidationResult
-            {
-                IsError = false
-            });
+            return Task.FromResult(new TokenRequestValidationResult(request));
         }
     }
 }
