@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using IdentityServer4.Core.Hosting;
 using IdentityServer4.Core.Extensions;
 
-namespace IdentityServer4.Core.Results
+namespace IdentityServer4.Core.Endpoints.Results
 {
     public class RedirectToPageResult : IEndpointResult
     {

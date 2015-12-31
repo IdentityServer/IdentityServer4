@@ -6,7 +6,7 @@ using IdentityServer4.Core.Extensions;
 using Microsoft.Extensions.Primitives;
 using IdentityServer4.Core.Hosting;
 
-namespace IdentityServer4.Core.Results
+namespace IdentityServer4.Core.Endpoints.Results
 {
     internal class ProtectedResourceErrorResult : IEndpointResult
     {

@@ -23,11 +23,11 @@ using IdentityServer4.Core.Hosting;
 using System.Collections.Specialized;
 using System.Security.Claims;
 using IdentityServer4.Core.Validation;
-using IdentityServer4.Core.Results;
 using Microsoft.Extensions.Logging;
 using IdentityServer4.Core.Events;
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core;
+using IdentityServer4.Core.Endpoints.Results;
 
 namespace UnitTests.Endpoints.Authorize
 {
@@ -72,7 +72,7 @@ namespace UnitTests.Endpoints.Authorize
                 _stubResponseGenerator,
                 _stubAuthorizeRequestValidator,
                 _stubInteractionGenerator,
-                _stubResultGenerator,
+                _stubResultFactory,
                 _mockUserConsentResponseMessageStore);
         }
 
@@ -87,7 +87,7 @@ namespace UnitTests.Endpoints.Authorize
         StubAuthorizeResponseGenerator _stubResponseGenerator = new StubAuthorizeResponseGenerator();
         StubAuthorizeRequestValidator _stubAuthorizeRequestValidator = new StubAuthorizeRequestValidator();
         StubAuthorizeInteractionResponseGenerator _stubInteractionGenerator = new StubAuthorizeInteractionResponseGenerator();
-        StubResultGenerator _stubResultGenerator = new StubResultGenerator();
+        StubResultFactory _stubResultFactory = new StubResultFactory();
         MockMessageStore<UserConsentResponseMessage> _mockUserConsentResponseMessageStore = new MockMessageStore<UserConsentResponseMessage>();
 
         [Fact]

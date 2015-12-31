@@ -4,7 +4,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Core.Extensions;
-using IdentityServer4.Core.Results;
 using Microsoft.AspNet.Http;
 using IdentityServer4.Core.Validation;
 using IdentityServer4.Core.ResponseHandling;
@@ -17,6 +16,7 @@ using IdentityServer4.Core.Hosting;
 using IdentityServer4.Core.Events;
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Resources;
+using IdentityServer4.Core.Endpoints.Results;
 
 namespace IdentityServer4.Core.Endpoints
 {
@@ -28,7 +28,7 @@ namespace IdentityServer4.Core.Endpoints
         private readonly IAuthorizeResponseGenerator _responseGenerator;
         private readonly IAuthorizeRequestValidator _validator;
         private readonly IAuthorizeInteractionResponseGenerator _interactionGenerator;
-        private readonly IAuthorizeEndpointResultGenerator _resultGenerator;
+        private readonly IAuthorizeEndpointResultFactory _resultGenerator;
         private readonly IMessageStore<UserConsentResponseMessage> _consentMessageStore;
 
         public AuthorizeEndpoint(
@@ -38,7 +38,7 @@ namespace IdentityServer4.Core.Endpoints
             IAuthorizeResponseGenerator responseGenerator,
             IAuthorizeRequestValidator validator,
             IAuthorizeInteractionResponseGenerator interactionGenerator,
-            IAuthorizeEndpointResultGenerator resultGenerator,
+            IAuthorizeEndpointResultFactory resultGenerator,
             IMessageStore<UserConsentResponseMessage> consentMessageStore)
         {
             _events = events;

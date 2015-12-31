@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Hosting;
 
-namespace IdentityServer4.Core.Results
+namespace IdentityServer4.Core.Endpoints.Results
 {
     abstract class AuthorizeResult : IEndpointResult
     {

@@ -6,9 +6,9 @@ using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Validation;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.ResponseHandling
+namespace IdentityServer4.Core.Endpoints.Results
 {
-    interface IAuthorizeEndpointResultGenerator
+    interface IAuthorizeEndpointResultFactory
     {
         Task<IEndpointResult> CreateErrorResultAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request);
         Task<IEndpointResult> CreateLoginResultAsync(ValidatedAuthorizeRequest request);

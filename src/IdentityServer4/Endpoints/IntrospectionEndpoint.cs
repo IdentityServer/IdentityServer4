@@ -3,7 +3,6 @@
 
 using System;
 using System.Threading.Tasks;
-using IdentityServer4.Core.Results;
 using Microsoft.AspNet.Http;
 using IdentityServer4.Core.Validation;
 using IdentityServer4.Core.ResponseHandling;
@@ -11,6 +10,7 @@ using IdentityServer4.Core.Services;
 using Microsoft.Extensions.Logging;
 using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Hosting;
+using IdentityServer4.Core.Endpoints.Results;
 
 namespace IdentityServer4.Core.Endpoints
 {

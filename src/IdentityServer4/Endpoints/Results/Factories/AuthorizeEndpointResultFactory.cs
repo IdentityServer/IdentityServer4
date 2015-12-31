@@ -4,7 +4,6 @@
 using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Hosting;
 using IdentityServer4.Core.Models;
-using IdentityServer4.Core.Results;
 using IdentityServer4.Core.Services;
 using IdentityServer4.Core.Validation;
 using Microsoft.Extensions.Logging;
@@ -12,11 +11,11 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.ResponseHandling
+namespace IdentityServer4.Core.Endpoints.Results
 {
-    class AuthorizeEndpointResultGenerator : IAuthorizeEndpointResultGenerator
+    class AuthorizeEndpointResultFactory : IAuthorizeEndpointResultFactory
     {
-        private readonly ILogger<AuthorizeEndpointResultGenerator> _logger;
+        private readonly ILogger<AuthorizeEndpointResultFactory> _logger;
         private readonly IdentityServerContext _context;
         private readonly ILocalizationService _localizationService;
         private readonly IMessageStore<SignInMessage> _signInMessageStore;
@@ -24,8 +23,8 @@ namespace IdentityServer4.Core.ResponseHandling
         private readonly IMessageStore<ErrorMessage> _errorMessageStore;
         private readonly ClientListCookie _clientListCookie;
 
-        public AuthorizeEndpointResultGenerator(
-            ILogger<AuthorizeEndpointResultGenerator> logger,
+        public AuthorizeEndpointResultFactory(
+            ILogger<AuthorizeEndpointResultFactory> logger,
             IdentityServerContext context,
             ILocalizationService localizationService,
             IMessageStore<SignInMessage> signInMessageStore,

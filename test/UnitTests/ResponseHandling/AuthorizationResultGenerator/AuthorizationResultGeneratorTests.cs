@@ -1,9 +1,8 @@
 ﻿using FluentAssertions;
 using IdentityServer4.Core;
+using IdentityServer4.Core.Endpoints.Results;
 using IdentityServer4.Core.Hosting;
 using IdentityServer4.Core.Models;
-using IdentityServer4.Core.ResponseHandling;
-using IdentityServer4.Core.Results;
 using IdentityServer4.Core.Validation;
 using Microsoft.Extensions.Logging;
 using System;
@@ -19,7 +18,7 @@ namespace UnitTests.ResponseHandling
     {
         const string Category = "Authorize Endpoint";
 
-        AuthorizeEndpointResultGenerator _subject;
+        AuthorizeEndpointResultFactory _subject;
 
         public AuthorizationResultGeneratorTests()
         {
@@ -30,7 +29,7 @@ namespace UnitTests.ResponseHandling
         {
             _mockClientListCookie = new MockClientListCookie(_context);
 
-            _subject = new AuthorizeEndpointResultGenerator(
+            _subject = new AuthorizeEndpointResultFactory(
                 _fakeLogger,
                 _context,
                 _stubLocalizationService,
@@ -40,7 +39,7 @@ namespace UnitTests.ResponseHandling
                 _mockClientListCookie);
         }
 
-        ILogger<AuthorizeEndpointResultGenerator> _fakeLogger = new FakeLogger<AuthorizeEndpointResultGenerator>();
+        ILogger<AuthorizeEndpointResultFactory> _fakeLogger = new FakeLogger<AuthorizeEndpointResultFactory>();
         IdentityServerContext _context = IdentityServerContextHelper.Create();
         MockClientListCookie _mockClientListCookie;
         MockMessageStore<SignInMessage> _mockSignInMessageStore = new MockMessageStore<SignInMessage>();

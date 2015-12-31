@@ -1,13 +1,12 @@
-﻿using IdentityServer4.Core.ResponseHandling;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using IdentityServer4.Core.Models;
-using IdentityServer4.Core.Results;
 using IdentityServer4.Core.Validation;
 using IdentityServer4.Core.Hosting;
+using IdentityServer4.Core.Endpoints.Results;
 
 namespace UnitTests.Endpoints.Authorize
 {
-    class StubResultGenerator : IAuthorizeEndpointResultGenerator
+    class StubResultFactory : IAuthorizeEndpointResultFactory
     {
         public IEndpointResult AuthorizeResult { get; set; } = new AuthorizeRedirectResult(null);
         public IEndpointResult ConsentResult { get; set; } = new ConsentPageResult("consent_id");

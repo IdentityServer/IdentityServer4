@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using IdentityServer4.Core.Hosting;
 
-namespace IdentityServer4.Core.Results
+namespace IdentityServer4.Core.Endpoints.Results
 {
     internal class TokenErrorResult : IEndpointResult
     {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
 using IdentityServer4.Core.Hosting;
 
-namespace IdentityServer4.Core.Results
+namespace IdentityServer4.Core.Endpoints.Results
 {
     internal class UserInfoResult : IEndpointResult
     {

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.Net;
 using IdentityServer4.Core.Hosting;
 
-namespace IdentityServer4.Core.Results
+namespace IdentityServer4.Core.Endpoints.Results
 {
     public class StatusCodeResult : IEndpointResult
     {

@@ -4,6 +4,7 @@
 using IdentityServer4.Core;
 using IdentityServer4.Core.Configuration;
 using IdentityServer4.Core.Endpoints;
+using IdentityServer4.Core.Endpoints.Results;
 using IdentityServer4.Core.Hosting;
 using IdentityServer4.Core.ResponseHandling;
 using IdentityServer4.Core.Services;
@@ -107,7 +108,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<IIntrospectionResponseGenerator, IntrospectionResponseGenerator>();
             services.TryAddTransient<IAuthorizeInteractionResponseGenerator, AuthorizeInteractionResponseGenerator>();
             services.TryAddTransient<IAuthorizeResponseGenerator, AuthorizeResponseGenerator>();
-            services.TryAddTransient<IAuthorizeEndpointResultGenerator, AuthorizeEndpointResultGenerator>();
+            services.TryAddTransient<IAuthorizeEndpointResultFactory, AuthorizeEndpointResultFactory>();
 
             return services;
         }

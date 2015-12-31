@@ -7,7 +7,7 @@ using Microsoft.AspNet.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Results
+namespace IdentityServer4.Core.Endpoints.Results
 {
     public class JsonWebKeysResult : IEndpointResult
     {

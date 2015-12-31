@@ -6,7 +6,7 @@ using IdentityServer4.Core.Models;
 using Microsoft.AspNet.Http;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Results
+namespace IdentityServer4.Core.Endpoints.Results
 {
     internal class TokenResult : IEndpointResult
     {
