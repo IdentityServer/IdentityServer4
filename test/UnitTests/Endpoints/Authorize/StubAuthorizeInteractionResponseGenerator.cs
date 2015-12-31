@@ -2,8 +2,6 @@
 using System.Threading.Tasks;
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Validation;
-using System.Security.Claims;
-using System;
 
 namespace UnitTests.Endpoints.Authorize
 {

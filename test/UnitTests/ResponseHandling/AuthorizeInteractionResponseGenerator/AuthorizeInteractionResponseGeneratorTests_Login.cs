@@ -20,8 +20,6 @@ using IdentityServer4.Core;
 using IdentityServer4.Core.Configuration;
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.ResponseHandling;
-using IdentityServer4.Core.Services;
-using IdentityServer4.Core.Services.Default;
 using IdentityServer4.Core.Validation;
 using System.Collections.Generic;
 using System.Threading.Tasks;

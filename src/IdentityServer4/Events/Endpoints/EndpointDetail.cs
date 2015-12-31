@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace IdentityServer4.Core.Events
 {
-    public interface IIdentityServerBuilder
+    class EndpointDetail
     {
-        IServiceCollection Services { get; }
+        public string EndpointName { get; set; }
     }
 }

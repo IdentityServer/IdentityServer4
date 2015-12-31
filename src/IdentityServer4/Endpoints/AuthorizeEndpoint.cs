@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Core.Extensions;
@@ -14,7 +16,6 @@ using System.Security.Claims;
 using IdentityServer4.Core.Hosting;
 using IdentityServer4.Core.Events;
 using IdentityServer4.Core.Models;
-using Microsoft.Extensions.WebEncoders;
 using IdentityServer4.Core.Resources;
 
 namespace IdentityServer4.Core.Endpoints

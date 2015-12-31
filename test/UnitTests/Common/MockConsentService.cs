@@ -1,11 +1,8 @@
 ﻿using IdentityServer4.Core.Services;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Core.Models;
 using System.Security.Claims;
-using IdentityServer4.Core.Extensions;
 
 namespace UnitTests.Common
 {

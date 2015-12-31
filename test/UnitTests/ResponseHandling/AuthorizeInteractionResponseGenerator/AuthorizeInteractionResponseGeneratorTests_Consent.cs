@@ -17,12 +17,8 @@
 using FluentAssertions;
 using IdentityServer4.Core;
 using IdentityServer4.Core.Configuration;
-using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Models;
-using IdentityServer4.Core.Resources;
 using IdentityServer4.Core.ResponseHandling;
-using IdentityServer4.Core.Services;
-using IdentityServer4.Core.Services.Default;
 using IdentityServer4.Core.Services.InMemory;
 using IdentityServer4.Core.Validation;
 using System;

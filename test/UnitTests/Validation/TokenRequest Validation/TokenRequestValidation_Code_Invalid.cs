@@ -19,8 +19,8 @@ using IdentityServer4.Core;
 using IdentityServer4.Core.Configuration;
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Services;
-using IdentityServer4.Core.Services.Default;
 using IdentityServer4.Core.Services.InMemory;
+using IdentityServer4.Core.Validation;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -29,7 +29,7 @@ using Xunit;
 
 namespace IdentityServer4.Tests.Validation.TokenRequest
 {
-    
+
     public class TokenRequestValidation_Code_Invalid
     {
         IClientStore _clients = Factory.CreateClientStore();
