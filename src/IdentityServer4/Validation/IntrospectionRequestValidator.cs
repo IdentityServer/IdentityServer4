@@ -21,11 +21,11 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.Validation
 {
-    public class IntrospectionRequestValidator
+    public class IntrospectionRequestValidator : IIntrospectionRequestValidator
     {
-        private readonly TokenValidator _tokenValidator;
+        private readonly ITokenValidator _tokenValidator;
 
-        public IntrospectionRequestValidator(TokenValidator tokenValidator)
+        public IntrospectionRequestValidator(ITokenValidator tokenValidator)
         {
             _tokenValidator = tokenValidator;
         }

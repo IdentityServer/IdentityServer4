@@ -28,7 +28,8 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<IdentityServerContext>();
 
             services.AddEndpoints(options.Endpoints);
-            services.AddValidators();
+            services.AddCoreValidators();
+            services.AddPluggableValidators();
             services.AddResponseGenerators();
 
             services.AddSecretParsers();
@@ -74,19 +75,25 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
-        public static IServiceCollection AddValidators(this IServiceCollection services)
+        public static IServiceCollection AddCoreValidators(this IServiceCollection services)
+        {
+            services.AddTransient<ScopeSecretValidator>();
+            services.AddTransient<ScopeValidator>();
+            services.AddTransient<CustomGrantValidator>();
+            services.AddTransient<ClientSecretValidator>();
+            services.AddTransient<BearerTokenUsageValidator>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddPluggableValidators(this IServiceCollection services)
         {
             services.TryAddTransient<IAuthorizeRequestValidator, AuthorizeRequestValidator>();
-            services.TryAddTransient<TokenRequestValidator>();
-            services.TryAddTransient<ScopeValidator>();
-            services.TryAddTransient<CustomGrantValidator>();
-            services.TryAddTransient<ClientSecretValidator>();
-            services.TryAddTransient<TokenValidator>();
-            services.TryAddTransient<BearerTokenUsageValidator>();
-            services.TryAddTransient<ScopeSecretValidator>();
-            services.TryAddTransient<IntrospectionRequestValidator>();
+            services.TryAddTransient<ITokenRequestValidator, TokenRequestValidator>();
             services.TryAddTransient<IRedirectUriValidator, DefaultRedirectUriValidator>();
-
+            services.TryAddTransient<ITokenValidator, TokenValidator>();
+            services.TryAddTransient<IIntrospectionRequestValidator, IntrospectionRequestValidator>();
+            
             return services;
         }
 

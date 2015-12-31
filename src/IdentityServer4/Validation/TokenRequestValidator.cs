@@ -27,7 +27,7 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.Validation
 {
-    public class TokenRequestValidator
+    public class TokenRequestValidator : ITokenRequestValidator
     {
         private readonly ILogger _logger;
 

@@ -13,10 +13,10 @@ namespace IdentityServer4.Core.Endpoints
     {
         private readonly ClientSecretValidator _clientValidator;
         private readonly ILogger _logger;
-        private readonly TokenRequestValidator _requestValidator;
+        private readonly ITokenRequestValidator _requestValidator;
         private readonly TokenResponseGenerator _responseGenerator;
 
-        public TokenEndpoint(TokenRequestValidator requestValidator, ClientSecretValidator clientValidator, TokenResponseGenerator responseGenerator, ILoggerFactory loggerFactory)
+        public TokenEndpoint(ITokenRequestValidator requestValidator, ClientSecretValidator clientValidator, TokenResponseGenerator responseGenerator, ILoggerFactory loggerFactory)
         {
             _requestValidator = requestValidator;
             _clientValidator = clientValidator;

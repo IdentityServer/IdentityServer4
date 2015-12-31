@@ -35,12 +35,10 @@ using System.Threading.Tasks;
 using System.IdentityModel.Tokens.Jwt;
 #endif
 
-#pragma warning disable 1591
-
 namespace IdentityServer4.Core.Validation
 {
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public class TokenValidator
+    public class TokenValidator : ITokenValidator
     {
         private readonly ILogger _logger;
         private readonly IdentityServerOptions _options;

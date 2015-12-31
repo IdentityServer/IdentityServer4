@@ -19,9 +19,9 @@ namespace IdentityServer4.Core.Endpoints
         private readonly UserInfoResponseGenerator _generator;
         private readonly IdentityServerOptions _options;
         private readonly BearerTokenUsageValidator _tokenUsageValidator;
-        private readonly TokenValidator _tokenValidator;
+        private readonly ITokenValidator _tokenValidator;
 
-        public UserInfoEndpoint(IdentityServerOptions options, TokenValidator tokenValidator, UserInfoResponseGenerator generator, BearerTokenUsageValidator tokenUsageValidator, IEventService events, ILogger<UserInfoEndpoint> logger)
+        public UserInfoEndpoint(IdentityServerOptions options, ITokenValidator tokenValidator, UserInfoResponseGenerator generator, BearerTokenUsageValidator tokenUsageValidator, IEventService events, ILogger<UserInfoEndpoint> logger)
         {
             _options = options;
             _tokenValidator = tokenValidator;
