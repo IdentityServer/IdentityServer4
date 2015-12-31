@@ -17,7 +17,7 @@
 using IdentityServer4.Core.Models;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Services
+namespace IdentityServer4.Core.Validation
 {
     /// <summary>
     /// Models the logic when validating redirect and post logout redirect URIs.

@@ -1,4 +1,6 @@
-﻿/*
+﻿using IdentityServer4.Core.Models;
+using IdentityServer4.Core.Validation;
+/*
  * Copyright 2014, 2015 Dominick Baier, Brock Allen
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,29 +16,22 @@
  * limitations under the License.
  */
 
-using IdentityServer4.Core.Validation;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Services
+namespace IdentityServer4.Core.Validation
 {
     /// <summary>
-    /// Handles validation of token requests using custom grant types
+    /// Service for validating a received secret against a stored secret
     /// </summary>
-    public interface ICustomGrantValidator
+    public interface ISecretValidator
     {
         /// <summary>
-        /// Validates the custom grant request.
+        /// Validates a secret
         /// </summary>
-        /// <param name="request">The validated token request.</param>
-        /// <returns>A principal</returns>
-        Task<CustomGrantValidationResult> ValidateAsync(ValidatedTokenRequest request);
-
-        /// <summary>
-        /// Returns the grant type this validator can deal with
-        /// </summary>
-        /// <value>
-        /// The type of the grant.
-        /// </value>
-        string GrantType { get; }
+        /// <param name="secrets">The stored secrets.</param>
+        /// <param name="parsedSecret">The received secret.</param>
+        /// <returns>A validation result</returns>
+        Task<SecretValidationResult> ValidateAsync(IEnumerable<Secret> secrets, ParsedSecret parsedSecret);
     }
 }

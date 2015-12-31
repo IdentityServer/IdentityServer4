@@ -1,6 +1,4 @@
-﻿using IdentityServer4.Core.Models;
-using IdentityServer4.Core.Validation;
-/*
+﻿/*
  * Copyright 2014, 2015 Dominick Baier, Brock Allen
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,22 +14,27 @@ using IdentityServer4.Core.Validation;
  * limitations under the License.
  */
 
-using System.Collections.Generic;
+using IdentityServer4.Core.Models;
+using Microsoft.AspNet.Http;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Services
+namespace IdentityServer4.Core.Validation
 {
     /// <summary>
-    /// Service for validating a received secret against a stored secret
+    /// A service for parsing secrets found on the environment
     /// </summary>
-    public interface ISecretValidator
+    public interface ISecretParser
     {
         /// <summary>
-        /// Validates a secret
+        /// Tries to find a secret on the environment that can be used for authentication
         /// </summary>
-        /// <param name="secrets">The stored secrets.</param>
-        /// <param name="parsedSecret">The received secret.</param>
-        /// <returns>A validation result</returns>
-        Task<SecretValidationResult> ValidateAsync(IEnumerable<Secret> secrets, ParsedSecret parsedSecret);
+        /// <param name="environment">The environment.</param>
+        /// <returns>A parsed secret</returns>
+        Task<ParsedSecret> ParseAsync(HttpContext context);
+
+        /// <summary>
+        /// Returns the authentication method name that this parser implements
+        /// </summary>
+        string AuthenticationMethod { get; }
     }
 }

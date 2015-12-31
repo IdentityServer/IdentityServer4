@@ -17,25 +17,26 @@
 using IdentityServer4.Core.Validation;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Services
+namespace IdentityServer4.Core.Validation
 {
     /// <summary>
-    /// Allows inserting custom token validation logic
+    /// Allows inserting custom validation logic into authorize and token requests
     /// </summary>
-    public interface ICustomTokenValidator
+    public interface ICustomRequestValidator
     {
         /// <summary>
-        /// Custom validation logic for access tokens.
+        /// Custom validation logic for the authorize request.
         /// </summary>
-        /// <param name="result">The validation result so far.</param>
+        /// <param name="request">The validated request.</param>
         /// <returns>The validation result</returns>
-        Task<TokenValidationResult> ValidateAccessTokenAsync(TokenValidationResult result);
+        // postpone
+        Task<AuthorizeRequestValidationResult> ValidateAuthorizeRequestAsync(ValidatedAuthorizeRequest request);
 
         /// <summary>
-        /// Custom validation logic for identity tokens.
+        /// Custom validation logic for the token request.
         /// </summary>
-        /// <param name="result">The validation result so far.</param>
+        /// <param name="request">The validated request.</param>
         /// <returns>The validation result</returns>
-        Task<TokenValidationResult> ValidateIdentityTokenAsync(TokenValidationResult result);
+        Task<TokenRequestValidationResult> ValidateTokenRequestAsync(ValidatedTokenRequest request);
     }
 }

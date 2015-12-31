@@ -20,13 +20,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Services.Default
+namespace IdentityServer4.Core.Validation
 {
     /// <summary>
     /// Default implementation of redirect URI validator. Validates the URIs against
     /// the client's configured URIs.
     /// </summary>
-    public class DefaultRedirectUriValidator : IRedirectUriValidator
+    public class StrictRedirectUriValidator : IRedirectUriValidator
     {
         /// <summary>
         /// Checks if a given URI string is in a collection of strings (using ordinal ignore case comparison)

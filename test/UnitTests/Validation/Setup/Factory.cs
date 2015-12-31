@@ -138,7 +138,7 @@ namespace IdentityServer4.Tests.Validation
 
             if (uriValidator == null)
             {
-                uriValidator = new DefaultRedirectUriValidator();
+                uriValidator = new StrictRedirectUriValidator();
             }
 
             if (scopeValidator == null)

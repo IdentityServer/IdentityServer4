@@ -90,7 +90,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.TryAddTransient<IAuthorizeRequestValidator, AuthorizeRequestValidator>();
             services.TryAddTransient<ITokenRequestValidator, TokenRequestValidator>();
-            services.TryAddTransient<IRedirectUriValidator, DefaultRedirectUriValidator>();
+            services.TryAddTransient<IRedirectUriValidator, StrictRedirectUriValidator>();
             services.TryAddTransient<ITokenValidator, TokenValidator>();
             services.TryAddTransient<IIntrospectionRequestValidator, IntrospectionRequestValidator>();
             

@@ -17,26 +17,26 @@
 using IdentityServer4.Core.Validation;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Services
+namespace IdentityServer4.Core.Validation
 {
     /// <summary>
-    /// Allows inserting custom validation logic into authorize and token requests
+    /// Handles validation of token requests using custom grant types
     /// </summary>
-    public interface ICustomRequestValidator
+    public interface ICustomGrantValidator
     {
         /// <summary>
-        /// Custom validation logic for the authorize request.
+        /// Validates the custom grant request.
         /// </summary>
-        /// <param name="request">The validated request.</param>
-        /// <returns>The validation result</returns>
-        // postpone
-        Task<AuthorizeRequestValidationResult> ValidateAuthorizeRequestAsync(ValidatedAuthorizeRequest request);
+        /// <param name="request">The validated token request.</param>
+        /// <returns>A principal</returns>
+        Task<CustomGrantValidationResult> ValidateAsync(ValidatedTokenRequest request);
 
         /// <summary>
-        /// Custom validation logic for the token request.
+        /// Returns the grant type this validator can deal with
         /// </summary>
-        /// <param name="request">The validated request.</param>
-        /// <returns>The validation result</returns>
-        Task<TokenRequestValidationResult> ValidateTokenRequestAsync(ValidatedTokenRequest request);
+        /// <value>
+        /// The type of the grant.
+        /// </value>
+        string GrantType { get; }
     }
 }

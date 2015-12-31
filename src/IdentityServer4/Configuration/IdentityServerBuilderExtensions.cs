@@ -1,6 +1,7 @@
 ﻿using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Services;
 using IdentityServer4.Core.Services.InMemory;
+using IdentityServer4.Core.Validation;
 using System.Collections.Generic;
 
 namespace Microsoft.Extensions.DependencyInjection

@@ -14,27 +14,28 @@
  * limitations under the License.
  */
 
-using IdentityServer4.Core.Models;
-using Microsoft.AspNet.Http;
+using IdentityServer4.Core.Validation;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Services
+namespace IdentityServer4.Core.Validation
 {
     /// <summary>
-    /// A service for parsing secrets found on the environment
+    /// Allows inserting custom token validation logic
     /// </summary>
-    public interface ISecretParser
+    public interface ICustomTokenValidator
     {
         /// <summary>
-        /// Tries to find a secret on the environment that can be used for authentication
+        /// Custom validation logic for access tokens.
         /// </summary>
-        /// <param name="environment">The environment.</param>
-        /// <returns>A parsed secret</returns>
-        Task<ParsedSecret> ParseAsync(HttpContext context);
+        /// <param name="result">The validation result so far.</param>
+        /// <returns>The validation result</returns>
+        Task<TokenValidationResult> ValidateAccessTokenAsync(TokenValidationResult result);
 
         /// <summary>
-        /// Returns the authentication method name that this parser implements
+        /// Custom validation logic for identity tokens.
         /// </summary>
-        string AuthenticationMethod { get; }
+        /// <param name="result">The validation result so far.</param>
+        /// <returns>The validation result</returns>
+        Task<TokenValidationResult> ValidateIdentityTokenAsync(TokenValidationResult result);
     }
 }
