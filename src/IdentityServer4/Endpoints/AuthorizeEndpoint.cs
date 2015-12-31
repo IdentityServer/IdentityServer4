@@ -166,18 +166,6 @@ namespace IdentityServer4.Core.Endpoints
             return await SuccessfulAuthorizationAsync(request);
         }
 
-        private async Task<IEndpointResult> SuccessfulAuthorizationAsync(ValidatedAuthorizeRequest request)
-        {
-            _logger.LogInformation("Issuing successful authorization response");
-
-            var response = await _responseGenerator.CreateResponseAsync(request);
-            var result = await _resultGenerator.CreateAuthorizeResultAsync(response);
-
-            await RaiseSuccessEventAsync();
-
-            return result;
-        }
-
         async Task<IEndpointResult> LoginPageAsync(ValidatedAuthorizeRequest request)
         {
             _logger.LogInformation("Showing login page");
@@ -190,16 +178,30 @@ namespace IdentityServer4.Core.Endpoints
             return await _resultGenerator.CreateConsentResultAsync(validatedRequest);
         }
 
+        private async Task<IEndpointResult> SuccessfulAuthorizationAsync(ValidatedAuthorizeRequest request)
+        {
+            _logger.LogInformation("Issuing successful authorization response");
+
+            var response = await _responseGenerator.CreateResponseAsync(request);
+            var result = await _resultGenerator.CreateAuthorizeResultAsync(response);
+
+            await RaiseSuccessEventAsync();
+
+            return result;
+        }
+
         async Task<IEndpointResult> ErrorPageAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request)
         {
             _logger.LogInformation("Showing error page");
 
-            await RaiseFailureEventAsync(error);
-
-            return await _resultGenerator.CreateErrorResultAsync(
+            var result = await _resultGenerator.CreateErrorResultAsync(
                 errorType,
                 error,
                 request);
+
+            await RaiseFailureEventAsync(error);
+
+            return result;
         }
 
         private async Task RaiseSuccessEventAsync()
