@@ -101,7 +101,7 @@ namespace IdentityServer4.Core.Hosting
         {
             get
             {
-                return "https".Equals(_context.HttpContext.Request.Scheme, StringComparison.OrdinalIgnoreCase);
+                return _context.HttpContext.Request.IsHttps;
             }
         }
 
