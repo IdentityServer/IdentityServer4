@@ -120,6 +120,8 @@ namespace IdentityServer4.Core.Endpoints
 
             var result = await ProcessAuthorizeRequestAsync(message.AuthorizeRequestParameters, user, null);
 
+            await _signInMessageStore.DeleteAsync(id);
+
             _logger.LogInformation("End Authorize Request. Result type: {0}", result?.GetType().ToString() ?? "-none-");
 
             return result;
@@ -156,6 +158,8 @@ namespace IdentityServer4.Core.Endpoints
             var user = await _context.GetIdentityServerUserAsync();
 
             var result = await ProcessAuthorizeRequestAsync(consent.AuthorizeRequestParameters, user, consent.Consent);
+
+            await _consentMessageStore.DeleteAsync(id);
 
             _logger.LogInformation("End Authorize Request. Result type: {0}", result?.GetType().ToString() ?? "-none-");
 

@@ -328,6 +328,19 @@ namespace UnitTests.Endpoints.Authorize
             result.Should().BeAssignableTo<AuthorizeResult>();
         }
 
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task ProcessAuthorizeAfterLoginAsync_valid_signin_message_should_cleanup_signin_message_cookie()
+        {
+            _mockSignInMessageStore.Messages.Add("123", new SignInMessage());
+            _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
+            _context.HttpContext.SetUser(_user);
+
+            await _subject.ProcessAuthorizeAfterLoginAsync(_context);
+
+            _mockSignInMessageStore.Messages.Count.Should().Be(0);
+        }
+
         // after consent
 
         [Fact]
@@ -391,6 +404,19 @@ namespace UnitTests.Endpoints.Authorize
             var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
 
             result.Should().BeAssignableTo<AuthorizeResult>();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task ProcessAuthorizeWithConsentAsync_valid_consent_message_should_cleanup_consent_cookie()
+        {
+            _mockUserConsentResponseMessageStore.Messages.Add("123", new UserConsentResponseMessage());
+            _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
+            _context.HttpContext.SetUser(_user);
+
+            await _subject.ProcessAuthorizeAfterConsentAsync(_context);
+
+            _mockUserConsentResponseMessageStore.Messages.Count.Should().Be(0);
         }
     }
 }
