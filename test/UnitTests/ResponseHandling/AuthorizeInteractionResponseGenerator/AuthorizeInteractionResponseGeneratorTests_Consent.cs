@@ -29,9 +29,8 @@ using System.Threading.Tasks;
 using UnitTests.Common;
 using Xunit;
 
-namespace IdentityServer4.Tests.Connect.ResponseHandling
+namespace IdentityServer4.Tests.ResponseHandling
 {
-
     public class AuthorizeInteractionResponseGeneratorTests_Consent
     {
         AuthorizeInteractionResponseGenerator _subject;
