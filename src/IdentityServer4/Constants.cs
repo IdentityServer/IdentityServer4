@@ -635,7 +635,8 @@ namespace IdentityServer4.Core
             {
                 public const string Authorize = "connect/authorize";
                 // new
-                public const string AuthorizeWithConsent = "connect/authorize/consent";
+                public const string AuthorizeAfterConsent = "connect/authorize/consent";
+                public const string AuthorizeAfterLogin = "connect/authorize/login";
 
                 public const string Consent = "connect/consent";
                 public const string SwitchUser = "connect/switch";

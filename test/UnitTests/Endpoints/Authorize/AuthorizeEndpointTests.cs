@@ -73,6 +73,7 @@ namespace UnitTests.Endpoints.Authorize
                 _stubAuthorizeRequestValidator,
                 _stubInteractionGenerator,
                 _stubResultFactory,
+                _mockSignInMessageStore,
                 _mockUserConsentResponseMessageStore);
         }
 
@@ -88,6 +89,7 @@ namespace UnitTests.Endpoints.Authorize
         StubAuthorizeRequestValidator _stubAuthorizeRequestValidator = new StubAuthorizeRequestValidator();
         StubAuthorizeInteractionResponseGenerator _stubInteractionGenerator = new StubAuthorizeInteractionResponseGenerator();
         StubResultFactory _stubResultFactory = new StubResultFactory();
+        MockMessageStore<SignInMessage> _mockSignInMessageStore = new MockMessageStore<SignInMessage>();
         MockMessageStore<UserConsentResponseMessage> _mockUserConsentResponseMessageStore = new MockMessageStore<UserConsentResponseMessage>();
 
         [Fact]
@@ -124,6 +126,34 @@ namespace UnitTests.Endpoints.Authorize
             _context.HttpContext.Request.Method = "GET";
             _context.HttpContext.Request.Path = new Microsoft.AspNet.Http.PathString("/connect/authorize");
             _context.HttpContext.SetUser(_user);
+
+            var result = await _subject.ProcessAsync(_context);
+
+            result.Should().BeAssignableTo<AuthorizeResult>();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task ProcessAsync_authorize_with_login_path_without_login_params_should_return_error_page()
+        {
+            _context.HttpContext.Request.Method = "GET";
+            _context.HttpContext.Request.Path = new Microsoft.AspNet.Http.PathString("/connect/authorize/login");
+            _context.HttpContext.SetUser(_user);
+
+            var result = await _subject.ProcessAsync(_context);
+
+            result.Should().BeAssignableTo<ErrorPageResult>();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task ProcessAsync_authorize_with_login_path_should_return_authorization_result()
+        {
+            _context.HttpContext.Request.Method = "GET";
+            _mockSignInMessageStore.Messages.Add("123", new SignInMessage() { AuthorizeRequestParameters = new NameValueCollection() });
+            _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
+            _context.HttpContext.SetUser(_user);
+            _context.HttpContext.Request.Path = new Microsoft.AspNet.Http.PathString("/connect/authorize/login");
 
             var result = await _subject.ProcessAsync(_context);
 
@@ -247,6 +277,59 @@ namespace UnitTests.Endpoints.Authorize
             result.Should().BeAssignableTo<AuthorizeResult>();
         }
 
+        // after login
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task ProcessAuthorizeAfterLoginAsync_no_id_param_should_return_error_page()
+        {
+            _mockSignInMessageStore.Messages.Add("123", new SignInMessage());
+            _context.HttpContext.SetUser(_user);
+
+            var result = await _subject.ProcessAuthorizeAfterLoginAsync(_context);
+
+            result.Should().BeAssignableTo<ErrorPageResult>();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task ProcessAuthorizeAfterLoginAsync_no_signin_message_should_return_error_page()
+        {
+            _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
+            _context.HttpContext.SetUser(_user);
+
+            var result = await _subject.ProcessAuthorizeAfterLoginAsync(_context);
+
+            result.Should().BeAssignableTo<ErrorPageResult>();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task ProcessAuthorizeAfterLoginAsync_signin_missing_params_data_should_return_error_page()
+        {
+            _mockSignInMessageStore.Messages.Add("123", new SignInMessage() { AuthorizeRequestParameters=null });
+            _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
+            _context.HttpContext.SetUser(_user);
+
+            var result = await _subject.ProcessAuthorizeAfterLoginAsync(_context);
+
+            result.Should().BeAssignableTo<ErrorPageResult>();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task ProcessAuthorizeAfterLoginAsync_valid_signin_message_should_return_authorize_result()
+        {
+            _mockSignInMessageStore.Messages.Add("123", new SignInMessage());
+            _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
+            _context.HttpContext.SetUser(_user);
+
+            var result = await _subject.ProcessAuthorizeAfterLoginAsync(_context);
+
+            result.Should().BeAssignableTo<AuthorizeResult>();
+        }
+
+        // after consent
+
         [Fact]
         [Trait("Category", Category)]
         public async Task ProcessAuthorizeWithConsentAsync_no_id_param_should_return_error_page()
@@ -254,7 +337,7 @@ namespace UnitTests.Endpoints.Authorize
             _mockUserConsentResponseMessageStore.Messages.Add("123", new UserConsentResponseMessage());
             _context.HttpContext.SetUser(_user);
 
-            var result = await _subject.ProcessAuthorizeWithConsentAsync(_context);
+            var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
 
             result.Should().BeAssignableTo<ErrorPageResult>();
         }
@@ -266,7 +349,7 @@ namespace UnitTests.Endpoints.Authorize
             _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
             _context.HttpContext.SetUser(_user);
 
-            var result = await _subject.ProcessAuthorizeWithConsentAsync(_context);
+            var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
 
             result.Should().BeAssignableTo<ErrorPageResult>();
         }
@@ -279,7 +362,7 @@ namespace UnitTests.Endpoints.Authorize
             _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
             _context.HttpContext.SetUser(_user);
 
-            var result = await _subject.ProcessAuthorizeWithConsentAsync(_context);
+            var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
 
             result.Should().BeAssignableTo<ErrorPageResult>();
         }
@@ -292,7 +375,7 @@ namespace UnitTests.Endpoints.Authorize
             _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
             _context.HttpContext.SetUser(_user);
 
-            var result = await _subject.ProcessAuthorizeWithConsentAsync(_context);
+            var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
 
             result.Should().BeAssignableTo<ErrorPageResult>();
         }
@@ -305,7 +388,7 @@ namespace UnitTests.Endpoints.Authorize
             _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
             _context.HttpContext.SetUser(_user);
 
-            var result = await _subject.ProcessAuthorizeWithConsentAsync(_context);
+            var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
 
             result.Should().BeAssignableTo<AuthorizeResult>();
         }

@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 
 namespace IdentityServer4.Core.Models
@@ -79,12 +80,15 @@ namespace IdentityServer4.Core.Models
         /// </value>
         public IEnumerable<string> AcrValues { get; set; }
 
+        public NameValueCollection AuthorizeRequestParameters { get; set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SignInMessage"/> class.
         /// </summary>
         public SignInMessage()
         {
             AcrValues = Enumerable.Empty<string>();
+            AuthorizeRequestParameters = new NameValueCollection();
         }
     }
 }

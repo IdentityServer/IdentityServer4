@@ -29,6 +29,7 @@ namespace IdentityServer4.Core.Endpoints
         private readonly IAuthorizeRequestValidator _validator;
         private readonly IAuthorizeInteractionResponseGenerator _interactionGenerator;
         private readonly IAuthorizeEndpointResultFactory _resultGenerator;
+        private readonly IMessageStore<SignInMessage> _signInMessageStore;
         private readonly IMessageStore<UserConsentResponseMessage> _consentMessageStore;
 
         public AuthorizeEndpoint(
@@ -39,6 +40,7 @@ namespace IdentityServer4.Core.Endpoints
             IAuthorizeRequestValidator validator,
             IAuthorizeInteractionResponseGenerator interactionGenerator,
             IAuthorizeEndpointResultFactory resultGenerator,
+            IMessageStore<SignInMessage> signInMessageStore,
             IMessageStore<UserConsentResponseMessage> consentMessageStore)
         {
             _events = events;
@@ -48,6 +50,7 @@ namespace IdentityServer4.Core.Endpoints
             _validator = validator;
             _interactionGenerator = interactionGenerator;
             _resultGenerator = resultGenerator;
+            _signInMessageStore = signInMessageStore;
             _consentMessageStore = consentMessageStore;
         }
 
@@ -63,9 +66,14 @@ namespace IdentityServer4.Core.Endpoints
                 return await ProcessAuthorizeAsync(context);
             }
 
-            if (context.HttpContext.Request.Path == Constants.RoutePaths.Oidc.AuthorizeWithConsent.EnsureLeadingSlash())
+            if (context.HttpContext.Request.Path == Constants.RoutePaths.Oidc.AuthorizeAfterLogin.EnsureLeadingSlash())
             {
-                return await ProcessAuthorizeWithConsentAsync(context);
+                return await ProcessAuthorizeAfterLoginAsync(context);
+            }
+
+            if (context.HttpContext.Request.Path == Constants.RoutePaths.Oidc.AuthorizeAfterConsent.EnsureLeadingSlash())
+            {
+                return await ProcessAuthorizeAfterConsentAsync(context);
             }
 
             return new StatusCodeResult(HttpStatusCode.NotFound);
@@ -85,9 +93,41 @@ namespace IdentityServer4.Core.Endpoints
             return result;
         }
 
-        internal async Task<IEndpointResult> ProcessAuthorizeWithConsentAsync(IdentityServerContext context)
+        internal async Task<IEndpointResult> ProcessAuthorizeAfterLoginAsync(IdentityServerContext context)
         {
-            _logger.LogInformation("Start Authorize Request (with consent)");
+            _logger.LogInformation("Start Authorize Request (after login)");
+
+            if (!context.HttpContext.Request.Query.ContainsKey("id"))
+            {
+                _logger.LogWarning("id query parameter is missing.");
+                return await ErrorPageAsync(ErrorTypes.User, nameof(Messages.UnexpectedError), null);
+            }
+
+            var id = context.HttpContext.Request.Query["id"].First();
+            var message = await _signInMessageStore.ReadAsync(id);
+            if (message == null)
+            {
+                _logger.LogWarning("signin message is missing.");
+                return await ErrorPageAsync(ErrorTypes.User, nameof(Messages.UnexpectedError), null);
+            }
+            if (message.AuthorizeRequestParameters == null)
+            {
+                _logger.LogWarning("signin message is missing AuthorizeRequestParameters data.");
+                return await ErrorPageAsync(ErrorTypes.User, nameof(Messages.UnexpectedError), null);
+            }
+
+            var user = await _context.GetIdentityServerUserAsync();
+
+            var result = await ProcessAuthorizeRequestAsync(message.AuthorizeRequestParameters, user, null);
+
+            _logger.LogInformation("End Authorize Request. Result type: {0}", result?.GetType().ToString() ?? "-none-");
+
+            return result;
+        }
+
+        internal async Task<IEndpointResult> ProcessAuthorizeAfterConsentAsync(IdentityServerContext context)
+        {
+            _logger.LogInformation("Start Authorize Request (after consent)");
 
             if (!context.HttpContext.Request.Query.ContainsKey("id"))
             {
