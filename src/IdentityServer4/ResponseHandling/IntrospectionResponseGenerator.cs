@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.ResponseHandling
 {
-    public class IntrospectionResponseGenerator
+    public class IntrospectionResponseGenerator : IIntrospectionResponseGenerator
     {
         private readonly ILogger _logger;
 

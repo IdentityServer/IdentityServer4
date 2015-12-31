@@ -14,9 +14,9 @@ namespace IdentityServer4.Core.Endpoints
         private readonly ClientSecretValidator _clientValidator;
         private readonly ILogger _logger;
         private readonly ITokenRequestValidator _requestValidator;
-        private readonly TokenResponseGenerator _responseGenerator;
+        private readonly ITokenResponseGenerator _responseGenerator;
 
-        public TokenEndpoint(ITokenRequestValidator requestValidator, ClientSecretValidator clientValidator, TokenResponseGenerator responseGenerator, ILoggerFactory loggerFactory)
+        public TokenEndpoint(ITokenRequestValidator requestValidator, ClientSecretValidator clientValidator, ITokenResponseGenerator responseGenerator, ILoggerFactory loggerFactory)
         {
             _requestValidator = requestValidator;
             _clientValidator = clientValidator;

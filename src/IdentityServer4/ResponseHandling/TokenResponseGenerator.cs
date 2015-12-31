@@ -24,12 +24,10 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
-#pragma warning disable 1591
-
 namespace IdentityServer4.Core.ResponseHandling
 {
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public class TokenResponseGenerator
+    public class TokenResponseGenerator : ITokenResponseGenerator
     {
         private ILogger _logger;
         private readonly ITokenService _tokenService;

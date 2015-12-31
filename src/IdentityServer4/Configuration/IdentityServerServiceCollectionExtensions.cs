@@ -99,9 +99,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IServiceCollection AddResponseGenerators(this IServiceCollection services)
         {
-            services.TryAddTransient<TokenResponseGenerator>();
-            services.TryAddTransient<UserInfoResponseGenerator>();
-            services.TryAddTransient<IntrospectionResponseGenerator>();
+            services.TryAddTransient<ITokenResponseGenerator, TokenResponseGenerator>();
+            services.TryAddTransient<IUserInfoResponseGenerator, UserInfoResponseGenerator>();
+            services.TryAddTransient<IIntrospectionResponseGenerator, IntrospectionResponseGenerator>();
             services.TryAddTransient<IAuthorizeInteractionResponseGenerator, AuthorizeInteractionResponseGenerator>();
             services.TryAddTransient<IAuthorizeResponseGenerator, AuthorizeResponseGenerator>();
             services.TryAddTransient<IAuthorizeEndpointResultGenerator, AuthorizeEndpointResultGenerator>();

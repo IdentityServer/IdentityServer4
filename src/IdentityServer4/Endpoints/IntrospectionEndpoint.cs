@@ -14,12 +14,12 @@ namespace IdentityServer4.Core.Endpoints
     public class IntrospectionEndpoint : IEndpoint
     {
         private readonly IEventService _events;
-        private readonly IntrospectionResponseGenerator _generator;
+        private readonly IIntrospectionResponseGenerator _generator;
         private readonly ILogger<IntrospectionEndpoint> _logger;
         private readonly IIntrospectionRequestValidator _requestValidator;
         private readonly ScopeSecretValidator _scopeSecretValidator;
 
-        public IntrospectionEndpoint(ScopeSecretValidator scopeSecretValidator, IIntrospectionRequestValidator requestValidator, IntrospectionResponseGenerator generator, IEventService events, ILogger<IntrospectionEndpoint> logger)
+        public IntrospectionEndpoint(ScopeSecretValidator scopeSecretValidator, IIntrospectionRequestValidator requestValidator, IIntrospectionResponseGenerator generator, IEventService events, ILogger<IntrospectionEndpoint> logger)
         {
             _scopeSecretValidator = scopeSecretValidator;
             _requestValidator = requestValidator;
