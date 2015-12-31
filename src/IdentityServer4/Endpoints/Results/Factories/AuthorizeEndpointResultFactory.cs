@@ -4,6 +4,7 @@
 using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Hosting;
 using IdentityServer4.Core.Models;
+using IdentityServer4.Core.ResponseHandling;
 using IdentityServer4.Core.Services;
 using IdentityServer4.Core.Validation;
 using Microsoft.Extensions.Logging;
@@ -17,6 +18,7 @@ namespace IdentityServer4.Core.Endpoints.Results
     {
         private readonly ILogger<AuthorizeEndpointResultFactory> _logger;
         private readonly IdentityServerContext _context;
+        private readonly IAuthorizeResponseGenerator _responseGenerator;
         private readonly ILocalizationService _localizationService;
         private readonly IMessageStore<SignInMessage> _signInMessageStore;
         private readonly IMessageStore<ConsentRequest> _consentRequestStore;
@@ -26,6 +28,7 @@ namespace IdentityServer4.Core.Endpoints.Results
         public AuthorizeEndpointResultFactory(
             ILogger<AuthorizeEndpointResultFactory> logger,
             IdentityServerContext context,
+            IAuthorizeResponseGenerator responseGenerator,
             ILocalizationService localizationService,
             IMessageStore<SignInMessage> signInMessageStore,
             IMessageStore<ConsentRequest> consentRequestStore,
@@ -34,6 +37,7 @@ namespace IdentityServer4.Core.Endpoints.Results
         {
             _logger = logger;
             _context = context;
+            _responseGenerator = responseGenerator;
             _localizationService = localizationService;
             _signInMessageStore = signInMessageStore;
             _consentRequestStore = consentRequestStore;
@@ -200,25 +204,35 @@ namespace IdentityServer4.Core.Endpoints.Results
             return new ErrorPageResult(message.Id);
         }
 
-        public Task<IEndpointResult> CreateAuthorizeResultAsync(AuthorizeResponse response)
+        public async Task<IEndpointResult> CreateAuthorizeResultAsync(ValidatedAuthorizeRequest request)
+        {
+            var response = await _responseGenerator.CreateResponseAsync(request);
+            return await CreateAuthorizeResultAsync(response);
+        }
+
+        Task<IEndpointResult> CreateAuthorizeResultAsync(AuthorizeResponse response)
         {
             var request = response.Request;
+
+            IEndpointResult result = null;
 
             if (request.ResponseMode == Constants.ResponseModes.Query ||
                 request.ResponseMode == Constants.ResponseModes.Fragment)
             {
-                _logger.LogDebug("Adding client {0} to client list cookie for subject {1}", request.ClientId, request.Subject.GetSubjectId());
-                _clientListCookie.AddClient(request.ClientId);
-
-                return Task.FromResult<IEndpointResult>(new AuthorizeRedirectResult(response));
+                result = new AuthorizeRedirectResult(response);
             }
-
             if (request.ResponseMode == Constants.ResponseModes.FormPost)
             {
+                result = new AuthorizeFormPostResult(response);
+            }
+
+            if (result != null)
+            {
                 _logger.LogDebug("Adding client {0} to client list cookie for subject {1}", request.ClientId, request.Subject.GetSubjectId());
+
                 _clientListCookie.AddClient(request.ClientId);
 
-                return Task.FromResult<IEndpointResult>(new AuthorizeFormPostResult(response));
+                return Task.FromResult<IEndpointResult>(result);
             }
 
             _logger.LogError("Unsupported response mode.");

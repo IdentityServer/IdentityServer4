@@ -25,7 +25,6 @@ namespace IdentityServer4.Core.Endpoints
         private readonly IEventService _events;
         private readonly ILogger _logger;
         private readonly IdentityServerContext _context;
-        private readonly IAuthorizeResponseGenerator _responseGenerator;
         private readonly IAuthorizeRequestValidator _validator;
         private readonly IAuthorizeInteractionResponseGenerator _interactionGenerator;
         private readonly IAuthorizeEndpointResultFactory _resultGenerator;
@@ -36,7 +35,6 @@ namespace IdentityServer4.Core.Endpoints
             IEventService events, 
             ILogger<AuthorizeEndpoint> logger,
             IdentityServerContext context,
-            IAuthorizeResponseGenerator responseGenerator,
             IAuthorizeRequestValidator validator,
             IAuthorizeInteractionResponseGenerator interactionGenerator,
             IAuthorizeEndpointResultFactory resultGenerator,
@@ -46,7 +44,6 @@ namespace IdentityServer4.Core.Endpoints
             _events = events;
             _logger = logger;
             _context = context;
-            _responseGenerator = responseGenerator;
             _validator = validator;
             _interactionGenerator = interactionGenerator;
             _resultGenerator = resultGenerator;
@@ -227,8 +224,7 @@ namespace IdentityServer4.Core.Endpoints
         {
             _logger.LogInformation("Issuing successful authorization response");
 
-            var response = await _responseGenerator.CreateResponseAsync(request);
-            var result = await _resultGenerator.CreateAuthorizeResultAsync(response);
+            var result = await _resultGenerator.CreateAuthorizeResultAsync(request);
 
             await RaiseSuccessEventAsync();
 

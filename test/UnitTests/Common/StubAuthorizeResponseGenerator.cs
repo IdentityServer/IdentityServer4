@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Validation;
 
-namespace UnitTests.Endpoints.Authorize
+namespace UnitTests.Common
 {
     class StubAuthorizeResponseGenerator : IAuthorizeResponseGenerator
     {

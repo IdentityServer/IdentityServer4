@@ -12,26 +12,23 @@ using System.Threading.Tasks;
 using UnitTests.Common;
 using Xunit;
 
-namespace UnitTests.ResponseHandling
+namespace UnitTests.Endpoints.Results
 {
-    public class AuthorizationResultGeneratorTests
+    public class AuthorizationResultFactoryTests
     {
         const string Category = "Authorize Endpoint";
 
         AuthorizeEndpointResultFactory _subject;
 
-        public AuthorizationResultGeneratorTests()
-        {
-            Init();
-        }
-
-        public void Init()
+        public AuthorizationResultFactoryTests()
         {
             _mockClientListCookie = new MockClientListCookie(_context);
+            _stubAuthorizeResponseGenerator.Response.Request = _validatedRequest;
 
             _subject = new AuthorizeEndpointResultFactory(
                 _fakeLogger,
                 _context,
+                _stubAuthorizeResponseGenerator,
                 _stubLocalizationService,
                 _mockSignInMessageStore,
                 _mockConsentRequestMessageStore,
@@ -42,6 +39,7 @@ namespace UnitTests.ResponseHandling
         ILogger<AuthorizeEndpointResultFactory> _fakeLogger = new FakeLogger<AuthorizeEndpointResultFactory>();
         IdentityServerContext _context = IdentityServerContextHelper.Create();
         MockClientListCookie _mockClientListCookie;
+        StubAuthorizeResponseGenerator _stubAuthorizeResponseGenerator = new StubAuthorizeResponseGenerator();
         MockMessageStore<SignInMessage> _mockSignInMessageStore = new MockMessageStore<SignInMessage>();
         MockMessageStore<ConsentRequest> _mockConsentRequestMessageStore = new MockMessageStore<ConsentRequest>();
         MockMessageStore<IdentityServer4.Core.Models.ErrorMessage> _mockErrorMessageStore = new MockMessageStore<IdentityServer4.Core.Models.ErrorMessage>();
@@ -239,12 +237,7 @@ namespace UnitTests.ResponseHandling
         [Trait("Category", Category)]
         public async Task CreateAuthorizeResultAsync_should_return_authorize_result()
         {
-            var response = new AuthorizeResponse()
-            {
-                Request = _validatedRequest
-            };
-
-            var result = await _subject.CreateAuthorizeResultAsync(response);
+            var result = await _subject.CreateAuthorizeResultAsync(_validatedRequest);
 
             result.Should().BeAssignableTo<AuthorizeResult>();
         }
@@ -253,12 +246,7 @@ namespace UnitTests.ResponseHandling
         [Trait("Category", Category)]
         public async Task CreateAuthorizeResultAsync_should_track_clientid()
         {
-            var response = new AuthorizeResponse()
-            {
-                Request = _validatedRequest
-            };
-
-            await _subject.CreateAuthorizeResultAsync(response);
+            await _subject.CreateAuthorizeResultAsync(_validatedRequest);
 
             _mockClientListCookie.Clients.Should().Contain("client_id");
         }
@@ -268,12 +256,8 @@ namespace UnitTests.ResponseHandling
         public async Task CreateAuthorizeResultAsync_with_response_mode_fragment_should_return_redirect()
         {
             _validatedRequest.ResponseMode = "fragment";
-            var response = new AuthorizeResponse()
-            {
-                Request = _validatedRequest
-            };
 
-            var result = await _subject.CreateAuthorizeResultAsync(response);
+            var result = await _subject.CreateAuthorizeResultAsync(_validatedRequest);
 
             result.Should().BeOfType<AuthorizeRedirectResult>();
         }
@@ -283,12 +267,8 @@ namespace UnitTests.ResponseHandling
         public async Task CreateAuthorizeResultAsync_with_response_mode_query_should_return_redirect()
         {
             _validatedRequest.ResponseMode = "query";
-            var response = new AuthorizeResponse()
-            {
-                Request = _validatedRequest
-            };
 
-            var result = await _subject.CreateAuthorizeResultAsync(response);
+            var result = await _subject.CreateAuthorizeResultAsync(_validatedRequest);
 
             result.Should().BeOfType<AuthorizeRedirectResult>();
         }
@@ -298,12 +278,8 @@ namespace UnitTests.ResponseHandling
         public async Task CreateAuthorizeResultAsync_with_response_mode_post_should_return_post()
         {
             _validatedRequest.ResponseMode = "form_post";
-            var response = new AuthorizeResponse()
-            {
-                Request = _validatedRequest
-            };
 
-            var result = await _subject.CreateAuthorizeResultAsync(response);
+            var result = await _subject.CreateAuthorizeResultAsync(_validatedRequest);
 
             result.Should().BeOfType<AuthorizeFormPostResult>();
         }

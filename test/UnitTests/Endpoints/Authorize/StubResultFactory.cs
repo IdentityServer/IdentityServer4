@@ -13,12 +13,12 @@ namespace UnitTests.Endpoints.Authorize
         public IEndpointResult LoginResult { get; set; } = new LoginPageResult("login_id");
         public IEndpointResult ErrorResult { get; set; } = new ErrorPageResult("error_id");
 
-        public Task<IEndpointResult> CreateAuthorizeResultAsync(AuthorizeResponse response)
+        public Task<IEndpointResult> CreateAuthorizeResultAsync(ValidatedAuthorizeRequest request)
         {
             return Task.FromResult(AuthorizeResult);
         }
 
-        public Task<IEndpointResult> CreateConsentResultAsync(ValidatedAuthorizeRequest validatedRequest)
+        public Task<IEndpointResult> CreateConsentResultAsync(ValidatedAuthorizeRequest request)
         {
             return Task.FromResult(ConsentResult);
         }

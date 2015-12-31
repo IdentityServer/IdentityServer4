@@ -63,13 +63,11 @@ namespace UnitTests.Endpoints.Authorize
 
             _stubAuthorizeRequestValidator.Result.IsError = false;
             _stubAuthorizeRequestValidator.Result.ValidatedRequest = _validatedAuthorizeRequest;
-            _stubResponseGenerator.Response.Request = _validatedAuthorizeRequest;
 
             _subject = new AuthorizeEndpoint(
                 _mockEventService,
                 _fakeLogger,
                 _context,
-                _stubResponseGenerator,
                 _stubAuthorizeRequestValidator,
                 _stubInteractionGenerator,
                 _stubResultFactory,
@@ -85,7 +83,6 @@ namespace UnitTests.Endpoints.Authorize
 
         MockEventService _mockEventService = new MockEventService();
         ILogger<AuthorizeEndpoint> _fakeLogger = new FakeLogger<AuthorizeEndpoint>();
-        StubAuthorizeResponseGenerator _stubResponseGenerator = new StubAuthorizeResponseGenerator();
         StubAuthorizeRequestValidator _stubAuthorizeRequestValidator = new StubAuthorizeRequestValidator();
         StubAuthorizeInteractionResponseGenerator _stubInteractionGenerator = new StubAuthorizeInteractionResponseGenerator();
         StubResultFactory _stubResultFactory = new StubResultFactory();

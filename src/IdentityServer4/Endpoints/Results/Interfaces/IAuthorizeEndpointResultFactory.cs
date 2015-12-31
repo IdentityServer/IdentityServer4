@@ -12,7 +12,7 @@ namespace IdentityServer4.Core.Endpoints.Results
     {
         Task<IEndpointResult> CreateErrorResultAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request);
         Task<IEndpointResult> CreateLoginResultAsync(ValidatedAuthorizeRequest request);
-        Task<IEndpointResult> CreateConsentResultAsync(ValidatedAuthorizeRequest validatedRequest);
-        Task<IEndpointResult> CreateAuthorizeResultAsync(AuthorizeResponse response);
+        Task<IEndpointResult> CreateConsentResultAsync(ValidatedAuthorizeRequest request);
+        Task<IEndpointResult> CreateAuthorizeResultAsync(ValidatedAuthorizeRequest request);
     }
 }
