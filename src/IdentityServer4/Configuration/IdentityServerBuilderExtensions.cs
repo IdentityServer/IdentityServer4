@@ -42,5 +42,21 @@ namespace Microsoft.Extensions.DependencyInjection
             
             return builder;
         }
+
+        public static IIdentityServerBuilder AddSecretParser<T>(this IIdentityServerBuilder builder)
+            where T : class, ISecretParser
+        {
+            builder.Services.AddTransient<ISecretParser, T>();
+
+            return builder;
+        }
+
+        public static IIdentityServerBuilder AddSecretValidator<T>(this IIdentityServerBuilder builder)
+            where T : class, ISecretValidator
+        {
+            builder.Services.AddTransient<ISecretValidator, T>();
+
+            return builder;
+        }
     }
 }
