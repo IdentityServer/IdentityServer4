@@ -220,6 +220,14 @@ namespace IdentityServer4.Core.Models
         public List<string> AllowedCorsOrigins { get; set; }
 
         /// <summary>
+        /// Gets or sets if client is allowed to use prompt=none OIDC parameter value.
+        /// </summary>
+        /// <value>
+        /// true if client can use prompt=none, false otherwise.
+        /// </value>
+        public bool AllowPromptNone { get; set; }
+
+        /// <summary>
         /// Creates a Client with default values
         /// </summary>
         public Client()

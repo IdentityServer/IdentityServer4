@@ -60,6 +60,14 @@ namespace UnitTests.ResponseHandling
             Raw = new NameValueCollection()
         };
 
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task CreateErrorResultAsync_should_return_error_page()
+        {
+            var result = await _subject.CreateErrorResultAsync(ErrorTypes.User, "error", _validatedRequest);
+
+            result.Should().BeAssignableTo<ErrorPageResult>();
+        }
 
         [Fact]
         [Trait("Category", Category)]
@@ -170,15 +178,61 @@ namespace UnitTests.ResponseHandling
                 await _subject.CreateErrorResultAsync(ErrorTypes.Client, "error", _validatedRequest));
         }
 
+
         [Fact]
         [Trait("Category", Category)]
-        public async Task CreateErrorResultAsync_client_error_with_prompt_mode_none_should_return_authorize_result()
+        public async Task CreateErrorResultAsync_client_access_denied_error_should_return_authorize_result()
+        {
+            _validatedRequest.State = "123";
+            _validatedRequest.RedirectUri = "http://client/callback";
+            _validatedRequest.PromptMode = "none";
+
+            var result = await _subject.CreateErrorResultAsync(ErrorTypes.Client, "access_denied", _validatedRequest);
+
+            result.Should().BeAssignableTo<AuthorizeResult>();
+        }
+
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task CreateErrorResultAsync_client_error_with_prompt_mode_none_client_does_not_allow_none_should_return_error_page()
+        {
+            _validatedRequest.State = "123";
+            _validatedRequest.RedirectUri = "http://client/callback";
+            _validatedRequest.PromptMode = "none";
+
+            var result = await _subject.CreateErrorResultAsync(ErrorTypes.Client, "login_required", _validatedRequest);
+
+            result.Should().BeAssignableTo<ErrorPageResult>();
+        }
+
+        [Theory]
+        [InlineData("login_required")]
+        [InlineData("interaction_required")]
+        [InlineData("consent_required")]
+        [Trait("Category", Category)]
+        public async Task CreateErrorResultAsync_client_error_with_prompt_mode_none_client_allows_none_for_valid_errors_should_return_authorize_result(string error)
         {
             _validatedRequest.PromptMode = "none";
+            _validatedRequest.Client.AllowPromptNone = true;
+
+            var result = await _subject.CreateErrorResultAsync(ErrorTypes.Client, error, _validatedRequest);
+
+            result.Should().BeAssignableTo<AuthorizeResult>();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task CreateErrorResultAsync_client_error_with_prompt_mode_none_client_allows_none_for_invalid_error_should_return_error_page()
+        {
+            _validatedRequest.State = "123";
+            _validatedRequest.RedirectUri = "http://client/callback";
+            _validatedRequest.PromptMode = "none";
+            _validatedRequest.Client.AllowPromptNone = true;
 
             var result = await _subject.CreateErrorResultAsync(ErrorTypes.Client, "foo", _validatedRequest);
 
-            result.Should().BeAssignableTo<AuthorizeResult>();
+            result.Should().BeAssignableTo<ErrorPageResult>();
         }
 
         [Fact]

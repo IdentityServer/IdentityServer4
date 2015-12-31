@@ -143,9 +143,26 @@ namespace IdentityServer4.Core.Endpoints.Results
                     RedirectUri = request.RedirectUri
                 };
 
-                if (request.PromptMode == Constants.PromptModes.None)
+                if (error == Constants.AuthorizeErrors.AccessDenied)
                 {
                     return await CreateAuthorizeResultAsync(response);
+                }
+
+                if (request.PromptMode == Constants.PromptModes.None && 
+                    request.Client.AllowPromptNone == true &&
+                    (error == Constants.AuthorizeErrors.LoginRequired || 
+                     error == Constants.AuthorizeErrors.ConsentRequired || 
+                     error == Constants.AuthorizeErrors.InteractionRequired)
+                )
+                {
+                    // todo: verify these are the right conditions to allow
+                    // redirecting back to client
+                    // https://tools.ietf.org/html/draft-bradley-oauth-open-redirector-00
+                    return await CreateAuthorizeResultAsync(response);
+                }
+                else
+                {
+                    //_logger.LogWarning("Rendering error page due to prompt=none, client does not allow prompt mode none, response is query, and ");
                 }
 
                 errorModel.ReturnInfo = new ClientReturnInfo
