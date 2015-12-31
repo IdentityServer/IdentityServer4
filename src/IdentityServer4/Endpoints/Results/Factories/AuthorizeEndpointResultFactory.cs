@@ -45,10 +45,8 @@ namespace IdentityServer4.Core.Endpoints.Results
         {
             var message = new SignInMessage();
 
-            // build return URL to return to authorization
-            var url = _context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.RoutePaths.Oidc.Authorize;
-            url.AddQueryString(request.Raw.ToQueryString());
-            message.ReturnUrl = url;
+            // capture original authorization params
+            message.AuthorizeRequestParameters = request.Raw;
 
             // let the login page know the client requesting authorization
             message.ClientId = request.ClientId;
@@ -93,6 +91,12 @@ namespace IdentityServer4.Core.Endpoints.Results
             }
 
             var id = await _signInMessageStore.WriteAsync(message);
+
+            // todo: determine how we'll gen ids for message passing
+            // build return URL to return to authorization
+            //var url = _context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.RoutePaths.Oidc.AuthorizeAfterLogin;
+            //url.AddQueryString(request.Raw.ToQueryString());
+            //message.ReturnUrl = url;
 
             return new LoginPageResult(id);
         }
