@@ -23,6 +23,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using IdentityServer4.Core.Hosting;
 using Microsoft.AspNet.Http.Internal;
+using UnitTests.Common;
 
 namespace IdentityServer4.Tests.Validation
 {
@@ -145,19 +146,17 @@ namespace IdentityServer4.Tests.Validation
                 scopeValidator = new ScopeValidator(scopes, new LoggerFactory());
             }
 
-            //var mockSessionCookie = new Mock<SessionCookie>((IOwinContext)null, (IdentityServerOptions)null);
-            //mockSessionCookie.CallBase = false;
-            //mockSessionCookie.Setup(x => x.GetSessionId()).Returns((string)null);
+            var sessionCookie = new SessionCookie(IdentityServerContextHelper.Create(null, options));
 
             return new AuthorizeRequestValidator(
                 options, 
                 clients, 
                 customValidator, 
                 uriValidator, 
-                scopeValidator, 
+                scopeValidator,
+                sessionCookie,
                 new Logger<AuthorizeRequestValidator>(new LoggerFactory())
             );
-
         }
 
         public static TokenValidator CreateTokenValidator(ITokenHandleStore tokenStore = null, IUserService users = null)

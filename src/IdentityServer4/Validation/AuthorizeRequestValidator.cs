@@ -17,6 +17,7 @@
 using IdentityModel;
 using IdentityServer4.Core.Configuration;
 using IdentityServer4.Core.Extensions;
+using IdentityServer4.Core.Hosting;
 using IdentityServer4.Core.Logging;
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Services;
@@ -36,7 +37,7 @@ namespace IdentityServer4.Core.Validation
         private readonly ICustomRequestValidator _customValidator;
         private readonly IRedirectUriValidator _uriValidator;
         private readonly ScopeValidator _scopeValidator;
-        //private readonly SessionCookie _sessionCookie;
+        private readonly SessionCookie _sessionCookie;
         private readonly ILogger<AuthorizeRequestValidator> _logger;
 
         public AuthorizeRequestValidator(
@@ -44,7 +45,8 @@ namespace IdentityServer4.Core.Validation
             IClientStore clients, 
             ICustomRequestValidator customValidator, 
             IRedirectUriValidator uriValidator, 
-            ScopeValidator scopeValidator, 
+            ScopeValidator scopeValidator,
+            SessionCookie sessionCookie,
             ILogger<AuthorizeRequestValidator> logger)
         {
             _options = options;
@@ -52,7 +54,7 @@ namespace IdentityServer4.Core.Validation
             _customValidator = customValidator;
             _uriValidator = uriValidator;
             _scopeValidator = scopeValidator;
-            //_sessionCookie = sessionCookie;
+            _sessionCookie = sessionCookie;
             _logger = logger;
         }
 
@@ -480,15 +482,15 @@ namespace IdentityServer4.Core.Validation
             if (_options.Endpoints.EnableCheckSessionEndpoint && 
                 request.Subject.Identity.IsAuthenticated)
             {
-                //var sessionId = _sessionCookie.GetSessionId();
-                //if (sessionId.IsPresent())
-                //{
-                //    request.SessionId = sessionId;
-                //}
-                //else
-                //{
-                //    LogError("Check session endpoint enabled, but SessionId is missing", request);
-                //}
+                var sessionId = _sessionCookie.GetSessionId();
+                if (sessionId.IsPresent())
+                {
+                    request.SessionId = sessionId;
+                }
+                else
+                {
+                    LogError("Check session endpoint enabled, but SessionId is missing", request);
+                }
             }
 
             return Valid(request);

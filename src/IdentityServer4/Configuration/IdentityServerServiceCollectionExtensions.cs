@@ -151,6 +151,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IServiceCollection AddHostServices(this IServiceCollection services)
         {
+            services.TryAddTransient<SessionCookie>();
             services.TryAddTransient<ClientListCookie>();
             services.TryAddTransient(typeof(MessageCookie<>));
 
