@@ -115,20 +115,17 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IServiceCollection AddSecretParsers(this IServiceCollection services)
         {
-            services.TryAddTransient<SecretParser>();
-            services.TryAddEnumerable(new List<ServiceDescriptor>
-            {
-                new ServiceDescriptor(typeof(ISecretParser), typeof(BasicAuthenticationSecretParser), ServiceLifetime.Transient),
-                new ServiceDescriptor(typeof(ISecretParser), typeof(PostBodySecretParser), ServiceLifetime.Transient),
-            });
+            services.AddTransient<SecretParser>();
+            services.AddTransient<ISecretParser, BasicAuthenticationSecretParser>();
+            services.AddTransient<ISecretParser, PostBodySecretParser>();
             
             return services;
         }
 
         public static IServiceCollection AddSecretValidators(this IServiceCollection services)
         {
-            services.TryAddTransient<SecretValidator>();
-            services.TryAddTransient<ISecretValidator, HashedSharedSecretValidator>();
+            services.AddTransient<SecretValidator>();
+            services.AddTransient<ISecretValidator, HashedSharedSecretValidator>();
 
             return services;
         }
