@@ -173,7 +173,7 @@ namespace IdentityServer4.Core.ResponseHandling
                     Error = new AuthorizeError
                     {
                         ErrorType = ErrorTypes.Client,
-                        Error = Constants.AuthorizeErrors.InteractionRequired,
+                        Error = Constants.AuthorizeErrors.ConsentRequired,
                         ResponseMode = request.ResponseMode,
                         ErrorUri = request.RedirectUri,
                         State = request.State

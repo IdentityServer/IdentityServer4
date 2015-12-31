@@ -183,7 +183,7 @@ namespace IdentityServer4.Tests.Connect.ResponseHandling
             request.WasConsentShown.Should().BeFalse();
             result.IsError.Should().BeTrue();
             result.Error.ErrorType.Should().Be(ErrorTypes.Client);
-            result.Error.Error.Should().Be(Constants.AuthorizeErrors.InteractionRequired);
+            result.Error.Error.Should().Be(Constants.AuthorizeErrors.ConsentRequired);
             AssertErrorReturnsRequestValues(result.Error, request);
             AssertUpdateConsentNotCalled();
         }
