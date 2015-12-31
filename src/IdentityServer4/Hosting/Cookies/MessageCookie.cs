@@ -15,8 +15,7 @@ using System.Security.Cryptography;
 
 namespace IdentityServer4.Core.Hosting
 {
-    class MessageCookie<TMessage>
-        where TMessage : Message
+    class MessageCookie<TModel>
     {
         static readonly JsonSerializerSettings settings = new JsonSerializerSettings
         {
@@ -24,11 +23,11 @@ namespace IdentityServer4.Core.Hosting
             DefaultValueHandling = DefaultValueHandling.Ignore,
         };
 
-        private readonly ILogger<MessageCookie<TMessage>> _logger;
+        private readonly ILogger<MessageCookie<TModel>> _logger;
         private readonly IdentityServerContext _context;
         private readonly IDataProtector _protector;
 
-        public MessageCookie(ILogger<MessageCookie<TMessage>> logger, IdentityServerContext context, IDataProtectionProvider provider)
+        public MessageCookie(ILogger<MessageCookie<TModel>> logger, IdentityServerContext context, IDataProtectionProvider provider)
         {
             _logger = logger;
             _context = context;
@@ -37,10 +36,10 @@ namespace IdentityServer4.Core.Hosting
 
         string MessageType
         {
-            get { return typeof(TMessage).Name; }
+            get { return typeof(TModel).Name; }
         }
 
-        string Protect(TMessage message)
+        string Protect(Message<TModel> message)
         {
             var json = JsonConvert.SerializeObject(message, settings);
             _logger.LogDebug("Protecting message: {0}", json);
@@ -48,10 +47,10 @@ namespace IdentityServer4.Core.Hosting
             return _protector.Protect(json);
         }
 
-        TMessage Unprotect(string data)
+        Message<TModel> Unprotect(string data)
         {
             var json = _protector.Unprotect(data);
-            var message = JsonConvert.DeserializeObject<TMessage>(json);
+            var message = JsonConvert.DeserializeObject<Message<TModel>>(json);
             return message;
         }
 
@@ -93,14 +92,13 @@ namespace IdentityServer4.Core.Hosting
             }
         }
 
-        public string Write(TMessage message)
+        public void Write(Message<TModel> message)
         {
             ClearOverflow();
 
             if (message == null) throw new ArgumentNullException("message");
 
-            var id = CryptoRandom.CreateUniqueId();
-            var name = GetCookieName(id);
+            var name = GetCookieName(message.Id);
             var data = Protect(message);
 
             _context.HttpContext.Response.Cookies.Append(
@@ -112,10 +110,9 @@ namespace IdentityServer4.Core.Hosting
                     Secure = Secure,
                     Path = CookiePath
                 });
-            return id;
         }
 
-        public TMessage Read(string id)
+        public Message<TModel> Read(string id)
         {
             if (String.IsNullOrWhiteSpace(id)) return null;
 
@@ -123,7 +120,7 @@ namespace IdentityServer4.Core.Hosting
             return ReadByCookieName(name);
         }
 
-        TMessage ReadByCookieName(string name)
+        Message<TModel> ReadByCookieName(string name)
         {
             var data = _context.HttpContext.Request.Cookies[name];
             if (!String.IsNullOrWhiteSpace(data))
@@ -169,7 +166,7 @@ namespace IdentityServer4.Core.Hosting
             catch (CryptographicException e)
             {   
                 // cookie was protected with a different key/algorithm
-                _logger.LogDebug("Unable to decrypt cookie {0}: {1}", name, e.Message);
+                _logger.LogDebug("Unable to unprotect cookie {0}: {1}", name, e.Message);
             }
             
             return rank;

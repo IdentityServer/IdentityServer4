@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.Services
 {
-    public interface IMessageStore<TMessage>
-        where TMessage : Message
+    public interface IMessageStore<TModel>
     {
-        Task<string> WriteAsync(TMessage message);
-        Task<TMessage> ReadAsync(string id);
+        Task WriteAsync(Message<TModel> message);
+        Task<Message<TModel>> ReadAsync(string id);
         Task DeleteAsync(string id);
     }
 }

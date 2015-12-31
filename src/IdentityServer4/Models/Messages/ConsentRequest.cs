@@ -8,7 +8,7 @@ namespace IdentityServer4.Core.Models
     /// <summary>
     /// Models the data submitted from the conset page.
     /// </summary>
-    public class UserConsentRequestMessage : Message
+    public class ConsentRequest
     {
         public string ClientId { get; set; }
 
@@ -19,7 +19,5 @@ namespace IdentityServer4.Core.Models
         /// The scopes requested.
         /// </value>
         public string[] ScopesRequested { get; set; }
-
-        public NameValueCollection AuthorizeRequestParameters { get; set; }
     }
 }

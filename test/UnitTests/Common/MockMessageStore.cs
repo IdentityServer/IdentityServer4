@@ -5,10 +5,9 @@ using System.Threading.Tasks;
 
 namespace UnitTests.Common
 {
-    public class MockMessageStore<TMessage> : IMessageStore<TMessage>
-        where TMessage : Message
+    public class MockMessageStore<TModel> : IMessageStore<TModel>
     {
-        public Dictionary<string, TMessage> Messages { get; set; } = new Dictionary<string, TMessage>();
+        public Dictionary<string, Message<TModel>> Messages { get; set; } = new Dictionary<string, Message<TModel>>();
 
         public Task DeleteAsync(string id)
         {
@@ -19,18 +18,17 @@ namespace UnitTests.Common
             return Task.FromResult(0);
         }
 
-        public Task<TMessage> ReadAsync(string id)
+        public Task<Message<TModel>> ReadAsync(string id)
         {
-            TMessage val;
+            Message<TModel> val;
             Messages.TryGetValue(id, out val);
             return Task.FromResult(val);
         }
 
-        public Task<string> WriteAsync(TMessage message)
+        public Task WriteAsync(Message<TModel> message)
         {
-            var id = IdentityModel.CryptoRandom.CreateUniqueId();
-            Messages[id] = message;
-            return Task.FromResult(id);
+            Messages[message.Id] = message;
+            return Task.FromResult(0);
         }
     }
 }

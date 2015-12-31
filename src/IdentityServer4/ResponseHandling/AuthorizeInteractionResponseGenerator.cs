@@ -35,7 +35,7 @@ namespace IdentityServer4.Core.ResponseHandling
             _localizationService = localizationService;
         }
 
-        public async Task<InteractionResponse> ProcessInteractionAsync(ValidatedAuthorizeRequest request, UserConsent consent = null)
+        public async Task<InteractionResponse> ProcessInteractionAsync(ValidatedAuthorizeRequest request, ConsentResponse consent = null)
         {
             var result = await ProcessLoginAsync(request);
             if (result.IsLogin || result.IsError)
@@ -151,7 +151,7 @@ namespace IdentityServer4.Core.ResponseHandling
             return new InteractionResponse();
         }
 
-        internal async Task<InteractionResponse> ProcessConsentAsync(ValidatedAuthorizeRequest request, UserConsent consent = null)
+        internal async Task<InteractionResponse> ProcessConsentAsync(ValidatedAuthorizeRequest request, ConsentResponse consent = null)
         {
             if (request == null) throw new ArgumentNullException("request");
 

@@ -9,6 +9,6 @@ namespace IdentityServer4.Core.ResponseHandling
 {
     interface IAuthorizeInteractionResponseGenerator
     {
-        Task<InteractionResponse> ProcessInteractionAsync(ValidatedAuthorizeRequest request, UserConsent consent = null);
+        Task<InteractionResponse> ProcessInteractionAsync(ValidatedAuthorizeRequest request, ConsentResponse consent = null);
     }
 }

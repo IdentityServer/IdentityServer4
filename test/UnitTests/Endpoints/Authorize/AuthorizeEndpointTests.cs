@@ -90,7 +90,7 @@ namespace UnitTests.Endpoints.Authorize
         StubAuthorizeInteractionResponseGenerator _stubInteractionGenerator = new StubAuthorizeInteractionResponseGenerator();
         StubResultFactory _stubResultFactory = new StubResultFactory();
         MockMessageStore<SignInMessage> _mockSignInMessageStore = new MockMessageStore<SignInMessage>();
-        MockMessageStore<UserConsentResponseMessage> _mockUserConsentResponseMessageStore = new MockMessageStore<UserConsentResponseMessage>();
+        MockMessageStore<ConsentResponse> _mockUserConsentResponseMessageStore = new MockMessageStore<ConsentResponse>();
 
         [Fact]
         [Trait("Category", Category)]
@@ -150,7 +150,7 @@ namespace UnitTests.Endpoints.Authorize
         public async Task ProcessAsync_authorize_with_login_path_should_return_authorization_result()
         {
             _context.HttpContext.Request.Method = "GET";
-            _mockSignInMessageStore.Messages.Add("123", new SignInMessage() { AuthorizeRequestParameters = new NameValueCollection() });
+            _mockSignInMessageStore.Messages.Add("123", new Message<SignInMessage>(new SignInMessage()) { AuthorizeRequestParameters = new NameValueCollection() });
             _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
             _context.HttpContext.SetUser(_user);
             _context.HttpContext.Request.Path = new Microsoft.AspNet.Http.PathString("/connect/authorize/login");
@@ -178,7 +178,7 @@ namespace UnitTests.Endpoints.Authorize
         public async Task ProcessAsync_authorize_with_consent_path_should_return_authorization_result()
         {
             _context.HttpContext.Request.Method = "GET";
-            _mockUserConsentResponseMessageStore.Messages.Add("123", new UserConsentResponseMessage());
+            _mockUserConsentResponseMessageStore.Messages.Add("123", new Message<ConsentResponse>(new ConsentResponse()) { AuthorizeRequestParameters = new NameValueCollection() });
             _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
             _context.HttpContext.SetUser(_user);
             _context.HttpContext.Request.Path = new Microsoft.AspNet.Http.PathString("/connect/authorize/consent");
@@ -282,7 +282,7 @@ namespace UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task ProcessAuthorizeAfterLoginAsync_no_id_param_should_return_error_page()
         {
-            _mockSignInMessageStore.Messages.Add("123", new SignInMessage());
+            _mockSignInMessageStore.Messages.Add("123", new Message<SignInMessage>(new SignInMessage()));
             _context.HttpContext.SetUser(_user);
 
             var result = await _subject.ProcessAuthorizeAfterLoginAsync(_context);
@@ -306,7 +306,7 @@ namespace UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task ProcessAuthorizeAfterLoginAsync_signin_missing_params_data_should_return_error_page()
         {
-            _mockSignInMessageStore.Messages.Add("123", new SignInMessage() { AuthorizeRequestParameters=null });
+            _mockSignInMessageStore.Messages.Add("123", new Message<SignInMessage>(new SignInMessage()));
             _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
             _context.HttpContext.SetUser(_user);
 
@@ -319,7 +319,7 @@ namespace UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task ProcessAuthorizeAfterLoginAsync_valid_signin_message_should_return_authorize_result()
         {
-            _mockSignInMessageStore.Messages.Add("123", new SignInMessage());
+            _mockSignInMessageStore.Messages.Add("123", new Message<SignInMessage>(new SignInMessage()) { AuthorizeRequestParameters = new NameValueCollection() });
             _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
             _context.HttpContext.SetUser(_user);
 
@@ -332,7 +332,7 @@ namespace UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task ProcessAuthorizeAfterLoginAsync_valid_signin_message_should_cleanup_signin_message_cookie()
         {
-            _mockSignInMessageStore.Messages.Add("123", new SignInMessage());
+            _mockSignInMessageStore.Messages.Add("123", new Message<SignInMessage>(new SignInMessage()) { AuthorizeRequestParameters = new NameValueCollection() });
             _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
             _context.HttpContext.SetUser(_user);
 
@@ -347,7 +347,7 @@ namespace UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task ProcessAuthorizeWithConsentAsync_no_id_param_should_return_error_page()
         {
-            _mockUserConsentResponseMessageStore.Messages.Add("123", new UserConsentResponseMessage());
+            _mockUserConsentResponseMessageStore.Messages.Add("123", new Message<ConsentResponse>(new ConsentResponse()));
             _context.HttpContext.SetUser(_user);
 
             var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
@@ -371,7 +371,7 @@ namespace UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task ProcessAuthorizeWithConsentAsync_consent_missing_params_data_should_return_error_page()
         {
-            _mockUserConsentResponseMessageStore.Messages.Add("123", new UserConsentResponseMessage() { AuthorizeRequestParameters = null });
+            _mockUserConsentResponseMessageStore.Messages.Add("123", new Message<ConsentResponse>(new ConsentResponse()));
             _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
             _context.HttpContext.SetUser(_user);
 
@@ -384,7 +384,7 @@ namespace UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task ProcessAuthorizeWithConsentAsync_consent_missing_consent_data_should_return_error_page()
         {
-            _mockUserConsentResponseMessageStore.Messages.Add("123", new UserConsentResponseMessage() { Consent = null });
+            _mockUserConsentResponseMessageStore.Messages.Add("123", new Message<ConsentResponse>(null) { AuthorizeRequestParameters = new NameValueCollection() });
             _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
             _context.HttpContext.SetUser(_user);
 
@@ -397,7 +397,7 @@ namespace UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task ProcessAuthorizeWithConsentAsync_valid_consent_message_should_return_authorize_result()
         {
-            _mockUserConsentResponseMessageStore.Messages.Add("123", new UserConsentResponseMessage());
+            _mockUserConsentResponseMessageStore.Messages.Add("123", new Message<ConsentResponse>(new ConsentResponse()) { AuthorizeRequestParameters = new NameValueCollection() });
             _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
             _context.HttpContext.SetUser(_user);
 
@@ -410,7 +410,7 @@ namespace UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task ProcessAuthorizeWithConsentAsync_valid_consent_message_should_cleanup_consent_cookie()
         {
-            _mockUserConsentResponseMessageStore.Messages.Add("123", new UserConsentResponseMessage());
+            _mockUserConsentResponseMessageStore.Messages.Add("123", new Message<ConsentResponse>(new ConsentResponse()) { AuthorizeRequestParameters = new NameValueCollection() });
             _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
             _context.HttpContext.SetUser(_user);
 

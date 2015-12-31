@@ -7,12 +7,11 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.Services.Default
 {
-    internal class CookieMessageStore<TMessage> : IMessageStore<TMessage>
-        where TMessage : Message
+    internal class CookieMessageStore<TModel> : IMessageStore<TModel>
     {
-        private readonly MessageCookie<TMessage> _cookie;
+        private readonly MessageCookie<TModel> _cookie;
 
-        public CookieMessageStore(MessageCookie<TMessage> cookie)
+        public CookieMessageStore(MessageCookie<TModel> cookie)
         {
             _cookie = cookie;
         }
@@ -23,14 +22,15 @@ namespace IdentityServer4.Core.Services.Default
             return Task.FromResult(0);
         }
 
-        public Task<TMessage> ReadAsync(string id)
+        public Task<Message<TModel>> ReadAsync(string id)
         {
             return Task.FromResult(_cookie.Read(id));
         }
 
-        public Task<string> WriteAsync(TMessage message)
+        public Task WriteAsync(Message<TModel> message)
         {
-            return Task.FromResult(_cookie.Write(message));
+            _cookie.Write(message);
+            return Task.FromResult(0);
         }
     }
 }

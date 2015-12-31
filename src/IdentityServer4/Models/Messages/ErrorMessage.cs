@@ -6,7 +6,7 @@ namespace IdentityServer4.Core.Models
     /// <summary>
     /// Models the data for the error page.
     /// </summary>
-    public class ErrorMessage : Message
+    public class ErrorMessage
     {
         /// <summary>
         /// Gets or sets the error code.

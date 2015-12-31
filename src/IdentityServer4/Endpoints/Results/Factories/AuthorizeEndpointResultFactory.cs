@@ -19,7 +19,7 @@ namespace IdentityServer4.Core.Endpoints.Results
         private readonly IdentityServerContext _context;
         private readonly ILocalizationService _localizationService;
         private readonly IMessageStore<SignInMessage> _signInMessageStore;
-        private readonly IMessageStore<UserConsentRequestMessage> _consentRequestStore;
+        private readonly IMessageStore<ConsentRequest> _consentRequestStore;
         private readonly IMessageStore<ErrorMessage> _errorMessageStore;
         private readonly ClientListCookie _clientListCookie;
 
@@ -28,7 +28,7 @@ namespace IdentityServer4.Core.Endpoints.Results
             IdentityServerContext context,
             ILocalizationService localizationService,
             IMessageStore<SignInMessage> signInMessageStore,
-            IMessageStore<UserConsentRequestMessage> consentRequestStore,
+            IMessageStore<ConsentRequest> consentRequestStore,
             IMessageStore<ErrorMessage> errorMessageStore,
             ClientListCookie clientListCookie)
         {
@@ -43,74 +43,76 @@ namespace IdentityServer4.Core.Endpoints.Results
 
         public async Task<IEndpointResult> CreateLoginResultAsync(ValidatedAuthorizeRequest request)
         {
-            var message = new SignInMessage();
-
-            // capture original authorization params
-            message.AuthorizeRequestParameters = request.Raw;
+            var signIn = new SignInMessage();
 
             // let the login page know the client requesting authorization
-            message.ClientId = request.ClientId;
+            signIn.ClientId = request.ClientId;
 
             // pass through display mode to signin service
             if (request.DisplayMode.IsPresent())
             {
-                message.DisplayMode = request.DisplayMode;
+                signIn.DisplayMode = request.DisplayMode;
             }
 
             // pass through ui locales to signin service
             if (request.UiLocales.IsPresent())
             {
-                message.UiLocales = request.UiLocales;
+                signIn.UiLocales = request.UiLocales;
             }
 
             // pass through login_hint
             if (request.LoginHint.IsPresent())
             {
-                message.LoginHint = request.LoginHint;
+                signIn.LoginHint = request.LoginHint;
             }
 
             // look for well-known acr value -- idp
             var idp = request.GetIdP();
             if (idp.IsPresent())
             {
-                message.IdP = idp;
+                signIn.IdP = idp;
             }
 
             // look for well-known acr value -- tenant
             var tenant = request.GetTenant();
             if (tenant.IsPresent())
             {
-                message.Tenant = tenant;
+                signIn.Tenant = tenant;
             }
 
             // process acr values
             var acrValues = request.GetAcrValues();
             if (acrValues.Any())
             {
-                message.AcrValues = acrValues;
+                signIn.AcrValues = acrValues;
             }
 
-            var id = await _signInMessageStore.WriteAsync(message);
+            var message = new Message<SignInMessage>(signIn)
+            {
+                ReturnUrl = _context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.RoutePaths.Oidc.AuthorizeAfterLogin,
+                AuthorizeRequestParameters = request.Raw
+            };
+            await _signInMessageStore.WriteAsync(message);
 
-            // todo: determine how we'll gen ids for message passing
-            // build return URL to return to authorization
-            //var url = _context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.RoutePaths.Oidc.AuthorizeAfterLogin;
-            //url.AddQueryString(request.Raw.ToQueryString());
-            //message.ReturnUrl = url;
-
-            return new LoginPageResult(id);
+            return new LoginPageResult(message.Id);
         }
 
         public async Task<IEndpointResult> CreateConsentResultAsync(ValidatedAuthorizeRequest request)
         {
-            var message = new UserConsentRequestMessage()
+            var consent = new ConsentRequest()
             {
                 ClientId = request.ClientId,
                 ScopesRequested = request.RequestedScopes.ToArray(),
+            };
+
+            var message = new Message<ConsentRequest>(consent)
+            {
+                ReturnUrl = _context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.RoutePaths.Oidc.AuthorizeAfterConsent,
                 AuthorizeRequestParameters = request.Raw
             };
-            var id = await _consentRequestStore.WriteAsync(message);
-            return new ConsentPageResult(id);
+            await _consentRequestStore.WriteAsync(message);
+
+            return new ConsentPageResult(message.Id);
         }
 
         public async Task<IEndpointResult> CreateErrorResultAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request)
@@ -192,8 +194,10 @@ namespace IdentityServer4.Core.Endpoints.Results
                 }
             }
 
-            var id = await _errorMessageStore.WriteAsync(errorModel);
-            return new ErrorPageResult(id);
+            var message = new Message<ErrorMessage>(errorModel);
+            await _errorMessageStore.WriteAsync(message);
+
+            return new ErrorPageResult(message.Id);
         }
 
         public Task<IEndpointResult> CreateAuthorizeResultAsync(AuthorizeResponse response)

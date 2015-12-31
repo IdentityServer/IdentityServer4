@@ -8,7 +8,7 @@ namespace IdentityServer4.Core.Models
     /// <summary>
     /// Models the user's response to the consent screen.
     /// </summary>
-    public class UserConsent
+    public class ConsentResponse
     {
         /// <summary>
         /// Gets if consent was granted.

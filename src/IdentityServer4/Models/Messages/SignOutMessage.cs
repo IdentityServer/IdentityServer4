@@ -6,7 +6,7 @@ namespace IdentityServer4.Core.Models
     /// <summary>
     /// Models the request from a client to sign the user out.
     /// </summary>
-    public class SignOutMessage : Message
+    public class SignOutMessage
     {
         /// <summary>
         /// Gets or sets the client identifier.

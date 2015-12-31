@@ -10,16 +10,8 @@ namespace IdentityServer4.Core.Models
     /// <summary>
     /// Represents contextual information about a login request.
     /// </summary>
-    public class SignInMessage : Message
+    public class SignInMessage
     {
-        /// <summary>
-        /// The return URL to return to after authentication. If the login request is part of an authorization request, then this will be populated.
-        /// </summary>
-        /// <value>
-        /// The return URL.
-        /// </value>
-        public string ReturnUrl { get; set; }
-        
         /// <summary>
         /// The client identifier that initiated the request.
         /// </summary>
@@ -80,15 +72,12 @@ namespace IdentityServer4.Core.Models
         /// </value>
         public IEnumerable<string> AcrValues { get; set; }
 
-        public NameValueCollection AuthorizeRequestParameters { get; set; }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="SignInMessage"/> class.
         /// </summary>
         public SignInMessage()
         {
             AcrValues = Enumerable.Empty<string>();
-            AuthorizeRequestParameters = new NameValueCollection();
         }
     }
 }

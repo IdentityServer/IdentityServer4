@@ -30,7 +30,7 @@ namespace IdentityServer4.Core.Endpoints
         private readonly IAuthorizeInteractionResponseGenerator _interactionGenerator;
         private readonly IAuthorizeEndpointResultFactory _resultGenerator;
         private readonly IMessageStore<SignInMessage> _signInMessageStore;
-        private readonly IMessageStore<UserConsentResponseMessage> _consentMessageStore;
+        private readonly IMessageStore<ConsentResponse> _consentMessageStore;
 
         public AuthorizeEndpoint(
             IEventService events, 
@@ -41,7 +41,7 @@ namespace IdentityServer4.Core.Endpoints
             IAuthorizeInteractionResponseGenerator interactionGenerator,
             IAuthorizeEndpointResultFactory resultGenerator,
             IMessageStore<SignInMessage> signInMessageStore,
-            IMessageStore<UserConsentResponseMessage> consentMessageStore)
+            IMessageStore<ConsentResponse> consentMessageStore)
         {
             _events = events;
             _logger = logger;
@@ -149,7 +149,7 @@ namespace IdentityServer4.Core.Endpoints
                 _logger.LogWarning("consent message is missing AuthorizeRequestParameters data.");
                 return await ErrorPageAsync(ErrorTypes.User, nameof(Messages.UnexpectedError), null);
             }
-            if (consent.Consent == null)
+            if (consent.Data == null)
             {
                 _logger.LogWarning("consent message is missing Consent data.");
                 return await ErrorPageAsync(ErrorTypes.User, nameof(Messages.UnexpectedError), null);
@@ -157,7 +157,7 @@ namespace IdentityServer4.Core.Endpoints
 
             var user = await _context.GetIdentityServerUserAsync();
 
-            var result = await ProcessAuthorizeRequestAsync(consent.AuthorizeRequestParameters, user, consent.Consent);
+            var result = await ProcessAuthorizeRequestAsync(consent.AuthorizeRequestParameters, user, consent.Data);
 
             await _consentMessageStore.DeleteAsync(id);
 
@@ -166,7 +166,7 @@ namespace IdentityServer4.Core.Endpoints
             return result;
         }
 
-        internal async Task<IEndpointResult> ProcessAuthorizeRequestAsync(NameValueCollection parameters, ClaimsPrincipal user, UserConsent consent)
+        internal async Task<IEndpointResult> ProcessAuthorizeRequestAsync(NameValueCollection parameters, ClaimsPrincipal user, ConsentResponse consent)
         {
             if (user != null)
             {

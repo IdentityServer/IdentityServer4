@@ -111,7 +111,7 @@ namespace IdentityServer4.Tests.Connect.ResponseHandling
         [Fact]
         public void ProcessConsentAsync_NullRequest_Throws()
         {
-            Func<Task> act = () => _subject.ProcessConsentAsync(null, new UserConsent());
+            Func<Task> act = () => _subject.ProcessConsentAsync(null, new ConsentResponse());
 
             act.ShouldThrow<ArgumentNullException>()
                 .And.ParamName.Should().Be("request");
@@ -232,7 +232,7 @@ namespace IdentityServer4.Tests.Connect.ResponseHandling
                 PromptMode = Constants.PromptModes.Consent
             };
 
-            var consent = new UserConsent
+            var consent = new ConsentResponse
             {
                 RememberConsent = false,
                 ScopesConsented = new string[] {}
@@ -256,7 +256,7 @@ namespace IdentityServer4.Tests.Connect.ResponseHandling
                 State = "12345",
                 RedirectUri = "https://client.com/callback",
             };
-            var consent = new UserConsent
+            var consent = new ConsentResponse
             {
                 RememberConsent = false,
                 ScopesConsented = new string[] {}
@@ -285,7 +285,7 @@ namespace IdentityServer4.Tests.Connect.ResponseHandling
                 }
             };
             await request.ValidatedScopes.AreScopesValidAsync(new string[] { "read", "write" });
-            var consent = new UserConsent
+            var consent = new ConsentResponse
             {
                 RememberConsent = false,
                 ScopesConsented = new string[] { "read" }
@@ -313,7 +313,7 @@ namespace IdentityServer4.Tests.Connect.ResponseHandling
                 }
             };
             await request.ValidatedScopes.AreScopesValidAsync(new string[] { "read", "write" });
-            var consent = new UserConsent
+            var consent = new ConsentResponse
             {
                 RememberConsent = false,
                 ScopesConsented = new string[] { "read" }
@@ -342,7 +342,7 @@ namespace IdentityServer4.Tests.Connect.ResponseHandling
                 Subject = user
             };
             await request.ValidatedScopes.AreScopesValidAsync(new string[] { "read", "write" });
-            var consent = new UserConsent
+            var consent = new ConsentResponse
             {
                 RememberConsent = true,
                 ScopesConsented = new string[] { "read" }
