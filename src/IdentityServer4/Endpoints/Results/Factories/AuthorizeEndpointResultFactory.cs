@@ -126,6 +126,44 @@ namespace IdentityServer4.Core.Endpoints.Results
                 throw new ArgumentNullException(nameof(request), "Request must be passed when error type is Client.");
             }
 
+            AuthorizeResponse response = null;
+
+            if (errorType == ErrorTypes.Client)
+            {
+                response = new AuthorizeResponse
+                {
+                    Request = request,
+                    IsError = true,
+                    Error = error,
+                    State = request.State,
+                    RedirectUri = request.RedirectUri
+                };
+
+                // do some early checks to see if we will end up not generating an error page
+                if (error == Constants.AuthorizeErrors.AccessDenied)
+                {
+                    return await CreateAuthorizeResultAsync(response);
+                }
+
+                if (request.PromptMode == Constants.PromptModes.None &&
+                    request.Client.AllowPromptNone == true &&
+                    (error == Constants.AuthorizeErrors.LoginRequired ||
+                     error == Constants.AuthorizeErrors.ConsentRequired ||
+                     error == Constants.AuthorizeErrors.InteractionRequired)
+                )
+                {
+                    // todo: verify these are the right conditions to allow
+                    // redirecting back to client
+                    // https://tools.ietf.org/html/draft-bradley-oauth-open-redirector-00
+                    return await CreateAuthorizeResultAsync(response);
+                }
+                else
+                {
+                    //_logger.LogWarning("Rendering error page due to prompt=none, client does not allow prompt mode none, response is query, and ");
+                }
+            }
+
+            // we now know we must show error page
             var msg = _localizationService.GetMessage(error);
             if (msg.IsMissing())
             {
@@ -139,42 +177,11 @@ namespace IdentityServer4.Core.Endpoints.Results
                 ErrorDescription = msg
             };
 
-            // if this is a client error, we need to build up the 
-            // response back to the client, and provide it in the 
-            // error view model so the UI can build the link/form
             if (errorType == ErrorTypes.Client)
             {
-                var response = new AuthorizeResponse
-                {
-                    Request = request,
-                    IsError = true,
-                    Error = error,
-                    State = request.State,
-                    RedirectUri = request.RedirectUri
-                };
-
-                if (error == Constants.AuthorizeErrors.AccessDenied)
-                {
-                    return await CreateAuthorizeResultAsync(response);
-                }
-
-                if (request.PromptMode == Constants.PromptModes.None && 
-                    request.Client.AllowPromptNone == true &&
-                    (error == Constants.AuthorizeErrors.LoginRequired || 
-                     error == Constants.AuthorizeErrors.ConsentRequired || 
-                     error == Constants.AuthorizeErrors.InteractionRequired)
-                )
-                {
-                    // todo: verify these are the right conditions to allow
-                    // redirecting back to client
-                    // https://tools.ietf.org/html/draft-bradley-oauth-open-redirector-00
-                    return await CreateAuthorizeResultAsync(response);
-                }
-                else
-                {
-                    //_logger.LogWarning("Rendering error page due to prompt=none, client does not allow prompt mode none, response is query, and ");
-                }
-
+                // if this is a client error, we need to build up the 
+                // response back to the client, and provide it in the 
+                // error view model so the UI can build the link/form
                 errorModel.ReturnInfo = new ClientReturnInfo
                 {
                     ClientId = request.ClientId,
