@@ -235,11 +235,13 @@ namespace IdentityServer4.Core.Endpoints.Results
 
             if (result != null)
             {
-                _logger.LogDebug("Adding client {0} to client list cookie for subject {1}", request.ClientId, request.Subject.GetSubjectId());
+                if (response.IsError == false)
+                {
+                    _logger.LogDebug("Adding client {0} to client list cookie for subject {1}", request.ClientId, request.Subject.GetSubjectId());
+                    _clientListCookie.AddClient(request.ClientId);
+                }
 
-                _clientListCookie.AddClient(request.ClientId);
-
-                return Task.FromResult<IEndpointResult>(result);
+                return Task.FromResult(result);
             }
 
             _logger.LogError("Unsupported response mode.");

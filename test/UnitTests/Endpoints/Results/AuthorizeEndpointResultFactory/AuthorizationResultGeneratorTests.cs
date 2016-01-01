@@ -244,11 +244,22 @@ namespace UnitTests.Endpoints.Results
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task CreateAuthorizeResultAsync_should_track_clientid()
+        public async Task CreateAuthorizeResultAsync_should_track_clientid_for_successful_results()
         {
             await _subject.CreateAuthorizeResultAsync(_validatedRequest);
 
             _mockClientListCookie.Clients.Should().Contain("client_id");
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task CreateAuthorizeResultAsync_should_not_track_clientid_for_error_results()
+        {
+            _stubAuthorizeResponseGenerator.Response.IsError = true;
+
+            await _subject.CreateAuthorizeResultAsync(_validatedRequest);
+
+            _mockClientListCookie.Clients.Should().BeEmpty();
         }
 
         [Fact]
