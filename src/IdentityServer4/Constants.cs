@@ -619,11 +619,12 @@ namespace IdentityServer4.Core
         public static class RoutePaths
         {
             // TODO: new
-            public const string Error = "/ui/error";
+            public const string Error = "ui/error";
+            public const string Login = "ui/login";
+            public const string Consent = "ui/consent";
 
             // TODO: old
             public const string Welcome = "";
-            public const string Login = "login";
             public const string LoginExternal = "external";
             public const string LoginExternalCallback = "callback";
             public const string Logout = "logout";
@@ -638,8 +639,8 @@ namespace IdentityServer4.Core
                 public const string AuthorizeAfterConsent = "connect/authorize/consent";
                 public const string AuthorizeAfterLogin = "connect/authorize/login";
 
-                public const string Consent = "connect/consent";
-                public const string SwitchUser = "connect/switch";
+                //public const string Consent = "connect/consent";
+                //public const string SwitchUser = "connect/switch";
                 public const string DiscoveryConfiguration = ".well-known/openid-configuration";
                 public const string DiscoveryWebKeys = DiscoveryConfiguration + "/jwks";
                 public const string Token = "connect/token";

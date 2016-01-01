@@ -68,7 +68,7 @@ namespace IdentityServer4.Core.Hosting
         {
             get
             {
-                return _context.GetIdentityServerBaseUrl().CleanUrlPath();
+                return _context.GetBasePath().CleanUrlPath();
             }
         }
 

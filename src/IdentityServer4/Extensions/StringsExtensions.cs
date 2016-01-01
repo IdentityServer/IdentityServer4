@@ -78,6 +78,7 @@ namespace IdentityServer4.Core.Extensions
             return !string.IsNullOrWhiteSpace(value);
         }
 
+        [DebuggerStepThrough]
         public static string EnsureLeadingSlash(this string url)
         {
             if (!url.StartsWith("/"))
@@ -88,6 +89,7 @@ namespace IdentityServer4.Core.Extensions
             return url;
         }
 
+        [DebuggerStepThrough]
         public static string EnsureTrailingSlash(this string url)
         {
             if (!url.EndsWith("/"))
@@ -98,6 +100,7 @@ namespace IdentityServer4.Core.Extensions
             return url;
         }
 
+        [DebuggerStepThrough]
         public static string RemoveLeadingSlash(this string url)
         {
             if (url != null && url.StartsWith("/"))
@@ -107,7 +110,8 @@ namespace IdentityServer4.Core.Extensions
 
             return url;
         }
-        
+
+        [DebuggerStepThrough]
         public static string RemoveTrailingSlash(this string url)
         {
             if (url != null && url.EndsWith("/"))
@@ -117,7 +121,8 @@ namespace IdentityServer4.Core.Extensions
 
             return url;
         }
-        
+
+        [DebuggerStepThrough]
         public static string CleanUrlPath(this string url)
         {
             if (String.IsNullOrWhiteSpace(url)) url = "/";
@@ -129,7 +134,8 @@ namespace IdentityServer4.Core.Extensions
 
             return url;
         }
-        
+
+        [DebuggerStepThrough]
         public static string AddQueryString(this string url, string query)
         {
             if (!url.Contains("?"))
@@ -144,6 +150,7 @@ namespace IdentityServer4.Core.Extensions
             return url + query;
         }
 
+        [DebuggerStepThrough]
         public static string AddHashFragment(this string url, string query)
         {
             if (!url.Contains("#"))

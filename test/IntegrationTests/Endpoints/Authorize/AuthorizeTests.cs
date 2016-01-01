@@ -4,6 +4,11 @@ using System.Threading.Tasks;
 using Xunit;
 using FluentAssertions;
 using System.Net;
+using System.Threading;
+using System;
+using IdentityServer4.Core.Extensions;
+using IdentityModel.Client;
+using IdentityServer4.Tests.Common;
 
 namespace IdentityServer4.Tests.Endpoints.Authorize
 {
@@ -14,15 +19,13 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
 
         private readonly HttpClient _client;
         private readonly HttpMessageHandler _handler;
+        private readonly Startup _startup = new Startup();
 
         public AuthorizeTests()
         {
-            var builder = TestServer.CreateBuilder()
-                .UseStartup<Startup>();
-            var server = new TestServer(builder);
-
+            var server = TestServer.Create(null, _startup.Configure, _startup.ConfigureServices);
             _handler = server.CreateHandler();
-            _client = server.CreateClient();
+            _client = new HttpClient(new BrowsR(_handler));
         }
 
         [Fact]
@@ -40,7 +43,25 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
         {
             var response = await _client.GetAsync(Endpoint);
 
-            (((int)response.StatusCode) < 500).Should().Be(true);
+            ((int)response.StatusCode).Should().BeLessThan(500);
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task anonymous_user_is_redirected_to_login_page()
+        {
+            var wasLoginCalled = false;
+            _startup.Login = ctx =>
+            {
+                wasLoginCalled = true;
+                return Task.FromResult(0);
+            };
+
+            var authorizeRequest = new AuthorizeRequest(Endpoint);
+            var url = authorizeRequest.CreateAuthorizeUrl("client1", "id_token", "openid", "https://client1/callback", "123_state", "123_nonce");
+            var response = await _client.GetAsync(url);
+
+            wasLoginCalled.Should().BeTrue();
         }
     }
 }

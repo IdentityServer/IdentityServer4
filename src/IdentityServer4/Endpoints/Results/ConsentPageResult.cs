@@ -6,7 +6,7 @@ namespace IdentityServer4.Core.Endpoints.Results
     public class ConsentPageResult : RedirectToPageResult
     {
         public ConsentPageResult(string id)
-            : base(Constants.RoutePaths.Oidc.Consent, id)
+            : base(Constants.RoutePaths.Consent, id)
         {
         }
     }
