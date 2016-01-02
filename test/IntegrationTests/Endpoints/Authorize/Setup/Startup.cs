@@ -1,7 +1,9 @@
 ﻿using IdentityServer4.Core;
 using IdentityServer4.Core.Extensions;
+using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Services.InMemory;
 using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.PlatformAbstractions;
 using System.Collections.Generic;
@@ -11,20 +13,43 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
 {
     public class Startup
     {
-        public RequestDelegate Login { get; set; } = ctx => Task.FromResult(0);
-        public RequestDelegate Consent { get; set; } = ctx => Task.FromResult(0);
-        public RequestDelegate Error { get; set; } = ctx => Task.FromResult(0);
-
         private readonly IApplicationEnvironment _environment;
+
+        public Startup(IApplicationEnvironment environment)
+        {
+            _environment = environment;
+            Login = OnLogin;
+            Consent = OnConsent;
+            Error = OnError;
+        }
 
         public Startup()
             : this(PlatformServices.Default.Application)
         {
         }
 
-        public Startup(IApplicationEnvironment environment)
+        public bool LoginWasCalled { get; set; }
+        public RequestDelegate Login { get; set; }
+        Task OnLogin(HttpContext ctx)
         {
-            _environment = environment;
+            LoginWasCalled = true;
+            return Task.FromResult(0);
+        }
+
+        public bool ConsentWasCalled { get; set; }
+        public RequestDelegate Consent { get; set; }
+        Task OnConsent(HttpContext ctx)
+        {
+            ConsentWasCalled = true;
+            return Task.FromResult(0);
+        }
+
+        public bool ErrorWasCalled { get; set; }
+        public RequestDelegate Error { get; set; }
+        Task OnError(HttpContext ctx)
+        {
+            ErrorWasCalled = true;
+            return Task.FromResult(0);
         }
 
         public void ConfigureServices(IServiceCollection services)

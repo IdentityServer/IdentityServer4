@@ -20,6 +20,7 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
         private readonly HttpClient _client;
         private readonly HttpMessageHandler _handler;
         private readonly Startup _startup = new Startup();
+        private readonly AuthorizeRequest _authorizeRequest = new AuthorizeRequest(Endpoint);
 
         public AuthorizeTests()
         {
@@ -50,18 +51,16 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task anonymous_user_is_redirected_to_login_page()
         {
-            var wasLoginCalled = false;
-            _startup.Login = ctx =>
-            {
-                wasLoginCalled = true;
-                return Task.FromResult(0);
-            };
-
-            var authorizeRequest = new AuthorizeRequest(Endpoint);
-            var url = authorizeRequest.CreateAuthorizeUrl("client1", "id_token", "openid", "https://client1/callback", "123_state", "123_nonce");
+            var url = _authorizeRequest.CreateAuthorizeUrl(
+                clientId: "client1",
+                responseType: "id_token",
+                scope: "openid",
+                redirectUri:"https://client1/callback",
+                state:  "123_state",
+                nonce: "123_nonce");
             var response = await _client.GetAsync(url);
 
-            wasLoginCalled.Should().BeTrue();
+            _startup.LoginWasCalled.Should().BeTrue();
         }
     }
 }
