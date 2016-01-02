@@ -12,6 +12,7 @@ namespace IdentityServer4.Tests.Clients
                 StandardScopes.OpenId,
                 StandardScopes.Email,
                 StandardScopes.OfflineAccess,
+                StandardScopes.Address,
 
                 new Scope
                 {

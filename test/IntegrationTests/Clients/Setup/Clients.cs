@@ -46,6 +46,7 @@ namespace IdentityServer4.Tests.Clients
                         StandardScopes.OpenId.Name,
                         StandardScopes.Email.Name,
                         StandardScopes.OfflineAccess.Name,
+                        StandardScopes.Address.Name,
 
                         "api1", "api2"
                     }

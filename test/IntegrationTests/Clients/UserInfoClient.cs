@@ -54,6 +54,29 @@ namespace IdentityServer4.Tests.Clients
         }
 
         [Fact]
+        public async Task Address_Scope()
+        {
+            var tokenClient = new TokenClient(
+                TokenEndpoint,
+                "roclient",
+                "secret",
+                innerHttpMessageHandler: _handler);
+
+            var response = await tokenClient.RequestResourceOwnerPasswordAsync("bob", "bob", "openid address");
+            response.IsError.Should().BeFalse();
+
+            var userInfoclient = new UserInfoClient(
+                new Uri(UserInfoEndpoint),
+                response.AccessToken,
+                _handler);
+
+            var userInfo = await userInfoclient.GetAsync();
+
+            userInfo.IsError.Should().BeFalse();
+            userInfo.Raw.Should().Be("{\"sub\":\"88421113\",\"address\":{\"street_address\":\"One Hacker Way\",\"locality\":\"Heidelberg\",\"postal_code\":69118,\"country\":\"Germany\"}}");
+        }
+
+        [Fact]
         public async Task No_Identity_Scope()
         {
             var tokenClient = new TokenClient(
@@ -63,6 +86,29 @@ namespace IdentityServer4.Tests.Clients
                 innerHttpMessageHandler: _handler);
 
             var response = await tokenClient.RequestResourceOwnerPasswordAsync("bob", "bob", "api1");
+            response.IsError.Should().BeFalse();
+
+            var userInfoclient = new UserInfoClient(
+                new Uri(UserInfoEndpoint),
+                response.AccessToken,
+                _handler);
+
+            var userInfo = await userInfoclient.GetAsync();
+
+            userInfo.IsError.Should().BeTrue();
+            userInfo.HttpErrorStatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Identity_Scope_No_OpenID()
+        {
+            var tokenClient = new TokenClient(
+                TokenEndpoint,
+                "roclient",
+                "secret",
+                innerHttpMessageHandler: _handler);
+
+            var response = await tokenClient.RequestResourceOwnerPasswordAsync("bob", "bob", "email api1");
             response.IsError.Should().BeFalse();
 
             var userInfoclient = new UserInfoClient(
