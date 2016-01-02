@@ -22,7 +22,7 @@ namespace IdentityServer4.Core.Services
         /// Retrieves all public keys that can be used to validate tokens
         /// </summary>
         /// <returns>Public keys</returns>
-        Task<IEnumerable<X509Certificate2>> GetPublicKeysAsync();
+        Task<IEnumerable<X509Certificate2>> GetValidationKeysAsync();
 
         /// <summary>
         /// Calculates the key id for a given x509 certificate

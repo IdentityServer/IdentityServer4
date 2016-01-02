@@ -205,7 +205,7 @@ namespace IdentityServer4.Core.Endpoints
             }
 
             var webKeys = new List<JsonWebKey>();
-            foreach (var pubKey in await _keyService.GetPublicKeysAsync())
+            foreach (var pubKey in await _keyService.GetValidationKeysAsync())
             {
                 if (pubKey != null)
                 {

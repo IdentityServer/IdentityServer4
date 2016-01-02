@@ -83,7 +83,7 @@ namespace IdentityServer4.Core.Validation
 
             _log.ClientName = client.ClientName;
 
-            var certs = await _keyService.GetPublicKeysAsync();
+            var certs = await _keyService.GetValidationKeysAsync();
             var result = await ValidateJwtAsync(token, clientId, certs, validateLifetime);
 
             result.Client = client;
@@ -137,7 +137,7 @@ namespace IdentityServer4.Core.Validation
                 result = await ValidateJwtAsync(
                     token,
                     string.Format(Constants.AccessTokenAudience, _context.GetIssuerUri().EnsureTrailingSlash()),
-                    await _keyService.GetPublicKeysAsync());
+                    await _keyService.GetValidationKeysAsync());
             }
             else
             {

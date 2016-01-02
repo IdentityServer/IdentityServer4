@@ -39,7 +39,7 @@ namespace IdentityServer4.Core.Services.Default
         /// Retrieves all public keys that can be used to validate tokens
         /// </summary>
         /// <returns>x509 certificates</returns>
-        public Task<IEnumerable<X509Certificate2>> GetPublicKeysAsync()
+        public Task<IEnumerable<X509Certificate2>> GetValidationKeysAsync()
         {
             return Task.FromResult(_options.PublicKeysForMetadata);
         }
