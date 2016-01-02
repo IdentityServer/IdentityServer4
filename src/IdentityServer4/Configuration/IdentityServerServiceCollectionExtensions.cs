@@ -163,6 +163,10 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<ClientListCookie>();
             services.TryAddTransient(typeof(MessageCookie<>));
 
+            services.TryAddTransient<SignInInteraction>();
+            services.TryAddTransient<ConsentInteraction>();
+            services.TryAddTransient<ErrorInteraction>();
+
             return services;
         }
     }

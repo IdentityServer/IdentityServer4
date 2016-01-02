@@ -374,7 +374,7 @@ namespace IdentityServer4.Core.Validation
             /////////////////////////////////////////////
             // check optional parameters and populate SignInMessage
             /////////////////////////////////////////////
-            var signInMessage = new SignInMessage();
+            var signInMessage = new SignInRequest();
 
             // pass through client_id
             signInMessage.ClientId = _validatedRequest.Client.ClientId;
@@ -423,7 +423,7 @@ namespace IdentityServer4.Core.Validation
             {
                 UserName = userName,
                 Password = password,
-                SignInMessage = signInMessage
+                SignInRequest = signInMessage
             };
 
             await _users.AuthenticateLocalAsync(authenticationContext);
@@ -717,14 +717,14 @@ namespace IdentityServer4.Core.Validation
         //    };
         //}
 
-        private async Task RaiseSuccessfulResourceOwnerAuthenticationEventAsync(string userName, string subjectId, SignInMessage signInMessage)
+        private async Task RaiseSuccessfulResourceOwnerAuthenticationEventAsync(string userName, string subjectId, SignInRequest signInRequest)
         {
-            await _events.RaiseSuccessfulResourceOwnerFlowAuthenticationEventAsync(userName, subjectId, signInMessage);
+            await _events.RaiseSuccessfulResourceOwnerFlowAuthenticationEventAsync(userName, subjectId, signInRequest);
         }
 
-        private async Task RaiseFailedResourceOwnerAuthenticationEventAsync(string userName, SignInMessage signInMessage, string error)
+        private async Task RaiseFailedResourceOwnerAuthenticationEventAsync(string userName, SignInRequest signInRequest, string error)
         {
-            await _events.RaiseFailedResourceOwnerFlowAuthenticationEventAsync(userName, signInMessage, error);
+            await _events.RaiseFailedResourceOwnerFlowAuthenticationEventAsync(userName, signInRequest, error);
         }
 
         private async Task RaiseFailedAuthorizationCodeRedeemedEventAsync(string handle, string error)

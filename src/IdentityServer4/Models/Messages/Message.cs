@@ -3,6 +3,7 @@
 
 using IdentityModel;
 using IdentityServer4.Core.Extensions;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 
 namespace IdentityServer4.Core.Models
@@ -35,6 +36,6 @@ namespace IdentityServer4.Core.Models
         public TModel Data { get; set; }
 
         public string ReturnUrl { get; set; }
-        public NameValueCollection AuthorizeRequestParameters { get; set; }
+        public Dictionary<string, string> AuthorizeRequestParameters { get; set; }
     }
 }

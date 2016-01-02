@@ -9,6 +9,22 @@ namespace IdentityServer4.Core.Models
     public class ErrorMessage
     {
         /// <summary>
+        /// The display mode passed from the authorization request.
+        /// </summary>
+        /// <value>
+        /// The display mode.
+        /// </value>
+        public string DisplayMode { get; set; }
+
+        /// <summary>
+        /// The UI locales passed from the authorization request.
+        /// </summary>
+        /// <value>
+        /// The UI locales.
+        /// </value>
+        public string UiLocales { get; set; }
+        
+        /// <summary>
         /// Gets or sets the error code.
         /// </summary>
         /// <value>

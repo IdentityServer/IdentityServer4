@@ -40,7 +40,7 @@ namespace UnitTests.Endpoints.Results
         IdentityServerContext _context = IdentityServerContextHelper.Create();
         MockClientListCookie _mockClientListCookie;
         StubAuthorizeResponseGenerator _stubAuthorizeResponseGenerator = new StubAuthorizeResponseGenerator();
-        MockMessageStore<SignInMessage> _mockSignInMessageStore = new MockMessageStore<SignInMessage>();
+        MockMessageStore<SignInRequest> _mockSignInMessageStore = new MockMessageStore<SignInRequest>();
         MockMessageStore<ConsentRequest> _mockConsentRequestMessageStore = new MockMessageStore<ConsentRequest>();
         MockMessageStore<IdentityServer4.Core.Models.ErrorMessage> _mockErrorMessageStore = new MockMessageStore<IdentityServer4.Core.Models.ErrorMessage>();
         StubLocalizationService _stubLocalizationService = new StubLocalizationService();

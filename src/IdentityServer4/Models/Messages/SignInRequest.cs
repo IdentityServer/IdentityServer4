@@ -10,7 +10,7 @@ namespace IdentityServer4.Core.Models
     /// <summary>
     /// Represents contextual information about a login request.
     /// </summary>
-    public class SignInMessage
+    public class SignInRequest 
     {
         /// <summary>
         /// The client identifier that initiated the request.
@@ -19,6 +19,22 @@ namespace IdentityServer4.Core.Models
         /// The client identifier.
         /// </value>
         public string ClientId { get; set; }
+
+        /// <summary>
+        /// The display mode passed from the authorization request.
+        /// </summary>
+        /// <value>
+        /// The display mode.
+        /// </value>
+        public string DisplayMode { get; set; }
+
+        /// <summary>
+        /// The UI locales passed from the authorization request.
+        /// </summary>
+        /// <value>
+        /// The UI locales.
+        /// </value>
+        public string UiLocales { get; set; }
         
         /// <summary>
         /// The external identity provider requested. This is used to bypass home realm 
@@ -49,22 +65,6 @@ namespace IdentityServer4.Core.Models
         public string LoginHint { get; set; }
         
         /// <summary>
-        /// The display mode passed from the authorization request.
-        /// </summary>
-        /// <value>
-        /// The display mode.
-        /// </value>
-        public string DisplayMode { get; set; }
-        
-        /// <summary>
-        /// The UI locales passed from the authorization request.
-        /// </summary>
-        /// <value>
-        /// The UI locales.
-        /// </value>
-        public string UiLocales { get; set; }
-        
-        /// <summary>
         /// The acr values passed from the authorization request.
         /// </summary>
         /// <value>
@@ -73,9 +73,9 @@ namespace IdentityServer4.Core.Models
         public IEnumerable<string> AcrValues { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SignInMessage"/> class.
+        /// Initializes a new instance of the <see cref="SignInRequest"/> class.
         /// </summary>
-        public SignInMessage()
+        public SignInRequest()
         {
             AcrValues = Enumerable.Empty<string>();
         }

@@ -10,8 +10,7 @@ namespace IdentityServer4.Tests.Common
 {
     // thanks to Damian Hickey for this awesome sample
     // https://github.com/damianh/OwinHttpMessageHandler/blob/master/src/OwinHttpMessageHandler/OwinHttpMessageHandler.cs
-    // but the name "BrowsR" is ours
-    public class BrowsR : DelegatingHandler
+    public class Browser : DelegatingHandler
     {
         private CookieContainer _cookieContainer = new CookieContainer();
 
@@ -19,7 +18,7 @@ namespace IdentityServer4.Tests.Common
         public bool AllowCookies { get; set; } = true;
         public int AutoRedirectLimit { get; set; } = 20;
 
-        public BrowsR(HttpMessageHandler next)
+        public Browser(HttpMessageHandler next)
             : base(next)
         {
         }

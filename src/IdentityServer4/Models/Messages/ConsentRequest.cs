@@ -10,8 +10,30 @@ namespace IdentityServer4.Core.Models
     /// </summary>
     public class ConsentRequest
     {
+        /// <summary>
+        /// The client identifier that initiated the request.
+        /// </summary>
+        /// <value>
+        /// The client identifier.
+        /// </value>
         public string ClientId { get; set; }
 
+        /// <summary>
+        /// The display mode passed from the authorization request.
+        /// </summary>
+        /// <value>
+        /// The display mode.
+        /// </value>
+        public string DisplayMode { get; set; }
+
+        /// <summary>
+        /// The UI locales passed from the authorization request.
+        /// </summary>
+        /// <value>
+        /// The UI locales.
+        /// </value>
+        public string UiLocales { get; set; }
+        
         /// <summary>
         /// Gets or sets the scopes requested.
         /// </summary>

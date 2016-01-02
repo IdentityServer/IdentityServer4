@@ -14,7 +14,7 @@ namespace IdentityServer4.Core.Extensions
     internal static class IEventServiceExtensions
     {
         public static async Task RaisePreLoginSuccessEventAsync(this IEventService events, 
-            string signInMessageId, SignInMessage signInMessage, AuthenticateResult authResult)
+            string signInMessageId, SignInRequest signInRequest, AuthenticateResult authResult)
         {
             var evt = new Event<LoginDetails>(
                 EventConstants.Categories.Authentication,
@@ -25,7 +25,7 @@ namespace IdentityServer4.Core.Extensions
                     SubjectId = authResult.HasSubject ?  authResult.User.GetSubjectId() : null,
                     Name = authResult.User.Identity.Name,
                     SignInId = signInMessageId,
-                    SignInMessage = signInMessage,
+                    SignInRequest = signInRequest,
                     PartialLogin = authResult.IsPartialSignIn
                 });
 
@@ -33,7 +33,7 @@ namespace IdentityServer4.Core.Extensions
         }
 
         public static async Task RaisePreLoginFailureEventAsync(this IEventService events, 
-            string signInMessageId, SignInMessage signInMessage, string error)
+            string signInMessageId, SignInRequest signInRequest, string error)
         {
             var evt = new Event<LoginDetails>(
                 EventConstants.Categories.Authentication,
@@ -43,7 +43,7 @@ namespace IdentityServer4.Core.Extensions
                 new LoginDetails
                 {
                     SignInId = signInMessageId,
-                    SignInMessage = signInMessage,
+                    SignInRequest = signInRequest,
                 }, 
                 error);
 
@@ -51,7 +51,7 @@ namespace IdentityServer4.Core.Extensions
         }
 
         public static async Task RaiseLocalLoginSuccessEventAsync(this IEventService events, 
-            string username, string signInMessageId, SignInMessage signInMessage, AuthenticateResult authResult)
+            string username, string signInMessageId, SignInRequest signInRequest, AuthenticateResult authResult)
         {
             var evt = new Event<LocalLoginDetails>(
                 EventConstants.Categories.Authentication,
@@ -63,7 +63,7 @@ namespace IdentityServer4.Core.Extensions
                     SubjectId = authResult.HasSubject ? authResult.User.GetSubjectId() : null,
                     Name = authResult.User.Identity.Name,
                     SignInId = signInMessageId,
-                    SignInMessage = signInMessage,
+                    SignInRequest = signInRequest,
                     PartialLogin = authResult.IsPartialSignIn,
                     LoginUserName = username
                 });
@@ -72,7 +72,7 @@ namespace IdentityServer4.Core.Extensions
         }
 
         public static async Task RaiseLocalLoginFailureEventAsync(this IEventService events, 
-            string username, string signInMessageId, SignInMessage signInMessage, string error)
+            string username, string signInMessageId, SignInRequest signInRequest, string error)
         {
             var evt = new Event<LocalLoginDetails>(
                 EventConstants.Categories.Authentication,
@@ -82,7 +82,7 @@ namespace IdentityServer4.Core.Extensions
                 new LocalLoginDetails
                 {
                     SignInId = signInMessageId,
-                    SignInMessage = signInMessage,
+                    SignInRequest = signInRequest,
                     LoginUserName = username
                 }, 
                 error);
@@ -91,7 +91,7 @@ namespace IdentityServer4.Core.Extensions
         }
 
         public static async Task RaiseExternalLoginSuccessEventAsync(this IEventService events, 
-            ExternalIdentity externalIdentity, string signInMessageId, SignInMessage signInMessage, AuthenticateResult authResult)
+            ExternalIdentity externalIdentity, string signInMessageId, SignInRequest signInRequest, AuthenticateResult authResult)
         {
             var evt = new Event<ExternalLoginDetails>(
                 EventConstants.Categories.Authentication,
@@ -103,7 +103,7 @@ namespace IdentityServer4.Core.Extensions
                     SubjectId = authResult.HasSubject ? authResult.User.GetSubjectId() : null,
                     Name = authResult.User.Identity.Name,
                     SignInId = signInMessageId,
-                    SignInMessage = signInMessage,
+                    SignInRequest = signInRequest,
                     PartialLogin = authResult.IsPartialSignIn,
                     Provider = externalIdentity.Provider,
                     ProviderId = externalIdentity.ProviderId,
@@ -113,7 +113,7 @@ namespace IdentityServer4.Core.Extensions
         }
 
         public static async Task RaiseExternalLoginFailureEventAsync(this IEventService events, 
-            ExternalIdentity externalIdentity, string signInMessageId, SignInMessage signInMessage, string error)
+            ExternalIdentity externalIdentity, string signInMessageId, SignInRequest signInRequest, string error)
         {
             var evt = new Event<ExternalLoginDetails>(
                 EventConstants.Categories.Authentication,
@@ -123,7 +123,7 @@ namespace IdentityServer4.Core.Extensions
                 new ExternalLoginDetails
                 {
                     SignInId = signInMessageId,
-                    SignInMessage = signInMessage,
+                    SignInRequest = signInRequest,
                     Provider = externalIdentity.Provider,
                     ProviderId = externalIdentity.ProviderId,
                 }, 
@@ -145,7 +145,7 @@ namespace IdentityServer4.Core.Extensions
         }
 
         public static async Task RaiseSuccessfulResourceOwnerFlowAuthenticationEventAsync(this IEventService events, 
-            string userName, string subjectId, SignInMessage message)
+            string userName, string subjectId, SignInRequest message)
         {
             var evt = new Event<LocalLoginDetails>(
                 EventConstants.Categories.Authentication,
@@ -155,7 +155,7 @@ namespace IdentityServer4.Core.Extensions
                 new LocalLoginDetails
                 {
                     SubjectId = subjectId,
-                    SignInMessage = message,
+                    SignInRequest = message,
                     LoginUserName = userName
                 });
 
@@ -163,7 +163,7 @@ namespace IdentityServer4.Core.Extensions
         }
 
         public static async Task RaiseFailedResourceOwnerFlowAuthenticationEventAsync(this IEventService events, 
-            string userName, SignInMessage message, string error)
+            string userName, SignInRequest message, string error)
         {
             var evt = new Event<LocalLoginDetails>(
                 EventConstants.Categories.Authentication,
@@ -172,7 +172,7 @@ namespace IdentityServer4.Core.Extensions
                 EventConstants.Ids.ResourceOwnerFlowLoginFailure,
                 new LocalLoginDetails
                 {
-                    SignInMessage = message,
+                    SignInRequest = message,
                     LoginUserName = userName
                 },
                 error);
@@ -181,7 +181,7 @@ namespace IdentityServer4.Core.Extensions
         }
 
         public static async Task RaisePartialLoginCompleteEventAsync(this IEventService events, 
-            ClaimsIdentity subject, string signInMessageId, SignInMessage signInMessage)
+            ClaimsIdentity subject, string signInMessageId, SignInRequest signInRequest)
         {
             var evt = new Event<LoginDetails>(
                 EventConstants.Categories.Authentication,
@@ -193,7 +193,7 @@ namespace IdentityServer4.Core.Extensions
                     SubjectId = subject.GetSubjectId(),
                     Name = subject.Name,
                     SignInId = signInMessageId,
-                    SignInMessage = signInMessage
+                    SignInRequest = signInRequest
                 });
 
             await events.RaiseEventAsync(evt);

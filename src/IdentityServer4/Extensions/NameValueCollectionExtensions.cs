@@ -57,6 +57,26 @@ namespace IdentityServer4.Core.Extensions
             return builder.ToString();
         }
 
+        public static NameValueCollection ToNameValueCollection(this Dictionary<string, string> data)
+        {
+            var result = new NameValueCollection();
+
+            if (data == null || data.Count == 0)
+            {
+                return result;
+            }
+
+            foreach (string name in data.Keys)
+            {
+                var value = data[name];
+                if (value != null)
+                {
+                    result.Add(name, value);
+                }
+            }
+
+            return result;
+        }
 
         public static Dictionary<string, string> ToDictionary(this NameValueCollection collection)
         {

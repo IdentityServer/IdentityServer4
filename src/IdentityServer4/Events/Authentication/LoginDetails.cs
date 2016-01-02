@@ -24,7 +24,7 @@ namespace IdentityServer4.Core.Events
         /// <value>
         /// The sign in message.
         /// </value>
-        public SignInMessage SignInMessage { get; set; }
+        public SignInRequest SignInRequest { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether login was a partial login.

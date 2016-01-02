@@ -49,7 +49,7 @@ namespace IdentityServer4.Core.Validation
         /// <value>
         /// The sign in message.
         /// </value>
-        public SignInMessage SignInMessage { get; set; }
+        public SignInRequest SignInMessage { get; set; }
 
         /// <summary>
         /// Gets or sets the refresh token.
