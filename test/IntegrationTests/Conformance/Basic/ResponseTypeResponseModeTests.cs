@@ -16,7 +16,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace IdentityServer3.Tests.Conformance.Basic
+namespace IdentityServer4.Tests.Conformance.Basic
 {
     public class ResponseTypeResponseModeTests : AuthorizeEndpointTestBase
     {

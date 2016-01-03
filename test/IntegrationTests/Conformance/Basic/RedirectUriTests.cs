@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 using Xunit;
 using System.Net.Http;
 
-namespace IdentityServer3.Tests.Conformance.Basic
+namespace IdentityServer4.Tests.Conformance.Basic
 {
     public class RedirectUriTests : AuthorizeEndpointTestBase
     {
