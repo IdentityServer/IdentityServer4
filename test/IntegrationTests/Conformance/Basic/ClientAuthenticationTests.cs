@@ -93,39 +93,38 @@ namespace IdentityServer4.Tests.Conformance.Basic
             //result.Headers.CacheControl.NoStore.Should().BeTrue();
         }
 
-        //[Fact]
-        //[Trait("Category", Category)]
-        //public void Token_endpoint_supports_client_authentication_with_form_encoded_authentication_in_POST_body()
-        //{
-        //    host.Login();
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task Token_endpoint_supports_client_authentication_with_form_encoded_authentication_in_POST_body()
+        {
+            await LoginAsync("bob");
 
-        //    var nonce = Guid.NewGuid().ToString();
-        //    var query = host.RequestAuthorizationCode(client_id, redirect_uri, "openid", nonce);
-        //    var code = query["code"];
+            var nonce = Guid.NewGuid().ToString();
 
-        //    host.NewRequest();
+            _browser.AllowAutoRedirect = false;
+            var url = CreateAuthorizeUrl(
+                           clientId: "code_client",
+                           responseType: "code",
+                           scope: "openid",
+                           redirectUri: "https://code_client/callback?foo=bar&baz=quux",
+                           nonce: nonce);
+            var response = await _client.GetAsync(url);
 
-        //    var result = host.PostForm(host.GetTokenUrl(),
-        //        new
-        //        {
-        //            grant_type = "authorization_code",
-        //            code,
-        //            client_id,
-        //            client_secret,
-        //            redirect_uri,
-        //        }
-        //    );
+            var authorization = ParseAuthorizationResponseUrl(response.Headers.Location.ToString());
+            authorization.Code.Should().NotBeNull();
 
-        //    result.StatusCode.Should().Be(HttpStatusCode.OK);
-        //    result.Headers.CacheControl.NoCache.Should().BeTrue();
-        //    result.Headers.CacheControl.NoStore.Should().BeTrue();
+            var code = authorization.Code;
 
-        //    var data = result.ReadJsonObject();
-        //    data["token_type"].Should().NotBeNull();
-        //    data["token_type"].ToString().Should().Be("Bearer");
-        //    data["access_token"].Should().NotBeNull();
-        //    data["expires_in"].Should().NotBeNull();
-        //    data["id_token"].Should().NotBeNull();
-        //}
+            // backchannel client
+            var tokenClient = new TokenClient(TokenEndpoint, "code_client", "secret", _server.CreateHandler(), AuthenticationStyle.PostValues);
+            var tokenResult = await tokenClient.RequestAuthorizationCodeAsync(code, "https://code_client/callback?foo=bar&baz=quux");
+
+            tokenResult.IsError.Should().BeFalse();
+            tokenResult.IsHttpError.Should().BeFalse();
+            tokenResult.TokenType.Should().Be("Bearer");
+            tokenResult.AccessToken.Should().NotBeNull();
+            tokenResult.ExpiresIn.Should().BeGreaterThan(0);
+            tokenResult.IdentityToken.Should().NotBeNull();
+        }
     }
 }
