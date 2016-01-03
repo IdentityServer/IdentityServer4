@@ -34,7 +34,6 @@ namespace IdentityServer4.Core.Endpoints
             _logger = logger;
         }
 
-        // todo: no caching
         public async Task<IEndpointResult> ProcessAsync(IdentityServerContext context)
         {
             if (context.HttpContext.Request.Method != "GET" && context.HttpContext.Request.Method != "POST")

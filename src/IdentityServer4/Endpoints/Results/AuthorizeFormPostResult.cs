@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Hosting;
+using Microsoft.AspNet.Http;
 
 namespace IdentityServer4.Core.Endpoints.Results
 {
@@ -22,6 +23,10 @@ namespace IdentityServer4.Core.Endpoints.Results
 
         public override Task ExecuteAsync(IdentityServerContext context)
         {
+            context.HttpContext.Response.SetNoCache();
+
+            // todo: render response <form>
+
             return Task.FromResult(0);
         }
     }

@@ -33,6 +33,7 @@ namespace IdentityServer4.Core.Endpoints.Results
             };
 
             context.HttpContext.Response.StatusCode = 400;
+            context.HttpContext.Response.SetNoCache();
             await context.HttpContext.Response.WriteJsonAsync(dto);
         }
 

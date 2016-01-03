@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using IdentityServer4.Core.Extensions;
 using Microsoft.Extensions.Primitives;
 using IdentityServer4.Core.Hosting;
+using Microsoft.AspNet.Http;
 
 namespace IdentityServer4.Core.Endpoints.Results
 {
@@ -22,6 +23,7 @@ namespace IdentityServer4.Core.Endpoints.Results
         public Task ExecuteAsync(IdentityServerContext context)
         {
             context.HttpContext.Response.StatusCode = 401;
+            context.HttpContext.Response.SetNoCache();
 
             if (Constants.ProtectedResourceErrorStatusCodes.ContainsKey(Error))
             {

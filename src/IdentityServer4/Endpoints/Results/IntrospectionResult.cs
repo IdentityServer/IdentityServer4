@@ -19,6 +19,7 @@ namespace IdentityServer4.Core.Endpoints.Results
         
         public Task ExecuteAsync(IdentityServerContext context)
         {
+            context.HttpContext.Response.SetNoCache();
             return context.HttpContext.Response.WriteJsonAsync(Result);
         }
     }
