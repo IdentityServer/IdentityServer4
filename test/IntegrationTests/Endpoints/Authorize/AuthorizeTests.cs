@@ -17,25 +17,12 @@ using System.Security.Claims;
 
 namespace IdentityServer4.Tests.Endpoints.Authorize
 {
-    public class AuthorizeTests
+    public class AuthorizeTests : AuthorizeEndpointTestBase
     {
         const string Category = "Authorize endpoint";
-        const string LoginEndpoint = "https://server/ui/login";
-        const string AuthorizeEndpoint = "https://server/connect/authorize";
-
-        private readonly HttpClient _client;
-        private readonly Browser _browser;
-        private readonly HttpMessageHandler _handler;
-        private readonly MockAuthorizationPipeline _mockPipeline;
-        private readonly AuthorizeRequest _authorizeRequest = new AuthorizeRequest(AuthorizeEndpoint);
 
         public AuthorizeTests()
         {
-            _mockPipeline = new MockAuthorizationPipeline(GetClients(), GetScopes(), GetUsers());
-            var server = TestServer.Create(null, _mockPipeline.Configure, _mockPipeline.ConfigureServices);
-            _handler = server.CreateHandler();
-            _browser = new Browser(_handler);
-            _client = new HttpClient(_browser);
         }
 
         [Fact]
@@ -76,14 +63,13 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task authenticated_user_with_valid_request_should_recieve_authorization_response()
+        public async Task authenticated_user_with_valid_request_should_receive_authorization_response()
         {
+            await LoginAsync("bob");
+
             _browser.AllowAutoRedirect = false;
 
-            _mockPipeline.Subject = IdentityServerPrincipal.Create("123", "Bob Loblaw");
-            await _client.GetAsync(LoginEndpoint);
-
-            var url = _authorizeRequest.CreateAuthorizeUrl(
+            var url = CreateAuthorizeUrl(
                 clientId: "client1",
                 responseType: "id_token",
                 scope: "openid",
@@ -101,7 +87,7 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
             authorization.State.Should().Be("123_state");
         }
 
-        public static IEnumerable<Client> GetClients()
+        public override IEnumerable<Client> GetClients()
         {
             return new List<Client>
             {
@@ -115,7 +101,7 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
                 },
             };
         }
-        public static IEnumerable<Scope> GetScopes()
+        public override IEnumerable<Scope> GetScopes()
         {
             return new List<Scope>
             {
@@ -134,13 +120,13 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
                 },
             };
         }
-        public static List<InMemoryUser> GetUsers()
+        public override List<InMemoryUser> GetUsers()
         {
             return new List<InMemoryUser>
             {
                 new InMemoryUser
                 {
-                    Subject = "123",
+                    Subject = "bob",
                     Username = "bob",
                     Claims = new Claim[]
                     {

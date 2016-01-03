@@ -14,7 +14,7 @@ using IdentityServer4.Core.Services;
 using System.Security.Claims;
 using System.Diagnostics;
 
-namespace IdentityServer4.Tests.Endpoints.Authorize
+namespace IdentityServer4.Tests.Common
 {
     public class MockAuthorizationPipeline
     {
