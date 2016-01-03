@@ -25,5 +25,14 @@ namespace Microsoft.AspNet.Http
             response.ContentType = "application/json";
             await response.WriteAsync(json);
         }
+
+        public static void SetNoCache(this HttpResponse response)
+        {
+            if (response.StatusCode < 400)
+            {
+                response.Headers.Add("Cache-Control", "no-store, no-cache, max-age=0");
+                response.Headers.Add("Pragma", "no-cache");
+            }
+        }
     }
 }

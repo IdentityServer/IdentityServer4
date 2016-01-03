@@ -28,6 +28,7 @@ namespace IdentityServer4.Core.Endpoints.Results
                 token_type = Constants.TokenTypes.Bearer
             };
 
+            context.HttpContext.Response.SetNoCache();
             await context.HttpContext.Response.WriteJsonAsync(dto);
         }
 

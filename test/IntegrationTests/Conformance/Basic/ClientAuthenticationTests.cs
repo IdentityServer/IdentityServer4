@@ -79,7 +79,8 @@ namespace IdentityServer4.Tests.Conformance.Basic
             var code = authorization.Code;
 
             // backchannel client
-            var tokenClient = new TokenClient(TokenEndpoint, "code_client", "secret", _server.CreateHandler());
+            var wrapper = new MessageHandlerWrapper(_server.CreateHandler());
+            var tokenClient = new TokenClient(TokenEndpoint, "code_client", "secret", wrapper);
             var tokenResult = await tokenClient.RequestAuthorizationCodeAsync(code, "https://code_client/callback?foo=bar&baz=quux");
 
             tokenResult.IsError.Should().BeFalse();
@@ -89,8 +90,8 @@ namespace IdentityServer4.Tests.Conformance.Basic
             tokenResult.ExpiresIn.Should().BeGreaterThan(0);
             tokenResult.IdentityToken.Should().NotBeNull();
 
-            //result.Headers.CacheControl.NoCache.Should().BeTrue();
-            //result.Headers.CacheControl.NoStore.Should().BeTrue();
+            wrapper.Response.Headers.CacheControl.NoCache.Should().BeTrue();
+            wrapper.Response.Headers.CacheControl.NoStore.Should().BeTrue();
         }
 
         [Fact]
