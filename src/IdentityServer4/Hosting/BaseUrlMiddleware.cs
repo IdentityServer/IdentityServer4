@@ -21,13 +21,8 @@ namespace IdentityServer4.Core.Hosting
         {
             var request = context.Request;
 
-            var origin = idsrvContext.Options.PublicOrigin;
-            if (origin.IsMissing())
-            {
-                origin = context.Request.Scheme + "://" + request.Host.Value;
-            }
-
-            idsrvContext.SetHost(origin);
+            var host = request.Scheme + "://" + request.Host.Value;
+            idsrvContext.SetHost(host);
             idsrvContext.SetBasePath(request.PathBase.Value.RemoveTrailingSlash());
 
             await _next(context);

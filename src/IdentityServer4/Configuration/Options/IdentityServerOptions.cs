@@ -70,14 +70,6 @@ namespace IdentityServer4.Core.Configuration
         public bool RequireSsl { get; set; }
 
         /// <summary>
-        /// Gets or sets the public origin for IdentityServer (e.g. "https://yourserver:1234").
-        /// </summary>
-        /// <value>
-        /// The name of the public origin.
-        /// </value>
-        public string PublicOrigin { get; set; }
-
-        /// <summary>
         /// Gets or sets the endpoint configuration.
         /// </summary>
         /// <value>
