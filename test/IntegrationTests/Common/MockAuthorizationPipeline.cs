@@ -157,11 +157,6 @@ namespace IdentityServer4.Tests.Common
 
         public void Configure(IApplicationBuilder app)
         {
-            app.Use(async (ctx, next) =>
-            {
-                await next();
-            });
-
             if (CookieAuthenticationScheme != null)
             {
                 app.UseCookieAuthentication(options =>
@@ -170,17 +165,7 @@ namespace IdentityServer4.Tests.Common
                 });
             }
 
-            app.Use(async (ctx, next) =>
-            {
-                await next();
-            });
-
             app.UseIdentityServer();
-
-            app.Use(async (ctx, next) =>
-            {
-                await next();
-            });
 
             app.Map(Constants.RoutePaths.Login.EnsureLeadingSlash(), path =>
             {
