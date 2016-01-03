@@ -4,6 +4,7 @@
 using IdentityModel;
 using IdentityServer4.Core.Configuration;
 using IdentityServer4.Core.Extensions;
+using IdentityServer4.Core.Hosting;
 using IdentityServer4.Core.Models;
 using Microsoft.Extensions.Logging;
 using System;
@@ -27,9 +28,9 @@ namespace IdentityServer4.Core.Services.Default
         private readonly ILogger _logger;
 
         /// <summary>
-        /// The identity server options
+        /// The identity server context
         /// </summary>
-        protected readonly IdentityServerOptions _options;
+        protected readonly IdentityServerContext _context;
 
         /// <summary>
         /// The claims provider
@@ -62,10 +63,10 @@ namespace IdentityServer4.Core.Services.Default
         /// <param name="tokenHandles">The token handles.</param>
         /// <param name="signingService">The signing service.</param>
         /// <param name="events">The events service.</param>
-        public DefaultTokenService(IdentityServerOptions options, IClaimsProvider claimsProvider, ITokenHandleStore tokenHandles, ITokenSigningService signingService, IEventService events, ILoggerFactory loggerFactory)
+        public DefaultTokenService(IdentityServerContext context, IClaimsProvider claimsProvider, ITokenHandleStore tokenHandles, ITokenSigningService signingService, IEventService events, ILoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<DefaultTokenService>();
-            _options = options;
+            _context = context;
             _claimsProvider = claimsProvider;
             _tokenHandles = tokenHandles;
             _signingService = signingService;
@@ -91,21 +92,6 @@ namespace IdentityServer4.Core.Services.Default
         //    _events = events;
         //    _owinEnvironmentService = owinEnvironmentService;
         //}
-
-        // todo: remove in 3.0.0
-        private string IssuerUri
-        {
-            get
-            {
-                //if (_owinEnvironmentService != null)
-                //{
-                //    return new OwinContext(_owinEnvironmentService.Environment).GetIdentityServerIssuerUri();
-                //}
-
-                // todo - dynamic calc?
-                return _options.IssuerUri;
-            }
-        }
 
         /// <summary>
         /// Creates an identity token.
@@ -156,10 +142,12 @@ namespace IdentityServer4.Core.Services.Default
                 request.IncludeAllIdentityClaims,
                 request.ValidatedRequest));
 
+            var issuer = _context.GetIssuerUri();
+
             var token = new Token(Constants.TokenTypes.IdentityToken)
             {
                 Audience = request.Client.ClientId,
-                Issuer = IssuerUri,
+                Issuer = issuer,
                 Lifetime = request.Client.IdentityTokenLifetime,
                 Claims = claims.Distinct(new ClaimComparer()).ToList(),
                 Client = request.Client
@@ -192,10 +180,11 @@ namespace IdentityServer4.Core.Services.Default
                 claims.Add(new Claim(Constants.ClaimTypes.JwtId, CryptoRandom.CreateUniqueId()));
             }
 
+            var issuer = _context.GetIssuerUri();
             var token = new Token(Constants.TokenTypes.AccessToken)
             {
-                Audience = string.Format(Constants.AccessTokenAudience, IssuerUri.EnsureTrailingSlash()),
-                Issuer = IssuerUri,
+                Audience = string.Format(Constants.AccessTokenAudience, issuer.EnsureTrailingSlash()),
+                Issuer = issuer,
                 Lifetime = request.Client.AccessTokenLifetime,
                 Claims = claims.Distinct(new ClaimComparer()).ToList(),
                 Client = request.Client
