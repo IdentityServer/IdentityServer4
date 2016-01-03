@@ -23,8 +23,11 @@ namespace IdentityServer4.Tests.Common
 {
     public class AuthorizeEndpointTestBase
     {
+        public const string LoginPage = "https://server/ui/login";
+        public const string ConsentPage = "https://server/ui/consent";
+        public const string ErrorPage = "https://server/ui/error";
+
         public const string DiscoveryEndpoint = "https://server/.well-known/openid-configuration";
-        public const string LoginEndpoint = "https://server/ui/login";
         public const string AuthorizeEndpoint = "https://server/connect/authorize";
 
         protected readonly HttpClient _client;
@@ -35,25 +38,16 @@ namespace IdentityServer4.Tests.Common
 
         public AuthorizeEndpointTestBase()
         {
-            _mockPipeline = new MockAuthorizationPipeline(GetClients(), GetScopes(), GetUsers());
+            _mockPipeline = new MockAuthorizationPipeline(Clients, Scopes, Users);
             var server = TestServer.Create(null, _mockPipeline.Configure, _mockPipeline.ConfigureServices);
             _handler = server.CreateHandler();
             _browser = new Browser(_handler);
             _client = new HttpClient(_browser);
         }
 
-        public virtual IEnumerable<Client> GetClients()
-        {
-            return new List<Client>();
-        }
-        public virtual IEnumerable<Scope> GetScopes()
-        {
-            return new List<Scope>();
-        }
-        public virtual List<InMemoryUser> GetUsers()
-        {
-            return new List<InMemoryUser>();
-        }
+        protected List<Client> Clients = new List<Client>();
+        protected List<Scope> Scopes = new List<Scope>();
+        protected List<InMemoryUser> Users = new List<InMemoryUser>();
 
         public async Task LoginAsync(ClaimsPrincipal subject)
         {
@@ -61,14 +55,14 @@ namespace IdentityServer4.Tests.Common
             _browser.AllowAutoRedirect = false;
 
             _mockPipeline.Subject = subject;
-            await _client.GetAsync(LoginEndpoint);
+            await _client.GetAsync(LoginPage);
 
             _browser.AllowAutoRedirect = old;
         }
 
         public async Task LoginAsync(string subject)
         {
-            var user = GetUsers().Single(x => x.Subject == subject);
+            var user = Users.Single(x => x.Subject == subject);
             var name = user.Claims.Where(x => x.Type == "name").Select(x=>x.Value).FirstOrDefault() ?? user.Username;
             await LoginAsync(IdentityServerPrincipal.Create(subject, name));
         }
@@ -97,6 +91,17 @@ namespace IdentityServer4.Tests.Common
                 responseMode: responseMode, 
                 extra: extra);
             return url;
+        }
+
+        public IdentityModel.Client.AuthorizeResponse AssertAuthorizationResponseUrl(HttpResponseMessage response)
+        {
+            response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+            return ParseAuthorizationResponseUrl(response.Headers.Location.ToString());
+        }
+
+        public IdentityModel.Client.AuthorizeResponse ParseAuthorizationResponseUrl(string url)
+        {
+            return new IdentityModel.Client.AuthorizeResponse(url);
         }
     }
 }

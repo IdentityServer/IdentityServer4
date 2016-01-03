@@ -25,6 +25,39 @@ namespace IdentityServer3.Tests.Conformance.Basic
         public ResponseTypeResponseModeTests()
         {
             _browser.AllowAutoRedirect = false;
+
+            Clients.Add(new Client
+            {
+                Enabled = true,
+                ClientId = "code_client",
+                ClientSecrets = new List<Secret>
+                {
+                    new Secret("secret".Sha512())
+                },
+
+                Flow = Flows.AuthorizationCode,
+                AllowAccessToAllScopes = true,
+
+                RequireConsent = false,
+                RedirectUris = new List<string>
+                {
+                    "https://code_client/callback"
+                }
+            });
+
+            Scopes.Add(StandardScopes.OpenId);
+
+            Users.Add(new InMemoryUser
+            {
+                Subject = "bob",
+                Username = "bob",
+                Claims = new Claim[]
+                    {
+                        new Claim("name", "Bob Loblaw"),
+                        new Claim("email", "bob@loblaw.com"),
+                        new Claim("role", "Attorney"),
+                    }
+            });
         }
 
         [Fact]
@@ -77,55 +110,5 @@ namespace IdentityServer3.Tests.Conformance.Basic
         //    query.AllKeys.Should().Contain("error");
         //    query["error"].Should().Be("unsupported_response_type");
         //}
-
-        public override IEnumerable<Client> GetClients()
-        {
-            return new List<Client>
-            {
-               new Client
-               {
-                Enabled = true,
-                ClientId = "code_client",
-                ClientSecrets = new List<Secret>
-                {
-                    new Secret("secret".Sha512())
-                },
-
-                Flow = Flows.AuthorizationCode,
-                AllowAccessToAllScopes = true,
-
-                RequireConsent = false,
-                RedirectUris = new List<string>
-                {
-                    "https://code_client/callback"
-                }
-               }
-            };
-        }
-        public override IEnumerable<Scope> GetScopes()
-        {
-            return new List<Scope>
-            {
-                StandardScopes.OpenId,
-            };
-        }
-
-        public override List<InMemoryUser> GetUsers()
-        {
-            return new List<InMemoryUser>
-            {
-                new InMemoryUser
-                {
-                    Subject = "bob",
-                    Username = "bob",
-                    Claims = new Claim[]
-                    {
-                        new Claim("name", "Bob Loblaw"),
-                        new Claim("email", "bob@loblaw.com"),
-                        new Claim("role", "Attorney"),
-                    }
-                }
-            };
-        }
     }
 }

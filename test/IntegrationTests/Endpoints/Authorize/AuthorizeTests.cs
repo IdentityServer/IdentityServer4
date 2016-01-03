@@ -26,6 +26,42 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
 
         public AuthorizeTests()
         {
+            Clients.Add(new Client
+            {
+                ClientId = "client1",
+                Flow = Flows.Implicit,
+                RequireConsent = false,
+                AllowedScopes = new List<string> { "openid", "profile" },
+                RedirectUris = new List<string> { "https://client1/callback" }
+            });
+
+            Users.Add(new InMemoryUser
+            {
+                Subject = "bob",
+                Username = "bob",
+                Claims = new Claim[]
+                    {
+                        new Claim("name", "Bob Loblaw"),
+                        new Claim("email", "bob@loblaw.com"),
+                        new Claim("role", "Attorney"),
+                    }
+            });
+
+            Scopes.AddRange(new Scope[] {
+                StandardScopes.OpenId,
+                StandardScopes.Profile,
+                StandardScopes.Email,
+                new Scope
+                {
+                    Name = "api1",
+                    Type = ScopeType.Resource
+                },
+                new Scope
+                {
+                    Name = "api2",
+                    Type = ScopeType.Resource
+                }
+            });
         }
 
         [Fact]
@@ -88,57 +124,6 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
             authorization.IsError.Should().BeFalse();
             authorization.IdentityToken.Should().NotBeNull();
             authorization.State.Should().Be("123_state");
-        }
-
-        public override IEnumerable<Client> GetClients()
-        {
-            return new List<Client>
-            {
-                new Client
-                {
-                    ClientId = "client1",
-                    Flow = Flows.Implicit,
-                    RequireConsent = false,
-                    AllowedScopes = new List<string> { "openid", "profile" },
-                    RedirectUris = new List<string> { "https://client1/callback" }
-                },
-            };
-        }
-        public override IEnumerable<Scope> GetScopes()
-        {
-            return new List<Scope>
-            {
-                StandardScopes.OpenId,
-                StandardScopes.Profile,
-                StandardScopes.Email,
-                new Scope
-                {
-                    Name = "api1",
-                    Type = ScopeType.Resource
-                },
-                new Scope
-                {
-                    Name = "api2",
-                    Type = ScopeType.Resource
-                },
-            };
-        }
-        public override List<InMemoryUser> GetUsers()
-        {
-            return new List<InMemoryUser>
-            {
-                new InMemoryUser
-                {
-                    Subject = "bob",
-                    Username = "bob",
-                    Claims = new Claim[]
-                    {
-                        new Claim("name", "Bob Loblaw"),
-                        new Claim("email", "bob@loblaw.com"),
-                        new Claim("role", "Attorney"),
-                    }
-                }
-            };
         }
     }
 }
