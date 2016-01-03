@@ -21,8 +21,6 @@ namespace IdentityServer4.Tests.Conformance.Basic
 
         public RedirectUriTests()
         {
-            _browser.AllowAutoRedirect = false;
-
             Clients.Add(new Client
             {
                 Enabled = true,
@@ -58,7 +56,7 @@ namespace IdentityServer4.Tests.Conformance.Basic
             });
         }
 
-        [Fact(Skip = "open redirector")]
+        [Fact]
         [Trait("Category", Category)]
         public async Task Reject_redirect_uri_not_matching_registered_redirect_uri()
         {
@@ -76,11 +74,11 @@ namespace IdentityServer4.Tests.Conformance.Basic
                            nonce: nonce);
             var response = await _client.GetAsync(url);
 
-            var authorization = AssertAuthorizationResponseUrl(response);
-            authorization.Error.Should().Be("unauthorized_client");
+            _mockPipeline.ErrorWasCalled.Should().BeTrue();
+            _mockPipeline.ErrorMessage.ErrorCode.Should().Be("unauthorized_client");
         }
 
-        [Fact(Skip = "open redirector")]
+        [Fact]
         [Trait("Category", Category)]
         public async Task Reject_request_without_redirect_uri_when_multiple_registered()
         {
@@ -93,16 +91,17 @@ namespace IdentityServer4.Tests.Conformance.Basic
                           clientId: "code_client",
                           responseType: "code",
                           scope: "openid",
-                          //redirectUri: "https://bad",
+                          // redirectUri deliberately absent 
+                          redirectUri: null,
                           state: state,
                           nonce: nonce);
             var response = await _client.GetAsync(url);
 
-            var authorization = AssertAuthorizationResponseUrl(response);
-            authorization.Error.Should().Be("invalid_request");
+            _mockPipeline.ErrorWasCalled.Should().BeTrue();
+            _mockPipeline.ErrorMessage.ErrorCode.Should().Be("invalid_request");
         }
 
-        [Fact()]
+        [Fact]
         [Trait("Category", Category)]
         public async Task Preserves_query_parameters_in_redirect_uri()
         {
@@ -111,6 +110,7 @@ namespace IdentityServer4.Tests.Conformance.Basic
             var nonce = Guid.NewGuid().ToString();
             var state = Guid.NewGuid().ToString();
 
+            _browser.AllowAutoRedirect = false;
             var url = CreateAuthorizeUrl(
                            clientId: "code_client",
                            responseType: "code",
@@ -120,7 +120,9 @@ namespace IdentityServer4.Tests.Conformance.Basic
                            nonce: nonce);
             var response = await _client.GetAsync(url);
 
-            var authorization = AssertAuthorizationResponseUrl(response);
+            response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+            response.Headers.Location.ToString().Should().StartWith("https://code_client/callback?");
+            var authorization = ParseAuthorizationResponseUrl(response.Headers.Location.ToString());
             authorization.Code.Should().NotBeNull();
             authorization.State.Should().Be(state);
             var query = response.Headers.Location.ParseQueryString();
@@ -128,7 +130,7 @@ namespace IdentityServer4.Tests.Conformance.Basic
             query["baz"].ToString().Should().Be("quux");
         }
 
-        [Fact(Skip = "open redirector")]
+        [Fact]
         [Trait("Category", Category)]
         public async Task Rejects_redirect_uri_when_query_parameter_does_not_match()
         {
@@ -146,8 +148,8 @@ namespace IdentityServer4.Tests.Conformance.Basic
                            nonce: nonce);
             var response = await _client.GetAsync(url);
 
-            var authorization = AssertAuthorizationResponseUrl(response);
-            authorization.Error.Should().Be("unauthorized_client");
+            _mockPipeline.ErrorWasCalled.Should().BeTrue();
+            _mockPipeline.ErrorMessage.ErrorCode.Should().Be("unauthorized_client");
         }
     }
 }

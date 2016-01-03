@@ -93,12 +93,6 @@ namespace IdentityServer4.Tests.Common
             return url;
         }
 
-        public IdentityModel.Client.AuthorizeResponse AssertAuthorizationResponseUrl(HttpResponseMessage response)
-        {
-            response.StatusCode.Should().Be(HttpStatusCode.Redirect);
-            return ParseAuthorizationResponseUrl(response.Headers.Location.ToString());
-        }
-
         public IdentityModel.Client.AuthorizeResponse ParseAuthorizationResponseUrl(string url)
         {
             return new IdentityModel.Client.AuthorizeResponse(url);
