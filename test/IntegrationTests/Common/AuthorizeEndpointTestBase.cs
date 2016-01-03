@@ -29,19 +29,20 @@ namespace IdentityServer4.Tests.Common
 
         public const string DiscoveryEndpoint = "https://server/.well-known/openid-configuration";
         public const string AuthorizeEndpoint = "https://server/connect/authorize";
+        public const string TokenEndpoint = "https://server/connect/token";
 
+        protected readonly TestServer _server;
         protected readonly HttpClient _client;
         protected readonly Browser _browser;
-        protected readonly HttpMessageHandler _handler;
         protected readonly MockAuthorizationPipeline _mockPipeline;
+
         protected readonly AuthorizeRequest _authorizeRequest = new AuthorizeRequest(AuthorizeEndpoint);
 
         public AuthorizeEndpointTestBase()
         {
             _mockPipeline = new MockAuthorizationPipeline(Clients, Scopes, Users);
-            var server = TestServer.Create(null, _mockPipeline.Configure, _mockPipeline.ConfigureServices);
-            _handler = server.CreateHandler();
-            _browser = new Browser(_handler);
+            _server = TestServer.Create(null, _mockPipeline.Configure, _mockPipeline.ConfigureServices);
+            _browser = new Browser(_server.CreateHandler());
             _client = new HttpClient(_browser);
         }
 
