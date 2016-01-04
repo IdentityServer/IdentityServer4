@@ -26,13 +26,23 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
 
         public AuthorizeTests()
         {
-            Clients.Add(new Client
-            {
-                ClientId = "client1",
-                Flow = Flows.Implicit,
-                RequireConsent = false,
-                AllowedScopes = new List<string> { "openid", "profile" },
-                RedirectUris = new List<string> { "https://client1/callback" }
+            Clients.AddRange(new Client[] {
+                new Client
+                {
+                    ClientId = "client1",
+                    Flow = Flows.Implicit,
+                    RequireConsent = false,
+                    AllowedScopes = new List<string> { "openid", "profile" },
+                    RedirectUris = new List<string> { "https://client1/callback" }
+                },
+                new Client
+                {
+                    ClientId = "client2",
+                    Flow = Flows.Implicit,
+                    RequireConsent = true,
+                    AllowedScopes = new List<string> { "openid", "profile", "api1", "api2" },
+                    RedirectUris = new List<string> { "https://client2/callback" }
+                }
             });
 
             Users.Add(new InMemoryUser
@@ -40,11 +50,11 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
                 Subject = "bob",
                 Username = "bob",
                 Claims = new Claim[]
-                    {
-                        new Claim("name", "Bob Loblaw"),
-                        new Claim("email", "bob@loblaw.com"),
-                        new Claim("role", "Attorney"),
-                    }
+                {
+                    new Claim("name", "Bob Loblaw"),
+                    new Claim("email", "bob@loblaw.com"),
+                    new Claim("role", "Attorney"),
+                }
             });
 
             Scopes.AddRange(new Scope[] {
@@ -97,7 +107,38 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
 
             _mockPipeline.LoginWasCalled.Should().BeTrue();
             _mockPipeline.SignInRequest.Should().NotBeNull();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task signin_request_should_have_authorization_params()
+        {
+            var url = _authorizeRequest.CreateAuthorizeUrl(
+                clientId: "client1",
+                responseType: "id_token",
+                scope: "openid",
+                redirectUri: "https://client1/callback",
+                state: "123_state",
+                nonce: "123_nonce",
+                loginHint:"login_hint_value",
+                acrValues:"acr_1 acr_2 tenant:tenant_value idp:idp_value",
+                extra: new {
+                    display = "popup", // must use a valid value form the spec for display
+                    ui_locales ="ui_locale_value",
+                    custom_foo ="foo_value"
+                });
+            var response = await _client.GetAsync(url);
+
+            _mockPipeline.LoginWasCalled.Should().BeTrue();
+            _mockPipeline.SignInRequest.Should().NotBeNull();
             _mockPipeline.SignInRequest.ClientId.Should().Be("client1");
+            _mockPipeline.SignInRequest.DisplayMode.Should().Be("popup");
+            _mockPipeline.SignInRequest.UiLocales.Should().Be("ui_locale_value");
+            _mockPipeline.SignInRequest.IdP.Should().Be("idp_value");
+            _mockPipeline.SignInRequest.Tenant.Should().Be("tenant_value");
+            _mockPipeline.SignInRequest.LoginHint.Should().Be("login_hint_value");
+            _mockPipeline.SignInRequest.AcrValues.ShouldAllBeEquivalentTo(new string[] { "acr_2", "acr_1" });
+            // todo: add custom params to signin message
         }
 
         [Fact]
