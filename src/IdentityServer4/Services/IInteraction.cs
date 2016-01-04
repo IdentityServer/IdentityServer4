@@ -71,8 +71,8 @@ namespace IdentityServer4.Core.Services
 
         public async Task ProcessResponseAsync(string requestId, TResponse response)
         {
-            var requestMessage = await GetRequestMessageAsync(id);
-            await ClearRequestAsync(id);
+            var requestMessage = await GetRequestMessageAsync(requestId);
+            await ClearRequestAsync(requestId);
 
             var message = new Message<TResponse>(response)
             {
