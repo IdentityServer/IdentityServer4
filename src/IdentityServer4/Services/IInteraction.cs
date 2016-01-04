@@ -4,23 +4,19 @@
 using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Models;
 using Microsoft.AspNet.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.Services
 {
     public interface IInteraction<TRequest>
     {
-        Task<TRequest> GetRequestAsync();
-        Task ClearRequestAsync();
+        Task<TRequest> GetRequestAsync(string requestId);
+        Task ClearRequestAsync(string requestId);
     }
 
     public abstract class Interaction<TRequest> : IInteraction<TRequest>
         where TRequest : class
     {
-        string _requestId;
         Message<TRequest> _requestMessage;
 
         private readonly IMessageStore<TRequest> _requestStore;
@@ -32,51 +28,30 @@ namespace IdentityServer4.Core.Services
             _context = context;
         }
 
-        string RequestId
-        {
-            get
-            {
-                if (_requestId.IsMissing())
-                {
-                    if (_context.Request.Query.ContainsKey("id"))
-                    {
-                        _requestId = _context.Request.Query["id"].First();
-                    }
-
-                    if (_requestId.IsMissing())
-                    {
-                        throw new InvalidOperationException("HTTP request must have an 'id' query parameter.");
-                    }
-                }
-
-                return _requestId;
-            }
-        }
-
-        protected internal async Task<Message<TRequest>> GetRequestMessageAsync()
+        protected internal async Task<Message<TRequest>> GetRequestMessageAsync(string requestId)
         {
             if (_requestMessage == null)
             {
-                _requestMessage = await _requestStore.ReadAsync(RequestId);
+                _requestMessage = await _requestStore.ReadAsync(requestId);
             }
 
             return _requestMessage;
         }
 
-        public async Task<TRequest> GetRequestAsync()
+        public async Task<TRequest> GetRequestAsync(string requestId)
         {
-            return (await GetRequestMessageAsync())?.Data;
+            return (await GetRequestMessageAsync(requestId))?.Data;
         }
 
-        public async Task ClearRequestAsync()
+        public async Task ClearRequestAsync(string requestId)
         {
-            await _requestStore.DeleteAsync(RequestId);
+            await _requestStore.DeleteAsync(requestId);
         }
     }
 
     public interface IInteraction<TRequest, TResponse> : IInteraction<TRequest>
     {
-        Task ProcessResponseAsync(TResponse response);
+        Task ProcessResponseAsync(string requestId, TResponse response);
     }
 
     public abstract class Interaction<TRequest, TResponse> : Interaction<TRequest>, IInteraction<TRequest, TResponse>
@@ -94,10 +69,10 @@ namespace IdentityServer4.Core.Services
             _responseStore = responseStore;
         }
 
-        public async Task ProcessResponseAsync(TResponse response)
+        public async Task ProcessResponseAsync(string requestId, TResponse response)
         {
-            var requestMessage = await GetRequestMessageAsync();
-            await ClearRequestAsync();
+            var requestMessage = await GetRequestMessageAsync(id);
+            await ClearRequestAsync(id);
 
             var message = new Message<TResponse>(response)
             {

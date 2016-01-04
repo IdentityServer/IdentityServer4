@@ -66,7 +66,7 @@ namespace IdentityServer4.Tests.Common
             try
             {
                 var interaction = ctx.RequestServices.GetRequiredService<SignInInteraction>();
-                SignInRequest = await interaction.GetRequestAsync();
+                SignInRequest = await interaction.GetRequestAsync(ctx.Request.Query["id"].First());
             }
             catch(Exception ex) {
                     var msg = ex.ToString();
@@ -88,7 +88,7 @@ namespace IdentityServer4.Tests.Common
             if (SignInResponse != null)
             {
                 var interaction = ctx.RequestServices.GetRequiredService<SignInInteraction>();
-                await interaction.ProcessResponseAsync(SignInResponse);
+                await interaction.ProcessResponseAsync(ctx.Request.Query["id"].First(), SignInResponse);
             }
         }
 
@@ -108,7 +108,7 @@ namespace IdentityServer4.Tests.Common
             try
             {
                 var interaction = ctx.RequestServices.GetRequiredService<ConsentInteraction>();
-                ConsentRequest = await interaction.GetRequestAsync();
+                ConsentRequest = await interaction.GetRequestAsync(ctx.Request.Query["id"].First());
             }
             catch { }
         }
@@ -118,7 +118,7 @@ namespace IdentityServer4.Tests.Common
             if (ConsentResponse != null)
             {
                 var interaction = ctx.RequestServices.GetRequiredService<ConsentInteraction>();
-                await interaction.ProcessResponseAsync(ConsentResponse);
+                await interaction.ProcessResponseAsync(ctx.Request.Query["id"].First(), ConsentResponse);
                 ConsentResponse = null;
             }
         }
@@ -137,7 +137,7 @@ namespace IdentityServer4.Tests.Common
             try
             {
                 var interaction = ctx.RequestServices.GetRequiredService<ErrorInteraction>();
-                ErrorMessage = await interaction.GetRequestAsync();
+                ErrorMessage = await interaction.GetRequestAsync(ctx.Request.Query["id"].First());
             }
             catch { }
         }
