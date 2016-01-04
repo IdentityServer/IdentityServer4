@@ -187,7 +187,6 @@ namespace IdentityServer4.Core.Endpoints.Results
                 errorModel.ReturnInfo = new ClientReturnInfo
                 {
                     ClientId = request.ClientId,
-                    ClientName = request.Client.ClientName,
                 };
 
                 if (request.ResponseMode == Constants.ResponseModes.Query ||

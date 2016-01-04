@@ -118,7 +118,6 @@ namespace UnitTests.Endpoints.Results
             var model = _mockErrorMessageStore.Messages[result.Id];
             model.Data.ReturnInfo.Should().NotBeNull();
             model.Data.ReturnInfo.ClientId.Should().Be("client_id");
-            model.Data.ReturnInfo.ClientName.Should().Be("Test Client");
         }
 
         [Fact]

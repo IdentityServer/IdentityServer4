@@ -17,14 +17,6 @@ namespace IdentityServer4.Core.Models
         public string ClientId { get; set; }
 
         /// <summary>
-        /// The name of the client the user will be sent to.
-        /// </summary>
-        /// <value>
-        /// The client name.
-        /// </value>
-        public string ClientName { get; set; }
-
-        /// <summary>
         /// The Uri of the client where the user can be returned.
         /// </summary>
         /// <value>
