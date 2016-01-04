@@ -26,9 +26,6 @@ namespace Host
             var builder = services.AddIdentityServer(options =>
             {
                 options.SigningCertificate = cert;
-                options.IssuerUri = "https://idsrv4";
-
-                options.DiscoveryOptions.CustomEntries.Add("foo", "bar");
             });
 
             builder.AddInMemoryClients(Clients.Get());
