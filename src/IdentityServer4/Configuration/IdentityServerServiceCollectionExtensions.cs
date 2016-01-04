@@ -21,6 +21,8 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services, Action<IdentityServerOptions> setupAction = null)
         {
+            services.AddAuthentication();
+
             var options = new IdentityServerOptions();
 
             if (setupAction != null)
