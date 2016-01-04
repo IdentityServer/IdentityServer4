@@ -33,7 +33,7 @@ namespace IdentityServer4.Core.Extensions
                 {
                     foreach (string value in values)
                     {
-                        first = AppendNameValuePair(builder, first, true, name, UrlEncoder.Default.UrlEncode(value));
+                        first = AppendNameValuePair(builder, first, true, name, value);
                     }
                 }
             }
