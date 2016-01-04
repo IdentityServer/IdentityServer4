@@ -4,7 +4,6 @@
 using IdentityModel;
 using IdentityServer4.Core.Extensions;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 
 namespace IdentityServer4.Core.Models
 {

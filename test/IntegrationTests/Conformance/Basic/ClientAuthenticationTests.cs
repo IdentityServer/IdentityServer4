@@ -8,8 +8,6 @@ using IdentityServer4.Core.Services.InMemory;
 using IdentityServer4.Tests.Common;
 using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;

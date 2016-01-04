@@ -1,15 +1,10 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-using Microsoft.AspNet.TestHost;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 using FluentAssertions;
 using System.Net;
-using System.Threading;
-using System;
-using IdentityServer4.Core.Extensions;
 using IdentityModel.Client;
 using IdentityServer4.Tests.Common;
 using IdentityServer4.Core;

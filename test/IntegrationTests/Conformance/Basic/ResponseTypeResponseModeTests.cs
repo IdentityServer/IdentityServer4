@@ -2,16 +2,12 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using FluentAssertions;
-using IdentityModel.Client;
-using IdentityServer4.Core;
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Services.InMemory;
 using IdentityServer4.Tests.Common;
-using Microsoft.AspNet.TestHost;
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;

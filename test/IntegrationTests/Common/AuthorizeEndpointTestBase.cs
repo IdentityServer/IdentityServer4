@@ -4,14 +4,7 @@
 using Microsoft.AspNet.TestHost;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Xunit;
-using FluentAssertions;
-using System.Net;
-using System.Threading;
-using System;
-using IdentityServer4.Core.Extensions;
 using IdentityModel.Client;
-using IdentityServer4.Tests.Common;
 using IdentityServer4.Core;
 using System.Collections.Generic;
 using IdentityServer4.Core.Models;
