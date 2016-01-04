@@ -111,10 +111,10 @@ namespace IdentityServer4.Core.Extensions
         private static bool AppendNameValuePair(StringBuilder builder, bool first, bool urlEncode, string name, string value)
         {
             string effectiveName = name ?? String.Empty;
-            string encodedName = urlEncode ? WebUtility.UrlEncode(effectiveName) : effectiveName;
+            string encodedName = urlEncode ? UrlEncoder.Default.UrlEncode(effectiveName) : effectiveName;
 
             string effectiveValue = value ?? String.Empty;
-            string encodedValue = urlEncode ? WebUtility.UrlEncode(effectiveValue) : effectiveValue;
+            string encodedValue = urlEncode ? UrlEncoder.Default.UrlEncode(effectiveValue) : effectiveValue;
             encodedValue = ConvertFormUrlEncodedSpacesToUrlEncodedSpaces(encodedValue);
 
             if (first)
