@@ -105,7 +105,7 @@ namespace IdentityServer4.Core.Services
             };
             await _responseStore.WriteAsync(message);
 
-            var url = requestMessage.ReturnUrl.AddQueryString("id=" + message.Id);
+            var url = requestMessage.ResponseUrl.AddQueryString("id=" + message.Id);
             _context.Response.Redirect(url);
         }
     }

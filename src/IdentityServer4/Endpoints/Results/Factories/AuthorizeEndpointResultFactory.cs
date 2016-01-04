@@ -93,7 +93,7 @@ namespace IdentityServer4.Core.Endpoints.Results
 
             var message = new Message<SignInRequest>(signin)
             {
-                ReturnUrl = _context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.RoutePaths.Oidc.AuthorizeAfterLogin,
+                ResponseUrl = _context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.RoutePaths.Oidc.AuthorizeAfterLogin,
                 AuthorizeRequestParameters = request.Raw.ToDictionary()
             };
             await _signInRequestStore.WriteAsync(message);
@@ -113,7 +113,7 @@ namespace IdentityServer4.Core.Endpoints.Results
 
             var message = new Message<ConsentRequest>(consent)
             {
-                ReturnUrl = _context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.RoutePaths.Oidc.AuthorizeAfterConsent,
+                ResponseUrl = _context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.RoutePaths.Oidc.AuthorizeAfterConsent,
                 AuthorizeRequestParameters = request.Raw.ToDictionary()
             };
             await _consentRequestStore.WriteAsync(message);
