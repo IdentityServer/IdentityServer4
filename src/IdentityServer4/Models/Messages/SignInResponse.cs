@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Security.Claims;
 
 namespace IdentityServer4.Core.Models
 {
@@ -12,5 +13,15 @@ namespace IdentityServer4.Core.Models
     /// </summary>
     public class SignInResponse 
     {
+        public SignInResponse()
+        {
+        }
+
+        //public SignInResponse(string subject)
+        //{
+        //    Subject = subject;
+        //}
+
+        //public string Subject { get; set; }
     }
 }

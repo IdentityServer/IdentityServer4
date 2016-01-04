@@ -6,7 +6,7 @@ namespace IdentityServer4.Core.Models
     /// <summary>
     /// Models the request from a client to sign the user out.
     /// </summary>
-    public class SignOutMessage
+    public class SignOutRequest
     {
         /// <summary>
         /// Gets or sets the client identifier.
@@ -15,13 +15,5 @@ namespace IdentityServer4.Core.Models
         /// The client identifier.
         /// </value>
         public string ClientId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the URL for the user to return to after they have signed out.
-        /// </summary>
-        /// <value>
-        /// The return URL.
-        /// </value>
-        public string ReturnUrl { get; set; }
     }
 }
