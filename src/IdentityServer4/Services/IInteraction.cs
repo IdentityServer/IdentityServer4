@@ -99,10 +99,13 @@ namespace IdentityServer4.Core.Services
             var requestMessage = await GetRequestMessageAsync();
             await ClearRequestAsync();
 
-            var message = new Message<TResponse>(response);
+            var message = new Message<TResponse>(response)
+            {
+                AuthorizeRequestParameters = requestMessage.AuthorizeRequestParameters,
+            };
             await _responseStore.WriteAsync(message);
 
-            var url = requestMessage.ReturnUrl.AddQueryString("id=" + message.Id);
+            var url = requestMessage.ResponseUrl.AddQueryString("id=" + message.Id);
             _context.Response.Redirect(url);
         }
     }

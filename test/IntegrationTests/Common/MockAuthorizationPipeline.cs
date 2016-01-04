@@ -100,6 +100,7 @@ namespace IdentityServer4.Tests.Common
         {
             ConsentWasCalled = true;
             await ReadConsentMessage(ctx);
+            await CreateConsentResponse(ctx);
         }
 
         async Task ReadConsentMessage(HttpContext ctx)
@@ -118,6 +119,7 @@ namespace IdentityServer4.Tests.Common
             {
                 var interaction = ctx.RequestServices.GetRequiredService<ConsentInteraction>();
                 await interaction.ProcessResponseAsync(ConsentResponse);
+                ConsentResponse = null;
             }
         }
 

@@ -17,9 +17,10 @@ namespace IdentityServer4.Tests.Common
     {
         private CookieContainer _cookieContainer = new CookieContainer();
 
-        public bool AllowAutoRedirect { get; set; } = true;
         public bool AllowCookies { get; set; } = true;
-        public int AutoRedirectLimit { get; set; } = 20;
+        public bool AllowAutoRedirect { get; set; } = true;
+        public int ErrorRedirectLimit { get; set; } = 20;
+        public int StopRedirectingAfter { get; set; } = Int32.MaxValue;
 
         public Browser(HttpMessageHandler next)
             : base(next)
@@ -32,14 +33,15 @@ namespace IdentityServer4.Tests.Common
 
             int redirectCount = 0;
 
-            while (AllowAutoRedirect && (
-                    response.StatusCode == HttpStatusCode.Moved
-                    || response.StatusCode == HttpStatusCode.Found))
+            while (AllowAutoRedirect && 
+                (300 <= (int)response.StatusCode && (int)response.StatusCode < 400) &&
+                redirectCount < StopRedirectingAfter)
             {
-                if (redirectCount >= AutoRedirectLimit)
+                if (redirectCount >= ErrorRedirectLimit)
                 {
-                    throw new InvalidOperationException(string.Format("Too many redirects. Limit = {0}", redirectCount));
+                    throw new InvalidOperationException(string.Format("Too many redirects. Error limit = {0}", redirectCount));
                 }
+
                 var location = response.Headers.Location;
                 if (!location.IsAbsoluteUri)
                 {
@@ -52,6 +54,7 @@ namespace IdentityServer4.Tests.Common
 
                 redirectCount++;
             }
+
             return response;
         }
 

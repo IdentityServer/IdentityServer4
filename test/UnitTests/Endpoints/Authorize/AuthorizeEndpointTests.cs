@@ -59,7 +59,7 @@ namespace UnitTests.Endpoints.Authorize
                 _stubAuthorizeRequestValidator,
                 _stubInteractionGenerator,
                 _stubResultFactory,
-                _mockSignInMessageStore,
+                _mockSignInResponseStore,
                 _mockUserConsentResponseMessageStore);
         }
 
@@ -74,7 +74,7 @@ namespace UnitTests.Endpoints.Authorize
         StubAuthorizeRequestValidator _stubAuthorizeRequestValidator = new StubAuthorizeRequestValidator();
         StubAuthorizeInteractionResponseGenerator _stubInteractionGenerator = new StubAuthorizeInteractionResponseGenerator();
         StubResultFactory _stubResultFactory = new StubResultFactory();
-        MockMessageStore<SignInRequest> _mockSignInMessageStore = new MockMessageStore<SignInRequest>();
+        MockMessageStore<SignInResponse> _mockSignInResponseStore = new MockMessageStore<SignInResponse>();
         MockMessageStore<ConsentResponse> _mockUserConsentResponseMessageStore = new MockMessageStore<ConsentResponse>();
 
         [Fact]
@@ -135,7 +135,7 @@ namespace UnitTests.Endpoints.Authorize
         public async Task ProcessAsync_authorize_with_login_path_should_return_authorization_result()
         {
             _context.HttpContext.Request.Method = "GET";
-            _mockSignInMessageStore.Messages.Add("123", new Message<SignInRequest>(new SignInRequest()) { AuthorizeRequestParameters = new Dictionary<string, string>() });
+            _mockSignInResponseStore.Messages.Add("123", new Message<SignInResponse>(new SignInResponse()) { AuthorizeRequestParameters = new Dictionary<string, string>() });
             _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
             _context.HttpContext.SetUser(_user);
             _context.HttpContext.Request.Path = new Microsoft.AspNet.Http.PathString("/connect/authorize/login");
@@ -267,7 +267,7 @@ namespace UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task ProcessAuthorizeAfterLoginAsync_no_id_param_should_return_error_page()
         {
-            _mockSignInMessageStore.Messages.Add("123", new Message<SignInRequest>(new SignInRequest()));
+            _mockSignInResponseStore.Messages.Add("123", new Message<SignInResponse>(new SignInResponse()));
             _context.HttpContext.SetUser(_user);
 
             var result = await _subject.ProcessAuthorizeAfterLoginAsync(_context);
@@ -291,7 +291,7 @@ namespace UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task ProcessAuthorizeAfterLoginAsync_signin_missing_params_data_should_return_error_page()
         {
-            _mockSignInMessageStore.Messages.Add("123", new Message<SignInRequest>(new SignInRequest()));
+            _mockSignInResponseStore.Messages.Add("123", new Message<SignInResponse>(new SignInResponse()));
             _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
             _context.HttpContext.SetUser(_user);
 
@@ -304,7 +304,7 @@ namespace UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task ProcessAuthorizeAfterLoginAsync_valid_signin_message_should_return_authorize_result()
         {
-            _mockSignInMessageStore.Messages.Add("123", new Message<SignInRequest>(new SignInRequest()) { AuthorizeRequestParameters = new Dictionary<string, string>() });
+            _mockSignInResponseStore.Messages.Add("123", new Message<SignInResponse>(new SignInResponse()) { AuthorizeRequestParameters = new Dictionary<string, string>() });
             _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
             _context.HttpContext.SetUser(_user);
 
@@ -317,13 +317,13 @@ namespace UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task ProcessAuthorizeAfterLoginAsync_valid_signin_message_should_cleanup_signin_message_cookie()
         {
-            _mockSignInMessageStore.Messages.Add("123", new Message<SignInRequest>(new SignInRequest()) { AuthorizeRequestParameters = new Dictionary<string, string>() });
+            _mockSignInResponseStore.Messages.Add("123", new Message<SignInResponse>(new SignInResponse()) { AuthorizeRequestParameters = new Dictionary<string, string>() });
             _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
             _context.HttpContext.SetUser(_user);
 
             await _subject.ProcessAuthorizeAfterLoginAsync(_context);
 
-            _mockSignInMessageStore.Messages.Count.Should().Be(0);
+            _mockSignInResponseStore.Messages.Count.Should().Be(0);
         }
 
         // after consent

@@ -20,7 +20,7 @@ namespace IdentityServer4.Core.Models
         {
             Created = DateTimeOffsetHelper.UtcNow.Ticks;
             Id = CryptoRandom.CreateUniqueId();
-            this.Data = data;
+            Data = data;
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace IdentityServer4.Core.Models
 
         public TModel Data { get; set; }
 
-        public string ReturnUrl { get; set; }
+        public string ResponseUrl { get; set; }
         public Dictionary<string, string> AuthorizeRequestParameters { get; set; }
     }
 }
