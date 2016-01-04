@@ -36,7 +36,7 @@ namespace IdentityServer4.Core.Extensions
         {
             return request
                 .AuthenticationContextReferenceClasses
-                .Where(x => !Constants.KnownAcrValues.All.Any(y => y.StartsWith(x)))
+                .Where(acr => !Constants.KnownAcrValues.All.Any(well_known => acr.StartsWith(well_known)))
                 .Distinct();
         }
     }
