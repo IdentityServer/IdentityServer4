@@ -141,6 +141,32 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
 
         [Fact]
         [Trait("Category", Category)]
+        public async Task signin_response_should_allow_successful_authorization_response()
+        {
+            _mockPipeline.Subject = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
+            _mockPipeline.SignInResponse = new SignInResponse();
+            _browser.StopRedirectingAfter = 2;
+
+            var url = CreateAuthorizeUrl(
+                clientId: "client1",
+                responseType: "id_token",
+                scope: "openid",
+                redirectUri: "https://client1/callback",
+                state: "123_state",
+                nonce: "123_nonce");
+            var response = await _client.GetAsync(url);
+
+            response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+            response.Headers.Location.ToString().Should().StartWith("https://client1/callback");
+
+            var authorization = new IdentityModel.Client.AuthorizeResponse(response.Headers.Location.ToString());
+            authorization.IsError.Should().BeFalse();
+            authorization.IdentityToken.Should().NotBeNull();
+            authorization.State.Should().Be("123_state");
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
         public async Task authenticated_user_with_valid_request_should_receive_authorization_response()
         {
             await LoginAsync("bob");
@@ -212,6 +238,72 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
             _mockPipeline.ConsentRequest.DisplayMode.Should().Be("popup");
             _mockPipeline.ConsentRequest.UiLocales.Should().Be("ui_locale_value");
             _mockPipeline.ConsentRequest.ScopesRequested.ShouldAllBeEquivalentTo(new string[] { "api2", "openid", "api1" });
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task consent_response_should_allow_successful_authorization_response()
+        {
+            await LoginAsync("bob");
+
+            _mockPipeline.ConsentResponse = new ConsentResponse()
+            {
+                ScopesConsented = new string[] { "openid", "api2" }
+            };
+            _browser.StopRedirectingAfter = 2;
+
+            var url = CreateAuthorizeUrl(
+                clientId: "client2",
+                responseType: "id_token token",
+                scope: "openid profile api1 api2",
+                redirectUri: "https://client2/callback",
+                state: "123_state",
+                nonce: "123_nonce");
+            var response = await _client.GetAsync(url);
+
+            response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+            response.Headers.Location.ToString().Should().StartWith("https://client2/callback");
+
+            var authorization = new IdentityModel.Client.AuthorizeResponse(response.Headers.Location.ToString());
+            authorization.IsError.Should().BeFalse();
+            authorization.IdentityToken.Should().NotBeNull();
+            authorization.State.Should().Be("123_state");
+            var scopes = authorization.Scope.Split(' ');
+            scopes.ShouldAllBeEquivalentTo(new string[] { "api2", "openid" });
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task login_response_and_consent_response_should_receive_authorization_response()
+        {
+            _mockPipeline.Subject = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
+            _mockPipeline.SignInResponse = new SignInResponse();
+
+            _mockPipeline.ConsentResponse = new ConsentResponse()
+            {
+                ScopesConsented = new string[] { "openid", "api1", "profile" }
+            };
+
+            _browser.StopRedirectingAfter = 4;
+
+            var url = CreateAuthorizeUrl(
+                clientId: "client2",
+                responseType: "id_token token",
+                scope: "openid profile api1 api2",
+                redirectUri: "https://client2/callback",
+                state: "123_state",
+                nonce: "123_nonce");
+            var response = await _client.GetAsync(url);
+
+            response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+            response.Headers.Location.ToString().Should().StartWith("https://client2/callback");
+
+            var authorization = new IdentityModel.Client.AuthorizeResponse(response.Headers.Location.ToString());
+            authorization.IsError.Should().BeFalse();
+            authorization.IdentityToken.Should().NotBeNull();
+            authorization.State.Should().Be("123_state");
+            var scopes = authorization.Scope.Split(' ');
+            scopes.ShouldAllBeEquivalentTo(new string[] { "profile", "api1", "openid" });
         }
     }
 }
