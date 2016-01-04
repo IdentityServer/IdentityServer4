@@ -94,7 +94,7 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task anonymous_user_requesting_authorization_should_be_redirected_to_login_page_with_signin_request()
+        public async Task anonymous_user_should_be_redirected_to_login_page()
         {
             var url = _authorizeRequest.CreateAuthorizeUrl(
                 clientId: "client1",
@@ -106,7 +106,6 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
             var response = await _client.GetAsync(url);
 
             _mockPipeline.LoginWasCalled.Should().BeTrue();
-            _mockPipeline.SignInRequest.Should().NotBeNull();
         }
 
         [Fact]
@@ -129,7 +128,6 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
                 });
             var response = await _client.GetAsync(url);
 
-            _mockPipeline.LoginWasCalled.Should().BeTrue();
             _mockPipeline.SignInRequest.Should().NotBeNull();
             _mockPipeline.SignInRequest.ClientId.Should().Be("client1");
             _mockPipeline.SignInRequest.DisplayMode.Should().Be("popup");
@@ -165,6 +163,55 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
             authorization.IsError.Should().BeFalse();
             authorization.IdentityToken.Should().NotBeNull();
             authorization.State.Should().Be("123_state");
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task client_requires_consent_should_show_consent_page()
+        {
+            await LoginAsync("bob");
+
+            var url = _authorizeRequest.CreateAuthorizeUrl(
+                clientId: "client2",
+                responseType: "id_token",
+                scope: "openid",
+                redirectUri: "https://client2/callback",
+                state: "123_state",
+                nonce: "123_nonce"
+            );
+            var response = await _client.GetAsync(url);
+
+            _mockPipeline.ConsentWasCalled.Should().BeTrue();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task consent_page_should_have_authorization_params()
+        {
+            await LoginAsync("bob");
+
+            var url = _authorizeRequest.CreateAuthorizeUrl(
+                clientId: "client2",
+                responseType: "id_token token",
+                scope: "openid api1 api2",
+                redirectUri: "https://client2/callback",
+                state: "123_state",
+                nonce: "123_nonce",
+                acrValues: "acr_1 acr_2 tenant:tenant_value",
+                extra: new
+                {
+                    display = "popup", // must use a valid value form the spec for display
+                    ui_locales = "ui_locale_value",
+                    custom_foo = "foo_value"
+                }
+            );
+            var response = await _client.GetAsync(url);
+
+            _mockPipeline.ConsentRequest.Should().NotBeNull();
+            _mockPipeline.ConsentRequest.ClientId.Should().Be("client2");
+            _mockPipeline.ConsentRequest.DisplayMode.Should().Be("popup");
+            _mockPipeline.ConsentRequest.UiLocales.Should().Be("ui_locale_value");
+            _mockPipeline.ConsentRequest.ScopesRequested.ShouldAllBeEquivalentTo(new string[] { "api2", "openid", "api1" });
         }
     }
 }

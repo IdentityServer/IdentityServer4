@@ -107,6 +107,8 @@ namespace IdentityServer4.Core.Endpoints.Results
             {
                 ClientId = request.ClientId,
                 ScopesRequested = request.RequestedScopes.ToArray(),
+                DisplayMode = request.DisplayMode,
+                UiLocales = request.UiLocales
             };
 
             var message = new Message<ConsentRequest>(consent)
