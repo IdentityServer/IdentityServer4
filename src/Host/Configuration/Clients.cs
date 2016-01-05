@@ -95,6 +95,17 @@ namespace Host.Configuration
 
                     AccessTokenType = AccessTokenType.Reference
                 },
+
+                new Client
+                {
+                    ClientId = "mvc_implicit",
+                    Flow = Flows.Implicit,
+                    RedirectUris = new List<string>
+                    {
+                        "http://localhost:44077/signin-oidc"
+                    },
+                    AllowedScopes = new List<string> { "openid", "profile", "email", "roles" }
+                }
             };
         }
     }

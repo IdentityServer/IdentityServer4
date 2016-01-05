@@ -33,6 +33,16 @@ namespace Host
             builder.AddInMemoryUsers(Users.Get());
 
             builder.AddCustomGrantValidator<CustomGrantValidator>();
+
+
+            // for the UI
+            services
+                .AddMvc()
+                .AddRazorOptions(razor =>
+                {
+                    razor.ViewLocationExpanders.Add(new UI.CustomViewLocationExpander());
+                });
+            services.AddTransient<UI.Login.LoginService>();
         }
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
@@ -44,6 +54,9 @@ namespace Host
             app.UseIISPlatformHandler();
 
             app.UseIdentityServer();
+
+            app.UseStaticFiles();
+            app.UseMvcWithDefaultRoute();
         }
 
         public static void Main(string[] args) => WebApplication.Run<Startup>(args);

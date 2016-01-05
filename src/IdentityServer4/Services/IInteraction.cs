@@ -17,8 +17,6 @@ namespace IdentityServer4.Core.Services
     public abstract class Interaction<TRequest> : IInteraction<TRequest>
         where TRequest : class
     {
-        Message<TRequest> _requestMessage;
-
         private readonly IMessageStore<TRequest> _requestStore;
         protected readonly HttpContext _context;
 
@@ -30,12 +28,7 @@ namespace IdentityServer4.Core.Services
 
         protected internal async Task<Message<TRequest>> GetRequestMessageAsync(string requestId)
         {
-            if (_requestMessage == null)
-            {
-                _requestMessage = await _requestStore.ReadAsync(requestId);
-            }
-
-            return _requestMessage;
+            return await _requestStore.ReadAsync(requestId);
         }
 
         public async Task<TRequest> GetRequestAsync(string requestId)
@@ -88,6 +81,14 @@ namespace IdentityServer4.Core.Services
     public class SignInInteraction : Interaction<SignInRequest, SignInResponse>
     {
         public SignInInteraction(IMessageStore<SignInRequest> requestStore, IMessageStore<SignInResponse> responseStore, IHttpContextAccessor contextAccessor)
+            : base(requestStore, responseStore, contextAccessor.HttpContext)
+        {
+        }
+    }
+
+    public class SignOutInteraction : Interaction<SignOutRequest, SignOutResponse>
+    {
+        public SignOutInteraction(IMessageStore<SignOutRequest> requestStore, IMessageStore<SignOutResponse> responseStore, IHttpContextAccessor contextAccessor)
             : base(requestStore, responseStore, contextAccessor.HttpContext)
         {
         }

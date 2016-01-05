@@ -19,6 +19,7 @@ namespace IdentityServer4.Core.Hosting
                 app.UseCookieAuthentication(options =>
                 {
                     options.AuthenticationScheme = idSvrOptions.AuthenticationOptions.EffectivePrimaryAuthenticationScheme;
+                    options.AutomaticAuthenticate = true;
                 });
             }
         }

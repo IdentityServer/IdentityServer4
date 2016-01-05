@@ -10,8 +10,18 @@ namespace Host.Configuration
             return new List<Scope>
             {
                 StandardScopes.OpenId,
+                StandardScopes.Profile,
                 StandardScopes.Email,
                 StandardScopes.OfflineAccess,
+
+                new Scope
+                {
+                    Name = "roles",
+                    Type = ScopeType.Identity,
+                    Claims = new List<ScopeClaim> {
+                        new ScopeClaim("role")
+                    }
+                },
 
                 new Scope
                 {

@@ -13,8 +13,8 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IIdentityServerBuilder AddInMemoryUsers(this IIdentityServerBuilder builder, List<InMemoryUser> users)
         {
-            var userService = new InMemoryUserService(users);
-            builder.Services.AddSingleton<IUserService>(prov => userService);
+            builder.Services.AddInstance(users);
+            builder.Services.AddTransient<IUserService, InMemoryUserService>();
 
             return builder;
         }

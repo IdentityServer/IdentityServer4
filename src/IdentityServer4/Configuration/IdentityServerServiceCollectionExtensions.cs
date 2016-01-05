@@ -166,6 +166,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient(typeof(MessageCookie<>));
 
             services.TryAddTransient<SignInInteraction>();
+            services.TryAddTransient<SignOutInteraction>();
             services.TryAddTransient<ConsentInteraction>();
             services.TryAddTransient<ErrorInteraction>();
 
