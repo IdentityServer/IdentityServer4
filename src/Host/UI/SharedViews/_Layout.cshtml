@@ -26,24 +26,20 @@
                     </span>
                 </a>
             </div>
-            @if (User.Identity.IsAuthenticated)
-            {
-                <ul class="nav navbar-nav">
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">@User.Identity.Name <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <li><a asp-route="Logout">Logout</a></li>
-                            <li class="divider"></li>
-                            <li><a asp-route="Login">Login With Different Account</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            }
+
+            <ul class="nav navbar-nav" show-when="User.Identity.IsAuthenticated">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">@User.Identity.Name <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a asp-route="Logout">Logout</a></li>
+                        <li class="divider"></li>
+                        <li><a asp-route="Login">Login With Different Account</a></li>
+                    </ul>
+                </li>
+            </ul>
         </div>
     </div>
     
-
-
     <div class="container body-content">
         @RenderBody()
     </div>

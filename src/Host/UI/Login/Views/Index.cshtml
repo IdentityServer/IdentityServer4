@@ -5,17 +5,10 @@
         <h1>Login</h1>
     </div>
 
-    @if (!ViewContext.ModelState.IsValid)
-    {
-        <div class="row">
-            <div class="col-sm-6">
-                <div class="alert alert-danger">
-                    <strong>Error:</strong>
-                    <div asp-validation-summary="ValidationSummary.All"></div>  
-                </div>
-            </div>
-        </div>
-    }
+    <div class="alert alert-danger" hide-when="ViewContext.ModelState.IsValid">
+        <strong>Error</strong>
+        <div asp-validation-summary="ValidationSummary.All" class="danger"></div>
+    </div>
 
     <div class="row">
         <div class="col-sm-6">
@@ -24,6 +17,7 @@
                     <h3 class="panel-title">Local Login</h3>
                 </div>
                 <div class="panel-body">
+
                     <form asp-action="Login">
                         <input type="hidden" asp-for="SignInId" />
 
@@ -48,6 +42,7 @@
                         </fieldset>
                     </form>
                 </div>
+
                 @*<ul class="list-unstyled">
                         <li ng-repeat="link in model.additionalLinks"><a ng-href="{{link.href}}">{{link.text}}</a></li>
                     </ul>*@
