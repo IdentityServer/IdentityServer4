@@ -622,15 +622,9 @@ namespace IdentityServer4.Core
             public const string Error = "ui/error";
             public const string Login = "ui/login";
             public const string Consent = "ui/consent";
+            public const string Logout = "ui/logout";
 
-            // TODO: old
-            public const string Welcome = "";
-            public const string LoginExternal = "external";
-            public const string LoginExternalCallback = "callback";
-            public const string Logout = "logout";
-            public const string ResumeLoginFromRedirect = "return";
             public const string CspReport = "csp/report";
-            public const string ClientPermissions = "permissions";
 
             public static class Oidc
             {
