@@ -27,7 +27,7 @@
                 </a>
             </div>
 
-            <ul class="nav navbar-nav" show-when="User.Identity.IsAuthenticated">
+            <ul class="nav navbar-nav" show-if="User.Identity.IsAuthenticated">
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">@User.Identity.Name <b class="caret"></b></a>
                     <ul class="dropdown-menu">

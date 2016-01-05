@@ -6,7 +6,7 @@
         <small>You are now logged out</small>
     </h1>
 
-    <div hide-when-null="Model.ReturnInfo">
+    <div hide-if-null="Model.ReturnInfo">
         Click <a href="@Model.ReturnInfo.Uri">here</a> to return to the
         <span>@Model.ClientName</span> application.
     </div>

@@ -6,60 +6,60 @@ using System.Threading.Tasks;
 
 namespace Host.UI.TagHelpers
 {
-    [HtmlTargetElement(Attributes = "hide-when")]
-    public class HideWhenTagHelper : TagHelper
+    [HtmlTargetElement(Attributes = "hide-if")]
+    public class HideIfTagHelper : TagHelper
     {
-        [HtmlAttributeName("hide-when")]
-        public bool HideWhen { get; set; }
+        [HtmlAttributeName("hide-if")]
+        public bool HideIf { get; set; }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            if (HideWhen)
+            if (HideIf)
             {
                 output.SuppressOutput();
             }
         }
     }
 
-    [HtmlTargetElement(Attributes = "show-when")]
-    public class ShowWhenTagHelper : TagHelper
+    [HtmlTargetElement(Attributes = "show-if")]
+    public class ShowIfTagHelper : TagHelper
     {
-        [HtmlAttributeName("show-when")]
-        public bool ShowWhen { get; set; }
+        [HtmlAttributeName("show-if")]
+        public bool ShowIf { get; set; }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            if (ShowWhen == false)
+            if (ShowIf == false)
             {
                 output.SuppressOutput();
             }
         }
     }
 
-    [HtmlTargetElement(Attributes = "hide-when-null")]
-    public class HideWhenNullTagHelper : TagHelper
+    [HtmlTargetElement(Attributes = "hide-if-null")]
+    public class HideIfNullTagHelper : TagHelper
     {
-        [HtmlAttributeName("hide-when-null")]
-        public object HideWhenNull { get; set; }
+        [HtmlAttributeName("hide-if-null")]
+        public object HideIfNull { get; set; }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            if (HideWhenNull == null)
+            if (HideIfNull == null)
             {
                 output.SuppressOutput();
             }
         }
     }
 
-    [HtmlTargetElement(Attributes = "show-when-null")]
-    public class ShowWhenNullTagHelper : TagHelper
+    [HtmlTargetElement(Attributes = "show-if-null")]
+    public class ShowifNullTagHelper : TagHelper
     {
-        [HtmlAttributeName("show-when-null")]
-        public object ShowWhenNull { get; set; }
+        [HtmlAttributeName("show-if-null")]
+        public object ShowIfNull { get; set; }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            if (ShowWhenNull != null)
+            if (ShowIfNull != null)
             {
                 output.SuppressOutput();
             }
