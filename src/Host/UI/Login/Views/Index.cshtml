@@ -5,10 +5,7 @@
         <h1>Login</h1>
     </div>
 
-    <div class="alert alert-danger" hide-if="ViewContext.ModelState.IsValid">
-        <strong>Error</strong>
-        <div asp-validation-summary="ValidationSummary.All" class="danger"></div>
-    </div>
+    @Html.Partial("_ValidationSummary")
 
     <div class="row">
         <div class="col-sm-6">
