@@ -96,6 +96,9 @@ namespace Host.Configuration
                     AccessTokenType = AccessTokenType.Reference
                 },
 
+                ///////////////////////////////////////////
+                // MVC Implicit Flow Samples
+                //////////////////////////////////////////
                 new Client
                 {
                     ClientId = "mvc_implicit",
@@ -104,7 +107,16 @@ namespace Host.Configuration
                     {
                         "http://localhost:44077/signin-oidc"
                     },
-                    AllowedScopes = new List<string> { "openid", "profile", "email", "roles" }
+
+                    AllowedScopes = new List<string>
+                    {
+                        StandardScopes.OpenId.Name,
+                        StandardScopes.Profile.Name,
+                        StandardScopes.Email.Name,
+                        StandardScopes.Roles.Name,
+
+                        "api1", "api2"
+                    }
                 }
             };
         }
