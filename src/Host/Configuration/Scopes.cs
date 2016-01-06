@@ -10,10 +10,10 @@ namespace Host.Configuration
             return new List<Scope>
             {
                 StandardScopes.OpenId,
-                StandardScopes.Profile,
-                StandardScopes.Email,
+                StandardScopes.ProfileAlwaysInclude,
+                StandardScopes.EmailAlwaysInclude,
                 StandardScopes.OfflineAccess,
-                StandardScopes.Roles,
+                StandardScopes.RolesAlwaysInclude,
 
                 new Scope
                 {
@@ -25,6 +25,10 @@ namespace Host.Configuration
                     ScopeSecrets = new List<Secret>
                     {
                         new Secret("secret".Sha256())
+                    },
+                    Claims = new List<ScopeClaim>
+                    {
+                        new ScopeClaim("role")
                     }
                 },
                 new Scope
