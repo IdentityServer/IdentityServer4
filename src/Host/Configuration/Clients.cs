@@ -102,6 +102,9 @@ namespace Host.Configuration
                 new Client
                 {
                     ClientId = "mvc_implicit",
+                    ClientName = "MVC Implicit",
+                    ClientUri = "http://identityserver.io",
+
                     Flow = Flows.Implicit,
                     RedirectUris = new List<string>
                     {

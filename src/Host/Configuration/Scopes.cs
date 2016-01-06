@@ -13,19 +13,13 @@ namespace Host.Configuration
                 StandardScopes.Profile,
                 StandardScopes.Email,
                 StandardScopes.OfflineAccess,
-
-                new Scope
-                {
-                    Name = "roles",
-                    Type = ScopeType.Identity,
-                    Claims = new List<ScopeClaim> {
-                        new ScopeClaim("role")
-                    }
-                },
+                StandardScopes.Roles,
 
                 new Scope
                 {
                     Name = "api1",
+                    DisplayName = "API 1",
+                    Description = "API 1 features and data",
                     Type = ScopeType.Resource,
 
                     ScopeSecrets = new List<Secret>
@@ -36,6 +30,8 @@ namespace Host.Configuration
                 new Scope
                 {
                     Name = "api2",
+                    DisplayName = "API 2",
+                    Description = "API 2 features and data, which are better than API 1",
                     Type = ScopeType.Resource
                 }
             };

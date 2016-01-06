@@ -5,6 +5,8 @@ using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System;
+using IdentityServer4.Core.Models;
 
 namespace Host.UI.Consent
 {
@@ -14,21 +16,82 @@ namespace Host.UI.Consent
         private readonly IClientStore _clientStore;
         private readonly ConsentInteraction _consentInteraction;
         private readonly IScopeStore _scopeStore;
+        private readonly ILocalizationService _localization;
 
         public ConsentController(
             ILogger<ConsentController> logger,
             ConsentInteraction consentInteraction,
             IClientStore clientStore,
-            IScopeStore scopeStore)
+            IScopeStore scopeStore,
+            ILocalizationService localization)
         {
             _logger = logger;
             _consentInteraction = consentInteraction;
             _clientStore = clientStore;
             _scopeStore = scopeStore;
+            _localization = localization;
         }
 
         [HttpGet(Constants.RoutePaths.Consent, Name = "Consent")]
         public async Task<IActionResult> Index(string id)
+        {
+            var vm = await BuildViewModelAsync(id);
+            if (vm != null)
+            {
+                return View("Index", vm);
+            }
+
+            return View("Error");
+        }
+
+        [HttpPost(Constants.RoutePaths.Consent)]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Index(string button, string id, ConsentInputModel model)
+        {
+            if (button == "no")
+            {
+                return new ConsentResult(id, ConsentResponse.Denied);
+            }
+            else if (button == "yes" && model != null)
+            {
+                if (model.ScopesConsented != null && model.ScopesConsented.Any())
+                {
+                    return new ConsentResult(id, new ConsentResponse
+                    {
+                        RememberConsent = model.RememberConsent,
+                        ScopesConsented = model.ScopesConsented
+                    });
+                }
+                else
+                {
+                    ModelState.AddModelError("", "You must pick at least one permission.");
+                }
+            }
+            else
+            {
+                ModelState.AddModelError("", "Invalid Selection");
+            }
+
+            var vm = await BuildViewModelAsync(id, model);
+            if (vm != null)
+            {
+                return View("Index", vm);
+            }
+
+            return View("Error");
+        }
+
+        async Task<IActionResult> BuildConsentResponse(string id, string[] scopesConsented, bool rememberConsent)
+        {
+            if (id != null)
+            {
+                var request = await _consentInteraction.GetRequestAsync(id);
+            }
+
+            return View("Error");
+        }
+
+        async Task<ConsentViewModel> BuildViewModelAsync(string id, ConsentInputModel model = null)
         {
             if (id != null)
             {
@@ -41,12 +104,11 @@ namespace Host.UI.Consent
                         var scopes = await _scopeStore.FindScopesAsync(request.ScopesRequested);
                         if (scopes != null && scopes.Any())
                         {
-                            var vm = new ConsentViewModel(id, request, client, scopes);
-                            return View("Index", vm);
+                            return new ConsentViewModel(model, id, request, client, scopes, _localization);
                         }
                         else
                         {
-                            _logger.LogError("No scopes matching: {0}", request.ScopesRequested.Aggregate((x,y)=>x + ", " + y));
+                            _logger.LogError("No scopes matching: {0}", request.ScopesRequested.Aggregate((x, y) => x + ", " + y));
                         }
                     }
                     else
@@ -64,28 +126,7 @@ namespace Host.UI.Consent
                 _logger.LogError("No id passed");
             }
 
-            return View("Error");
+            return null;
         }
-
-        //[HttpPost(Constants.RoutePaths.Consent)]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Index(ConsentInputModel model)
-        //{
-
-        //    if (id != null)
-        //    {
-        //        var request = await _consentInteraction.GetRequestAsync(id);
-        //        if (request != null)
-        //        {
-        //            return new ConsentResult(id, new IdentityServer4.Core.Models.ConsentResponse
-        //            {
-        //                ScopesConsented = request.ScopesRequested,
-        //                RememberConsent = true
-        //            });
-        //        }
-        //    }
-
-        //    return View("Error");
-        //}
     }
 }

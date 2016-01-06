@@ -11,6 +11,8 @@ namespace IdentityServer4.Core.Models
     /// </summary>
     public class ConsentResponse
     {
+        public static ConsentResponse Denied = new ConsentResponse();
+
         /// <summary>
         /// Gets if consent was granted.
         /// </summary>

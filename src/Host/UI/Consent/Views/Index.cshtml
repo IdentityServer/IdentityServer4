@@ -1,6 +1,6 @@
 ﻿@model Host.UI.Consent.ConsentViewModel
 
-<div class="consent-page">
+<div class="page-consent">
     <div class="row page-header">
         <div class="col-sm-10">
             <div class="client-logo" hide-if-null="Model.ClientLogoUrl"><img src="@Model.ClientLogoUrl"></div>
@@ -15,8 +15,7 @@
         <div class="col-sm-8">
             @Html.Partial("_ValidationSummary")
 
-            <form asp-action="Submit" class="consent-form">
-                <input type="hidden" asp-for="ConsentId" />
+            <form asp-route="Consent" asp-route-id="@Model.ConsentId" class="consent-form">
 
                 <div>Uncheck the permissions you do not wish to grant.</div>
                 
@@ -47,9 +46,9 @@
 
                 </div>
 
-                @*<div class="consent-remember" show-if="Model.AllowRememberConsent">
+                <div class="consent-remember" show-if="Model.AllowRememberConsent">
                     <label>
-                        <input class="consent-scopecheck" type="checkbox" name="RememberConsent" value="true" ng-model="model.rememberConsent" />
+                        <input class="consent-scopecheck" asp-for="RememberConsent" />
                         <strong>Remember My Decision</strong>
                     </label>
                 </div>
@@ -57,11 +56,11 @@
                 <div class="consent-buttons">
                     <button name="button" value="yes" class="btn btn-primary" autofocus>Yes, Allow</button>
                     <button name="button" value="no" class="btn">No, Do Not Allow</button>
-                    <a class="pull-right btn btn-default" target="_blank" ng-show="model.clientUrl" ng-href="{{model.clientUrl}}">
+                    <a class="pull-right btn btn-default" target="_blank" hide-if-null="Model.ClientUrl" href="@Model.ClientUrl">
                         <span class="glyphicon glyphicon-info-sign"></span>
-                        <strong>{{model.clientName}}</strong>
+                        <strong>@Model.ClientName</strong>
                     </a>
-                </div>*@
+                </div>
             </form>
         </div>
     </div>
