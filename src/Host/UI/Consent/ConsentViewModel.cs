@@ -22,8 +22,8 @@ namespace Host.UI.Consent
             ClientLogoUrl = client.LogoUri;
             AllowRememberConsent = client.AllowRememberConsent;
 
-            IdentityScopes = scopes.Where(x => x.Type == ScopeType.Identity).Select(x => new ScopeViewModel(localization, x, ScopesConsented.Contains(x.Name))).ToArray();
-            ResourceScopes = scopes.Where(x => x.Type == ScopeType.Resource).Select(x => new ScopeViewModel(localization, x, ScopesConsented.Contains(x.Name))).ToArray();
+            IdentityScopes = scopes.Where(x => x.Type == ScopeType.Identity).Select(x => new ScopeViewModel(localization, x, ScopesConsented.Contains(x.Name) || model == null)).ToArray();
+            ResourceScopes = scopes.Where(x => x.Type == ScopeType.Resource).Select(x => new ScopeViewModel(localization, x, ScopesConsented.Contains(x.Name) || model == null)).ToArray();
         }
 
         public string ConsentId { get; set; }
