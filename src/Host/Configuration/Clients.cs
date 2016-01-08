@@ -120,6 +120,27 @@ namespace Host.Configuration
 
                         "api1", "api2"
                     }
+                },
+
+                ///////////////////////////////////////////
+                // JS OAuth 2.0 Sample
+                //////////////////////////////////////////
+                new Client
+                {
+                    ClientId = "js_oauth",
+                    ClientName = "JavaScript OAuth 2.0 Client",
+                    ClientUri = "http://identityserver.io",
+
+                    Flow = Flows.Implicit,
+                    RedirectUris = new List<string>
+                    {
+                        "http://localhost:28895/index.html"
+                    },
+
+                    AllowedScopes = new List<string>
+                    {
+                        "api1", "api2"
+                    }
                 }
             };
         }
