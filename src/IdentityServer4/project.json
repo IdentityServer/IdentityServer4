@@ -11,6 +11,7 @@
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final",
     "Microsoft.AspNet.Http.Abstractions": "1.0.0-rc1-final",
     "Microsoft.AspNet.Authentication.Cookies": "1.0.0-rc1-final",
+    "Microsoft.AspNet.Cors": "6.0.0-rc1-final",
     "Newtonsoft.Json": "7.0.1",
     "IdentityModel": "2.0.0-alpha1"
   },

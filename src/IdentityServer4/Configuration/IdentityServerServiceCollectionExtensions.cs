@@ -6,12 +6,15 @@ using IdentityServer4.Core.Configuration;
 using IdentityServer4.Core.Endpoints;
 using IdentityServer4.Core.Endpoints.Results;
 using IdentityServer4.Core.Hosting;
+using IdentityServer4.Core.Hosting.Cors;
 using IdentityServer4.Core.ResponseHandling;
 using IdentityServer4.Core.Services;
 using IdentityServer4.Core.Services.Default;
 using IdentityServer4.Core.Services.InMemory;
 using IdentityServer4.Core.Validation;
+using Microsoft.AspNet.Cors.Infrastructure;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 
@@ -170,6 +173,15 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<SignOutInteraction>();
             services.TryAddTransient<ConsentInteraction>();
             services.TryAddTransient<ErrorInteraction>();
+
+            services.AddTransient<ICorsPolicyProvider>(provider=>
+            {
+                return new PolicyProvider(
+                    provider.GetRequiredService<ILogger<PolicyProvider>>(),
+                    Constants.RoutePaths.CorsPaths,
+                    provider.GetRequiredService<ICorsPolicyService>());
+            });
+            services.AddCors();
 
             return services;
         }
