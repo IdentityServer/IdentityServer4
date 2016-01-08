@@ -23,6 +23,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.Services.AddInstance(clients);
             builder.Services.AddTransient<IClientStore, InMemoryClientStore>();
+            builder.Services.AddTransient<ICorsPolicyService, InMemoryCorsPolicyService>();
 
             return builder;
         }
