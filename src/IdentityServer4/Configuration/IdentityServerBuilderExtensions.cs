@@ -21,16 +21,16 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IIdentityServerBuilder AddInMemoryClients(this IIdentityServerBuilder builder, IEnumerable<Client> clients)
         {
-            var clientStore = new InMemoryClientStore(clients);
-            builder.Services.AddSingleton<IClientStore>(prov => clientStore);
+            builder.Services.AddInstance(clients);
+            builder.Services.AddTransient<IClientStore, InMemoryClientStore>();
 
             return builder;
         }
 
         public static IIdentityServerBuilder AddInMemoryScopes(this IIdentityServerBuilder builder, IEnumerable<Scope> scopes)
         {
-            var scopeStore = new InMemoryScopeStore(scopes);
-            builder.Services.AddSingleton<IScopeStore>(prov => scopeStore);
+            builder.Services.AddInstance(scopes);
+            builder.Services.AddTransient<IScopeStore, InMemoryScopeStore>();
 
             return builder;
         }
