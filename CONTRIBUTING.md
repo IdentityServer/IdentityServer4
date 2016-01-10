@@ -14,6 +14,7 @@ Please log a new issue in the appropriate GitHub repo:
 
 * [Core](https://github.com/IdentityServer/IdentityServer4)
 * [Samples](https://github.com/IdentityServer/IdentityServer4.Samples)
+* [AccessTokenValidation](https://github.com/IdentityServer/IdentityServer4.AccessTokenValidation)
 
 ## Other discussions
 https://gitter.im/IdentityServer/IdentityServer4
