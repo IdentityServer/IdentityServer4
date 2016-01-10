@@ -1,3 +1,3 @@
 # IdentityServer4
 
-IdentityServer for DNX, ASP.NET 5 &amp; CoreClr
+IdentityServer for ASP.NET 5 & .NET Core
