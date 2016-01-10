@@ -2,7 +2,7 @@
   "version": "1.0.0",
   "description": "OpenID Connect and OAuth 2.0 Framework for ASP.NET 5",
   "authors": [ "Brock Allen & Dominick Baier" ],
-  "tags": [ "" ],
+  "tags": [ "IdentityServer", "OpenID Connect", "OIDC", "OAuth 2.0", "ASP.NET", "WebApi", "SSO", "Federation", "Claims", "Identity" ],
   "projectUrl": "https://github.com/IdentityServer/IdentityServer4",
   "licenseUrl": "https://github.com/IdentityServer/IdentityServer4/blob/dev/LICENSE",
   "iconUrl": "https://identityserver.github.io/Documentation/assets/images/icons/IDserver_icon128.jpg",
