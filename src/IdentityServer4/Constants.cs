@@ -11,7 +11,7 @@ namespace IdentityServer4.Core
 {
     public static class Constants
     {
-        public const string IdentityServerName = "IdentityServer3";
+        public const string IdentityServerName = "IdentityServer4";
         
         public const string PrimaryAuthenticationType       = "idsrv";
         public const string ExternalAuthenticationType      = "idsrv.external";
