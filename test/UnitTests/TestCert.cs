@@ -11,7 +11,7 @@ namespace IdentityServer4.Tests
     {
         public static X509Certificate2 Load()
         {
-            var cert = PlatformServices.Default.Application.ApplicationBasePath + "\\idsrv3test.pfx";
+            var cert = Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "idsrv3test.pfx");
 
             // todo
             return new X509Certificate2(cert, "idsrv3test");
