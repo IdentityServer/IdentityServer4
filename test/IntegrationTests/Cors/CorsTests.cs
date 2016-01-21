@@ -20,7 +20,7 @@ namespace IdentityServer4.Tests.Cors
     {
         const string Category = "CORS Integration";
 
-        IdentityServerPipeline _pipeline = new IdentityServerPipeline();
+        MockAuthorizationPipeline _pipeline = new MockAuthorizationPipeline();
 
         public CorsTests()
         {
@@ -31,7 +31,8 @@ namespace IdentityServer4.Tests.Cors
                     Flow = Flows.Implicit,
                     RequireConsent = true,
                     AllowedScopes = new List<string> { "openid", "profile", "api1", "api2" },
-                    RedirectUris = new List<string> { "https://client/callback" }
+                    RedirectUris = new List<string> { "https://client/callback" },
+                    AllowedCorsOrigins = new List<string> { "https://client" }
                 }
             });
 
@@ -66,16 +67,43 @@ namespace IdentityServer4.Tests.Cors
             _pipeline.Initialize();
         }
 
-        [Theory(Skip = "todo: not done")]
-        [InlineData("http://server/connect/authorize")]
+        [Theory]
+        [InlineData(MockAuthorizationPipeline.DiscoveryEndpoint)]
+        [InlineData(MockAuthorizationPipeline.DiscoveryKeysEndpoint)]
+        [InlineData(MockAuthorizationPipeline.TokenEndpoint)]
+        [InlineData(MockAuthorizationPipeline.UserInfoEndpoint)]
+        [InlineData(MockAuthorizationPipeline.IdentityTokenValidationEndpoint)]
+        [InlineData(MockAuthorizationPipeline.RevocationEndpoint)]
         [Trait("Category", Category)]
         public async Task cors_request_to_allowed_endpoints_should_succeed(string url)
         {
-            _pipeline.Client.DefaultRequestHeaders.Add("Origin", "http://client");
+            _pipeline.Client.DefaultRequestHeaders.Add("Origin", "https://client");
+            _pipeline.Client.DefaultRequestHeaders.Add("Access-Control-Request-Method", "GET");
+            
+            var message = new HttpRequestMessage(HttpMethod.Options, url);
+            var response = await _pipeline.Client.SendAsync(message);
 
-            var response = await _pipeline.Client.GetAsync(IdentityServerPipeline.AuthorizeEndpoint);
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            response.Headers.Contains("Access-Control-Allow-Origin").Should().BeTrue();
+        }
 
-            response.StatusCode.Should().NotBe(HttpStatusCode.NotFound);
+        [Theory]
+        [InlineData(MockAuthorizationPipeline.AuthorizeEndpoint)]
+        [InlineData(MockAuthorizationPipeline.EndSessionEndpoint)]
+        [InlineData(MockAuthorizationPipeline.CheckSessionEndpoint)]
+        [InlineData(MockAuthorizationPipeline.LoginPage)]
+        [InlineData(MockAuthorizationPipeline.ConsentPage)]
+        [InlineData(MockAuthorizationPipeline.ErrorPage)]
+        [Trait("Category", Category)]
+        public async Task cors_request_to_restricted_endpoints_should_not_succeed(string url)
+        {
+            _pipeline.Client.DefaultRequestHeaders.Add("Origin", "https://client");
+            _pipeline.Client.DefaultRequestHeaders.Add("Access-Control-Request-Method", "GET");
+
+            var message = new HttpRequestMessage(HttpMethod.Options, url);
+            var response = await _pipeline.Client.SendAsync(message);
+
+            response.Headers.Contains("Access-Control-Allow-Origin").Should().BeFalse();
         }
     }
 }

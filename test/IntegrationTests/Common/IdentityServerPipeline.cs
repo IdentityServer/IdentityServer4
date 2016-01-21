@@ -24,8 +24,15 @@ namespace IdentityServer4.Tests.Common
         public const string ErrorPage = "https://server/ui/error";
 
         public const string DiscoveryEndpoint = "https://server/.well-known/openid-configuration";
+        public const string DiscoveryKeysEndpoint = "https://server/.well-known/openid-configuration/jwks";
         public const string AuthorizeEndpoint = "https://server/connect/authorize";
         public const string TokenEndpoint = "https://server/connect/token";
+        public const string RevocationEndpoint = "https://server/connect/revocation";
+        public const string UserInfoEndpoint = "https://server/connect/userinfo";
+        public const string IntrospectionEndpoint = "https://server/connect/introspect";
+        public const string IdentityTokenValidationEndpoint = "https://server/connect/identityTokenValidation";
+        public const string EndSessionEndpoint = "https://server/connect/endsession";
+        public const string CheckSessionEndpoint = "https://server/connect/checksession";
 
         public IdentityServerOptions Options { get; set; } = new IdentityServerOptions();
         public List<Client> Clients { get; set; } = new List<Client>();
