@@ -24,8 +24,6 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services, Action<IdentityServerOptions> setupAction = null)
         {
-            services.AddAuthentication();
-
             var options = new IdentityServerOptions();
 
             if (setupAction != null)
@@ -33,7 +31,15 @@ namespace Microsoft.Extensions.DependencyInjection
                 setupAction(options);
             }
 
+            return services.AddIdentityServer(options);
+        }
+
+        public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services, IdentityServerOptions options)
+        {
             services.AddInstance(options);
+
+            services.AddAuthentication();
+
             services.AddTransient<IdentityServerContext>();
 
             services.AddEndpoints(options.Endpoints);

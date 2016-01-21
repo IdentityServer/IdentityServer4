@@ -12,16 +12,20 @@ using System.Collections.Generic;
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Services.InMemory;
 using System.Security.Claims;
+using System.Net.Http;
+using System.Linq;
 
 namespace IdentityServer4.Tests.Endpoints.Authorize
 {
-    public class AuthorizeTests : AuthorizeEndpointTestBase
+    public class AuthorizeTests
     {
         const string Category = "Authorize endpoint";
 
+        MockAuthorizationPipeline _mockPipeline = new MockAuthorizationPipeline();
+
         public AuthorizeTests()
         {
-            Clients.AddRange(new Client[] {
+            _mockPipeline.Clients.AddRange(new Client[] {
                 new Client
                 {
                     ClientId = "client1",
@@ -40,7 +44,7 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
                 }
             });
 
-            Users.Add(new InMemoryUser
+            _mockPipeline.Users.Add(new InMemoryUser
             {
                 Subject = "bob",
                 Username = "bob",
@@ -52,7 +56,7 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
                 }
             });
 
-            Scopes.AddRange(new Scope[] {
+            _mockPipeline.Scopes.AddRange(new Scope[] {
                 StandardScopes.OpenId,
                 StandardScopes.Profile,
                 StandardScopes.Email,
@@ -67,13 +71,15 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
                     Type = ScopeType.Resource
                 }
             });
+
+            _mockPipeline.Initialize();
         }
 
         [Fact]
         [Trait("Category", Category)]
         public async Task get_request_should_not_return_404()
         {
-            var response = await _client.GetAsync(AuthorizeEndpoint);
+            var response = await _mockPipeline.BrowserClient.GetAsync(MockAuthorizationPipeline.AuthorizeEndpoint);
 
             response.StatusCode.Should().NotBe(HttpStatusCode.NotFound);
         }
@@ -82,7 +88,7 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task get_request_should_not_return_500()
         {
-            var response = await _client.GetAsync(AuthorizeEndpoint);
+            var response = await _mockPipeline.BrowserClient.GetAsync(MockAuthorizationPipeline.AuthorizeEndpoint);
 
             ((int)response.StatusCode).Should().BeLessThan(500);
         }
@@ -91,14 +97,14 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task anonymous_user_should_be_redirected_to_login_page()
         {
-            var url = _authorizeRequest.CreateAuthorizeUrl(
+            var url = _mockPipeline.CreateAuthorizeUrl(
                 clientId: "client1",
                 responseType: "id_token",
                 scope: "openid",
                 redirectUri: "https://client1/callback",
                 state: "123_state",
                 nonce: "123_nonce");
-            var response = await _client.GetAsync(url);
+            var response = await _mockPipeline.BrowserClient.GetAsync(url);
 
             _mockPipeline.LoginWasCalled.Should().BeTrue();
         }
@@ -107,7 +113,7 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task signin_request_should_have_authorization_params()
         {
-            var url = _authorizeRequest.CreateAuthorizeUrl(
+            var url = _mockPipeline.CreateAuthorizeUrl(
                 clientId: "client1",
                 responseType: "id_token",
                 scope: "openid",
@@ -121,7 +127,7 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
                     ui_locales ="ui_locale_value",
                     custom_foo ="foo_value"
                 });
-            var response = await _client.GetAsync(url);
+            var response = await _mockPipeline.BrowserClient.GetAsync(url);
 
             _mockPipeline.SignInRequest.Should().NotBeNull();
             _mockPipeline.SignInRequest.ClientId.Should().Be("client1");
@@ -140,16 +146,16 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
         {
             _mockPipeline.Subject = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
             _mockPipeline.SignInResponse = new SignInResponse();
-            _browser.StopRedirectingAfter = 2;
+            _mockPipeline.Browser.StopRedirectingAfter = 2;
 
-            var url = CreateAuthorizeUrl(
+            var url = _mockPipeline.CreateAuthorizeUrl(
                 clientId: "client1",
                 responseType: "id_token",
                 scope: "openid",
                 redirectUri: "https://client1/callback",
                 state: "123_state",
                 nonce: "123_nonce");
-            var response = await _client.GetAsync(url);
+            var response = await _mockPipeline.BrowserClient.GetAsync(url);
 
             response.StatusCode.Should().Be(HttpStatusCode.Redirect);
             response.Headers.Location.ToString().Should().StartWith("https://client1/callback");
@@ -164,18 +170,18 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task authenticated_user_with_valid_request_should_receive_authorization_response()
         {
-            await LoginAsync("bob");
+            await _mockPipeline.LoginAsync("bob");
 
-            _browser.AllowAutoRedirect = false;
+            _mockPipeline.Browser.AllowAutoRedirect = false;
 
-            var url = CreateAuthorizeUrl(
+            var url = _mockPipeline.CreateAuthorizeUrl(
                 clientId: "client1",
                 responseType: "id_token",
                 scope: "openid",
                 redirectUri: "https://client1/callback",
                 state: "123_state",
                 nonce: "123_nonce");
-            var response = await _client.GetAsync(url);
+            var response = await _mockPipeline.BrowserClient.GetAsync(url);
 
             response.StatusCode.Should().Be(HttpStatusCode.Redirect);
             response.Headers.Location.ToString().Should().StartWith("https://client1/callback");
@@ -190,9 +196,9 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task client_requires_consent_should_show_consent_page()
         {
-            await LoginAsync("bob");
+            await _mockPipeline.LoginAsync("bob");
 
-            var url = _authorizeRequest.CreateAuthorizeUrl(
+            var url = _mockPipeline.CreateAuthorizeUrl(
                 clientId: "client2",
                 responseType: "id_token",
                 scope: "openid",
@@ -200,7 +206,7 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
                 state: "123_state",
                 nonce: "123_nonce"
             );
-            var response = await _client.GetAsync(url);
+            var response = await _mockPipeline.BrowserClient.GetAsync(url);
 
             _mockPipeline.ConsentWasCalled.Should().BeTrue();
         }
@@ -209,9 +215,9 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task consent_page_should_have_authorization_params()
         {
-            await LoginAsync("bob");
+            await _mockPipeline.LoginAsync("bob");
 
-            var url = _authorizeRequest.CreateAuthorizeUrl(
+            var url = _mockPipeline.CreateAuthorizeUrl(
                 clientId: "client2",
                 responseType: "id_token token",
                 scope: "openid api1 api2",
@@ -226,7 +232,7 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
                     custom_foo = "foo_value"
                 }
             );
-            var response = await _client.GetAsync(url);
+            var response = await _mockPipeline.BrowserClient.GetAsync(url);
 
             _mockPipeline.ConsentRequest.Should().NotBeNull();
             _mockPipeline.ConsentRequest.ClientId.Should().Be("client2");
@@ -239,22 +245,22 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task consent_response_should_allow_successful_authorization_response()
         {
-            await LoginAsync("bob");
+            await _mockPipeline.LoginAsync("bob");
 
             _mockPipeline.ConsentResponse = new ConsentResponse()
             {
                 ScopesConsented = new string[] { "openid", "api2" }
             };
-            _browser.StopRedirectingAfter = 2;
+            _mockPipeline.Browser.StopRedirectingAfter = 2;
 
-            var url = CreateAuthorizeUrl(
+            var url = _mockPipeline.CreateAuthorizeUrl(
                 clientId: "client2",
                 responseType: "id_token token",
                 scope: "openid profile api1 api2",
                 redirectUri: "https://client2/callback",
                 state: "123_state",
                 nonce: "123_nonce");
-            var response = await _client.GetAsync(url);
+            var response = await _mockPipeline.BrowserClient.GetAsync(url);
 
             response.StatusCode.Should().Be(HttpStatusCode.Redirect);
             response.Headers.Location.ToString().Should().StartWith("https://client2/callback");
@@ -279,16 +285,16 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
                 ScopesConsented = new string[] { "openid", "api1", "profile" }
             };
 
-            _browser.StopRedirectingAfter = 4;
+            _mockPipeline.Browser.StopRedirectingAfter = 4;
 
-            var url = CreateAuthorizeUrl(
+            var url = _mockPipeline.CreateAuthorizeUrl(
                 clientId: "client2",
                 responseType: "id_token token",
                 scope: "openid profile api1 api2",
                 redirectUri: "https://client2/callback",
                 state: "123_state",
                 nonce: "123_nonce");
-            var response = await _client.GetAsync(url);
+            var response = await _mockPipeline.BrowserClient.GetAsync(url);
 
             response.StatusCode.Should().Be(HttpStatusCode.Redirect);
             response.Headers.Location.ToString().Should().StartWith("https://client2/callback");

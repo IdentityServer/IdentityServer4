@@ -15,17 +15,19 @@ using Xunit;
 
 namespace IdentityServer4.Tests.Conformance.Basic
 {
-    public class ClientAuthenticationTests : AuthorizeEndpointTestBase
+    public class ClientAuthenticationTests 
     {
         const string Category = "Conformance.Basic.ClientAuthenticationTests";
 
+        MockAuthorizationPipeline _pipeline = new MockAuthorizationPipeline();
+
         public ClientAuthenticationTests()
         {
-            Scopes.Add(StandardScopes.OpenId);
-            Clients.Add(new Client
+            _pipeline.Scopes.Add(StandardScopes.OpenId);
+            _pipeline.Clients.Add(new Client
             {
                 Enabled = true,
-                ClientId = "code_client",
+                ClientId = "code_pipeline.Client",
                 ClientSecrets = new List<Secret>
                 {
                     new Secret("secret".Sha512())
@@ -37,11 +39,12 @@ namespace IdentityServer4.Tests.Conformance.Basic
                 RequireConsent = false,
                 RedirectUris = new List<string>
                 {
-                    "https://code_client/callback",
-                    "https://code_client/callback?foo=bar&baz=quux"
+                    "https://code_pipeline.Client/callback",
+                    "https://code_pipeline.Client/callback?foo=bar&baz=quux"
                 }
             });
-            Users.Add(new InMemoryUser
+
+            _pipeline.Users.Add(new InMemoryUser
             {
                 Subject = "bob",
                 Username = "bob",
@@ -52,34 +55,36 @@ namespace IdentityServer4.Tests.Conformance.Basic
                         new Claim("role", "Attorney"),
                    }
             });
+
+            _pipeline.Initialize();
         }
 
         [Fact]
         [Trait("Category", Category)]
         public async Task Token_endpoint_supports_client_authentication_with_basic_authentication_with_POST()
         {
-            await LoginAsync("bob");
+            await _pipeline.LoginAsync("bob");
 
             var nonce = Guid.NewGuid().ToString();
 
-            _browser.AllowAutoRedirect = false;
-            var url = CreateAuthorizeUrl(
-                           clientId: "code_client",
+            _pipeline.Browser.AllowAutoRedirect = false;
+            var url = _pipeline.CreateAuthorizeUrl(
+                           clientId: "code_pipeline.Client",
                            responseType: "code",
                            scope: "openid",
-                           redirectUri: "https://code_client/callback?foo=bar&baz=quux",
+                           redirectUri: "https://code_pipeline.Client/callback?foo=bar&baz=quux",
                            nonce: nonce);
-            var response = await _client.GetAsync(url);
+            var response = await _pipeline.BrowserClient.GetAsync(url);
 
-            var authorization = ParseAuthorizationResponseUrl(response.Headers.Location.ToString());
+            var authorization = _pipeline.ParseAuthorizationResponseUrl(response.Headers.Location.ToString());
             authorization.Code.Should().NotBeNull();
 
             var code = authorization.Code;
 
             // backchannel client
-            var wrapper = new MessageHandlerWrapper(_server.CreateHandler());
-            var tokenClient = new TokenClient(TokenEndpoint, "code_client", "secret", wrapper);
-            var tokenResult = await tokenClient.RequestAuthorizationCodeAsync(code, "https://code_client/callback?foo=bar&baz=quux");
+            var wrapper = new MessageHandlerWrapper(_pipeline.Handler);
+            var tokenClient = new TokenClient(MockAuthorizationPipeline.TokenEndpoint, "code_pipeline.Client", "secret", wrapper);
+            var tokenResult = await tokenClient.RequestAuthorizationCodeAsync(code, "https://code_pipeline.Client/callback?foo=bar&baz=quux");
 
             tokenResult.IsError.Should().BeFalse();
             tokenResult.IsHttpError.Should().BeFalse();
@@ -96,27 +101,27 @@ namespace IdentityServer4.Tests.Conformance.Basic
         [Trait("Category", Category)]
         public async Task Token_endpoint_supports_client_authentication_with_form_encoded_authentication_in_POST_body()
         {
-            await LoginAsync("bob");
+            await _pipeline.LoginAsync("bob");
 
             var nonce = Guid.NewGuid().ToString();
 
-            _browser.AllowAutoRedirect = false;
-            var url = CreateAuthorizeUrl(
-                           clientId: "code_client",
+            _pipeline.Browser.AllowAutoRedirect = false;
+            var url = _pipeline.CreateAuthorizeUrl(
+                           clientId: "code_pipeline.Client",
                            responseType: "code",
                            scope: "openid",
-                           redirectUri: "https://code_client/callback?foo=bar&baz=quux",
+                           redirectUri: "https://code_pipeline.Client/callback?foo=bar&baz=quux",
                            nonce: nonce);
-            var response = await _client.GetAsync(url);
+            var response = await _pipeline.BrowserClient.GetAsync(url);
 
-            var authorization = ParseAuthorizationResponseUrl(response.Headers.Location.ToString());
+            var authorization = _pipeline.ParseAuthorizationResponseUrl(response.Headers.Location.ToString());
             authorization.Code.Should().NotBeNull();
 
             var code = authorization.Code;
 
             // backchannel client
-            var tokenClient = new TokenClient(TokenEndpoint, "code_client", "secret", _server.CreateHandler(), AuthenticationStyle.PostValues);
-            var tokenResult = await tokenClient.RequestAuthorizationCodeAsync(code, "https://code_client/callback?foo=bar&baz=quux");
+            var tokenClient = new TokenClient(MockAuthorizationPipeline.TokenEndpoint, "code_pipeline.Client", "secret", _pipeline.Handler, AuthenticationStyle.PostValues);
+            var tokenResult = await tokenClient.RequestAuthorizationCodeAsync(code, "https://code_pipeline.Client/callback?foo=bar&baz=quux");
 
             tokenResult.IsError.Should().BeFalse();
             tokenResult.IsHttpError.Should().BeFalse();
