@@ -257,6 +257,37 @@ namespace IdentityServer4.Tests.ResponseHandling
         }
 
         [Fact]
+        public void ProcessConsentAsync_NoPromptMode_ConsentServiceRequiresConsent_ConsentGrantedButMissingRequiredScopes_ReturnsErrorResult()
+        {
+            RequiresConsent(true);
+            var client = new Client {};
+            var scopeValidator = new ScopeValidator(new InMemoryScopeStore(GetScopes()), new FakeLoggerFactory());
+            var request = new ValidatedAuthorizeRequest()
+            {
+                ResponseMode = Constants.ResponseModes.Fragment,
+                State = "12345",
+                RedirectUri = "https://client.com/callback",
+                RequestedScopes = new List<string> { "openid", "read" },
+                ValidatedScopes = scopeValidator,
+                Client = client
+            };
+            var valid = scopeValidator.AreScopesValidAsync(request.RequestedScopes).Result;
+
+            var consent = new ConsentResponse
+            {
+                RememberConsent = false,
+                ScopesConsented = new string[] { "read" }
+            };
+
+            var result = _subject.ProcessConsentAsync(request, consent).Result;
+            result.IsError.Should().BeTrue();
+            result.Error.ErrorType.Should().Be(ErrorTypes.Client);
+            result.Error.Error.Should().Be(Constants.AuthorizeErrors.AccessDenied);
+            AssertErrorReturnsRequestValues(result.Error, request);
+            AssertUpdateConsentNotCalled();
+        }
+
+        [Fact]
         public async Task ProcessConsentAsync_NoPromptMode_ConsentServiceRequiresConsent_ConsentGranted_ScopesSelected_ReturnsConsentResult()
         {
             RequiresConsent(true);

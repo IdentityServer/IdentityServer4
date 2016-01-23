@@ -211,20 +211,36 @@ namespace IdentityServer4.Core.ResponseHandling
                     }
                     else
                     {
-                        // they said yes, set scopes they chose
-                        request.ValidatedScopes.SetConsentedScopes(consent.ScopesConsented);
-
-                        if (request.Client.AllowRememberConsent)
+                        // double check that required scopes are in the list of consented scopes
+                        var valid = request.ValidatedScopes.ValidateRequiredScopes(consent.ScopesConsented);
+                        if (valid == false)
                         {
-                            // remember consent
-                            var scopes = Enumerable.Empty<string>();
-                            if (consent.RememberConsent)
+                            response.Error = new AuthorizeError
                             {
-                                // remember what user actually selected
-                                scopes = request.ValidatedScopes.GrantedScopes.Select(x => x.Name);
-                            }
+                                ErrorType = ErrorTypes.Client,
+                                Error = Constants.AuthorizeErrors.AccessDenied,
+                                ResponseMode = request.ResponseMode,
+                                ErrorUri = request.RedirectUri,
+                                State = request.State
+                            };
+                        }
+                        else
+                        {
+                            // they said yes, set scopes they chose
+                            request.ValidatedScopes.SetConsentedScopes(consent.ScopesConsented);
 
-                            await _consent.UpdateConsentAsync(request.Client, request.Subject, scopes);
+                            if (request.Client.AllowRememberConsent)
+                            {
+                                // remember consent
+                                var scopes = Enumerable.Empty<string>();
+                                if (consent.RememberConsent)
+                                {
+                                    // remember what user actually selected
+                                    scopes = request.ValidatedScopes.GrantedScopes.Select(x => x.Name);
+                                }
+
+                                await _consent.UpdateConsentAsync(request.Client, request.Subject, scopes);
+                            }
                         }
                     }
                 }

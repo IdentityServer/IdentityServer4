@@ -273,6 +273,35 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
             scopes.ShouldAllBeEquivalentTo(new string[] { "api2", "openid" });
         }
 
+        [Fact()]
+        [Trait("Category", Category)]
+        public async Task consent_response_missing_required_scopes_should_error()
+        {
+            await _mockPipeline.LoginAsync("bob");
+
+            _mockPipeline.ConsentResponse = new ConsentResponse()
+            {
+                ScopesConsented = new string[] { "api2" }
+            };
+            _mockPipeline.BrowserClient.StopRedirectingAfter = 2;
+
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: "client2",
+                responseType: "id_token token",
+                scope: "openid profile api1 api2",
+                redirectUri: "https://client2/callback",
+                state: "123_state",
+                nonce: "123_nonce");
+            var response = await _mockPipeline.BrowserClient.GetAsync(url);
+            response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+            response.Headers.Location.ToString().Should().StartWith("https://client2/callback");
+
+            var authorization = new IdentityModel.Client.AuthorizeResponse(response.Headers.Location.ToString());
+            authorization.IsError.Should().BeTrue();
+            authorization.Error.Should().Be("access_denied");
+            authorization.State.Should().Be("123_state");
+        }
+
         [Fact]
         [Trait("Category", Category)]
         public async Task login_response_and_consent_response_should_receive_authorization_response()
