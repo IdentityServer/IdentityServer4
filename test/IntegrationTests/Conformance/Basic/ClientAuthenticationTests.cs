@@ -67,7 +67,7 @@ namespace IdentityServer4.Tests.Conformance.Basic
 
             var nonce = Guid.NewGuid().ToString();
 
-            _pipeline.Browser.AllowAutoRedirect = false;
+            _pipeline.BrowserClient.AllowAutoRedirect = false;
             var url = _pipeline.CreateAuthorizeUrl(
                            clientId: "code_pipeline.Client",
                            responseType: "code",
@@ -105,7 +105,7 @@ namespace IdentityServer4.Tests.Conformance.Basic
 
             var nonce = Guid.NewGuid().ToString();
 
-            _pipeline.Browser.AllowAutoRedirect = false;
+            _pipeline.BrowserClient.AllowAutoRedirect = false;
             var url = _pipeline.CreateAuthorizeUrl(
                            clientId: "code_pipeline.Client",
                            responseType: "code",

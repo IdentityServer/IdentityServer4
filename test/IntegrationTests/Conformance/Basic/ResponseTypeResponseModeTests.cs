@@ -23,7 +23,7 @@ namespace IdentityServer4.Tests.Conformance.Basic
         public ResponseTypeResponseModeTests()
         {
             _mockPipeline.Initialize();
-            _mockPipeline.Browser.AllowAutoRedirect = false;
+            _mockPipeline.BrowserClient.AllowAutoRedirect = false;
             _mockPipeline.Clients.Add(new Client
             {
                 Enabled = true,

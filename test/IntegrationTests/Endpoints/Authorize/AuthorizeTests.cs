@@ -123,7 +123,7 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
                 loginHint:"login_hint_value",
                 acrValues:"acr_1 acr_2 tenant:tenant_value idp:idp_value",
                 extra: new {
-                    display = "popup", // must use a valid value form the spec for display
+                    display = "popup", // must use a valid value from the spec for display
                     ui_locales ="ui_locale_value",
                     custom_foo ="foo_value"
                 });
@@ -146,7 +146,7 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
         {
             _mockPipeline.Subject = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
             _mockPipeline.SignInResponse = new SignInResponse();
-            _mockPipeline.Browser.StopRedirectingAfter = 2;
+            _mockPipeline.BrowserClient.StopRedirectingAfter = 2;
 
             var url = _mockPipeline.CreateAuthorizeUrl(
                 clientId: "client1",
@@ -172,7 +172,7 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
         {
             await _mockPipeline.LoginAsync("bob");
 
-            _mockPipeline.Browser.AllowAutoRedirect = false;
+            _mockPipeline.BrowserClient.AllowAutoRedirect = false;
 
             var url = _mockPipeline.CreateAuthorizeUrl(
                 clientId: "client1",
@@ -251,7 +251,7 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
             {
                 ScopesConsented = new string[] { "openid", "api2" }
             };
-            _mockPipeline.Browser.StopRedirectingAfter = 2;
+            _mockPipeline.BrowserClient.StopRedirectingAfter = 2;
 
             var url = _mockPipeline.CreateAuthorizeUrl(
                 clientId: "client2",
@@ -285,7 +285,7 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
                 ScopesConsented = new string[] { "openid", "api1", "profile" }
             };
 
-            _mockPipeline.Browser.StopRedirectingAfter = 4;
+            _mockPipeline.BrowserClient.StopRedirectingAfter = 4;
 
             var url = _mockPipeline.CreateAuthorizeUrl(
                 clientId: "client2",

@@ -170,13 +170,13 @@ namespace IdentityServer4.Tests.Common
         /* helpers */
         public async Task LoginAsync(ClaimsPrincipal subject)
         {
-            var old = Browser.AllowAutoRedirect;
-            Browser.AllowAutoRedirect = false;
+            var old = BrowserClient.AllowAutoRedirect;
+            BrowserClient.AllowAutoRedirect = false;
 
             Subject = subject;
             await BrowserClient.GetAsync(LoginPage);
 
-            Browser.AllowAutoRedirect = old;
+            BrowserClient.AllowAutoRedirect = old;
         }
 
         public async Task LoginAsync(string subject)

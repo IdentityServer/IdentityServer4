@@ -40,11 +40,10 @@ namespace IdentityServer4.Tests.Common
         public List<InMemoryUser> Users { get; set; } = new List<InMemoryUser>();
 
         public TestServer Server { get; set; }
-        public HttpClient Client { get; set; }
         public HttpMessageHandler Handler { get; set; }
-        public Browser Browser { get; set; }
-        public HttpClient BrowserClient { get; set; }
-        public IdentityServerPipeline Pipeline { get; set; }
+
+        public BrowserClient BrowserClient { get; set; }
+        public HttpClient Client { get; set; }
 
         public IdentityServerPipeline(IApplicationEnvironment environment)
         {
@@ -61,9 +60,7 @@ namespace IdentityServer4.Tests.Common
             Server = TestServer.Create(null, Configure, ConfigureServices);
             Handler = Server.CreateHandler();
 
-            Browser = new Browser(Handler);
-            BrowserClient = new HttpClient(Browser);
-
+            BrowserClient = new BrowserClient(new BrowserHandler(Handler));
             Client = new HttpClient(Handler);
         }
 

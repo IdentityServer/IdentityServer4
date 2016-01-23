@@ -11,7 +11,7 @@ namespace IdentityServer4.Tests.Common
 {
     // thanks to Damian Hickey for this awesome sample
     // https://github.com/damianh/OwinHttpMessageHandler/blob/master/src/OwinHttpMessageHandler/OwinHttpMessageHandler.cs
-    public class Browser : DelegatingHandler
+    public class BrowserHandler : DelegatingHandler
     {
         private CookieContainer _cookieContainer = new CookieContainer();
 
@@ -20,7 +20,7 @@ namespace IdentityServer4.Tests.Common
         public int ErrorRedirectLimit { get; set; } = 20;
         public int StopRedirectingAfter { get; set; } = Int32.MaxValue;
 
-        public Browser(HttpMessageHandler next)
+        public BrowserHandler(HttpMessageHandler next)
             : base(next)
         {
         }

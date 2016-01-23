@@ -114,7 +114,7 @@ namespace IdentityServer4.Tests.Conformance.Basic
             var nonce = Guid.NewGuid().ToString();
             var state = Guid.NewGuid().ToString();
 
-            _mockPipeline.Browser.AllowAutoRedirect = false;
+            _mockPipeline.BrowserClient.AllowAutoRedirect = false;
             var url = _mockPipeline.CreateAuthorizeUrl(
                            clientId: "code_client",
                            responseType: "code",
