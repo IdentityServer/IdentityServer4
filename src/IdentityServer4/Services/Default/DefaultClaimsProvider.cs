@@ -25,16 +25,16 @@ namespace IdentityServer4.Core.Services.Default
         /// <summary>
         /// The user service
         /// </summary>
-        protected readonly IUserService _users;
+        protected readonly IProfileService _profile;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultClaimsProvider"/> class.
         /// </summary>
         /// <param name="users">The users service</param>
-        public DefaultClaimsProvider(IUserService users, ILoggerFactory loggerFactory)
+        public DefaultClaimsProvider(IProfileService profile, ILoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<DefaultClaimsProvider>();
-            _users = users;
+            _profile = profile;
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace IdentityServer4.Core.Services.Default
                     client,
                     Constants.ProfileDataCallers.ClaimsProviderIdentityToken);
 
-                await _users.GetProfileDataAsync(context);
+                await _profile.GetProfileDataAsync(context);
                 
                 var claims = FilterProtocolClaims(context.IssuedClaims);
                 if (claims != null)
@@ -101,7 +101,7 @@ namespace IdentityServer4.Core.Services.Default
                     Constants.ProfileDataCallers.ClaimsProviderIdentityToken,
                     additionalClaims);
                 
-                await _users.GetProfileDataAsync(context);
+                await _profile.GetProfileDataAsync(context);
 
                 var claims = FilterProtocolClaims(context.IssuedClaims);
                 if (claims != null)
@@ -170,7 +170,7 @@ namespace IdentityServer4.Core.Services.Default
                     client,
                     Constants.ProfileDataCallers.ClaimsProviderAccessToken);
 
-                    await _users.GetProfileDataAsync(context);
+                    await _profile.GetProfileDataAsync(context);
 
                     var claims = FilterProtocolClaims(context.IssuedClaims);
                     if (claims != null)
@@ -206,7 +206,7 @@ namespace IdentityServer4.Core.Services.Default
                     Constants.ProfileDataCallers.ClaimsProviderAccessToken,
                     additionalClaims.Distinct());
 
-                    await _users.GetProfileDataAsync(context);
+                    await _profile.GetProfileDataAsync(context);
 
                     var claims = FilterProtocolClaims(context.IssuedClaims);
                     if (claims != null)

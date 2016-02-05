@@ -18,20 +18,20 @@ namespace IdentityServer4.Core.ResponseHandling
         private readonly ILogger<AuthorizeInteractionResponseGenerator> _logger;
         private readonly IdentityServerOptions _options;
         private readonly IConsentService _consent;
-        private readonly IUserService _users;
+        private readonly IProfileService _profile;
         private readonly ILocalizationService _localizationService;
 
         public AuthorizeInteractionResponseGenerator(
             ILogger<AuthorizeInteractionResponseGenerator> logger, 
             IdentityServerOptions options, 
             IConsentService consent, 
-            IUserService users, 
+            IProfileService profile, 
             ILocalizationService localizationService)
         {
             _logger = logger;
             _options = options;
             _consent = consent;
-            _users = users;
+            _profile = profile;
             _localizationService = localizationService;
         }
 
@@ -68,7 +68,7 @@ namespace IdentityServer4.Core.ResponseHandling
             if (isAuthenticated)
             {
                 var isActiveCtx = new IsActiveContext(request.Subject, request.Client);
-                await _users.IsActiveAsync(isActiveCtx);
+                await _profile.IsActiveAsync(isActiveCtx);
                 
                 isActive = isActiveCtx.IsActive;
             }

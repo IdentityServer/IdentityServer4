@@ -15,8 +15,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.Services.AddInstance(users);
 
-            //todo
-            builder.Services.AddTransient<IUserService, InMemoryUserService>();
+            builder.Services.AddTransient<IProfileService, InMemoryProfileService>();
             builder.Services.AddTransient<IResourceOwnerPasswordValidator, InMemoryResourceOwnerPasswordValidator>();
             
             return builder;

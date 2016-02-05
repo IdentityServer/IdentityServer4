@@ -32,6 +32,7 @@ namespace IdentityServer4.Tests.Validation
             IAuthorizationCodeStore authorizationCodeStore = null,
             IRefreshTokenStore refreshTokens = null,
             IResourceOwnerPasswordValidator resourceOwnerValidator = null,
+            IProfileService profile = null,
             IEnumerable<ICustomGrantValidator> customGrantValidators = null,
             ICustomRequestValidator customRequestValidator = null,
             ScopeValidator scopeValidator = null)
@@ -81,6 +82,7 @@ namespace IdentityServer4.Tests.Validation
                 authorizationCodeStore, 
                 refreshTokens, 
                 resourceOwnerValidator, 
+                profile,
                 aggregateCustomValidator, 
                 customRequestValidator, 
                 scopeValidator, 
@@ -97,7 +99,7 @@ namespace IdentityServer4.Tests.Validation
             IdentityServerOptions options = null,
             IScopeStore scopes = null,
             IClientStore clients = null,
-            IUserService users = null,
+            IProfileService profile = null,
             ICustomRequestValidator customValidator = null,
             IRedirectUriValidator uriValidator = null,
             ScopeValidator scopeValidator = null,
@@ -146,7 +148,7 @@ namespace IdentityServer4.Tests.Validation
             );
         }
 
-        public static TokenValidator CreateTokenValidator(ITokenHandleStore tokenStore = null, IUserService users = null)
+        public static TokenValidator CreateTokenValidator(ITokenHandleStore tokenStore = null, IProfileService profile = null)
         {
             // todo
             //if (users == null)
@@ -168,7 +170,7 @@ namespace IdentityServer4.Tests.Validation
                 clients: clients,
                 tokenHandles: tokenStore,
                 customValidator: new DefaultCustomTokenValidator(
-                    users: users,
+                    profile: profile,
                     clients: clients,
                     logger: new Logger<DefaultCustomTokenValidator>(new LoggerFactory())),
                 keyService: new DefaultSigningKeyService(options),

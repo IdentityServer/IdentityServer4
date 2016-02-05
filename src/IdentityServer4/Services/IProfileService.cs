@@ -9,7 +9,7 @@ namespace IdentityServer4.Core.Services
     /// <summary>
     /// This interface allows IdentityServer to connect to your user and profile store.
     /// </summary>
-    public interface IUserService
+    public interface IProfileService
     {
         /// <summary>
         /// This method is called whenever claims about the user are requested (e.g. during token creation or via the userinfo endpoint)

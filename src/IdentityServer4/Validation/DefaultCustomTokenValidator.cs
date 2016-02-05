@@ -25,7 +25,7 @@ namespace IdentityServer4.Core.Validation
         /// <summary>
         /// The user service
         /// </summary>
-        protected readonly IUserService _users;
+        protected readonly IProfileService _profile;
 
         /// <summary>
         /// The client store
@@ -37,10 +37,10 @@ namespace IdentityServer4.Core.Validation
         /// </summary>
         /// <param name="users">The users store.</param>
         /// <param name="clients">The client store.</param>
-        public DefaultCustomTokenValidator(IUserService users, IClientStore clients, ILogger<DefaultCustomTokenValidator> logger)
+        public DefaultCustomTokenValidator(IProfileService profile, IClientStore clients, ILogger<DefaultCustomTokenValidator> logger)
         {
             _logger = logger;
-            _users = users;
+            _profile = profile;
             _clients = clients;
         }
 
@@ -70,7 +70,7 @@ namespace IdentityServer4.Core.Validation
                 }
 
                 var isActiveCtx = new IsActiveContext(principal, result.Client);
-                await _users.IsActiveAsync(isActiveCtx);
+                await _profile.IsActiveAsync(isActiveCtx);
                 
                 if (isActiveCtx.IsActive == false)
                 {
@@ -120,7 +120,7 @@ namespace IdentityServer4.Core.Validation
                 var principal = Principal.Create("tokenvalidator", result.Claims.ToArray());
 
                 var isActiveCtx = new IsActiveContext(principal, result.Client);
-                await _users.IsActiveAsync(isActiveCtx);
+                await _profile.IsActiveAsync(isActiveCtx);
                 
                 if (isActiveCtx.IsActive == false)
                 {
