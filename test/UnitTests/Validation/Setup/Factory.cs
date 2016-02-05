@@ -52,6 +52,11 @@ namespace IdentityServer4.Tests.Validation
                 resourceOwnerValidator = new TestResourceOwnerPasswordValidator();
             }
 
+            if (profile == null)
+            {
+                profile = new TestProfileService();
+            }
+
             if (customRequestValidator == null)
             {
                 customRequestValidator = new DefaultCustomRequestValidator();
@@ -150,11 +155,10 @@ namespace IdentityServer4.Tests.Validation
 
         public static TokenValidator CreateTokenValidator(ITokenHandleStore tokenStore = null, IProfileService profile = null)
         {
-            // todo
-            //if (users == null)
-            //{
-            //    users = new TestUserService();
-            //}
+            if (profile == null)
+            {
+                profile = new TestProfileService();
+            }
 
             var clients = CreateClientStore();
             var options = TestIdentityServerOptions.Create();
