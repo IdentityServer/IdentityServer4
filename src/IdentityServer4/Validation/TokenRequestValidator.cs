@@ -20,23 +20,23 @@ namespace IdentityServer4.Core.Validation
 
         private readonly IdentityServerOptions _options;
         private readonly IAuthorizationCodeStore _authorizationCodes;
-        private readonly IUserService _users;
         private readonly CustomGrantValidator _customGrantValidator;
         private readonly ICustomRequestValidator _customRequestValidator;
         private readonly IRefreshTokenStore _refreshTokens;
         private readonly ScopeValidator _scopeValidator;
         private readonly IEventService _events;
+        private readonly IResourceOwnerPasswordValidator _resourceOwnerValidator;
 
         private ValidatedTokenRequest _validatedRequest;
 
-        public TokenRequestValidator(IdentityServerOptions options, IAuthorizationCodeStore authorizationCodes, IRefreshTokenStore refreshTokens, IUserService users, CustomGrantValidator customGrantValidator, ICustomRequestValidator customRequestValidator, ScopeValidator scopeValidator, IEventService events, ILoggerFactory loggerFactory)
+        public TokenRequestValidator(IdentityServerOptions options, IAuthorizationCodeStore authorizationCodes, IRefreshTokenStore refreshTokens, IResourceOwnerPasswordValidator resourceOwnerValidator, CustomGrantValidator customGrantValidator, ICustomRequestValidator customRequestValidator, ScopeValidator scopeValidator, IEventService events, ILoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<TokenRequestValidator>();
 
             _options = options;
             _authorizationCodes = authorizationCodes;
             _refreshTokens = refreshTokens;
-            _users = users;
+            _resourceOwnerValidator = resourceOwnerValidator;
             _customGrantValidator = customGrantValidator;
             _customRequestValidator = customRequestValidator;
             _scopeValidator = scopeValidator;
@@ -262,7 +262,7 @@ namespace IdentityServer4.Core.Validation
             // make sure user is enabled
             /////////////////////////////////////////////
             var isActiveCtx = new IsActiveContext(_validatedRequest.AuthorizationCode.Subject, _validatedRequest.Client);
-            await _users.IsActiveAsync(isActiveCtx);
+            //todo await _users.IsActiveAsync(isActiveCtx);
 
             if (isActiveCtx.IsActive == false)
             {
@@ -374,87 +374,88 @@ namespace IdentityServer4.Core.Validation
             /////////////////////////////////////////////
             // check optional parameters and populate SignInMessage
             /////////////////////////////////////////////
-            var signInMessage = new SignInRequest();
+            //var signInMessage = new SignInRequest();
 
-            // pass through client_id
-            signInMessage.ClientId = _validatedRequest.Client.ClientId;
+            //// pass through client_id
+            //signInMessage.ClientId = _validatedRequest.Client.ClientId;
 
-            // process acr values
-            var acr = parameters.Get(Constants.AuthorizeRequest.AcrValues);
-            if (acr.IsPresent())
-            {
-                if (acr.Length > _options.InputLengthRestrictions.AcrValues)
-                {
-                    LogError("Acr values too long.");
-                    return Invalid(Constants.TokenErrors.InvalidRequest);
-                }
+            //// process acr values
+            //var acr = parameters.Get(Constants.AuthorizeRequest.AcrValues);
+            //if (acr.IsPresent())
+            //{
+            //    if (acr.Length > _options.InputLengthRestrictions.AcrValues)
+            //    {
+            //        LogError("Acr values too long.");
+            //        return Invalid(Constants.TokenErrors.InvalidRequest);
+            //    }
 
-                var acrValues = acr.FromSpaceSeparatedString().Distinct().ToList();
+            //    var acrValues = acr.FromSpaceSeparatedString().Distinct().ToList();
 
-                // look for well-known acr value -- idp
-                var idp = acrValues.FirstOrDefault(x => x.StartsWith(Constants.KnownAcrValues.HomeRealm));
-                if (idp.IsPresent())
-                {
-                    signInMessage.IdP = idp.Substring(Constants.KnownAcrValues.HomeRealm.Length);
-                    acrValues.Remove(idp);
-                }
+            //    // look for well-known acr value -- idp
+            //    var idp = acrValues.FirstOrDefault(x => x.StartsWith(Constants.KnownAcrValues.HomeRealm));
+            //    if (idp.IsPresent())
+            //    {
+            //        signInMessage.IdP = idp.Substring(Constants.KnownAcrValues.HomeRealm.Length);
+            //        acrValues.Remove(idp);
+            //    }
 
-                // look for well-known acr value -- tenant
-                var tenant = acrValues.FirstOrDefault(x => x.StartsWith(Constants.KnownAcrValues.Tenant));
-                if (tenant.IsPresent())
-                {
-                    signInMessage.Tenant = tenant.Substring(Constants.KnownAcrValues.Tenant.Length);
-                    acrValues.Remove(tenant);
-                }
+            //    // look for well-known acr value -- tenant
+            //    var tenant = acrValues.FirstOrDefault(x => x.StartsWith(Constants.KnownAcrValues.Tenant));
+            //    if (tenant.IsPresent())
+            //    {
+            //        signInMessage.Tenant = tenant.Substring(Constants.KnownAcrValues.Tenant.Length);
+            //        acrValues.Remove(tenant);
+            //    }
 
-                // pass through any remaining acr values
-                if (acrValues.Any())
-                {
-                    signInMessage.AcrValues = acrValues;
-                }
-            }
+            //    // pass through any remaining acr values
+            //    if (acrValues.Any())
+            //    {
+            //        signInMessage.AcrValues = acrValues;
+            //    }
+            //}
 
-            _validatedRequest.SignInMessage = signInMessage;
+            //_validatedRequest.SignInMessage = signInMessage;
 
             /////////////////////////////////////////////
             // authenticate user
             /////////////////////////////////////////////
-            var authenticationContext = new LocalAuthenticationContext
-            {
-                UserName = userName,
-                Password = password,
-                SignInRequest = signInMessage
-            };
+            //var authenticationContext = new LocalAuthenticationContext
+            //{
+            //    UserName = userName,
+            //    Password = password,
+            //    SignInRequest = signInMessage
+            //};
 
-            await _users.AuthenticateLocalAsync(authenticationContext);
-            var authnResult = authenticationContext.AuthenticateResult;
+            var resourceOwnerResult = await _resourceOwnerValidator.ValidateAsync(userName, password, _validatedRequest);
 
-            if (authnResult == null || authnResult.IsError || authnResult.IsPartialSignIn)
+            if (resourceOwnerResult.IsError)
             {
                 var error = "invalid_username_or_password";
-                if (authnResult != null && authnResult.IsError)
-                {
-                    error = authnResult.ErrorMessage;
-                }
-                if (authnResult != null && authnResult.IsPartialSignIn)
-                {
-                    error = "Partial signin returned from AuthenticateLocalAsync";
-                }
-                LogError("User authentication failed: " + error);
-                await RaiseFailedResourceOwnerAuthenticationEventAsync(userName, signInMessage, error);
 
-                if (authnResult != null)
+                if (resourceOwnerResult.Error.IsPresent())
                 {
-                    return Invalid(Constants.TokenErrors.InvalidGrant, authnResult.ErrorMessage);
+                    error = resourceOwnerResult.Error;
                 }
+
+                LogError("User authentication failed: " + error);
+                await RaiseFailedResourceOwnerAuthenticationEventAsync(userName, error);
+
+                return Invalid(Constants.TokenErrors.InvalidGrant, error);
+            }
+
+            if (resourceOwnerResult.Principal == null)
+            {
+                var error = "User authentication failed: no principal returned";
+                LogError(error);
+                await RaiseFailedResourceOwnerAuthenticationEventAsync(userName, error);
 
                 return Invalid(Constants.TokenErrors.InvalidGrant);
             }
 
             _validatedRequest.UserName = userName;
-            _validatedRequest.Subject = authnResult.User;
+            _validatedRequest.Subject = resourceOwnerResult.Principal;
 
-            await RaiseSuccessfulResourceOwnerAuthenticationEventAsync(userName, authnResult.User.GetSubjectId(), signInMessage);
+            await RaiseSuccessfulResourceOwnerAuthenticationEventAsync(userName, resourceOwnerResult.Principal.GetSubjectId());
             _logger.LogInformation("Password token request validation success.");
             return Valid();
         }
@@ -542,9 +543,9 @@ namespace IdentityServer4.Core.Validation
             // make sure user is enabled
             /////////////////////////////////////////////
             var principal = IdentityServerPrincipal.FromSubjectId(_validatedRequest.RefreshToken.SubjectId, refreshToken.AccessToken.Claims);
-            
+
             var isActiveCtx = new IsActiveContext(principal, _validatedRequest.Client);
-            await _users.IsActiveAsync(isActiveCtx);
+            //todo: await _users.IsActiveAsync(isActiveCtx);
 
             if (isActiveCtx.IsActive == false)
             {
@@ -699,13 +700,13 @@ namespace IdentityServer4.Core.Validation
 
         private string LogEvent(string message)
         {
-                var validationLog = new TokenRequestValidationLog(_validatedRequest);
-                var json = LogSerializer.Serialize(validationLog);
+            var validationLog = new TokenRequestValidationLog(_validatedRequest);
+            var json = LogSerializer.Serialize(validationLog);
 
-                return string.Format("{0}\n {1}", message, json);
+            return string.Format("{0}\n {1}", message, json);
         }
 
-        // postpone
+        // todo
         //private Func<string> LogEvent(string message)
         //{
         //    return () =>
@@ -717,14 +718,14 @@ namespace IdentityServer4.Core.Validation
         //    };
         //}
 
-        private async Task RaiseSuccessfulResourceOwnerAuthenticationEventAsync(string userName, string subjectId, SignInRequest signInRequest)
+        private async Task RaiseSuccessfulResourceOwnerAuthenticationEventAsync(string userName, string subjectId)
         {
-            await _events.RaiseSuccessfulResourceOwnerFlowAuthenticationEventAsync(userName, subjectId, signInRequest);
+            await _events.RaiseSuccessfulResourceOwnerFlowAuthenticationEventAsync(userName, subjectId);
         }
 
-        private async Task RaiseFailedResourceOwnerAuthenticationEventAsync(string userName, SignInRequest signInRequest, string error)
+        private async Task RaiseFailedResourceOwnerAuthenticationEventAsync(string userName, string error)
         {
-            await _events.RaiseFailedResourceOwnerFlowAuthenticationEventAsync(userName, signInRequest, error);
+            await _events.RaiseFailedResourceOwnerFlowAuthenticationEventAsync(userName, error);
         }
 
         private async Task RaiseFailedAuthorizationCodeRedeemedEventAsync(string handle, string error)

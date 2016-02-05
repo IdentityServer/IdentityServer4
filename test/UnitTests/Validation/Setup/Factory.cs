@@ -31,7 +31,7 @@ namespace IdentityServer4.Tests.Validation
             IScopeStore scopes = null,
             IAuthorizationCodeStore authorizationCodeStore = null,
             IRefreshTokenStore refreshTokens = null,
-            IUserService userService = null,
+            IResourceOwnerPasswordValidator resourceOwnerValidator = null,
             IEnumerable<ICustomGrantValidator> customGrantValidators = null,
             ICustomRequestValidator customRequestValidator = null,
             ScopeValidator scopeValidator = null)
@@ -46,9 +46,9 @@ namespace IdentityServer4.Tests.Validation
                 scopes = new InMemoryScopeStore(TestScopes.Get());
             }
 
-            if (userService == null)
+            if (resourceOwnerValidator == null)
             {
-                userService = new TestUserService();
+                resourceOwnerValidator = new TestResourceOwnerPasswordValidator();
             }
 
             if (customRequestValidator == null)
@@ -80,7 +80,7 @@ namespace IdentityServer4.Tests.Validation
                 options, 
                 authorizationCodeStore, 
                 refreshTokens, 
-                userService, 
+                resourceOwnerValidator, 
                 aggregateCustomValidator, 
                 customRequestValidator, 
                 scopeValidator, 
@@ -148,10 +148,11 @@ namespace IdentityServer4.Tests.Validation
 
         public static TokenValidator CreateTokenValidator(ITokenHandleStore tokenStore = null, IUserService users = null)
         {
-            if (users == null)
-            {
-                users = new TestUserService();
-            }
+            // todo
+            //if (users == null)
+            //{
+            //    users = new TestUserService();
+            //}
 
             var clients = CreateClientStore();
             var options = TestIdentityServerOptions.Create();

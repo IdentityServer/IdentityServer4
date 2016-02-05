@@ -145,7 +145,7 @@ namespace IdentityServer4.Core.Extensions
         }
 
         public static async Task RaiseSuccessfulResourceOwnerFlowAuthenticationEventAsync(this IEventService events, 
-            string userName, string subjectId, SignInRequest message)
+            string userName, string subjectId)
         {
             var evt = new Event<LocalLoginDetails>(
                 EventConstants.Categories.Authentication,
@@ -155,7 +155,6 @@ namespace IdentityServer4.Core.Extensions
                 new LocalLoginDetails
                 {
                     SubjectId = subjectId,
-                    SignInRequest = message,
                     LoginUserName = userName
                 });
 
@@ -163,7 +162,7 @@ namespace IdentityServer4.Core.Extensions
         }
 
         public static async Task RaiseFailedResourceOwnerFlowAuthenticationEventAsync(this IEventService events, 
-            string userName, SignInRequest message, string error)
+            string userName, string error)
         {
             var evt = new Event<LocalLoginDetails>(
                 EventConstants.Categories.Authentication,
@@ -172,7 +171,6 @@ namespace IdentityServer4.Core.Extensions
                 EventConstants.Ids.ResourceOwnerFlowLoginFailure,
                 new LocalLoginDetails
                 {
-                    SignInRequest = message,
                     LoginUserName = userName
                 },
                 error);
