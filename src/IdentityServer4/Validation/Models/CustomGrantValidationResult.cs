@@ -32,10 +32,14 @@ namespace IdentityServer4.Core.Validation
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CustomGrantValidationResult"/> class with no error and no user.
+        /// Initializes a new instance of the <see cref="CustomGrantValidationResult"/> class with a given principal.
+        /// Warning: the principal needs to include the required claims - it is recommended to use the other constructor that does validation.
         /// </summary>
-        public CustomGrantValidationResult()
-        { }
+        public CustomGrantValidationResult(ClaimsPrincipal principal)
+        {
+            Principal = principal;
+            IsError = false;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CustomGrantValidationResult"/> class.

@@ -23,7 +23,7 @@ namespace IdentityServer4.Tests.ResponseHandling
         AuthorizeInteractionResponseGenerator _subject;
         IdentityServerOptions _options = new IdentityServerOptions();
         MockConsentService _mockConsent = new MockConsentService();
-        FakeUserService _fakeUserService = new FakeUserService();
+        FakeProfileService _fakeUserService = new FakeProfileService();
         FakeLocalizationService _fakeLocalizationService = new FakeLocalizationService();
 
         void RequiresConsent(bool value)

@@ -16,12 +16,12 @@ namespace IdentityServer4.Core.ResponseHandling
     public class UserInfoResponseGenerator : IUserInfoResponseGenerator
     {
         private readonly ILogger _logger;
-        private readonly IUserService _users;
+        private readonly IProfileService _profile;
         private readonly IScopeStore _scopes;
 
-        public UserInfoResponseGenerator(IUserService users, IScopeStore scopes, ILogger<UserInfoResponseGenerator> logger)
+        public UserInfoResponseGenerator(IProfileService profile, IScopeStore scopes, ILogger<UserInfoResponseGenerator> logger)
         {
-            _users = users;
+            _profile = profile;
             _scopes = scopes;
             _logger = logger;
         }
@@ -45,7 +45,7 @@ namespace IdentityServer4.Core.ResponseHandling
                     client, 
                     Constants.ProfileDataCallers.UserInfoEndpoint);
 
-                await _users.GetProfileDataAsync(context);
+                await _profile.GetProfileDataAsync(context);
                 profileClaims = context.IssuedClaims;
             }
             else
@@ -58,7 +58,7 @@ namespace IdentityServer4.Core.ResponseHandling
                     Constants.ProfileDataCallers.UserInfoEndpoint,
                     requestedClaimTypes.ClaimTypes);
 
-                await _users.GetProfileDataAsync(context);
+                await _profile.GetProfileDataAsync(context);
                 profileClaims = context.IssuedClaims;
             }
             

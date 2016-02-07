@@ -14,8 +14,10 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IIdentityServerBuilder AddInMemoryUsers(this IIdentityServerBuilder builder, List<InMemoryUser> users)
         {
             builder.Services.AddInstance(users);
-            builder.Services.AddTransient<IUserService, InMemoryUserService>();
 
+            builder.Services.AddTransient<IProfileService, InMemoryProfileService>();
+            builder.Services.AddTransient<IResourceOwnerPasswordValidator, InMemoryResourceOwnerPasswordValidator>();
+            
             return builder;
         }
 
