@@ -42,95 +42,7 @@ namespace IdentityServer4.Core
 
         public const string ScopeDisplayNameSuffix = "_DisplayName";
         public const string ScopeDescriptionSuffix = "_Description";
-
-        //public static class AuthorizeRequest
-        //{
-        //    public const string Scope        = "scope";
-        //    public const string ResponseType = "response_type";
-        //    public const string ClientId     = "client_id";
-        //    public const string RedirectUri  = "redirect_uri";
-        //    public const string State        = "state";
-        //    public const string ResponseMode = "response_mode";
-        //    public const string Nonce        = "nonce";
-        //    public const string Display      = "display";
-        //    public const string Prompt       = "prompt";
-        //    public const string MaxAge       = "max_age";
-        //    public const string UiLocales    = "ui_locales";
-        //    public const string IdTokenHint  = "id_token_hint";
-        //    public const string LoginHint    = "login_hint";
-        //    public const string AcrValues    = "acr_values";
-        //}
-
-        //public static class TokenRequest
-        //{
-        //    public const string GrantType    = "grant_type";
-        //    public const string RedirectUri  = "redirect_uri";
-        //    public const string ClientId     = "client_id";
-        //    public const string ClientSecret = "client_secret";
-        //    public const string Assertion    = "assertion";
-        //    public const string Code         = "code";
-        //    public const string RefreshToken = "refresh_token";
-        //    public const string Scope        = "scope";
-        //    public const string UserName     = "username";
-        //    public const string Password     = "password";
-        //}
-
-        //public static class EndSessionRequest
-        //{
-        //    public const string IdTokenHint           = "id_token_hint";
-        //    public const string PostLogoutRedirectUri = "post_logout_redirect_uri";
-        //    public const string State                 = "state";
-        //}
-
-        //public static class TokenResponse
-        //{
-        //    public const string AccessToken   = "access_token";
-        //    public const string IdentityToken = "id_token";
-        //    public const string ExpiresIn     = "expires_in";
-        //    public const string RefreshToken  = "refresh_token";
-        //    public const string TokenType     = "token_type";
-        //    public const string State         = "state";
-        //    public const string Scope         = "scope";
-        //    public const string Error         = "error";
-        //}
-
-        //public static class TokenTypes
-        //{
-        //    public const string AccessToken   = "access_token";
-        //    public const string IdentityToken = "id_token";
-        //    public const string RefreshToken  = "refresh_token";
-        //    public const string Bearer        = "Bearer";
-        //}
-
-        //public static class GrantTypes
-        //{
-        //    public const string Password          = "password";
-        //    public const string AuthorizationCode = "authorization_code";
-        //    public const string ClientCredentials = "client_credentials";
-        //    public const string RefreshToken      = "refresh_token";
-        //    public const string Implicit          = "implicit";
-           
-        //    // assertion grants
-        //    public const string Saml2Bearer = "urn:ietf:params:oauth:grant-type:saml2-bearer";
-        //    public const string JwtBearer   = "urn:ietf:params:oauth:grant-type:jwt-bearer";
-        //}
-
-        //public static class ResponseTypes
-        //{
-        //    // authorization code flow
-        //    public const string Code = "code";
-
-        //    // implicit flow
-        //    public const string Token        = "token";
-        //    public const string IdToken      = "id_token";
-        //    public const string IdTokenToken = "id_token token";
-            
-        //    // hybrid flow
-        //    public const string CodeIdToken      = "code id_token";
-        //    public const string CodeToken        = "code token";
-        //    public const string CodeIdTokenToken = "code id_token token";
-        //}
-
+        
         public static readonly List<string> SupportedResponseTypes = new List<string> 
                             { 
                                 OidcConstants.ResponseTypes.Code,
@@ -195,13 +107,6 @@ namespace IdentityServer4.Core
                                 { Flows.Hybrid, new[] { OidcConstants.ResponseModes.Fragment, OidcConstants.ResponseModes.FormPost }}
                             };
 
-        //public static class ResponseModes
-        //{
-        //    public const string FormPost = "form_post";
-        //    public const string Query    = "query";
-        //    public const string Fragment = "fragment";
-        //}
-
         public static readonly List<string> SupportedResponseModes = new List<string>
                             {
                                 OidcConstants.ResponseModes.FormPost,
@@ -219,14 +124,6 @@ namespace IdentityServer4.Core
             public const string RSA_SHA_256 = "RS256";
         }
 
-        //public static class DisplayModes
-        //{
-        //    public const string Page  = "page";
-        //    public const string Popup = "popup";
-        //    public const string Touch = "touch";
-        //    public const string Wap   = "wap";
-        //}
-
         public static readonly List<string> SupportedDisplayModes = new List<string>
                             {
                                 OidcConstants.DisplayModes.Page,
@@ -234,14 +131,6 @@ namespace IdentityServer4.Core
                                 OidcConstants.DisplayModes.Touch,
                                 OidcConstants.DisplayModes.Wap,
                             };
-
-        //public static class PromptModes
-        //{
-        //    public const string None          = "none";
-        //    public const string Login         = "login";
-        //    public const string Consent       = "consent";
-        //    public const string SelectAccount = "select_account";
-        //}
 
         public static readonly List<string> SupportedPromptModes = new List<string>
                             {
@@ -258,48 +147,6 @@ namespace IdentityServer4.Core
 
             public static readonly string[] All = { HomeRealm, Tenant };
         }
-
-        //public static class AuthorizeErrors
-        //{
-        //    // OAuth2 errors
-        //    public const string InvalidRequest          = "invalid_request";
-        //    public const string UnauthorizedClient      = "unauthorized_client";
-        //    public const string AccessDenied            = "access_denied";
-        //    public const string UnsupportedResponseType = "unsupported_response_type";
-        //    public const string InvalidScope            = "invalid_scope";
-        //    public const string ServerError             = "server_error";
-        //    public const string TemporarilyUnavailable  = "temporarily_unavailable";
-            
-        //    // OIDC errors
-        //    public const string InteractionRequired      = "interaction_required";
-        //    public const string LoginRequired            = "login_required";
-        //    public const string AccountSelectionRequired = "account_selection_required";
-        //    public const string ConsentRequired          = "consent_required";
-        //    public const string InvalidRequestUri        = "invalid_request_uri";
-        //    public const string InvalidRequestObject     = "invalid_request_object";
-        //    public const string RequestNotSupported      = "request_not_supported";
-        //    public const string RequestUriNotSupported   = "request_uri_not_supported";
-        //    public const string RegistrationNotSupported = "registration_not_supported";
-        //}
-
-        //public static class TokenErrors
-        //{
-        //    public const string InvalidRequest          = "invalid_request";
-        //    public const string InvalidClient           = "invalid_client";
-        //    public const string InvalidGrant            = "invalid_grant";
-        //    public const string UnauthorizedClient      = "unauthorized_client";
-        //    public const string UnsupportedGrantType    = "unsupported_grant_type";
-        //    public const string UnsupportedResponseType = "unsupported_response_type";
-        //    public const string InvalidScope            = "invalid_scope";
-        //}
-
-        //public static class ProtectedResourceErrors
-        //{
-        //    public const string InvalidToken      = "invalid_token";
-        //    public const string ExpiredToken      = "expired_token";
-        //    public const string InvalidRequest    = "invalid_request";
-        //    public const string InsufficientScope = "insufficient_scope";
-        //}
 
         public static Dictionary<string, int> ProtectedResourceErrorStatusCodes = new Dictionary<string, int>
         {
