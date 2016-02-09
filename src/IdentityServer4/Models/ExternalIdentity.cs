@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,7 +49,7 @@ namespace IdentityServer4.Core.Models
         {
             if (claims == null) throw new ArgumentNullException("claims");
 
-            var subClaim = claims.FirstOrDefault(x => x.Type == Constants.ClaimTypes.Subject);
+            var subClaim = claims.FirstOrDefault(x => x.Type == JwtClaimTypes.Subject);
             if (subClaim == null)
             {
                 subClaim = claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);

@@ -166,7 +166,7 @@ namespace IdentityServer4.Core.Validation
 
             if (expectedScope.IsPresent())
             {
-                var scope = result.Claims.FirstOrDefault(c => c.Type == Constants.ClaimTypes.Scope && c.Value == expectedScope);
+                var scope = result.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Scope && c.Value == expectedScope);
                 if (scope == null)
                 {
                     LogError(string.Format("Checking for expected scope {0} failed", expectedScope));
@@ -226,7 +226,7 @@ namespace IdentityServer4.Core.Validation
                 var id = handler.ValidateToken(jwt, parameters, out jwtToken);
 
                 // if access token contains an ID, log it
-                var jwtId = id.FindFirst(Constants.ClaimTypes.JwtId);
+                var jwtId = id.FindFirst(JwtClaimTypes.JwtId);
                 if (jwtId != null)
                 {
                     _log.JwtId = jwtId.Value;
@@ -234,7 +234,7 @@ namespace IdentityServer4.Core.Validation
 
                 // load the client that belongs to the client_id claim
                 Client client = null;
-                var clientId = id.FindFirst(Constants.ClaimTypes.ClientId);
+                var clientId = id.FindFirst(JwtClaimTypes.ClientId);
                 if (clientId != null)
                 {
                     client = await _clients.FindClientByIdAsync(clientId.Value);
@@ -302,10 +302,10 @@ namespace IdentityServer4.Core.Validation
         {
             var claims = new List<Claim>
             {
-                new Claim(Constants.ClaimTypes.Audience, token.Audience),
-                new Claim(Constants.ClaimTypes.Issuer, token.Issuer),
-                new Claim(Constants.ClaimTypes.NotBefore, token.CreationTime.ToEpochTime().ToString()),
-                new Claim(Constants.ClaimTypes.Expiration, token.CreationTime.AddSeconds(token.Lifetime).ToEpochTime().ToString())
+                new Claim(JwtClaimTypes.Audience, token.Audience),
+                new Claim(JwtClaimTypes.Issuer, token.Issuer),
+                new Claim(JwtClaimTypes.NotBefore, token.CreationTime.ToEpochTime().ToString()),
+                new Claim(JwtClaimTypes.Expiration, token.CreationTime.AddSeconds(token.Lifetime).ToEpochTime().ToString())
             };
 
             claims.AddRange(token.Claims);

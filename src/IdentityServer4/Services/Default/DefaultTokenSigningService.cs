@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens;
+using IdentityModel;
 
 #if DOTNET5_4
 using System.IdentityModel.Tokens.Jwt;
@@ -98,7 +99,7 @@ namespace IdentityServer4.Core.Services.Default
                 DateTimeHelper.UtcNow,
                 DateTimeHelper.UtcNow.AddSeconds(token.Lifetime));
 
-            var amrClaims = token.Claims.Where(x => x.Type == Constants.ClaimTypes.AuthenticationMethod);
+            var amrClaims = token.Claims.Where(x => x.Type == JwtClaimTypes.AuthenticationMethod);
             var jsonClaims = token.Claims.Where(x => x.ValueType == Constants.ClaimValueTypes.Json);
             var normalClaims = token.Claims.Except(amrClaims).Except(jsonClaims);
 
@@ -108,7 +109,7 @@ namespace IdentityServer4.Core.Services.Default
             var amrValues = amrClaims.Select(x => x.Value).Distinct().ToArray();
             if (amrValues.Any())
             {
-                payload.Add(Constants.ClaimTypes.AuthenticationMethod, amrValues);
+                payload.Add(JwtClaimTypes.AuthenticationMethod, amrValues);
             }
 
             // deal with json types

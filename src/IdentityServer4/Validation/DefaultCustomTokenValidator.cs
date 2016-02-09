@@ -59,14 +59,14 @@ namespace IdentityServer4.Core.Validation
             }
 
             // make sure user is still active (if sub claim is present)
-            var subClaim = result.Claims.FirstOrDefault(c => c.Type == Constants.ClaimTypes.Subject);
+            var subClaim = result.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject);
             if (subClaim != null)
             {
                 var principal = Principal.Create("tokenvalidator", result.Claims.ToArray());
 
                 if (result.ReferenceTokenId.IsPresent())
                 {
-                    principal.Identities.First().AddClaim(new Claim(Constants.ClaimTypes.ReferenceTokenId, result.ReferenceTokenId));
+                    principal.Identities.First().AddClaim(new Claim(JwtClaimTypes.ReferenceTokenId, result.ReferenceTokenId));
                 }
 
                 var isActiveCtx = new IsActiveContext(principal, result.Client);
@@ -85,7 +85,7 @@ namespace IdentityServer4.Core.Validation
             }
 
             // make sure client is still active (if client_id claim is present)
-            var clientClaim = result.Claims.FirstOrDefault(c => c.Type == Constants.ClaimTypes.ClientId);
+            var clientClaim = result.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.ClientId);
             if (clientClaim != null)
             {
                 var client = await _clients.FindClientByIdAsync(clientClaim.Value);
@@ -114,7 +114,7 @@ namespace IdentityServer4.Core.Validation
         public virtual async Task<TokenValidationResult> ValidateIdentityTokenAsync(TokenValidationResult result)
         {
             // make sure user is still active (if sub claim is present)
-            var subClaim = result.Claims.FirstOrDefault(c => c.Type == Constants.ClaimTypes.Subject);
+            var subClaim = result.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject);
             if (subClaim != null)
             {
                 var principal = Principal.Create("tokenvalidator", result.Claims.ToArray());

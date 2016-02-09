@@ -108,7 +108,7 @@ namespace IdentityServer4.Core.Models
         {
             get
             {
-                return Claims.Where(x => x.Type == Constants.ClaimTypes.Subject).Select(x => x.Value).SingleOrDefault();
+                return Claims.Where(x => x.Type == JwtClaimTypes.Subject).Select(x => x.Value).SingleOrDefault();
             }
         }
 
@@ -134,7 +134,7 @@ namespace IdentityServer4.Core.Models
         /// </value>
         public IEnumerable<string> Scopes
         {
-            get { return Claims.Where(x => x.Type == Constants.ClaimTypes.Scope).Select(x => x.Value); }
+            get { return Claims.Where(x => x.Type == JwtClaimTypes.Scope).Select(x => x.Value); }
         }
     }
 }

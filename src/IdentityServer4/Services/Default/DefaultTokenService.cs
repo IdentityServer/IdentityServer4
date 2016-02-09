@@ -110,28 +110,28 @@ namespace IdentityServer4.Core.Services.Default
             // if nonce was sent, must be mirrored in id token
             if (request.Nonce.IsPresent())
             {
-                claims.Add(new Claim(Constants.ClaimTypes.Nonce, request.Nonce));
+                claims.Add(new Claim(JwtClaimTypes.Nonce, request.Nonce));
             }
 
             // add iat claim
-            claims.Add(new Claim(Constants.ClaimTypes.IssuedAt, DateTimeOffsetHelper.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer));
+            claims.Add(new Claim(JwtClaimTypes.IssuedAt, DateTimeOffsetHelper.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer));
 
             // add at_hash claim
             if (request.AccessTokenToHash.IsPresent())
             {
-                claims.Add(new Claim(Constants.ClaimTypes.AccessTokenHash, HashAdditionalData(request.AccessTokenToHash)));
+                claims.Add(new Claim(JwtClaimTypes.AccessTokenHash, HashAdditionalData(request.AccessTokenToHash)));
             }
 
             // add c_hash claim
             if (request.AuthorizationCodeToHash.IsPresent())
             {
-                claims.Add(new Claim(Constants.ClaimTypes.AuthorizationCodeHash, HashAdditionalData(request.AuthorizationCodeToHash)));
+                claims.Add(new Claim(JwtClaimTypes.AuthorizationCodeHash, HashAdditionalData(request.AuthorizationCodeToHash)));
             }
 
             // add sid if present
             if (request.ValidatedRequest.SessionId.IsPresent())
             {
-                claims.Add(new Claim(Constants.ClaimTypes.SessionId, request.ValidatedRequest.SessionId));
+                claims.Add(new Claim(JwtClaimTypes.SessionId, request.ValidatedRequest.SessionId));
             }
 
             claims.AddRange(await _claimsProvider.GetIdentityTokenClaimsAsync(
@@ -176,7 +176,7 @@ namespace IdentityServer4.Core.Services.Default
 
             if (request.Client.IncludeJwtId)
             {
-                claims.Add(new Claim(Constants.ClaimTypes.JwtId, CryptoRandom.CreateUniqueId()));
+                claims.Add(new Claim(JwtClaimTypes.JwtId, CryptoRandom.CreateUniqueId()));
             }
 
             var issuer = _context.GetIssuerUri();

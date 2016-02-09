@@ -56,10 +56,10 @@ namespace IdentityServer4.Core.Validation
         {
             var resultClaims = new List<Claim>
             {
-                new Claim(Constants.ClaimTypes.Subject, subject),
-                new Claim(Constants.ClaimTypes.AuthenticationMethod, authenticationMethod),
-                new Claim(Constants.ClaimTypes.IdentityProvider, identityProvider),
-                new Claim(Constants.ClaimTypes.AuthenticationTime, DateTimeOffsetHelper.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer)
+                new Claim(JwtClaimTypes.Subject, subject),
+                new Claim(JwtClaimTypes.AuthenticationMethod, authenticationMethod),
+                new Claim(JwtClaimTypes.IdentityProvider, identityProvider),
+                new Claim(JwtClaimTypes.AuthenticationTime, DateTimeOffsetHelper.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer)
             };
 
             if (claims != null && claims.Any())

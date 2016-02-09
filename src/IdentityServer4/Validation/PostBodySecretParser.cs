@@ -8,6 +8,7 @@ using Microsoft.AspNet.Http;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using System.Linq;
+using IdentityModel;
 
 namespace IdentityServer4.Core.Validation
 {
@@ -33,7 +34,7 @@ namespace IdentityServer4.Core.Validation
         {
             get
             {
-                return Constants.TokenEndpointAuthenticationMethods.PostBody;
+                return OidcConstants.EndpointAuthenticationMethods.PostBody;
             }
         }
 

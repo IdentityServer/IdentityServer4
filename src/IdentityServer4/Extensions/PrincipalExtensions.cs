@@ -46,7 +46,7 @@ namespace IdentityServer4.Core.Extensions
         public static long GetAuthenticationTimeEpoch(this IIdentity identity)
         {
             var id = identity as ClaimsIdentity;
-            var claim = id.FindFirst(Constants.ClaimTypes.AuthenticationTime);
+            var claim = id.FindFirst(JwtClaimTypes.AuthenticationTime);
 
             if (claim == null) throw new InvalidOperationException("auth_time is missing.");
            
@@ -74,7 +74,7 @@ namespace IdentityServer4.Core.Extensions
         public static string GetSubjectId(this IIdentity identity)
         {
             var id = identity as ClaimsIdentity;
-            var claim = id.FindFirst(Constants.ClaimTypes.Subject);
+            var claim = id.FindFirst(JwtClaimTypes.Subject);
 
             if (claim == null) throw new InvalidOperationException("sub claim is missing");
             return claim.Value;
@@ -101,7 +101,7 @@ namespace IdentityServer4.Core.Extensions
         public static string GetName(this IIdentity identity)
         {
             var id = identity as ClaimsIdentity;
-            var claim = id.FindFirst(Constants.ClaimTypes.Name);
+            var claim = id.FindFirst(JwtClaimTypes.Name);
 
             if (claim == null) throw new InvalidOperationException("name claim is missing");
             return claim.Value;
@@ -139,7 +139,7 @@ namespace IdentityServer4.Core.Extensions
         public static string GetAuthenticationMethod(this IIdentity identity)
         {
             var id = identity as ClaimsIdentity;
-            var claim = id.FindFirst(Constants.ClaimTypes.AuthenticationMethod);
+            var claim = id.FindFirst(JwtClaimTypes.AuthenticationMethod);
 
             if (claim == null) throw new InvalidOperationException("amr claim is missing");
             return claim.Value;
@@ -154,7 +154,7 @@ namespace IdentityServer4.Core.Extensions
         public static IEnumerable<Claim> GetAuthenticationMethods(this IIdentity identity)
         {
             var id = identity as ClaimsIdentity;
-            return id.FindAll(Constants.ClaimTypes.AuthenticationMethod);
+            return id.FindAll(JwtClaimTypes.AuthenticationMethod);
         }
 
         /// <summary>
@@ -178,7 +178,7 @@ namespace IdentityServer4.Core.Extensions
         public static string GetIdentityProvider(this IIdentity identity)
         {
             var id = identity as ClaimsIdentity;
-            var claim = id.FindFirst(Constants.ClaimTypes.IdentityProvider);
+            var claim = id.FindFirst(JwtClaimTypes.IdentityProvider);
 
             if (claim == null) throw new InvalidOperationException("idp claim is missing");
             return claim.Value;

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityModel;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -71,7 +72,7 @@ namespace IdentityServer4.Core.Models
                     Type = ScopeType.Identity,
                     Claims = new List<ScopeClaim>
                     {
-                        new ScopeClaim(Constants.ClaimTypes.Subject, alwaysInclude: true)
+                        new ScopeClaim(JwtClaimTypes.Subject, alwaysInclude: true)
                     }
                 };
             }
@@ -274,7 +275,7 @@ namespace IdentityServer4.Core.Models
                     Emphasize = true,
                     Claims = new List<ScopeClaim> 
                     {
-                        new ScopeClaim(Constants.ClaimTypes.Role)
+                        new ScopeClaim(JwtClaimTypes.Role)
                     }
                 };
             }
@@ -297,7 +298,7 @@ namespace IdentityServer4.Core.Models
                     Emphasize = true,
                     Claims = new List<ScopeClaim>
                     {
-                        new ScopeClaim(Constants.ClaimTypes.Role, alwaysInclude: true)
+                        new ScopeClaim(JwtClaimTypes.Role, alwaysInclude: true)
                     }
                 };
             }

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityModel;
 using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Validation;
@@ -128,7 +129,7 @@ namespace IdentityServer4.Core.Services.Default
             // add client_id
             var outputClaims = new List<Claim>
             {
-                new Claim(Constants.ClaimTypes.ClientId, client.ClientId),
+                new Claim(JwtClaimTypes.ClientId, client.ClientId),
             };
 
             // check for client claims
@@ -153,7 +154,7 @@ namespace IdentityServer4.Core.Services.Default
             // add scopes
             foreach (var scope in scopes)
             {
-                outputClaims.Add(new Claim(Constants.ClaimTypes.Scope, scope.Name));
+                outputClaims.Add(new Claim(JwtClaimTypes.Scope, scope.Name));
             }
 
             // a user is involved
@@ -228,9 +229,9 @@ namespace IdentityServer4.Core.Services.Default
         {
             var claims = new List<Claim>
             {
-                new Claim(Constants.ClaimTypes.Subject, subject.GetSubjectId()),
-                new Claim(Constants.ClaimTypes.AuthenticationTime, subject.GetAuthenticationTimeEpoch().ToString(), ClaimValueTypes.Integer),
-                new Claim(Constants.ClaimTypes.IdentityProvider, subject.GetIdentityProvider()),
+                new Claim(JwtClaimTypes.Subject, subject.GetSubjectId()),
+                new Claim(JwtClaimTypes.AuthenticationTime, subject.GetAuthenticationTimeEpoch().ToString(), ClaimValueTypes.Integer),
+                new Claim(JwtClaimTypes.IdentityProvider, subject.GetIdentityProvider()),
             };
 
             claims.AddRange(subject.GetAuthenticationMethods());
@@ -247,7 +248,7 @@ namespace IdentityServer4.Core.Services.Default
         {
             var claims = new List<Claim>();
 
-            var acr = subject.FindFirst(Constants.ClaimTypes.AuthenticationContextClassReference);
+            var acr = subject.FindFirst(JwtClaimTypes.AuthenticationContextClassReference);
             if (acr.HasValue()) claims.Add(acr);
 
             return claims;

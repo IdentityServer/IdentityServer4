@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityModel;
 using IdentityServer4.Core.Models;
 using System.Collections.Specialized;
 using System.Linq;
@@ -44,7 +45,7 @@ namespace IdentityServer4.Core.Validation
 
             // check expected scope
             var expectedScope = tokenValidationResult.Claims.FirstOrDefault(
-                c => c.Type == Constants.ClaimTypes.Scope && c.Value == scope.Name);
+                c => c.Type == JwtClaimTypes.Scope && c.Value == scope.Name);
 
             // expected scope not present
             if (expectedScope == null)

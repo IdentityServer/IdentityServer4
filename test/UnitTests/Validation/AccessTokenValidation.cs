@@ -82,7 +82,7 @@ namespace IdentityServer4.Tests.Validation.Tokens
 
             result.IsError.Should().BeFalse();
             result.Claims.Count().Should().Be(8);
-            result.Claims.First(c => c.Type == Constants.ClaimTypes.ClientId).Value.Should().Be("roclient");
+            result.Claims.First(c => c.Type == JwtClaimTypes.ClientId).Value.Should().Be("roclient");
         }
 
         [Fact]
