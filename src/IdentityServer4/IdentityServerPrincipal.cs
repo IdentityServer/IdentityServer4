@@ -14,7 +14,7 @@ namespace IdentityServer4.Core
         public static ClaimsPrincipal Create(
             string subject,
             string displayName,
-            string authenticationMethod = Constants.AuthenticationMethods.Password,
+            string authenticationMethod = OidcConstants.AuthenticationMethods.Password,
             string idp = Constants.BuiltInIdentityProvider,
             string authenticationType = Constants.PrimaryAuthenticationType,
             long authenticationTime = 0)

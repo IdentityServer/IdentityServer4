@@ -72,11 +72,11 @@ namespace IdentityServer4.Core.Models
             {
                 if (identityProvider == Constants.BuiltInIdentityProvider)
                 {
-                    authenticationMethod = Constants.AuthenticationMethods.Password;
+                    authenticationMethod = OidcConstants.AuthenticationMethods.Password;
                 }
                 else
                 {
-                    authenticationMethod = Constants.AuthenticationMethods.External;
+                    authenticationMethod = Constants.ExternalAuthenticationMethod;
                 }
             }
 
