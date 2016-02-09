@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityModel;
 using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Services;
@@ -31,12 +32,12 @@ namespace IdentityServer4.Core.ResponseHandling
         {
             _logger.LogVerbose("Creating token response");
 
-            if (request.GrantType == Constants.GrantTypes.AuthorizationCode)
+            if (request.GrantType == OidcConstants.GrantTypes.AuthorizationCode)
             {
                 return await ProcessAuthorizationCodeRequestAsync(request);
             }
 
-            if (request.GrantType == Constants.GrantTypes.RefreshToken)
+            if (request.GrantType == OidcConstants.GrantTypes.RefreshToken)
             {
                 return await ProcessRefreshTokenRequestAsync(request);
             }

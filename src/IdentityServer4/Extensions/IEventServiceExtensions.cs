@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityModel;
 using IdentityServer4.Core.Events;
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Services;
@@ -273,11 +274,11 @@ namespace IdentityServer4.Core.Extensions
 
         public static async Task RaiseTokenIssuedEventAsync(this IEventService events, Token token, string rawToken)
         {
-            if (token.Type == Constants.TokenTypes.AccessToken)
+            if (token.Type == OidcConstants.TokenTypes.AccessToken)
             {
                 await events.RaiseAccessTokenIssuedEventAsync(token, rawToken);
             }
-            else if (token.Type == Constants.TokenTypes.IdentityToken)
+            else if (token.Type == OidcConstants.TokenTypes.IdentityToken)
             {
                 await events.RaiseIdentityTokenIssuedEventAsync(token);
             }

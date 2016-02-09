@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityModel;
 using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Hosting;
 using IdentityServer4.Core.Models;
@@ -142,16 +143,16 @@ namespace IdentityServer4.Core.Endpoints.Results
                 };
 
                 // do some early checks to see if we will end up not generating an error page
-                if (error == Constants.AuthorizeErrors.AccessDenied)
+                if (error == OidcConstants.AuthorizeErrors.AccessDenied)
                 {
                     return await CreateAuthorizeResultAsync(response);
                 }
 
-                if (request.PromptMode == Constants.PromptModes.None &&
+                if (request.PromptMode == OidcConstants.PromptModes.None &&
                     request.Client.AllowPromptNone == true &&
-                    (error == Constants.AuthorizeErrors.LoginRequired ||
-                     error == Constants.AuthorizeErrors.ConsentRequired ||
-                     error == Constants.AuthorizeErrors.InteractionRequired)
+                    (error == OidcConstants.AuthorizeErrors.LoginRequired ||
+                     error == OidcConstants.AuthorizeErrors.ConsentRequired ||
+                     error == OidcConstants.AuthorizeErrors.InteractionRequired)
                 )
                 {
                     // todo: verify these are the right conditions to allow
@@ -189,12 +190,12 @@ namespace IdentityServer4.Core.Endpoints.Results
                     ClientId = request.ClientId,
                 };
 
-                if (request.ResponseMode == Constants.ResponseModes.Query ||
-                    request.ResponseMode == Constants.ResponseModes.Fragment)
+                if (request.ResponseMode == OidcConstants.ResponseModes.Query ||
+                    request.ResponseMode == OidcConstants.ResponseModes.Fragment)
                 {
                     errorModel.ReturnInfo.Uri = request.RedirectUri = AuthorizeRedirectResult.BuildUri(response);
                 }
-                else if (request.ResponseMode == Constants.ResponseModes.FormPost)
+                else if (request.ResponseMode == OidcConstants.ResponseModes.FormPost)
                 {
                     errorModel.ReturnInfo.Uri = request.RedirectUri;
                     errorModel.ReturnInfo.PostBody = AuthorizeFormPostResult.BuildFormBody(response);
@@ -224,12 +225,12 @@ namespace IdentityServer4.Core.Endpoints.Results
 
             IEndpointResult result = null;
 
-            if (request.ResponseMode == Constants.ResponseModes.Query ||
-                request.ResponseMode == Constants.ResponseModes.Fragment)
+            if (request.ResponseMode == OidcConstants.ResponseModes.Query ||
+                request.ResponseMode == OidcConstants.ResponseModes.Fragment)
             {
                 result = new AuthorizeRedirectResult(response);
             }
-            if (request.ResponseMode == Constants.ResponseModes.FormPost)
+            if (request.ResponseMode == OidcConstants.ResponseModes.FormPost)
             {
                 result = new AuthorizeFormPostResult(response);
             }

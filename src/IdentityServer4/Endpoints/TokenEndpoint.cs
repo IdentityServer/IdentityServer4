@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityModel;
 using IdentityServer4.Core.Endpoints.Results;
 using IdentityServer4.Core.Hosting;
 using IdentityServer4.Core.ResponseHandling;
@@ -34,7 +35,7 @@ namespace IdentityServer4.Core.Endpoints
             if (context.HttpContext.Request.Method != "POST" || !context.HttpContext.Request.HasFormContentType)
             {
                 // todo logging
-                return new TokenErrorResult(Constants.TokenErrors.InvalidRequest);
+                return new TokenErrorResult(OidcConstants.TokenErrors.InvalidRequest);
             }
 
             // validate client
@@ -42,7 +43,7 @@ namespace IdentityServer4.Core.Endpoints
 
             if (clientResult.Client == null)
             {
-                return new TokenErrorResult(Constants.TokenErrors.InvalidClient);
+                return new TokenErrorResult(OidcConstants.TokenErrors.InvalidClient);
             }
             
             // validate request

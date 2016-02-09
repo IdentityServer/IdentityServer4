@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityModel;
 using IdentityServer4.Core.Configuration;
 using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Models;
@@ -48,11 +49,11 @@ namespace IdentityServer4.Core.ResponseHandling
 
         internal async Task<InteractionResponse> ProcessLoginAsync(ValidatedAuthorizeRequest request)
         {
-            if (request.PromptMode == Constants.PromptModes.Login)
+            if (request.PromptMode == OidcConstants.PromptModes.Login)
             {
                 // remove prompt so when we redirect back in from login page
                 // we won't think we need to force a prompt again
-                request.Raw.Remove(Constants.AuthorizeRequest.Prompt);
+                request.Raw.Remove(OidcConstants.AuthorizeRequest.Prompt);
 
                 _logger.LogInformation("Redirecting to login page because of prompt=login");
 
@@ -79,7 +80,7 @@ namespace IdentityServer4.Core.ResponseHandling
                 else if (!isActive) _logger.LogInformation("User is not active.");
 
                 // prompt=none means user must be signed in already
-                if (request.PromptMode == Constants.PromptModes.None)
+                if (request.PromptMode == OidcConstants.PromptModes.None)
                 {
                     _logger.LogInformation("prompt=none was requested but user is not authenticated/active.");
 
@@ -88,7 +89,7 @@ namespace IdentityServer4.Core.ResponseHandling
                         Error = new AuthorizeError
                         {
                             ErrorType = ErrorTypes.Client,
-                            Error = Constants.AuthorizeErrors.LoginRequired,
+                            Error = OidcConstants.AuthorizeErrors.LoginRequired,
                             ResponseMode = request.ResponseMode,
                             ErrorUri = request.RedirectUri,
                             State = request.State
@@ -156,15 +157,15 @@ namespace IdentityServer4.Core.ResponseHandling
             if (request == null) throw new ArgumentNullException("request");
 
             if (request.PromptMode != null &&
-                request.PromptMode != Constants.PromptModes.None &&
-                request.PromptMode != Constants.PromptModes.Consent)
+                request.PromptMode != OidcConstants.PromptModes.None &&
+                request.PromptMode != OidcConstants.PromptModes.Consent)
             {
                 throw new ArgumentException("Invalid PromptMode");
             }
 
             var consentRequired = await _consent.RequiresConsentAsync(request.Client, request.Subject, request.RequestedScopes);
 
-            if (consentRequired && request.PromptMode == Constants.PromptModes.None)
+            if (consentRequired && request.PromptMode == OidcConstants.PromptModes.None)
             {
                 _logger.LogInformation("Prompt=none requested, but consent is required.");
 
@@ -173,7 +174,7 @@ namespace IdentityServer4.Core.ResponseHandling
                     Error = new AuthorizeError
                     {
                         ErrorType = ErrorTypes.Client,
-                        Error = Constants.AuthorizeErrors.ConsentRequired,
+                        Error = OidcConstants.AuthorizeErrors.ConsentRequired,
                         ResponseMode = request.ResponseMode,
                         ErrorUri = request.RedirectUri,
                         State = request.State
@@ -181,7 +182,7 @@ namespace IdentityServer4.Core.ResponseHandling
                 };
             }
 
-            if (request.PromptMode == Constants.PromptModes.Consent || consentRequired)
+            if (request.PromptMode == OidcConstants.PromptModes.Consent || consentRequired)
             {
                 var response = new InteractionResponse();
 
@@ -203,7 +204,7 @@ namespace IdentityServer4.Core.ResponseHandling
                         response.Error = new AuthorizeError
                         {
                             ErrorType = ErrorTypes.Client,
-                            Error = Constants.AuthorizeErrors.AccessDenied,
+                            Error = OidcConstants.AuthorizeErrors.AccessDenied,
                             ResponseMode = request.ResponseMode,
                             ErrorUri = request.RedirectUri,
                             State = request.State
@@ -218,7 +219,7 @@ namespace IdentityServer4.Core.ResponseHandling
                             response.Error = new AuthorizeError
                             {
                                 ErrorType = ErrorTypes.Client,
-                                Error = Constants.AuthorizeErrors.AccessDenied,
+                                Error = OidcConstants.AuthorizeErrors.AccessDenied,
                                 ResponseMode = request.ResponseMode,
                                 ErrorUri = request.RedirectUri,
                                 State = request.State

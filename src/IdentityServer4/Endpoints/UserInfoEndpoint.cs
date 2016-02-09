@@ -12,6 +12,7 @@ using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Events;
 using IdentityServer4.Core.Hosting;
 using IdentityServer4.Core.Endpoints.Results;
+using IdentityModel;
 
 namespace IdentityServer4.Core.Endpoints
 {
@@ -50,7 +51,7 @@ namespace IdentityServer4.Core.Endpoints
 
                 _logger.LogError(error);
                 await RaiseFailureEventAsync(error);
-                return Error(Constants.ProtectedResourceErrors.InvalidToken);
+                return Error(OidcConstants.ProtectedResourceErrors.InvalidToken);
             }
 
             _logger.LogInformation("Token found: {token}", tokenUsageResult.UsageType.ToString());

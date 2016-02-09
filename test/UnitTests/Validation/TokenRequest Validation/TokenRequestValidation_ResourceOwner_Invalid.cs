@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using FluentAssertions;
+using IdentityModel;
 using IdentityServer4.Core;
 using IdentityServer4.Core.Services;
 using System.Collections.Specialized;
@@ -25,13 +26,13 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var validator = Factory.CreateTokenRequestValidator();
 
             var parameters = new NameValueCollection();
-            parameters.Add(Constants.TokenRequest.GrantType, Constants.GrantTypes.Password);
-            parameters.Add(Constants.TokenRequest.Scope, "resource");
+            parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.Password);
+            parameters.Add(OidcConstants.TokenRequest.Scope, "resource");
 
             var result = await validator.ValidateRequestAsync(parameters, client);
 
             result.IsError.Should().BeTrue();
-            result.Error.Should().Be(Constants.TokenErrors.UnauthorizedClient);
+            result.Error.Should().Be(OidcConstants.TokenErrors.UnauthorizedClient);
         }
 
         [Fact]
@@ -42,14 +43,14 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var validator = Factory.CreateTokenRequestValidator();
 
             var parameters = new NameValueCollection();
-            parameters.Add(Constants.TokenRequest.GrantType, Constants.GrantTypes.Password);
-            parameters.Add(Constants.TokenRequest.UserName, "bob");
-            parameters.Add(Constants.TokenRequest.Password, "bob");
+            parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.Password);
+            parameters.Add(OidcConstants.TokenRequest.UserName, "bob");
+            parameters.Add(OidcConstants.TokenRequest.Password, "bob");
 
             var result = await validator.ValidateRequestAsync(parameters, client);
 
             result.IsError.Should().BeTrue();
-            result.Error.Should().Be(Constants.TokenErrors.InvalidScope);
+            result.Error.Should().Be(OidcConstants.TokenErrors.InvalidScope);
         }
 
         [Fact]
@@ -60,15 +61,15 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var validator = Factory.CreateTokenRequestValidator();
 
             var parameters = new NameValueCollection();
-            parameters.Add(Constants.TokenRequest.GrantType, Constants.GrantTypes.Password);
-            parameters.Add(Constants.TokenRequest.Scope, "unknown");
-            parameters.Add(Constants.TokenRequest.UserName, "bob");
-            parameters.Add(Constants.TokenRequest.Password, "bob");
+            parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.Password);
+            parameters.Add(OidcConstants.TokenRequest.Scope, "unknown");
+            parameters.Add(OidcConstants.TokenRequest.UserName, "bob");
+            parameters.Add(OidcConstants.TokenRequest.Password, "bob");
 
             var result = await validator.ValidateRequestAsync(parameters, client);
 
             result.IsError.Should().BeTrue();
-            result.Error.Should().Be(Constants.TokenErrors.InvalidScope);
+            result.Error.Should().Be(OidcConstants.TokenErrors.InvalidScope);
         }
 
         [Fact]
@@ -79,15 +80,15 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var validator = Factory.CreateTokenRequestValidator();
 
             var parameters = new NameValueCollection();
-            parameters.Add(Constants.TokenRequest.GrantType, Constants.GrantTypes.Password);
-            parameters.Add(Constants.TokenRequest.Scope, "resource unknown");
-            parameters.Add(Constants.TokenRequest.UserName, "bob");
-            parameters.Add(Constants.TokenRequest.Password, "bob");
+            parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.Password);
+            parameters.Add(OidcConstants.TokenRequest.Scope, "resource unknown");
+            parameters.Add(OidcConstants.TokenRequest.UserName, "bob");
+            parameters.Add(OidcConstants.TokenRequest.Password, "bob");
 
             var result = await validator.ValidateRequestAsync(parameters, client);
 
             result.IsError.Should().BeTrue();
-            result.Error.Should().Be(Constants.TokenErrors.InvalidScope);
+            result.Error.Should().Be(OidcConstants.TokenErrors.InvalidScope);
         }
 
         [Fact]
@@ -98,15 +99,15 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var validator = Factory.CreateTokenRequestValidator();
 
             var parameters = new NameValueCollection();
-            parameters.Add(Constants.TokenRequest.GrantType, Constants.GrantTypes.Password);
-            parameters.Add(Constants.TokenRequest.Scope, "resource2");
-            parameters.Add(Constants.TokenRequest.UserName, "bob");
-            parameters.Add(Constants.TokenRequest.Password, "bob");
+            parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.Password);
+            parameters.Add(OidcConstants.TokenRequest.Scope, "resource2");
+            parameters.Add(OidcConstants.TokenRequest.UserName, "bob");
+            parameters.Add(OidcConstants.TokenRequest.Password, "bob");
 
             var result = await validator.ValidateRequestAsync(parameters, client);
 
             result.IsError.Should().BeTrue();
-            result.Error.Should().Be(Constants.TokenErrors.InvalidScope);
+            result.Error.Should().Be(OidcConstants.TokenErrors.InvalidScope);
         }
 
         [Fact]
@@ -117,15 +118,15 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var validator = Factory.CreateTokenRequestValidator();
 
             var parameters = new NameValueCollection();
-            parameters.Add(Constants.TokenRequest.GrantType, Constants.GrantTypes.Password);
-            parameters.Add(Constants.TokenRequest.Scope, "resource resource2");
-            parameters.Add(Constants.TokenRequest.UserName, "bob");
-            parameters.Add(Constants.TokenRequest.Password, "bob");
+            parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.Password);
+            parameters.Add(OidcConstants.TokenRequest.Scope, "resource resource2");
+            parameters.Add(OidcConstants.TokenRequest.UserName, "bob");
+            parameters.Add(OidcConstants.TokenRequest.Password, "bob");
 
             var result = await validator.ValidateRequestAsync(parameters, client);
 
             result.IsError.Should().BeTrue();
-            result.Error.Should().Be(Constants.TokenErrors.InvalidScope);
+            result.Error.Should().Be(OidcConstants.TokenErrors.InvalidScope);
         }
 
         [Fact]
@@ -136,13 +137,13 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var validator = Factory.CreateTokenRequestValidator();
 
             var parameters = new NameValueCollection();
-            parameters.Add(Constants.TokenRequest.GrantType, Constants.GrantTypes.Password);
-            parameters.Add(Constants.TokenRequest.Scope, "resource");
+            parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.Password);
+            parameters.Add(OidcConstants.TokenRequest.Scope, "resource");
 
             var result = await validator.ValidateRequestAsync(parameters, client);
 
             result.IsError.Should().BeTrue();
-            result.Error.Should().Be(Constants.TokenErrors.InvalidGrant);
+            result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
         }
 
         [Fact]
@@ -153,14 +154,14 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var validator = Factory.CreateTokenRequestValidator();
 
             var parameters = new NameValueCollection();
-            parameters.Add(Constants.TokenRequest.GrantType, Constants.GrantTypes.Password);
-            parameters.Add(Constants.TokenRequest.Scope, "resource");
-            parameters.Add(Constants.TokenRequest.Password, "bob");
+            parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.Password);
+            parameters.Add(OidcConstants.TokenRequest.Scope, "resource");
+            parameters.Add(OidcConstants.TokenRequest.Password, "bob");
 
             var result = await validator.ValidateRequestAsync(parameters, client);
 
             result.IsError.Should().BeTrue();
-            result.Error.Should().Be(Constants.TokenErrors.InvalidGrant);
+            result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
         }
 
         [Fact]
@@ -171,14 +172,14 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var validator = Factory.CreateTokenRequestValidator();
 
             var parameters = new NameValueCollection();
-            parameters.Add(Constants.TokenRequest.GrantType, Constants.GrantTypes.Password);
-            parameters.Add(Constants.TokenRequest.Scope, "resource");
-            parameters.Add(Constants.TokenRequest.UserName, "bob");
+            parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.Password);
+            parameters.Add(OidcConstants.TokenRequest.Scope, "resource");
+            parameters.Add(OidcConstants.TokenRequest.UserName, "bob");
 
             var result = await validator.ValidateRequestAsync(parameters, client);
 
             result.IsError.Should().BeTrue();
-            result.Error.Should().Be(Constants.TokenErrors.InvalidGrant);
+            result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
         }
 
         [Fact]
@@ -189,15 +190,15 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var validator = Factory.CreateTokenRequestValidator();
 
             var parameters = new NameValueCollection();
-            parameters.Add(Constants.TokenRequest.GrantType, Constants.GrantTypes.Password);
-            parameters.Add(Constants.TokenRequest.Scope, "resource");
-            parameters.Add(Constants.TokenRequest.UserName, "bob");
-            parameters.Add(Constants.TokenRequest.Password, "notbob");
+            parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.Password);
+            parameters.Add(OidcConstants.TokenRequest.Scope, "resource");
+            parameters.Add(OidcConstants.TokenRequest.UserName, "bob");
+            parameters.Add(OidcConstants.TokenRequest.Password, "notbob");
 
             var result = await validator.ValidateRequestAsync(parameters, client);
 
             result.IsError.Should().BeTrue();
-            result.Error.Should().Be(Constants.TokenErrors.InvalidGrant);
+            result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
             result.ErrorDescription.Should().Be("Username and/or password incorrect");
         }
     }

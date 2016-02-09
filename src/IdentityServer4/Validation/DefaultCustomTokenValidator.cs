@@ -77,7 +77,7 @@ namespace IdentityServer4.Core.Validation
                     _logger.LogWarning("User marked as not active: {subject}", subClaim.Value);
 
                     result.IsError = true;
-                    result.Error = Constants.ProtectedResourceErrors.InvalidToken;
+                    result.Error = OidcConstants.ProtectedResourceErrors.InvalidToken;
                     result.Claims = null;
 
                     return result;
@@ -94,7 +94,7 @@ namespace IdentityServer4.Core.Validation
                     _logger.LogWarning("Client deleted or disabled: {clientId}", clientClaim.Value);
 
                     result.IsError = true;
-                    result.Error = Constants.ProtectedResourceErrors.InvalidToken;
+                    result.Error = OidcConstants.ProtectedResourceErrors.InvalidToken;
                     result.Claims = null;
 
                     return result;
@@ -127,7 +127,7 @@ namespace IdentityServer4.Core.Validation
                     _logger.LogWarning("User marked as not active: {subject}", subClaim.Value);
 
                     result.IsError = true;
-                    result.Error = Constants.ProtectedResourceErrors.InvalidToken;
+                    result.Error = OidcConstants.ProtectedResourceErrors.InvalidToken;
                     result.Claims = null;
 
                     return result;

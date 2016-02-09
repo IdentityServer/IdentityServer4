@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityModel;
 using IdentityServer4.Core.Extensions;
 using Microsoft.AspNet.Http;
 using System.Linq;
@@ -36,9 +37,9 @@ namespace IdentityServer4.Core.Validation
             if (authorizationHeader.IsPresent())
             {
                 var header = authorizationHeader.Trim();
-                if (header.StartsWith(Constants.TokenTypes.Bearer))
+                if (header.StartsWith(OidcConstants.TokenTypes.Bearer))
                 {
-                    var value = header.Substring(Constants.TokenTypes.Bearer.Length).Trim();
+                    var value = header.Substring(OidcConstants.TokenTypes.Bearer.Length).Trim();
                     if (value != null && value.Length > 0)
                     {
                         return new BearerTokenUsageValidationResult

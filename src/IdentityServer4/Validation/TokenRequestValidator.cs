@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityModel;
 using IdentityServer4.Core.Configuration;
 using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Logging;
@@ -68,17 +69,17 @@ namespace IdentityServer4.Core.Validation
             /////////////////////////////////////////////
             // check grant type
             /////////////////////////////////////////////
-            var grantType = parameters.Get(Constants.TokenRequest.GrantType);
+            var grantType = parameters.Get(OidcConstants.TokenRequest.GrantType);
             if (grantType.IsMissing())
             {
                 LogError("Grant type is missing.");
-                return Invalid(Constants.TokenErrors.UnsupportedGrantType);
+                return Invalid(OidcConstants.TokenErrors.UnsupportedGrantType);
             }
 
             if (grantType.Length > _options.InputLengthRestrictions.GrantType)
             {
                 LogError("Grant type is too long.");
-                return Invalid(Constants.TokenErrors.UnsupportedGrantType);
+                return Invalid(OidcConstants.TokenErrors.UnsupportedGrantType);
             }
 
             _validatedRequest.GrantType = grantType;
@@ -86,13 +87,13 @@ namespace IdentityServer4.Core.Validation
             // standard grant types
             switch (grantType)
             {
-                case Constants.GrantTypes.AuthorizationCode:
+                case OidcConstants.GrantTypes.AuthorizationCode:
                     return await RunValidationAsync(ValidateAuthorizationCodeRequestAsync, parameters);
-                case Constants.GrantTypes.ClientCredentials:
+                case OidcConstants.GrantTypes.ClientCredentials:
                     return await RunValidationAsync(ValidateClientCredentialsRequestAsync, parameters);
-                case Constants.GrantTypes.Password:
+                case OidcConstants.GrantTypes.Password:
                     return await RunValidationAsync(ValidateResourceOwnerCredentialRequestAsync, parameters);
-                case Constants.GrantTypes.RefreshToken:
+                case OidcConstants.GrantTypes.RefreshToken:
                     return await RunValidationAsync(ValidateRefreshTokenRequestAsync, parameters);
             }
 
@@ -107,7 +108,7 @@ namespace IdentityServer4.Core.Validation
                 }
 
                 LogError("Unsupported grant_type: " + grantType);
-                return Invalid(Constants.TokenErrors.UnsupportedGrantType);
+                return Invalid(OidcConstants.TokenErrors.UnsupportedGrantType);
             }
 
             return result;
@@ -153,20 +154,20 @@ namespace IdentityServer4.Core.Validation
                 _validatedRequest.Client.Flow != Flows.Hybrid)
             {
                 LogError("Client not authorized for code flow");
-                return Invalid(Constants.TokenErrors.UnauthorizedClient);
+                return Invalid(OidcConstants.TokenErrors.UnauthorizedClient);
             }
 
             /////////////////////////////////////////////
             // validate authorization code
             /////////////////////////////////////////////
-            var code = parameters.Get(Constants.TokenRequest.Code);
+            var code = parameters.Get(OidcConstants.TokenRequest.Code);
             if (code.IsMissing())
             {
                 var error = "Authorization code is missing.";
                 LogError(error);
                 await RaiseFailedAuthorizationCodeRedeemedEventAsync(null, error);
 
-                return Invalid(Constants.TokenErrors.InvalidGrant);
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
             if (code.Length > _options.InputLengthRestrictions.AuthorizationCode)
@@ -175,7 +176,7 @@ namespace IdentityServer4.Core.Validation
                 LogError(error);
                 await RaiseFailedAuthorizationCodeRedeemedEventAsync(null, error);
 
-                return Invalid(Constants.TokenErrors.InvalidGrant);
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
             _validatedRequest.AuthorizationCodeHandle = code;
@@ -186,7 +187,7 @@ namespace IdentityServer4.Core.Validation
                 LogError("Invalid authorization code: " + code);
                 await RaiseFailedAuthorizationCodeRedeemedEventAsync(code, "Invalid handle");
 
-                return Invalid(Constants.TokenErrors.InvalidGrant);
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
             await _authorizationCodes.RemoveAsync(code);
@@ -207,7 +208,7 @@ namespace IdentityServer4.Core.Validation
                 LogError(string.Format("Client {0} is trying to use a code from client {1}", _validatedRequest.Client.ClientId, authZcode.Client.ClientId));
                 await RaiseFailedAuthorizationCodeRedeemedEventAsync(code, "Invalid client binding");
 
-                return Invalid(Constants.TokenErrors.InvalidGrant);
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
             /////////////////////////////////////////////
@@ -219,7 +220,7 @@ namespace IdentityServer4.Core.Validation
                 LogError(error);
                 await RaiseFailedAuthorizationCodeRedeemedEventAsync(code, error);
 
-                return Invalid(Constants.TokenErrors.InvalidGrant);
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
             _validatedRequest.AuthorizationCode = authZcode;
@@ -227,14 +228,14 @@ namespace IdentityServer4.Core.Validation
             /////////////////////////////////////////////
             // validate redirect_uri
             /////////////////////////////////////////////
-            var redirectUri = parameters.Get(Constants.TokenRequest.RedirectUri);
+            var redirectUri = parameters.Get(OidcConstants.TokenRequest.RedirectUri);
             if (redirectUri.IsMissing())
             {
                 var error = "Redirect URI is missing.";
                 LogError(error);
                 await RaiseFailedAuthorizationCodeRedeemedEventAsync(code, error);
 
-                return Invalid(Constants.TokenErrors.UnauthorizedClient);
+                return Invalid(OidcConstants.TokenErrors.UnauthorizedClient);
             }
 
             if (redirectUri.Equals(_validatedRequest.AuthorizationCode.RedirectUri, StringComparison.Ordinal) == false)
@@ -243,7 +244,7 @@ namespace IdentityServer4.Core.Validation
                 LogError(error);
                 await RaiseFailedAuthorizationCodeRedeemedEventAsync(code, error);
 
-                return Invalid(Constants.TokenErrors.UnauthorizedClient);
+                return Invalid(OidcConstants.TokenErrors.UnauthorizedClient);
             }
 
             /////////////////////////////////////////////
@@ -256,7 +257,7 @@ namespace IdentityServer4.Core.Validation
                 LogError(error);
                 await RaiseFailedAuthorizationCodeRedeemedEventAsync(code, error);
 
-                return Invalid(Constants.TokenErrors.InvalidRequest);
+                return Invalid(OidcConstants.TokenErrors.InvalidRequest);
             }
 
 
@@ -272,7 +273,7 @@ namespace IdentityServer4.Core.Validation
                 LogError(error);
                 await RaiseFailedAuthorizationCodeRedeemedEventAsync(code, error);
 
-                return Invalid(Constants.TokenErrors.InvalidRequest);
+                return Invalid(OidcConstants.TokenErrors.InvalidRequest);
             }
 
             _logger.LogInformation("Validation of authorization code token request success");
@@ -293,7 +294,7 @@ namespace IdentityServer4.Core.Validation
                 if (_validatedRequest.Client.AllowClientCredentialsOnly == false)
                 {
                     LogError("Client not authorized for client credentials flow");
-                    return Invalid(Constants.TokenErrors.UnauthorizedClient);
+                    return Invalid(OidcConstants.TokenErrors.UnauthorizedClient);
                 }
             }
 
@@ -303,19 +304,19 @@ namespace IdentityServer4.Core.Validation
             if (!(await ValidateRequestedScopesAsync(parameters)))
             {
                 LogError("Invalid scopes.");
-                return Invalid(Constants.TokenErrors.InvalidScope);
+                return Invalid(OidcConstants.TokenErrors.InvalidScope);
             }
 
             if (_validatedRequest.ValidatedScopes.ContainsOpenIdScopes)
             {
                 LogError("Client cannot request OpenID scopes in client credentials flow");
-                return Invalid(Constants.TokenErrors.InvalidScope);
+                return Invalid(OidcConstants.TokenErrors.InvalidScope);
             }
 
             if (_validatedRequest.ValidatedScopes.ContainsOfflineAccessScope)
             {
                 LogError("Client cannot request a refresh token in client credentials flow");
-                return Invalid(Constants.TokenErrors.InvalidScope);
+                return Invalid(OidcConstants.TokenErrors.InvalidScope);
             }
 
             _logger.LogInformation("Client credentials token request validation success");
@@ -331,7 +332,7 @@ namespace IdentityServer4.Core.Validation
                 _validatedRequest.Client.EnableLocalLogin == false)
             {
                 LogError("EnableLocalLogin is disabled, failing with UnsupportedGrantType");
-                return Invalid(Constants.TokenErrors.UnsupportedGrantType);
+                return Invalid(OidcConstants.TokenErrors.UnsupportedGrantType);
             }
 
             /////////////////////////////////////////////
@@ -340,7 +341,7 @@ namespace IdentityServer4.Core.Validation
             if (_validatedRequest.Client.Flow != Flows.ResourceOwner)
             {
                 LogError("Client not authorized for resource owner flow");
-                return Invalid(Constants.TokenErrors.UnauthorizedClient);
+                return Invalid(OidcConstants.TokenErrors.UnauthorizedClient);
             }
 
             /////////////////////////////////////////////
@@ -349,26 +350,26 @@ namespace IdentityServer4.Core.Validation
             if (!(await ValidateRequestedScopesAsync(parameters)))
             {
                 LogError("Invalid scopes.");
-                return Invalid(Constants.TokenErrors.InvalidScope);
+                return Invalid(OidcConstants.TokenErrors.InvalidScope);
             }
 
             /////////////////////////////////////////////
             // check resource owner credentials
             /////////////////////////////////////////////
-            var userName = parameters.Get(Constants.TokenRequest.UserName);
-            var password = parameters.Get(Constants.TokenRequest.Password);
+            var userName = parameters.Get(OidcConstants.TokenRequest.UserName);
+            var password = parameters.Get(OidcConstants.TokenRequest.Password);
 
             if (userName.IsMissing() || password.IsMissing())
             {
                 LogError("Username or password missing.");
-                return Invalid(Constants.TokenErrors.InvalidGrant);
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
             if (userName.Length > _options.InputLengthRestrictions.UserName ||
                 password.Length > _options.InputLengthRestrictions.Password)
             {
                 LogError("Username or password too long.");
-                return Invalid(Constants.TokenErrors.InvalidGrant);
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
             _validatedRequest.UserName = userName;
@@ -391,7 +392,7 @@ namespace IdentityServer4.Core.Validation
                 LogError("User authentication failed: " + error);
                 await RaiseFailedResourceOwnerAuthenticationEventAsync(userName, error);
 
-                return Invalid(Constants.TokenErrors.InvalidGrant, error);
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant, error);
             }
 
             if (resourceOwnerResult.Principal == null)
@@ -400,7 +401,7 @@ namespace IdentityServer4.Core.Validation
                 LogError(error);
                 await RaiseFailedResourceOwnerAuthenticationEventAsync(userName, error);
 
-                return Invalid(Constants.TokenErrors.InvalidGrant);
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
             _validatedRequest.UserName = userName;
@@ -415,14 +416,14 @@ namespace IdentityServer4.Core.Validation
         {
             _logger.LogVerbose("Start validation of refresh token request");
 
-            var refreshTokenHandle = parameters.Get(Constants.TokenRequest.RefreshToken);
+            var refreshTokenHandle = parameters.Get(OidcConstants.TokenRequest.RefreshToken);
             if (refreshTokenHandle.IsMissing())
             {
                 var error = "Refresh token is missing";
                 LogError(error);
                 await RaiseRefreshTokenRefreshFailureEventAsync(null, error);
 
-                return Invalid(Constants.TokenErrors.InvalidRequest);
+                return Invalid(OidcConstants.TokenErrors.InvalidRequest);
             }
 
             if (refreshTokenHandle.Length > _options.InputLengthRestrictions.RefreshToken)
@@ -431,7 +432,7 @@ namespace IdentityServer4.Core.Validation
                 LogError(error);
                 await RaiseRefreshTokenRefreshFailureEventAsync(null, error);
 
-                return Invalid(Constants.TokenErrors.InvalidGrant);
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
             _validatedRequest.RefreshTokenHandle = refreshTokenHandle;
@@ -446,7 +447,7 @@ namespace IdentityServer4.Core.Validation
                 LogWarn(error);
                 await RaiseRefreshTokenRefreshFailureEventAsync(refreshTokenHandle, error);
 
-                return Invalid(Constants.TokenErrors.InvalidGrant);
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
             /////////////////////////////////////////////
@@ -459,7 +460,7 @@ namespace IdentityServer4.Core.Validation
                 await RaiseRefreshTokenRefreshFailureEventAsync(refreshTokenHandle, error);
 
                 await _refreshTokens.RemoveAsync(refreshTokenHandle);
-                return Invalid(Constants.TokenErrors.InvalidGrant);
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
             /////////////////////////////////////////////
@@ -470,7 +471,7 @@ namespace IdentityServer4.Core.Validation
                 LogError(string.Format("Client {0} tries to refresh token belonging to client {1}", _validatedRequest.Client.ClientId, refreshToken.ClientId));
                 await RaiseRefreshTokenRefreshFailureEventAsync(refreshTokenHandle, "Invalid client binding");
 
-                return Invalid(Constants.TokenErrors.InvalidGrant);
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
             /////////////////////////////////////////////
@@ -484,7 +485,7 @@ namespace IdentityServer4.Core.Validation
                     LogError(error);
                     await RaiseRefreshTokenRefreshFailureEventAsync(refreshTokenHandle, error);
 
-                    return Invalid(Constants.TokenErrors.InvalidGrant);
+                    return Invalid(OidcConstants.TokenErrors.InvalidGrant);
                 }
             }
 
@@ -504,7 +505,7 @@ namespace IdentityServer4.Core.Validation
                 LogError(error);
                 await RaiseRefreshTokenRefreshFailureEventAsync(refreshTokenHandle, error);
 
-                return Invalid(Constants.TokenErrors.InvalidRequest);
+                return Invalid(OidcConstants.TokenErrors.InvalidRequest);
             }
 
             _logger.LogInformation("Validation of refresh token request success");
@@ -521,7 +522,7 @@ namespace IdentityServer4.Core.Validation
             if (_validatedRequest.Client.Flow != Flows.Custom)
             {
                 LogError("Client not registered for custom grant type");
-                return Invalid(Constants.TokenErrors.UnsupportedGrantType);
+                return Invalid(OidcConstants.TokenErrors.UnsupportedGrantType);
             }
 
             /////////////////////////////////////////////
@@ -532,7 +533,7 @@ namespace IdentityServer4.Core.Validation
                 if (!_validatedRequest.Client.AllowedCustomGrantTypes.Contains(_validatedRequest.GrantType))
                 {
                     LogError("Client does not have the custom grant type in the allowed list, therefore requested grant is not allowed.");
-                    return Invalid(Constants.TokenErrors.UnsupportedGrantType);
+                    return Invalid(OidcConstants.TokenErrors.UnsupportedGrantType);
                 }
             }
 
@@ -542,7 +543,7 @@ namespace IdentityServer4.Core.Validation
             if (!_customGrantValidator.GetAvailableGrantTypes().Contains(_validatedRequest.GrantType, StringComparer.Ordinal))
             {
                 LogError("No validator is registered for the grant type.");
-                return Invalid(Constants.TokenErrors.UnsupportedGrantType);
+                return Invalid(OidcConstants.TokenErrors.UnsupportedGrantType);
             }
 
             /////////////////////////////////////////////
@@ -551,7 +552,7 @@ namespace IdentityServer4.Core.Validation
             if (!(await ValidateRequestedScopesAsync(parameters)))
             {
                 LogError("Invalid scopes.");
-                return Invalid(Constants.TokenErrors.InvalidScope);
+                return Invalid(OidcConstants.TokenErrors.InvalidScope);
             }
 
             /////////////////////////////////////////////
@@ -562,7 +563,7 @@ namespace IdentityServer4.Core.Validation
             if (result == null)
             {
                 LogError("Invalid custom grant.");
-                return Invalid(Constants.TokenErrors.InvalidGrant);
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
             if (result.IsError)
@@ -575,7 +576,7 @@ namespace IdentityServer4.Core.Validation
                 else
                 {
                     LogError("Invalid custom grant.");
-                    return Invalid(Constants.TokenErrors.InvalidGrant);
+                    return Invalid(OidcConstants.TokenErrors.InvalidGrant);
                 }
             }
 
@@ -590,7 +591,7 @@ namespace IdentityServer4.Core.Validation
 
         private async Task<bool> ValidateRequestedScopesAsync(NameValueCollection parameters)
         {
-            var scopes = parameters.Get(Constants.TokenRequest.Scope);
+            var scopes = parameters.Get(OidcConstants.TokenRequest.Scope);
             if (scopes.IsMissingOrTooLong(_options.InputLengthRestrictions.Scope))
             {
                 _logger.LogWarning("Scopes missing or too long");

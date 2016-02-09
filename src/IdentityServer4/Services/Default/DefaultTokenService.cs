@@ -143,7 +143,7 @@ namespace IdentityServer4.Core.Services.Default
 
             var issuer = _context.GetIssuerUri();
 
-            var token = new Token(Constants.TokenTypes.IdentityToken)
+            var token = new Token(OidcConstants.TokenTypes.IdentityToken)
             {
                 Audience = request.Client.ClientId,
                 Issuer = issuer,
@@ -180,7 +180,7 @@ namespace IdentityServer4.Core.Services.Default
             }
 
             var issuer = _context.GetIssuerUri();
-            var token = new Token(Constants.TokenTypes.AccessToken)
+            var token = new Token(OidcConstants.TokenTypes.AccessToken)
             {
                 Audience = string.Format(Constants.AccessTokenAudience, issuer.EnsureTrailingSlash()),
                 Issuer = issuer,
@@ -204,7 +204,7 @@ namespace IdentityServer4.Core.Services.Default
         {
             string tokenResult;
 
-            if (token.Type == Constants.TokenTypes.AccessToken)
+            if (token.Type == OidcConstants.TokenTypes.AccessToken)
             {
                 if (token.Client.AccessTokenType == AccessTokenType.Jwt)
                 {
@@ -222,7 +222,7 @@ namespace IdentityServer4.Core.Services.Default
                     tokenResult = handle;
                 }
             }
-            else if (token.Type == Constants.TokenTypes.IdentityToken)
+            else if (token.Type == OidcConstants.TokenTypes.IdentityToken)
             {
                 _logger.LogVerbose("Creating JWT identity token");
 

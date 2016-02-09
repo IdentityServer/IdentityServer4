@@ -108,7 +108,7 @@ namespace IdentityServer4.Core.Endpoints
                 var standardGrantTypes = Constants.SupportedGrantTypes.AsEnumerable();
                 if (this._options.AuthenticationOptions.EnableLocalLogin == false)
                 {
-                    standardGrantTypes = standardGrantTypes.Where(type => type != Constants.GrantTypes.Password);
+                    standardGrantTypes = standardGrantTypes.Where(type => type != OidcConstants.GrantTypes.Password);
                 }
 
                 var showGrantTypes = new List<string>(standardGrantTypes);

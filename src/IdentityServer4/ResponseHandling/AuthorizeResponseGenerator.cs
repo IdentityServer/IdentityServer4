@@ -116,7 +116,7 @@ namespace IdentityServer4.Core.ResponseHandling
 
             var responseTypes = request.ResponseType.FromSpaceSeparatedString();
 
-            if (responseTypes.Contains(Constants.ResponseTypes.Token))
+            if (responseTypes.Contains(OidcConstants.ResponseTypes.Token))
             {
                 var tokenRequest = new TokenCreationRequest
                 {
@@ -134,7 +134,7 @@ namespace IdentityServer4.Core.ResponseHandling
             }
 
             string jwt = null;
-            if (responseTypes.Contains(Constants.ResponseTypes.IdToken))
+            if (responseTypes.Contains(OidcConstants.ResponseTypes.IdToken))
             {
                 var tokenRequest = new TokenCreationRequest
                 {
@@ -143,7 +143,7 @@ namespace IdentityServer4.Core.ResponseHandling
                     Client = request.Client,
                     Scopes = request.ValidatedScopes.GrantedScopes,
 
-                    Nonce = request.Raw.Get(Constants.AuthorizeRequest.Nonce),
+                    Nonce = request.Raw.Get(OidcConstants.AuthorizeRequest.Nonce),
                     IncludeAllIdentityClaims = !request.AccessTokenRequested,
                     AccessTokenToHash = accessTokenValue,
                     AuthorizationCodeToHash = authorizationCode

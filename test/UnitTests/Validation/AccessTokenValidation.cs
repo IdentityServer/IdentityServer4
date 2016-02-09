@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using FluentAssertions;
+using IdentityModel;
 using IdentityServer4.Core;
 using IdentityServer4.Core.Configuration;
 using IdentityServer4.Core.Extensions;
@@ -116,7 +117,7 @@ namespace IdentityServer4.Tests.Validation.Tokens
             var result = await validator.ValidateAccessTokenAsync("123", "missing");
 
             result.IsError.Should().BeTrue();
-            result.Error.Should().Be(Constants.ProtectedResourceErrors.InsufficientScope);
+            result.Error.Should().Be(OidcConstants.ProtectedResourceErrors.InsufficientScope);
         }
 
         [Fact]
@@ -129,7 +130,7 @@ namespace IdentityServer4.Tests.Validation.Tokens
             var result = await validator.ValidateAccessTokenAsync("unknown");
 
             result.IsError.Should().BeTrue();
-            result.Error.Should().Be(Constants.ProtectedResourceErrors.InvalidToken);
+            result.Error.Should().Be(OidcConstants.ProtectedResourceErrors.InvalidToken);
         }
 
         [Fact]
@@ -144,7 +145,7 @@ namespace IdentityServer4.Tests.Validation.Tokens
             var result = await validator.ValidateAccessTokenAsync(longToken);
 
             result.IsError.Should().BeTrue();
-            result.Error.Should().Be(Constants.ProtectedResourceErrors.InvalidToken);
+            result.Error.Should().Be(OidcConstants.ProtectedResourceErrors.InvalidToken);
         }
 
         [Fact]
@@ -166,7 +167,7 @@ namespace IdentityServer4.Tests.Validation.Tokens
             var result = await validator.ValidateAccessTokenAsync("123");
 
             result.IsError.Should().BeTrue();
-            result.Error.Should().Be(Constants.ProtectedResourceErrors.ExpiredToken);
+            result.Error.Should().Be(OidcConstants.ProtectedResourceErrors.ExpiredToken);
         }
 
         [Fact]
@@ -179,7 +180,7 @@ namespace IdentityServer4.Tests.Validation.Tokens
             var result = await validator.ValidateAccessTokenAsync("unk.nown");
 
             result.IsError.Should().BeTrue();
-            result.Error.Should().Be(Constants.ProtectedResourceErrors.InvalidToken);
+            result.Error.Should().Be(OidcConstants.ProtectedResourceErrors.InvalidToken);
         }
 
         [Fact]
@@ -208,7 +209,7 @@ namespace IdentityServer4.Tests.Validation.Tokens
             var result = await validator.ValidateAccessTokenAsync(jwt);
 
             result.IsError.Should().BeTrue();
-            result.Error.Should().Be(Constants.ProtectedResourceErrors.InvalidToken);
+            result.Error.Should().Be(OidcConstants.ProtectedResourceErrors.InvalidToken);
         }
 
         [Fact]
@@ -222,7 +223,7 @@ namespace IdentityServer4.Tests.Validation.Tokens
             var result = await validator.ValidateAccessTokenAsync(jwt);
 
             result.IsError.Should().BeTrue();
-            result.Error.Should().Be(Constants.ProtectedResourceErrors.InvalidToken);
+            result.Error.Should().Be(OidcConstants.ProtectedResourceErrors.InvalidToken);
         }
 
         [Fact]
@@ -238,7 +239,7 @@ namespace IdentityServer4.Tests.Validation.Tokens
             var result = await validator.ValidateAccessTokenAsync(jwt);
 
             result.IsError.Should().BeTrue();
-            result.Error.Should().Be(Constants.ProtectedResourceErrors.InvalidToken);
+            result.Error.Should().Be(OidcConstants.ProtectedResourceErrors.InvalidToken);
         }
 
         // todo

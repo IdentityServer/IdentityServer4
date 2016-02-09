@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using FluentAssertions;
+using IdentityModel;
 using IdentityServer4.Core;
 using IdentityServer4.Core.Configuration;
 using IdentityServer4.Core.Models;
@@ -108,10 +109,10 @@ namespace IdentityServer4.Tests.ResponseHandling
         {
             var request = new ValidatedAuthorizeRequest()
             {
-                ResponseMode = Constants.ResponseModes.Fragment,
+                ResponseMode = OidcConstants.ResponseModes.Fragment,
                 State = "12345",
                 RedirectUri = "https://client.com/callback",
-                PromptMode = Constants.PromptModes.Consent
+                PromptMode = OidcConstants.PromptModes.Consent
             }; 
             var result = _subject.ProcessConsentAsync(request, null).Result;
         }
@@ -122,10 +123,10 @@ namespace IdentityServer4.Tests.ResponseHandling
             RequiresConsent(true);
             var request = new ValidatedAuthorizeRequest()
             {
-                ResponseMode = Constants.ResponseModes.Fragment,
+                ResponseMode = OidcConstants.ResponseModes.Fragment,
                 State = "12345",
                 RedirectUri = "https://client.com/callback",
-                PromptMode = Constants.PromptModes.Login
+                PromptMode = OidcConstants.PromptModes.Login
             };
 
             Func<Task> act = () => _subject.ProcessConsentAsync(request);
@@ -140,10 +141,10 @@ namespace IdentityServer4.Tests.ResponseHandling
             RequiresConsent(true);
             var request = new ValidatedAuthorizeRequest()
             {
-                ResponseMode = Constants.ResponseModes.Fragment,
+                ResponseMode = OidcConstants.ResponseModes.Fragment,
                 State = "12345",
                 RedirectUri = "https://client.com/callback",
-                PromptMode = Constants.PromptModes.SelectAccount
+                PromptMode = OidcConstants.PromptModes.SelectAccount
             };
 
             Func<Task> act = () => _subject.ProcessConsentAsync(request);
@@ -159,17 +160,17 @@ namespace IdentityServer4.Tests.ResponseHandling
             RequiresConsent(true);
             var request = new ValidatedAuthorizeRequest()
             {
-                ResponseMode = Constants.ResponseModes.Fragment,
+                ResponseMode = OidcConstants.ResponseModes.Fragment,
                 State = "12345",
                 RedirectUri = "https://client.com/callback",
-                PromptMode = Constants.PromptModes.None
+                PromptMode = OidcConstants.PromptModes.None
             };
             var result = _subject.ProcessConsentAsync(request).Result;
 
             request.WasConsentShown.Should().BeFalse();
             result.IsError.Should().BeTrue();
             result.Error.ErrorType.Should().Be(ErrorTypes.Client);
-            result.Error.Error.Should().Be(Constants.AuthorizeErrors.ConsentRequired);
+            result.Error.Error.Should().Be(OidcConstants.AuthorizeErrors.ConsentRequired);
             AssertErrorReturnsRequestValues(result.Error, request);
             AssertUpdateConsentNotCalled();
         }
@@ -179,10 +180,10 @@ namespace IdentityServer4.Tests.ResponseHandling
         {
             var request = new ValidatedAuthorizeRequest()
             {
-                ResponseMode = Constants.ResponseModes.Fragment,
+                ResponseMode = OidcConstants.ResponseModes.Fragment,
                 State = "12345",
                 RedirectUri = "https://client.com/callback",
-                PromptMode = Constants.PromptModes.Consent
+                PromptMode = OidcConstants.PromptModes.Consent
             };
             var result = _subject.ProcessConsentAsync(request).Result;
             request.WasConsentShown.Should().BeFalse();
@@ -196,10 +197,10 @@ namespace IdentityServer4.Tests.ResponseHandling
             RequiresConsent(true);
             var request = new ValidatedAuthorizeRequest()
             {
-                ResponseMode = Constants.ResponseModes.Fragment,
+                ResponseMode = OidcConstants.ResponseModes.Fragment,
                 State = "12345",
                 RedirectUri = "https://client.com/callback",
-                PromptMode = Constants.PromptModes.Consent
+                PromptMode = OidcConstants.PromptModes.Consent
             };
             var result = _subject.ProcessConsentAsync(request).Result;
             request.WasConsentShown.Should().BeFalse();
@@ -212,10 +213,10 @@ namespace IdentityServer4.Tests.ResponseHandling
         {
             var request = new ValidatedAuthorizeRequest()
             {
-                ResponseMode = Constants.ResponseModes.Fragment,
+                ResponseMode = OidcConstants.ResponseModes.Fragment,
                 State = "12345",
                 RedirectUri = "https://client.com/callback",
-                PromptMode = Constants.PromptModes.Consent
+                PromptMode = OidcConstants.PromptModes.Consent
             };
 
             var consent = new ConsentResponse
@@ -227,7 +228,7 @@ namespace IdentityServer4.Tests.ResponseHandling
             request.WasConsentShown.Should().BeTrue();
             result.IsError.Should().BeTrue();
             result.Error.ErrorType.Should().Be(ErrorTypes.Client);
-            result.Error.Error.Should().Be(Constants.AuthorizeErrors.AccessDenied);
+            result.Error.Error.Should().Be(OidcConstants.AuthorizeErrors.AccessDenied);
             AssertErrorReturnsRequestValues(result.Error, request);
             AssertUpdateConsentNotCalled();
         }
@@ -238,7 +239,7 @@ namespace IdentityServer4.Tests.ResponseHandling
             RequiresConsent(true);
             var request = new ValidatedAuthorizeRequest()
             {
-                ResponseMode = Constants.ResponseModes.Fragment,
+                ResponseMode = OidcConstants.ResponseModes.Fragment,
                 State = "12345",
                 RedirectUri = "https://client.com/callback",
             };
@@ -251,7 +252,7 @@ namespace IdentityServer4.Tests.ResponseHandling
             request.WasConsentShown.Should().BeTrue();
             result.IsError.Should().BeTrue();
             result.Error.ErrorType.Should().Be(ErrorTypes.Client);
-            result.Error.Error.Should().Be(Constants.AuthorizeErrors.AccessDenied);
+            result.Error.Error.Should().Be(OidcConstants.AuthorizeErrors.AccessDenied);
             AssertErrorReturnsRequestValues(result.Error, request);
             AssertUpdateConsentNotCalled();
         }
@@ -264,7 +265,7 @@ namespace IdentityServer4.Tests.ResponseHandling
             var scopeValidator = new ScopeValidator(new InMemoryScopeStore(GetScopes()), new FakeLoggerFactory());
             var request = new ValidatedAuthorizeRequest()
             {
-                ResponseMode = Constants.ResponseModes.Fragment,
+                ResponseMode = OidcConstants.ResponseModes.Fragment,
                 State = "12345",
                 RedirectUri = "https://client.com/callback",
                 RequestedScopes = new List<string> { "openid", "read" },
@@ -282,7 +283,7 @@ namespace IdentityServer4.Tests.ResponseHandling
             var result = _subject.ProcessConsentAsync(request, consent).Result;
             result.IsError.Should().BeTrue();
             result.Error.ErrorType.Should().Be(ErrorTypes.Client);
-            result.Error.Error.Should().Be(Constants.AuthorizeErrors.AccessDenied);
+            result.Error.Error.Should().Be(OidcConstants.AuthorizeErrors.AccessDenied);
             AssertErrorReturnsRequestValues(result.Error, request);
             AssertUpdateConsentNotCalled();
         }
@@ -293,7 +294,7 @@ namespace IdentityServer4.Tests.ResponseHandling
             RequiresConsent(true);
             var request = new ValidatedAuthorizeRequest()
             {
-                ResponseMode = Constants.ResponseModes.Fragment,
+                ResponseMode = OidcConstants.ResponseModes.Fragment,
                 State = "12345",
                 RedirectUri = "https://client.com/callback",
                 ValidatedScopes = new ScopeValidator(new InMemoryScopeStore(GetScopes()), new FakeLoggerFactory()),
@@ -321,7 +322,7 @@ namespace IdentityServer4.Tests.ResponseHandling
             RequiresConsent(true);
             var request = new ValidatedAuthorizeRequest()
             {
-                ResponseMode = Constants.ResponseModes.Fragment,
+                ResponseMode = OidcConstants.ResponseModes.Fragment,
                 State = "12345",
                 RedirectUri = "https://client.com/callback",
                 ValidatedScopes = new ScopeValidator(new InMemoryScopeStore(GetScopes()), new FakeLoggerFactory()),
@@ -351,7 +352,7 @@ namespace IdentityServer4.Tests.ResponseHandling
             var user = new ClaimsPrincipal();
             var request = new ValidatedAuthorizeRequest()
             {
-                ResponseMode = Constants.ResponseModes.Fragment,
+                ResponseMode = OidcConstants.ResponseModes.Fragment,
                 State = "12345",
                 RedirectUri = "https://client.com/callback",
                 ValidatedScopes = new ScopeValidator(new InMemoryScopeStore(GetScopes()), new FakeLoggerFactory()),
