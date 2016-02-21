@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace IdentityServer4.Core.Hosting
 {
@@ -53,6 +54,8 @@ namespace IdentityServer4.Core.Hosting
                 return Enumerable.Empty<string>();
             }
 
+            var bytes = IdentityModel.Base64Url.Decode(value);
+            value = Encoding.UTF8.GetString(bytes);
             return JsonConvert.DeserializeObject<string[]>(value, settings);
         }
 
@@ -62,6 +65,8 @@ namespace IdentityServer4.Core.Hosting
             if (clients != null && clients.Any())
             {
                 value = JsonConvert.SerializeObject(clients);
+                var bytes = Encoding.UTF8.GetBytes(value);
+                value = IdentityModel.Base64Url.Encode(bytes);
             }
 
             SetCookie(value);
