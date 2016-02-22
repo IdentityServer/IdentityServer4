@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.0-beta1-update1",
   "description": "OpenID Connect and OAuth 2.0 Framework for ASP.NET 5",
   "authors": [ "Brock Allen & Dominick Baier" ],
   "tags": [ "IdentityServer", "OpenID Connect", "OIDC", "OAuth 2.0", "ASP.NET", "WebApi", "SSO", "Federation", "Claims", "Identity" ],
