@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using FluentAssertions;
+using IdentityModel;
 using IdentityServer4.Core;
 using IdentityServer4.Core.Services;
 using System.Collections.Specialized;
@@ -25,13 +26,13 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var validator = Factory.CreateTokenRequestValidator();
 
             var parameters = new NameValueCollection();
-            parameters.Add(Constants.TokenRequest.GrantType, "customGrant");
-            parameters.Add(Constants.TokenRequest.Scope, "resource");
+            parameters.Add(OidcConstants.TokenRequest.GrantType, "customGrant");
+            parameters.Add(OidcConstants.TokenRequest.Scope, "resource");
 
             var result = await validator.ValidateRequestAsync(parameters, client);
 
             result.IsError.Should().BeTrue();
-            result.Error.Should().Be(Constants.TokenErrors.UnsupportedGrantType);
+            result.Error.Should().Be(OidcConstants.TokenErrors.UnsupportedGrantType);
         }
 
         [Fact]
@@ -43,13 +44,13 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var validator = Factory.CreateTokenRequestValidator();
 
             var parameters = new NameValueCollection();
-            parameters.Add(Constants.TokenRequest.GrantType, "unknown_grant_type");
-            parameters.Add(Constants.TokenRequest.Scope, "resource");
+            parameters.Add(OidcConstants.TokenRequest.GrantType, "unknown_grant_type");
+            parameters.Add(OidcConstants.TokenRequest.Scope, "resource");
 
             var result = await validator.ValidateRequestAsync(parameters, client);
 
             result.IsError.Should().BeTrue();
-            result.Error.Should().Be(Constants.TokenErrors.UnsupportedGrantType);
+            result.Error.Should().Be(OidcConstants.TokenErrors.UnsupportedGrantType);
         }
     }
 }

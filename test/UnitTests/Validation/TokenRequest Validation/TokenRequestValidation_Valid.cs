@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using FluentAssertions;
+using IdentityModel;
 using IdentityServer4.Core;
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Services;
@@ -46,9 +47,9 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
                 authorizationCodeStore: store);
 
             var parameters = new NameValueCollection();
-            parameters.Add(Constants.TokenRequest.GrantType, Constants.GrantTypes.AuthorizationCode);
-            parameters.Add(Constants.TokenRequest.Code, "valid");
-            parameters.Add(Constants.TokenRequest.RedirectUri, "https://server/cb");
+            parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.AuthorizationCode);
+            parameters.Add(OidcConstants.TokenRequest.Code, "valid");
+            parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server/cb");
 
             var result = await validator.ValidateRequestAsync(parameters, client);
 
@@ -86,9 +87,9 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
                 authorizationCodeStore: store);
 
             var parameters = new NameValueCollection();
-            parameters.Add(Constants.TokenRequest.GrantType, Constants.GrantTypes.AuthorizationCode);
-            parameters.Add(Constants.TokenRequest.Code, "valid");
-            parameters.Add(Constants.TokenRequest.RedirectUri, "https://server/cb");
+            parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.AuthorizationCode);
+            parameters.Add(OidcConstants.TokenRequest.Code, "valid");
+            parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server/cb");
 
             var result = await validator.ValidateRequestAsync(parameters, client);
 
@@ -104,8 +105,8 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var validator = Factory.CreateTokenRequestValidator();
 
             var parameters = new NameValueCollection();
-            parameters.Add(Constants.TokenRequest.GrantType, Constants.GrantTypes.ClientCredentials);
-            parameters.Add(Constants.TokenRequest.Scope, "resource");
+            parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.ClientCredentials);
+            parameters.Add(OidcConstants.TokenRequest.Scope, "resource");
 
             var result = await validator.ValidateRequestAsync(parameters, client);
 
@@ -121,8 +122,8 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var validator = Factory.CreateTokenRequestValidator();
 
             var parameters = new NameValueCollection();
-            parameters.Add(Constants.TokenRequest.GrantType, Constants.GrantTypes.ClientCredentials);
-            parameters.Add(Constants.TokenRequest.Scope, "resource");
+            parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.ClientCredentials);
+            parameters.Add(OidcConstants.TokenRequest.Scope, "resource");
 
             var result = await validator.ValidateRequestAsync(parameters, client);
 
@@ -138,8 +139,8 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var validator = Factory.CreateTokenRequestValidator();
 
             var parameters = new NameValueCollection();
-            parameters.Add(Constants.TokenRequest.GrantType, Constants.GrantTypes.ClientCredentials);
-            parameters.Add(Constants.TokenRequest.Scope, "resource");
+            parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.ClientCredentials);
+            parameters.Add(OidcConstants.TokenRequest.Scope, "resource");
 
             var result = await validator.ValidateRequestAsync(parameters, client);
 
@@ -155,10 +156,10 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var validator = Factory.CreateTokenRequestValidator();
 
             var parameters = new NameValueCollection();
-            parameters.Add(Constants.TokenRequest.GrantType, Constants.GrantTypes.Password);
-            parameters.Add(Constants.TokenRequest.UserName, "bob");
-            parameters.Add(Constants.TokenRequest.Password, "bob");
-            parameters.Add(Constants.TokenRequest.Scope, "resource");
+            parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.Password);
+            parameters.Add(OidcConstants.TokenRequest.UserName, "bob");
+            parameters.Add(OidcConstants.TokenRequest.Password, "bob");
+            parameters.Add(OidcConstants.TokenRequest.Scope, "resource");
 
             var result = await validator.ValidateRequestAsync(parameters, client);
 
@@ -174,10 +175,10 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var validator = Factory.CreateTokenRequestValidator();
 
             var parameters = new NameValueCollection();
-            parameters.Add(Constants.TokenRequest.GrantType, Constants.GrantTypes.Password);
-            parameters.Add(Constants.TokenRequest.UserName, "bob");
-            parameters.Add(Constants.TokenRequest.Password, "bob");
-            parameters.Add(Constants.TokenRequest.Scope, "resource offline_access");
+            parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.Password);
+            parameters.Add(OidcConstants.TokenRequest.UserName, "bob");
+            parameters.Add(OidcConstants.TokenRequest.Password, "bob");
+            parameters.Add(OidcConstants.TokenRequest.Scope, "resource offline_access");
 
             var result = await validator.ValidateRequestAsync(parameters, client);
 
@@ -193,10 +194,10 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var validator = Factory.CreateTokenRequestValidator();
 
             var parameters = new NameValueCollection();
-            parameters.Add(Constants.TokenRequest.GrantType, Constants.GrantTypes.Password);
-            parameters.Add(Constants.TokenRequest.UserName, "bob");
-            parameters.Add(Constants.TokenRequest.Password, "bob");
-            parameters.Add(Constants.TokenRequest.Scope, "resource");
+            parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.Password);
+            parameters.Add(OidcConstants.TokenRequest.UserName, "bob");
+            parameters.Add(OidcConstants.TokenRequest.Password, "bob");
+            parameters.Add(OidcConstants.TokenRequest.Scope, "resource");
 
             var result = await validator.ValidateRequestAsync(parameters, client);
 
@@ -212,8 +213,8 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var validator = Factory.CreateTokenRequestValidator();
 
             var parameters = new NameValueCollection();
-            parameters.Add(Constants.TokenRequest.GrantType, "custom_grant");
-            parameters.Add(Constants.TokenRequest.Scope, "resource");
+            parameters.Add(OidcConstants.TokenRequest.GrantType, "custom_grant");
+            parameters.Add(OidcConstants.TokenRequest.Scope, "resource");
 
             var result = await validator.ValidateRequestAsync(parameters, client);
 

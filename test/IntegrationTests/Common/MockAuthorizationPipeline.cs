@@ -16,34 +16,59 @@ using System.Linq;
 using IdentityServer4.Core.Services;
 using System.Security.Claims;
 using System.Diagnostics;
+using IdentityModel.Client;
 
 namespace IdentityServer4.Tests.Common
 {
-    public class MockAuthorizationPipeline
+    public class MockAuthorizationPipeline : IdentityServerPipeline
     {
-        private readonly IApplicationEnvironment _environment;
-        private IEnumerable<Client> _clients;
-        private IEnumerable<Scope> _scopes;
-        private List<InMemoryUser> _users;
-
         public RequestDelegate Login { get; set; }
         public RequestDelegate Consent { get; set; }
         public RequestDelegate Error { get; set; }
 
-        public MockAuthorizationPipeline(IApplicationEnvironment environment)
+        public MockAuthorizationPipeline()
         {
-            _environment = environment;
             Login = OnLogin;
             Consent = OnConsent;
             Error = OnError;
+
+            this.OnConfigureServices += MockAuthorizationPipeline_OnConfigureServices;
+            this.OnPreConfigure += MockAuthorizationPipeline_OnPreConfigure;
+            this.OnPostConfigure += MockAuthorizationPipeline_OnPostConfigure;
         }
 
-        public MockAuthorizationPipeline(IEnumerable<Client> clients, IEnumerable<Scope> scopes, List<InMemoryUser> users)
-            : this(PlatformServices.Default.Application)
+        private void MockAuthorizationPipeline_OnConfigureServices(IServiceCollection obj)
         {
-           _clients = clients;
-           _scopes = scopes;
-           _users = users;
+        }
+
+        private void MockAuthorizationPipeline_OnPreConfigure(IApplicationBuilder app)
+        {
+            if (CookieAuthenticationScheme != null)
+            {
+                this.Options.AuthenticationOptions.PrimaryAuthenticationScheme = CookieAuthenticationScheme;
+                app.UseCookieAuthentication(options =>
+                {
+                    options.AuthenticationScheme = CookieAuthenticationScheme;
+                });
+            }
+        }
+
+        private void MockAuthorizationPipeline_OnPostConfigure(IApplicationBuilder app)
+        {
+            app.Map(Constants.RoutePaths.Login.EnsureLeadingSlash(), path =>
+            {
+                path.Run(ctx => Login(ctx));
+            });
+
+            app.Map(Constants.RoutePaths.Consent.EnsureLeadingSlash(), path =>
+            {
+                path.Run(ctx => Consent(ctx));
+            });
+
+            app.Map(Constants.RoutePaths.Error.EnsureLeadingSlash(), path =>
+            {
+                path.Run(ctx => Error(ctx));
+            });
         }
 
         public string CookieAuthenticationScheme { get; set; } = "cookie_authn";
@@ -142,47 +167,54 @@ namespace IdentityServer4.Tests.Common
             catch { }
         }
 
-        public void ConfigureServices(IServiceCollection services)
+        /* helpers */
+        public async Task LoginAsync(ClaimsPrincipal subject)
         {
-            services.AddWebEncoders();
-            services.AddDataProtection();
+            var old = BrowserClient.AllowAutoRedirect;
+            BrowserClient.AllowAutoRedirect = false;
 
-            services.AddIdentityServer(options =>
-            {
-                options.SigningCertificate = _environment.LoadSigningCert();
-                options.AuthenticationOptions.PrimaryAuthenticationScheme = CookieAuthenticationScheme;
-            })
-            .AddInMemoryClients(_clients)
-            .AddInMemoryScopes(_scopes)
-            .AddInMemoryUsers(_users);
+            Subject = subject;
+            await BrowserClient.GetAsync(LoginPage);
+
+            BrowserClient.AllowAutoRedirect = old;
         }
 
-        public void Configure(IApplicationBuilder app)
+        public async Task LoginAsync(string subject)
         {
-            if (CookieAuthenticationScheme != null)
-            {
-                app.UseCookieAuthentication(options =>
-                {
-                    options.AuthenticationScheme = CookieAuthenticationScheme;
-                });
-            }
+            var user = Users.Single(x => x.Subject == subject);
+            var name = user.Claims.Where(x => x.Type == "name").Select(x => x.Value).FirstOrDefault() ?? user.Username;
+            await LoginAsync(IdentityServerPrincipal.Create(subject, name));
+        }
 
-            app.UseIdentityServer();
+        public string CreateAuthorizeUrl(
+            string clientId,
+            string responseType,
+            string scope = null,
+            string redirectUri = null,
+            string state = null,
+            string nonce = null,
+            string loginHint = null,
+            string acrValues = null,
+            string responseMode = null,
+            object extra = null)
+        {
+            var url = new AuthorizeRequest(AuthorizeEndpoint).CreateAuthorizeUrl(
+                clientId: clientId,
+                responseType: responseType,
+                scope: scope,
+                redirectUri: redirectUri,
+                state: state,
+                nonce: nonce,
+                loginHint: loginHint,
+                acrValues: acrValues,
+                responseMode: responseMode,
+                extra: extra);
+            return url;
+        }
 
-            app.Map(Constants.RoutePaths.Login.EnsureLeadingSlash(), path =>
-            {
-                path.Run(ctx => Login(ctx));
-            });
-
-            app.Map(Constants.RoutePaths.Consent.EnsureLeadingSlash(), path =>
-            {
-                path.Run(ctx => Consent(ctx));
-            });
-
-            app.Map(Constants.RoutePaths.Error.EnsureLeadingSlash(), path =>
-            {
-                path.Run(ctx => Error(ctx));
-            });
+        public IdentityModel.Client.AuthorizeResponse ParseAuthorizationResponseUrl(string url)
+        {
+            return new IdentityModel.Client.AuthorizeResponse(url);
         }
     }
 }

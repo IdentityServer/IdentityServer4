@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityModel;
 using IdentityServer4.Core.Extensions;
 using System;
 using System.Collections.Generic;
@@ -71,11 +72,11 @@ namespace IdentityServer4.Core.Models
             {
                 if (identityProvider == Constants.BuiltInIdentityProvider)
                 {
-                    authenticationMethod = Constants.AuthenticationMethods.Password;
+                    authenticationMethod = OidcConstants.AuthenticationMethods.Password;
                 }
                 else
                 {
-                    authenticationMethod = Constants.AuthenticationMethods.External;
+                    authenticationMethod = Constants.ExternalAuthenticationMethod;
                 }
             }
 
@@ -83,7 +84,7 @@ namespace IdentityServer4.Core.Models
             if (claims != null && claims.Any())
             {
                 claims = claims.Where(x => !Constants.OidcProtocolClaimTypes.Contains(x.Type));
-                claims = claims.Where(x => x.Type != Constants.ClaimTypes.Name);
+                claims = claims.Where(x => x.Type != JwtClaimTypes.Name);
                 user.Identities.First().AddClaims(claims);
             }
 
@@ -210,7 +211,7 @@ namespace IdentityServer4.Core.Models
                 claims = Enumerable.Empty<Claim>();
             }
 
-            var id = new ClaimsIdentity(claims, Constants.PartialSignInAuthenticationType, Constants.ClaimTypes.Name, Constants.ClaimTypes.Role);
+            var id = new ClaimsIdentity(claims, Constants.PartialSignInAuthenticationType, JwtClaimTypes.Name, JwtClaimTypes.Role);
             this.User = new ClaimsPrincipal(id); 
             
             this.PartialSignInRedirectPath = redirectPath;
@@ -251,7 +252,7 @@ namespace IdentityServer4.Core.Models
         {
             get
             {
-                return User != null && User.HasClaim(c => c.Type == Constants.ClaimTypes.Subject);
+                return User != null && User.HasClaim(c => c.Type == JwtClaimTypes.Subject);
             }
         }
     }

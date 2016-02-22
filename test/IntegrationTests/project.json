@@ -1,4 +1,4 @@
-﻿{
+{
   "compilationOptions": {
     "warningsAsErrors": true
   },
@@ -8,8 +8,8 @@
     "xunit.runner.dnx": "2.1.0-rc1-build204",
     "Microsoft.AspNet.Http": "1.0.0-rc1-final",
     "Microsoft.AspNet.TestHost": "1.0.0-rc1-final",
-    "FluentAssertions": "4.0.1",
-    "IdentityModel": "2.0.0-alpha1",
+    "FluentAssertions": "4.2.2",
+    "IdentityModel": "2.0.0-alpha3",
     "Microsoft.AspNet.Mvc.WebApiCompatShim": "6.0.0-rc1-final"
   },
   "commands": {

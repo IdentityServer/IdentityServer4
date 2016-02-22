@@ -29,7 +29,7 @@ namespace IdentityServer4.Core.Hosting
                 var path = key.EnsureLeadingSlash();
                 if (context.Request.Path.StartsWithSegments(path))
                 {
-                    endpoint = context.ApplicationServices.GetService(_map[key]) as IEndpoint;
+                    endpoint = context.RequestServices.GetService(_map[key]) as IEndpoint;
                     break;
                 }
             }

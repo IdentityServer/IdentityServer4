@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityModel;
 using IdentityServer4.Core.Extensions;
 using System;
 using System.Collections.Generic;
@@ -84,7 +85,7 @@ namespace IdentityServer4.Core.Models
         public Token()
         {
             Version = 3;
-            Type = Constants.TokenTypes.AccessToken;
+            Type = OidcConstants.TokenTypes.AccessToken;
             CreationTime = DateTimeOffsetHelper.UtcNow;
         }
 
@@ -107,7 +108,7 @@ namespace IdentityServer4.Core.Models
         {
             get
             {
-                return Claims.Where(x => x.Type == Constants.ClaimTypes.Subject).Select(x => x.Value).SingleOrDefault();
+                return Claims.Where(x => x.Type == JwtClaimTypes.Subject).Select(x => x.Value).SingleOrDefault();
             }
         }
 
@@ -133,7 +134,7 @@ namespace IdentityServer4.Core.Models
         /// </value>
         public IEnumerable<string> Scopes
         {
-            get { return Claims.Where(x => x.Type == Constants.ClaimTypes.Scope).Select(x => x.Value); }
+            get { return Claims.Where(x => x.Type == JwtClaimTypes.Scope).Select(x => x.Value); }
         }
     }
 }

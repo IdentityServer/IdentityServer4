@@ -25,7 +25,7 @@ namespace IdentityServer4.Core.Validation
         /// <summary>
         /// The user service
         /// </summary>
-        protected readonly IUserService _users;
+        protected readonly IProfileService _profile;
 
         /// <summary>
         /// The client store
@@ -37,10 +37,10 @@ namespace IdentityServer4.Core.Validation
         /// </summary>
         /// <param name="users">The users store.</param>
         /// <param name="clients">The client store.</param>
-        public DefaultCustomTokenValidator(IUserService users, IClientStore clients, ILogger<DefaultCustomTokenValidator> logger)
+        public DefaultCustomTokenValidator(IProfileService profile, IClientStore clients, ILogger<DefaultCustomTokenValidator> logger)
         {
             _logger = logger;
-            _users = users;
+            _profile = profile;
             _clients = clients;
         }
 
@@ -59,25 +59,25 @@ namespace IdentityServer4.Core.Validation
             }
 
             // make sure user is still active (if sub claim is present)
-            var subClaim = result.Claims.FirstOrDefault(c => c.Type == Constants.ClaimTypes.Subject);
+            var subClaim = result.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject);
             if (subClaim != null)
             {
                 var principal = Principal.Create("tokenvalidator", result.Claims.ToArray());
 
                 if (result.ReferenceTokenId.IsPresent())
                 {
-                    principal.Identities.First().AddClaim(new Claim(Constants.ClaimTypes.ReferenceTokenId, result.ReferenceTokenId));
+                    principal.Identities.First().AddClaim(new Claim(JwtClaimTypes.ReferenceTokenId, result.ReferenceTokenId));
                 }
 
                 var isActiveCtx = new IsActiveContext(principal, result.Client);
-                await _users.IsActiveAsync(isActiveCtx);
+                await _profile.IsActiveAsync(isActiveCtx);
                 
                 if (isActiveCtx.IsActive == false)
                 {
                     _logger.LogWarning("User marked as not active: {subject}", subClaim.Value);
 
                     result.IsError = true;
-                    result.Error = Constants.ProtectedResourceErrors.InvalidToken;
+                    result.Error = OidcConstants.ProtectedResourceErrors.InvalidToken;
                     result.Claims = null;
 
                     return result;
@@ -85,7 +85,7 @@ namespace IdentityServer4.Core.Validation
             }
 
             // make sure client is still active (if client_id claim is present)
-            var clientClaim = result.Claims.FirstOrDefault(c => c.Type == Constants.ClaimTypes.ClientId);
+            var clientClaim = result.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.ClientId);
             if (clientClaim != null)
             {
                 var client = await _clients.FindClientByIdAsync(clientClaim.Value);
@@ -94,7 +94,7 @@ namespace IdentityServer4.Core.Validation
                     _logger.LogWarning("Client deleted or disabled: {clientId}", clientClaim.Value);
 
                     result.IsError = true;
-                    result.Error = Constants.ProtectedResourceErrors.InvalidToken;
+                    result.Error = OidcConstants.ProtectedResourceErrors.InvalidToken;
                     result.Claims = null;
 
                     return result;
@@ -114,20 +114,20 @@ namespace IdentityServer4.Core.Validation
         public virtual async Task<TokenValidationResult> ValidateIdentityTokenAsync(TokenValidationResult result)
         {
             // make sure user is still active (if sub claim is present)
-            var subClaim = result.Claims.FirstOrDefault(c => c.Type == Constants.ClaimTypes.Subject);
+            var subClaim = result.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject);
             if (subClaim != null)
             {
                 var principal = Principal.Create("tokenvalidator", result.Claims.ToArray());
 
                 var isActiveCtx = new IsActiveContext(principal, result.Client);
-                await _users.IsActiveAsync(isActiveCtx);
+                await _profile.IsActiveAsync(isActiveCtx);
                 
                 if (isActiveCtx.IsActive == false)
                 {
                     _logger.LogWarning("User marked as not active: {subject}", subClaim.Value);
 
                     result.IsError = true;
-                    result.Error = Constants.ProtectedResourceErrors.InvalidToken;
+                    result.Error = OidcConstants.ProtectedResourceErrors.InvalidToken;
                     result.Claims = null;
 
                     return result;

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityModel;
 using IdentityServer4.Core;
 using IdentityServer4.Core.Models;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace IdentityServer4.Tests.Validation
 
             scopes.ToList().ForEach(s => claims.Add(new Claim("scope", s)));
 
-            var token = new Token(Constants.TokenTypes.AccessToken)
+            var token = new Token(OidcConstants.TokenTypes.AccessToken)
             {
                 Audience = "https://idsrv3.com/resources",
                 Issuer = "https://idsrv3.com",
@@ -48,7 +49,7 @@ namespace IdentityServer4.Tests.Validation
 
             scopes.ToList().ForEach(s => claims.Add(new Claim("scope", s)));
 
-            var token = new Token(Constants.TokenTypes.AccessToken)
+            var token = new Token(OidcConstants.TokenTypes.AccessToken)
             {
                 Audience = "https://idsrv3.com/resources",
                 Issuer = "https://idsrv3.com",
@@ -69,7 +70,7 @@ namespace IdentityServer4.Tests.Validation
                 new Claim("sub", subjectId)
             };
 
-            var token = new Token(Constants.TokenTypes.IdentityToken)
+            var token = new Token(OidcConstants.TokenTypes.IdentityToken)
             {
                 Audience = clientId,
                 Client = clients.FindClientByIdAsync(clientId).Result,
@@ -95,7 +96,7 @@ namespace IdentityServer4.Tests.Validation
                 claims.Add(new Claim("junk", "x".Repeat(100)));
             }
 
-            var token = new Token(Constants.TokenTypes.IdentityToken)
+            var token = new Token(OidcConstants.TokenTypes.IdentityToken)
             {
                 Audience = clientId,
                 Client = clients.FindClientByIdAsync(clientId).Result,

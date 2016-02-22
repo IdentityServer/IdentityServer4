@@ -57,7 +57,7 @@ namespace IdentityServer4.Core.Validation
             if (token.Length > _options.InputLengthRestrictions.Jwt)
             {
                 _logger.LogError("JWT too long");
-                return Invalid(Constants.ProtectedResourceErrors.InvalidToken);
+                return Invalid(OidcConstants.ProtectedResourceErrors.InvalidToken);
             }
 
             if (clientId.IsMissing())
@@ -67,7 +67,7 @@ namespace IdentityServer4.Core.Validation
                 if (clientId.IsMissing())
                 {
                     _logger.LogError("No clientId supplied, can't find id in identity token.");
-                    return Invalid(Constants.ProtectedResourceErrors.InvalidToken);
+                    return Invalid(OidcConstants.ProtectedResourceErrors.InvalidToken);
                 }
             }
 
@@ -78,7 +78,7 @@ namespace IdentityServer4.Core.Validation
             if (client == null)
             {
                 LogError("Unknown or diabled client.");
-                return Invalid(Constants.ProtectedResourceErrors.InvalidToken);
+                return Invalid(OidcConstants.ProtectedResourceErrors.InvalidToken);
             }
 
             _log.ClientName = client.ClientName;
@@ -128,7 +128,7 @@ namespace IdentityServer4.Core.Validation
                     return new TokenValidationResult
                     {
                         IsError = true,
-                        Error = Constants.ProtectedResourceErrors.InvalidToken,
+                        Error = OidcConstants.ProtectedResourceErrors.InvalidToken,
                         ErrorDescription = "Token too long"
                     };
                 }
@@ -148,7 +148,7 @@ namespace IdentityServer4.Core.Validation
                     return new TokenValidationResult
                     {
                         IsError = true,
-                        Error = Constants.ProtectedResourceErrors.InvalidToken,
+                        Error = OidcConstants.ProtectedResourceErrors.InvalidToken,
                         ErrorDescription = "Token too long"
                     };
                 }
@@ -166,11 +166,11 @@ namespace IdentityServer4.Core.Validation
 
             if (expectedScope.IsPresent())
             {
-                var scope = result.Claims.FirstOrDefault(c => c.Type == Constants.ClaimTypes.Scope && c.Value == expectedScope);
+                var scope = result.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Scope && c.Value == expectedScope);
                 if (scope == null)
                 {
                     LogError(string.Format("Checking for expected scope {0} failed", expectedScope));
-                    return Invalid(Constants.ProtectedResourceErrors.InsufficientScope);
+                    return Invalid(OidcConstants.ProtectedResourceErrors.InsufficientScope);
                 }
             }
 
@@ -226,7 +226,7 @@ namespace IdentityServer4.Core.Validation
                 var id = handler.ValidateToken(jwt, parameters, out jwtToken);
 
                 // if access token contains an ID, log it
-                var jwtId = id.FindFirst(Constants.ClaimTypes.JwtId);
+                var jwtId = id.FindFirst(JwtClaimTypes.JwtId);
                 if (jwtId != null)
                 {
                     _log.JwtId = jwtId.Value;
@@ -234,7 +234,7 @@ namespace IdentityServer4.Core.Validation
 
                 // load the client that belongs to the client_id claim
                 Client client = null;
-                var clientId = id.FindFirst(Constants.ClaimTypes.ClientId);
+                var clientId = id.FindFirst(JwtClaimTypes.ClientId);
                 if (clientId != null)
                 {
                     client = await _clients.FindClientByIdAsync(clientId.Value);
@@ -256,7 +256,7 @@ namespace IdentityServer4.Core.Validation
             catch (Exception ex)
             {
                 _logger.LogError("JWT token validation error", ex);
-                return Invalid(Constants.ProtectedResourceErrors.InvalidToken);
+                return Invalid(OidcConstants.ProtectedResourceErrors.InvalidToken);
             }
         }
 
@@ -268,15 +268,15 @@ namespace IdentityServer4.Core.Validation
             if (token == null)
             {
                 LogError("Token handle not found");
-                return Invalid(Constants.ProtectedResourceErrors.InvalidToken);
+                return Invalid(OidcConstants.ProtectedResourceErrors.InvalidToken);
             }
 
-            if (token.Type != Constants.TokenTypes.AccessToken)
+            if (token.Type != OidcConstants.TokenTypes.AccessToken)
             {
                 LogError("Token handle does not resolve to an access token - but instead to: " + token.Type);
 
                 await _tokenHandles.RemoveAsync(tokenHandle);
-                return Invalid(Constants.ProtectedResourceErrors.InvalidToken);
+                return Invalid(OidcConstants.ProtectedResourceErrors.InvalidToken);
             }
 
             if (DateTimeOffsetHelper.UtcNow >= token.CreationTime.AddSeconds(token.Lifetime))
@@ -284,7 +284,7 @@ namespace IdentityServer4.Core.Validation
                 LogError("Token expired.");
 
                 await _tokenHandles.RemoveAsync(tokenHandle);
-                return Invalid(Constants.ProtectedResourceErrors.ExpiredToken);
+                return Invalid(OidcConstants.ProtectedResourceErrors.ExpiredToken);
             }
 
             return new TokenValidationResult
@@ -302,10 +302,10 @@ namespace IdentityServer4.Core.Validation
         {
             var claims = new List<Claim>
             {
-                new Claim(Constants.ClaimTypes.Audience, token.Audience),
-                new Claim(Constants.ClaimTypes.Issuer, token.Issuer),
-                new Claim(Constants.ClaimTypes.NotBefore, token.CreationTime.ToEpochTime().ToString()),
-                new Claim(Constants.ClaimTypes.Expiration, token.CreationTime.AddSeconds(token.Lifetime).ToEpochTime().ToString())
+                new Claim(JwtClaimTypes.Audience, token.Audience),
+                new Claim(JwtClaimTypes.Issuer, token.Issuer),
+                new Claim(JwtClaimTypes.NotBefore, token.CreationTime.ToEpochTime().ToString()),
+                new Claim(JwtClaimTypes.Expiration, token.CreationTime.AddSeconds(token.Lifetime).ToEpochTime().ToString())
             };
 
             claims.AddRange(token.Claims);

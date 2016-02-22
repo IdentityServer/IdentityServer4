@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityModel;
 using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Validation;
 using System.Collections.Generic;
@@ -29,9 +30,9 @@ namespace IdentityServer4.Core.Logging
             const string scrubValue = "******";
             Raw = request.Raw.ToDictionary();
 
-            if (Raw.ContainsKey(Constants.TokenRequest.Password))
+            if (Raw.ContainsKey(OidcConstants.TokenRequest.Password))
             {
-                Raw[Constants.TokenRequest.Password] = scrubValue;
+                Raw[OidcConstants.TokenRequest.Password] = scrubValue;
             }
 
             if (request.Client != null)

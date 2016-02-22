@@ -14,7 +14,7 @@ namespace IdentityServer4.Core
         public static ClaimsPrincipal Create(
             string subject,
             string displayName,
-            string authenticationMethod = Constants.AuthenticationMethods.Password,
+            string authenticationMethod = OidcConstants.AuthenticationMethods.Password,
             string idp = Constants.BuiltInIdentityProvider,
             string authenticationType = Constants.PrimaryAuthenticationType,
             long authenticationTime = 0)
@@ -29,36 +29,36 @@ namespace IdentityServer4.Core
 
             var claims = new List<Claim>
             {
-                new Claim(Constants.ClaimTypes.Subject, subject),
-                new Claim(Constants.ClaimTypes.Name, displayName),
-                new Claim(Constants.ClaimTypes.AuthenticationMethod, authenticationMethod),
-                new Claim(Constants.ClaimTypes.IdentityProvider, idp),
-                new Claim(Constants.ClaimTypes.AuthenticationTime, authenticationTime.ToString(), ClaimValueTypes.Integer)
+                new Claim(JwtClaimTypes.Subject, subject),
+                new Claim(JwtClaimTypes.Name, displayName),
+                new Claim(JwtClaimTypes.AuthenticationMethod, authenticationMethod),
+                new Claim(JwtClaimTypes.IdentityProvider, idp),
+                new Claim(JwtClaimTypes.AuthenticationTime, authenticationTime.ToString(), ClaimValueTypes.Integer)
             };
 
-            var id = new ClaimsIdentity(claims, authenticationType, Constants.ClaimTypes.Name, Constants.ClaimTypes.Role);
+            var id = new ClaimsIdentity(claims, authenticationType, JwtClaimTypes.Name, JwtClaimTypes.Role);
             return new ClaimsPrincipal(id);
         }
 
         public static ClaimsPrincipal CreateFromPrincipal(ClaimsPrincipal principal, string authenticationType)
         {
             // we require the following claims
-            var subject = principal.FindFirst(Constants.ClaimTypes.Subject);
+            var subject = principal.FindFirst(JwtClaimTypes.Subject);
             if (subject == null) throw new InvalidOperationException("sub claim is missing");
 
-            var name = principal.FindFirst(Constants.ClaimTypes.Name);
+            var name = principal.FindFirst(JwtClaimTypes.Name);
             if (name == null) throw new InvalidOperationException("name claim is missing");
 
-            var authenticationMethod = principal.FindFirst(Constants.ClaimTypes.AuthenticationMethod);
+            var authenticationMethod = principal.FindFirst(JwtClaimTypes.AuthenticationMethod);
             if (authenticationMethod == null) throw new InvalidOperationException("amr claim is missing");
 
-            var authenticationTime = principal.FindFirst(Constants.ClaimTypes.AuthenticationTime);
+            var authenticationTime = principal.FindFirst(JwtClaimTypes.AuthenticationTime);
             if (authenticationTime == null) throw new InvalidOperationException("auth_time claim is missing");
 
-            var idp = principal.FindFirst(Constants.ClaimTypes.IdentityProvider);
+            var idp = principal.FindFirst(JwtClaimTypes.IdentityProvider);
             if (idp == null) throw new InvalidOperationException("idp claim is missing");
 
-            var id = new ClaimsIdentity(principal.Claims, authenticationType, Constants.ClaimTypes.Name, Constants.ClaimTypes.Role);
+            var id = new ClaimsIdentity(principal.Claims, authenticationType, JwtClaimTypes.Name, JwtClaimTypes.Role);
             return new ClaimsPrincipal(id);
         }
 
@@ -66,7 +66,7 @@ namespace IdentityServer4.Core
         {
             var claims = new List<Claim>
             {
-                new Claim(Constants.ClaimTypes.Subject, subjectId)
+                new Claim(JwtClaimTypes.Subject, subjectId)
             };
 
             if (additionalClaims != null)
@@ -80,10 +80,10 @@ namespace IdentityServer4.Core
 
         public static ClaimsPrincipal FromClaims(IEnumerable<Claim> claims, bool allowMissing = false)
         {
-            var sub = claims.FirstOrDefault(c => c.Type == Constants.ClaimTypes.Subject);
-            var amr = claims.FirstOrDefault(c => c.Type == Constants.ClaimTypes.AuthenticationMethod);
-            var idp = claims.FirstOrDefault(c => c.Type == Constants.ClaimTypes.IdentityProvider);
-            var authTime = claims.FirstOrDefault(c => c.Type == Constants.ClaimTypes.AuthenticationTime);
+            var amr = claims.FirstOrDefault(c => c.Type == JwtClaimTypes.AuthenticationMethod);
+            var sub = claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject);
+            var idp = claims.FirstOrDefault(c => c.Type == JwtClaimTypes.IdentityProvider);
+            var authTime = claims.FirstOrDefault(c => c.Type == JwtClaimTypes.AuthenticationTime);
 
             var id = new ClaimsIdentity(Constants.BuiltInIdentityProvider);
 

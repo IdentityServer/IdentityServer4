@@ -39,11 +39,7 @@ namespace IdentityServer4.Core.Validation
 
             if (validator == null)
             {
-                return new CustomGrantValidationResult
-                {
-                    IsError = true,
-                    Error = "No validator found for grant type"
-                };
+                return new CustomGrantValidationResult("No validator found for grant type");
             }
 
             try
@@ -53,11 +49,7 @@ namespace IdentityServer4.Core.Validation
             catch (Exception e)
             {
                 _logger.LogError("Grant validation error", e);
-                return new CustomGrantValidationResult
-                {
-                    IsError = true,
-                    Error = "Grant validation error",
-                };
+                return new CustomGrantValidationResult("Grant validation error");
             }
         }
     }

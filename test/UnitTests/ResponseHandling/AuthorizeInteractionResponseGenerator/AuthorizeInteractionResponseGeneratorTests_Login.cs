@@ -27,7 +27,7 @@ namespace IdentityServer4.Tests.ResponseHandling
                 new FakeLogger<AuthorizeInteractionResponseGenerator>(),
                 _options,
                 _mockConsentService,
-                new FakeUserService(),
+                new FakeProfileService(),
                 new FakeLocalizationService());
         }
 

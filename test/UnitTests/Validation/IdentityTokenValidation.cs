@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using FluentAssertions;
+using IdentityModel;
 using IdentityServer4.Core;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens;
@@ -78,7 +79,7 @@ namespace IdentityServer4.Tests.Validation
 
             var result = await validator.ValidateIdentityTokenAsync(jwt, "invalid");
             result.IsError.Should().BeTrue();
-            result.Error.Should().Be(Constants.ProtectedResourceErrors.InvalidToken);
+            result.Error.Should().Be(OidcConstants.ProtectedResourceErrors.InvalidToken);
         }
 
         [Fact]
@@ -91,7 +92,7 @@ namespace IdentityServer4.Tests.Validation
 
             var result = await validator.ValidateIdentityTokenAsync(jwt, "roclient");
             result.IsError.Should().BeTrue();
-            result.Error.Should().Be(Constants.ProtectedResourceErrors.InvalidToken);
+            result.Error.Should().Be(OidcConstants.ProtectedResourceErrors.InvalidToken);
         }
     }
 }

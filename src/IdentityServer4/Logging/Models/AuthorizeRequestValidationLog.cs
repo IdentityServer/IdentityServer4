@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityModel;
 using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Validation;
@@ -48,7 +49,7 @@ namespace IdentityServer4.Core.Logging
 
             if (request.Subject != null)
             {
-                var subjectClaim = request.Subject.FindFirst(Constants.ClaimTypes.Subject);
+                var subjectClaim = request.Subject.FindFirst(JwtClaimTypes.Subject);
                 if (subjectClaim != null)
                 {
                     SubjectId = subjectClaim.Value;

@@ -15,13 +15,17 @@ using System.Net.Http;
 
 namespace IdentityServer4.Tests.Conformance.Basic
 {
-    public class RedirectUriTests : AuthorizeEndpointTestBase
+    public class RedirectUriTests
     {
         const string Category = "Conformance.Basic.RedirectUriTests";
 
+        MockAuthorizationPipeline _mockPipeline = new MockAuthorizationPipeline();
+
         public RedirectUriTests()
         {
-            Clients.Add(new Client
+            _mockPipeline.Initialize();
+
+            _mockPipeline.Clients.Add(new Client
             {
                 Enabled = true,
                 ClientId = "code_client",
@@ -41,9 +45,9 @@ namespace IdentityServer4.Tests.Conformance.Basic
                 }
             });
 
-            Scopes.Add(StandardScopes.OpenId);
+            _mockPipeline.Scopes.Add(StandardScopes.OpenId);
 
-            Users.Add(new InMemoryUser
+            _mockPipeline.Users.Add(new InMemoryUser
             {
                 Subject = "bob",
                 Username = "bob",
@@ -60,19 +64,19 @@ namespace IdentityServer4.Tests.Conformance.Basic
         [Trait("Category", Category)]
         public async Task Reject_redirect_uri_not_matching_registered_redirect_uri()
         {
-            await LoginAsync("bob");
+            await _mockPipeline.LoginAsync("bob");
 
             var nonce = Guid.NewGuid().ToString();
             var state = Guid.NewGuid().ToString();
 
-            var url = CreateAuthorizeUrl(
+            var url = _mockPipeline.CreateAuthorizeUrl(
                            clientId: "code_client",
                            responseType: "code",
                            scope: "openid",
                            redirectUri: "https://bad",
                            state: state,
                            nonce: nonce);
-            var response = await _client.GetAsync(url);
+            var response = await _mockPipeline.BrowserClient.GetAsync(url);
 
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
             _mockPipeline.ErrorMessage.ErrorCode.Should().Be("unauthorized_client");
@@ -82,12 +86,12 @@ namespace IdentityServer4.Tests.Conformance.Basic
         [Trait("Category", Category)]
         public async Task Reject_request_without_redirect_uri_when_multiple_registered()
         {
-            await LoginAsync("bob");
+            await _mockPipeline.LoginAsync("bob");
 
             var nonce = Guid.NewGuid().ToString();
             var state = Guid.NewGuid().ToString();
 
-            var url = CreateAuthorizeUrl(
+            var url = _mockPipeline.CreateAuthorizeUrl(
                           clientId: "code_client",
                           responseType: "code",
                           scope: "openid",
@@ -95,7 +99,7 @@ namespace IdentityServer4.Tests.Conformance.Basic
                           redirectUri: null,
                           state: state,
                           nonce: nonce);
-            var response = await _client.GetAsync(url);
+            var response = await _mockPipeline.BrowserClient.GetAsync(url);
 
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
             _mockPipeline.ErrorMessage.ErrorCode.Should().Be("invalid_request");
@@ -105,24 +109,24 @@ namespace IdentityServer4.Tests.Conformance.Basic
         [Trait("Category", Category)]
         public async Task Preserves_query_parameters_in_redirect_uri()
         {
-            await LoginAsync("bob");
+            await _mockPipeline.LoginAsync("bob");
 
             var nonce = Guid.NewGuid().ToString();
             var state = Guid.NewGuid().ToString();
 
-            _browser.AllowAutoRedirect = false;
-            var url = CreateAuthorizeUrl(
+            _mockPipeline.BrowserClient.AllowAutoRedirect = false;
+            var url = _mockPipeline.CreateAuthorizeUrl(
                            clientId: "code_client",
                            responseType: "code",
                            scope: "openid",
                            redirectUri: "https://code_client/callback?foo=bar&baz=quux",
                            state: state,
                            nonce: nonce);
-            var response = await _client.GetAsync(url);
+            var response = await _mockPipeline.BrowserClient.GetAsync(url);
 
             response.StatusCode.Should().Be(HttpStatusCode.Redirect);
             response.Headers.Location.ToString().Should().StartWith("https://code_client/callback?");
-            var authorization = ParseAuthorizationResponseUrl(response.Headers.Location.ToString());
+            var authorization = _mockPipeline.ParseAuthorizationResponseUrl(response.Headers.Location.ToString());
             authorization.Code.Should().NotBeNull();
             authorization.State.Should().Be(state);
             var query = response.Headers.Location.ParseQueryString();
@@ -134,19 +138,19 @@ namespace IdentityServer4.Tests.Conformance.Basic
         [Trait("Category", Category)]
         public async Task Rejects_redirect_uri_when_query_parameter_does_not_match()
         {
-            await LoginAsync("bob");
+            await _mockPipeline.LoginAsync("bob");
 
             var nonce = Guid.NewGuid().ToString();
             var state = Guid.NewGuid().ToString();
 
-            var url = CreateAuthorizeUrl(
+            var url = _mockPipeline.CreateAuthorizeUrl(
                            clientId: "code_client",
                            responseType: "code",
                            scope: "openid",
                            redirectUri: "https://code_client/callback?baz=quux&foo=bar",
                            state: state,
                            nonce: nonce);
-            var response = await _client.GetAsync(url);
+            var response = await _mockPipeline.BrowserClient.GetAsync(url);
 
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
             _mockPipeline.ErrorMessage.ErrorCode.Should().Be("unauthorized_client");

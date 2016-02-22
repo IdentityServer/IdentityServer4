@@ -10,6 +10,7 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
+using IdentityModel;
 
 namespace IdentityServer4.Core.Validation
 {
@@ -35,7 +36,7 @@ namespace IdentityServer4.Core.Validation
         {
             get
             {
-                return Constants.TokenEndpointAuthenticationMethods.BasicAuthentication;
+                return OidcConstants.EndpointAuthenticationMethods.BasicAuthentication;
             }
         }
 

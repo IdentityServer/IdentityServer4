@@ -31,7 +31,8 @@ namespace IdentityServer4.Tests.Validation
             IScopeStore scopes = null,
             IAuthorizationCodeStore authorizationCodeStore = null,
             IRefreshTokenStore refreshTokens = null,
-            IUserService userService = null,
+            IResourceOwnerPasswordValidator resourceOwnerValidator = null,
+            IProfileService profile = null,
             IEnumerable<ICustomGrantValidator> customGrantValidators = null,
             ICustomRequestValidator customRequestValidator = null,
             ScopeValidator scopeValidator = null)
@@ -46,9 +47,14 @@ namespace IdentityServer4.Tests.Validation
                 scopes = new InMemoryScopeStore(TestScopes.Get());
             }
 
-            if (userService == null)
+            if (resourceOwnerValidator == null)
             {
-                userService = new TestUserService();
+                resourceOwnerValidator = new TestResourceOwnerPasswordValidator();
+            }
+
+            if (profile == null)
+            {
+                profile = new TestProfileService();
             }
 
             if (customRequestValidator == null)
@@ -80,7 +86,8 @@ namespace IdentityServer4.Tests.Validation
                 options, 
                 authorizationCodeStore, 
                 refreshTokens, 
-                userService, 
+                resourceOwnerValidator, 
+                profile,
                 aggregateCustomValidator, 
                 customRequestValidator, 
                 scopeValidator, 
@@ -97,7 +104,7 @@ namespace IdentityServer4.Tests.Validation
             IdentityServerOptions options = null,
             IScopeStore scopes = null,
             IClientStore clients = null,
-            IUserService users = null,
+            IProfileService profile = null,
             ICustomRequestValidator customValidator = null,
             IRedirectUriValidator uriValidator = null,
             ScopeValidator scopeValidator = null,
@@ -146,11 +153,11 @@ namespace IdentityServer4.Tests.Validation
             );
         }
 
-        public static TokenValidator CreateTokenValidator(ITokenHandleStore tokenStore = null, IUserService users = null)
+        public static TokenValidator CreateTokenValidator(ITokenHandleStore tokenStore = null, IProfileService profile = null)
         {
-            if (users == null)
+            if (profile == null)
             {
-                users = new TestUserService();
+                profile = new TestProfileService();
             }
 
             var clients = CreateClientStore();
@@ -167,7 +174,7 @@ namespace IdentityServer4.Tests.Validation
                 clients: clients,
                 tokenHandles: tokenStore,
                 customValidator: new DefaultCustomTokenValidator(
-                    users: users,
+                    profile: profile,
                     clients: clients,
                     logger: new Logger<DefaultCustomTokenValidator>(new LoggerFactory())),
                 keyService: new DefaultSigningKeyService(options),

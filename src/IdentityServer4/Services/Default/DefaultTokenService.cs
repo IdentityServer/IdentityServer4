@@ -110,28 +110,28 @@ namespace IdentityServer4.Core.Services.Default
             // if nonce was sent, must be mirrored in id token
             if (request.Nonce.IsPresent())
             {
-                claims.Add(new Claim(Constants.ClaimTypes.Nonce, request.Nonce));
+                claims.Add(new Claim(JwtClaimTypes.Nonce, request.Nonce));
             }
 
             // add iat claim
-            claims.Add(new Claim(Constants.ClaimTypes.IssuedAt, DateTimeOffsetHelper.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer));
+            claims.Add(new Claim(JwtClaimTypes.IssuedAt, DateTimeOffsetHelper.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer));
 
             // add at_hash claim
             if (request.AccessTokenToHash.IsPresent())
             {
-                claims.Add(new Claim(Constants.ClaimTypes.AccessTokenHash, HashAdditionalData(request.AccessTokenToHash)));
+                claims.Add(new Claim(JwtClaimTypes.AccessTokenHash, HashAdditionalData(request.AccessTokenToHash)));
             }
 
             // add c_hash claim
             if (request.AuthorizationCodeToHash.IsPresent())
             {
-                claims.Add(new Claim(Constants.ClaimTypes.AuthorizationCodeHash, HashAdditionalData(request.AuthorizationCodeToHash)));
+                claims.Add(new Claim(JwtClaimTypes.AuthorizationCodeHash, HashAdditionalData(request.AuthorizationCodeToHash)));
             }
 
             // add sid if present
             if (request.ValidatedRequest.SessionId.IsPresent())
             {
-                claims.Add(new Claim(Constants.ClaimTypes.SessionId, request.ValidatedRequest.SessionId));
+                claims.Add(new Claim(JwtClaimTypes.SessionId, request.ValidatedRequest.SessionId));
             }
 
             claims.AddRange(await _claimsProvider.GetIdentityTokenClaimsAsync(
@@ -143,7 +143,7 @@ namespace IdentityServer4.Core.Services.Default
 
             var issuer = _context.GetIssuerUri();
 
-            var token = new Token(Constants.TokenTypes.IdentityToken)
+            var token = new Token(OidcConstants.TokenTypes.IdentityToken)
             {
                 Audience = request.Client.ClientId,
                 Issuer = issuer,
@@ -176,11 +176,11 @@ namespace IdentityServer4.Core.Services.Default
 
             if (request.Client.IncludeJwtId)
             {
-                claims.Add(new Claim(Constants.ClaimTypes.JwtId, CryptoRandom.CreateUniqueId()));
+                claims.Add(new Claim(JwtClaimTypes.JwtId, CryptoRandom.CreateUniqueId()));
             }
 
             var issuer = _context.GetIssuerUri();
-            var token = new Token(Constants.TokenTypes.AccessToken)
+            var token = new Token(OidcConstants.TokenTypes.AccessToken)
             {
                 Audience = string.Format(Constants.AccessTokenAudience, issuer.EnsureTrailingSlash()),
                 Issuer = issuer,
@@ -204,7 +204,7 @@ namespace IdentityServer4.Core.Services.Default
         {
             string tokenResult;
 
-            if (token.Type == Constants.TokenTypes.AccessToken)
+            if (token.Type == OidcConstants.TokenTypes.AccessToken)
             {
                 if (token.Client.AccessTokenType == AccessTokenType.Jwt)
                 {
@@ -222,7 +222,7 @@ namespace IdentityServer4.Core.Services.Default
                     tokenResult = handle;
                 }
             }
-            else if (token.Type == Constants.TokenTypes.IdentityToken)
+            else if (token.Type == OidcConstants.TokenTypes.IdentityToken)
             {
                 _logger.LogVerbose("Creating JWT identity token");
 

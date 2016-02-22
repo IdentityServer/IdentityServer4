@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using FluentAssertions;
+using IdentityModel;
 using IdentityServer4.Core;
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Services;
@@ -41,9 +42,9 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
                 authorizationCodeStore: store);
 
             var parameters = new NameValueCollection();
-            parameters.Add(Constants.TokenRequest.GrantType, Constants.GrantTypes.AuthorizationCode);
-            parameters.Add(Constants.TokenRequest.Code, "valid");
-            parameters.Add(Constants.TokenRequest.RedirectUri, "https://server/cb");
+            parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.AuthorizationCode);
+            parameters.Add(OidcConstants.TokenRequest.Code, "valid");
+            parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server/cb");
 
             Func<Task> act = () => validator.ValidateRequestAsync(parameters, null);
 
@@ -70,14 +71,14 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
                 authorizationCodeStore: store);
 
             var parameters = new NameValueCollection();
-            parameters.Add(Constants.TokenRequest.GrantType, "unknown");
-            parameters.Add(Constants.TokenRequest.Code, "valid");
-            parameters.Add(Constants.TokenRequest.RedirectUri, "https://server/cb");
+            parameters.Add(OidcConstants.TokenRequest.GrantType, "unknown");
+            parameters.Add(OidcConstants.TokenRequest.Code, "valid");
+            parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server/cb");
 
             var result = await validator.ValidateRequestAsync(parameters, client);
 
             result.IsError.Should().BeTrue();
-            result.Error.Should().Be(Constants.TokenErrors.UnsupportedGrantType);
+            result.Error.Should().Be(OidcConstants.TokenErrors.UnsupportedGrantType);
         }
 
         [Fact]
@@ -100,13 +101,13 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
                 authorizationCodeStore: store);
 
             var parameters = new NameValueCollection();
-            parameters.Add(Constants.TokenRequest.Code, "valid");
-            parameters.Add(Constants.TokenRequest.RedirectUri, "https://server/cb");
+            parameters.Add(OidcConstants.TokenRequest.Code, "valid");
+            parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server/cb");
 
             var result = await validator.ValidateRequestAsync(parameters, client);
 
             result.IsError.Should().BeTrue();
-            result.Error.Should().Be(Constants.TokenErrors.UnsupportedGrantType);
+            result.Error.Should().Be(OidcConstants.TokenErrors.UnsupportedGrantType);
         }
     }
 }

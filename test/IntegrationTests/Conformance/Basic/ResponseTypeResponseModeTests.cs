@@ -14,15 +14,17 @@ using Xunit;
 
 namespace IdentityServer4.Tests.Conformance.Basic
 {
-    public class ResponseTypeResponseModeTests : AuthorizeEndpointTestBase
+    public class ResponseTypeResponseModeTests
     {
         const string Category = "Conformance.Basic.ResponseTypeResponseModeTests";
 
+        MockAuthorizationPipeline _mockPipeline = new MockAuthorizationPipeline();
+
         public ResponseTypeResponseModeTests()
         {
-            _browser.AllowAutoRedirect = false;
-
-            Clients.Add(new Client
+            _mockPipeline.Initialize();
+            _mockPipeline.BrowserClient.AllowAutoRedirect = false;
+            _mockPipeline.Clients.Add(new Client
             {
                 Enabled = true,
                 ClientId = "code_client",
@@ -41,9 +43,9 @@ namespace IdentityServer4.Tests.Conformance.Basic
                 }
             });
 
-            Scopes.Add(StandardScopes.OpenId);
+            _mockPipeline.Scopes.Add(StandardScopes.OpenId);
 
-            Users.Add(new InMemoryUser
+            _mockPipeline.Users.Add(new InMemoryUser
             {
                 Subject = "bob",
                 Username = "bob",
@@ -60,22 +62,22 @@ namespace IdentityServer4.Tests.Conformance.Basic
         [Trait("Category", Category)]
         public async Task Request_with_response_type_code_supported()
         {
-            await LoginAsync("bob");
+            await _mockPipeline.LoginAsync("bob");
 
-            var metadata = await _client.GetAsync(DiscoveryEndpoint);
+            var metadata = await _mockPipeline.Client.GetAsync(MockAuthorizationPipeline.DiscoveryEndpoint);
             metadata.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var state = Guid.NewGuid().ToString();
             var nonce = Guid.NewGuid().ToString();
 
-            var url = CreateAuthorizeUrl(
+            var url = _mockPipeline.CreateAuthorizeUrl(
                            clientId: "code_client",
                            responseType: "code",
                            scope: "openid",
                            redirectUri: "https://code_client/callback",
                            state: state,
                            nonce: nonce);
-            var response = await _client.GetAsync(url);
+            var response = await _mockPipeline.BrowserClient.GetAsync(url);
             response.StatusCode.Should().Be(HttpStatusCode.Found);
 
             var authorization = new IdentityModel.Client.AuthorizeResponse(response.Headers.Location.ToString());

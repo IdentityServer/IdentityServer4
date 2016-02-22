@@ -6,6 +6,7 @@ using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Hosting;
 using Microsoft.AspNet.Http;
+using IdentityModel;
 
 namespace IdentityServer4.Core.Endpoints.Results
 {
@@ -21,7 +22,7 @@ namespace IdentityServer4.Core.Endpoints.Results
             var uri = response.RedirectUri;
             var query = response.ToNameValueCollection().ToQueryString();
 
-            if (response.Request.ResponseMode == Constants.ResponseModes.Query)
+            if (response.Request.ResponseMode == OidcConstants.ResponseModes.Query)
             {
                 uri = uri.AddQueryString(query);
             }

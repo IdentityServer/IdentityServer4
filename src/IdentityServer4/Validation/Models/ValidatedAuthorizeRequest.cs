@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityModel;
 using IdentityServer4.Core.Models;
 using System.Collections.Generic;
 
@@ -165,11 +166,11 @@ namespace IdentityServer4.Core.Validation
         {
             get
             {
-                return (ResponseType == Constants.ResponseTypes.IdTokenToken ||
-                        ResponseType == Constants.ResponseTypes.Code ||
-                        ResponseType == Constants.ResponseTypes.CodeIdToken ||
-                        ResponseType == Constants.ResponseTypes.CodeToken ||
-                        ResponseType == Constants.ResponseTypes.CodeIdTokenToken);
+                return (ResponseType == OidcConstants.ResponseTypes.IdTokenToken ||
+                        ResponseType == OidcConstants.ResponseTypes.Code ||
+                        ResponseType == OidcConstants.ResponseTypes.CodeIdToken ||
+                        ResponseType == OidcConstants.ResponseTypes.CodeToken ||
+                        ResponseType == OidcConstants.ResponseTypes.CodeIdTokenToken);
             }
         }
 

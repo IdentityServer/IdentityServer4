@@ -32,10 +32,14 @@ namespace IdentityServer4.Core.Validation
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CustomGrantValidationResult"/> class with no error and no user.
+        /// Initializes a new instance of the <see cref="CustomGrantValidationResult"/> class with a given principal.
+        /// Warning: the principal needs to include the required claims - it is recommended to use the other constructor that does validation.
         /// </summary>
-        public CustomGrantValidationResult()
-        { }
+        public CustomGrantValidationResult(ClaimsPrincipal principal)
+        {
+            Principal = principal;
+            IsError = false;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CustomGrantValidationResult"/> class.
@@ -52,10 +56,10 @@ namespace IdentityServer4.Core.Validation
         {
             var resultClaims = new List<Claim>
             {
-                new Claim(Constants.ClaimTypes.Subject, subject),
-                new Claim(Constants.ClaimTypes.AuthenticationMethod, authenticationMethod),
-                new Claim(Constants.ClaimTypes.IdentityProvider, identityProvider),
-                new Claim(Constants.ClaimTypes.AuthenticationTime, DateTimeOffsetHelper.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer)
+                new Claim(JwtClaimTypes.Subject, subject),
+                new Claim(JwtClaimTypes.AuthenticationMethod, authenticationMethod),
+                new Claim(JwtClaimTypes.IdentityProvider, identityProvider),
+                new Claim(JwtClaimTypes.AuthenticationTime, DateTimeOffsetHelper.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer)
             };
 
             if (claims != null && claims.Any())

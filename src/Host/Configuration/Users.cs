@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+using IdentityModel;
 using IdentityServer4.Core;
 using IdentityServer4.Core.Services.InMemory;
 using System.Collections.Generic;
@@ -30,29 +31,29 @@ namespace Host.Configuration
                 new InMemoryUser{Subject = "818727", Username = "alice", Password = "alice", 
                     Claims = new Claim[]
                     {
-                        new Claim(Constants.ClaimTypes.Name, "Alice Smith"),
-                        new Claim(Constants.ClaimTypes.GivenName, "Alice"),
-                        new Claim(Constants.ClaimTypes.FamilyName, "Smith"),
-                        new Claim(Constants.ClaimTypes.Email, "AliceSmith@email.com"),
-                        new Claim(Constants.ClaimTypes.EmailVerified, "true", ClaimValueTypes.Boolean),
-                        new Claim(Constants.ClaimTypes.Role, "Admin"),
-                        new Claim(Constants.ClaimTypes.Role, "Geek"),
-                        new Claim(Constants.ClaimTypes.WebSite, "http://alice.com"),
-                        new Claim(Constants.ClaimTypes.Address, @"{ 'street_address': 'One Hacker Way', 'locality': 'Heidelberg', 'postal_code': 69118, 'country': 'Germany' }", Constants.ClaimValueTypes.Json)
+                        new Claim(JwtClaimTypes.Name, "Alice Smith"),
+                        new Claim(JwtClaimTypes.GivenName, "Alice"),
+                        new Claim(JwtClaimTypes.FamilyName, "Smith"),
+                        new Claim(JwtClaimTypes.Email, "AliceSmith@email.com"),
+                        new Claim(JwtClaimTypes.EmailVerified, "true", ClaimValueTypes.Boolean),
+                        new Claim(JwtClaimTypes.Role, "Admin"),
+                        new Claim(JwtClaimTypes.Role, "Geek"),
+                        new Claim(JwtClaimTypes.WebSite, "http://alice.com"),
+                        new Claim(JwtClaimTypes.Address, @"{ 'street_address': 'One Hacker Way', 'locality': 'Heidelberg', 'postal_code': 69118, 'country': 'Germany' }", Constants.ClaimValueTypes.Json)
                     }
                 },
                 new InMemoryUser{Subject = "88421113", Username = "bob", Password = "bob", 
                     Claims = new Claim[]
                     {
-                        new Claim(Constants.ClaimTypes.Name, "Bob Smith"),
-                        new Claim(Constants.ClaimTypes.GivenName, "Bob"),
-                        new Claim(Constants.ClaimTypes.FamilyName, "Smith"),
-                        new Claim(Constants.ClaimTypes.Email, "BobSmith@email.com"),
-                        new Claim(Constants.ClaimTypes.EmailVerified, "true", ClaimValueTypes.Boolean),
-                        new Claim(Constants.ClaimTypes.Role, "Developer"),
-                        new Claim(Constants.ClaimTypes.Role, "Geek"),
-                        new Claim(Constants.ClaimTypes.WebSite, "http://bob.com"),
-                        new Claim(Constants.ClaimTypes.Address, @"{ 'street_address': 'One Hacker Way', 'locality': 'Heidelberg', 'postal_code': 69118, 'country': 'Germany' }", Constants.ClaimValueTypes.Json)
+                        new Claim(JwtClaimTypes.Name, "Bob Smith"),
+                        new Claim(JwtClaimTypes.GivenName, "Bob"),
+                        new Claim(JwtClaimTypes.FamilyName, "Smith"),
+                        new Claim(JwtClaimTypes.Email, "BobSmith@email.com"),
+                        new Claim(JwtClaimTypes.EmailVerified, "true", ClaimValueTypes.Boolean),
+                        new Claim(JwtClaimTypes.Role, "Developer"),
+                        new Claim(JwtClaimTypes.Role, "Geek"),
+                        new Claim(JwtClaimTypes.WebSite, "http://bob.com"),
+                        new Claim(JwtClaimTypes.Address, @"{ 'street_address': 'One Hacker Way', 'locality': 'Heidelberg', 'postal_code': 69118, 'country': 'Germany' }", Constants.ClaimValueTypes.Json)
                     }
                 },
             };

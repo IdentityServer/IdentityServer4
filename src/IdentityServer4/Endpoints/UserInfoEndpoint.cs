@@ -12,6 +12,7 @@ using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Events;
 using IdentityServer4.Core.Hosting;
 using IdentityServer4.Core.Endpoints.Results;
+using IdentityModel;
 
 namespace IdentityServer4.Core.Endpoints
 {
@@ -50,7 +51,7 @@ namespace IdentityServer4.Core.Endpoints
 
                 _logger.LogError(error);
                 await RaiseFailureEventAsync(error);
-                return Error(Constants.ProtectedResourceErrors.InvalidToken);
+                return Error(OidcConstants.ProtectedResourceErrors.InvalidToken);
             }
 
             _logger.LogInformation("Token found: {token}", tokenUsageResult.UsageType.ToString());
@@ -67,8 +68,8 @@ namespace IdentityServer4.Core.Endpoints
             }
 
             // pass scopes/claims to profile service
-            var subject = tokenResult.Claims.FirstOrDefault(c => c.Type == Constants.ClaimTypes.Subject).Value;
-            var scopes = tokenResult.Claims.Where(c => c.Type == Constants.ClaimTypes.Scope).Select(c => c.Value);
+            var subject = tokenResult.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject).Value;
+            var scopes = tokenResult.Claims.Where(c => c.Type == JwtClaimTypes.Scope).Select(c => c.Value);
 
             var payload = await _generator.ProcessAsync(subject, scopes, tokenResult.Client);
 

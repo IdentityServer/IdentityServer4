@@ -22,7 +22,8 @@ namespace IdentityServer4.Tests.Validation
                 new Scope
                 {
                     Name = "openid",
-                    Type = ScopeType.Identity
+                    Type = ScopeType.Identity,
+                    Required = true
                 },
                 new Scope
                 {
@@ -32,7 +33,8 @@ namespace IdentityServer4.Tests.Validation
                 new Scope
                 {
                     Name = "resource1",
-                    Type = ScopeType.Resource
+                    Type = ScopeType.Resource,
+                    Required = true
                 },
                 new Scope
                 {
@@ -231,6 +233,29 @@ namespace IdentityServer4.Tests.Validation
             result.Should().BeTrue();
             validator.ContainsOpenIdScopes.Should().BeTrue();
             validator.ContainsResourceScopes.Should().BeFalse();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public void ValidateRequiredScopes_required_scopes_present_should_succeed()
+        {
+            var validator = Factory.CreateScopeValidator(_store);
+            validator.RequestedScopes.AddRange(_allScopes);
+            validator.ValidateRequiredScopes(new string[] { "openid", "email", "resource1", "resource2" }).Should().BeTrue();
+            validator.ValidateRequiredScopes(new string[] { "openid", "email", "resource1" }).Should().BeTrue();
+            validator.ValidateRequiredScopes(new string[] { "openid", "resource1", "resource2" }).Should().BeTrue();
+            validator.ValidateRequiredScopes(new string[] { "openid", "resource1" }).Should().BeTrue();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public void ValidateRequiredScopes_required_scopes_absent_should_fail()
+        {
+            var validator = Factory.CreateScopeValidator(_store);
+            validator.RequestedScopes.AddRange(_allScopes);
+            validator.ValidateRequiredScopes(new string[] { "email", "resource2" }).Should().BeFalse();
+            validator.ValidateRequiredScopes(new string[] { "email", "resource1", "resource2" }).Should().BeFalse();
+            validator.ValidateRequiredScopes(new string[] { "openid", "resource2" }).Should().BeFalse();
         }
     }
 }

@@ -32,6 +32,12 @@ namespace IdentityServer4.Core.Validation
             _store = store;
         }
 
+        public bool ValidateRequiredScopes(IEnumerable<string> consentedScopes)
+        {
+            var requiredScopes = RequestedScopes.Where(x => x.Required).Select(x=>x.Name);
+            return requiredScopes.All(x => consentedScopes.Contains(x));
+        }
+
         public void SetConsentedScopes(IEnumerable<string> consentedScopes)
         {
             consentedScopes = consentedScopes ?? Enumerable.Empty<string>();
