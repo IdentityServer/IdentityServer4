@@ -80,6 +80,10 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 map.Add(Constants.RoutePaths.Oidc.Authorize, typeof(AuthorizeEndpoint));
             }
+            if (endpoints.EnableEndSessionEndpoint)
+            {
+                map.Add(Constants.RoutePaths.Oidc.EndSession, typeof(EndSessionEndpoint));
+            }
 
             services.AddInstance<IEndpointRouter>(new EndpointRouter(map));
             foreach (var item in map)
@@ -108,7 +112,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<IRedirectUriValidator, StrictRedirectUriValidator>();
             services.TryAddTransient<ITokenValidator, TokenValidator>();
             services.TryAddTransient<IIntrospectionRequestValidator, IntrospectionRequestValidator>();
-
+            services.TryAddTransient<IEndSessionRequestValidator, EndSessionRequestValidator>();
             // todo services.TryAddTransient<IResourceOwnerPasswordValidator, DefaultResouceOwnerPasswordValidator>();
             
             return services;
@@ -122,6 +126,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<IAuthorizeInteractionResponseGenerator, AuthorizeInteractionResponseGenerator>();
             services.TryAddTransient<IAuthorizeResponseGenerator, AuthorizeResponseGenerator>();
             services.TryAddTransient<IAuthorizeEndpointResultFactory, AuthorizeEndpointResultFactory>();
+            services.TryAddTransient<IEndSessionResponseGenerator, EndSessionResponseGenerator>();
 
             return services;
         }

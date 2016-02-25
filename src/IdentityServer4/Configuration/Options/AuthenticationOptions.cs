@@ -73,5 +73,14 @@ namespace IdentityServer4.Core.Configuration
         /// The limit after which old signin messages are purged
         /// </value>
         public int SignInMessageThreshold { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether IdentityServer will always show a confirmation page for sign-out.
+        /// Defaults to false.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if sign-out prompt is required; otherwise, <c>false</c>.
+        /// </value>
+        public bool RequireSignOutPrompt { get; set; }
     }
 }
