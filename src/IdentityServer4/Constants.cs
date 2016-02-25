@@ -415,6 +415,13 @@ namespace IdentityServer4.Core
             public const string ClaimsProviderAccessToken = "ClaimsProviderAccessToken";
         }
 
+        public static class EndSessionRequest
+        {
+            public const string IdTokenHint = "id_token_hint";
+            public const string PostLogoutRedirectUri = "post_logout_redirect_uri";
+            public const string State = "state";
+        }
+
         public static class ClaimValueTypes
         {
             public const string Json = "json";

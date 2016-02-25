@@ -228,6 +228,11 @@ namespace IdentityServer4.Core.Models
         public bool AllowPromptNone { get; set; }
 
         /// <summary>
+        /// Specifies if the client will always show a confirmation page for sign-out. Defaults to false.
+        /// </summary>
+        public bool RequireSignOutPrompt { get; set; }
+
+        /// <summary>
         /// Creates a Client with default values
         /// </summary>
         public Client()
@@ -243,6 +248,7 @@ namespace IdentityServer4.Core.Models
             AllowedCorsOrigins = new List<string>();
 
             LogoutSessionRequired = true;
+            RequireSignOutPrompt = true;
 
             Enabled = true;
             EnableLocalLogin = true;
