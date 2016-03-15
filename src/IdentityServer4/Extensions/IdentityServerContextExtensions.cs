@@ -46,7 +46,12 @@ namespace IdentityServer4.Core.Hosting
         /// <returns></returns>
         public static string GetIdentityServerBaseUrl(this IdentityServerContext context)
         {
-            return context.GetHost() + context.GetBasePath();
+            var url = context.Options.ProxyServerBaseUrl;
+            if (url.IsMissing())
+            {
+                return context.GetHost() + context.GetBasePath();
+            }
+            return url;
         }
 
         public static string GetIssuerUri(this IdentityServerContext context)

@@ -45,6 +45,8 @@ namespace IdentityServer4.Core.Configuration
         /// </value>
         public string IssuerUri { get; set; }
 
+        public string ProxyServerBaseUrl { get; set; }
+
         /// <summary>
         /// Gets or sets the X.509 certificate (and corresponding private key) for signing security tokens.
         /// </summary>
