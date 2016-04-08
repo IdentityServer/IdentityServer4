@@ -57,6 +57,15 @@ namespace IdentityServer4.Core.Models
         public IEnumerable<string> AllowedGrantTypes { get; set; }
 
         /// <summary>
+        /// Controls whether access tokens are transmitted via the browser for this client (defaults to true).
+        /// This can prevent accidental leakage of access tokens when multiple response types are allowed.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if access tokens can be transmitted via the browser; otherwise, <c>false</c>.
+        /// </value>
+        public bool AllowAccessTokensViaBrowser { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether this client is allowed to request token using client credentials only.
         /// This is e.g. useful when you want a client to be able to use both a user-centric flow like implicit and additionally client credentials flow
         /// </summary>
