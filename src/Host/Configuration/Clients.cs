@@ -20,7 +20,7 @@ namespace Host.Configuration
                         new Secret("secret".Sha256())
                     },
 
-                    Flow = Flows.ClientCredentials,
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
 
                     AllowedScopes = new List<string>
                     {
@@ -39,7 +39,7 @@ namespace Host.Configuration
                         new Secret("secret".Sha256())
                     },
 
-                    Flow = Flows.ResourceOwner,
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
                     AllowedScopes = new List<string>
                     {
@@ -51,29 +51,30 @@ namespace Host.Configuration
                     }
                 },
 
+                // todo
                 ///////////////////////////////////////////
                 // Console Client Credentials Flow Sample
                 //////////////////////////////////////////
-                new Client
-                {
-                    ClientId = "client.custom",
-                    ClientSecrets = new List<Secret>
-                    {
-                        new Secret("secret".Sha256())
-                    },
+                //new Client
+                //{
+                //    ClientId = "client.custom",
+                //    ClientSecrets = new List<Secret>
+                //    {
+                //        new Secret("secret".Sha256())
+                //    },
 
-                    Flow = Flows.Custom,
+                //    Flow = Flows.Custom,
                     
-                    AllowedCustomGrantTypes = new List<string>
-                    {
-                        "custom"
-                    },
+                //    AllowedCustomGrantTypes = new List<string>
+                //    {
+                //        "custom"
+                //    },
 
-                    AllowedScopes = new List<string>
-                    {
-                        "api1", "api2"
-                    }
-                },
+                //    AllowedScopes = new List<string>
+                //    {
+                //        "api1", "api2"
+                //    }
+                //},
 
                 ///////////////////////////////////////////
                 // Introspection Client Sample
@@ -86,7 +87,7 @@ namespace Host.Configuration
                         new Secret("secret".Sha256())
                     },
 
-                    Flow = Flows.ResourceOwner,
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
                     AllowedScopes = new List<string>
                     {
@@ -105,7 +106,7 @@ namespace Host.Configuration
                     ClientName = "MVC Implicit",
                     ClientUri = "http://identityserver.io",
 
-                    Flow = Flows.Implicit,
+                    AllowedGrantTypes = GrantTypes.Implicit,
                     RedirectUris = new List<string>
                     {
                         "http://localhost:44077/signin-oidc"
@@ -131,7 +132,7 @@ namespace Host.Configuration
                     ClientName = "JavaScript OAuth 2.0 Client",
                     ClientUri = "http://identityserver.io",
 
-                    Flow = Flows.Implicit,
+                    AllowedGrantTypes = GrantTypes.Implicit,
                     RedirectUris = new List<string>
                     {
                         "http://localhost:28895/index.html"
@@ -152,7 +153,7 @@ namespace Host.Configuration
                     ClientName = "JavaScript OIDC Client",
                     ClientUri = "http://identityserver.io",
 
-                    Flow = Flows.Implicit,
+                    AllowedGrantTypes = GrantTypes.Implicit,
                     RedirectUris = new List<string>
                     {
                         "http://localhost:7017/index.html",

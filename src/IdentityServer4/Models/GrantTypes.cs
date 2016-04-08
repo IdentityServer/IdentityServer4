@@ -37,6 +37,12 @@ namespace IdentityServer4.Core.Models
         public static IEnumerable<string> HybridWithProofKeyAndClientCredentials =>
             new[] { GrantType.HybridWithProofKey, GrantType.ClientCredentials };
 
+        public static IEnumerable<string> ClientCredentials =>
+            new[] { GrantType.ClientCredentials };
+
+        public static IEnumerable<string> ResourceOwnerPassword =>
+            new[] { GrantType.ResourceOwnerPassword };
+
         public static IEnumerable<string> List(params string[] values) => values;
     }
 }

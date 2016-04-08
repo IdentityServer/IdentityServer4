@@ -32,21 +32,21 @@ namespace IdentityServer4.Core.ResponseHandling
 
         public async Task<AuthorizeResponse> CreateResponseAsync(ValidatedAuthorizeRequest request)
         {
-            if (request.Flow == Flows.AuthorizationCode)
+            if (request.GrantType == GrantType.Code)
             {
                 return await CreateCodeFlowResponseAsync(request);
             }
-            if (request.Flow == Flows.Implicit)
+            if (request.GrantType == GrantType.Implicit)
             {
                 return await CreateImplicitFlowResponseAsync(request);
             }
-            if (request.Flow == Flows.Hybrid)
+            if (request.GrantType == GrantType.Hybrid)
             {
                 return await CreateHybridFlowResponseAsync(request);
             }
 
-            _logger.LogError("Unsupported flow: " + request.Flow.ToString());
-            throw new InvalidOperationException("invalid flow: " + request.Flow.ToString());
+            _logger.LogError("Unsupported grant type: " + request.GrantType);
+            throw new InvalidOperationException("invalid grant type: " + request.GrantType);
         }
 
         private async Task<AuthorizeResponse> CreateHybridFlowResponseAsync(ValidatedAuthorizeRequest request)

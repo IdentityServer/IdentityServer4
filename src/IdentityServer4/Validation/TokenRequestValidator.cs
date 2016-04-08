@@ -150,8 +150,8 @@ namespace IdentityServer4.Core.Validation
             /////////////////////////////////////////////
             // check if client is authorized for grant type
             /////////////////////////////////////////////
-            if (_validatedRequest.Client.Flow != Flows.AuthorizationCode &&
-                _validatedRequest.Client.Flow != Flows.Hybrid)
+            if (!_validatedRequest.Client.AllowedGrantTypes.ToList().Contains(GrantType.Code) &&
+                !_validatedRequest.Client.AllowedGrantTypes.ToList().Contains(GrantType.Hybrid))
             {
                 LogError("Client not authorized for code flow");
                 return Invalid(OidcConstants.TokenErrors.UnauthorizedClient);
@@ -289,7 +289,7 @@ namespace IdentityServer4.Core.Validation
             /////////////////////////////////////////////
             // check if client is authorized for grant type
             /////////////////////////////////////////////
-            if (_validatedRequest.Client.Flow != Flows.ClientCredentials)
+            if (!_validatedRequest.Client.AllowedGrantTypes.ToList().Contains(GrantType.ClientCredentials))
             {
                 if (_validatedRequest.Client.AllowClientCredentialsOnly == false)
                 {
@@ -338,7 +338,7 @@ namespace IdentityServer4.Core.Validation
             /////////////////////////////////////////////
             // check if client is authorized for grant type
             /////////////////////////////////////////////
-            if (_validatedRequest.Client.Flow != Flows.ResourceOwner)
+            if (!_validatedRequest.Client.AllowedGrantTypes.ToList().Contains(GrantType.ResourceOwnerPassword))
             {
                 LogError("Client not authorized for resource owner flow");
                 return Invalid(OidcConstants.TokenErrors.UnauthorizedClient);
@@ -516,14 +516,15 @@ namespace IdentityServer4.Core.Validation
         {
             _logger.LogVerbose("Start validation of custom grant token request");
 
+            // custom
             /////////////////////////////////////////////
             // check if client is authorized for custom grant type
             /////////////////////////////////////////////
-            if (_validatedRequest.Client.Flow != Flows.Custom)
-            {
-                LogError("Client not registered for custom grant type");
-                return Invalid(OidcConstants.TokenErrors.UnsupportedGrantType);
-            }
+            //if (_validatedRequest.Client.Flow != Flows.Custom)
+            //{
+            //    LogError("Client not registered for custom grant type");
+            //    return Invalid(OidcConstants.TokenErrors.UnsupportedGrantType);
+            //}
 
             /////////////////////////////////////////////
             // check if client is allowed grant type

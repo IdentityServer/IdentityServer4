@@ -20,7 +20,7 @@ namespace IdentityServer4.Core.Logging
 
         public string ResponseType { get; set; }
         public string ResponseMode { get; set; }
-        public Flows Flow { get; set; }
+        public string GrantType { get; set; }
         public string RequestedScopes { get; set; }
         
         public string State { get; set; }
@@ -68,7 +68,7 @@ namespace IdentityServer4.Core.Logging
             RedirectUri = request.RedirectUri;
             ResponseType = request.ResponseType;
             ResponseMode = request.ResponseMode;
-            Flow = request.Flow;
+            GrantType = request.GrantType;
             RequestedScopes = request.RequestedScopes.ToSpaceSeparatedString();
             State = request.State;
             UiLocales = request.UiLocales;

@@ -52,9 +52,9 @@ namespace IdentityServer4.Core.Models
         public bool AllowRememberConsent { get; set; }
 
         /// <summary>
-        /// Specifies allowed flow for client (either AuthorizationCode, Implicit, Hybrid, ResourceOwner, ClientCredentials or Custom). Defaults to Implicit.
+        /// Specifies the allowed grant types (legal combinations of AuthorizationCode, Implicit, Hybrid, ResourceOwner, ClientCredentials). Defaults to Implicit.
         /// </summary>
-        public Flows Flow { get; set; }
+        public IEnumerable<string> AllowedGrantTypes { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this client is allowed to request token using client credentials only.
@@ -232,7 +232,7 @@ namespace IdentityServer4.Core.Models
         /// </summary>
         public Client()
         {
-            Flow = Flows.Implicit;
+            AllowedGrantTypes = GrantTypes.Implicit;
             
             ClientSecrets = new List<Secret>();
             AllowedScopes = new List<string>();

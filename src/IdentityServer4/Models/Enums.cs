@@ -20,42 +20,6 @@ namespace IdentityServer4.Core.Models
     }
 
     /// <summary>
-    /// OpenID Connect flows.
-    /// </summary>
-    public enum Flows
-    {
-        /// <summary>
-        /// authorization code flow
-        /// </summary>
-        AuthorizationCode = 0,
-
-        /// <summary>
-        /// implicit flow
-        /// </summary>
-        Implicit = 1,
-
-        /// <summary>
-        /// hybrid flow
-        /// </summary>
-        Hybrid = 2,
-
-        /// <summary>
-        /// client credentials flow
-        /// </summary>
-        ClientCredentials = 3,
-
-        /// <summary>
-        /// resource owner password credential flow
-        /// </summary>
-        ResourceOwner = 4,
-
-        /// <summary>
-        /// custom grant
-        /// </summary>
-        Custom = 5
-    }
-
-    /// <summary>
     /// OpenID Connect subject types.
     /// </summary>
     public enum SubjectTypes

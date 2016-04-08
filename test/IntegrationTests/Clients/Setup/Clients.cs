@@ -23,7 +23,7 @@ namespace IdentityServer4.Tests.Clients
                         new Secret("secret".Sha256())
                     },
 
-                    Flow = Flows.ClientCredentials,
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
 
                     AllowedScopes = new List<string>
                     {
@@ -42,7 +42,7 @@ namespace IdentityServer4.Tests.Clients
                         new Secret("secret".Sha256())
                     },
 
-                    Flow = Flows.ResourceOwner,
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
                     AllowedScopes = new List<string>
                     {
@@ -55,29 +55,30 @@ namespace IdentityServer4.Tests.Clients
                     }
                 },
 
+                // todo
                 ///////////////////////////////////////////
                 // Console Custom Grant Flow Sample
                 //////////////////////////////////////////
-                new Client
-                {
-                    ClientId = "client.custom",
-                    ClientSecrets = new List<Secret>
-                    {
-                        new Secret("secret".Sha256())
-                    },
+                //new Client
+                //{
+                //    ClientId = "client.custom",
+                //    ClientSecrets = new List<Secret>
+                //    {
+                //        new Secret("secret".Sha256())
+                //    },
 
-                    Flow = Flows.Custom,
+                //    AllowedGrantTypes = Flows.Custom,
 
-                    AllowedCustomGrantTypes = new List<string>
-                    {
-                        "custom"
-                    },
+                //    AllowedCustomGrantTypes = new List<string>
+                //    {
+                //        "custom"
+                //    },
 
-                    AllowedScopes = new List<string>
-                    {
-                        "api1", "api2"
-                    }
-                },
+                //    AllowedScopes = new List<string>
+                //    {
+                //        "api1", "api2"
+                //    }
+                //},
 
                 ///////////////////////////////////////////
                 // Introspection Client Sample
@@ -90,7 +91,7 @@ namespace IdentityServer4.Tests.Clients
                         new Secret("secret".Sha256())
                     },
 
-                    Flow = Flows.ResourceOwner,
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
                     AllowedScopes = new List<string>
                     {

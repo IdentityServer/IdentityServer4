@@ -55,22 +55,24 @@ namespace IdentityServer4.Core
                                 OidcConstants.ResponseTypes.CodeIdTokenToken
                             };
 
-        public static readonly Dictionary<string, Flows> ResponseTypeToFlowMapping = new Dictionary<string, Flows>
+        public static readonly Dictionary<string, string> ResponseTypeToGrantTypeMapping = new Dictionary<string, string>
                             {
-                                { OidcConstants.ResponseTypes.Code, Flows.AuthorizationCode },
-                                { OidcConstants.ResponseTypes.Token, Flows.Implicit },
-                                { OidcConstants.ResponseTypes.IdToken, Flows.Implicit },
-                                { OidcConstants.ResponseTypes.IdTokenToken, Flows.Implicit },
-                                { OidcConstants.ResponseTypes.CodeIdToken, Flows.Hybrid },
-                                { OidcConstants.ResponseTypes.CodeToken, Flows.Hybrid },
-                                { OidcConstants.ResponseTypes.CodeIdTokenToken, Flows.Hybrid }
+                                { OidcConstants.ResponseTypes.Code, GrantType.Code },
+                                { OidcConstants.ResponseTypes.Token, GrantType.Implicit },
+                                { OidcConstants.ResponseTypes.IdToken, GrantType.Implicit },
+                                { OidcConstants.ResponseTypes.IdTokenToken, GrantType.Implicit },
+                                { OidcConstants.ResponseTypes.CodeIdToken, GrantType.Hybrid },
+                                { OidcConstants.ResponseTypes.CodeToken, GrantType.Hybrid },
+                                { OidcConstants.ResponseTypes.CodeIdTokenToken, GrantType.Hybrid }
                             };
 
-        public static readonly List<Flows> AllowedFlowsForAuthorizeEndpoint = new List<Flows>
+        public static readonly List<string> AllowedGrantTypesForAuthorizeEndpoint = new List<string>
                             {
-                                Flows.AuthorizationCode,
-                                Flows.Implicit,
-                                Flows.Hybrid
+                                GrantType.Code,
+                                GrantType.CodeWithProofKey,
+                                GrantType.Hybrid,
+                                GrantType.HybridWithProofKey,
+                                GrantType.Implicit
                             };
 
         public enum ScopeRequirement
@@ -101,11 +103,13 @@ namespace IdentityServer4.Core
                                 OidcConstants.GrantTypes.Implicit
                             };
 
-        public static readonly Dictionary<Flows, IEnumerable<string>> AllowedResponseModesForFlow = new Dictionary<Flows, IEnumerable<string>>
+        public static readonly Dictionary<string, IEnumerable<string>> AllowedResponseModesForGrantType = new Dictionary<string, IEnumerable<string>>
                             {
-                                { Flows.AuthorizationCode, new[] { OidcConstants.ResponseModes.Query, OidcConstants.ResponseModes.FormPost } },
-                                { Flows.Implicit, new[] { OidcConstants.ResponseModes.Fragment, OidcConstants.ResponseModes.FormPost }},
-                                { Flows.Hybrid, new[] { OidcConstants.ResponseModes.Fragment, OidcConstants.ResponseModes.FormPost }}
+                                { GrantType.Code, new[] { OidcConstants.ResponseModes.Query, OidcConstants.ResponseModes.FormPost } },
+                                { GrantType.CodeWithProofKey, new[] { OidcConstants.ResponseModes.Query, OidcConstants.ResponseModes.FormPost } },
+                                { GrantType.Hybrid, new[] { OidcConstants.ResponseModes.Fragment, OidcConstants.ResponseModes.FormPost }},
+                                { GrantType.HybridWithProofKey, new[] { OidcConstants.ResponseModes.Fragment, OidcConstants.ResponseModes.FormPost }},
+                                { GrantType.Implicit, new[] { OidcConstants.ResponseModes.Fragment, OidcConstants.ResponseModes.FormPost }},
                             };
 
         public static readonly List<string> SupportedResponseModes = new List<string>

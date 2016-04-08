@@ -193,19 +193,20 @@ namespace IdentityServer4.Core.Validation
 
             request.ResponseType = responseType;
 
-
+            // todo
             //////////////////////////////////////////////////////////
             // match response_type to flow
             //////////////////////////////////////////////////////////
-            request.Flow = Constants.ResponseTypeToFlowMapping[request.ResponseType];
+            //request.Flow = Constants.ResponseTypeToFlowMapping[request.ResponseType];
+            request.GrantType = Constants.ResponseTypeToGrantTypeMapping[request.ResponseType];
 
-
+            // todo
             //////////////////////////////////////////////////////////
             // check if flow is allowed at authorize endpoint
             //////////////////////////////////////////////////////////
-            if (!Constants.AllowedFlowsForAuthorizeEndpoint.Contains(request.Flow))
+            if (!Constants.AllowedGrantTypesForAuthorizeEndpoint.Contains(request.GrantType))
             {
-                LogError("Invalid flow", request);
+                LogError("Invalid grant type", request);
                 return Invalid(request);
             }
 
@@ -214,7 +215,7 @@ namespace IdentityServer4.Core.Validation
             //////////////////////////////////////////////////////////
 
             // set default response mode for flow first
-            request.ResponseMode = Constants.AllowedResponseModesForFlow[request.Flow].First();
+            request.ResponseMode = Constants.AllowedResponseModesForGrantType[request.GrantType].First();
 
             // check if response_mode parameter is present and valid
             var responseMode = request.Raw.Get(OidcConstants.AuthorizeRequest.ResponseMode);
@@ -222,7 +223,7 @@ namespace IdentityServer4.Core.Validation
             {
                 if (Constants.SupportedResponseModes.Contains(responseMode))
                 {
-                    if (Constants.AllowedResponseModesForFlow[request.Flow].Contains(responseMode))
+                    if (Constants.AllowedResponseModesForGrantType[request.GrantType].Contains(responseMode))
                     {
                         request.ResponseMode = responseMode;
                     }
@@ -243,9 +244,9 @@ namespace IdentityServer4.Core.Validation
             //////////////////////////////////////////////////////////
             // check if flow is allowed for client
             //////////////////////////////////////////////////////////
-            if (request.Flow != request.Client.Flow)
+            if (!request.Client.AllowedGrantTypes.ToList().Contains(request.GrantType))
             {
-                LogError("Invalid flow for client: " + request.Flow, request);
+                LogError("Invalid grant type for client: " + request.GrantType, request);
                 return Invalid(request, ErrorTypes.User, OidcConstants.AuthorizeErrors.UnauthorizedClient);
             }
 
@@ -349,8 +350,8 @@ namespace IdentityServer4.Core.Validation
             }
             else
             {
-                if (request.Flow == Flows.Implicit ||
-                    request.Flow == Flows.Hybrid)
+                if (request.GrantType == GrantType.Implicit ||
+                    request.GrantType == GrantType.Hybrid)
                 {
                     // only openid requests require nonce
                     if (request.IsOpenIdRequest)
