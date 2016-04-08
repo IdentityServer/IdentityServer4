@@ -269,41 +269,34 @@ namespace IdentityServer4.Tests.Validation
                             "offline_access"
                         },       
                     },
-                    // todo
-                    //new Client
-                    //{
-                    //    ClientName = "Custom Grant Client",
-                    //    Enabled = true,
-                    //    ClientId = "customgrantclient",
-                    //    ClientSecrets = new List<Secret>
-                    //    { 
-                    //        new Secret("secret".Sha256())
-                    //    },
 
-                    //    Flow = Flows.Custom,
-                    //    AllowAccessToAllScopes = true,
+                    new Client
+                    {
+                        ClientName = "Custom Grant Client",
+                        Enabled = true,
+                        ClientId = "customgrantclient",
+                        ClientSecrets = new List<Secret>
+                        {
+                            new Secret("secret".Sha256())
+                        },
 
-                    //    AllowedCustomGrantTypes = new List<string>
-                    //    {
-                    //        "custom_grant"
-                    //    }
+                        AllowedGrantTypes = GrantTypes.List("custom_grant"),
+                        AllowAccessToAllScopes = true,
+                    },
 
-                    //},
+                    new Client
+                    {
+                        ClientName = "Disabled Client",
+                        Enabled = false,
+                        ClientId = "disabled",
+                        ClientSecrets = new List<Secret>
+                        {
+                            new Secret("invalid".Sha256())
+                        },
 
-                    // todo
-                    //new Client
-                    //{
-                    //    ClientName = "Disabled Client",
-                    //    Enabled = false,
-                    //    ClientId = "disabled",
-                    //    ClientSecrets = new List<Secret>
-                    //    { 
-                    //        new Secret("invalid".Sha256())
-                    //    },
-
-                    //    Flow = Flows.Custom,
-                    //    AllowAccessToAllScopes = true,
-                    //},
+                        AllowedGrantTypes = GrantTypes.ClientCredentials,
+                        AllowAccessToAllScopes = true,
+                    },
                     new Client
                     {
                         ClientName = "Reference Token Client",

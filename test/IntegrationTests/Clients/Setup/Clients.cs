@@ -55,30 +55,24 @@ namespace IdentityServer4.Tests.Clients
                     }
                 },
 
-                // todo
-                ///////////////////////////////////////////
+                /////////////////////////////////////////
                 // Console Custom Grant Flow Sample
-                //////////////////////////////////////////
-                //new Client
-                //{
-                //    ClientId = "client.custom",
-                //    ClientSecrets = new List<Secret>
-                //    {
-                //        new Secret("secret".Sha256())
-                //    },
+                ////////////////////////////////////////
+                new Client
+                {
+                    ClientId = "client.custom",
+                    ClientSecrets = new List<Secret>
+                    {
+                        new Secret("secret".Sha256())
+                    },
 
-                //    AllowedGrantTypes = Flows.Custom,
+                    AllowedGrantTypes = GrantTypes.List("custom"),
 
-                //    AllowedCustomGrantTypes = new List<string>
-                //    {
-                //        "custom"
-                //    },
-
-                //    AllowedScopes = new List<string>
-                //    {
-                //        "api1", "api2"
-                //    }
-                //},
+                    AllowedScopes = new List<string>
+                    {
+                        "api1", "api2"
+                    }
+                },
 
                 ///////////////////////////////////////////
                 // Introspection Client Sample

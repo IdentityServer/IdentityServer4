@@ -513,27 +513,15 @@ namespace IdentityServer4.Core.Validation
         {
             _logger.LogVerbose("Start validation of custom grant token request");
 
-            // custom
             /////////////////////////////////////////////
-            // check if client is authorized for custom grant type
+            // check if client is allowed to use grant type
             /////////////////////////////////////////////
-            //if (_validatedRequest.Client.Flow != Flows.Custom)
-            //{
-            //    LogError("Client not registered for custom grant type");
-            //    return Invalid(OidcConstants.TokenErrors.UnsupportedGrantType);
-            //}
-
-            /////////////////////////////////////////////
-            // check if client is allowed grant type
-            /////////////////////////////////////////////
-            if (_validatedRequest.Client.AllowAccessToAllCustomGrantTypes == false)
+            if (!_validatedRequest.Client.AllowedGrantTypes.Contains(_validatedRequest.GrantType))
             {
-                if (!_validatedRequest.Client.AllowedCustomGrantTypes.Contains(_validatedRequest.GrantType))
-                {
-                    LogError("Client does not have the custom grant type in the allowed list, therefore requested grant is not allowed.");
-                    return Invalid(OidcConstants.TokenErrors.UnsupportedGrantType);
-                }
+                LogError("Client does not have the custom grant type in the allowed list, therefore requested grant is not allowed.");
+                return Invalid(OidcConstants.TokenErrors.UnsupportedGrantType);
             }
+
 
             /////////////////////////////////////////////
             // check if a validator is registered for the grant type
