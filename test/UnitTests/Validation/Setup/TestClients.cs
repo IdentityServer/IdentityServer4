@@ -87,9 +87,8 @@ namespace IdentityServer4.Tests.Validation
                             new Secret("secret".Sha256())
                         },
 
-                        AllowedGrantTypes = GrantTypes.Implicit,
+                        AllowedGrantTypes = GrantTypes.ImplicitAndClientCredentials,
                         AllowAccessToAllScopes = true,
-                        AllowClientCredentialsOnly = true,
                         RequireConsent = false,
                     
                         RedirectUris = new List<string>

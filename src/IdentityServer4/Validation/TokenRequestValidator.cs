@@ -30,7 +30,7 @@ namespace IdentityServer4.Core.Validation
         private readonly IProfileService _profile;
 
         private ValidatedTokenRequest _validatedRequest;
-        
+
         public TokenRequestValidator(IdentityServerOptions options, IAuthorizationCodeStore authorizationCodes, IRefreshTokenStore refreshTokens, IResourceOwnerPasswordValidator resourceOwnerValidator, IProfileService profile, CustomGrantValidator customGrantValidator, ICustomRequestValidator customRequestValidator, ScopeValidator scopeValidator, IEventService events, ILoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<TokenRequestValidator>();
@@ -291,11 +291,8 @@ namespace IdentityServer4.Core.Validation
             /////////////////////////////////////////////
             if (!_validatedRequest.Client.AllowedGrantTypes.ToList().Contains(GrantType.ClientCredentials))
             {
-                if (_validatedRequest.Client.AllowClientCredentialsOnly == false)
-                {
-                    LogError("Client not authorized for client credentials flow");
-                    return Invalid(OidcConstants.TokenErrors.UnauthorizedClient);
-                }
+                LogError("Client not authorized for client credentials flow");
+                return Invalid(OidcConstants.TokenErrors.UnauthorizedClient);
             }
 
             /////////////////////////////////////////////
@@ -374,7 +371,7 @@ namespace IdentityServer4.Core.Validation
 
             _validatedRequest.UserName = userName;
 
-            
+
             /////////////////////////////////////////////
             // authenticate user
             /////////////////////////////////////////////

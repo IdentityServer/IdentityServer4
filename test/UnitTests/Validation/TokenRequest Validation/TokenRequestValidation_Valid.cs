@@ -115,7 +115,7 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task Valid_ClientCredentials_Request_for_ImplicitClient_with_AllowClientCredentials_Flag()
+        public async Task Valid_ClientCredentials_Request_for_Implicit_and_ClientCredentials_Client()
         {
             var client = await _clients.FindClientByIdAsync("implicit_and_client_creds_client");
 
