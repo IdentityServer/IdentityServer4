@@ -60,15 +60,11 @@ namespace IdentityServer4.Tests.Validation
                     new Client
                     {
                         ClientName = "Implicit Client",
-                        Enabled = true,
                         ClientId = "implicitclient",
-                        ClientSecrets = new List<Secret>
-                        { 
-                            new Secret("secret".Sha256())
-                        },
-
+                        
                         AllowedGrantTypes = GrantTypes.Implicit,
                         AllowAccessToAllScopes = true,
+                        AllowAccessTokensViaBrowser = true,
 
                         RequireConsent = false,
                     
