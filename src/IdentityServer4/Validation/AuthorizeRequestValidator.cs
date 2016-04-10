@@ -242,12 +242,26 @@ namespace IdentityServer4.Core.Validation
 
             
             //////////////////////////////////////////////////////////
-            // check if flow is allowed for client
+            // check if grant type is allowed for client
             //////////////////////////////////////////////////////////
-            if (!request.Client.AllowedGrantTypes.ToList().Contains(request.GrantType))
+            if (!request.Client.AllowedGrantTypes.Contains(request.GrantType))
             {
                 LogError("Invalid grant type for client: " + request.GrantType, request);
                 return Invalid(request, ErrorTypes.User, OidcConstants.AuthorizeErrors.UnauthorizedClient);
+            }
+
+            //////////////////////////////////////////////////////////
+            // check if response type contains an access token, 
+            // and if client is allowed to request access token via browser
+            //////////////////////////////////////////////////////////
+            var responseTypes = responseType.FromSpaceSeparatedString();
+            if (responseTypes.Contains(OidcConstants.ResponseTypes.Token))
+            {
+                if (!request.Client.AllowAccessTokensViaBrowser)
+                {
+                    LogError("Client requested access token - but client is not configured to receive access tokens via browser", request);
+                    return Invalid(request);
+                }
             }
 
             return Valid(request);
