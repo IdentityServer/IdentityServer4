@@ -28,7 +28,7 @@ namespace IdentityServer4.Tests.Cors
                 new Client
                 {
                     ClientId = "client",
-                    Flow = Flows.Implicit,
+                    AllowedGrantTypes = GrantTypes.Implicit,
                     RequireConsent = true,
                     AllowedScopes = new List<string> { "openid", "profile", "api1", "api2" },
                     RedirectUris = new List<string> { "https://client/callback" },

@@ -23,7 +23,7 @@ namespace IdentityServer4.Tests.Clients
                         new Secret("secret".Sha256())
                     },
 
-                    Flow = Flows.ClientCredentials,
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
 
                     AllowedScopes = new List<string>
                     {
@@ -42,7 +42,7 @@ namespace IdentityServer4.Tests.Clients
                         new Secret("secret".Sha256())
                     },
 
-                    Flow = Flows.ResourceOwner,
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
                     AllowedScopes = new List<string>
                     {
@@ -55,9 +55,9 @@ namespace IdentityServer4.Tests.Clients
                     }
                 },
 
-                ///////////////////////////////////////////
+                /////////////////////////////////////////
                 // Console Custom Grant Flow Sample
-                //////////////////////////////////////////
+                ////////////////////////////////////////
                 new Client
                 {
                     ClientId = "client.custom",
@@ -66,12 +66,7 @@ namespace IdentityServer4.Tests.Clients
                         new Secret("secret".Sha256())
                     },
 
-                    Flow = Flows.Custom,
-
-                    AllowedCustomGrantTypes = new List<string>
-                    {
-                        "custom"
-                    },
+                    AllowedGrantTypes = GrantTypes.List("custom"),
 
                     AllowedScopes = new List<string>
                     {
@@ -90,7 +85,7 @@ namespace IdentityServer4.Tests.Clients
                         new Secret("secret".Sha256())
                     },
 
-                    Flow = Flows.ResourceOwner,
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
                     AllowedScopes = new List<string>
                     {

@@ -20,7 +20,7 @@ namespace IdentityServer4.Tests.Endpoints.Introspection
                         new Secret("secret".Sha256())
                     },
 
-                    Flow = Flows.ClientCredentials,
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
                     AllowAccessToAllScopes = true,
                     AccessTokenType = AccessTokenType.Reference
                 },
@@ -32,7 +32,7 @@ namespace IdentityServer4.Tests.Endpoints.Introspection
                         new Secret("secret".Sha256())
                     },
 
-                    Flow = Flows.ClientCredentials,
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
                     AllowAccessToAllScopes = true,
                     AccessTokenType = AccessTokenType.Reference
                 }

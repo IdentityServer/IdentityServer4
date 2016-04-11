@@ -29,18 +29,20 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
                 new Client
                 {
                     ClientId = "client1",
-                    Flow = Flows.Implicit,
+                    AllowedGrantTypes = GrantTypes.Implicit,
                     RequireConsent = false,
                     AllowedScopes = new List<string> { "openid", "profile" },
-                    RedirectUris = new List<string> { "https://client1/callback" }
+                    RedirectUris = new List<string> { "https://client1/callback" },
+                    AllowAccessTokensViaBrowser = true
                 },
                 new Client
                 {
                     ClientId = "client2",
-                    Flow = Flows.Implicit,
+                    AllowedGrantTypes = GrantTypes.Implicit,
                     RequireConsent = true,
                     AllowedScopes = new List<string> { "openid", "profile", "api1", "api2" },
-                    RedirectUris = new List<string> { "https://client2/callback" }
+                    RedirectUris = new List<string> { "https://client2/callback" },
+                    AllowAccessTokensViaBrowser = true
                 }
             });
 

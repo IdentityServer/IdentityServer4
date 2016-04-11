@@ -33,7 +33,7 @@ namespace IdentityServer4.Tests.Conformance.Basic
                     new Secret("secret".Sha512())
                 },
 
-                Flow = Flows.AuthorizationCode,
+                AllowedGrantTypes = GrantTypes.Code,
                 AllowAccessToAllScopes = true,
 
                 RequireConsent = false,

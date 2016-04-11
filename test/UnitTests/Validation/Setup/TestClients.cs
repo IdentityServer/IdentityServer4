@@ -22,7 +22,7 @@ namespace IdentityServer4.Tests.Validation
                         new Secret("secret".Sha256())
                     },
 
-                    Flow = Flows.AuthorizationCode,
+                    AllowedGrantTypes = GrantTypes.Code,
                     AllowAccessToAllScopes = true,
                         
                     RequireConsent = false,
@@ -45,7 +45,7 @@ namespace IdentityServer4.Tests.Validation
                             new Secret("secret".Sha256())
                         },
 
-                        Flow = Flows.AuthorizationCode,
+                        AllowedGrantTypes = GrantTypes.Code,
                         AllowAccessToAllScopes = true,
                         
                         RequireConsent = false,
@@ -60,15 +60,11 @@ namespace IdentityServer4.Tests.Validation
                     new Client
                     {
                         ClientName = "Implicit Client",
-                        Enabled = true,
                         ClientId = "implicitclient",
-                        ClientSecrets = new List<Secret>
-                        { 
-                            new Secret("secret".Sha256())
-                        },
-
-                        Flow = Flows.Implicit,
+                        
+                        AllowedGrantTypes = GrantTypes.Implicit,
                         AllowAccessToAllScopes = true,
+                        AllowAccessTokensViaBrowser = true,
 
                         RequireConsent = false,
                     
@@ -87,9 +83,8 @@ namespace IdentityServer4.Tests.Validation
                             new Secret("secret".Sha256())
                         },
 
-                        Flow = Flows.Implicit,
+                        AllowedGrantTypes = GrantTypes.ImplicitAndClientCredentials,
                         AllowAccessToAllScopes = true,
-                        AllowClientCredentialsOnly = true,
                         RequireConsent = false,
                     
                         RedirectUris = new List<string>
@@ -107,7 +102,7 @@ namespace IdentityServer4.Tests.Validation
                             new Secret("secret".Sha256())
                         },
 
-                        Flow = Flows.AuthorizationCode,
+                        AllowedGrantTypes = GrantTypes.Code,
                         RequireConsent = false,
 
                         AllowedScopes = new List<string>
@@ -130,7 +125,7 @@ namespace IdentityServer4.Tests.Validation
                             new Secret("secret".Sha256())
                         },
 
-                        Flow = Flows.ClientCredentials,
+                        AllowedGrantTypes = GrantTypes.ClientCredentials,
                         AllowAccessToAllScopes = true,
 
                         AccessTokenType = AccessTokenType.Jwt
@@ -145,7 +140,7 @@ namespace IdentityServer4.Tests.Validation
                             new Secret("secret".Sha256())
                         },
 
-                        Flow = Flows.ClientCredentials,
+                        AllowedGrantTypes = GrantTypes.ClientCredentials,
 
                         AllowedScopes = new List<string>
                         {
@@ -162,7 +157,7 @@ namespace IdentityServer4.Tests.Validation
                             new Secret("secret".Sha256())
                         },
 
-                        Flow = Flows.ResourceOwner,
+                        AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                         AllowAccessToAllScopes = true,
                     },
                     new Client
@@ -175,7 +170,7 @@ namespace IdentityServer4.Tests.Validation
                             new Secret("secret".Sha256())
                         },
 
-                        Flow = Flows.ResourceOwner,
+                        AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                         AllowAccessToAllScopes = true,
 
                         RefreshTokenExpiration = TokenExpiration.Absolute,
@@ -192,7 +187,7 @@ namespace IdentityServer4.Tests.Validation
                             new Secret("secret".Sha256())
                         },
 
-                        Flow = Flows.ResourceOwner,
+                        AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                         AllowAccessToAllScopes = true,
 
                         RefreshTokenExpiration = TokenExpiration.Absolute,
@@ -209,7 +204,7 @@ namespace IdentityServer4.Tests.Validation
                             new Secret("secret".Sha256())
                         },
 
-                        Flow = Flows.ResourceOwner,
+                        AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                         AllowAccessToAllScopes = true,
 
                         RefreshTokenExpiration = TokenExpiration.Sliding,
@@ -227,7 +222,7 @@ namespace IdentityServer4.Tests.Validation
                             new Secret("secret".Sha256())
                         },
 
-                        Flow = Flows.ResourceOwner,
+                        AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                         AllowAccessToAllScopes = true,
 
                         RefreshTokenExpiration = TokenExpiration.Sliding,
@@ -245,7 +240,7 @@ namespace IdentityServer4.Tests.Validation
                             new Secret("secret".Sha256())
                         },
 
-                        Flow = Flows.ResourceOwner,
+                        AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
                         AllowedScopes = new List<string>
                         {
@@ -262,7 +257,7 @@ namespace IdentityServer4.Tests.Validation
                             new Secret("secret".Sha256())
                         },
 
-                        Flow = Flows.ResourceOwner,
+                        AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
                         AllowedScopes = new List<string>
                         {
@@ -270,36 +265,32 @@ namespace IdentityServer4.Tests.Validation
                             "offline_access"
                         },       
                     },
+
                     new Client
                     {
                         ClientName = "Custom Grant Client",
                         Enabled = true,
                         ClientId = "customgrantclient",
                         ClientSecrets = new List<Secret>
-                        { 
+                        {
                             new Secret("secret".Sha256())
                         },
 
-                        Flow = Flows.Custom,
+                        AllowedGrantTypes = GrantTypes.List("custom_grant"),
                         AllowAccessToAllScopes = true,
-
-                        AllowedCustomGrantTypes = new List<string>
-                        {
-                            "custom_grant"
-                        }
-
                     },
+
                     new Client
                     {
                         ClientName = "Disabled Client",
                         Enabled = false,
                         ClientId = "disabled",
                         ClientSecrets = new List<Secret>
-                        { 
+                        {
                             new Secret("invalid".Sha256())
                         },
 
-                        Flow = Flows.Custom,
+                        AllowedGrantTypes = GrantTypes.ClientCredentials,
                         AllowAccessToAllScopes = true,
                     },
                     new Client
@@ -313,7 +304,7 @@ namespace IdentityServer4.Tests.Validation
                             new Secret("secret".Sha256())
                         },
 
-                        Flow = Flows.Implicit,
+                        AllowedGrantTypes = GrantTypes.Implicit,
                         AllowAccessToAllScopes = true,
 
                         AccessTokenType = AccessTokenType.Reference

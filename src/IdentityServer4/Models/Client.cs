@@ -52,18 +52,18 @@ namespace IdentityServer4.Core.Models
         public bool AllowRememberConsent { get; set; }
 
         /// <summary>
-        /// Specifies allowed flow for client (either AuthorizationCode, Implicit, Hybrid, ResourceOwner, ClientCredentials or Custom). Defaults to Implicit.
+        /// Specifies the allowed grant types (legal combinations of AuthorizationCode, Implicit, Hybrid, ResourceOwner, ClientCredentials). Defaults to Implicit.
         /// </summary>
-        public Flows Flow { get; set; }
+        public IEnumerable<string> AllowedGrantTypes { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this client is allowed to request token using client credentials only.
-        /// This is e.g. useful when you want a client to be able to use both a user-centric flow like implicit and additionally client credentials flow
+        /// Controls whether access tokens are transmitted via the browser for this client (defaults to true).
+        /// This can prevent accidental leakage of access tokens when multiple response types are allowed.
         /// </summary>
         /// <value>
-        /// <c>true</c> if client credentials flow is allowed; otherwise, <c>false</c>.
+        /// <c>true</c> if access tokens can be transmitted via the browser; otherwise, <c>false</c>.
         /// </value>
-        public bool AllowClientCredentialsOnly { get; set; }
+        public bool AllowAccessTokensViaBrowser { get; set; }
 
         /// <summary>
         /// Specifies allowed URIs to return tokens or authorization codes to
@@ -195,23 +195,6 @@ namespace IdentityServer4.Core.Models
         public bool PrefixClientClaims { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the client has access to all custom grant types. Defaults to false.
-        /// You can set the allowed custom grant types via the AllowedCustomGrantTypes list.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if client has access to all custom grant types; otherwise, <c>false</c>.
-        /// </value>
-        public bool AllowAccessToAllCustomGrantTypes { get; set; }
-        
-        /// <summary>
-        /// Gets or sets a list of allowed custom grant types when Flow is set to Custom.
-        /// </summary>
-        /// <value>
-        /// The allowed custom grant types.
-        /// </value>
-        public List<string> AllowedCustomGrantTypes { get; set; }
-
-        /// <summary>
         /// Gets or sets the allowed CORS origins for JavaScript clients.
         /// </summary>
         /// <value>
@@ -232,14 +215,14 @@ namespace IdentityServer4.Core.Models
         /// </summary>
         public Client()
         {
-            Flow = Flows.Implicit;
+            AllowedGrantTypes = GrantTypes.Implicit;
+            AllowAccessTokensViaBrowser = false;
             
             ClientSecrets = new List<Secret>();
             AllowedScopes = new List<string>();
             RedirectUris = new List<string>();
             PostLogoutRedirectUris = new List<string>();
             IdentityProviderRestrictions = new List<string>();
-            AllowedCustomGrantTypes = new List<string>();
             AllowedCorsOrigins = new List<string>();
 
             LogoutSessionRequired = true;
@@ -247,7 +230,6 @@ namespace IdentityServer4.Core.Models
             Enabled = true;
             EnableLocalLogin = true;
             AllowAccessToAllScopes = false;
-            AllowAccessToAllCustomGrantTypes = false;
 
             // client claims settings
             Claims = new List<Claim>();
