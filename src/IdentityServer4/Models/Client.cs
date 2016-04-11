@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Linq;
+using System;
 
 namespace IdentityServer4.Core.Models
 {
@@ -61,7 +62,11 @@ namespace IdentityServer4.Core.Models
         public IEnumerable<string> AllowedGrantTypes
         {
             get { return _allowedGrantTypes; }
-            set { _allowedGrantTypes = value.ToArray(); }
+            set
+            {
+                CheckGrantTypesPlausability(value);
+                _allowedGrantTypes = value.ToArray();
+            }
         }
 
         /// <summary>
@@ -217,5 +222,37 @@ namespace IdentityServer4.Core.Models
         /// true if client can use prompt=none, false otherwise.
         /// </value>
         public bool AllowPromptNone { get; set; } = false;
+
+        public void CheckGrantTypesPlausability(IEnumerable<string> grantTypes)
+        {
+            if (grantTypes.Count() == 1) return;
+
+            // would allow response_type downgrade attack from code to token
+            DisallowGrantTypeCombination(GrantType.Implicit, GrantType.Code, grantTypes);
+            DisallowGrantTypeCombination(GrantType.Implicit, GrantType.CodeWithProofKey, grantTypes);
+            DisallowGrantTypeCombination(GrantType.Implicit, GrantType.Hybrid, grantTypes);
+            DisallowGrantTypeCombination(GrantType.Implicit, GrantType.HybridWithProofKey, grantTypes);
+
+            // make sure PKCE requirements are enforced
+            DisallowGrantTypeCombination(GrantType.Code, GrantType.CodeWithProofKey, grantTypes);
+            DisallowGrantTypeCombination(GrantType.Code, GrantType.Hybrid, grantTypes);
+            DisallowGrantTypeCombination(GrantType.Code, GrantType.HybridWithProofKey, grantTypes);
+
+            DisallowGrantTypeCombination(GrantType.CodeWithProofKey, GrantType.Hybrid, grantTypes);
+            DisallowGrantTypeCombination(GrantType.CodeWithProofKey, GrantType.HybridWithProofKey, grantTypes);
+
+            DisallowGrantTypeCombination(GrantType.Hybrid, GrantType.HybridWithProofKey, grantTypes);
+
+            return;
+        }
+
+        private void DisallowGrantTypeCombination(string value1, string value2, IEnumerable<string> grantTypes)
+        {
+            if (grantTypes.Contains(value1, StringComparer.Ordinal) &&
+                grantTypes.Contains(value2, StringComparer.Ordinal))
+            {
+                throw new InvalidOperationException($"Grant types list cannot contain both {value1} and {value2}");
+            }
+        }
     }
 }
