@@ -107,6 +107,7 @@ namespace Host.Configuration
                     ClientUri = "http://identityserver.io",
 
                     AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowAccessTokensViaBrowser = true,
                     RedirectUris = new List<string>
                     {
                         "http://localhost:44077/signin-oidc"
@@ -120,7 +121,7 @@ namespace Host.Configuration
                         StandardScopes.Roles.Name,
 
                         "api1", "api2"
-                    }
+                    },
                 },
 
                 ///////////////////////////////////////////
@@ -133,6 +134,7 @@ namespace Host.Configuration
                     ClientUri = "http://identityserver.io",
 
                     AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowAccessTokensViaBrowser = true,
                     RedirectUris = new List<string>
                     {
                         "http://localhost:28895/index.html"
@@ -141,7 +143,7 @@ namespace Host.Configuration
                     AllowedScopes = new List<string>
                     {
                         "api1", "api2"
-                    }
+                    },
                 },
                 
                 ///////////////////////////////////////////
@@ -154,6 +156,7 @@ namespace Host.Configuration
                     ClientUri = "http://identityserver.io",
 
                     AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowAccessTokensViaBrowser = true,
                     RedirectUris = new List<string>
                     {
                         "http://localhost:7017/index.html",
@@ -176,7 +179,7 @@ namespace Host.Configuration
                         StandardScopes.Email.Name,
                         StandardScopes.Roles.Name,
                         "api1", "api2"
-                    }
+                    },
                 },
             };
         }
