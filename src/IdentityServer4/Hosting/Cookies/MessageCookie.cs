@@ -3,8 +3,8 @@
 
 using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Models;
-using Microsoft.AspNet.DataProtection;
-using Microsoft.AspNet.Http;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;

@@ -9,7 +9,7 @@ using IdentityServer4.Core.Hosting;
 using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Services;
 using IdentityServer4.Core.Validation;
-using Microsoft.AspNet.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -60,7 +60,7 @@ namespace IdentityServer4.Core.Endpoints
 
         private async Task<IEndpointResult> ExecuteDiscoDocAsync(HttpContext context)
         {
-            _logger.LogVerbose("Start discovery request");
+            _logger.LogTrace("Start discovery request");
 
             var baseUrl = _context.GetIdentityServerBaseUrl().EnsureTrailingSlash();
             var allScopes = await _scopes.GetScopesAsync(publicOnly: true);
@@ -196,7 +196,7 @@ namespace IdentityServer4.Core.Endpoints
 
         private async Task<IEndpointResult> ExecuteJwksAsync(HttpContext context)
         {
-            _logger.LogVerbose("Start key discovery request");
+            _logger.LogTrace("Start key discovery request");
 
             if (_options.DiscoveryOptions.ShowKeySet == false)
             {

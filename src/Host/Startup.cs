@@ -1,10 +1,10 @@
 ﻿using Host.Configuration;
 using Host.Extensions;
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Hosting;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.PlatformAbstractions;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 
@@ -12,17 +12,18 @@ namespace Host
 {
     public class Startup
     {
-        private readonly IApplicationEnvironment _environment;
+        private readonly IHostingEnvironment _environment;
 
-        public Startup(IApplicationEnvironment environment)
+        public Startup(IHostingEnvironment env)
         {
-            _environment = environment;
+            _environment = env;
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var cert = new X509Certificate2(Path.Combine(_environment.ApplicationBasePath, "idsrv3test.pfx"), "idsrv3test");
+            var cert = new X509Certificate2(Path.Combine(_environment.ContentRootPath, "idsrv3test.pfx"), "idsrv3test");
 
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             var builder = services.AddIdentityServer(options =>
             {
                 options.SigningCertificate = cert;
@@ -47,18 +48,30 @@ namespace Host
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddConsole(LogLevel.Verbose);
-            loggerFactory.AddDebug(LogLevel.Verbose);
+            loggerFactory.AddConsole(LogLevel.Trace);
+            loggerFactory.AddDebug(LogLevel.Trace);
 
             app.UseDeveloperExceptionPage();
-            app.UseIISPlatformHandler();
+
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AuthenticationScheme = "Temp",
+                AutomaticAuthenticate = false,
+                AutomaticChallenge = false
+            });
+
+            app.UseGoogleAuthentication(new GoogleOptions
+            {
+                AuthenticationScheme = "Google",
+                SignInScheme = "Temp",
+                ClientId = "998042782978-s07498t8i8jas7npj4crve1skpromf37.apps.googleusercontent.com",
+                ClientSecret = "HsnwJri_53zn7VcO1Fm7THBb"
+            });
 
             app.UseIdentityServer();
 
             app.UseStaticFiles();
             app.UseMvcWithDefaultRoute();
         }
-
-        public static void Main(string[] args) => WebApplication.Run<Startup>(args);
     }
 }

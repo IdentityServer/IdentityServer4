@@ -48,7 +48,7 @@ namespace IdentityServer4.Core.Validation
 
         public async Task<TokenRequestValidationResult> ValidateRequestAsync(NameValueCollection parameters, Client client)
         {
-            _logger.LogVerbose("Start token request validation");
+            _logger.LogTrace("Start token request validation");
 
             _validatedRequest = new ValidatedTokenRequest();
 
@@ -145,7 +145,7 @@ namespace IdentityServer4.Core.Validation
 
         private async Task<TokenRequestValidationResult> ValidateAuthorizationCodeRequestAsync(NameValueCollection parameters)
         {
-            _logger.LogVerbose("Start validation of authorization code token request");
+            _logger.LogTrace("Start validation of authorization code token request");
 
             /////////////////////////////////////////////
             // check if client is authorized for grant type
@@ -284,7 +284,7 @@ namespace IdentityServer4.Core.Validation
 
         private async Task<TokenRequestValidationResult> ValidateClientCredentialsRequestAsync(NameValueCollection parameters)
         {
-            _logger.LogVerbose("Start client credentials token request validation");
+            _logger.LogTrace("Start client credentials token request validation");
 
             /////////////////////////////////////////////
             // check if client is authorized for grant type
@@ -411,7 +411,7 @@ namespace IdentityServer4.Core.Validation
 
         private async Task<TokenRequestValidationResult> ValidateRefreshTokenRequestAsync(NameValueCollection parameters)
         {
-            _logger.LogVerbose("Start validation of refresh token request");
+            _logger.LogTrace("Start validation of refresh token request");
 
             var refreshTokenHandle = parameters.Get(OidcConstants.TokenRequest.RefreshToken);
             if (refreshTokenHandle.IsMissing())
@@ -511,7 +511,7 @@ namespace IdentityServer4.Core.Validation
 
         private async Task<TokenRequestValidationResult> ValidateCustomGrantRequestAsync(NameValueCollection parameters)
         {
-            _logger.LogVerbose("Start validation of custom grant token request");
+            _logger.LogTrace("Start validation of custom grant token request");
 
             /////////////////////////////////////////////
             // check if client is allowed to use grant type

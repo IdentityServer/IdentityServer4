@@ -1,9 +1,6 @@
 ﻿using IdentityServer4.Core;
 using IdentityServer4.Core.Services;
-using Microsoft.AspNet.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
 namespace Host.UI.Error

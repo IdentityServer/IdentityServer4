@@ -3,6 +3,7 @@
 
 using IdentityModel;
 using IdentityServer4.Core.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
@@ -32,7 +33,8 @@ namespace IdentityServer4.Core.Services.Default
         /// <returns>kid</returns>
         public Task<string> GetKidAsync(X509Certificate2 certificate)
         {
-            return Task.FromResult(Base64Url.Encode(certificate.GetCertHash()));
+            var key = new X509SecurityKey(certificate);
+            return Task.FromResult(key.KeyId);
         }
 
         /// <summary>

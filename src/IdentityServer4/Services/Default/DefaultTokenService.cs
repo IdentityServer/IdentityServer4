@@ -101,7 +101,7 @@ namespace IdentityServer4.Core.Services.Default
         /// </returns>
         public virtual async Task<Token> CreateIdentityTokenAsync(TokenCreationRequest request)
         {
-            _logger.LogVerbose("Creating identity token");
+            _logger.LogTrace("Creating identity token");
             request.Validate();
 
             // host provided claims
@@ -164,7 +164,7 @@ namespace IdentityServer4.Core.Services.Default
         /// </returns>
         public virtual async Task<Token> CreateAccessTokenAsync(TokenCreationRequest request)
         {
-            _logger.LogVerbose("Creating access token");
+            _logger.LogTrace("Creating access token");
             request.Validate();
 
             var claims = new List<Claim>();
@@ -208,13 +208,13 @@ namespace IdentityServer4.Core.Services.Default
             {
                 if (token.Client.AccessTokenType == AccessTokenType.Jwt)
                 {
-                    _logger.LogVerbose("Creating JWT access token");
+                    _logger.LogTrace("Creating JWT access token");
 
                     tokenResult = await _signingService.SignTokenAsync(token);
                 }
                 else
                 {
-                    _logger.LogVerbose("Creating reference access token");
+                    _logger.LogTrace("Creating reference access token");
 
                     var handle = CryptoRandom.CreateUniqueId();
                     await _tokenHandles.StoreAsync(handle, token);
@@ -224,7 +224,7 @@ namespace IdentityServer4.Core.Services.Default
             }
             else if (token.Type == OidcConstants.TokenTypes.IdentityToken)
             {
-                _logger.LogVerbose("Creating JWT identity token");
+                _logger.LogTrace("Creating JWT identity token");
 
                 tokenResult = await _signingService.SignTokenAsync(token);
             }

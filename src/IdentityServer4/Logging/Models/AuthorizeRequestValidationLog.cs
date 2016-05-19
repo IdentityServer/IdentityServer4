@@ -3,7 +3,6 @@
 
 using IdentityModel;
 using IdentityServer4.Core.Extensions;
-using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Validation;
 using System.Collections.Generic;
 using System.Linq;

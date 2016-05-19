@@ -167,11 +167,11 @@ namespace IdentityServer4.Core.Endpoints
         {
             if (user != null)
             {
-                _logger.LogVerbose("User in authorize request: name:{0}, sub:{1}", user.GetName(), user.GetSubjectId());
+                _logger.LogTrace("User in authorize request: name:{0}, sub:{1}", user.GetName(), user.GetSubjectId());
             }
             else
             {
-                _logger.LogVerbose("No user present in authorize request");
+                _logger.LogTrace("No user present in authorize request");
             }
 
             // validate request

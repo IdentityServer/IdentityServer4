@@ -12,15 +12,12 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-
-#if DOTNET5_4
 using System.IdentityModel.Tokens.Jwt;
-#endif
+using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityServer4.Core.Validation
 {
@@ -52,7 +49,7 @@ namespace IdentityServer4.Core.Validation
         
         public virtual async Task<TokenValidationResult> ValidateIdentityTokenAsync(string token, string clientId = null, bool validateLifetime = true)
         {
-            _logger.LogVerbose("Start identity token validation");
+            _logger.LogTrace("Start identity token validation");
 
             if (token.Length > _options.InputLengthRestrictions.Jwt)
             {
@@ -112,7 +109,7 @@ namespace IdentityServer4.Core.Validation
 
         public virtual async Task<TokenValidationResult> ValidateAccessTokenAsync(string token, string expectedScope = null)
         {
-            _logger.LogVerbose("Start access token validation");
+            _logger.LogTrace("Start access token validation");
 
             _log.ExpectedScope = expectedScope;
             _log.ValidateLifetime = true;
@@ -192,23 +189,8 @@ namespace IdentityServer4.Core.Validation
         private async Task<TokenValidationResult> ValidateJwtAsync(string jwt, string audience, IEnumerable<X509Certificate2> signingCertificates, bool validateLifetime = true)
         {
             var handler = new JwtSecurityTokenHandler();
-
-            // todo
-#if NET451
-            JwtSecurityTokenHandler.InboundClaimTypeMap.Clear();
-#elif DOTNET5_4
             handler.InboundClaimTypeMap.Clear();
-#endif
 
-
-            //{
-            //    Configuration =
-            //        new SecurityTokenHandlerConfiguration
-            //        {
-            //            CertificateValidationMode = X509CertificateValidationMode.None,
-            //            CertificateValidator = X509CertificateValidator.None
-            //        }
-            //};
 
             var keys = (from c in signingCertificates select new X509SecurityKey(c)).ToList();
 

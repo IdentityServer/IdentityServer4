@@ -42,7 +42,7 @@ namespace IdentityServer4.Core.Endpoints
                 return new StatusCodeResult(405);
             }
 
-            _logger.LogVerbose("Start userinfo request");
+            _logger.LogTrace("Start userinfo request");
 
             var tokenUsageResult = await _tokenUsageValidator.ValidateAsync(context.HttpContext);
             if (tokenUsageResult.TokenFound == false)

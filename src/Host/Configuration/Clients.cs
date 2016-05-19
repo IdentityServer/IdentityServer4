@@ -51,31 +51,6 @@ namespace Host.Configuration
                     }
                 },
 
-                // todo
-                ///////////////////////////////////////////
-                // Console Client Credentials Flow Sample
-                //////////////////////////////////////////
-                //new Client
-                //{
-                //    ClientId = "client.custom",
-                //    ClientSecrets = new List<Secret>
-                //    {
-                //        new Secret("secret".Sha256())
-                //    },
-
-                //    Flow = Flows.Custom,
-                    
-                //    AllowedCustomGrantTypes = new List<string>
-                //    {
-                //        "custom"
-                //    },
-
-                //    AllowedScopes = new List<string>
-                //    {
-                //        "api1", "api2"
-                //    }
-                //},
-
                 ///////////////////////////////////////////
                 // Introspection Client Sample
                 //////////////////////////////////////////
@@ -121,6 +96,38 @@ namespace Host.Configuration
                         StandardScopes.Roles.Name,
 
                         "api1", "api2"
+                    },
+                },
+
+                ///////////////////////////////////////////
+                // MVC Hybrid Flow Samples
+                //////////////////////////////////////////
+                new Client
+                {
+                    ClientId = "mvc.hybrid",
+                    ClientName = "MVC Hybrid",
+                    ClientSecrets = new List<Secret>
+                    {
+                        new Secret("secret".Sha256())
+                    },
+                    ClientUri = "http://identityserver.io",
+
+                    AllowedGrantTypes = GrantTypes.Hybrid,
+                    AllowAccessTokensViaBrowser = false,
+                    RedirectUris = new List<string>
+                    {
+                        "http://localhost:44077/signin-oidc"
+                    },
+
+                    AllowedScopes = new List<string>
+                    {
+                        StandardScopes.OpenId.Name,
+                        StandardScopes.Profile.Name,
+                        StandardScopes.Email.Name,
+                        StandardScopes.Roles.Name,
+                        StandardScopes.OfflineAccess.Name,
+
+                        "api1", "api2",
                     },
                 },
 

@@ -13,7 +13,7 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IIdentityServerBuilder AddInMemoryUsers(this IIdentityServerBuilder builder, List<InMemoryUser> users)
         {
-            builder.Services.AddInstance(users);
+            builder.Services.AddSingleton(users);
 
             builder.Services.AddTransient<IProfileService, InMemoryProfileService>();
             builder.Services.AddTransient<IResourceOwnerPasswordValidator, InMemoryResourceOwnerPasswordValidator>();
@@ -23,7 +23,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IIdentityServerBuilder AddInMemoryClients(this IIdentityServerBuilder builder, IEnumerable<Client> clients)
         {
-            builder.Services.AddInstance(clients);
+            builder.Services.AddSingleton(clients);
             builder.Services.AddTransient<IClientStore, InMemoryClientStore>();
             builder.Services.AddTransient<ICorsPolicyService, InMemoryCorsPolicyService>();
 
@@ -32,7 +32,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IIdentityServerBuilder AddInMemoryScopes(this IIdentityServerBuilder builder, IEnumerable<Scope> scopes)
         {
-            builder.Services.AddInstance(scopes);
+            builder.Services.AddSingleton(scopes);
             builder.Services.AddTransient<IScopeStore, InMemoryScopeStore>();
 
             return builder;

@@ -3,7 +3,7 @@
 
 using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Models;
-using Microsoft.AspNet.Http;
+using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.Services

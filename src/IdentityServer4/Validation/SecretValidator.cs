@@ -39,7 +39,7 @@ namespace IdentityServer4.Core.Validation
 
                 if (secretValidationResult.Success)
                 {
-                    _logger.LogVerbose("Secret validator success: {0}", validator.GetType().Name);
+                    _logger.LogTrace("Secret validator success: {0}", validator.GetType().Name);
                     return secretValidationResult;
                 }
             }

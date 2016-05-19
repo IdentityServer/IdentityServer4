@@ -113,7 +113,7 @@ namespace IdentityServer4.Core.Hosting
                 expires = DateTime.Now.AddYears(-1);
             }
 
-            var opts = new Microsoft.AspNet.Http.CookieOptions
+            var opts = new Microsoft.AspNetCore.Http.CookieOptions
             {
                 HttpOnly = true,
                 Secure = Secure,

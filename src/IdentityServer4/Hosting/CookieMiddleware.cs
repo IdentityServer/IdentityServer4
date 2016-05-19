@@ -3,7 +3,7 @@
 
 using IdentityServer4.Core.Configuration;
 using IdentityServer4.Core.Extensions;
-using Microsoft.AspNet.Builder;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace IdentityServer4.Core.Hosting
@@ -16,10 +16,10 @@ namespace IdentityServer4.Core.Hosting
             if (idSvrOptions.Endpoints.EnableAuthorizeEndpoint &&
                 idSvrOptions.AuthenticationOptions.PrimaryAuthenticationScheme.IsMissing())
             {
-                app.UseCookieAuthentication(options =>
+                app.UseCookieAuthentication(new CookieAuthenticationOptions
                 {
-                    options.AuthenticationScheme = idSvrOptions.AuthenticationOptions.EffectivePrimaryAuthenticationScheme;
-                    options.AutomaticAuthenticate = true;
+                    AuthenticationScheme = idSvrOptions.AuthenticationOptions.EffectivePrimaryAuthenticationScheme,
+                    AutomaticAuthenticate = true
                 });
             }
         }
