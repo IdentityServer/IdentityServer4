@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Events;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNet.Http;
+using Microsoft.AspNetCore.Http;
 
 namespace IdentityServer4.Core.Validation
 {
@@ -29,7 +29,7 @@ namespace IdentityServer4.Core.Validation
 
         public async Task<ClientSecretValidationResult> ValidateAsync(HttpContext context)
         {
-            _logger.LogVerbose("Start client validation");
+            _logger.LogTrace("Start client validation");
 
             var fail = new ClientSecretValidationResult
             {

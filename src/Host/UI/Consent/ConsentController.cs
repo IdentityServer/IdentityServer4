@@ -1,11 +1,9 @@
 ﻿using IdentityServer4.Core;
 using IdentityServer4.Core.Services;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using System;
 using IdentityServer4.Core.Models;
 
 namespace Host.UI.Consent

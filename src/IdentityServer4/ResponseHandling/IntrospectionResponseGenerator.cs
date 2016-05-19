@@ -23,7 +23,7 @@ namespace IdentityServer4.Core.ResponseHandling
 
         public Task<Dictionary<string, object>> ProcessAsync(IntrospectionRequestValidationResult validationResult, Scope scope)
         {
-            _logger.LogVerbose("Creating introspection response");
+            _logger.LogTrace("Creating introspection response");
 
             var response = new Dictionary<string, object>();
             

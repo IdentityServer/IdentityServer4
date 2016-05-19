@@ -4,7 +4,7 @@
 using IdentityServer4.Core.Events;
 using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Services;
-using Microsoft.AspNet.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,7 +30,7 @@ namespace IdentityServer4.Core.Validation
 
         public async Task<ScopeSecretValidationResult> ValidateAsync(HttpContext context)
         {
-            _logger.LogVerbose("Start scope validation");
+            _logger.LogTrace("Start scope validation");
 
             var fail = new ScopeSecretValidationResult
             {

@@ -3,6 +3,8 @@
 
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Linq;
+using System;
 
 namespace IdentityServer4.Core.Models
 {
@@ -11,10 +13,13 @@ namespace IdentityServer4.Core.Models
     /// </summary>
     public class Client
     {
+        // setting grant types should be atomic
+        private IEnumerable<string> _allowedGrantTypes = GrantTypes.Implicit;
+
         /// <summary>
         /// Specifies if client is enabled (defaults to true)
         /// </summary>
-        public bool Enabled { get; set; }
+        public bool Enabled { get; set; } = true;
 
         /// <summary>
         /// Unique ID of the client
@@ -24,7 +29,7 @@ namespace IdentityServer4.Core.Models
         /// <summary>
         /// Client secrets - only relevant for flows that require a secret
         /// </summary>
-        public List<Secret> ClientSecrets { get; set; }
+        public List<Secret> ClientSecrets { get; set; } = new List<Secret>();
 
         /// <summary>
         /// Client display name (used for logging and consent screen)
@@ -40,40 +45,48 @@ namespace IdentityServer4.Core.Models
         /// URI to client logo (used on consent screen)
         /// </summary>
         public string LogoUri { get; set; }
-        
+
         /// <summary>
         /// Specifies whether a consent screen is required (defaults to true)
         /// </summary>
-        public bool RequireConsent { get; set; }
+        public bool RequireConsent { get; set; } = true;
 
         /// <summary>
         /// Specifies whether user can choose to store consent decisions (defaults to true)
         /// </summary>
-        public bool AllowRememberConsent { get; set; }
+        public bool AllowRememberConsent { get; set; } = true;
 
         /// <summary>
-        /// Specifies allowed flow for client (either AuthorizationCode, Implicit, Hybrid, ResourceOwner, ClientCredentials or Custom). Defaults to Implicit.
+        /// Specifies the allowed grant types (legal combinations of AuthorizationCode, Implicit, Hybrid, ResourceOwner, ClientCredentials). Defaults to Implicit.
         /// </summary>
-        public Flows Flow { get; set; }
+        public IEnumerable<string> AllowedGrantTypes
+        {
+            get { return _allowedGrantTypes; }
+            set
+            {
+                CheckGrantTypesPlausability(value);
+                _allowedGrantTypes = value.ToArray();
+            }
+        }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this client is allowed to request token using client credentials only.
-        /// This is e.g. useful when you want a client to be able to use both a user-centric flow like implicit and additionally client credentials flow
+        /// Controls whether access tokens are transmitted via the browser for this client (defaults to true).
+        /// This can prevent accidental leakage of access tokens when multiple response types are allowed.
         /// </summary>
         /// <value>
-        /// <c>true</c> if client credentials flow is allowed; otherwise, <c>false</c>.
+        /// <c>true</c> if access tokens can be transmitted via the browser; otherwise, <c>false</c>.
         /// </value>
-        public bool AllowClientCredentialsOnly { get; set; }
+        public bool AllowAccessTokensViaBrowser { get; set; } = false;
 
         /// <summary>
         /// Specifies allowed URIs to return tokens or authorization codes to
         /// </summary>
-        public List<string> RedirectUris { get; set; }
+        public List<string> RedirectUris { get; set; } = new List<string>();
 
         /// <summary>
         /// Specifies allowed URIs to redirect to after logout
         /// </summary>
-        public List<string> PostLogoutRedirectUris { get; set; }
+        public List<string> PostLogoutRedirectUris { get; set; } = new List<string>();
         
         /// <summary>
         /// Specifies logout URI at client for HTTP based logout.
@@ -83,7 +96,7 @@ namespace IdentityServer4.Core.Models
         /// <summary>
         /// Specifies is the user's session id should be sent to the LogoutUri. Defaults to true.
         /// </summary>
-        public bool LogoutSessionRequired { get; set; }
+        public bool LogoutSessionRequired { get; set; } = true;
 
         /// <summary>
         /// Gets or sets a value indicating whether the client has access to all scopes. Defaults to false.
@@ -92,43 +105,43 @@ namespace IdentityServer4.Core.Models
         /// <value>
         /// <c>true</c> if client has access to all scopes; otherwise, <c>false</c>.
         /// </value>
-        public bool AllowAccessToAllScopes { get; set; }
+        public bool AllowAccessToAllScopes { get; set; } = false;
 
         /// <summary>
         /// Specifies the scopes that the client is allowed to request. If empty, the client can't access any scope
         /// </summary>
-        public List<string> AllowedScopes { get; set; }
-        
+        public List<string> AllowedScopes { get; set; } = new List<string>();
+
         /// <summary>
         /// Lifetime of identity token in seconds (defaults to 300 seconds / 5 minutes)
         /// </summary>
-        public int IdentityTokenLifetime { get; set; }
+        public int IdentityTokenLifetime { get; set; } = 300;
 
         /// <summary>
         /// Lifetime of access token in seconds (defaults to 3600 seconds / 1 hour)
         /// </summary>
-        public int AccessTokenLifetime { get; set; }
+        public int AccessTokenLifetime { get; set; } = 3600;
 
         /// <summary>
         /// Lifetime of authorization code in seconds (defaults to 300 seconds / 5 minutes)
         /// </summary>
-        public int AuthorizationCodeLifetime { get; set; }
+        public int AuthorizationCodeLifetime { get; set; } = 300;
 
         /// <summary>
         /// Maximum lifetime of a refresh token in seconds. Defaults to 2592000 seconds / 30 days
         /// </summary>
-        public int AbsoluteRefreshTokenLifetime { get; set; }
-        
+        public int AbsoluteRefreshTokenLifetime { get; set; } = 2592000;
+
         /// <summary>
         /// Sliding lifetime of a refresh token in seconds. Defaults to 1296000 seconds / 15 days
         /// </summary>
-        public int SlidingRefreshTokenLifetime { get; set; }
-        
+        public int SlidingRefreshTokenLifetime { get; set; } = 1296000;
+
         /// <summary>
         /// ReUse: the refresh token handle will stay the same when refreshing tokens
         /// OneTime: the refresh token handle will be updated when refreshing tokens
         /// </summary>
-        public TokenUsage RefreshTokenUsage { get; set; }
+        public TokenUsage RefreshTokenUsage { get; set; } = TokenUsage.OneTimeOnly;
 
         /// <summary>
         /// Gets or sets a value indicating whether the access token (and its claims) should be updated on a refresh token request.
@@ -136,18 +149,18 @@ namespace IdentityServer4.Core.Models
         /// <value>
         /// <c>true</c> if the token should be updated; otherwise, <c>false</c>.
         /// </value>
-        public bool UpdateAccessTokenClaimsOnRefresh { get; set; }
+        public bool UpdateAccessTokenClaimsOnRefresh { get; set; } = false;
 
         /// <summary>
         /// Absolute: the refresh token will expire on a fixed point in time (specified by the AbsoluteRefreshTokenLifetime)
         /// Sliding: when refreshing the token, the lifetime of the refresh token will be renewed (by the amount specified in SlidingRefreshTokenLifetime). The lifetime will not exceed AbsoluteRefreshTokenLifetime.
         /// </summary>        
-        public TokenExpiration RefreshTokenExpiration { get; set; }
-        
+        public TokenExpiration RefreshTokenExpiration { get; set; } = TokenExpiration.Absolute;
+
         /// <summary>
         /// Specifies whether the access token is a reference token or a self contained JWT token (defaults to Jwt).
         /// </summary>
-        public AccessTokenType AccessTokenType { get; set; }
+        public AccessTokenType AccessTokenType { get; set; } = AccessTokenType.Jwt;
 
         /// <summary>
         /// Gets or sets a value indicating whether the local login is allowed for this client. Defaults to <c>true</c>.
@@ -155,12 +168,12 @@ namespace IdentityServer4.Core.Models
         /// <value>
         ///   <c>true</c> if local logins are enabled; otherwise, <c>false</c>.
         /// </value>
-        public bool EnableLocalLogin { get; set; }
-        
+        public bool EnableLocalLogin { get; set; } = true;
+
         /// <summary>
         /// Specifies which external IdPs can be used with this client (if list is empty all IdPs are allowed). Defaults to empty.
         /// </summary>
-        public List<string> IdentityProviderRestrictions { get; set; }
+        public List<string> IdentityProviderRestrictions { get; set; } = new List<string>();
 
         /// <summary>
         /// Gets or sets a value indicating whether JWT access tokens should include an identifier
@@ -168,7 +181,7 @@ namespace IdentityServer4.Core.Models
         /// <value>
         /// <c>true</c> to add an id; otherwise, <c>false</c>.
         /// </value>
-        public bool IncludeJwtId { get; set; }
+        public bool IncludeJwtId { get; set; } = false;
 
         /// <summary>
         /// Allows settings claims for the client (will be included in the access token).
@@ -176,7 +189,7 @@ namespace IdentityServer4.Core.Models
         /// <value>
         /// The claims.
         /// </value>
-        public List<Claim> Claims { get; set; }
+        public List<Claim> Claims { get; set; } = new List<Claim>();
 
         /// <summary>
         /// Gets or sets a value indicating whether client claims should be always included in the access tokens - or only for client credentials flow.
@@ -184,7 +197,7 @@ namespace IdentityServer4.Core.Models
         /// <value>
         /// <c>true</c> if claims should always be sent; otherwise, <c>false</c>.
         /// </value>
-        public bool AlwaysSendClientClaims { get; set; }
+        public bool AlwaysSendClientClaims { get; set; } = false;
 
         /// <summary>
         /// Gets or sets a value indicating whether all client claims should be prefixed.
@@ -192,24 +205,7 @@ namespace IdentityServer4.Core.Models
         /// <value>
         /// <c>true</c> if client claims should be prefixed; otherwise, <c>false</c>.
         /// </value>
-        public bool PrefixClientClaims { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the client has access to all custom grant types. Defaults to false.
-        /// You can set the allowed custom grant types via the AllowedCustomGrantTypes list.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if client has access to all custom grant types; otherwise, <c>false</c>.
-        /// </value>
-        public bool AllowAccessToAllCustomGrantTypes { get; set; }
-        
-        /// <summary>
-        /// Gets or sets a list of allowed custom grant types when Flow is set to Custom.
-        /// </summary>
-        /// <value>
-        /// The allowed custom grant types.
-        /// </value>
-        public List<string> AllowedCustomGrantTypes { get; set; }
+        public bool PrefixClientClaims { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the allowed CORS origins for JavaScript clients.
@@ -217,7 +213,7 @@ namespace IdentityServer4.Core.Models
         /// <value>
         /// The allowed CORS origins.
         /// </value>
-        public List<string> AllowedCorsOrigins { get; set; }
+        public List<string> AllowedCorsOrigins { get; set; } = new List<string>();
 
         /// <summary>
         /// Gets or sets if client is allowed to use prompt=none OIDC parameter value.
@@ -225,55 +221,38 @@ namespace IdentityServer4.Core.Models
         /// <value>
         /// true if client can use prompt=none, false otherwise.
         /// </value>
-        public bool AllowPromptNone { get; set; }
+        public bool AllowPromptNone { get; set; } = false;
 
-        /// <summary>
-        /// Creates a Client with default values
-        /// </summary>
-        public Client()
+        public void CheckGrantTypesPlausability(IEnumerable<string> grantTypes)
         {
-            Flow = Flows.Implicit;
-            
-            ClientSecrets = new List<Secret>();
-            AllowedScopes = new List<string>();
-            RedirectUris = new List<string>();
-            PostLogoutRedirectUris = new List<string>();
-            IdentityProviderRestrictions = new List<string>();
-            AllowedCustomGrantTypes = new List<string>();
-            AllowedCorsOrigins = new List<string>();
+            if (grantTypes.Count() == 1) return;
 
-            LogoutSessionRequired = true;
+            // would allow response_type downgrade attack from code to token
+            DisallowGrantTypeCombination(GrantType.Implicit, GrantType.Code, grantTypes);
+            DisallowGrantTypeCombination(GrantType.Implicit, GrantType.CodeWithProofKey, grantTypes);
+            DisallowGrantTypeCombination(GrantType.Implicit, GrantType.Hybrid, grantTypes);
+            DisallowGrantTypeCombination(GrantType.Implicit, GrantType.HybridWithProofKey, grantTypes);
 
-            Enabled = true;
-            EnableLocalLogin = true;
-            AllowAccessToAllScopes = false;
-            AllowAccessToAllCustomGrantTypes = false;
+            // make sure PKCE requirements are enforced
+            DisallowGrantTypeCombination(GrantType.Code, GrantType.CodeWithProofKey, grantTypes);
+            DisallowGrantTypeCombination(GrantType.Code, GrantType.Hybrid, grantTypes);
+            DisallowGrantTypeCombination(GrantType.Code, GrantType.HybridWithProofKey, grantTypes);
 
-            // client claims settings
-            Claims = new List<Claim>();
-            AlwaysSendClientClaims = false;
-            PrefixClientClaims = true;
-            
-            // 5 minutes
-            AuthorizationCodeLifetime = 300;
-            IdentityTokenLifetime = 300;
+            DisallowGrantTypeCombination(GrantType.CodeWithProofKey, GrantType.Hybrid, grantTypes);
+            DisallowGrantTypeCombination(GrantType.CodeWithProofKey, GrantType.HybridWithProofKey, grantTypes);
 
-            // one hour
-            AccessTokenLifetime = 3600;
+            DisallowGrantTypeCombination(GrantType.Hybrid, GrantType.HybridWithProofKey, grantTypes);
 
-            // 30 days
-            AbsoluteRefreshTokenLifetime = 2592000;
+            return;
+        }
 
-            // 15 days
-            SlidingRefreshTokenLifetime = 1296000;
-
-            RefreshTokenUsage = TokenUsage.OneTimeOnly;
-            RefreshTokenExpiration = TokenExpiration.Absolute;
-
-            AccessTokenType = AccessTokenType.Jwt;
-            
-            RequireConsent = true;
-            AllowRememberConsent = true;
+        private void DisallowGrantTypeCombination(string value1, string value2, IEnumerable<string> grantTypes)
+        {
+            if (grantTypes.Contains(value1, StringComparer.Ordinal) &&
+                grantTypes.Contains(value2, StringComparer.Ordinal))
+            {
+                throw new InvalidOperationException($"Grant types list cannot contain both {value1} and {value2}");
+            }
         }
     }
 }

@@ -3,7 +3,7 @@
 
 using IdentityModel;
 using IdentityServer4.Core.Extensions;
-using Microsoft.AspNet.Http;
+using Microsoft.AspNetCore.Http;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -37,9 +37,9 @@ namespace IdentityServer4.Core.Validation
             if (authorizationHeader.IsPresent())
             {
                 var header = authorizationHeader.Trim();
-                if (header.StartsWith(OidcConstants.TokenTypes.Bearer))
+                if (header.StartsWith(OidcConstants.AuthenticationSchemes.AuthorizationHeaderBearer))
                 {
-                    var value = header.Substring(OidcConstants.TokenTypes.Bearer.Length).Trim();
+                    var value = header.Substring(OidcConstants.AuthenticationSchemes.AuthorizationHeaderBearer.Length).Trim();
                     if (value != null && value.Length > 0)
                     {
                         return new BearerTokenUsageValidationResult

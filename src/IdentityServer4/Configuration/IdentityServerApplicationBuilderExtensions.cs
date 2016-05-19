@@ -3,8 +3,9 @@
 
 using IdentityServer4.Core.Hosting;
 using System;
+using Microsoft.AspNetCore.Builder;
 
-namespace Microsoft.AspNet.Builder
+namespace Microsoft.AspNetCore.Builder
 {
     public static class IdentityServerApplicationBuilderExtensions
     {

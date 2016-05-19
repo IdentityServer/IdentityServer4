@@ -20,7 +20,7 @@ namespace Host.Configuration
                         new Secret("secret".Sha256())
                     },
 
-                    Flow = Flows.ClientCredentials,
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
 
                     AllowedScopes = new List<string>
                     {
@@ -39,7 +39,7 @@ namespace Host.Configuration
                         new Secret("secret".Sha256())
                     },
 
-                    Flow = Flows.ResourceOwner,
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
                     AllowedScopes = new List<string>
                     {
@@ -47,30 +47,6 @@ namespace Host.Configuration
                         StandardScopes.Email.Name,
                         StandardScopes.OfflineAccess.Name,
 
-                        "api1", "api2"
-                    }
-                },
-
-                ///////////////////////////////////////////
-                // Console Client Credentials Flow Sample
-                //////////////////////////////////////////
-                new Client
-                {
-                    ClientId = "client.custom",
-                    ClientSecrets = new List<Secret>
-                    {
-                        new Secret("secret".Sha256())
-                    },
-
-                    Flow = Flows.Custom,
-                    
-                    AllowedCustomGrantTypes = new List<string>
-                    {
-                        "custom"
-                    },
-
-                    AllowedScopes = new List<string>
-                    {
                         "api1", "api2"
                     }
                 },
@@ -86,7 +62,7 @@ namespace Host.Configuration
                         new Secret("secret".Sha256())
                     },
 
-                    Flow = Flows.ResourceOwner,
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
                     AllowedScopes = new List<string>
                     {
@@ -105,7 +81,8 @@ namespace Host.Configuration
                     ClientName = "MVC Implicit",
                     ClientUri = "http://identityserver.io",
 
-                    Flow = Flows.Implicit,
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowAccessTokensViaBrowser = true,
                     RedirectUris = new List<string>
                     {
                         "http://localhost:44077/signin-oidc"
@@ -119,7 +96,39 @@ namespace Host.Configuration
                         StandardScopes.Roles.Name,
 
                         "api1", "api2"
-                    }
+                    },
+                },
+
+                ///////////////////////////////////////////
+                // MVC Hybrid Flow Samples
+                //////////////////////////////////////////
+                new Client
+                {
+                    ClientId = "mvc.hybrid",
+                    ClientName = "MVC Hybrid",
+                    ClientSecrets = new List<Secret>
+                    {
+                        new Secret("secret".Sha256())
+                    },
+                    ClientUri = "http://identityserver.io",
+
+                    AllowedGrantTypes = GrantTypes.Hybrid,
+                    AllowAccessTokensViaBrowser = false,
+                    RedirectUris = new List<string>
+                    {
+                        "http://localhost:44077/signin-oidc"
+                    },
+
+                    AllowedScopes = new List<string>
+                    {
+                        StandardScopes.OpenId.Name,
+                        StandardScopes.Profile.Name,
+                        StandardScopes.Email.Name,
+                        StandardScopes.Roles.Name,
+                        StandardScopes.OfflineAccess.Name,
+
+                        "api1", "api2",
+                    },
                 },
 
                 ///////////////////////////////////////////
@@ -131,7 +140,8 @@ namespace Host.Configuration
                     ClientName = "JavaScript OAuth 2.0 Client",
                     ClientUri = "http://identityserver.io",
 
-                    Flow = Flows.Implicit,
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowAccessTokensViaBrowser = true,
                     RedirectUris = new List<string>
                     {
                         "http://localhost:28895/index.html"
@@ -140,7 +150,7 @@ namespace Host.Configuration
                     AllowedScopes = new List<string>
                     {
                         "api1", "api2"
-                    }
+                    },
                 },
                 
                 ///////////////////////////////////////////
@@ -152,7 +162,8 @@ namespace Host.Configuration
                     ClientName = "JavaScript OIDC Client",
                     ClientUri = "http://identityserver.io",
 
-                    Flow = Flows.Implicit,
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowAccessTokensViaBrowser = true,
                     RedirectUris = new List<string>
                     {
                         "http://localhost:7017/index.html",
@@ -175,7 +186,7 @@ namespace Host.Configuration
                         StandardScopes.Email.Name,
                         StandardScopes.Roles.Name,
                         "api1", "api2"
-                    }
+                    },
                 },
             };
         }

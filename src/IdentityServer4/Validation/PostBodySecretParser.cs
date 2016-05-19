@@ -4,11 +4,11 @@
 using IdentityServer4.Core.Configuration;
 using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Models;
-using Microsoft.AspNet.Http;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using System.Linq;
 using IdentityModel;
+using Microsoft.AspNetCore.Http;
 
 namespace IdentityServer4.Core.Validation
 {
@@ -47,7 +47,7 @@ namespace IdentityServer4.Core.Validation
         /// </returns>
         public Task<ParsedSecret> ParseAsync(HttpContext context)
         {
-            _logger.LogVerbose("Start parsing for secret in post body");
+            _logger.LogTrace("Start parsing for secret in post body");
 
             if (!context.Request.HasFormContentType)
             {
@@ -82,7 +82,7 @@ namespace IdentityServer4.Core.Validation
                 }
             }
 
-            _logger.LogVerbose("No secret in post body found");
+            _logger.LogTrace("No secret in post body found");
             return Task.FromResult<ParsedSecret>(null);
         }
     }

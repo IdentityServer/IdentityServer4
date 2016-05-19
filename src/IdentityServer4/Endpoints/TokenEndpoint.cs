@@ -29,7 +29,7 @@ namespace IdentityServer4.Core.Endpoints
 
         public async Task<IEndpointResult> ProcessAsync(IdentityServerContext context)
         {
-            _logger.LogVerbose("Start token request.");
+            _logger.LogTrace("Start token request.");
 
             // validate HTTP
             if (context.HttpContext.Request.Method != "POST" || !context.HttpContext.Request.HasFormContentType)

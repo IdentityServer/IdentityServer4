@@ -26,7 +26,7 @@ namespace IdentityServer4.Core.Endpoints.Results
                 access_token = TokenResponse.AccessToken,
                 refresh_token = TokenResponse.RefreshToken,
                 expires_in = TokenResponse.AccessTokenLifetime,
-                token_type = OidcConstants.TokenTypes.Bearer
+                token_type = OidcConstants.TokenResponse.BearerTokenType
             };
 
             context.HttpContext.Response.SetNoCache();

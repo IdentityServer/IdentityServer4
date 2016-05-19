@@ -29,12 +29,12 @@ namespace IdentityServer4.Core.Validation
         public string ResponseMode { get; set; }
 
         /// <summary>
-        /// Gets or sets the flow.
+        /// Gets or sets the grant type.
         /// </summary>
         /// <value>
-        /// The flow.
+        /// The the grant type.
         /// </value>
-        public Flows Flow { get; set; }
+        public string GrantType { get; set; }
 
         /// <summary>
         /// Gets or sets the client.

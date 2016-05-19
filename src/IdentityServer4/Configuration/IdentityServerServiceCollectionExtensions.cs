@@ -12,11 +12,11 @@ using IdentityServer4.Core.Services;
 using IdentityServer4.Core.Services.Default;
 using IdentityServer4.Core.Services.InMemory;
 using IdentityServer4.Core.Validation;
-using Microsoft.AspNet.Cors.Infrastructure;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -36,8 +36,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services, IdentityServerOptions options)
         {
-            services.AddInstance(options);
-
+            services.AddSingleton(options);
+            
             services.AddAuthentication();
 
             services.AddTransient<IdentityServerContext>();
@@ -81,7 +81,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 map.Add(Constants.RoutePaths.Oidc.Authorize, typeof(AuthorizeEndpoint));
             }
 
-            services.AddInstance<IEndpointRouter>(new EndpointRouter(map));
+            services.AddSingleton<IEndpointRouter>(new EndpointRouter(map));
             foreach (var item in map)
             {
                 services.AddTransient(item.Value);

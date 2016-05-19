@@ -28,7 +28,7 @@ namespace IdentityServer4.Core.ResponseHandling
 
         public async Task<Dictionary<string, object>> ProcessAsync(string subject, IEnumerable<string> scopes, Client client)
         {
-            _logger.LogVerbose("Creating userinfo response");
+            _logger.LogTrace("Creating userinfo response");
 
             var profileData = new Dictionary<string, object>();
             

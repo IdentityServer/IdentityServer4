@@ -4,13 +4,13 @@
 using IdentityServer4.Core.Configuration;
 using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Models;
-using Microsoft.AspNet.Http;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
 using IdentityModel;
+using Microsoft.AspNetCore.Http;
 
 namespace IdentityServer4.Core.Validation
 {
@@ -49,7 +49,7 @@ namespace IdentityServer4.Core.Validation
         /// </returns>
         public Task<ParsedSecret> ParseAsync(HttpContext context)
         {
-            _logger.LogVerbose("Start parsing Basic Authentication secret");
+            _logger.LogTrace("Start parsing Basic Authentication secret");
 
             var notfound = Task.FromResult<ParsedSecret>(null);
             var authorizationHeader = context.Request.Headers["Authorization"].FirstOrDefault();
@@ -74,19 +74,19 @@ namespace IdentityServer4.Core.Validation
             }
             catch (FormatException)
             {
-                _logger.LogVerbose("Malformed Basic Authentication credential.");
+                _logger.LogTrace("Malformed Basic Authentication credential.");
                 return notfound;
             }
             catch (ArgumentException)
             {
-                _logger.LogVerbose("Malformed Basic Authentication credential.");
+                _logger.LogTrace("Malformed Basic Authentication credential.");
                 return notfound;
             }
 
             var ix = pair.IndexOf(':');
             if (ix == -1)
             {
-                _logger.LogVerbose("Malformed Basic Authentication credential.");
+                _logger.LogTrace("Malformed Basic Authentication credential.");
                 return notfound;
             }
 
@@ -112,7 +112,7 @@ namespace IdentityServer4.Core.Validation
                 return Task.FromResult(parsedSecret);
             }
 
-            _logger.LogVerbose("No Basic Authentication secret found");
+            _logger.LogTrace("No Basic Authentication secret found");
             return notfound;
         }
     }
