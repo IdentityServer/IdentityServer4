@@ -1,5 +1,14 @@
 {
   "version": "1.0.0-beta2",
+  "authors": [ "Brock Allen", "Dominick Baier" ],
+  "description": "OpenID Connect and OAuth 2.0 Framework for ASP.NET Core",
+
+  "packOptions": {
+    "tags": [ "OAuth2", "OAuth 2.0", "OpenID Connect", "Security", "Identity", "IdentityServer" ],
+    "projectUrl": "https://github.com/IdentityServer/IdentityServer4",
+    "licenseUrl": "https://github.com/IdentityServer/IdentityServer4/LICENSE",
+    "iconUrl": "https://identityserver.github.io/Documentation/assets/images/icons/IDserver_icon128.jpg"
+  },
 
   "dependencies": {
     "NETStandard.Library": "1.5.0-rc2-24027",
