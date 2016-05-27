@@ -3,6 +3,7 @@
 
 using IdentityServer4.Core.Extensions;
 using Microsoft.AspNetCore.Http;
+using System;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.Hosting
@@ -19,6 +20,14 @@ namespace IdentityServer4.Core.Hosting
         public async Task Invoke(HttpContext context, IdentityServerContext idsrvContext)
         {
             var request = context.Request;
+
+            if (!string.IsNullOrEmpty(idsrvContext.Options.PublicOrigin))
+            {
+                var origin = new Uri(idsrvContext.Options.PublicOrigin);
+
+                request.Scheme = origin.Scheme;
+                request.Host = new HostString(origin.Authority);
+            }
 
             var host = request.Scheme + "://" + request.Host.Value;
             idsrvContext.SetHost(host);
