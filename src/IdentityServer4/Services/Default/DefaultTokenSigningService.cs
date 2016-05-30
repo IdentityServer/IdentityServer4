@@ -72,17 +72,6 @@ namespace IdentityServer4.Core.Services.Default
             header = new JwtHeader(new SigningCredentials(key, SecurityAlgorithms.RsaSha256Signature));
 
             return Task.FromResult(header);
-
-            //#elif NET451
-            //            header = new JwtHeader(new SigningCredentials(key, SecurityAlgorithms.RsaSha256Signature, SecurityAlgorithms.Sha256Digest));
-
-            //            var x509key = key as X509SecurityKey;
-            //            if (x509key != null)
-            //            {
-            //                header.Add("kid", await _keyService.GetKidAsync(x509key.Certificate));
-            //                header.Add("x5t", await _keyService.GetKidAsync(x509key.Certificate));
-            //            }
-            //#endif
         }
 
         /// <summary>
