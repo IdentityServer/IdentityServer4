@@ -11,9 +11,11 @@ using IdentityServer4.Core.Services;
 using IdentityServer4.Core.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.Endpoints
@@ -204,28 +206,29 @@ namespace IdentityServer4.Core.Endpoints
                 return new StatusCodeResult(404);
             }
 
-            var webKeys = new List<JsonWebKey>();
-            foreach (var pubKey in await _keyService.GetValidationKeysAsync())
+            var webKeys = new List<Models.JsonWebKey>();
+            foreach (var key in await _keyService.GetValidationKeysAsync())
             {
-                if (pubKey != null)
+                if (key != null)
                 {
-                    var cert64 = Convert.ToBase64String(pubKey.RawData);
-                    var thumbprint = Base64Url.Encode(pubKey.GetCertHash());
+                    var x509Key = new X509SecurityKey(key);
 
-                    // todo
-                    //var key = pubKey.PublicKey.Key as RSACryptoServiceProvider;
-                    //var parameters = key.ExportParameters(false);
-                    //var exponent = Base64Url.Encode(parameters.Exponent);
-                    //var modulus = Base64Url.Encode(parameters.Modulus);
+                    var cert64 = Convert.ToBase64String(key.RawData);
+                    var thumbprint = Base64Url.Encode(key.GetCertHash());
 
-                    var webKey = new JsonWebKey
+                    var pubKey = x509Key.PublicKey as RSA;
+                    var parameters = pubKey.ExportParameters(false);
+                    var exponent = Base64Url.Encode(parameters.Exponent);
+                    var modulus = Base64Url.Encode(parameters.Modulus);
+
+                    var webKey = new Models.JsonWebKey
                     {
                         kty = "RSA",
                         use = "sig",
-                        kid = await _keyService.GetKidAsync(pubKey),
+                        kid = await _keyService.GetKidAsync(key),
                         x5t = thumbprint,
-                        //e = exponent,
-                        //n = modulus,
+                        e = exponent,
+                        n = modulus,
                         x5c = new[] { cert64 }
                     };
 

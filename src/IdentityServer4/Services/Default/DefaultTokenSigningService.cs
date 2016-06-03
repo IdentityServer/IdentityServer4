@@ -69,20 +69,9 @@ namespace IdentityServer4.Core.Services.Default
         protected virtual Task<JwtHeader> CreateHeaderAsync(Token token, SecurityKey key)
         {
             JwtHeader header = null;
-            header = new JwtHeader(new SigningCredentials(key, SecurityAlgorithms.RsaSha256Signature));
+            header = new JwtHeader(new SigningCredentials(key, "RS256"));
 
             return Task.FromResult(header);
-
-            //#elif NET451
-            //            header = new JwtHeader(new SigningCredentials(key, SecurityAlgorithms.RsaSha256Signature, SecurityAlgorithms.Sha256Digest));
-
-            //            var x509key = key as X509SecurityKey;
-            //            if (x509key != null)
-            //            {
-            //                header.Add("kid", await _keyService.GetKidAsync(x509key.Certificate));
-            //                header.Add("x5t", await _keyService.GetKidAsync(x509key.Certificate));
-            //            }
-            //#endif
         }
 
         /// <summary>
