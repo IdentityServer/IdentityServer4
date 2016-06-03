@@ -69,7 +69,7 @@ namespace IdentityServer4.Core.Services.Default
         protected virtual Task<JwtHeader> CreateHeaderAsync(Token token, SecurityKey key)
         {
             JwtHeader header = null;
-            header = new JwtHeader(new SigningCredentials(key, SecurityAlgorithms.RsaSha256Signature));
+            header = new JwtHeader(new SigningCredentials(key, "RS256"));
 
             return Task.FromResult(header);
         }
