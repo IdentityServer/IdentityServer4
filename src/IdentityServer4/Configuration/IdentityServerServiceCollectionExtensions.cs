@@ -17,6 +17,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.AspNetCore.Http;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -36,6 +37,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services, IdentityServerOptions options)
         {
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
             services.AddSingleton(options);
             
             services.AddAuthentication();
@@ -155,6 +158,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IServiceCollection AddCoreServices(this IServiceCollection services)
         {
+            services.TryAddTransient<ISigningCredentialStore, DefaultSigningCredentialsStore>();
             services.TryAddTransient<IEventService, DefaultEventService>();
             services.TryAddTransient<ICustomRequestValidator, DefaultCustomRequestValidator>();
             services.TryAddTransient<ITokenService, DefaultTokenService>();
