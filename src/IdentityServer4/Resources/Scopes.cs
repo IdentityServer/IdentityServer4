@@ -3,7 +3,7 @@
 
 using System.Reflection;
 
-namespace IdentityServer4.Core.Resources
+namespace IdentityServer4.Resources
 {
     public static class Scopes
     {

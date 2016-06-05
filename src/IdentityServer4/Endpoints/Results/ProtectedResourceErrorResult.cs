@@ -2,12 +2,12 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using System.Threading.Tasks;
-using IdentityServer4.Core.Extensions;
+using IdentityServer4.Extensions;
 using Microsoft.Extensions.Primitives;
-using IdentityServer4.Core.Hosting;
+using IdentityServer4.Hosting;
 using Microsoft.AspNet.Http;
 
-namespace IdentityServer4.Core.Endpoints.Results
+namespace IdentityServer4.Endpoints.Results
 {
     internal class ProtectedResourceErrorResult : IEndpointResult
     {

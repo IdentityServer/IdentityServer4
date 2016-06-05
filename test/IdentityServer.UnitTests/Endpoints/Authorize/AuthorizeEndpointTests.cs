@@ -2,19 +2,19 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using FluentAssertions;
-using IdentityServer4.Core.Endpoints;
+using IdentityServer4.Endpoints;
 using System.Threading.Tasks;
 using Xunit;
 using UnitTests.Common;
-using IdentityServer4.Core.Hosting;
+using IdentityServer4.Hosting;
 using System.Collections.Specialized;
 using System.Security.Claims;
-using IdentityServer4.Core.Validation;
+using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
-using IdentityServer4.Core.Events;
-using IdentityServer4.Core.Models;
-using IdentityServer4.Core;
-using IdentityServer4.Core.Endpoints.Results;
+using IdentityServer4.Events;
+using IdentityServer4.Models;
+using IdentityServer4;
+using IdentityServer4.Endpoints.Results;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 

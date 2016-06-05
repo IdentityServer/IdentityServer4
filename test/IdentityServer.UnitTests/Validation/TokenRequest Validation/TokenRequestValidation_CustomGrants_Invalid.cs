@@ -3,7 +3,7 @@
 
 using FluentAssertions;
 using IdentityModel;
-using IdentityServer4.Core.Services;
+using IdentityServer4.Services;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using Xunit;

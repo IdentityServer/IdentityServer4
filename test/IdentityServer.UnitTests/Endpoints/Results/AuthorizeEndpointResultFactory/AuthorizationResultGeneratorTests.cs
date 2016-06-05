@@ -2,11 +2,11 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using FluentAssertions;
-using IdentityServer4.Core;
-using IdentityServer4.Core.Endpoints.Results;
-using IdentityServer4.Core.Hosting;
-using IdentityServer4.Core.Models;
-using IdentityServer4.Core.Validation;
+using IdentityServer4;
+using IdentityServer4.Endpoints.Results;
+using IdentityServer4.Hosting;
+using IdentityServer4.Models;
+using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Specialized;
@@ -45,7 +45,7 @@ namespace UnitTests.Endpoints.Results
         StubAuthorizeResponseGenerator _stubAuthorizeResponseGenerator = new StubAuthorizeResponseGenerator();
         MockMessageStore<SignInRequest> _mockSignInMessageStore = new MockMessageStore<SignInRequest>();
         MockMessageStore<ConsentRequest> _mockConsentRequestMessageStore = new MockMessageStore<ConsentRequest>();
-        MockMessageStore<IdentityServer4.Core.Models.ErrorMessage> _mockErrorMessageStore = new MockMessageStore<IdentityServer4.Core.Models.ErrorMessage>();
+        MockMessageStore<IdentityServer4.Models.ErrorMessage> _mockErrorMessageStore = new MockMessageStore<IdentityServer4.Models.ErrorMessage>();
         StubLocalizationService _stubLocalizationService = new StubLocalizationService();
 
         ValidatedAuthorizeRequest _validatedRequest = new ValidatedAuthorizeRequest

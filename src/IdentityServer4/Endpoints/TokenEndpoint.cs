@@ -2,15 +2,15 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel;
-using IdentityServer4.Core.Endpoints.Results;
-using IdentityServer4.Core.Hosting;
-using IdentityServer4.Core.ResponseHandling;
-using IdentityServer4.Core.Validation;
+using IdentityServer4.Endpoints.Results;
+using IdentityServer4.Hosting;
+using IdentityServer4.ResponseHandling;
+using IdentityServer4.Validation;
 using Microsoft.AspNet.Http;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Endpoints
+namespace IdentityServer4.Endpoints
 {
     public class TokenEndpoint : IEndpoint
     {

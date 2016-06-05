@@ -1,6 +1,6 @@
 ﻿
 using FluentAssertions;
-using IdentityServer4.Core.Services.Default;
+using IdentityServer4.Services.Default;
 using UnitTests.Common;
 using Xunit;
 

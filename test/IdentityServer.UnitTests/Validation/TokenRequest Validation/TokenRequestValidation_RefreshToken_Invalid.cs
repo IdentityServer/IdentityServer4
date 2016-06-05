@@ -3,10 +3,10 @@
 
 using FluentAssertions;
 using IdentityModel;
-using IdentityServer4.Core.Configuration;
-using IdentityServer4.Core.Models;
-using IdentityServer4.Core.Services;
-using IdentityServer4.Core.Services.InMemory;
+using IdentityServer4.Configuration;
+using IdentityServer4.Models;
+using IdentityServer4.Services;
+using IdentityServer4.Services.InMemory;
 using System;
 using System.Collections.Specialized;
 using System.Threading.Tasks;

@@ -3,7 +3,7 @@
 
 using Microsoft.AspNetCore.Http;
 
-namespace IdentityServer4.Core.Hosting
+namespace IdentityServer4.Hosting
 {
     public interface IEndpointRouter
     {

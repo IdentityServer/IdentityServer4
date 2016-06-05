@@ -8,7 +8,7 @@ using System.Diagnostics;
 using System.Security.Claims;
 using System.Security.Principal;
 
-namespace IdentityServer4.Core.Extensions
+namespace IdentityServer4.Extensions
 {
     /// <summary>
     /// Extension methods for <see cref="System.Security.Principal.IPrincipal"/> and <see cref="System.Security.Principal.IIdentity"/> .

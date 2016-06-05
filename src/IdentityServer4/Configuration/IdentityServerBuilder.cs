@@ -4,7 +4,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace IdentityServer4.Core.Configuration
+namespace IdentityServer4.Configuration
 {
     public class IdentityServerBuilder : IIdentityServerBuilder
     {

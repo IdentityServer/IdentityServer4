@@ -1,4 +1,4 @@
-﻿using IdentityServer4.Core.Services;
+﻿using IdentityServer4.Services;
 using System.Threading.Tasks;
 
 namespace UnitTests.Hosting.Cors

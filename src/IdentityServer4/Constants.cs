@@ -2,13 +2,13 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel;
-using IdentityServer4.Core.Models;
+using IdentityServer4.Models;
 using System;
 using System.Collections.Generic;
 
 #pragma warning disable 1591
 
-namespace IdentityServer4.Core
+namespace IdentityServer4
 {
     public static class Constants
     {

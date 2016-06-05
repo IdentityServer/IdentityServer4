@@ -3,12 +3,12 @@
 
 using IdentityModel;
 
-using IdentityServer4.Core.Extensions;
+using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Linq;
 
-namespace IdentityServer4.Core.Hosting
+namespace IdentityServer4.Hosting
 {
     class SessionCookie
     {

@@ -3,11 +3,11 @@
 
 using FluentAssertions;
 using IdentityModel;
-using IdentityServer4.Core.Configuration;
-using IdentityServer4.Core.Models;
-using IdentityServer4.Core.ResponseHandling;
-using IdentityServer4.Core.Services.InMemory;
-using IdentityServer4.Core.Validation;
+using IdentityServer4.Configuration;
+using IdentityServer4.Models;
+using IdentityServer4.ResponseHandling;
+using IdentityServer4.Services.InMemory;
+using IdentityServer4.Validation;
 using System;
 using System.Collections.Generic;
 using System.Linq;

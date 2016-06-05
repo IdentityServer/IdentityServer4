@@ -2,10 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using System.Threading.Tasks;
-using IdentityServer4.Core.Models;
-using IdentityServer4.Core.Validation;
+using IdentityServer4.Models;
+using IdentityServer4.Validation;
 
-namespace IdentityServer4.Core.ResponseHandling
+namespace IdentityServer4.ResponseHandling
 {
     public interface ITokenResponseGenerator
     {

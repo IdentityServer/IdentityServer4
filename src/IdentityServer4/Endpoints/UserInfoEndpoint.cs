@@ -3,18 +3,18 @@
 
 using System.Linq;
 using System.Threading.Tasks;
-using IdentityServer4.Core.Configuration;
-using IdentityServer4.Core.Validation;
-using IdentityServer4.Core.Services;
-using IdentityServer4.Core.ResponseHandling;
+using IdentityServer4.Configuration;
+using IdentityServer4.Validation;
+using IdentityServer4.Services;
+using IdentityServer4.ResponseHandling;
 using Microsoft.Extensions.Logging;
-using IdentityServer4.Core.Extensions;
-using IdentityServer4.Core.Events;
-using IdentityServer4.Core.Hosting;
-using IdentityServer4.Core.Endpoints.Results;
+using IdentityServer4.Extensions;
+using IdentityServer4.Events;
+using IdentityServer4.Hosting;
+using IdentityServer4.Endpoints.Results;
 using IdentityModel;
 
-namespace IdentityServer4.Core.Endpoints
+namespace IdentityServer4.Endpoints
 {
     public class UserInfoEndpoint : IEndpoint
     {

@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 
-namespace IdentityServer4.Core.Configuration
+namespace IdentityServer4.Configuration
 {
     /// <summary>
     /// The IdentityServerOptions class is the top level container for all configuration settings of IdentityServer.

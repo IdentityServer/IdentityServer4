@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace IdentityServer4.Core.Models
+namespace IdentityServer4.Models
 {
     public class GrantTypes
     {

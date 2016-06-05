@@ -1,9 +1,9 @@
-﻿using IdentityServer4.Core.Services;
+﻿using IdentityServer4.Services;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Services
+namespace IdentityServer4.Services
 {
     public static class ValidationKeyStoreExtensions
     {

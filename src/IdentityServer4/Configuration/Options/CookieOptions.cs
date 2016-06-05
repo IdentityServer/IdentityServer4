@@ -3,7 +3,7 @@
 
 using System;
 
-namespace IdentityServer4.Core.Configuration
+namespace IdentityServer4.Configuration
 {
     /// <summary>
     /// Configured how cookies are managed by IdentityServer.

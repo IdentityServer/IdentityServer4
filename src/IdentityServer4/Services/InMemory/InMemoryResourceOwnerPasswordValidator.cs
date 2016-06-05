@@ -1,9 +1,9 @@
-﻿using IdentityServer4.Core.Validation;
+﻿using IdentityServer4.Validation;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Services.InMemory
+namespace IdentityServer4.Services.InMemory
 {
     public class InMemoryResourceOwnerPasswordValidator : IResourceOwnerPasswordValidator
     {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-using IdentityServer4.Core.Validation;
+using IdentityServer4.Validation;
 using System.Threading.Tasks;
 
 namespace Host.Extensions

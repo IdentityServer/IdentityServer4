@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
-using IdentityServer4.Core.Hosting;
+using IdentityServer4.Hosting;
 using Xunit;
 using Microsoft.AspNetCore.Http;
 

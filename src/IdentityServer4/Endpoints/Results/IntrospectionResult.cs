@@ -4,9 +4,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
-using IdentityServer4.Core.Hosting;
+using IdentityServer4.Hosting;
 
-namespace IdentityServer4.Core.Endpoints.Results
+namespace IdentityServer4.Endpoints.Results
 {
     public class IntrospectionResult : IEndpointResult
     {

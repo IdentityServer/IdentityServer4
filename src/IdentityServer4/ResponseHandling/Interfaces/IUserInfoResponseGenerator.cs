@@ -3,9 +3,9 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using IdentityServer4.Core.Models;
+using IdentityServer4.Models;
 
-namespace IdentityServer4.Core.ResponseHandling
+namespace IdentityServer4.ResponseHandling
 {
     public interface IUserInfoResponseGenerator
     {

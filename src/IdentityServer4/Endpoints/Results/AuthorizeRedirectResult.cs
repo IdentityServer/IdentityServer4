@@ -2,13 +2,13 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using System.Threading.Tasks;
-using IdentityServer4.Core.Models;
-using IdentityServer4.Core.Extensions;
-using IdentityServer4.Core.Hosting;
+using IdentityServer4.Models;
+using IdentityServer4.Extensions;
+using IdentityServer4.Hosting;
 using Microsoft.AspNet.Http;
 using IdentityModel;
 
-namespace IdentityServer4.Core.Endpoints.Results
+namespace IdentityServer4.Endpoints.Results
 {
     class AuthorizeRedirectResult : AuthorizeResult
     {

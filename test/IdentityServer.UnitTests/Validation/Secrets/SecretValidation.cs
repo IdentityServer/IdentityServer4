@@ -2,11 +2,11 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using FluentAssertions;
-using IdentityServer4.Core;
-using IdentityServer4.Core.Models;
-using IdentityServer4.Core.Services;
-using IdentityServer4.Core.Services.InMemory;
-using IdentityServer4.Core.Validation;
+using IdentityServer4;
+using IdentityServer4.Models;
+using IdentityServer4.Services;
+using IdentityServer4.Services.InMemory;
+using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;

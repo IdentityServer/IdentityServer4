@@ -6,7 +6,7 @@ using System.Security.Claims;
 using System.Linq;
 using System;
 
-namespace IdentityServer4.Core.Models
+namespace IdentityServer4.Models
 {
     /// <summary>
     /// Models an OpenID Connect or OAuth2 client

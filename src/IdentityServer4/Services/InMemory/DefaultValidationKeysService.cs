@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.IdentityModel.Tokens;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Services.InMemory
+namespace IdentityServer4.Services.InMemory
 {
     public class InMemoryValidationKeysStore : IValidationKeysStore
     {

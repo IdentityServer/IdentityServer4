@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-using IdentityServer4.Core.Validation;
+using IdentityServer4.Validation;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace IdentityServer4.Core.Extensions
+namespace IdentityServer4.Extensions
 {
     public static class ValidatedAuthorizeRequestExtensions
     {

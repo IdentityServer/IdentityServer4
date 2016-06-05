@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 
-namespace IdentityServer4.Core
+namespace IdentityServer4
 {
     internal static class IdentityServerPrincipal
     {

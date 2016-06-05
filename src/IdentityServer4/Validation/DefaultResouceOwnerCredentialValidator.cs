@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Validation
+namespace IdentityServer4.Validation
 {
     public class DefaultResouceOwnerPasswordValidator : IResourceOwnerPasswordValidator
     {

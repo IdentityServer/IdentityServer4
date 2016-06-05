@@ -2,18 +2,18 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel;
-using IdentityServer4.Core.Extensions;
-using IdentityServer4.Core.Hosting;
-using IdentityServer4.Core.Models;
-using IdentityServer4.Core.ResponseHandling;
-using IdentityServer4.Core.Services;
-using IdentityServer4.Core.Validation;
+using IdentityServer4.Extensions;
+using IdentityServer4.Hosting;
+using IdentityServer4.Models;
+using IdentityServer4.ResponseHandling;
+using IdentityServer4.Services;
+using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Endpoints.Results
+namespace IdentityServer4.Endpoints.Results
 {
     class AuthorizeEndpointResultFactory : IAuthorizeEndpointResultFactory
     {

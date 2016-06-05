@@ -3,7 +3,7 @@
 
 using System;
 
-namespace IdentityServer4.Core.Events
+namespace IdentityServer4.Events
 {
     /// <summary>
     /// Models base class for events raised from IdentityServer.

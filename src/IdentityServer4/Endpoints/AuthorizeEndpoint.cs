@@ -3,22 +3,22 @@
 
 using System.Linq;
 using System.Threading.Tasks;
-using IdentityServer4.Core.Extensions;
+using IdentityServer4.Extensions;
 using Microsoft.AspNet.Http;
-using IdentityServer4.Core.Validation;
-using IdentityServer4.Core.ResponseHandling;
-using IdentityServer4.Core.Services;
+using IdentityServer4.Validation;
+using IdentityServer4.ResponseHandling;
+using IdentityServer4.Services;
 using Microsoft.Extensions.Logging;
 using System.Collections.Specialized;
 using System.Net;
 using System.Security.Claims;
-using IdentityServer4.Core.Hosting;
-using IdentityServer4.Core.Events;
-using IdentityServer4.Core.Models;
-using IdentityServer4.Core.Resources;
-using IdentityServer4.Core.Endpoints.Results;
+using IdentityServer4.Hosting;
+using IdentityServer4.Events;
+using IdentityServer4.Models;
+using IdentityServer4.Resources;
+using IdentityServer4.Endpoints.Results;
 
-namespace IdentityServer4.Core.Endpoints
+namespace IdentityServer4.Endpoints
 {
     class AuthorizeEndpoint : IEndpoint
     {

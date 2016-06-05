@@ -5,12 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using IdentityServer4.Core.Services;
+using IdentityServer4.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 
-namespace IdentityServer4.Core.Hosting.Cors
+namespace IdentityServer4.Hosting.Cors
 {
     public class PolicyProvider : ICorsPolicyProvider
     {

@@ -3,7 +3,7 @@
 
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Validation
+namespace IdentityServer4.Validation
 {
     /// <summary>
     /// Allows inserting custom token validation logic

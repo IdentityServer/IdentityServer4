@@ -4,7 +4,7 @@
 
 using Microsoft.AspNetCore.Builder;
 
-namespace IdentityServer4.Core.Configuration
+namespace IdentityServer4.Configuration
 {
     /// <summary>
     /// Configures the login and logout views and behavior.

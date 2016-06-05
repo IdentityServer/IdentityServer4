@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using IdentityServer4.Core.Hosting.Cors;
+using IdentityServer4.Hosting.Cors;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;

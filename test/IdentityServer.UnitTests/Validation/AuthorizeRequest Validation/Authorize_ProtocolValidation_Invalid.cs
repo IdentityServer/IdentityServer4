@@ -3,8 +3,8 @@
 
 using FluentAssertions;
 using IdentityModel;
-using IdentityServer4.Core;
-using IdentityServer4.Core.Validation;
+using IdentityServer4;
+using IdentityServer4.Validation;
 using System;
 using System.Collections.Specialized;
 using System.Threading.Tasks;

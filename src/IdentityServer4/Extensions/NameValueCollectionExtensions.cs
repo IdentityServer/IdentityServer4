@@ -8,7 +8,7 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Text.Encodings.Web;
 
-namespace IdentityServer4.Core.Extensions
+namespace IdentityServer4.Extensions
 {
     internal static class NameValueCollectionExtensions
     {
