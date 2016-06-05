@@ -179,7 +179,7 @@ namespace IdentityServer4.Tests.Validation
                     profile: profile,
                     clients: clients,
                     logger: new Logger<DefaultCustomTokenValidator>(new LoggerFactory())),
-                keyService: new DefaultSigningKeyService(options),
+                    keys: new[] { new InMemoryValidationKeysStore(new[] { TestCert.LoadSigningCredentials().Key }) },
                 logger: logger,
                 context: idsrvContext);
 

@@ -30,18 +30,18 @@ namespace IdentityServer4.Core.Validation
         private readonly ITokenHandleStore _tokenHandles;
         private readonly ICustomTokenValidator _customValidator;
         private readonly IClientStore _clients;
-        private readonly ISigningKeyService _keyService;
+        private readonly IEnumerable<IValidationKeysStore> _keys;
 
         private readonly TokenValidationLog _log;
         
-        public TokenValidator(IdentityServerOptions options, IdentityServerContext context, IClientStore clients, ITokenHandleStore tokenHandles, ICustomTokenValidator customValidator, ISigningKeyService keyService, ILogger<TokenValidator> logger)
+        public TokenValidator(IdentityServerOptions options, IdentityServerContext context, IClientStore clients, ITokenHandleStore tokenHandles, ICustomTokenValidator customValidator, IEnumerable<IValidationKeysStore> keys, ILogger<TokenValidator> logger)
         {
             _options = options;
             _context = context;
             _clients = clients;
             _tokenHandles = tokenHandles;
             _customValidator = customValidator;
-            _keyService = keyService;
+            _keys = keys;
             _logger = logger;
 
             _log = new TokenValidationLog();
@@ -80,8 +80,8 @@ namespace IdentityServer4.Core.Validation
 
             _log.ClientName = client.ClientName;
 
-            var certs = await _keyService.GetValidationKeysAsync();
-            var result = await ValidateJwtAsync(token, clientId, certs, validateLifetime);
+            var keys = await _keys.GetKeysAsync();
+            var result = await ValidateJwtAsync(token, clientId, keys, validateLifetime);
 
             result.Client = client;
 
@@ -134,7 +134,7 @@ namespace IdentityServer4.Core.Validation
                 result = await ValidateJwtAsync(
                     token,
                     string.Format(Constants.AccessTokenAudience, _context.GetIssuerUri().EnsureTrailingSlash()),
-                    await _keyService.GetValidationKeysAsync());
+                    await _keys.GetKeysAsync());
             }
             else
             {
@@ -186,18 +186,15 @@ namespace IdentityServer4.Core.Validation
             return customResult;
         }
 
-        private async Task<TokenValidationResult> ValidateJwtAsync(string jwt, string audience, IEnumerable<X509Certificate2> signingCertificates, bool validateLifetime = true)
+        private async Task<TokenValidationResult> ValidateJwtAsync(string jwt, string audience, IEnumerable<SecurityKey> validationKeys, bool validateLifetime = true)
         {
             var handler = new JwtSecurityTokenHandler();
             handler.InboundClaimTypeMap.Clear();
 
-
-            var keys = (from c in signingCertificates select new X509SecurityKey(c)).ToList();
-
             var parameters = new TokenValidationParameters
             {
                 ValidIssuer = _context.GetIssuerUri(),
-                IssuerSigningKeys = keys,
+                IssuerSigningKeys = validationKeys,
                 ValidateLifetime = validateLifetime,
                 ValidAudience = audience
             };
