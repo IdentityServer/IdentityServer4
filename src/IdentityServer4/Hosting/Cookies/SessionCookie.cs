@@ -78,7 +78,7 @@ namespace IdentityServer4.Hosting
 
             if (_context.HttpContext.Request.Cookies.ContainsKey(GetCookieName()))
             {
-                return _context.HttpContext.Request.Cookies[GetCookieName()].FirstOrDefault().ToString();
+                return _context.HttpContext.Request.Cookies[GetCookieName()];
             }
 
             return IssueSessionId();
