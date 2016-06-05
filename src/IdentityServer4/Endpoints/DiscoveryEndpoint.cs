@@ -188,7 +188,7 @@ namespace IdentityServer4.Core.Endpoints
 
             if (_options.DiscoveryOptions.ShowKeySet)
             {
-                if (_options.SigningCertificate != null)
+                if ((await _keys.GetKeysAsync()).Any())
                 {
                     document.jwks_uri = baseUrl + Constants.RoutePaths.Oidc.DiscoveryWebKeys;
                 }

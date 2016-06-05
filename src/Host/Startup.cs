@@ -22,10 +22,7 @@ namespace Host
         {
             var cert = new X509Certificate2(Path.Combine(_environment.ContentRootPath, "idsrv3test.pfx"), "idsrv3test");
 
-            var builder = services.AddIdentityServer(options =>
-            {
-                options.SigningCertificate = cert;
-            })
+            var builder = services.AddIdentityServer()
                 .AddInMemoryClients(Clients.Get())
                 .AddInMemoryScopes(Scopes.Get())
                 .AddInMemoryUsers(Users.Get())

@@ -69,8 +69,7 @@ namespace IdentityServer4.Tests.Common
             services.AddDataProtection();
 
             var cert = new X509Certificate2(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "idsrvtest.pfx"), "idsrv3test");
-            Options.SigningCertificate = cert;
-
+            
             services.AddIdentityServer(Options)
                 .AddInMemoryClients(Clients)
                 .AddInMemoryScopes(Scopes)

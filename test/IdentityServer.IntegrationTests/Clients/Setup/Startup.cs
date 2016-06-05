@@ -21,7 +21,6 @@ namespace IdentityServer4.Tests.Clients
 
             var builder = services.AddIdentityServer(options =>
             {
-                options.SigningCertificate = cert;
                 options.IssuerUri = "https://idsrv4";
             });
 

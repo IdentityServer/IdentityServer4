@@ -46,22 +46,6 @@ namespace IdentityServer4.Core.Configuration
         public string IssuerUri { get; set; }
 
         /// <summary>
-        /// Gets or sets the X.509 certificate (and corresponding private key) for signing security tokens.
-        /// </summary>
-        /// <value>
-        /// The signing certificate.
-        /// </value>
-        public X509Certificate2 SigningCertificate { get; set; }
-
-        /// <summary>
-        /// Gets or sets a secondary certificate that will appear in the discovery document. Can be used to prepare clients for certificate rollover
-        /// </summary>
-        /// <value>
-        /// The secondary signing certificate.
-        /// </value>
-        public X509Certificate2 SecondarySigningCertificate { get; set; }
-
-        /// <summary>
         /// Gets or sets a value indicating whether SSL is required for IdentityServer. Defaults to `true`.
         /// </summary>
         /// <value>
@@ -132,25 +116,5 @@ namespace IdentityServer4.Core.Configuration
         /// <c>true</c> if the welcome page is enabled; otherwise, <c>false</c>.
         /// </value>
         public bool EnableWelcomePage { get; set; }
-        
-        internal IEnumerable<X509Certificate2> PublicKeysForMetadata
-        {
-            get
-            {
-                var keys = new List<X509Certificate2>();
-                
-                if (SigningCertificate != null)
-                {
-                    keys.Add(SigningCertificate);
-                }
-
-                if (SecondarySigningCertificate != null)
-                {
-                    keys.Add(SecondarySigningCertificate);
-                }
-
-                return keys;
-            }
-        }
     }
 }

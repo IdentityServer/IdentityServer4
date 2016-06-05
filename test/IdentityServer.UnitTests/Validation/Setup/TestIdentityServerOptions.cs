@@ -17,8 +17,6 @@ namespace IdentityServer4.Tests.Validation
                 //DataProtector = new NoDataProtector(),
             };
 
-            options.SigningCertificate = TestCert.Load();
-            
             return options;
         }
     }
