@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using IdentityServer4.Core.Hosting;
 using UnitTests.Common;
 using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityServer4.Tests.Validation
 {
@@ -97,7 +98,8 @@ namespace IdentityServer4.Tests.Validation
 
         internal static ITokenSigningService CreateDefaultTokenSigningService()
         {
-            return new DefaultTokenSigningService(new DefaultSigningKeyService(TestIdentityServerOptions.Create()));
+            return new DefaultTokenSigningService(
+                new DefaultSigningCredentialsStore(TestCert.LoadSigningCredentials()));
         }
 
         public static AuthorizeRequestValidator CreateAuthorizeRequestValidator(

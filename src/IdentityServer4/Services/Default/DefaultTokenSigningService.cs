@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+
 using IdentityServer4.Core.Extensions;
 using IdentityServer4.Core.Models;
 using Newtonsoft.Json.Linq;
@@ -8,14 +9,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
-using Newtonsoft.Json;
 using IdentityModel;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
-
-#if DOTNET5_4
-using System.IdentityModel.Tokens.Jwt;
-#endif
 
 namespace IdentityServer4.Core.Services.Default
 {
@@ -24,23 +20,16 @@ namespace IdentityServer4.Core.Services.Default
     /// </summary>
     public class DefaultTokenSigningService : ITokenSigningService
     {
-        /// <summary>
-        /// The signing key service
-        /// </summary>
-        private readonly ISigningKeyService _keyService;
+        private readonly ISigningCredentialStore _credentialStore;
 
-        static DefaultTokenSigningService()
-        {
-            JsonExtensions.Serializer = JsonConvert.SerializeObject;
-        }
+        //static DefaultTokenSigningService()
+        //{
+        //    JsonExtensions.Serializer = JsonConvert.SerializeObject;
+        //}
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultTokenSigningService"/> class.
-        /// </summary>
-        /// <param name="options">The options.</param>
-        public DefaultTokenSigningService(ISigningKeyService keyService)
+        public DefaultTokenSigningService(ISigningCredentialStore credentialStore)
         {
-            _keyService = keyService;
+            _credentialStore = credentialStore;
         }
 
         /// <summary>
@@ -52,9 +41,7 @@ namespace IdentityServer4.Core.Services.Default
         /// </returns>
         public virtual async Task<string> SignTokenAsync(Token token)
         {
-            var key = new X509SecurityKey(await _keyService.GetSigningKeyAsync());
-
-            var header = await CreateHeaderAsync(token, key);
+            var header = await CreateHeaderAsync(token);
             var payload = await CreatePayloadAsync(token);
 
             return await SignAsync(new JwtSecurityToken(header, payload));
@@ -66,12 +53,9 @@ namespace IdentityServer4.Core.Services.Default
         /// <param name="token">The token.</param>
         /// <param name="credential">The credentials.</param>
         /// <returns>The JWT header</returns>
-        protected virtual Task<JwtHeader> CreateHeaderAsync(Token token, SecurityKey key)
+        protected virtual async Task<JwtHeader> CreateHeaderAsync(Token token)
         {
-            JwtHeader header = null;
-            header = new JwtHeader(new SigningCredentials(key, "RS256"));
-
-            return Task.FromResult(header);
+            return new JwtHeader(await _credentialStore.GetSigningCredentialsAsync());
         }
 
         /// <summary>

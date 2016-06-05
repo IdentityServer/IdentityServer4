@@ -15,8 +15,6 @@ namespace IdentityServer4.Tests.Clients
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
             var cert = new X509Certificate2(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "idsrvtest.pfx"), "idsrv3test");
 
             services.AddAuthentication();
@@ -30,6 +28,7 @@ namespace IdentityServer4.Tests.Clients
             builder.AddInMemoryClients(Clients.Get());
             builder.AddInMemoryScopes(Scopes.Get());
             builder.AddInMemoryUsers(Users.Get());
+            builder.SetSigningCredentials(cert);
 
             builder.AddCustomGrantValidator<CustomGrantValidator>();
             builder.AddCustomGrantValidator<CustomGrantValidator2>();

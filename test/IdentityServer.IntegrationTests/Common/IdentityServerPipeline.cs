@@ -64,18 +64,18 @@ namespace IdentityServer4.Tests.Common
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
             OnConfigureServices(services);
 
             services.AddDataProtection();
 
-            Options.SigningCertificate = new X509Certificate2(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "idsrvtest.pfx"), "idsrv3test");
+            var cert = new X509Certificate2(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "idsrvtest.pfx"), "idsrv3test");
+            Options.SigningCertificate = cert;
 
             services.AddIdentityServer(Options)
                 .AddInMemoryClients(Clients)
                 .AddInMemoryScopes(Scopes)
-                .AddInMemoryUsers(Users);
+                .AddInMemoryUsers(Users)
+                .SetSigningCredentials(cert);
         }
 
         public event Action<IApplicationBuilder> OnPreConfigure = x => { };
