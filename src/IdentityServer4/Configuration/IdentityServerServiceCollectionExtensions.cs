@@ -158,7 +158,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IServiceCollection AddCoreServices(this IServiceCollection services)
         {
-            services.TryAddTransient<ISigningCredentialStore, DefaultSigningCredentialsStore>();
+            services.TryAddTransient<ISigningCredentialStore, InMemorySigningCredentialsStore>();
             services.TryAddTransient<IEventService, DefaultEventService>();
             services.TryAddTransient<ICustomRequestValidator, DefaultCustomRequestValidator>();
             services.TryAddTransient<ITokenService, DefaultTokenService>();

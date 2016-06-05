@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Core.Services.InMemory
 {
-    public class DefaultSigningCredentialsStore : ISigningCredentialStore
+    public class InMemorySigningCredentialsStore : ISigningCredentialStore
     {
         private readonly SigningCredentials _credential;
 
-        public DefaultSigningCredentialsStore(SigningCredentials credential)
+        public InMemorySigningCredentialsStore(SigningCredentials credential)
         {
             _credential = credential;
         }

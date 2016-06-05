@@ -67,8 +67,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IIdentityServerBuilder SetSigningCredentials(this IIdentityServerBuilder builder, SigningCredentials credential)
         {
-            builder.Services.AddSingleton<ISigningCredentialStore>(new DefaultSigningCredentialsStore(credential));
-            builder.Services.AddSingleton<IValidationKeysStore>(new DefaultValidationKeysStore(new[] { credential.Key }));
+            builder.Services.AddSingleton<ISigningCredentialStore>(new InMemorySigningCredentialsStore(credential));
+            builder.Services.AddSingleton<IValidationKeysStore>(new InMemoryValidationKeysStore(new[] { credential.Key }));
 
             return builder;
         }

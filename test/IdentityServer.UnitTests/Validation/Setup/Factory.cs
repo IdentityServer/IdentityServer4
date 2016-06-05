@@ -99,7 +99,7 @@ namespace IdentityServer4.Tests.Validation
         internal static ITokenSigningService CreateDefaultTokenSigningService()
         {
             return new DefaultTokenSigningService(
-                new DefaultSigningCredentialsStore(TestCert.LoadSigningCredentials()));
+                new InMemorySigningCredentialsStore(TestCert.LoadSigningCredentials()));
         }
 
         public static AuthorizeRequestValidator CreateAuthorizeRequestValidator(
