@@ -83,6 +83,10 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 map.Add(Constants.RoutePaths.Oidc.Authorize, typeof(AuthorizeEndpoint));
             }
+            if (endpoints.EnableEndSessionEndpoint)
+            {
+                map.Add(Constants.RoutePaths.Oidc.EndSession, typeof(EndSessionEndpoint));
+            }
 
             services.AddSingleton<IEndpointRouter>(new EndpointRouter(map));
             foreach (var item in map)
