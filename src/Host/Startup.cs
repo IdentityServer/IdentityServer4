@@ -28,7 +28,8 @@ namespace Host
             })
                 .AddInMemoryClients(Clients.Get())
                 .AddInMemoryScopes(Scopes.Get())
-                .AddInMemoryUsers(Users.Get());
+                .AddInMemoryUsers(Users.Get())
+                .SetSigningCredentials(cert);
 
             builder.AddCustomGrantValidator<CustomGrantValidator>();
 

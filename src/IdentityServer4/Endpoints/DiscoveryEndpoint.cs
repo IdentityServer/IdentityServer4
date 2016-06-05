@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -24,21 +25,21 @@ namespace IdentityServer4.Core.Endpoints
     {
         private readonly IdentityServerContext _context;
         private readonly CustomGrantValidator _customGrants;
-        private readonly ISigningKeyService _keyService;
+        private readonly IEnumerable<IValidationKeysStore> _keys;
         private readonly ILogger _logger;
         private readonly IdentityServerOptions _options;
         private readonly SecretParser _parsers;
         private readonly IScopeStore _scopes;
 
-        public DiscoveryEndpoint(IdentityServerOptions options, IdentityServerContext context, IScopeStore scopes, ILogger<DiscoveryEndpoint> logger, ISigningKeyService keyService, CustomGrantValidator customGrants, SecretParser parsers)
+        public DiscoveryEndpoint(IdentityServerOptions options, IdentityServerContext context, IScopeStore scopes, ILogger<DiscoveryEndpoint> logger, IEnumerable<IValidationKeysStore> keys, CustomGrantValidator customGrants, SecretParser parsers)
         {
             _options = options;
             _scopes = scopes;
             _logger = logger;
-            _keyService = keyService;
             _context = context;
             _customGrants = customGrants;
             _parsers = parsers;
+            _keys = keys;
         }
 
         public Task<IEndpointResult> ProcessAsync(IdentityServerContext context)
@@ -193,7 +194,7 @@ namespace IdentityServer4.Core.Endpoints
                 }
             }
 
-            return new DiscoveryDocumentResult(document, _options.DiscoveryOptions.CustomEntries); 
+            return new DiscoveryDocumentResult(document, _options.DiscoveryOptions.CustomEntries);
         }
 
         private async Task<IEndpointResult> ExecuteJwksAsync(HttpContext context)
@@ -207,33 +208,32 @@ namespace IdentityServer4.Core.Endpoints
             }
 
             var webKeys = new List<Models.JsonWebKey>();
-            foreach (var key in await _keyService.GetValidationKeysAsync())
+            foreach (var key in await _keys.GetKeysAsync())
             {
-                if (key != null)
+                // todo - check key type - for now only x509 is supported.
+
+                var x509Key = key as X509SecurityKey;
+
+                var cert64 = Convert.ToBase64String(x509Key.Certificate.RawData);
+                var thumbprint = Base64Url.Encode(x509Key.Certificate.GetCertHash());
+
+                var pubKey = x509Key.PublicKey as RSA;
+                var parameters = pubKey.ExportParameters(false);
+                var exponent = Base64Url.Encode(parameters.Exponent);
+                var modulus = Base64Url.Encode(parameters.Modulus);
+
+                var webKey = new Models.JsonWebKey
                 {
-                    var x509Key = new X509SecurityKey(key);
+                    kty = "RSA",
+                    use = "sig",
+                    kid = x509Key.KeyId,
+                    x5t = thumbprint,
+                    e = exponent,
+                    n = modulus,
+                    x5c = new[] { cert64 }
+                };
 
-                    var cert64 = Convert.ToBase64String(key.RawData);
-                    var thumbprint = Base64Url.Encode(key.GetCertHash());
-
-                    var pubKey = x509Key.PublicKey as RSA;
-                    var parameters = pubKey.ExportParameters(false);
-                    var exponent = Base64Url.Encode(parameters.Exponent);
-                    var modulus = Base64Url.Encode(parameters.Modulus);
-
-                    var webKey = new Models.JsonWebKey
-                    {
-                        kty = "RSA",
-                        use = "sig",
-                        kid = await _keyService.GetKidAsync(key),
-                        x5t = thumbprint,
-                        e = exponent,
-                        n = modulus,
-                        x5c = new[] { cert64 }
-                    };
-
-                    webKeys.Add(webKey);
-                }
+                webKeys.Add(webKey);
             }
 
             return new JsonWebKeysResult(webKeys);

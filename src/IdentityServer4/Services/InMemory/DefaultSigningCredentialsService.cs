@@ -1,7 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Services.Default
+namespace IdentityServer4.Core.Services.InMemory
 {
     public class DefaultSigningCredentialsStore : ISigningCredentialStore
     {

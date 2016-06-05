@@ -5,7 +5,10 @@ using IdentityServer4.Core.Models;
 using IdentityServer4.Core.Services;
 using IdentityServer4.Core.Services.InMemory;
 using IdentityServer4.Core.Validation;
+using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -60,6 +63,21 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddTransient<ISecretValidator, T>();
 
             return builder;
+        }
+
+        public static IIdentityServerBuilder SetSigningCredentials(this IIdentityServerBuilder builder, SigningCredentials credential)
+        {
+            builder.Services.AddSingleton<ISigningCredentialStore>(new DefaultSigningCredentialsStore(credential));
+            builder.Services.AddSingleton<IValidationKeysStore>(new DefaultValidationKeysStore(new[] { credential.Key }));
+
+            return builder;
+        }
+
+        public static IIdentityServerBuilder SetSigningCredentials(this IIdentityServerBuilder builder, X509Certificate2 certificate)
+        {
+            var credential = new SigningCredentials(new X509SecurityKey(certificate), "RS256");
+
+            return builder.SetSigningCredentials(credential);
         }
     }
 }
