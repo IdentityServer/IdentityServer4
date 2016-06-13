@@ -27,6 +27,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IIdentityServerBuilder AddInMemoryClients(this IIdentityServerBuilder builder, IEnumerable<Client> clients)
         {
             builder.Services.AddSingleton(clients);
+
             builder.Services.AddTransient<IClientStore, InMemoryClientStore>();
             builder.Services.AddTransient<ICorsPolicyService, InMemoryCorsPolicyService>();
 
@@ -75,6 +76,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IIdentityServerBuilder SetSigningCredentials(this IIdentityServerBuilder builder, X509Certificate2 certificate)
         {
+            // todo: need to set alg?
             var credential = new SigningCredentials(new X509SecurityKey(certificate), "RS256");
 
             return builder.SetSigningCredentials(credential);

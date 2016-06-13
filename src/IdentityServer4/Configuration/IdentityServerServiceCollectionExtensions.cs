@@ -115,8 +115,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<IRedirectUriValidator, StrictRedirectUriValidator>();
             services.TryAddTransient<ITokenValidator, TokenValidator>();
             services.TryAddTransient<IIntrospectionRequestValidator, IntrospectionRequestValidator>();
-
-            // todo services.TryAddTransient<IResourceOwnerPasswordValidator, DefaultResouceOwnerPasswordValidator>();
+            services.TryAddTransient<IResourceOwnerPasswordValidator, NopResouceOwnerPasswordValidator>();
             
             return services;
         }
@@ -136,6 +135,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddSecretParsers(this IServiceCollection services)
         {
             services.AddTransient<SecretParser>();
+
             services.AddTransient<ISecretParser, BasicAuthenticationSecretParser>();
             services.AddTransient<ISecretParser, PostBodySecretParser>();
             
@@ -145,6 +145,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddSecretValidators(this IServiceCollection services)
         {
             services.AddTransient<SecretValidator>();
+
             services.AddTransient<ISecretValidator, HashedSharedSecretValidator>();
 
             return services;
@@ -189,7 +190,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<ConsentInteraction>();
             services.TryAddTransient<ErrorInteraction>();
 
-            services.AddTransient<ICorsPolicyProvider>(provider=>
+            services.AddTransient<ICorsPolicyProvider>(provider =>
             {
                 return new PolicyProvider(
                     provider.GetRequiredService<ILogger<PolicyProvider>>(),
