@@ -42,8 +42,8 @@ namespace Host
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddConsole(LogLevel.Trace);
-            loggerFactory.AddDebug(LogLevel.Trace);
+            loggerFactory.AddConsole((scope, level) => scope.StartsWith("IdentityServer"));
+            loggerFactory.AddDebug((scope, level) => scope.StartsWith("IdentityServer"));
 
             app.UseDeveloperExceptionPage();
 
