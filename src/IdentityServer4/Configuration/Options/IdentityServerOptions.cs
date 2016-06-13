@@ -41,7 +41,7 @@ namespace IdentityServer4.Configuration
         /// <value>
         /// The endpoints configuration.
         /// </value>
-        public EndpointOptions Endpoints { get; set; } = new EndpointOptions();
+        public EndpointsOptions Endpoints { get; set; } = new EndpointsOptions();
 
         /// <summary>
         /// Gets or sets the discovery endpoint configuration.

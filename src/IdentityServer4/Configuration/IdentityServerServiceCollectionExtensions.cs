@@ -60,7 +60,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return new IdentityServerBuilder(services);
         }
 
-        public static IServiceCollection AddEndpoints(this IServiceCollection services, EndpointOptions endpoints)
+        public static IServiceCollection AddEndpoints(this IServiceCollection services, EndpointsOptions endpoints)
         {
             var map = new Dictionary<string, Type>();
             if (endpoints.EnableTokenEndpoint)
