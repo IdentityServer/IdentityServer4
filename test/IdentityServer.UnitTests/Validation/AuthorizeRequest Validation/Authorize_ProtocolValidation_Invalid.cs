@@ -3,7 +3,6 @@
 
 using FluentAssertions;
 using IdentityModel;
-using IdentityServer4;
 using IdentityServer4.Validation;
 using System;
 using System.Collections.Specialized;

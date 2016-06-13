@@ -167,7 +167,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<IEventService, DefaultEventService>();
             services.TryAddTransient<ICustomRequestValidator, DefaultCustomRequestValidator>();
             services.TryAddTransient<ITokenService, DefaultTokenService>();
-            services.TryAddTransient<ITokenSigningService, DefaultTokenSigningService>();
+            services.TryAddTransient<ITokenCreationService, DefaultTokenCreationService>();
             services.TryAddTransient<IClaimsProvider, DefaultClaimsProvider>();
             services.TryAddTransient<IRefreshTokenService, DefaultRefreshTokenService>();
             services.TryAddTransient<ICustomTokenValidator, DefaultCustomTokenValidator>();

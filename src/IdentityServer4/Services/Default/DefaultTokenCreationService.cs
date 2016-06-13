@@ -11,40 +11,34 @@ using System.Threading.Tasks;
 using System.Linq;
 using IdentityModel;
 using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityServer4.Services.Default
 {
     /// <summary>
-    /// Default token signing service
+    /// Default token creation service
     /// </summary>
-    public class DefaultTokenSigningService : ITokenSigningService
+    public class DefaultTokenCreationService : ITokenCreationService
     {
         private readonly ISigningCredentialStore _credentialStore;
 
-        //static DefaultTokenSigningService()
-        //{
-        //    JsonExtensions.Serializer = JsonConvert.SerializeObject;
-        //}
-
-        public DefaultTokenSigningService(ISigningCredentialStore credentialStore)
+        public DefaultTokenCreationService(ISigningCredentialStore credentialStore)
         {
             _credentialStore = credentialStore;
         }
 
         /// <summary>
-        /// Signs the token.
+        /// Creates the token.
         /// </summary>
         /// <param name="token">The token.</param>
         /// <returns>
         /// A protected and serialized security token
         /// </returns>
-        public virtual async Task<string> SignTokenAsync(Token token)
+        public virtual async Task<string> CreateTokenAsync(Token token)
         {
             var header = await CreateHeaderAsync(token);
             var payload = await CreatePayloadAsync(token);
 
-            return await SignAsync(new JwtSecurityToken(header, payload));
+            return await CreateJwtAsync(new JwtSecurityToken(header, payload));
         }
 
         /// <summary>
@@ -55,7 +49,14 @@ namespace IdentityServer4.Services.Default
         /// <returns>The JWT header</returns>
         protected virtual async Task<JwtHeader> CreateHeaderAsync(Token token)
         {
-            return new JwtHeader(await _credentialStore.GetSigningCredentialsAsync());
+            var credential = await _credentialStore.GetSigningCredentialsAsync();
+
+            if (credential == null)
+            {
+                throw new InvalidOperationException("No signing credential is configured. Can't create JWT token");
+            }
+
+            return new JwtHeader(credential);
         }
 
         /// <summary>
@@ -146,7 +147,7 @@ namespace IdentityServer4.Services.Default
         /// </summary>
         /// <param name="jwt">The JWT object.</param>
         /// <returns>The signed JWT</returns>
-        protected virtual Task<string> SignAsync(JwtSecurityToken jwt)
+        protected virtual Task<string> CreateJwtAsync(JwtSecurityToken jwt)
         {
             var handler = new JwtSecurityTokenHandler();
             return Task.FromResult(handler.WriteToken(jwt));

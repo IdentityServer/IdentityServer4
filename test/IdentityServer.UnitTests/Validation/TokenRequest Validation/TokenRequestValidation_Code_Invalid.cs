@@ -3,7 +3,6 @@
 
 using FluentAssertions;
 using IdentityModel;
-using IdentityServer4;
 using IdentityServer4.Configuration;
 using IdentityServer4.Models;
 using IdentityServer4.Services;

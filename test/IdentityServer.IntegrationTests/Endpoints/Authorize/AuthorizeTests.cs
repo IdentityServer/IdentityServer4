@@ -6,7 +6,6 @@ using Xunit;
 using FluentAssertions;
 using System.Net;
 using IdentityServer4.Tests.Common;
-using IdentityServer4;
 using System.Collections.Generic;
 using IdentityServer4.Models;
 using IdentityServer4.Services.InMemory;

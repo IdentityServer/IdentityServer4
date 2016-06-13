@@ -185,7 +185,7 @@ namespace IdentityServer4.Tests.Validation.Tokens
         public async Task Valid_JWT_Token()
         {
             var signer = Factory.CreateDefaultTokenSigningService();
-            var jwt = await signer.SignTokenAsync(TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "valid", 600, "read", "write"));
+            var jwt = await signer.CreateTokenAsync(TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "valid", 600, "read", "write"));
 
             var validator = Factory.CreateTokenValidator(null);
             var result = await validator.ValidateAccessTokenAsync(jwt);
@@ -200,7 +200,7 @@ namespace IdentityServer4.Tests.Validation.Tokens
             var signer = Factory.CreateDefaultTokenSigningService();
             var token = TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "valid", 600, "read", "write");
             token.Issuer = "invalid";
-            var jwt = await signer.SignTokenAsync(token);
+            var jwt = await signer.CreateTokenAsync(token);
 
             var validator = Factory.CreateTokenValidator(null);
             var result = await validator.ValidateAccessTokenAsync(jwt);
@@ -214,7 +214,7 @@ namespace IdentityServer4.Tests.Validation.Tokens
         public async Task JWT_Token_Too_Long()
         {
             var signer = Factory.CreateDefaultTokenSigningService();
-            var jwt = await signer.SignTokenAsync(TokenFactory.CreateAccessTokenLong(new Client { ClientId = "roclient" }, "valid", 600, 1000, "read", "write"));
+            var jwt = await signer.CreateTokenAsync(TokenFactory.CreateAccessTokenLong(new Client { ClientId = "roclient" }, "valid", 600, 1000, "read", "write"));
             
             var validator = Factory.CreateTokenValidator(null);
             var result = await validator.ValidateAccessTokenAsync(jwt);
@@ -230,7 +230,7 @@ namespace IdentityServer4.Tests.Validation.Tokens
             var signer = Factory.CreateDefaultTokenSigningService();
             var token = TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "valid", 600, "read", "write");
             token.Audience = "invalid";
-            var jwt = await signer.SignTokenAsync(token);
+            var jwt = await signer.CreateTokenAsync(token);
 
             var validator = Factory.CreateTokenValidator(null);
             var result = await validator.ValidateAccessTokenAsync(jwt);

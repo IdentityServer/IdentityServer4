@@ -8,7 +8,6 @@ using IdentityServer4.Validation;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

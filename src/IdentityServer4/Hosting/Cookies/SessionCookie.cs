@@ -6,7 +6,6 @@ using IdentityModel;
 using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Http;
 using System;
-using System.Linq;
 
 namespace IdentityServer4.Hosting
 {

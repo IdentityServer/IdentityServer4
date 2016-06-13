@@ -34,7 +34,7 @@ namespace IdentityServer4.Tests.Validation
         {
             var signer = Factory.CreateDefaultTokenSigningService();
             var token = TokenFactory.CreateIdentityToken("roclient", "valid");
-            var jwt = await signer.SignTokenAsync(token);
+            var jwt = await signer.CreateTokenAsync(token);
 
             var validator = Factory.CreateTokenValidator();
             var result = await validator.ValidateIdentityTokenAsync(jwt, "roclient");
@@ -47,7 +47,7 @@ namespace IdentityServer4.Tests.Validation
         public async Task Valid_IdentityToken_DefaultKeyType_no_ClientId_supplied()
         {
             var signer = Factory.CreateDefaultTokenSigningService();
-            var jwt = await signer.SignTokenAsync(TokenFactory.CreateIdentityToken("roclient", "valid"));
+            var jwt = await signer.CreateTokenAsync(TokenFactory.CreateIdentityToken("roclient", "valid"));
             var validator = Factory.CreateTokenValidator();
 
             var result = await validator.ValidateIdentityTokenAsync(jwt, "roclient");
@@ -59,7 +59,7 @@ namespace IdentityServer4.Tests.Validation
         public async Task Valid_IdentityToken_no_ClientId_supplied()
         {
             var signer = Factory.CreateDefaultTokenSigningService();
-            var jwt = await signer.SignTokenAsync(TokenFactory.CreateIdentityToken("roclient", "valid"));
+            var jwt = await signer.CreateTokenAsync(TokenFactory.CreateIdentityToken("roclient", "valid"));
             var validator = Factory.CreateTokenValidator();
 
             var result = await validator.ValidateIdentityTokenAsync(jwt);
@@ -71,7 +71,7 @@ namespace IdentityServer4.Tests.Validation
         public async Task IdentityToken_InvalidClientId()
         {
             var signer = Factory.CreateDefaultTokenSigningService();
-            var jwt = await signer.SignTokenAsync(TokenFactory.CreateIdentityToken("roclient", "valid"));
+            var jwt = await signer.CreateTokenAsync(TokenFactory.CreateIdentityToken("roclient", "valid"));
             var validator = Factory.CreateTokenValidator();
 
             var result = await validator.ValidateIdentityTokenAsync(jwt, "invalid");
@@ -84,7 +84,7 @@ namespace IdentityServer4.Tests.Validation
         public async Task IdentityToken_Too_Long()
         {
             var signer = Factory.CreateDefaultTokenSigningService();
-            var jwt = await signer.SignTokenAsync(TokenFactory.CreateIdentityTokenLong("roclient", "valid", 1000));
+            var jwt = await signer.CreateTokenAsync(TokenFactory.CreateIdentityTokenLong("roclient", "valid", 1000));
             var validator = Factory.CreateTokenValidator();
 
             var result = await validator.ValidateIdentityTokenAsync(jwt, "roclient");

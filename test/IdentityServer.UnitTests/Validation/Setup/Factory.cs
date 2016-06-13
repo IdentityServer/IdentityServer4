@@ -95,9 +95,9 @@ namespace IdentityServer4.Tests.Validation
                 new LoggerFactory());
         }
 
-        internal static ITokenSigningService CreateDefaultTokenSigningService()
+        internal static ITokenCreationService CreateDefaultTokenSigningService()
         {
-            return new DefaultTokenSigningService(
+            return new DefaultTokenCreationService(
                 new InMemorySigningCredentialsStore(TestCert.LoadSigningCredentials()));
         }
 
