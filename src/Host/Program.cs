@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Hosting;
+using System;
 
 namespace Host
 {
@@ -7,6 +8,8 @@ namespace Host
     {
         public static void Main(string[] args)
         {
+            Console.Title = "IdentityServer4";
+
             var host = new WebHostBuilder()
                 .UseKestrel()
                 .UseUrls("http://localhost:1941")
