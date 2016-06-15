@@ -31,6 +31,9 @@ namespace IdentityServer4.Services.Default
         /// <exception cref="System.ArgumentNullException">evt</exception>
         public virtual Task RaiseAsync<T>(Event<T> evt)
         {
+            // todo
+            return Task.FromResult(0);
+
             if (evt == null) throw new ArgumentNullException("evt");
             
             var json = LogSerializer.Serialize(evt);

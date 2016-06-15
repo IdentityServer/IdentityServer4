@@ -21,7 +21,7 @@ namespace IdentityServer4.Tests.Validation.Secrets
         public FormPostCredentialExtraction()
         {
             _options = new IdentityServerOptions();
-            _parser = new PostBodySecretParser(_options, new LoggerFactory());
+            _parser = new PostBodySecretParser(_options, new LoggerFactory().CreateLogger<PostBodySecretParser>());
         }
 
         [Fact]

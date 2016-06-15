@@ -18,18 +18,18 @@ namespace IdentityServer4.Validation
         private readonly SecretValidator _validator;
         private readonly SecretParser _parser;
 
-        public ClientSecretValidator(IClientStore clients, SecretParser parser, SecretValidator validator, IEventService events, ILoggerFactory loggerFactory)
+        public ClientSecretValidator(IClientStore clients, SecretParser parser, SecretValidator validator, IEventService events, ILogger<ClientSecretValidator> logger)
         {
             _clients = clients;
             _parser = parser;
             _validator = validator;
             _events = events;
-            _logger = loggerFactory.CreateLogger<ClientSecretValidator>();
+            _logger = logger;
         }
 
         public async Task<ClientSecretValidationResult> ValidateAsync(HttpContext context)
         {
-            _logger.LogTrace("Start client validation");
+            _logger.LogDebug("Start client validation");
 
             var fail = new ClientSecretValidationResult
             {
@@ -41,7 +41,7 @@ namespace IdentityServer4.Validation
             {
                 await RaiseFailureEvent("unknown", "No client id or secret found");
 
-                _logger.LogInformation("No client secret found");
+                _logger.LogError("No client secret found");
                 return fail;
             }
 
@@ -51,7 +51,7 @@ namespace IdentityServer4.Validation
             {
                 await RaiseFailureEvent(parsedSecret.Id, "Unknown client");
 
-                _logger.LogInformation("No client with that id found. aborting");
+                _logger.LogError("No client with that id found. aborting");
                 return fail;
             }
 
@@ -72,7 +72,7 @@ namespace IdentityServer4.Validation
             }
 
             await RaiseFailureEvent(client.ClientId, "Invalid client secret");
-            _logger.LogWarning("Client validation failed client {clientId}.", client.ClientId);
+            _logger.LogError("Client validation failed for client: {clientId}.", client.ClientId);
 
             return fail;
         }

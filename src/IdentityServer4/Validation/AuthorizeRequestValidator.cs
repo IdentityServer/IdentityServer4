@@ -25,7 +25,7 @@ namespace IdentityServer4.Validation
         private readonly IRedirectUriValidator _uriValidator;
         private readonly ScopeValidator _scopeValidator;
         private readonly SessionCookie _sessionCookie;
-        private readonly ILogger<AuthorizeRequestValidator> _logger;
+        private readonly ILogger _logger;
 
         public AuthorizeRequestValidator(
             IdentityServerOptions options, 
@@ -47,7 +47,7 @@ namespace IdentityServer4.Validation
 
         public async Task<AuthorizeRequestValidationResult> ValidateAsync(NameValueCollection parameters, ClaimsPrincipal subject = null)
         {
-            _logger.LogInformation("Start authorize request protocol validation");
+            _logger.LogDebug("Start authorize request protocol validation");
 
             var request = new ValidatedAuthorizeRequest
             {
@@ -57,8 +57,8 @@ namespace IdentityServer4.Validation
             
             if (parameters == null)
             {
-                _logger.LogError("Parameters are null.");
-                throw new ArgumentNullException("parameters");
+                _logger.LogCritical("Parameters are null.");
+                throw new ArgumentNullException(nameof(parameters));
             }
 
             request.Raw = parameters;
@@ -92,6 +92,7 @@ namespace IdentityServer4.Validation
             }
 
             // custom validator
+            _logger.LogDebug("Calling into custom validator: {type}", _customValidator.GetType().FullName);
             var customResult = await _customValidator.ValidateAuthorizeRequestAsync(request);
 
             if (customResult.IsError)
@@ -133,7 +134,7 @@ namespace IdentityServer4.Validation
             Uri uri;
             if (!Uri.TryCreate(redirectUri, UriKind.Absolute, out uri))
             {
-                LogError("invalid redirect_uri: " + redirectUri, request);
+                LogError("malformed redirect_uri: " + redirectUri, request);
                 return Invalid(request);
             }
 
@@ -389,7 +390,7 @@ namespace IdentityServer4.Validation
                 }
                 else
                 {
-                    _logger.LogInformation("Unsupported prompt mode - ignored: " + prompt);
+                    _logger.LogDebug("Unsupported prompt mode - ignored: " + prompt);
                 }
             }
 
@@ -419,7 +420,7 @@ namespace IdentityServer4.Validation
                     request.DisplayMode = display;
                 }
 
-                _logger.LogInformation("Unsupported display mode - ignored: " + display);
+                _logger.LogDebug("Unsupported display mode - ignored: " + display);
             }
 
             //////////////////////////////////////////////////////////
@@ -524,18 +525,14 @@ namespace IdentityServer4.Validation
 
         private void LogError(string message, ValidatedAuthorizeRequest request)
         {
-            var validationLog = new AuthorizeRequestValidationLog(request);
-            var json = LogSerializer.Serialize(validationLog);
-
-            _logger.LogError("{0}\n {1}", message, json);
+            var details = new AuthorizeRequestValidationLog(request);
+            _logger.LogError(message + "\n{validationDetails}", details);
         }
 
         private void LogSuccess(ValidatedAuthorizeRequest request)
         {
-            var validationLog = new AuthorizeRequestValidationLog(request);
-            var json = LogSerializer.Serialize(validationLog);
-
-            _logger.LogInformation("{0}\n {1}", "Authorize request validation success", json);
+            var details = new AuthorizeRequestValidationLog(request);
+            _logger.LogInformation("Authorize request validation success\n{validationDetails}", details);
         }
     }
 }

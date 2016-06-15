@@ -97,7 +97,7 @@ namespace IdentityServer4.Validation
                 }
             }
 
-            _logger.LogTrace("No matching hashed secret found.");
+            _logger.LogDebug("No matching hashed secret found.");
             return fail;
         }
     }

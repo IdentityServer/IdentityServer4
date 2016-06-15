@@ -79,5 +79,10 @@ namespace IdentityServer4.Logging
             MaxAge = request.MaxAge;
             SessionId = request.SessionId;
         }
+
+        public override string ToString()
+        {
+            return LogSerializer.Serialize(this);
+        }
     }
 }

@@ -58,5 +58,10 @@ namespace IdentityServer4.Logging
             RefreshToken = request.RefreshTokenHandle;
             UserName = request.UserName;
         }
+
+        public override string ToString()
+        {
+            return LogSerializer.Serialize(this);
+        }
     }
 }
