@@ -20,7 +20,6 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityServer4.Validation
 {
-    [EditorBrowsable(EditorBrowsableState.Never)]
     public class TokenValidator : ITokenValidator
     {
         private readonly ILogger _logger;
@@ -48,7 +47,7 @@ namespace IdentityServer4.Validation
         
         public virtual async Task<TokenValidationResult> ValidateIdentityTokenAsync(string token, string clientId = null, bool validateLifetime = true)
         {
-            _logger.LogTrace("Start identity token validation");
+            _logger.LogDebug("Start identity token validation");
 
             if (token.Length > _options.InputLengthRestrictions.Jwt)
             {
@@ -73,11 +72,12 @@ namespace IdentityServer4.Validation
             var client = await _clients.FindClientByIdAsync(clientId);
             if (client == null)
             {
-                LogError("Unknown or diabled client.");
+                _logger.LogError("Unknown or diabled client: {clientId}.", clientId);
                 return Invalid(OidcConstants.ProtectedResourceErrors.InvalidToken);
             }
 
             _log.ClientName = client.ClientName;
+            _logger.LogDebug("Client found: {clientId} / {clientName}", client.ClientId, client.ClientName);
 
             var keys = await _keys.GetKeysAsync();
             var result = await ValidateJwtAsync(token, clientId, keys, validateLifetime);
@@ -92,6 +92,7 @@ namespace IdentityServer4.Validation
 
             _log.Claims = result.Claims.ToClaimsDictionary();
 
+            _logger.LogDebug("Calling into custom token validator: {type}", _customValidator.GetType().FullName);
             var customResult = await _customValidator.ValidateIdentityTokenAsync(result);
 
             if (customResult.IsError)
@@ -233,7 +234,7 @@ namespace IdentityServer4.Validation
             }
             catch (Exception ex)
             {
-                _logger.LogError("JWT token validation error", ex);
+                _logger.LogError("JWT token validation error: {exception}", ex.ToString());
                 return Invalid(OidcConstants.ProtectedResourceErrors.InvalidToken);
             }
         }
@@ -245,7 +246,7 @@ namespace IdentityServer4.Validation
 
             if (token == null)
             {
-                LogError("Token handle not found");
+                LogError("Token handle not found in token handle store.");
                 return Invalid(OidcConstants.ProtectedResourceErrors.InvalidToken);
             }
 
@@ -302,7 +303,7 @@ namespace IdentityServer4.Validation
             }
             catch (Exception ex)
             {
-                _logger.LogError("Malformed JWT token", ex);
+                _logger.LogError("Malformed JWT token: {exception}", ex.ToString());
                 return null;
             }
         }
@@ -318,14 +319,12 @@ namespace IdentityServer4.Validation
 
         private void LogError(string message)
         {
-            var json = LogSerializer.Serialize(_log);
-            _logger.LogError(message +"\n{logMessage}",json);
+            _logger.LogError(message +"\n{logMessage}", _log);
         }
 
         private void LogSuccess()
         {
-            var json = LogSerializer.Serialize(_log);
-            _logger.LogInformation("Token validation success\n{logMessage}", json);
+            _logger.LogInformation("Token validation success\n{logMessage}", _log);
         }
     }
 }

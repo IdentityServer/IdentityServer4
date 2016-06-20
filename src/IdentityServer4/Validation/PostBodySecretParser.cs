@@ -51,7 +51,7 @@ namespace IdentityServer4.Validation
 
             if (!context.Request.HasFormContentType)
             {
-                _logger.LogWarning("Content type is not a form");
+                _logger.LogDebug("Content type is not a form");
                 return Task.FromResult<ParsedSecret>(null);
             }
 
@@ -67,7 +67,7 @@ namespace IdentityServer4.Validation
                     if (id.Length > _options.InputLengthRestrictions.ClientId ||
                         secret.Length > _options.InputLengthRestrictions.ClientSecret)
                     {
-                        _logger.LogWarning("Client ID or secret exceeds maximum lenght.");
+                        _logger.LogError("Client ID or secret exceeds maximum lenght.");
                         return Task.FromResult<ParsedSecret>(null);
                     }
 

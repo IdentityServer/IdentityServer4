@@ -27,7 +27,7 @@ namespace IdentityServer4.Validation
             if (expiredSecrets.Any())
             {
                 expiredSecrets.ToList().ForEach(
-                    ex => _logger.LogInformation("Secret [{description}] is expired", ex.Description ?? "no description"));
+                    ex => _logger.LogWarning("Secret [{description}] is expired", ex.Description ?? "no description"));
             }
 
             var currentSecrets = secrets.Where(s => !s.Expiration.HasExpired());
@@ -39,12 +39,12 @@ namespace IdentityServer4.Validation
 
                 if (secretValidationResult.Success)
                 {
-                    _logger.LogTrace("Secret validator success: {0}", validator.GetType().Name);
+                    _logger.LogDebug("Secret validator success: {0}", validator.GetType().Name);
                     return secretValidationResult;
                 }
             }
 
-            _logger.LogInformation("Secret validators could not validate secret");
+            _logger.LogError("Secret validators could not validate secret");
             return new SecretValidationResult { Success = false };
         }
     }

@@ -23,7 +23,7 @@ namespace IdentityServer4.Tests.Validation
 
         public static ScopeValidator CreateScopeValidator(IScopeStore store)
         {
-            return new ScopeValidator(store, new LoggerFactory());
+            return new ScopeValidator(store, new LoggerFactory().CreateLogger<ScopeValidator>());
         }
 
         public static TokenRequestValidator CreateTokenRequestValidator(
@@ -79,7 +79,7 @@ namespace IdentityServer4.Tests.Validation
 
             if (scopeValidator == null)
             {
-                scopeValidator = new ScopeValidator(scopes, new LoggerFactory());
+                scopeValidator = new ScopeValidator(scopes, new LoggerFactory().CreateLogger<ScopeValidator>());
             }
 
             return new TokenRequestValidator(
@@ -138,7 +138,7 @@ namespace IdentityServer4.Tests.Validation
 
             if (scopeValidator == null)
             {
-                scopeValidator = new ScopeValidator(scopes, new LoggerFactory());
+                scopeValidator = new ScopeValidator(scopes, new LoggerFactory().CreateLogger<ScopeValidator>());
             }
 
             var sessionCookie = new SessionCookie(IdentityServerContextHelper.Create(null, options));

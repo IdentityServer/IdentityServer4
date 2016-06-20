@@ -39,7 +39,7 @@ namespace IdentityServer4.Validation
 
             if (parsedSecret.Type != Constants.ParsedSecretTypes.SharedSecret)
             {
-                _logger.LogDebug("Parsed secret should not be of type {type}", parsedSecret.Type ?? "null");
+                _logger.LogError("Parsed secret should not be of type {type}", parsedSecret.Type ?? "null");
                 return fail;
             }
 

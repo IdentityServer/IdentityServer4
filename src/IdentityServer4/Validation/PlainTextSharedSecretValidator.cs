@@ -39,7 +39,7 @@ namespace IdentityServer4.Validation
 
             if (parsedSecret.Type != Constants.ParsedSecretTypes.SharedSecret)
             {
-                _logger.LogTrace("Parsed secret should not be of type: {type}", parsedSecret.Type ?? "null");
+                _logger.LogError("Parsed secret should not be of type: {type}", parsedSecret.Type ?? "null");
                 return fail;
             }
 
@@ -57,7 +57,7 @@ namespace IdentityServer4.Validation
                 // this validator is only applicable to shared secrets
                 if (secret.Type != Constants.SecretTypes.SharedSecret)
                 {
-                    _logger.LogTrace("Skipping secret: {description}, secret is not of type {type}.", secretDescription, Constants.SecretTypes.SharedSecret);
+                    _logger.LogDebug("Skipping secret: {description}, secret is not of type {type}.", secretDescription, Constants.SecretTypes.SharedSecret);
                     continue;
                 }
 
@@ -70,7 +70,7 @@ namespace IdentityServer4.Validation
                 }
             }
 
-            _logger.LogTrace("No matching plain text secret found.");
+            _logger.LogDebug("No matching plain text secret found.");
             return fail;
         }
     }
