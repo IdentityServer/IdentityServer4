@@ -26,10 +26,13 @@ namespace IdentityServer4.Hosting
                 var endpoint = router.Find(context);
                 if (endpoint != null)
                 {
+                    _logger.LogTrace("Invoking IdentityServer endpoint: {type}", endpoint.GetType().FullName);
+
                     var result = await endpoint.ProcessAsync(idSvrContext);
 
                     if (result != null)
                     {
+                        _logger.LogTrace("Invoking result: {type}", result.GetType().FullName);
                         await result.ExecuteAsync(idSvrContext);
                     }
 

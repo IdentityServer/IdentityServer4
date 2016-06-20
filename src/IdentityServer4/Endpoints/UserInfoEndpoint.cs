@@ -39,15 +39,21 @@ namespace IdentityServer4.Endpoints
         {
             if (context.HttpContext.Request.Method != "GET" && context.HttpContext.Request.Method != "POST")
             {
+                _logger.LogWarning("Invalid HTTP method for userinfo endpoint.");
                 return new StatusCodeResult(405);
             }
 
-            _logger.LogTrace("Start userinfo request");
+            return await ProcessUserInfoRequestAsync(context);
+        }
+
+        private async Task<IEndpointResult> ProcessUserInfoRequestAsync(IdentityServerContext context)
+        {
+            _logger.LogDebug("Start userinfo request");
 
             var tokenUsageResult = await _tokenUsageValidator.ValidateAsync(context.HttpContext);
             if (tokenUsageResult.TokenFound == false)
             {
-                var error = "No token found.";
+                var error = "No access token found.";
 
                 _logger.LogError(error);
                 await RaiseFailureEventAsync(error);

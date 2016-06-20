@@ -33,16 +33,26 @@ namespace IdentityServer4.Endpoints
 
         public async Task<IEndpointResult> ProcessAsync(IdentityServerContext context)
         {
+            _logger.LogTrace("Processing introspection request.");
+
             // validate HTTP
             if (context.HttpContext.Request.Method != "POST")
             {
+                _logger.LogWarning("Introspection endpoint only supports POST requests");
                 return new StatusCodeResult(405);
             }
+
+            return await ProcessIntrospectionRequestAsync(context);
+        }
+
+        private async Task<IEndpointResult> ProcessIntrospectionRequestAsync(IdentityServerContext context)
+        {
+            _logger.LogDebug("Starting introspection request.");
 
             var scopeResult = await _scopeSecretValidator.ValidateAsync(context.HttpContext);
             if (scopeResult.Scope == null)
             {
-                _logger.LogWarning("Scope unauthorized to call introspection endpoint. aborting.");
+                _logger.LogError("Scope unauthorized to call introspection endpoint. aborting.");
                 return new StatusCodeResult(401);
             }
 

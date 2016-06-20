@@ -47,7 +47,7 @@ namespace IdentityServer4.Validation
 
         public async Task<TokenRequestValidationResult> ValidateRequestAsync(NameValueCollection parameters, Client client)
         {
-            _logger.LogInformation("Start token request validation");
+            _logger.LogDebug("Start token request validation");
 
             _validatedRequest = new ValidatedTokenRequest();
 

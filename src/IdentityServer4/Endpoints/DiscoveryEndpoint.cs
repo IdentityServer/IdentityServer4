@@ -15,6 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 
@@ -43,11 +44,13 @@ namespace IdentityServer4.Endpoints
 
         public Task<IEndpointResult> ProcessAsync(IdentityServerContext context)
         {
+            _logger.LogTrace("Processing discovery request.");
+
             // validate HTTP
             if (context.HttpContext.Request.Method != "GET")
             {
-                // todo
-                // return bad request or 405 ?
+                _logger.LogWarning("Discovery endpoint only supports GET requests");
+                return Task.FromResult<IEndpointResult>(new StatusCodeResult(HttpStatusCode.MethodNotAllowed));
             }
 
             if (context.HttpContext.Request.Path.Value.EndsWith("/jwks"))
@@ -62,7 +65,13 @@ namespace IdentityServer4.Endpoints
 
         private async Task<IEndpointResult> ExecuteDiscoDocAsync(HttpContext context)
         {
-            _logger.LogTrace("Start discovery request");
+            _logger.LogDebug("Start discovery request");
+
+            if (!_options.Endpoints.EnableDiscoveryEndpoint)
+            {
+                _logger.LogInformation("Discovery endpoint disabled. 404.");
+                return new StatusCodeResult(404);
+            }
 
             var baseUrl = _context.GetIdentityServerBaseUrl().EnsureTrailingSlash();
             var allScopes = await _scopes.GetScopesAsync(publicOnly: true);
@@ -198,7 +207,7 @@ namespace IdentityServer4.Endpoints
 
         private async Task<IEndpointResult> ExecuteJwksAsync(HttpContext context)
         {
-            _logger.LogTrace("Start key discovery request");
+            _logger.LogDebug("Start key discovery request");
 
             if (_options.DiscoveryOptions.ShowKeySet == false)
             {
