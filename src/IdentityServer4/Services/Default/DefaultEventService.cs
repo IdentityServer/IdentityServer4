@@ -19,9 +19,9 @@ namespace IdentityServer4.Services.Default
         /// </summary>
         private readonly ILogger _logger;
 
-        public DefaultEventService(ILoggerFactory loggerFactory)
+        public DefaultEventService(ILogger<DefaultEventService> logger)
         {
-            _logger = loggerFactory.CreateLogger<DefaultEventService>();
+            _logger = logger;
         }
 
         /// <summary>

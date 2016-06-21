@@ -91,8 +91,8 @@ namespace IdentityServer4.Tests.Validation
                 aggregateCustomValidator, 
                 customRequestValidator, 
                 scopeValidator, 
-                new DefaultEventService(new LoggerFactory()),
-                new LoggerFactory());
+                new DefaultEventService(new LoggerFactory().CreateLogger<DefaultEventService>()),
+                new LoggerFactory().CreateLogger<TokenRequestValidator>());
         }
 
         internal static ITokenCreationService CreateDefaultTokenSigningService()

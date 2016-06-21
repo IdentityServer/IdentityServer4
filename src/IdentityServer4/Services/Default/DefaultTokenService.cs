@@ -62,9 +62,9 @@ namespace IdentityServer4.Services.Default
         /// <param name="tokenHandles">The token handles.</param>
         /// <param name="creationService">The signing service.</param>
         /// <param name="events">The events service.</param>
-        public DefaultTokenService(IdentityServerContext context, IClaimsProvider claimsProvider, ITokenHandleStore tokenHandles, ITokenCreationService creationService, IEventService events, ILoggerFactory loggerFactory)
+        public DefaultTokenService(IdentityServerContext context, IClaimsProvider claimsProvider, ITokenHandleStore tokenHandles, ITokenCreationService creationService, IEventService events, ILogger<DefaultTokenService> logger)
         {
-            _logger = loggerFactory.CreateLogger<DefaultTokenService>();
+            _logger = logger;
             _context = context;
             _claimsProvider = claimsProvider;
             _tokenHandles = tokenHandles;

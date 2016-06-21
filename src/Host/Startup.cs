@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Serilog;
 using System;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
+using Serilog.Events;
 
 namespace Host
 {
@@ -43,6 +45,16 @@ namespace Host
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
+            Func<LogEvent, bool> serilogFilter = (e) =>
+            {
+                var context = e.Properties["SourceContext"].ToString();
+
+                return (context.StartsWith("\"IdentityServer") ||
+                        context.StartsWith("\"IdentityModel") ||
+                        e.Level == LogEventLevel.Error ||
+                        e.Level == LogEventLevel.Fatal);
+            };
+        
             Func<string, LogLevel, bool> filter = (scope, level) =>
                 scope.StartsWith("IdentityServer") ||
                 scope.StartsWith("IdentityModel") ||
@@ -51,6 +63,15 @@ namespace Host
 
             loggerFactory.AddConsole(filter);
             loggerFactory.AddDebug(filter);
+
+            //var serilog = new LoggerConfiguration()
+            //    .MinimumLevel.Verbose()
+            //    .Enrich.FromLogContext()
+            //    .Filter.ByIncludingOnly(serilogFilter)
+            //    .WriteTo.LiterateConsole()
+            //    .CreateLogger();
+
+            //loggerFactory.AddSerilog(serilog);
 
             app.UseDeveloperExceptionPage();
 
