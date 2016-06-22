@@ -10,8 +10,6 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using IdentityServer4.Hosting;
 using UnitTests.Common;
-using Microsoft.AspNetCore.Http;
-using IdentityServer4.Events;
 
 namespace IdentityServer4.Tests.Validation
 {

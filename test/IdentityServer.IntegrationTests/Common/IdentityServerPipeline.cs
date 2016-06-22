@@ -8,12 +8,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.PlatformAbstractions;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net.Http;
-using System.Security.Cryptography.X509Certificates;
 
 namespace IdentityServer4.Tests.Common
 {
@@ -67,13 +64,11 @@ namespace IdentityServer4.Tests.Common
 
             services.AddDataProtection();
 
-            var cert = new X509Certificate2(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "idsrvtest.pfx"), "idsrv3test");
-            
             services.AddIdentityServer(Options)
                 .AddInMemoryClients(Clients)
                 .AddInMemoryScopes(Scopes)
                 .AddInMemoryUsers(Users)
-                .SetSigningCredentials(cert);
+                .SetSigningCredentials(Cert.Load());
         }
 
         public event Action<IApplicationBuilder> OnPreConfigure = x => { };
