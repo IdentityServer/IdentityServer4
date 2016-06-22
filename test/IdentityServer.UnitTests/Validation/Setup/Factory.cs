@@ -94,8 +94,8 @@ namespace IdentityServer4.Tests.Validation
                 aggregateCustomValidator, 
                 customRequestValidator, 
                 scopeValidator, 
-                new DefaultEventService(new LoggerFactory().CreateLogger<DefaultEventService>(), new EventServiceHelper(idsrvContext)),
-                new LoggerFactory().CreateLogger<TokenRequestValidator>());
+                new TestEventService(),
+                TestLogger.Create<TokenRequestValidator>());
         }
 
         internal static ITokenCreationService CreateDefaultTokenCreator()
@@ -111,8 +111,7 @@ namespace IdentityServer4.Tests.Validation
             IProfileService profile = null,
             ICustomRequestValidator customValidator = null,
             IRedirectUriValidator uriValidator = null,
-            ScopeValidator scopeValidator = null,
-            IDictionary<string, object> environment = null)
+            ScopeValidator scopeValidator = null)
         {
             if (options == null)
             {
@@ -147,14 +146,13 @@ namespace IdentityServer4.Tests.Validation
             var sessionCookie = new SessionCookie(IdentityServerContextHelper.Create(null, options));
 
             return new AuthorizeRequestValidator(
-                options, 
-                clients, 
-                customValidator, 
-                uriValidator, 
+                options,
+                clients,
+                customValidator,
+                uriValidator,
                 scopeValidator,
                 sessionCookie,
-                new Logger<AuthorizeRequestValidator>(new LoggerFactory())
-            );
+                TestLogger.Create<AuthorizeRequestValidator>());
         }
 
         public static TokenValidator CreateTokenValidator(ITokenHandleStore tokenStore = null, IProfileService profile = null)
@@ -164,13 +162,16 @@ namespace IdentityServer4.Tests.Validation
                 profile = new TestProfileService();
             }
 
+            if (tokenStore == null)
+            {
+                tokenStore = new InMemoryTokenHandleStore();
+            }
+
             var clients = CreateClientStore();
-            var options = TestIdentityServerOptions.Create();
             var idsrvContext = IdentityServerContextHelper.Create();
             var logger = TestLogger.Create<TokenValidator>();
 
             var validator = new TokenValidator(
-                options: options,
                 clients: clients,
                 tokenHandles: tokenStore,
                 customValidator: new DefaultCustomTokenValidator(

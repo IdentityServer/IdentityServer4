@@ -22,7 +22,6 @@ namespace IdentityServer4.Validation
     public class TokenValidator : ITokenValidator
     {
         private readonly ILogger _logger;
-        private readonly IdentityServerOptions _options;
         private readonly IdentityServerContext _context;
         private readonly ITokenHandleStore _tokenHandles;
         private readonly ICustomTokenValidator _customValidator;
@@ -31,9 +30,8 @@ namespace IdentityServer4.Validation
 
         private readonly TokenValidationLog _log;
         
-        public TokenValidator(IdentityServerOptions options, IdentityServerContext context, IClientStore clients, ITokenHandleStore tokenHandles, ICustomTokenValidator customValidator, IEnumerable<IValidationKeysStore> keys, ILogger<TokenValidator> logger)
+        public TokenValidator(IdentityServerContext context, IClientStore clients, ITokenHandleStore tokenHandles, ICustomTokenValidator customValidator, IEnumerable<IValidationKeysStore> keys, ILogger<TokenValidator> logger)
         {
-            _options = options;
             _context = context;
             _clients = clients;
             _tokenHandles = tokenHandles;
@@ -48,7 +46,7 @@ namespace IdentityServer4.Validation
         {
             _logger.LogDebug("Start identity token validation");
 
-            if (token.Length > _options.InputLengthRestrictions.Jwt)
+            if (token.Length > _context.Options.InputLengthRestrictions.Jwt)
             {
                 _logger.LogError("JWT too long");
                 return Invalid(OidcConstants.ProtectedResourceErrors.InvalidToken);
@@ -117,7 +115,7 @@ namespace IdentityServer4.Validation
 
             if (token.Contains("."))
             {
-                if (token.Length > _options.InputLengthRestrictions.Jwt)
+                if (token.Length > _context.Options.InputLengthRestrictions.Jwt)
                 {
                     _logger.LogError("JWT too long");
 
@@ -137,7 +135,7 @@ namespace IdentityServer4.Validation
             }
             else
             {
-                if (token.Length > _options.InputLengthRestrictions.TokenHandle)
+                if (token.Length > _context.Options.InputLengthRestrictions.TokenHandle)
                 {
                     _logger.LogError("token handle too long");
 
