@@ -1,4 +1,6 @@
-﻿
+﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
 using FluentAssertions;
 using IdentityServer4.Models;
 using IdentityServer4.Services.InMemory;
@@ -17,7 +19,7 @@ namespace UnitTests.Services.InMemory
 
         public InMemoryCorsPolicyServiceTests()
         {
-            _subject = new InMemoryCorsPolicyService(new FakeLogger<InMemoryCorsPolicyService>(), _clients);
+            _subject = new InMemoryCorsPolicyService(TestLogger.Create<InMemoryCorsPolicyService>(), _clients);
         }
 
         [Fact]

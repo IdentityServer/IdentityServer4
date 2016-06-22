@@ -26,6 +26,20 @@ namespace UnitTests.Endpoints.Authorize
 
         AuthorizeEndpoint _subject;
 
+        NameValueCollection _params = new NameValueCollection();
+        ClaimsPrincipal _user = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
+
+        IdentityServerContext _context;
+        ValidatedAuthorizeRequest _validatedAuthorizeRequest;
+
+        TestEventService _fakeEventService = new TestEventService();
+        ILogger<AuthorizeEndpoint> _fakeLogger = TestLogger.Create<AuthorizeEndpoint>();
+        StubAuthorizeRequestValidator _stubAuthorizeRequestValidator = new StubAuthorizeRequestValidator();
+        StubAuthorizeInteractionResponseGenerator _stubInteractionGenerator = new StubAuthorizeInteractionResponseGenerator();
+        StubResultFactory _stubResultFactory = new StubResultFactory();
+        MockMessageStore<SignInResponse> _mockSignInResponseStore = new MockMessageStore<SignInResponse>();
+        MockMessageStore<ConsentResponse> _mockUserConsentResponseMessageStore = new MockMessageStore<ConsentResponse>();
+
         public AuthorizeEndpointTests()
         {
             Init();
@@ -54,7 +68,7 @@ namespace UnitTests.Endpoints.Authorize
             _stubAuthorizeRequestValidator.Result.ValidatedRequest = _validatedAuthorizeRequest;
 
             _subject = new AuthorizeEndpoint(
-                _mockEventService,
+                _fakeEventService,
                 _fakeLogger,
                 _context,
                 _stubAuthorizeRequestValidator,
@@ -63,20 +77,6 @@ namespace UnitTests.Endpoints.Authorize
                 _mockSignInResponseStore,
                 _mockUserConsentResponseMessageStore);
         }
-
-        NameValueCollection _params = new NameValueCollection();
-        ClaimsPrincipal _user = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
-
-        IdentityServerContext _context;
-        ValidatedAuthorizeRequest _validatedAuthorizeRequest;
-
-        MockEventService _mockEventService = new MockEventService();
-        ILogger<AuthorizeEndpoint> _fakeLogger = new FakeLogger<AuthorizeEndpoint>();
-        StubAuthorizeRequestValidator _stubAuthorizeRequestValidator = new StubAuthorizeRequestValidator();
-        StubAuthorizeInteractionResponseGenerator _stubInteractionGenerator = new StubAuthorizeInteractionResponseGenerator();
-        StubResultFactory _stubResultFactory = new StubResultFactory();
-        MockMessageStore<SignInResponse> _mockSignInResponseStore = new MockMessageStore<SignInResponse>();
-        MockMessageStore<ConsentResponse> _mockUserConsentResponseMessageStore = new MockMessageStore<ConsentResponse>();
 
         [Fact]
         [Trait("Category", Category)]
@@ -197,7 +197,7 @@ namespace UnitTests.Endpoints.Authorize
 
             var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
-            var evt = _mockEventService.AssertEventWasRaised<Event<EndpointDetail>>();
+            var evt = _fakeEventService.AssertEventWasRaised<Event<EndpointDetail>>();
             evt.EventType.Should().Be(EventTypes.Failure);
             evt.Id.Should().Be(EventConstants.Ids.EndpointFailure);
             evt.Message.Should().Be("some error");
@@ -225,7 +225,7 @@ namespace UnitTests.Endpoints.Authorize
 
             var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
-            var evt = _mockEventService.AssertEventWasRaised<Event<EndpointDetail>>();
+            var evt = _fakeEventService.AssertEventWasRaised<Event<EndpointDetail>>();
             evt.EventType.Should().Be(EventTypes.Failure);
             evt.Id.Should().Be(EventConstants.Ids.EndpointFailure);
             evt.Message.Should().Be("some_error");

@@ -23,11 +23,11 @@ namespace IdentityServer4.Tests.ResponseHandling
         public AuthorizeInteractionResponseGeneratorTests_Login()
         {
             _subject = new AuthorizeInteractionResponseGenerator(
-                new FakeLogger<AuthorizeInteractionResponseGenerator>(),
+                TestLogger.Create<AuthorizeInteractionResponseGenerator>(),
                 _options,
                 _mockConsentService,
-                new FakeProfileService(),
-                new FakeLocalizationService());
+                new TestProfileService(),
+                new TestLocalizationService());
         }
 
         [Fact]

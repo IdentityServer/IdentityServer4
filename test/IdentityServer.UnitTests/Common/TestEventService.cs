@@ -11,7 +11,7 @@ using FluentAssertions;
 
 namespace UnitTests.Common
 {
-    public class MockEventService : IEventService
+    public class TestEventService : IEventService
     {
         Dictionary<Type, object> _events = new Dictionary<Type, object>();
 

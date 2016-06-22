@@ -9,13 +9,10 @@ using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Services.InMemory;
 using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
-
-#if DNXCORE50
-using System.IdentityModel.Tokens.Jwt;
-#endif
 
 namespace IdentityServer4.Tests.Validation.Tokens
 {
@@ -27,13 +24,7 @@ namespace IdentityServer4.Tests.Validation.Tokens
 
         static AccessTokenValidation()
         {
-#if DNXCORE50
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap = new Dictionary<string, string>();
-#endif
-
-#if DNX451
-            JwtSecurityTokenHandler.InboundClaimTypeMap = new Dictionary<string, string>();
-#endif
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
         }
 
         DateTimeOffset now;
@@ -184,7 +175,7 @@ namespace IdentityServer4.Tests.Validation.Tokens
         [Trait("Category", Category)]
         public async Task Valid_JWT_Token()
         {
-            var signer = Factory.CreateDefaultTokenSigningService();
+            var signer = Factory.CreateDefaultTokenCreator();
             var jwt = await signer.CreateTokenAsync(TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "valid", 600, "read", "write"));
 
             var validator = Factory.CreateTokenValidator(null);
@@ -197,7 +188,7 @@ namespace IdentityServer4.Tests.Validation.Tokens
         [Trait("Category", Category)]
         public async Task JWT_Token_invalid_Issuer()
         {
-            var signer = Factory.CreateDefaultTokenSigningService();
+            var signer = Factory.CreateDefaultTokenCreator();
             var token = TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "valid", 600, "read", "write");
             token.Issuer = "invalid";
             var jwt = await signer.CreateTokenAsync(token);
@@ -213,7 +204,7 @@ namespace IdentityServer4.Tests.Validation.Tokens
         [Trait("Category", Category)]
         public async Task JWT_Token_Too_Long()
         {
-            var signer = Factory.CreateDefaultTokenSigningService();
+            var signer = Factory.CreateDefaultTokenCreator();
             var jwt = await signer.CreateTokenAsync(TokenFactory.CreateAccessTokenLong(new Client { ClientId = "roclient" }, "valid", 600, 1000, "read", "write"));
             
             var validator = Factory.CreateTokenValidator(null);
@@ -227,7 +218,7 @@ namespace IdentityServer4.Tests.Validation.Tokens
         [Trait("Category", Category)]
         public async Task JWT_Token_invalid_Audience()
         {
-            var signer = Factory.CreateDefaultTokenSigningService();
+            var signer = Factory.CreateDefaultTokenCreator();
             var token = TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "valid", 600, "read", "write");
             token.Audience = "invalid";
             var jwt = await signer.CreateTokenAsync(token);
@@ -238,29 +229,6 @@ namespace IdentityServer4.Tests.Validation.Tokens
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.ProtectedResourceErrors.InvalidToken);
         }
-
-        // todo
-        //[Fact]
-        //[Trait("Category", Category)]
-        //public async Task Valid_AccessToken_but_User_not_active()
-        //{
-        //    var mock = new Mock<IUserService>();
-        //    mock.Setup(u => u.IsActiveAsync(It.IsAny<IsActiveContext>())).Callback<IsActiveContext>(ctx=>{
-        //        ctx.IsActive = false;
-        //    }).Returns(Task.FromResult(0));                        
-
-        //    var store = new InMemoryTokenHandleStore();
-        //    var validator = Factory.CreateTokenValidator(tokenStore: store, users: mock.Object);
-
-        //    var token = TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "invalid", 600, "read", "write");
-        //    var handle = "123";
-
-        //    await store.StoreAsync(handle, token);
-
-        //    var result = await validator.ValidateAccessTokenAsync("123");
-
-        //    result.IsError.Should().BeTrue();
-        //}
 
         [Fact]
         [Trait("Category", Category)]

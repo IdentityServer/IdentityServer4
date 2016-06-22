@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http;
+using IdentityServer4.Events;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -175,6 +176,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<IConsentService, DefaultConsentService>();
             services.TryAddTransient<ICorsPolicyService, DefaultCorsPolicyService>();
             services.TryAddTransient(typeof(IMessageStore<>), typeof(CookieMessageStore<>));
+            services.TryAddTransient<EventServiceHelper>();
 
             return services;
         }

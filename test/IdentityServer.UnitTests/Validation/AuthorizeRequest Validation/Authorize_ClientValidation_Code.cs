@@ -7,6 +7,7 @@ using IdentityServer4.Configuration;
 using IdentityServer4.Validation;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
+using UnitTests.Common;
 using Xunit;
 
 namespace IdentityServer4.Tests.Validation.AuthorizeRequest

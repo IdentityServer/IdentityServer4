@@ -23,6 +23,15 @@ namespace UnitTests.Endpoints.Results
 
         AuthorizeEndpointResultFactory _subject;
 
+        ILogger<AuthorizeEndpointResultFactory> _fakeLogger = TestLogger.Create<AuthorizeEndpointResultFactory>();
+        IdentityServerContext _context = IdentityServerContextHelper.Create();
+        MockClientListCookie _mockClientListCookie;
+        StubAuthorizeResponseGenerator _stubAuthorizeResponseGenerator = new StubAuthorizeResponseGenerator();
+        MockMessageStore<SignInRequest> _mockSignInMessageStore = new MockMessageStore<SignInRequest>();
+        MockMessageStore<ConsentRequest> _mockConsentRequestMessageStore = new MockMessageStore<ConsentRequest>();
+        MockMessageStore<IdentityServer4.Models.ErrorMessage> _mockErrorMessageStore = new MockMessageStore<IdentityServer4.Models.ErrorMessage>();
+        TestLocalizationService _stubLocalizationService = new TestLocalizationService();
+
         public AuthorizationResultFactoryTests()
         {
             _mockClientListCookie = new MockClientListCookie(_context);
@@ -38,16 +47,7 @@ namespace UnitTests.Endpoints.Results
                 _mockErrorMessageStore, 
                 _mockClientListCookie);
         }
-
-        ILogger<AuthorizeEndpointResultFactory> _fakeLogger = new FakeLogger<AuthorizeEndpointResultFactory>();
-        IdentityServerContext _context = IdentityServerContextHelper.Create();
-        MockClientListCookie _mockClientListCookie;
-        StubAuthorizeResponseGenerator _stubAuthorizeResponseGenerator = new StubAuthorizeResponseGenerator();
-        MockMessageStore<SignInRequest> _mockSignInMessageStore = new MockMessageStore<SignInRequest>();
-        MockMessageStore<ConsentRequest> _mockConsentRequestMessageStore = new MockMessageStore<ConsentRequest>();
-        MockMessageStore<IdentityServer4.Models.ErrorMessage> _mockErrorMessageStore = new MockMessageStore<IdentityServer4.Models.ErrorMessage>();
-        StubLocalizationService _stubLocalizationService = new StubLocalizationService();
-
+        
         ValidatedAuthorizeRequest _validatedRequest = new ValidatedAuthorizeRequest
         {
             ResponseMode = "fragment",

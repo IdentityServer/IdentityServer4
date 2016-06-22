@@ -5,7 +5,7 @@ using IdentityServer4.Services;
 
 namespace UnitTests.Common
 {
-    public class StubLocalizationService : ILocalizationService
+    public class TestLocalizationService : ILocalizationService
     {
         public string Result { get; set; }
 

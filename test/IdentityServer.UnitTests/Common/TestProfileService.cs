@@ -3,13 +3,18 @@
 
 using IdentityServer4.Services;
 using System.Threading.Tasks;
-using IdentityServer4.Events;
+using IdentityServer4.Models;
 
 namespace UnitTests.Common
 {
-    public class FakeEventService : IEventService
+    public class TestProfileService : IProfileService
     {
-        public Task RaiseAsync<T>(Event<T> evt)
+        public Task GetProfileDataAsync(ProfileDataRequestContext context)
+        {
+            return Task.FromResult(0);
+        }
+
+        public Task IsActiveAsync(IsActiveContext context)
         {
             return Task.FromResult(0);
         }

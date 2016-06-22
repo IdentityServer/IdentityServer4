@@ -24,8 +24,8 @@ namespace IdentityServer4.Tests.ResponseHandling
         AuthorizeInteractionResponseGenerator _subject;
         IdentityServerOptions _options = new IdentityServerOptions();
         MockConsentService _mockConsent = new MockConsentService();
-        FakeProfileService _fakeUserService = new FakeProfileService();
-        FakeLocalizationService _fakeLocalizationService = new FakeLocalizationService();
+        TestProfileService _fakeUserService = new TestProfileService();
+        TestLocalizationService _fakeLocalizationService = new TestLocalizationService();
 
         void RequiresConsent(bool value)
         {
@@ -88,7 +88,7 @@ namespace IdentityServer4.Tests.ResponseHandling
         public AuthorizeInteractionResponseGeneratorTests_Consent()
         {
             _subject = new AuthorizeInteractionResponseGenerator(
-                new FakeLogger<AuthorizeInteractionResponseGenerator>(),
+                TestLogger.Create<AuthorizeInteractionResponseGenerator>(),
                 _options,
                 _mockConsent,
                 _fakeUserService,
