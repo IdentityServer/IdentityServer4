@@ -8,6 +8,7 @@ using System;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using Serilog.Events;
+using IdentityServer4.Configuration;
 
 namespace Host
 {
@@ -24,7 +25,16 @@ namespace Host
         {
             var cert = new X509Certificate2(Path.Combine(_environment.ContentRootPath, "idsrv3test.pfx"), "idsrv3test");
 
-            var builder = services.AddIdentityServer()
+            var builder = services.AddIdentityServer(options =>
+            {
+                //options.EventsOptions = new EventsOptions
+                //{
+                //    RaiseErrorEvents = true,
+                //    RaiseFailureEvents = true,
+                //    RaiseInformationEvents = true,
+                //    RaiseSuccessEvents = true
+                //};
+            })
                 .AddInMemoryClients(Clients.Get())
                 .AddInMemoryScopes(Scopes.Get())
                 .AddInMemoryUsers(Users.Get())
