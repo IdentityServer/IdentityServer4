@@ -68,7 +68,7 @@ namespace IdentityServer4.Tests.Common
                 .AddInMemoryClients(Clients)
                 .AddInMemoryScopes(Scopes)
                 .AddInMemoryUsers(Users)
-                .SetSigningCredentials(Cert.Load());
+                .SetSigningCredential(Cert.Load());
         }
 
         public event Action<IApplicationBuilder> OnPreConfigure = x => { };

@@ -218,30 +218,59 @@ namespace IdentityServer4.Endpoints
             var webKeys = new List<Models.JsonWebKey>();
             foreach (var key in await _keys.GetKeysAsync())
             {
-                // todo - check key type - for now only x509 is supported.
-
-                var x509Key = key as X509SecurityKey;
-
-                var cert64 = Convert.ToBase64String(x509Key.Certificate.RawData);
-                var thumbprint = Base64Url.Encode(x509Key.Certificate.GetCertHash());
-
-                var pubKey = x509Key.PublicKey as RSA;
-                var parameters = pubKey.ExportParameters(false);
-                var exponent = Base64Url.Encode(parameters.Exponent);
-                var modulus = Base64Url.Encode(parameters.Modulus);
-
-                var webKey = new Models.JsonWebKey
+                if (!(key is AsymmetricSecurityKey) &&
+                     !key.IsSupportedAlgorithm(SecurityAlgorithms.RsaSha256Signature))
                 {
-                    kty = "RSA",
-                    use = "sig",
-                    kid = x509Key.KeyId,
-                    x5t = thumbprint,
-                    e = exponent,
-                    n = modulus,
-                    x5c = new[] { cert64 }
-                };
+                    var error = "signing key is not asymmetric and does not support RS256";
+                    _logger.LogError(error);
+                    throw new InvalidOperationException(error);
+                }
+              
+                var x509Key = key as X509SecurityKey;
+                if (x509Key != null)
+                {
+                    var cert64 = Convert.ToBase64String(x509Key.Certificate.RawData);
+                    var thumbprint = Base64Url.Encode(x509Key.Certificate.GetCertHash());
 
-                webKeys.Add(webKey);
+                    var pubKey = x509Key.PublicKey as RSA;
+                    var parameters = pubKey.ExportParameters(false);
+                    var exponent = Base64Url.Encode(parameters.Exponent);
+                    var modulus = Base64Url.Encode(parameters.Modulus);
+
+                    var webKey = new Models.JsonWebKey
+                    {
+                        kty = "RSA",
+                        use = "sig",
+                        kid = x509Key.KeyId,
+                        x5t = thumbprint,
+                        e = exponent,
+                        n = modulus,
+                        x5c = new[] { cert64 }
+                    };
+
+                    webKeys.Add(webKey);
+                    continue;
+                }
+
+                var rsaKey = key as RsaSecurityKey;
+                if (rsaKey != null)
+                {
+                    var parameters = rsaKey.Rsa.ExportParameters(false);
+
+                    var exponent = Base64Url.Encode(parameters.Exponent);
+                    var modulus = Base64Url.Encode(parameters.Modulus);
+
+                    var webKey = new Models.JsonWebKey
+                    {
+                        kty = "RSA",
+                        use = "sig",
+                        kid = rsaKey.KeyId,
+                        e = exponent,
+                        n = modulus,
+                    };
+
+                    webKeys.Add(webKey);
+                }
             }
 
             return new JsonWebKeysResult(webKeys);

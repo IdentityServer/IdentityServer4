@@ -22,7 +22,7 @@ namespace IdentityServer4.Tests.Clients
             builder.AddInMemoryClients(Clients.Get());
             builder.AddInMemoryScopes(Scopes.Get());
             builder.AddInMemoryUsers(Users.Get());
-            builder.SetSigningCredentials(Cert.Load());
+            builder.SetSigningCredential(Cert.Load());
 
             builder.AddCustomGrantValidator<CustomGrantValidator>();
             builder.AddCustomGrantValidator<CustomGrantValidator2>();
