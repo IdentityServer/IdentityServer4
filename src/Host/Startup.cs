@@ -38,8 +38,8 @@ namespace Host
                 .AddInMemoryClients(Clients.Get())
                 .AddInMemoryScopes(Scopes.Get())
                 .AddInMemoryUsers(Users.Get())
-                .SetTemporarySigningCredential();
-                //.SetSigningCredentials(cert);
+                //.SetTemporarySigningCredential();
+                .SetSigningCredential(cert);
 
             builder.AddCustomGrantValidator<CustomGrantValidator>();
 
@@ -55,6 +55,7 @@ namespace Host
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
+            // serilog filter
             Func<LogEvent, bool> serilogFilter = (e) =>
             {
                 var context = e.Properties["SourceContext"].ToString();
@@ -65,6 +66,7 @@ namespace Host
                         e.Level == LogEventLevel.Fatal);
             };
         
+            // built-in logging filter
             Func<string, LogLevel, bool> filter = (scope, level) =>
                 scope.StartsWith("IdentityServer") ||
                 scope.StartsWith("IdentityModel") ||

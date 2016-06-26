@@ -76,6 +76,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IIdentityServerBuilder SetSigningCredential(this IIdentityServerBuilder builder, SigningCredentials credential)
         {
+            if (!(credential.Key is AsymmetricSecurityKey) &&
+                !credential.Key.IsSupportedAlgorithm(SecurityAlgorithms.RsaSha256Signature))
+            {
+                throw new InvalidOperationException("Signing key is not asymmetric and does not support RS256");
+            }
+
             builder.Services.AddSingleton<ISigningCredentialStore>(new InMemorySigningCredentialsStore(credential));
             builder.Services.AddSingleton<IValidationKeysStore>(new InMemoryValidationKeysStore(new[] { credential.Key }));
 
@@ -90,7 +96,6 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             var credential = new SigningCredentials(new X509SecurityKey(certificate), "RS256");
-
             return builder.SetSigningCredential(credential);
         }
 
@@ -102,15 +107,18 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             var credential = new SigningCredentials(rsaKey, "RS256");
-
             return builder.SetSigningCredential(credential);
         }
 
         public static IIdentityServerBuilder SetTemporarySigningCredential(this IIdentityServerBuilder builder)
         {
             var rsa = RSA.Create();
-            var credential = new SigningCredentials(new RsaSecurityKey(rsa), "RS256");
+            var key = new RsaSecurityKey(rsa)
+            {
+                KeyId = "1"
+            };
 
+            var credential = new SigningCredentials(key, "RS256");
             return builder.SetSigningCredential(credential);
         }
     }
