@@ -76,11 +76,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IIdentityServerBuilder SetSigningCredential(this IIdentityServerBuilder builder, SigningCredentials credential)
         {
-            if (!(credential.Key is AsymmetricSecurityKey) &&
-                !credential.Key.IsSupportedAlgorithm(SecurityAlgorithms.RsaSha256Signature))
-            {
-                throw new InvalidOperationException("Signing key is not asymmetric and does not support RS256");
-            }
+            // todo
+            //if (!(credential.Key is AsymmetricSecurityKey) &&
+            //    !credential.Key.IsSupportedAlgorithm(SecurityAlgorithms.RsaSha256Signature))
+            //{
+            //    throw new InvalidOperationException("Signing key is not asymmetric and does not support RS256");
+            //}
 
             builder.Services.AddSingleton<ISigningCredentialStore>(new InMemorySigningCredentialsStore(credential));
             builder.Services.AddSingleton<IValidationKeysStore>(new InMemoryValidationKeysStore(new[] { credential.Key }));
