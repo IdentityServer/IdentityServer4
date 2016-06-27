@@ -16,7 +16,7 @@
     "Microsoft.AspNetCore.Cors": "1.0.0",
     "Microsoft.AspNetCore.Authentication.Cookies": "1.0.0",
     "System.IdentityModel.Tokens.Jwt": "5.0.0",
-    "IdentityModel": "2.0.0-beta3",
+    "IdentityModel": "2.0.0-beta4",
     "Newtonsoft.Json": "9.0.1"
   },
 
