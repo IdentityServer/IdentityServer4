@@ -1,17 +1,17 @@
 {
   "version": "1.0.0-*",
   "testRunner": "xunit",
-  "buildOptions": { "copyToOutput": [ "idsrvtest.pfx" ] },
   "dependencies": {
-    "xunit": "2.1.0",
-    "dotnet-test-xunit": "1.0.0-rc2-build10025",
+    "xunit": "2.2.0-beta2-build3300",
+    "dotnet-test-xunit": "2.2.0-preview2-build1029",
     "FluentAssertions": "4.6.1",
     "IdentityServer4": "1.0.0-*",
-    "IdentityModel": "2.0.0-beta4",
-    "Microsoft.AspNetCore.TestHost": "1.0.0",
-    "Microsoft.AspNetCore.Http.Abstractions": "1.0.0",
+    "IdentityModel": "2.0.0-*",
+    "Microsoft.AspNetCore.TestHost": "1.0.0-*",
+    "Microsoft.AspNetCore.Http.Abstractions": "1.0.0-*",
     "Microsoft.AspNet.WebApi.Client": "5.2.3"
   },
+
   "frameworks": {
     "netcoreapp1.0": {
       "dependencies": {
@@ -25,5 +25,9 @@
         "portable-net45+win8"
       ]
     }
+  },
+
+  "buildOptions": {
+    "copyToOutput": [ "idsrvtest.pfx" ] 
   }
 }
