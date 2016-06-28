@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using FluentAssertions;
-using IdentityServer4;
 using IdentityServer4.Configuration;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http;
@@ -22,7 +21,7 @@ namespace IdentityServer4.Tests.Validation.Secrets
         public FormPostCredentialExtraction()
         {
             _options = new IdentityServerOptions();
-            _parser = new PostBodySecretParser(_options, new LoggerFactory());
+            _parser = new PostBodySecretParser(_options, new LoggerFactory().CreateLogger<PostBodySecretParser>());
         }
 
         [Fact]

@@ -25,7 +25,7 @@ namespace UnitTests.Hosting.Cors
         public void Init()
         {
             _subject = new PolicyProvider(
-                new FakeLogger<PolicyProvider>(),
+                TestLogger.Create<PolicyProvider>(),
                 _allowedPaths,
                 _mockPolicy);
         }

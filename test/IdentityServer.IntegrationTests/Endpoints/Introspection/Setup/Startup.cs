@@ -28,7 +28,7 @@ namespace IdentityServer4.Tests.Endpoints.Introspection
             builder.AddInMemoryClients(Clients.Get());
             builder.AddInMemoryScopes(Scopes.Get());
             builder.AddInMemoryUsers(new List<InMemoryUser>());
-            builder.SetSigningCredentials(cert);
+            builder.SetSigningCredential(cert);
         }
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)

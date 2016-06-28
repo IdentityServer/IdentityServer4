@@ -74,7 +74,7 @@ namespace IdentityServer4.Validation
                 
                 if (isActiveCtx.IsActive == false)
                 {
-                    _logger.LogWarning("User marked as not active: {subject}", subClaim.Value);
+                    _logger.LogError("User marked as not active: {subject}", subClaim.Value);
 
                     result.IsError = true;
                     result.Error = OidcConstants.ProtectedResourceErrors.InvalidToken;
@@ -91,7 +91,7 @@ namespace IdentityServer4.Validation
                 var client = await _clients.FindClientByIdAsync(clientClaim.Value);
                 if (client == null || client.Enabled == false)
                 {
-                    _logger.LogWarning("Client deleted or disabled: {clientId}", clientClaim.Value);
+                    _logger.LogError("Client deleted or disabled: {clientId}", clientClaim.Value);
 
                     result.IsError = true;
                     result.Error = OidcConstants.ProtectedResourceErrors.InvalidToken;
@@ -124,7 +124,7 @@ namespace IdentityServer4.Validation
                 
                 if (isActiveCtx.IsActive == false)
                 {
-                    _logger.LogWarning("User marked as not active: {subject}", subClaim.Value);
+                    _logger.LogError("User marked as not active: {subject}", subClaim.Value);
 
                     result.IsError = true;
                     result.Error = OidcConstants.ProtectedResourceErrors.InvalidToken;

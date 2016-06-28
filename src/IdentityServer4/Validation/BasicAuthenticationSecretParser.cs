@@ -49,7 +49,7 @@ namespace IdentityServer4.Validation
         /// </returns>
         public Task<ParsedSecret> ParseAsync(HttpContext context)
         {
-            _logger.LogTrace("Start parsing Basic Authentication secret");
+            _logger.LogDebug("Start parsing Basic Authentication secret");
 
             var notfound = Task.FromResult<ParsedSecret>(null);
             var authorizationHeader = context.Request.Headers["Authorization"].FirstOrDefault();
@@ -74,19 +74,19 @@ namespace IdentityServer4.Validation
             }
             catch (FormatException)
             {
-                _logger.LogTrace("Malformed Basic Authentication credential.");
+                _logger.LogWarning("Malformed Basic Authentication credential.");
                 return notfound;
             }
             catch (ArgumentException)
             {
-                _logger.LogTrace("Malformed Basic Authentication credential.");
+                _logger.LogWarning("Malformed Basic Authentication credential.");
                 return notfound;
             }
 
             var ix = pair.IndexOf(':');
             if (ix == -1)
             {
-                _logger.LogTrace("Malformed Basic Authentication credential.");
+                _logger.LogWarning("Malformed Basic Authentication credential.");
                 return notfound;
             }
 
@@ -98,7 +98,7 @@ namespace IdentityServer4.Validation
                 if (clientId.Length > _options.InputLengthRestrictions.ClientId ||
                     secret.Length > _options.InputLengthRestrictions.ClientSecret)
                 {
-                    _logger.LogError("Client ID or secret exceeds allowed length.");
+                    _logger.LogWarning("Client ID or secret exceeds allowed length.");
                     return notfound;
                 }
 
@@ -112,7 +112,7 @@ namespace IdentityServer4.Validation
                 return Task.FromResult(parsedSecret);
             }
 
-            _logger.LogTrace("No Basic Authentication secret found");
+            _logger.LogDebug("No Basic Authentication secret found");
             return notfound;
         }
     }

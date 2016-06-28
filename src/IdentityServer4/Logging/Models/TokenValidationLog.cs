@@ -20,5 +20,10 @@ namespace IdentityServer4.Logging
 
         // both
         public Dictionary<string, object> Claims { get; set; }
+
+        public override string ToString()
+        {
+            return LogSerializer.Serialize(this);
+        }
     }
 }

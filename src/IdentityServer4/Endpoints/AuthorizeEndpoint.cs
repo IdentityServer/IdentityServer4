@@ -55,6 +55,7 @@ namespace IdentityServer4.Endpoints
         {
             if (context.HttpContext.Request.Method != "GET")
             {
+                _logger.LogWarning("Invalid HTTP method for authorize endpoint.");
                 return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
             }
 
@@ -78,45 +79,44 @@ namespace IdentityServer4.Endpoints
 
         async Task<IEndpointResult> ProcessAuthorizeAsync(IdentityServerContext context)
         {
-            _logger.LogInformation("Start Authorize Request");
+            _logger.LogDebug("Start authorize request");
 
             var values = context.HttpContext.Request.Query.AsNameValueCollection();
             var user = await _context.GetIdentityServerUserAsync();
 
             var result = await ProcessAuthorizeRequestAsync(values, user, null);
 
-            _logger.LogInformation("End Authorize Request. Result type: {0}", result?.GetType().ToString() ?? "-none-");
+            _logger.LogInformation("End authorize request. result type: {0}", result?.GetType().ToString() ?? "-none-");
 
             return result;
         }
 
         internal async Task<IEndpointResult> ProcessAuthorizeAfterLoginAsync(IdentityServerContext context)
         {
-            _logger.LogInformation("Start Authorize Request (after login)");
+            _logger.LogDebug("Start authorize request (after login)");
 
             if (!context.HttpContext.Request.Query.ContainsKey("id"))
             {
-                _logger.LogWarning("id query parameter is missing.");
+                _logger.LogError("id query parameter is missing.");
                 return await ErrorPageAsync(ErrorTypes.User, nameof(Messages.UnexpectedError), null);
             }
 
             var id = context.HttpContext.Request.Query["id"].First();
             var message = await _signInResponseStore.ReadAsync(id);
+
             if (message == null)
             {
-                _logger.LogWarning("signin message is missing.");
+                _logger.LogError("signin message is missing.");
                 return await ErrorPageAsync(ErrorTypes.User, nameof(Messages.UnexpectedError), null);
             }
             if (message.AuthorizeRequestParameters == null)
             {
-                _logger.LogWarning("signin message is missing AuthorizeRequestParameters data.");
+                _logger.LogError("signin message is missing AuthorizeRequestParameters data.");
                 return await ErrorPageAsync(ErrorTypes.User, nameof(Messages.UnexpectedError), null);
             }
 
             var user = await _context.GetIdentityServerUserAsync();
-
             var result = await ProcessAuthorizeRequestAsync(message.AuthorizeRequestParameters.ToNameValueCollection(), user, null);
-
             await _signInResponseStore.DeleteAsync(id);
 
             _logger.LogInformation("End Authorize Request. Result type: {0}", result?.GetType().ToString() ?? "-none-");
@@ -126,11 +126,11 @@ namespace IdentityServer4.Endpoints
 
         internal async Task<IEndpointResult> ProcessAuthorizeAfterConsentAsync(IdentityServerContext context)
         {
-            _logger.LogInformation("Start Authorize Request (after consent)");
+            _logger.LogInformation("Start authorize request (after consent)");
 
             if (!context.HttpContext.Request.Query.ContainsKey("id"))
             {
-                _logger.LogWarning("id query parameter is missing.");
+                _logger.LogError("id query parameter is missing.");
                 return await ErrorPageAsync(ErrorTypes.User, nameof(Messages.UnexpectedError), null);
             }
 
@@ -138,22 +138,21 @@ namespace IdentityServer4.Endpoints
             var consent = await _consentResponseStore.ReadAsync(id);
             if (consent == null)
             {
-                _logger.LogWarning("consent message is missing.");
+                _logger.LogError("consent message is missing.");
                 return await ErrorPageAsync(ErrorTypes.User, nameof(Messages.UnexpectedError), null);
             }
             if (consent.AuthorizeRequestParameters == null)
             {
-                _logger.LogWarning("consent message is missing AuthorizeRequestParameters data.");
+                _logger.LogError("consent message is missing AuthorizeRequestParameters data.");
                 return await ErrorPageAsync(ErrorTypes.User, nameof(Messages.UnexpectedError), null);
             }
             if (consent.Data == null)
             {
-                _logger.LogWarning("consent message is missing Consent data.");
+                _logger.LogError("consent message is missing Consent data.");
                 return await ErrorPageAsync(ErrorTypes.User, nameof(Messages.UnexpectedError), null);
             }
 
             var user = await _context.GetIdentityServerUserAsync();
-
             var result = await ProcessAuthorizeRequestAsync(consent.AuthorizeRequestParameters.ToNameValueCollection(), user, consent.Data);
 
             await _consentResponseStore.DeleteAsync(id);
@@ -167,7 +166,7 @@ namespace IdentityServer4.Endpoints
         {
             if (user != null)
             {
-                _logger.LogTrace("User in authorize request: name:{0}, sub:{1}", user.GetName(), user.GetSubjectId());
+                _logger.LogTrace("User in authorize request: name:{name}, sub:{sub}", user.GetName(), user.GetSubjectId());
             }
             else
             {
@@ -210,13 +209,13 @@ namespace IdentityServer4.Endpoints
 
         async Task<IEndpointResult> LoginPageAsync(ValidatedAuthorizeRequest request)
         {
-            _logger.LogInformation("Showing login page");
+            _logger.LogDebug("Showing login page");
             return await _resultGenerator.CreateLoginResultAsync(request);
         }
 
         private async Task<IEndpointResult> ConsentPageAsync(ValidatedAuthorizeRequest validatedRequest)
         {
-            _logger.LogInformation("Showing consent page");
+            _logger.LogDebug("Showing consent page");
             return await _resultGenerator.CreateConsentResultAsync(validatedRequest);
         }
 
@@ -233,7 +232,7 @@ namespace IdentityServer4.Endpoints
 
         async Task<IEndpointResult> ErrorPageAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request)
         {
-            _logger.LogInformation("Showing error page");
+            _logger.LogDebug("Showing error page");
 
             var result = await _resultGenerator.CreateErrorResultAsync(
                 errorType,

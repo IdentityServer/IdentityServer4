@@ -9,13 +9,13 @@ namespace IdentityServer4.Services
     /// <summary>
     /// Logic for signing security tokens
     /// </summary>
-    public interface ITokenSigningService
+    public interface ITokenCreationService
     {
         /// <summary>
         /// Signs the token.
         /// </summary>
         /// <param name="token">The token.</param>
         /// <returns>A protected and serialized security token</returns>
-        Task<string> SignTokenAsync(Token token);
+        Task<string> CreateTokenAsync(Token token);
     }
 }

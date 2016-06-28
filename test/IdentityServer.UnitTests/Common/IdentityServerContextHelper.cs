@@ -13,7 +13,7 @@ namespace UnitTests.Common
         {
             var accessor = new HttpContextAccessor();
             accessor.HttpContext = context ?? new DefaultHttpContext();
-            return new IdentityServerContext(accessor, options ?? new IdentityServerOptions());
+            return new IdentityServerContext(accessor, options ?? TestIdentityServerOptions.Create());
         }
     }
 }

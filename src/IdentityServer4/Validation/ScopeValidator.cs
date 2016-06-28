@@ -13,7 +13,6 @@ namespace IdentityServer4.Validation
     public class ScopeValidator
     {
         private readonly ILogger _logger;
-        
         private readonly IScopeStore _store;
 
         public bool ContainsOpenIdScopes { get; private set; }
@@ -23,12 +22,12 @@ namespace IdentityServer4.Validation
         public List<Scope> RequestedScopes { get; private set; }
         public List<Scope> GrantedScopes { get; private set; }
 
-        public ScopeValidator(IScopeStore store, ILoggerFactory loggerFactory)
+        public ScopeValidator(IScopeStore store, ILogger<ScopeValidator> logger)
         {
             RequestedScopes = new List<Scope>();
             GrantedScopes = new List<Scope>();
 
-            _logger = loggerFactory.CreateLogger<ScopeValidator>();
+            _logger = logger;
             _store = store;
         }
 

@@ -44,7 +44,7 @@ namespace IdentityServer4.Services.Default
         /// <summary>
         /// The signing service
         /// </summary>
-        protected readonly ITokenSigningService _signingService;
+        protected readonly ITokenCreationService _creationService;
 
         /// <summary>
         /// The events service
@@ -60,37 +60,17 @@ namespace IdentityServer4.Services.Default
         /// <param name="options">The options.</param>
         /// <param name="claimsProvider">The claims provider.</param>
         /// <param name="tokenHandles">The token handles.</param>
-        /// <param name="signingService">The signing service.</param>
+        /// <param name="creationService">The signing service.</param>
         /// <param name="events">The events service.</param>
-        public DefaultTokenService(IdentityServerContext context, IClaimsProvider claimsProvider, ITokenHandleStore tokenHandles, ITokenSigningService signingService, IEventService events, ILoggerFactory loggerFactory)
+        public DefaultTokenService(IdentityServerContext context, IClaimsProvider claimsProvider, ITokenHandleStore tokenHandles, ITokenCreationService creationService, IEventService events, ILogger<DefaultTokenService> logger)
         {
-            _logger = loggerFactory.CreateLogger<DefaultTokenService>();
+            _logger = logger;
             _context = context;
             _claimsProvider = claimsProvider;
             _tokenHandles = tokenHandles;
-            _signingService = signingService;
+            _creationService = creationService;
             _events = events;
         }
-
-        // todo
-        ///// <summary>
-        ///// Initializes a new instance of the <see cref="DefaultTokenService" /> class.
-        ///// </summary>
-        ///// <param name="options">The options.</param>
-        ///// <param name="claimsProvider">The claims provider.</param>
-        ///// <param name="tokenHandles">The token handles.</param>
-        ///// <param name="signingService">The signing service.</param>
-        ///// <param name="events">The OWIN environment service.</param>
-        ///// <param name="owinEnvironmentService">The events service.</param>
-        //public DefaultTokenService(IdentityServerOptions options, IClaimsProvider claimsProvider, ITokenHandleStore tokenHandles, ITokenSigningService signingService, IEventService events, OwinEnvironmentService owinEnvironmentService)
-        //{
-        //    _options = options;
-        //    _claimsProvider = claimsProvider;
-        //    _tokenHandles = tokenHandles;
-        //    _signingService = signingService;
-        //    _events = events;
-        //    _owinEnvironmentService = owinEnvironmentService;
-        //}
 
         /// <summary>
         /// Creates an identity token.
@@ -210,7 +190,7 @@ namespace IdentityServer4.Services.Default
                 {
                     _logger.LogTrace("Creating JWT access token");
 
-                    tokenResult = await _signingService.SignTokenAsync(token);
+                    tokenResult = await _creationService.CreateTokenAsync(token);
                 }
                 else
                 {
@@ -226,7 +206,7 @@ namespace IdentityServer4.Services.Default
             {
                 _logger.LogTrace("Creating JWT identity token");
 
-                tokenResult = await _signingService.SignTokenAsync(token);
+                tokenResult = await _creationService.CreateTokenAsync(token);
             }
             else
             {

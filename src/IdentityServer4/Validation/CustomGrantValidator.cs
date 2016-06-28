@@ -44,6 +44,7 @@ namespace IdentityServer4.Validation
 
             try
             {
+                _logger.LogTrace("Calling into custom grant validator: {type}", validator.GetType().FullName);
                 return await validator.ValidateAsync(request);
             }
             catch (Exception e)

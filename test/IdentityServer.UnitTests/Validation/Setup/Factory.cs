@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using IdentityServer4.Hosting;
 using UnitTests.Common;
-using Microsoft.AspNetCore.Http;
 
 namespace IdentityServer4.Tests.Validation
 {
@@ -23,7 +22,7 @@ namespace IdentityServer4.Tests.Validation
 
         public static ScopeValidator CreateScopeValidator(IScopeStore store)
         {
-            return new ScopeValidator(store, new LoggerFactory());
+            return new ScopeValidator(store, TestLogger.Create<ScopeValidator>());
         }
 
         public static TokenRequestValidator CreateTokenRequestValidator(
@@ -65,11 +64,11 @@ namespace IdentityServer4.Tests.Validation
             CustomGrantValidator aggregateCustomValidator;
             if (customGrantValidators == null)
             {
-                aggregateCustomValidator = new CustomGrantValidator(new [] { new TestGrantValidator() }, new Logger<CustomGrantValidator>(new LoggerFactory()));
+                aggregateCustomValidator = new CustomGrantValidator(new [] { new TestGrantValidator() }, TestLogger.Create<CustomGrantValidator>());
             }
             else
             {
-                aggregateCustomValidator = new CustomGrantValidator(customGrantValidators, new Logger<CustomGrantValidator>(new LoggerFactory()));
+                aggregateCustomValidator = new CustomGrantValidator(customGrantValidators, TestLogger.Create<CustomGrantValidator>());
             }
                 
             if (refreshTokens == null)
@@ -79,8 +78,10 @@ namespace IdentityServer4.Tests.Validation
 
             if (scopeValidator == null)
             {
-                scopeValidator = new ScopeValidator(scopes, new LoggerFactory());
+                scopeValidator = new ScopeValidator(scopes, new LoggerFactory().CreateLogger<ScopeValidator>());
             }
+
+            var idsrvContext = IdentityServerContextHelper.Create();
 
             return new TokenRequestValidator(
                 options, 
@@ -91,13 +92,13 @@ namespace IdentityServer4.Tests.Validation
                 aggregateCustomValidator, 
                 customRequestValidator, 
                 scopeValidator, 
-                new DefaultEventService(new LoggerFactory()),
-                new LoggerFactory());
+                new TestEventService(),
+                TestLogger.Create<TokenRequestValidator>());
         }
 
-        internal static ITokenSigningService CreateDefaultTokenSigningService()
+        internal static ITokenCreationService CreateDefaultTokenCreator()
         {
-            return new DefaultTokenSigningService(
+            return new DefaultTokenCreationService(
                 new InMemorySigningCredentialsStore(TestCert.LoadSigningCredentials()));
         }
 
@@ -108,8 +109,7 @@ namespace IdentityServer4.Tests.Validation
             IProfileService profile = null,
             ICustomRequestValidator customValidator = null,
             IRedirectUriValidator uriValidator = null,
-            ScopeValidator scopeValidator = null,
-            IDictionary<string, object> environment = null)
+            ScopeValidator scopeValidator = null)
         {
             if (options == null)
             {
@@ -138,20 +138,19 @@ namespace IdentityServer4.Tests.Validation
 
             if (scopeValidator == null)
             {
-                scopeValidator = new ScopeValidator(scopes, new LoggerFactory());
+                scopeValidator = new ScopeValidator(scopes, new LoggerFactory().CreateLogger<ScopeValidator>());
             }
 
             var sessionCookie = new SessionCookie(IdentityServerContextHelper.Create(null, options));
 
             return new AuthorizeRequestValidator(
-                options, 
-                clients, 
-                customValidator, 
-                uriValidator, 
+                options,
+                clients,
+                customValidator,
+                uriValidator,
                 scopeValidator,
                 sessionCookie,
-                new Logger<AuthorizeRequestValidator>(new LoggerFactory())
-            );
+                TestLogger.Create<AuthorizeRequestValidator>());
         }
 
         public static TokenValidator CreateTokenValidator(ITokenHandleStore tokenStore = null, IProfileService profile = null)
@@ -161,23 +160,22 @@ namespace IdentityServer4.Tests.Validation
                 profile = new TestProfileService();
             }
 
+            if (tokenStore == null)
+            {
+                tokenStore = new InMemoryTokenHandleStore();
+            }
+
             var clients = CreateClientStore();
-            var options = TestIdentityServerOptions.Create();
-
-            var accessor = new HttpContextAccessor();
-            accessor.HttpContext = new DefaultHttpContext();
-            var idsrvContext = new IdentityServerContext(accessor, options);
-
-            var logger = new Logger<TokenValidator>(new LoggerFactory());
+            var idsrvContext = IdentityServerContextHelper.Create();
+            var logger = TestLogger.Create<TokenValidator>();
 
             var validator = new TokenValidator(
-                options: options,
                 clients: clients,
                 tokenHandles: tokenStore,
                 customValidator: new DefaultCustomTokenValidator(
                     profile: profile,
                     clients: clients,
-                    logger: new Logger<DefaultCustomTokenValidator>(new LoggerFactory())),
+                    logger: TestLogger.Create<DefaultCustomTokenValidator>()),
                     keys: new[] { new InMemoryValidationKeysStore(new[] { TestCert.LoadSigningCredentials().Key }) },
                 logger: logger,
                 context: idsrvContext);

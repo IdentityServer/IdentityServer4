@@ -6,15 +6,11 @@ using IdentityServer4.Models;
 using IdentityServer4.Services.InMemory;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.PlatformAbstractions;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net.Http;
-using System.Security.Cryptography.X509Certificates;
 
 namespace IdentityServer4.Tests.Common
 {
@@ -48,9 +44,9 @@ namespace IdentityServer4.Tests.Common
 
         public void Initialize()
         {
-            var builder = new WebHostBuilder()
-                .ConfigureServices(ConfigureServices)
-                .Configure(Configure);
+            var builder = new WebHostBuilder();
+            builder.ConfigureServices(ConfigureServices);
+            builder.Configure(ConfigureApp);
             var server = new TestServer(builder);
 
             Server = new TestServer(builder);
@@ -68,19 +64,17 @@ namespace IdentityServer4.Tests.Common
 
             services.AddDataProtection();
 
-            var cert = new X509Certificate2(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "idsrvtest.pfx"), "idsrv3test");
-            
             services.AddIdentityServer(Options)
                 .AddInMemoryClients(Clients)
                 .AddInMemoryScopes(Scopes)
                 .AddInMemoryUsers(Users)
-                .SetSigningCredentials(cert);
+                .SetSigningCredential(Cert.Load());
         }
 
         public event Action<IApplicationBuilder> OnPreConfigure = x => { };
         public event Action<IApplicationBuilder> OnPostConfigure = x => { };
          
-        public void Configure(IApplicationBuilder app)
+        public void ConfigureApp(IApplicationBuilder app)
         {
             OnPreConfigure(app);
             app.UseIdentityServer();

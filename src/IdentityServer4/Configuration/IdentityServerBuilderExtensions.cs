@@ -6,9 +6,10 @@ using IdentityServer4.Services;
 using IdentityServer4.Services.InMemory;
 using IdentityServer4.Validation;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -27,6 +28,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IIdentityServerBuilder AddInMemoryClients(this IIdentityServerBuilder builder, IEnumerable<Client> clients)
         {
             builder.Services.AddSingleton(clients);
+
             builder.Services.AddTransient<IClientStore, InMemoryClientStore>();
             builder.Services.AddTransient<ICorsPolicyService, InMemoryCorsPolicyService>();
 
@@ -65,19 +67,60 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
-        public static IIdentityServerBuilder SetSigningCredentials(this IIdentityServerBuilder builder, SigningCredentials credential)
+        public static IIdentityServerBuilder AddValidationKeys(this IIdentityServerBuilder builder, params AsymmetricSecurityKey[] keys)
         {
+            builder.Services.AddSingleton<IValidationKeysStore>(new InMemoryValidationKeysStore(keys));
+
+            return builder;
+        }
+
+        public static IIdentityServerBuilder SetSigningCredential(this IIdentityServerBuilder builder, SigningCredentials credential)
+        {
+            // todo
+            //if (!(credential.Key is AsymmetricSecurityKey) &&
+            //    !credential.Key.IsSupportedAlgorithm(SecurityAlgorithms.RsaSha256Signature))
+            //{
+            //    throw new InvalidOperationException("Signing key is not asymmetric and does not support RS256");
+            //}
+
             builder.Services.AddSingleton<ISigningCredentialStore>(new InMemorySigningCredentialsStore(credential));
             builder.Services.AddSingleton<IValidationKeysStore>(new InMemoryValidationKeysStore(new[] { credential.Key }));
 
             return builder;
         }
 
-        public static IIdentityServerBuilder SetSigningCredentials(this IIdentityServerBuilder builder, X509Certificate2 certificate)
+        public static IIdentityServerBuilder SetSigningCredential(this IIdentityServerBuilder builder, X509Certificate2 certificate)
         {
-            var credential = new SigningCredentials(new X509SecurityKey(certificate), "RS256");
+            if (!certificate.HasPrivateKey)
+            {
+                throw new InvalidOperationException("X509 certificate does not have a private key.");
+            }
 
-            return builder.SetSigningCredentials(credential);
+            var credential = new SigningCredentials(new X509SecurityKey(certificate), "RS256");
+            return builder.SetSigningCredential(credential);
+        }
+
+        public static IIdentityServerBuilder SetSigningCredential(this IIdentityServerBuilder builder, RsaSecurityKey rsaKey)
+        {
+            if (!rsaKey.HasPrivateKey)
+            {
+                throw new InvalidOperationException("RSA key does not have a private key.");
+            }
+
+            var credential = new SigningCredentials(rsaKey, "RS256");
+            return builder.SetSigningCredential(credential);
+        }
+
+        public static IIdentityServerBuilder SetTemporarySigningCredential(this IIdentityServerBuilder builder)
+        {
+            var rsa = RSA.Create();
+            var key = new RsaSecurityKey(rsa)
+            {
+                KeyId = "1"
+            };
+
+            var credential = new SigningCredentials(key, "RS256");
+            return builder.SetSigningCredential(credential);
         }
     }
 }

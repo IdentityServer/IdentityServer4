@@ -29,6 +29,25 @@ namespace Host.Configuration
                 },
 
                 ///////////////////////////////////////////
+                // Custom Grant Sample
+                //////////////////////////////////////////
+                new Client
+                {
+                    ClientId = "client.custom",
+                    ClientSecrets = new List<Secret>
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    AllowedGrantTypes = GrantTypes.List("custom"),
+
+                    AllowedScopes = new List<string>
+                    {
+                        "api1", "api2"
+                    }
+                },
+
+                ///////////////////////////////////////////
                 // Console Resource Owner Flow Sample
                 //////////////////////////////////////////
                 new Client

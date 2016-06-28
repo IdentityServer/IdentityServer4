@@ -3,7 +3,6 @@
 
 using FluentAssertions;
 using IdentityModel;
-using IdentityServer4;
 using IdentityServer4.Configuration;
 using IdentityServer4.Models;
 using IdentityServer4.ResponseHandling;
@@ -24,11 +23,11 @@ namespace IdentityServer4.Tests.ResponseHandling
         public AuthorizeInteractionResponseGeneratorTests_Login()
         {
             _subject = new AuthorizeInteractionResponseGenerator(
-                new FakeLogger<AuthorizeInteractionResponseGenerator>(),
+                TestLogger.Create<AuthorizeInteractionResponseGenerator>(),
                 _options,
                 _mockConsentService,
-                new FakeProfileService(),
-                new FakeLocalizationService());
+                new TestProfileService(),
+                new TestLocalizationService());
         }
 
         [Fact]

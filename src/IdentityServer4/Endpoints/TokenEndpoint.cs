@@ -19,24 +19,31 @@ namespace IdentityServer4.Endpoints
         private readonly ITokenRequestValidator _requestValidator;
         private readonly ITokenResponseGenerator _responseGenerator;
 
-        public TokenEndpoint(ITokenRequestValidator requestValidator, ClientSecretValidator clientValidator, ITokenResponseGenerator responseGenerator, ILoggerFactory loggerFactory)
+        public TokenEndpoint(ITokenRequestValidator requestValidator, ClientSecretValidator clientValidator, ITokenResponseGenerator responseGenerator, ILogger<TokenEndpoint> logger)
         {
             _requestValidator = requestValidator;
             _clientValidator = clientValidator;
             _responseGenerator = responseGenerator;
-            _logger = loggerFactory.CreateLogger<TokenEndpoint>();
+            _logger = logger;
         }
 
         public async Task<IEndpointResult> ProcessAsync(IdentityServerContext context)
         {
-            _logger.LogTrace("Start token request.");
+            _logger.LogTrace("Processing token request.");
 
             // validate HTTP
             if (context.HttpContext.Request.Method != "POST" || !context.HttpContext.Request.HasFormContentType)
             {
-                // todo logging
+                _logger.LogWarning("Invalid HTTP request for token endpoint");
                 return new TokenErrorResult(OidcConstants.TokenErrors.InvalidRequest);
             }
+
+            return await ProcessTokenRequestAsync(context);
+        }
+
+        private async Task<IEndpointResult> ProcessTokenRequestAsync(IdentityServerContext context)
+        {
+            _logger.LogInformation("Start token request.");
 
             // validate client
             var clientResult = await _clientValidator.ValidateAsync(context.HttpContext);
@@ -45,10 +52,10 @@ namespace IdentityServer4.Endpoints
             {
                 return new TokenErrorResult(OidcConstants.TokenErrors.InvalidClient);
             }
-            
+
             // validate request
             var requestResult = await _requestValidator.ValidateRequestAsync(
-                context.HttpContext.Request.Form.AsNameValueCollection(), 
+                context.HttpContext.Request.Form.AsNameValueCollection(),
                 clientResult.Client);
 
             if (requestResult.IsError)
@@ -60,6 +67,7 @@ namespace IdentityServer4.Endpoints
             var response = await _responseGenerator.ProcessAsync(requestResult.ValidatedRequest);
 
             // return result
+            _logger.LogInformation("Token request success.");
             return new TokenResult(response);
         }
     }

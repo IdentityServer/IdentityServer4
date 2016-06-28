@@ -13,9 +13,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 
@@ -44,11 +44,13 @@ namespace IdentityServer4.Endpoints
 
         public Task<IEndpointResult> ProcessAsync(IdentityServerContext context)
         {
+            _logger.LogTrace("Processing discovery request.");
+
             // validate HTTP
             if (context.HttpContext.Request.Method != "GET")
             {
-                // todo
-                // return bad request or 405 ?
+                _logger.LogWarning("Discovery endpoint only supports GET requests");
+                return Task.FromResult<IEndpointResult>(new StatusCodeResult(HttpStatusCode.MethodNotAllowed));
             }
 
             if (context.HttpContext.Request.Path.Value.EndsWith("/jwks"))
@@ -63,7 +65,13 @@ namespace IdentityServer4.Endpoints
 
         private async Task<IEndpointResult> ExecuteDiscoDocAsync(HttpContext context)
         {
-            _logger.LogTrace("Start discovery request");
+            _logger.LogDebug("Start discovery request");
+
+            if (!_options.Endpoints.EnableDiscoveryEndpoint)
+            {
+                _logger.LogInformation("Discovery endpoint disabled. 404.");
+                return new StatusCodeResult(404);
+            }
 
             var baseUrl = _context.GetIdentityServerBaseUrl().EnsureTrailingSlash();
             var allScopes = await _scopes.GetScopesAsync(publicOnly: true);
@@ -199,7 +207,7 @@ namespace IdentityServer4.Endpoints
 
         private async Task<IEndpointResult> ExecuteJwksAsync(HttpContext context)
         {
-            _logger.LogTrace("Start key discovery request");
+            _logger.LogDebug("Start key discovery request");
 
             if (_options.DiscoveryOptions.ShowKeySet == false)
             {
@@ -210,30 +218,60 @@ namespace IdentityServer4.Endpoints
             var webKeys = new List<Models.JsonWebKey>();
             foreach (var key in await _keys.GetKeysAsync())
             {
-                // todo - check key type - for now only x509 is supported.
-
+                // todo
+                //if (!(key is AsymmetricSecurityKey) &&
+                //     !key.IsSupportedAlgorithm(SecurityAlgorithms.RsaSha256Signature))
+                //{
+                //    var error = "signing key is not asymmetric and does not support RS256";
+                //    _logger.LogError(error);
+                //    throw new InvalidOperationException(error);
+                //}
+              
                 var x509Key = key as X509SecurityKey;
-
-                var cert64 = Convert.ToBase64String(x509Key.Certificate.RawData);
-                var thumbprint = Base64Url.Encode(x509Key.Certificate.GetCertHash());
-
-                var pubKey = x509Key.PublicKey as RSA;
-                var parameters = pubKey.ExportParameters(false);
-                var exponent = Base64Url.Encode(parameters.Exponent);
-                var modulus = Base64Url.Encode(parameters.Modulus);
-
-                var webKey = new Models.JsonWebKey
+                if (x509Key != null)
                 {
-                    kty = "RSA",
-                    use = "sig",
-                    kid = x509Key.KeyId,
-                    x5t = thumbprint,
-                    e = exponent,
-                    n = modulus,
-                    x5c = new[] { cert64 }
-                };
+                    var cert64 = Convert.ToBase64String(x509Key.Certificate.RawData);
+                    var thumbprint = Base64Url.Encode(x509Key.Certificate.GetCertHash());
 
-                webKeys.Add(webKey);
+                    var pubKey = x509Key.PublicKey as RSA;
+                    var parameters = pubKey.ExportParameters(false);
+                    var exponent = Base64Url.Encode(parameters.Exponent);
+                    var modulus = Base64Url.Encode(parameters.Modulus);
+
+                    var webKey = new Models.JsonWebKey
+                    {
+                        kty = "RSA",
+                        use = "sig",
+                        kid = x509Key.KeyId,
+                        x5t = thumbprint,
+                        e = exponent,
+                        n = modulus,
+                        x5c = new[] { cert64 }
+                    };
+
+                    webKeys.Add(webKey);
+                    continue;
+                }
+
+                var rsaKey = key as RsaSecurityKey;
+                if (rsaKey != null)
+                {
+                    var parameters = rsaKey.Rsa.ExportParameters(false);
+
+                    var exponent = Base64Url.Encode(parameters.Exponent);
+                    var modulus = Base64Url.Encode(parameters.Modulus);
+
+                    var webKey = new Models.JsonWebKey
+                    {
+                        kty = "RSA",
+                        use = "sig",
+                        kid = rsaKey.KeyId,
+                        e = exponent,
+                        n = modulus,
+                    };
+
+                    webKeys.Add(webKey);
+                }
             }
 
             return new JsonWebKeysResult(webKeys);

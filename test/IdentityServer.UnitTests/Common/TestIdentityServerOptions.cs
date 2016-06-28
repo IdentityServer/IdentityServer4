@@ -3,7 +3,7 @@
 
 using IdentityServer4.Configuration;
 
-namespace IdentityServer4.Tests.Validation
+namespace UnitTests.Common
 {
     class TestIdentityServerOptions
     {
@@ -11,10 +11,8 @@ namespace IdentityServer4.Tests.Validation
         {
             var options = new IdentityServerOptions
             {
-                IssuerUri = "https://idsrv3.com",
-                SiteName = "IdentityServer3 - test",
-                //todo
-                //DataProtector = new NoDataProtector(),
+                IssuerUri = "https://idsrv.com",
+                SiteName = "IdentityServer - Test",
             };
 
             return options;

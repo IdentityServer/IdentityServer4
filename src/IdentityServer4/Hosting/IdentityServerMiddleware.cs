@@ -3,6 +3,7 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Hosting
@@ -20,17 +21,28 @@ namespace IdentityServer4.Hosting
 
         public async Task Invoke(HttpContext context, IEndpointRouter router, IdentityServerContext idSvrContext)
         {
-            var endpoint = router.Find(context);
-            if (endpoint != null)
+            try
             {
-                var result = await endpoint.ProcessAsync(idSvrContext);
-
-                if (result != null)
+                var endpoint = router.Find(context);
+                if (endpoint != null)
                 {
-                    await result.ExecuteAsync(idSvrContext);
-                }
+                    _logger.LogTrace("Invoking IdentityServer endpoint: {type}", endpoint.GetType().FullName);
 
-                return;
+                    var result = await endpoint.ProcessAsync(idSvrContext);
+
+                    if (result != null)
+                    {
+                        _logger.LogTrace("Invoking result: {type}", result.GetType().FullName);
+                        await result.ExecuteAsync(idSvrContext);
+                    }
+
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical("Unhandled exception: {exception}", ex.ToString());
+                throw;
             }
 
             await _next(context);

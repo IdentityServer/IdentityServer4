@@ -53,17 +53,17 @@ namespace IdentityServer4.Services.Default
         /// </returns>
         public virtual async Task<string> CreateRefreshTokenAsync(ClaimsPrincipal subject, Token accessToken, Client client)
         {
-            _logger.LogTrace("Creating refresh token");
+            _logger.LogDebug("Creating refresh token");
 
             int lifetime;
             if (client.RefreshTokenExpiration == TokenExpiration.Absolute)
             {
-                _logger.LogTrace("Setting an absolute lifetime: " + client.AbsoluteRefreshTokenLifetime);
+                _logger.LogDebug("Setting an absolute lifetime: " + client.AbsoluteRefreshTokenLifetime);
                 lifetime = client.AbsoluteRefreshTokenLifetime;
             }
             else
             {
-                _logger.LogTrace("Setting a sliding lifetime: " + client.SlidingRefreshTokenLifetime);
+                _logger.LogDebug("Setting a sliding lifetime: " + client.SlidingRefreshTokenLifetime);
                 lifetime = client.SlidingRefreshTokenLifetime;
             }
 
@@ -93,13 +93,13 @@ namespace IdentityServer4.Services.Default
         /// </returns>
         public virtual async Task<string> UpdateRefreshTokenAsync(string handle, RefreshToken refreshToken, Client client)
         {
-            _logger.LogTrace("Updating refresh token");
+            _logger.LogDebug("Updating refresh token");
 
             bool needsUpdate = false;
 
             if (client.RefreshTokenUsage == TokenUsage.OneTimeOnly)
             {
-                _logger.LogTrace("Token usage is one-time only. Generating new handle");
+                _logger.LogDebug("Token usage is one-time only. Generating new handle");
 
                 // delete old one
                 await _store.RemoveAsync(handle);
@@ -111,20 +111,20 @@ namespace IdentityServer4.Services.Default
 
             if (client.RefreshTokenExpiration == TokenExpiration.Sliding)
             {
-                _logger.LogTrace("Refresh token expiration is sliding - extending lifetime");
+                _logger.LogDebug("Refresh token expiration is sliding - extending lifetime");
 
                 // make sure we don't exceed absolute exp
                 // cap it at absolute exp
                 var currentLifetime = refreshToken.CreationTime.GetLifetimeInSeconds();
-                _logger.LogTrace("Current lifetime: " + currentLifetime.ToString());
+                _logger.LogDebug("Current lifetime: " + currentLifetime.ToString());
 
                 var newLifetime = currentLifetime + client.SlidingRefreshTokenLifetime;
-                _logger.LogTrace("New lifetime: " + newLifetime.ToString());
+                _logger.LogDebug("New lifetime: " + newLifetime.ToString());
 
                 if (newLifetime > client.AbsoluteRefreshTokenLifetime)
                 {
                     newLifetime = client.AbsoluteRefreshTokenLifetime;
-                    _logger.LogTrace("New lifetime exceeds absolute lifetime, capping it to " + newLifetime.ToString());
+                    _logger.LogDebug("New lifetime exceeds absolute lifetime, capping it to " + newLifetime.ToString());
                 }
 
                 refreshToken.LifeTime = newLifetime;
@@ -134,15 +134,15 @@ namespace IdentityServer4.Services.Default
             if (needsUpdate)
             {
                 await _store.StoreAsync(handle, refreshToken);
-                _logger.LogTrace("Updated refresh token in store");
+                _logger.LogDebug("Updated refresh token in store");
             }
             else
             {
-                _logger.LogTrace("No updates to refresh token done");
+                _logger.LogDebug("No updates to refresh token done");
             }
 
             await RaiseRefreshTokenRefreshedEventAsync(handle, handle, refreshToken);
-            _logger.LogTrace("No updates to refresh token done");
+            _logger.LogDebug("No updates to refresh token done");
 
             return handle;
         }

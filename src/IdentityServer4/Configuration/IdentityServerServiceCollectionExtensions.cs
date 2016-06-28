@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http;
+using IdentityServer4.Events;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -60,7 +61,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return new IdentityServerBuilder(services);
         }
 
-        public static IServiceCollection AddEndpoints(this IServiceCollection services, EndpointOptions endpoints)
+        public static IServiceCollection AddEndpoints(this IServiceCollection services, EndpointsOptions endpoints)
         {
             var map = new Dictionary<string, Type>();
             if (endpoints.EnableTokenEndpoint)
@@ -115,8 +116,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<IRedirectUriValidator, StrictRedirectUriValidator>();
             services.TryAddTransient<ITokenValidator, TokenValidator>();
             services.TryAddTransient<IIntrospectionRequestValidator, IntrospectionRequestValidator>();
-
-            // todo services.TryAddTransient<IResourceOwnerPasswordValidator, DefaultResouceOwnerPasswordValidator>();
+            services.TryAddTransient<IResourceOwnerPasswordValidator, NopResouceOwnerPasswordValidator>();
             
             return services;
         }
@@ -136,6 +136,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddSecretParsers(this IServiceCollection services)
         {
             services.AddTransient<SecretParser>();
+
             services.AddTransient<ISecretParser, BasicAuthenticationSecretParser>();
             services.AddTransient<ISecretParser, PostBodySecretParser>();
             
@@ -145,6 +146,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddSecretValidators(this IServiceCollection services)
         {
             services.AddTransient<SecretValidator>();
+
             services.AddTransient<ISecretValidator, HashedSharedSecretValidator>();
 
             return services;
@@ -166,7 +168,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<IEventService, DefaultEventService>();
             services.TryAddTransient<ICustomRequestValidator, DefaultCustomRequestValidator>();
             services.TryAddTransient<ITokenService, DefaultTokenService>();
-            services.TryAddTransient<ITokenSigningService, DefaultTokenSigningService>();
+            services.TryAddTransient<ITokenCreationService, DefaultTokenCreationService>();
             services.TryAddTransient<IClaimsProvider, DefaultClaimsProvider>();
             services.TryAddTransient<IRefreshTokenService, DefaultRefreshTokenService>();
             services.TryAddTransient<ICustomTokenValidator, DefaultCustomTokenValidator>();
@@ -174,6 +176,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<IConsentService, DefaultConsentService>();
             services.TryAddTransient<ICorsPolicyService, DefaultCorsPolicyService>();
             services.TryAddTransient(typeof(IMessageStore<>), typeof(CookieMessageStore<>));
+            services.TryAddTransient<EventServiceHelper>();
 
             return services;
         }
@@ -189,7 +192,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<ConsentInteraction>();
             services.TryAddTransient<ErrorInteraction>();
 
-            services.AddTransient<ICorsPolicyProvider>(provider=>
+            services.AddTransient<ICorsPolicyProvider>(provider =>
             {
                 return new PolicyProvider(
                     provider.GetRequiredService<ILogger<PolicyProvider>>(),

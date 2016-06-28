@@ -24,9 +24,9 @@ namespace IdentityServer4.Validation
         /// Creates the parser with options
         /// </summary>
         /// <param name="options">IdentityServer options</param>
-        public PostBodySecretParser(IdentityServerOptions options, ILoggerFactory loggerFactory)
+        public PostBodySecretParser(IdentityServerOptions options, ILogger<PostBodySecretParser> logger)
         {
-            _logger = loggerFactory.CreateLogger<PostBodySecretParser>();
+            _logger = logger;
             _options = options;
         }
 
@@ -47,11 +47,11 @@ namespace IdentityServer4.Validation
         /// </returns>
         public Task<ParsedSecret> ParseAsync(HttpContext context)
         {
-            _logger.LogTrace("Start parsing for secret in post body");
+            _logger.LogDebug("Start parsing for secret in post body");
 
             if (!context.Request.HasFormContentType)
             {
-                _logger.LogWarning("Content type is not a form");
+                _logger.LogDebug("Content type is not a form");
                 return Task.FromResult<ParsedSecret>(null);
             }
 
@@ -67,7 +67,7 @@ namespace IdentityServer4.Validation
                     if (id.Length > _options.InputLengthRestrictions.ClientId ||
                         secret.Length > _options.InputLengthRestrictions.ClientSecret)
                     {
-                        _logger.LogWarning("Client ID or secret exceeds maximum lenght.");
+                        _logger.LogError("Client ID or secret exceeds maximum lenght.");
                         return Task.FromResult<ParsedSecret>(null);
                     }
 
@@ -82,7 +82,7 @@ namespace IdentityServer4.Validation
                 }
             }
 
-            _logger.LogTrace("No secret in post body found");
+            _logger.LogDebug("No secret in post body found");
             return Task.FromResult<ParsedSecret>(null);
         }
     }

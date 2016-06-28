@@ -45,11 +45,11 @@ namespace IdentityServer4.Services.InMemory
 
             if (result)
             {
-                _logger.LogInformation("Client list checked and origin: {0} is allowed", origin);
+                _logger.LogDebug("Client list checked and origin: {0} is allowed", origin);
             }
             else
             {
-                _logger.LogInformation("Client list checked and origin: {0} is not allowed", origin);
+                _logger.LogDebug("Client list checked and origin: {0} is not allowed", origin);
             }
             
             return Task.FromResult(result);

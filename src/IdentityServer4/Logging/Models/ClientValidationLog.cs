@@ -8,5 +8,10 @@ namespace IdentityServer4.Logging
         public string ClientId { get; set; }
         public string ClientName { get; set; }
         public string ClientCredentialType { get; set; }
+
+        public override string ToString()
+        {
+            return LogSerializer.Serialize(this);
+        }
     }
 }

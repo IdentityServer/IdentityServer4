@@ -18,7 +18,6 @@ namespace IdentityServer4.Validation
     public class TokenRequestValidator : ITokenRequestValidator
     {
         private readonly ILogger _logger;
-
         private readonly IdentityServerOptions _options;
         private readonly IAuthorizationCodeStore _authorizationCodes;
         private readonly CustomGrantValidator _customGrantValidator;
@@ -31,10 +30,9 @@ namespace IdentityServer4.Validation
 
         private ValidatedTokenRequest _validatedRequest;
 
-        public TokenRequestValidator(IdentityServerOptions options, IAuthorizationCodeStore authorizationCodes, IRefreshTokenStore refreshTokens, IResourceOwnerPasswordValidator resourceOwnerValidator, IProfileService profile, CustomGrantValidator customGrantValidator, ICustomRequestValidator customRequestValidator, ScopeValidator scopeValidator, IEventService events, ILoggerFactory loggerFactory)
+        public TokenRequestValidator(IdentityServerOptions options, IAuthorizationCodeStore authorizationCodes, IRefreshTokenStore refreshTokens, IResourceOwnerPasswordValidator resourceOwnerValidator, IProfileService profile, CustomGrantValidator customGrantValidator, ICustomRequestValidator customRequestValidator, ScopeValidator scopeValidator, IEventService events, ILogger<TokenRequestValidator> logger)
         {
-            _logger = loggerFactory.CreateLogger<TokenRequestValidator>();
-
+            _logger = logger;
             _options = options;
             _authorizationCodes = authorizationCodes;
             _refreshTokens = refreshTokens;
@@ -48,7 +46,7 @@ namespace IdentityServer4.Validation
 
         public async Task<TokenRequestValidationResult> ValidateRequestAsync(NameValueCollection parameters, Client client)
         {
-            _logger.LogTrace("Start token request validation");
+            _logger.LogDebug("Start token request validation");
 
             _validatedRequest = new ValidatedTokenRequest();
 
@@ -124,6 +122,7 @@ namespace IdentityServer4.Validation
             }
 
             // run custom validation
+            _logger.LogTrace("Calling into custom request validator: {type}", _customRequestValidator.GetType().FullName);
             var customResult = await _customRequestValidator.ValidateTokenRequestAsync(_validatedRequest);
 
             if (customResult.IsError)
@@ -145,7 +144,7 @@ namespace IdentityServer4.Validation
 
         private async Task<TokenRequestValidationResult> ValidateAuthorizationCodeRequestAsync(NameValueCollection parameters)
         {
-            _logger.LogTrace("Start validation of authorization code token request");
+            _logger.LogDebug("Start validation of authorization code token request");
 
             /////////////////////////////////////////////
             // check if client is authorized for grant type
@@ -184,7 +183,7 @@ namespace IdentityServer4.Validation
             var authZcode = await _authorizationCodes.GetAsync(code);
             if (authZcode == null)
             {
-                LogError("Invalid authorization code: " + code);
+                LogError("Authorization code cannot be found in the store: " + code);
                 await RaiseFailedAuthorizationCodeRedeemedEventAsync(code, "Invalid handle");
 
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
@@ -284,7 +283,7 @@ namespace IdentityServer4.Validation
 
         private async Task<TokenRequestValidationResult> ValidateClientCredentialsRequestAsync(NameValueCollection parameters)
         {
-            _logger.LogTrace("Start client credentials token request validation");
+            _logger.LogDebug("Start client credentials token request validation");
 
             /////////////////////////////////////////////
             // check if client is authorized for grant type
@@ -322,7 +321,7 @@ namespace IdentityServer4.Validation
 
         private async Task<TokenRequestValidationResult> ValidateResourceOwnerCredentialRequestAsync(NameValueCollection parameters)
         {
-            _logger.LogInformation("Start password token request validation");
+            _logger.LogDebug("Start resource owner password token request validation");
 
             // if we've disabled local authentication, then fail
             if (_options.AuthenticationOptions.EnableLocalLogin == false ||
@@ -405,13 +404,13 @@ namespace IdentityServer4.Validation
             _validatedRequest.Subject = resourceOwnerResult.Principal;
 
             await RaiseSuccessfulResourceOwnerAuthenticationEventAsync(userName, resourceOwnerResult.Principal.GetSubjectId());
-            _logger.LogInformation("Password token request validation success.");
+            _logger.LogInformation("Resource owner password token request validation success.");
             return Valid();
         }
 
         private async Task<TokenRequestValidationResult> ValidateRefreshTokenRequestAsync(NameValueCollection parameters)
         {
-            _logger.LogTrace("Start validation of refresh token request");
+            _logger.LogDebug("Start validation of refresh token request");
 
             var refreshTokenHandle = parameters.Get(OidcConstants.TokenRequest.RefreshToken);
             if (refreshTokenHandle.IsMissing())
@@ -440,8 +439,8 @@ namespace IdentityServer4.Validation
             var refreshToken = await _refreshTokens.GetAsync(refreshTokenHandle);
             if (refreshToken == null)
             {
-                var error = "Refresh token is invalid";
-                LogWarn(error);
+                var error = "Refresh token cannot be found in store: " + refreshTokenHandle;
+                LogError(error);
                 await RaiseRefreshTokenRefreshFailureEventAsync(refreshTokenHandle, error);
 
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
@@ -453,7 +452,7 @@ namespace IdentityServer4.Validation
             if (refreshToken.CreationTime.HasExceeded(refreshToken.LifeTime))
             {
                 var error = "Refresh token has expired";
-                LogWarn(error);
+                LogError(error);
                 await RaiseRefreshTokenRefreshFailureEventAsync(refreshTokenHandle, error);
 
                 await _refreshTokens.RemoveAsync(refreshTokenHandle);
@@ -511,7 +510,7 @@ namespace IdentityServer4.Validation
 
         private async Task<TokenRequestValidationResult> ValidateCustomGrantRequestAsync(NameValueCollection parameters)
         {
-            _logger.LogTrace("Start validation of custom grant token request");
+            _logger.LogDebug("Start validation of custom grant token request");
 
             /////////////////////////////////////////////
             // check if client is allowed to use grant type
@@ -521,7 +520,6 @@ namespace IdentityServer4.Validation
                 LogError("Client does not have the custom grant type in the allowed list, therefore requested grant is not allowed.");
                 return Invalid(OidcConstants.TokenErrors.UnsupportedGrantType);
             }
-
 
             /////////////////////////////////////////////
             // check if a validator is registered for the grant type
@@ -580,7 +578,7 @@ namespace IdentityServer4.Validation
             var scopes = parameters.Get(OidcConstants.TokenRequest.Scope);
             if (scopes.IsMissingOrTooLong(_options.InputLengthRestrictions.Scope))
             {
-                _logger.LogWarning("Scopes missing or too long");
+                _logger.LogError("Scopes missing or too long");
                 return false;
             }
 
@@ -623,38 +621,15 @@ namespace IdentityServer4.Validation
 
         private void LogError(string message)
         {
-            _logger.LogError(LogEvent(message));
-        }
-
-        private void LogWarn(string message)
-        {
-            _logger.LogWarning(LogEvent(message));
+            var details = new TokenRequestValidationLog(_validatedRequest);
+            _logger.LogError(message + "\n{details}", details);
         }
 
         private void LogSuccess()
         {
-            _logger.LogInformation(LogEvent("Token request validation success"));
+            var details = new TokenRequestValidationLog(_validatedRequest);
+            _logger.LogInformation("Token request validation success\n{details}", details);
         }
-
-        private string LogEvent(string message)
-        {
-            var validationLog = new TokenRequestValidationLog(_validatedRequest);
-            var json = LogSerializer.Serialize(validationLog);
-
-            return string.Format("{0}\n {1}", message, json);
-        }
-
-        // todo
-        //private Func<string> LogEvent(string message)
-        //{
-        //    return () =>
-        //    {
-        //        var validationLog = new TokenRequestValidationLog(_validatedRequest);
-        //        var json = LogSerializer.Serialize(validationLog);
-
-        //        return string.Format("{0}\n {1}", message, json);
-        //    };
-        //}
 
         private async Task RaiseSuccessfulResourceOwnerAuthenticationEventAsync(string userName, string subjectId)
         {

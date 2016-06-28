@@ -42,7 +42,7 @@ namespace IdentityServer4.Validation
             {
                 await RaiseFailureEvent("unknown", "No scope id or secret found");
 
-                _logger.LogInformation("No scope secret found");
+                _logger.LogError("No scope secret found");
                 return fail;
             }
 
@@ -52,7 +52,7 @@ namespace IdentityServer4.Validation
             {
                 await RaiseFailureEvent(parsedSecret.Id, "Unknown scope");
 
-                _logger.LogInformation("No scope with that name found. aborting");
+                _logger.LogError("No scope with that name found. aborting");
                 return fail;
             }
 
@@ -72,7 +72,7 @@ namespace IdentityServer4.Validation
             }
 
             await RaiseFailureEvent(scope.Name, "Invalid client secret");
-            _logger.LogInformation("Scope validation failed.");
+            _logger.LogError("Scope validation failed.");
 
             return fail;
         }

@@ -3,6 +3,7 @@
 
 using IdentityModel;
 using IdentityServer4.Models;
+using Microsoft.Extensions.Logging;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,21 +12,27 @@ namespace IdentityServer4.Validation
 {
     public class IntrospectionRequestValidator : IIntrospectionRequestValidator
     {
+        private readonly ILogger<IntrospectionRequestValidator> _logger;
         private readonly ITokenValidator _tokenValidator;
 
-        public IntrospectionRequestValidator(ITokenValidator tokenValidator)
+        public IntrospectionRequestValidator(ITokenValidator tokenValidator, ILogger<IntrospectionRequestValidator> logger)
         {
             _tokenValidator = tokenValidator;
+            _logger = logger;
         }
 
         public async Task<IntrospectionRequestValidationResult> ValidateAsync(NameValueCollection parameters, Scope scope)
         {
+            _logger.LogDebug("Introspection request validation started.");
+
             var fail = new IntrospectionRequestValidationResult { IsError = true };
 
             // retrieve required token
             var token = parameters.Get("token");
             if (token == null)
             {
+                _logger.LogError("Token is missing");
+
                 fail.IsActive = false;
                 fail.FailureReason = IntrospectionRequestValidationFailureReason.MissingToken;
                 return fail;
@@ -37,6 +44,8 @@ namespace IdentityServer4.Validation
             // invalid or unknown token
             if (tokenValidationResult.IsError)
             {
+                _logger.LogError("Token is invalid.");
+
                 fail.IsActive = false;
                 fail.FailureReason = IntrospectionRequestValidationFailureReason.InvalidToken;
                 fail.Token = token;
@@ -50,6 +59,8 @@ namespace IdentityServer4.Validation
             // expected scope not present
             if (expectedScope == null)
             {
+                _logger.LogError("Expected scope of {scope} is missing", scope.Name);
+
                 fail.IsActive = false;
                 fail.IsError = true;
                 fail.FailureReason = IntrospectionRequestValidationFailureReason.InvalidScope;
@@ -66,6 +77,7 @@ namespace IdentityServer4.Validation
                 Claims = tokenValidationResult.Claims
             };
 
+            _logger.LogInformation("Introspection request validation successful.");
             return success;
         }
     }

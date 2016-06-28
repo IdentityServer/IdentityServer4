@@ -4,8 +4,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
+using Serilog.Events;
+using IdentityServer4.Configuration;
 
 namespace Host
 {
@@ -22,11 +25,21 @@ namespace Host
         {
             var cert = new X509Certificate2(Path.Combine(_environment.ContentRootPath, "idsrv3test.pfx"), "idsrv3test");
 
-            var builder = services.AddIdentityServer()
+            var builder = services.AddIdentityServer(options =>
+            {
+                //options.EventsOptions = new EventsOptions
+                //{
+                //    RaiseErrorEvents = true,
+                //    RaiseFailureEvents = true,
+                //    RaiseInformationEvents = true,
+                //    RaiseSuccessEvents = true
+                //};
+            })
                 .AddInMemoryClients(Clients.Get())
                 .AddInMemoryScopes(Scopes.Get())
                 .AddInMemoryUsers(Users.Get())
-                .SetSigningCredentials(cert);
+                //.SetTemporarySigningCredential();
+                .SetSigningCredential(cert);
 
             builder.AddCustomGrantValidator<CustomGrantValidator>();
 
@@ -42,8 +55,35 @@ namespace Host
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddConsole(LogLevel.Trace);
-            loggerFactory.AddDebug(LogLevel.Trace);
+            // serilog filter
+            Func<LogEvent, bool> serilogFilter = (e) =>
+            {
+                var context = e.Properties["SourceContext"].ToString();
+
+                return (context.StartsWith("\"IdentityServer") ||
+                        context.StartsWith("\"IdentityModel") ||
+                        e.Level == LogEventLevel.Error ||
+                        e.Level == LogEventLevel.Fatal);
+            };
+        
+            // built-in logging filter
+            Func<string, LogLevel, bool> filter = (scope, level) =>
+                scope.StartsWith("IdentityServer") ||
+                scope.StartsWith("IdentityModel") ||
+                level == LogLevel.Error ||
+                level == LogLevel.Critical;
+
+            loggerFactory.AddConsole(filter);
+            loggerFactory.AddDebug(filter);
+
+            //var serilog = new LoggerConfiguration()
+            //    .MinimumLevel.Verbose()
+            //    .Enrich.FromLogContext()
+            //    .Filter.ByIncludingOnly(serilogFilter)
+            //    .WriteTo.LiterateConsole()
+            //    .CreateLogger();
+
+            //loggerFactory.AddSerilog(serilog);
 
             app.UseDeveloperExceptionPage();
 
