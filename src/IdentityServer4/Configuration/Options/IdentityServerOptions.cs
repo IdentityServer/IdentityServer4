@@ -27,6 +27,8 @@ namespace IdentityServer4.Configuration
         /// </value>
         public string IssuerUri { get; set; }
 
+        public string ProxyServerBaseUrl { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether SSL is required for IdentityServer. Defaults to `true`.
         /// </summary>

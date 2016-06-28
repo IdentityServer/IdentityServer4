@@ -8,6 +8,7 @@ using IdentityServer4.Logging;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -219,11 +220,32 @@ namespace IdentityServer4.Validation
                     }
                 }
 
+                List<Claim> newClaims = new List<Claim>();
+                foreach (var claim in id.Claims)
+                {
+                    if (claim.Type == "scope")
+                    {
+                        //Convert the JSON ScopesString into seperate claims -> FROM scope:["openid","profile","email"] TO scope:openid, scope:profile
+                        if (claim.Value.Contains("["))
+                        {
+                            var input = claim.Value.Trim();
+                            var scopes = JsonConvert.DeserializeObject<List<string>>(input);
+                            foreach (var scope in scopes)
+                            {
+                                newClaims.Add(new Claim(claim.Type, scope, claim.ValueType, claim.Issuer, claim.OriginalIssuer, claim.Subject));
+                            }
+                        }
+                        else newClaims.Add(claim);
+                    }
+                    else newClaims.Add(claim);
+                }
+
+
                 return new TokenValidationResult
                 {
                     IsError = false,
 
-                    Claims = id.Claims,
+                    Claims = newClaims,
                     Client = client,
                     Jwt = jwt
                 };
