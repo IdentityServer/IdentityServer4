@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-beta4",
+  "version": "1.0.0-beta4-update1",
   "authors": [ "Brock Allen", "Dominick Baier" ],
   "description": "OpenID Connect and OAuth 2.0 Framework for ASP.NET Core",
 
@@ -16,8 +16,7 @@
     "Microsoft.AspNetCore.Cors": "1.0.0-*",
     "Microsoft.AspNetCore.Authentication.Cookies": "1.0.0-*",
     "Microsoft.IdentityModel.Protocols.OpenIdConnect": "2.0.0-*",
-    "IdentityModel": "2.0.0-*",
-    "Newtonsoft.Json": "9.0.1"
+    "IdentityModel": "2.0.0-*"
   },
 
   "frameworks": {
