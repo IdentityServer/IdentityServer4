@@ -90,5 +90,13 @@ namespace IdentityServer4.Configuration
         /// The length restrictions.
         /// </value>
         public InputLengthRestrictions InputLengthRestrictions { get; set; } = new InputLengthRestrictions();
+
+        /// <summary>
+        /// Gets or sets the options for the user interaction.
+        /// </summary>
+        /// <value>
+        /// The user interaction options.
+        /// </value>
+        public UserInteractionOptions UserInteractionOptions { get; set; } = new UserInteractionOptions();
     }
 }

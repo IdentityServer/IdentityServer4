@@ -2,6 +2,6 @@
 {
     public class LogoutViewModel
     {
-        public string SignOutId { get; set; }
+        public string ReturnUrl { get; set; }
     }
 }

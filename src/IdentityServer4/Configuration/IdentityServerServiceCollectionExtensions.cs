@@ -187,10 +187,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<ClientListCookie>();
             services.TryAddTransient(typeof(MessageCookie<>));
 
-            services.TryAddTransient<SignInInteraction>();
-            services.TryAddTransient<SignOutInteraction>();
-            services.TryAddTransient<ConsentInteraction>();
-            services.TryAddTransient<ErrorInteraction>();
+            services.TryAddTransient<IUserInteractionService, DefaultUserInteractionService>();
 
             services.AddTransient<ICorsPolicyProvider>(provider =>
             {

@@ -328,13 +328,21 @@ namespace IdentityServer4
             }
         }
 
+        public static class RoutePathParams
+        {
+            public const string Error = "errorId";
+            public const string Login = "returnUrl";
+            public const string Consent = "returnUrl";
+            public const string Logout = "returnUrl";
+        }
+
         public static class RoutePaths
         {
             // TODO: new
-            public const string Error = "ui/error";
-            public const string Login = "ui/login";
-            public const string Consent = "ui/consent";
-            public const string Logout = "ui/logout";
+            public const string Error = "home/error";
+            public const string Login = "account/login";
+            public const string Consent = "account/consent";
+            public const string Logout = "account/logout";
 
             public const string CspReport = "csp/report";
 

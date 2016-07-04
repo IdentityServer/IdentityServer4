@@ -14,7 +14,7 @@ namespace IdentityServer4.Models
         /// <value>
         /// The sign in message.
         /// </value>
-        public SignInRequest SignInRequest { get; set; }
+        public AuthorizationRequest SignInRequest { get; set; }
 
         /// <summary>
         /// Gets or sets the authenticate result.

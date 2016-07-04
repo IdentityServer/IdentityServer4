@@ -16,7 +16,7 @@
                 <div class="panel-body">
 
                     <form asp-route="Login">
-                        <input type="hidden" asp-for="SignInId" />
+                        <input type="hidden" asp-for="ReturnUrl" />
 
                         <fieldset>
                             <div class="form-group">
@@ -57,7 +57,7 @@
                                 <a class="btn btn-default" 
                                    asp-route="External" 
                                    asp-route-provider="Google"
-                                   asp-route-signInId="@Model.SignInId">Google</a>
+                                   asp-route-returnUrl="@Model.ReturnUrl">Google</a>
                             </li>
                             @*<li ng-repeat="provider in model.externalProviders">
                                 <a class="btn btn-default" href="{{provider.href}}">{{provider.text}}</a>

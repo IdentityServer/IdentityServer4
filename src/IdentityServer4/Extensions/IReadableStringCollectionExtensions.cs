@@ -21,5 +21,17 @@ namespace Microsoft.AspNet.Http
 
             return nv;
         }
+
+        public static NameValueCollection AsNameValueCollection(this IDictionary<string, StringValues> collection)
+        {
+            var nv = new NameValueCollection();
+
+            foreach (var field in collection)
+            {
+                nv.Add(field.Key, field.Value.First());
+            }
+
+            return nv;
+        }
     }
 }

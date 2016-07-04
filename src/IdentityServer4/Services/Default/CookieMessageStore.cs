@@ -27,9 +27,9 @@ namespace IdentityServer4.Services.Default
             return Task.FromResult(_cookie.Read(id));
         }
 
-        public Task WriteAsync(Message<TModel> message)
+        public Task WriteAsync(string id, Message<TModel> message)
         {
-            _cookie.Write(message);
+            _cookie.Write(id, message);
             return Task.FromResult(0);
         }
     }

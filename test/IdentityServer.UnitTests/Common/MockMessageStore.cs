@@ -28,9 +28,9 @@ namespace UnitTests.Common
             return Task.FromResult(val);
         }
 
-        public Task WriteAsync(Message<TModel> message)
+        public Task WriteAsync(string id, Message<TModel> message)
         {
-            Messages[message.Id] = message;
+            Messages[id] = message;
             return Task.FromResult(0);
         }
     }

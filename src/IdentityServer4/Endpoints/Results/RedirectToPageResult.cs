@@ -4,31 +4,42 @@
 using System.Threading.Tasks;
 using IdentityServer4.Hosting;
 using IdentityServer4.Extensions;
+using System.Text.Encodings.Web;
 
 namespace IdentityServer4.Endpoints.Results
 {
     public class RedirectToPageResult : IEndpointResult
     {
-        public string Path { get; set; }
-        public string Id { get; set; }
+        public string Url { get; set; }
+        public string ParamName { get; set; }
+        public string ParamValue { get; set; }
 
-        public RedirectToPageResult(string path)
-            : this(path, null)
+        public RedirectToPageResult(string url)
+            : this(url, null, null)
         {
         }
 
-        public RedirectToPageResult(string path, string id)
+        public RedirectToPageResult(string url, string paramName, string paramValue)
         {
-            Path = path;
-            Id = id;
+            Url = url;
+            if (paramValue.IsPresent())
+            {
+                ParamName = paramName;
+                ParamValue = paramValue;
+            }
         }
 
         public Task ExecuteAsync(IdentityServerContext context)
         {
-            var redirect = context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Path.RemoveLeadingSlash();
-            if (Id.IsPresent())
+            var redirect = Url;
+            if (!redirect.IsLocalUrl())
             {
-                redirect = redirect.AddQueryString("id=" + Id);
+                redirect = context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + redirect.RemoveLeadingSlash();
+            }
+
+            if (ParamValue.IsPresent())
+            {
+                redirect = redirect.AddQueryString(ParamName + "=" + UrlEncoder.Default.Encode(ParamValue));
             }
 
             context.HttpContext.Response.Redirect(redirect);

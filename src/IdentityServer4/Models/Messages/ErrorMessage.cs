@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityModel;
+
 namespace IdentityServer4.Models
 {
     /// <summary>
@@ -55,5 +57,10 @@ namespace IdentityServer4.Models
         /// The return information.
         /// </value>
         public ClientReturnInfo ReturnInfo { get; set; }
+
+        internal static string CreateId()
+        {
+            return CryptoRandom.CreateUniqueId();
+        }
     }
 }

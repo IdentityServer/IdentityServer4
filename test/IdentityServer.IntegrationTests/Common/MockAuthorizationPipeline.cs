@@ -12,6 +12,7 @@ using System.Security.Claims;
 using IdentityModel.Client;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
+using IdentityServer4.Validation;
 
 namespace IdentityServer4.Tests.Common
 {
@@ -68,24 +69,23 @@ namespace IdentityServer4.Tests.Common
         public string CookieAuthenticationScheme { get; set; } = "cookie_authn";
 
         public bool LoginWasCalled { get; set; }
-        public SignInRequest SignInRequest { get; set; }
+        public AuthorizationRequest LoginRequest { get; set; }
         public ClaimsPrincipal Subject { get; set; }
-        public SignInResponse SignInResponse { get; set; }
+        public bool FollowLoginReturnUrl { get; set; }
 
         async Task OnLogin(HttpContext ctx)
         {
             LoginWasCalled = true;
-            await ReadSignInMessage(ctx);
+            await ReadLoginRequest(ctx);
             await IssueLoginCookie(ctx);
-            await CreateSignInResponse(ctx);
         }
 
-        async Task ReadSignInMessage(HttpContext ctx)
+        async Task ReadLoginRequest(HttpContext ctx)
         {
             try
             {
-                var interaction = ctx.RequestServices.GetRequiredService<SignInInteraction>();
-                SignInRequest = await interaction.GetRequestAsync(ctx.Request.Query["id"].First());
+                var interaction = ctx.RequestServices.GetRequiredService<IUserInteractionService>();
+                LoginRequest = await interaction.GetLoginContextAsync();
             }
             catch(Exception ex) {
                     var msg = ex.ToString();
@@ -99,20 +99,17 @@ namespace IdentityServer4.Tests.Common
             {
                 await ctx.Authentication.SignInAsync(CookieAuthenticationScheme, Subject);
                 Subject = null;
+                var url = ctx.Request.Query[this.Options.UserInteractionOptions.LoginReturnUrlParameter].FirstOrDefault();
+                if (url != null)
+                {
+                    ctx.Response.Redirect(url);
+                }
             }
         }
 
-        async Task CreateSignInResponse(HttpContext ctx)
-        {
-            if (SignInResponse != null)
-            {
-                var interaction = ctx.RequestServices.GetRequiredService<SignInInteraction>();
-                await interaction.ProcessResponseAsync(ctx.Request.Query["id"].First(), SignInResponse);
-            }
-        }
 
         public bool ConsentWasCalled { get; set; }
-        public ConsentRequest ConsentRequest { get; set; }
+        public AuthorizationRequest ConsentRequest { get; set; }
         public ConsentResponse ConsentResponse { get; set; }
 
         async Task OnConsent(HttpContext ctx)
@@ -126,8 +123,9 @@ namespace IdentityServer4.Tests.Common
         {
             try
             {
-                var interaction = ctx.RequestServices.GetRequiredService<ConsentInteraction>();
-                ConsentRequest = await interaction.GetRequestAsync(ctx.Request.Query["id"].First());
+
+                var interaction = ctx.RequestServices.GetRequiredService<IUserInteractionService>();
+                ConsentRequest = await interaction.GetConsentContextAsync();
             }
             catch { }
         }
@@ -136,8 +134,8 @@ namespace IdentityServer4.Tests.Common
         {
             if (ConsentResponse != null)
             {
-                var interaction = ctx.RequestServices.GetRequiredService<ConsentInteraction>();
-                await interaction.ProcessResponseAsync(ctx.Request.Query["id"].First(), ConsentResponse);
+                var interaction = ctx.RequestServices.GetRequiredService<IUserInteractionService>();
+                await interaction.GrantConsentAsync(ConsentRequest, ConsentResponse);
                 ConsentResponse = null;
             }
         }
@@ -155,8 +153,8 @@ namespace IdentityServer4.Tests.Common
         {
             try
             {
-                var interaction = ctx.RequestServices.GetRequiredService<ErrorInteraction>();
-                ErrorMessage = await interaction.GetRequestAsync(ctx.Request.Query["id"].First());
+                var interaction = ctx.RequestServices.GetRequiredService<IUserInteractionService>();
+                ErrorMessage = await interaction.GetErrorContextAsync();
             }
             catch { }
         }

@@ -1,7 +1,10 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityServer4.Extensions;
+using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 
 namespace IdentityServer4.Models
@@ -42,5 +45,24 @@ namespace IdentityServer4.Models
         ///   <c>true</c> if consent is to be remembered; otherwise, <c>false</c>.
         /// </value>
         public bool RememberConsent { get; set; }
+
+        internal static string CreateId(string clientId, string subject, string nonce, IEnumerable<string> scopesRequested)
+        {
+            var normalizedScopes = scopesRequested.OrderBy(x => x).Distinct().Aggregate((x, y) => x + "," + y);
+            var value = String.Format("{0}:{1}:{2}:{3}",
+                clientId,
+                subject,
+                nonce,
+                normalizedScopes);
+            return value.Sha256();
+        }
+        internal static string CreateId(NameValueCollection parameters, string subject)
+        {
+            return CreateId(parameters[IdentityModel.OidcConstants.AuthorizeRequest.ClientId],
+                subject,
+                parameters[IdentityModel.OidcConstants.AuthorizeRequest.Nonce],
+                parameters[IdentityModel.OidcConstants.AuthorizeRequest.Scope].ParseScopesString()
+            );
+        }
     }
 }
