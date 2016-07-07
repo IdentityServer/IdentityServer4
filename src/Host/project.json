@@ -12,10 +12,11 @@
     "Microsoft.AspNetCore.Diagnostics": "1.0.0",
     "Microsoft.AspNetCore.StaticFiles": "1.0.0",
     "Microsoft.AspNetCore.Authentication.Google": "1.0.0",
-    "Serilog": "2.0.0-rc-640",
-    "Serilog.Sinks.Literate": "2.0.0-rc-25",
-    "Serilog.Extensions.Logging": "1.0.0-rc2-10110",
-    "IdentityServer4": "1.0.0-*"
+    "Serilog.Sinks.Literate": "2.0.0",
+    "Serilog.Extensions.Logging": "1.0.0",
+    "IdentityServer4": {
+      "target": "project"
+    }
   },
 
   "tools": {
