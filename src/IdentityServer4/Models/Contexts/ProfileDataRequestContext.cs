@@ -81,7 +81,7 @@ namespace IdentityServer4.Models
             Client = client;
             Caller = caller;
 
-            if (requestedClaimTypes == null)
+            if (requestedClaimTypes == null || !requestedClaimTypes.Any())
             {
                 AllClaimsRequested = true;
             }
