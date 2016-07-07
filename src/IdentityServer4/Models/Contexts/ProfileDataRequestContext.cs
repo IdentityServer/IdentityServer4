@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using IdentityServer4.Extensions;
 
 namespace IdentityServer4.Models
 {
@@ -17,6 +18,31 @@ namespace IdentityServer4.Models
         /// </summary>
         public ProfileDataRequestContext()
         {
+            IssuedClaims = Enumerable.Empty<Claim>();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProfileDataRequestContext" /> class.
+        /// </summary>
+        /// <param name="subject">The subject.</param>
+        /// <param name="client">The client.</param>
+        /// <param name="caller">The caller.</param>
+        /// <param name="requestedClaimTypes">The requested claim types.</param>
+        public ProfileDataRequestContext(ClaimsPrincipal subject, Client client, string caller, IEnumerable<string> requestedClaimTypes = null)
+        {
+            Subject = subject;
+            Client = client;
+            Caller = caller;
+
+            if (requestedClaimTypes.IsNullOrEmpty())
+            {
+                AllClaimsRequested = true;
+            }
+            else
+            {
+                RequestedClaimTypes = requestedClaimTypes;
+            }
+
             IssuedClaims = Enumerable.Empty<Claim>();
         }
 
@@ -67,30 +93,5 @@ namespace IdentityServer4.Models
         /// The issued claims.
         /// </value>
         public IEnumerable<Claim> IssuedClaims { get; set; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ProfileDataRequestContext" /> class.
-        /// </summary>
-        /// <param name="subject">The subject.</param>
-        /// <param name="client">The client.</param>
-        /// <param name="caller">The caller.</param>
-        /// <param name="requestedClaimTypes">The requested claim types.</param>
-        public ProfileDataRequestContext(ClaimsPrincipal subject, Client client, string caller, IEnumerable<string> requestedClaimTypes = null)
-        {
-            Subject = subject;
-            Client = client;
-            Caller = caller;
-
-            if (requestedClaimTypes == null)
-            {
-                AllClaimsRequested = true;
-            }
-            else
-            {
-                RequestedClaimTypes = requestedClaimTypes;
-            }
-
-            IssuedClaims = Enumerable.Empty<Claim>();
-        }
     }
 }
