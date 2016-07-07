@@ -9,15 +9,15 @@ namespace IdentityServer4.Extensions
         {
             if (list == null)
             {
-                return false;
+                return true;
             }
 
             if (!list.Any())
             {
-                return false;
+                return true;
             }
 
-            return true;
+            return false;
         }
     }
 }
