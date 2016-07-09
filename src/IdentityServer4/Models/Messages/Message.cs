@@ -30,4 +30,14 @@ namespace IdentityServer4.Models
         public long Created { get; set; }
         public TModel Data { get; set; }
     }
+
+    public class MessageWithId<TModel> : Message<TModel>
+    {
+        public MessageWithId(TModel data) : base(data)
+        {
+            Id = CryptoRandom.CreateUniqueId();
+        }
+
+        public string Id { get; set; }
+    }
 }

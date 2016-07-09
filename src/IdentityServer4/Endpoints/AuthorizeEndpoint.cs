@@ -37,7 +37,7 @@ namespace IdentityServer4.Endpoints
             IAuthorizeRequestValidator validator,
             IAuthorizeInteractionResponseGenerator interactionGenerator,
             IAuthorizeEndpointResultFactory resultGenerator,
-            IMessageStore<ConsentResponse> consentRequestStore)
+            IMessageStore<ConsentResponse> consentResponseStore)
         {
             _events = events;
             _logger = logger;
@@ -45,7 +45,7 @@ namespace IdentityServer4.Endpoints
             _validator = validator;
             _interactionGenerator = interactionGenerator;
             _resultGenerator = resultGenerator;
-            _consentResponseStore = consentRequestStore;
+            _consentResponseStore = consentResponseStore;
         }
 
         public async Task<IEndpointResult> ProcessAsync(IdentityServerContext context)
@@ -119,9 +119,9 @@ namespace IdentityServer4.Endpoints
             }
 
             var parameters = context.HttpContext.Request.Query.AsNameValueCollection();
+            var consentRequest = new ConsentRequest(parameters, user.GetSubjectId());
 
-            var id = ConsentResponse.CreateId(parameters, user.GetSubjectId());
-            var consent = await _consentResponseStore.ReadAsync(id);
+            var consent = await _consentResponseStore.ReadAsync(consentRequest.Id);
             if (consent == null)
             {
                 _logger.LogError("consent message is missing.");
@@ -134,7 +134,7 @@ namespace IdentityServer4.Endpoints
             }
 
             var result = await ProcessAuthorizeRequestAsync(parameters, user, consent.Data);
-            await _consentResponseStore.DeleteAsync(id);
+            await _consentResponseStore.DeleteAsync(consentRequest.Id);
 
             _logger.LogInformation("End Authorize Request. Result type: {0}", result?.GetType().ToString() ?? "-none-");
 

@@ -57,10 +57,5 @@ namespace IdentityServer4.Models
         /// The return information.
         /// </value>
         public ClientReturnInfo ReturnInfo { get; set; }
-
-        internal static string CreateId()
-        {
-            return CryptoRandom.CreateUniqueId();
-        }
     }
 }

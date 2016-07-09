@@ -143,11 +143,10 @@ namespace IdentityServer4.Endpoints.Results
                 }
             }
 
-            var id = ErrorMessage.CreateId();
-            var message = new Message<ErrorMessage>(errorModel);
-            await _errorMessageStore.WriteAsync(id, message);
+            var message = new MessageWithId<ErrorMessage>(errorModel);
+            await _errorMessageStore.WriteAsync(message.Id, message);
 
-            return new ErrorPageResult(_context.Options.UserInteractionOptions, id);
+            return new ErrorPageResult(_context.Options.UserInteractionOptions, message.Id);
         }
 
         public async Task<IEndpointResult> CreateAuthorizeResultAsync(ValidatedAuthorizeRequest request)

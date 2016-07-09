@@ -17,6 +17,7 @@ using IdentityServer4;
 using IdentityServer4.Endpoints.Results;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
+using IdentityServer4.Extensions;
 
 namespace UnitTests.Endpoints.Authorize
 {
@@ -116,62 +117,42 @@ namespace UnitTests.Endpoints.Authorize
             result.Should().BeAssignableTo<AuthorizeResult>();
         }
 
-        //[Fact]
-        //[Trait("Category", Category)]
-        //public async Task ProcessAsync_authorize_with_login_path_without_login_params_should_return_error_page()
-        //{
-        //    _context.HttpContext.Request.Method = "GET";
-        //    _context.HttpContext.Request.Path = new PathString("/connect/authorize/login");
-        //    _context.HttpContext.SetUser(_user);
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task ProcessAsync_authorize_after_login_path_should_return_authorization_result()
+        {
+            _context.HttpContext.Request.Method = "GET";
+            _context.HttpContext.Request.Path = new PathString("/connect/authorize/login");
+            _context.HttpContext.SetUser(_user);
 
-        //    var result = await _subject.ProcessAsync(_context);
+            var result = await _subject.ProcessAsync(_context);
 
-        //    result.Should().BeAssignableTo<ErrorPageResult>();
-        //}
+            result.Should().BeAssignableTo<AuthorizeResult>();
+        }
 
-        //[Fact]
-        //[Trait("Category", Category)]
-        //public async Task ProcessAsync_authorize_with_login_path_should_return_authorization_result()
-        //{
-        //    _context.HttpContext.Request.Method = "GET";
-        //    _context.HttpContext.Request.Path = new PathString("/connect/authorize/login");
-        //    _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
-        //    _context.HttpContext.SetUser(_user);
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task ProcessAsync_authorize_with_consent_path_should_return_authorization_result()
+        {
+            var parameters = new NameValueCollection()
+            {
+                { "client_id", "client" },
+                { "nonce", "some_nonce" },
+                { "scope", "api1 api2" }
+            };
+            var request = new ConsentRequest(parameters, _user.GetSubjectId());
+            _mockUserConsentResponseMessageStore.Messages.Add(request.Id, new Message<ConsentResponse>(new ConsentResponse()));
 
-        //    var result = await _subject.ProcessAsync(_context);
+            _context.HttpContext.SetUser(_user);
 
-        //    result.Should().BeAssignableTo<AuthorizeResult>();
-        //}
+            _context.HttpContext.Request.Method = "GET";
+            _context.HttpContext.Request.Path = new PathString("/connect/authorize/consent");
+            _context.HttpContext.Request.QueryString = new QueryString("?" + parameters.ToQueryString());
 
-        //[Fact]
-        //[Trait("Category", Category)]
-        //public async Task ProcessAsync_authorize_with_consent_path_without_consent_params_should_return_error_page()
-        //{
-        //    _context.HttpContext.Request.Method = "GET";
-        //    _context.HttpContext.Request.Path = new PathString("/connect/authorize/consent");
-        //    _context.HttpContext.SetUser(_user);
+            var result = await _subject.ProcessAsync(_context);
 
-        //    var result = await _subject.ProcessAsync(_context);
-
-        //    result.Should().BeAssignableTo<ErrorPageResult>();
-        //}
-
-        //[Fact]
-        //[Trait("Category", Category)]
-        //public async Task ProcessAsync_authorize_with_consent_path_should_return_authorization_result()
-        //{
-        //    _context.HttpContext.Request.Method = "GET";
-        //    ConsentResponse.CreateId()
-        //    _mockUserConsentResponseMessageStore.Messages.Add("123", new Message<ConsentResponse>(new ConsentResponse()));
-        //    _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
-        //    _context.HttpContext.SetUser(_user);
-        //    _context.HttpContext.Request.Path = new PathString("/connect/authorize/consent");
-
-        //    var result = await _subject.ProcessAsync(_context);
-
-        //    result.Should().BeAssignableTo<AuthorizeResult>();
-        //}
-
+            result.Should().BeAssignableTo<AuthorizeResult>();
+        }
 
 
         [Fact]

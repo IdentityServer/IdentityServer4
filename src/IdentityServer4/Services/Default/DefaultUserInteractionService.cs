@@ -91,8 +91,8 @@ namespace IdentityServer4.Services.Default
                 subject = user.GetSubjectId();
             }
 
-            var id = ConsentResponse.CreateId(request.ClientId, subject, request.Nonce, request.ScopesRequested);
-            await _consentMessageStore.WriteAsync(id, new Message<ConsentResponse>(consent));
+            var consentRequest = new ConsentRequest(request, subject);
+            await _consentMessageStore.WriteAsync(consentRequest.Id, new Message<ConsentResponse>(consent));
         }
 
         public bool IsValidReturnUrl(string returnUrl)
