@@ -51,7 +51,7 @@ namespace IdentityServer4.Validation
             {
                 await RaiseFailureEvent(parsedSecret.Id, "Unknown client");
 
-                _logger.LogError("No client with that id found. aborting");
+                _logger.LogError("No client with id '{clientId}' found. aborting", parsedSecret.Id);
                 return fail;
             }
 

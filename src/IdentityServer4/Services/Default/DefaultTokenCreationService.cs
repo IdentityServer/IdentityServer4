@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using IdentityModel;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityServer4.Services.Default
 {
@@ -56,7 +57,16 @@ namespace IdentityServer4.Services.Default
                 throw new InvalidOperationException("No signing credential is configured. Can't create JWT token");
             }
 
-            return new JwtHeader(credential);
+            var header = new JwtHeader(credential);
+
+            // emit x5t claim for backwards compatibility with v4 of MS JWT library
+            var x509key = credential.Key as X509SecurityKey;
+            if (x509key != null)
+            {
+                header.Add("x5t", Base64Url.Encode(x509key.Certificate.GetCertHash()));
+            }
+
+            return header;
         }
 
         /// <summary>

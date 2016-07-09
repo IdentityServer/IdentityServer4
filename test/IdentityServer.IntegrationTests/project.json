@@ -5,11 +5,13 @@
     "xunit": "2.2.0-beta2-build3300",
     "dotnet-test-xunit": "2.2.0-preview2-build1029",
     "FluentAssertions": "4.6.1",
-    "IdentityServer4": "1.0.0-*",
     "IdentityModel": "2.0.0-*",
-    "Microsoft.AspNetCore.TestHost": "1.0.0-*",
-    "Microsoft.AspNetCore.Http.Abstractions": "1.0.0-*",
-    "Microsoft.AspNet.WebApi.Client": "5.2.3"
+    "Microsoft.AspNetCore.TestHost": "1.0.0",
+    "Microsoft.AspNetCore.Http.Abstractions": "1.0.0",
+    "Microsoft.AspNet.WebApi.Client": "5.2.3",
+    "IdentityServer4": {
+      "target": "project"
+    }
   },
 
   "frameworks": {
