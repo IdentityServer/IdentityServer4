@@ -99,21 +99,16 @@ namespace IdentityServer4.Services.Default
         {
             if (returnUrl.IsLocalUrl())
             {
-                var basePath = _context.HttpContext.Request.PathBase.ToString().EnsureTrailingSlash();
-                if (returnUrl.StartsWith(basePath))
+                var index = returnUrl.IndexOf('?');
+                if (index >= 0)
                 {
-                    returnUrl = returnUrl.Substring(basePath.Length);
-                    var index = returnUrl.IndexOf('?');
-                    if (index >= 0)
-                    {
-                        returnUrl = returnUrl.Substring(0, index);
-                    }
+                    returnUrl = returnUrl.Substring(0, index);
+                }
 
-                    if (returnUrl.Equals(Constants.RoutePaths.Oidc.AuthorizeAfterLogin, StringComparison.Ordinal) || 
-                        returnUrl.Equals(Constants.RoutePaths.Oidc.AuthorizeAfterConsent, StringComparison.Ordinal))
-                    {
-                        return true;
-                    }
+                if (returnUrl.EndsWith(Constants.RoutePaths.Oidc.AuthorizeAfterLogin, StringComparison.Ordinal) || 
+                    returnUrl.EndsWith(Constants.RoutePaths.Oidc.AuthorizeAfterConsent, StringComparison.Ordinal))
+                {
+                    return true;
                 }
             }
 
