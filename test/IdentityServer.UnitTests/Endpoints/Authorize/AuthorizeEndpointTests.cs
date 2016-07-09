@@ -132,7 +132,7 @@ namespace UnitTests.Endpoints.Authorize
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task ProcessAsync_authorize_with_consent_path_should_return_authorization_result()
+        public async Task ProcessAsync_authorize_after_consent_path_should_return_authorization_result()
         {
             var parameters = new NameValueCollection()
             {
@@ -243,146 +243,124 @@ namespace UnitTests.Endpoints.Authorize
         }
 
         // after login
-        //[Fact]
-        //[Trait("Category", Category)]
-        //public async Task ProcessAuthorizeAfterLoginAsync_no_id_param_should_return_error_page()
-        //{
-        //    _mockSignInResponseStore.Messages.Add("123", new Message<SignInResponse>(new SignInResponse()));
-        //    _context.HttpContext.SetUser(_user);
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task ProcessAuthorizeAfterLoginAsync_no_user_should_return_error_page()
+        {
+            _context.HttpContext.SetUser(null);
 
-        //    var result = await _subject.ProcessAuthorizeAfterLoginAsync(_context);
+            var result = await _subject.ProcessAuthorizeAfterLoginAsync(_context);
 
-        //    result.Should().BeAssignableTo<ErrorPageResult>();
-        //}
+            result.Should().BeAssignableTo<ErrorPageResult>();
+        }
 
-        //[Fact]
-        //[Trait("Category", Category)]
-        //public async Task ProcessAuthorizeAfterLoginAsync_no_signin_message_should_return_error_page()
-        //{
-        //    _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
-        //    _context.HttpContext.SetUser(_user);
-
-        //    var result = await _subject.ProcessAuthorizeAfterLoginAsync(_context);
-
-        //    result.Should().BeAssignableTo<ErrorPageResult>();
-        //}
-
-        //[Fact]
-        //[Trait("Category", Category)]
-        //public async Task ProcessAuthorizeAfterLoginAsync_signin_missing_params_data_should_return_error_page()
-        //{
-        //    _mockSignInResponseStore.Messages.Add("123", new Message<SignInResponse>(new SignInResponse()));
-        //    _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
-        //    _context.HttpContext.SetUser(_user);
-
-        //    var result = await _subject.ProcessAuthorizeAfterLoginAsync(_context);
-
-        //    result.Should().BeAssignableTo<ErrorPageResult>();
-        //}
-
-        //[Fact]
-        //[Trait("Category", Category)]
-        //public async Task ProcessAuthorizeAfterLoginAsync_valid_signin_message_should_return_authorize_result()
-        //{
-        //    _mockSignInResponseStore.Messages.Add("123", new Message<SignInResponse>(new SignInResponse()) { AuthorizeRequestParameters = new Dictionary<string, string>() });
-        //    _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
-        //    _context.HttpContext.SetUser(_user);
-
-        //    var result = await _subject.ProcessAuthorizeAfterLoginAsync(_context);
-
-        //    result.Should().BeAssignableTo<AuthorizeResult>();
-        //}
-
-        //[Fact]
-        //[Trait("Category", Category)]
-        //public async Task ProcessAuthorizeAfterLoginAsync_valid_signin_message_should_cleanup_signin_message_cookie()
-        //{
-        //    _mockSignInResponseStore.Messages.Add("123", new Message<SignInResponse>(new SignInResponse()) { AuthorizeRequestParameters = new Dictionary<string, string>() });
-        //    _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
-        //    _context.HttpContext.SetUser(_user);
-
-        //    await _subject.ProcessAuthorizeAfterLoginAsync(_context);
-
-        //    _mockSignInResponseStore.Messages.Count.Should().Be(0);
-        //}
 
         // after consent
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task ProcessAuthorizeWithConsentAsync_no_user_should_return_error_page()
+        {
+            _context.HttpContext.SetUser(null);
 
-        //[Fact]
-        //[Trait("Category", Category)]
-        //public async Task ProcessAuthorizeWithConsentAsync_no_id_param_should_return_error_page()
-        //{
+            var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
 
-        //    _mockUserConsentResponseMessageStore.Messages.Add("123", new Message<ConsentResponse>(new ConsentResponse()));
-        //    _context.HttpContext.SetUser(_user);
+            result.Should().BeAssignableTo<ErrorPageResult>();
+        }
 
-        //    var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task ProcessAuthorizeWithConsentAsync_no_consent_message_should_return_error_page()
+        {
+            var parameters = new NameValueCollection()
+            {
+                { "client_id", "client" },
+                { "nonce", "some_nonce" },
+                { "scope", "api1 api2" }
+            };
+            var request = new ConsentRequest(parameters, _user.GetSubjectId());
+            _mockUserConsentResponseMessageStore.Messages.Add(request.Id, null);
 
-        //    result.Should().BeAssignableTo<ErrorPageResult>();
-        //}
+            _context.HttpContext.SetUser(_user);
 
-        //[Fact]
-        //[Trait("Category", Category)]
-        //public async Task ProcessAuthorizeWithConsentAsync_no_consent_message_should_return_error_page()
-        //{
-        //    _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
-        //    _context.HttpContext.SetUser(_user);
+            _context.HttpContext.Request.Method = "GET";
+            _context.HttpContext.Request.Path = new PathString("/connect/authorize/consent");
+            _context.HttpContext.Request.QueryString = new QueryString("?" + parameters.ToQueryString());
 
-        //    var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
+            var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
 
-        //    result.Should().BeAssignableTo<ErrorPageResult>();
-        //}
+            result.Should().BeAssignableTo<ErrorPageResult>();
+        }
 
-        //[Fact]
-        //[Trait("Category", Category)]
-        //public async Task ProcessAuthorizeWithConsentAsync_consent_missing_params_data_should_return_error_page()
-        //{
-        //    _mockUserConsentResponseMessageStore.Messages.Add("123", new Message<ConsentResponse>(new ConsentResponse()));
-        //    _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
-        //    _context.HttpContext.SetUser(_user);
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task ProcessAuthorizeWithConsentAsync_consent_missing_consent_data_should_return_error_page()
+        {
+            var parameters = new NameValueCollection()
+            {
+                { "client_id", "client" },
+                { "nonce", "some_nonce" },
+                { "scope", "api1 api2" }
+            };
+            var request = new ConsentRequest(parameters, _user.GetSubjectId());
+            _mockUserConsentResponseMessageStore.Messages.Add(request.Id, new Message<ConsentResponse>(null));
 
-        //    var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
+            _context.HttpContext.SetUser(_user);
 
-        //    result.Should().BeAssignableTo<ErrorPageResult>();
-        //}
+            _context.HttpContext.Request.Method = "GET";
+            _context.HttpContext.Request.Path = new PathString("/connect/authorize/consent");
+            _context.HttpContext.Request.QueryString = new QueryString("?" + parameters.ToQueryString());
 
-        //[Fact]
-        //[Trait("Category", Category)]
-        //public async Task ProcessAuthorizeWithConsentAsync_consent_missing_consent_data_should_return_error_page()
-        //{
-        //    _mockUserConsentResponseMessageStore.Messages.Add("123", new Message<ConsentResponse>(null));
-        //    _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
-        //    _context.HttpContext.SetUser(_user);
+            var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
 
-        //    var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
+            result.Should().BeAssignableTo<ErrorPageResult>();
+        }
 
-        //    result.Should().BeAssignableTo<ErrorPageResult>();
-        //}
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task ProcessAuthorizeWithConsentAsync_valid_consent_message_should_return_authorize_result()
+        {
+            var parameters = new NameValueCollection()
+            {
+                { "client_id", "client" },
+                { "nonce", "some_nonce" },
+                { "scope", "api1 api2" }
+            };
+            var request = new ConsentRequest(parameters, _user.GetSubjectId());
+            _mockUserConsentResponseMessageStore.Messages.Add(request.Id, new Message<ConsentResponse>(new ConsentResponse() {ScopesConsented = new string[] { "api1", "api2" } }));
 
-        //[Fact]
-        //[Trait("Category", Category)]
-        //public async Task ProcessAuthorizeWithConsentAsync_valid_consent_message_should_return_authorize_result()
-        //{
-        //    _mockUserConsentResponseMessageStore.Messages.Add("123", new Message<ConsentResponse>(new ConsentResponse()) { AuthorizeRequestParameters = new Dictionary<string, string>() });
-        //    _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
-        //    _context.HttpContext.SetUser(_user);
+            _context.HttpContext.SetUser(_user);
 
-        //    var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
+            _context.HttpContext.Request.Method = "GET";
+            _context.HttpContext.Request.Path = new PathString("/connect/authorize/consent");
+            _context.HttpContext.Request.QueryString = new QueryString("?" + parameters.ToQueryString());
 
-        //    result.Should().BeAssignableTo<AuthorizeResult>();
-        //}
+            var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
 
-        //[Fact]
-        //[Trait("Category", Category)]
-        //public async Task ProcessAuthorizeWithConsentAsync_valid_consent_message_should_cleanup_consent_cookie()
-        //{
-        //    _mockUserConsentResponseMessageStore.Messages.Add("123", new Message<ConsentResponse>(new ConsentResponse()) { AuthorizeRequestParameters = new Dictionary<string, string>() });
-        //    _context.HttpContext.Request.QueryString = _context.HttpContext.Request.QueryString.Add("id", "123");
-        //    _context.HttpContext.SetUser(_user);
+            result.Should().BeAssignableTo<AuthorizeResult>();
+        }
 
-        //    await _subject.ProcessAuthorizeAfterConsentAsync(_context);
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task ProcessAuthorizeWithConsentAsync_valid_consent_message_should_cleanup_consent_cookie()
+        {
+            var parameters = new NameValueCollection()
+            {
+                { "client_id", "client" },
+                { "nonce", "some_nonce" },
+                { "scope", "api1 api2" }
+            };
+            var request = new ConsentRequest(parameters, _user.GetSubjectId());
+            _mockUserConsentResponseMessageStore.Messages.Add(request.Id, new Message<ConsentResponse>(new ConsentResponse() { ScopesConsented = new string[] { "api1", "api2" } }));
 
-        //    _mockUserConsentResponseMessageStore.Messages.Count.Should().Be(0);
-        //}
+            _context.HttpContext.SetUser(_user);
+
+            _context.HttpContext.Request.Method = "GET";
+            _context.HttpContext.Request.Path = new PathString("/connect/authorize/consent");
+            _context.HttpContext.Request.QueryString = new QueryString("?" + parameters.ToQueryString());
+
+            var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
+
+            _mockUserConsentResponseMessageStore.Messages.Count.Should().Be(0);
+        }
     }
 }
