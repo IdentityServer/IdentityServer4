@@ -87,8 +87,9 @@ namespace IdentityServer4.Tests.Common
                 var interaction = ctx.RequestServices.GetRequiredService<IUserInteractionService>();
                 LoginRequest = await interaction.GetLoginContextAsync();
             }
-            catch(Exception ex) {
-                    var msg = ex.ToString();
+            catch(Exception ex)
+            {
+                var msg = ex.ToString();
                 //Trace.Write(msg);
             }
         }
@@ -123,7 +124,6 @@ namespace IdentityServer4.Tests.Common
         {
             try
             {
-
                 var interaction = ctx.RequestServices.GetRequiredService<IUserInteractionService>();
                 ConsentRequest = await interaction.GetConsentContextAsync();
             }
@@ -132,11 +132,17 @@ namespace IdentityServer4.Tests.Common
 
         async Task CreateConsentResponse(HttpContext ctx)
         {
-            if (ConsentResponse != null)
+            if (ConsentRequest != null && ConsentResponse != null)
             {
                 var interaction = ctx.RequestServices.GetRequiredService<IUserInteractionService>();
                 await interaction.GrantConsentAsync(ConsentRequest, ConsentResponse);
                 ConsentResponse = null;
+
+                var url = ctx.Request.Query[this.Options.UserInteractionOptions.ConsentReturnUrlParameter].FirstOrDefault();
+                if (url != null)
+                {
+                    ctx.Response.Redirect(url);
+                }
             }
         }
 
