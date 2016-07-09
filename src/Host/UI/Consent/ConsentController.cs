@@ -100,7 +100,7 @@ namespace Host.UI.Consent
 
         async Task<ConsentViewModel> BuildViewModelAsync(string returnUrl, ConsentInputModel model = null)
         {
-            if (returnUrl != null && _interaction.IsValidReturnUrl(returnUrl))
+            if (returnUrl != null)
             {
                 var request = await _interaction.GetConsentContextAsync(returnUrl);
                 if (request != null)

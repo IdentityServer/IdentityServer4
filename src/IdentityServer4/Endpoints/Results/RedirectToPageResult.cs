@@ -29,7 +29,7 @@ namespace IdentityServer4.Endpoints.Results
             }
         }
 
-        public Task ExecuteAsync(IdentityServerContext context)
+        public virtual Task ExecuteAsync(IdentityServerContext context)
         {
             var redirect = Url;
             if (!redirect.IsLocalUrl())

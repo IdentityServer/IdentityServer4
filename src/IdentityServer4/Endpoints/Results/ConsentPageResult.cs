@@ -5,10 +5,10 @@ using IdentityServer4.Configuration;
 
 namespace IdentityServer4.Endpoints.Results
 {
-    public class ConsentPageResult : RedirectToPageResult
+    public class ConsentPageResult : RedirectToPageWithReturnUrlResult
     {
-        public ConsentPageResult(UserInteractionOptions options, string id)
-            : base(options.ConsentUrl, options.ConsentReturnUrlParameter, id)
+        public ConsentPageResult(UserInteractionOptions options, string returnUrl)
+            : base(options.ConsentUrl, options.ConsentReturnUrlParameter, returnUrl)
         {
         }
     }

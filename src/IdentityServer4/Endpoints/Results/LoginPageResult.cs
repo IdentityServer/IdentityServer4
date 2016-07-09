@@ -5,7 +5,7 @@ using IdentityServer4.Configuration;
 
 namespace IdentityServer4.Endpoints.Results
 {
-    public class LoginPageResult : RedirectToPageResult
+    public class LoginPageResult : RedirectToPageWithReturnUrlResult
     {
         public LoginPageResult(UserInteractionOptions options, string returnUrl)
             : base(options.LoginUrl, options.LogoutReturnUrlParameter, returnUrl)

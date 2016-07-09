@@ -42,7 +42,7 @@ namespace IdentityServer4.Endpoints.Results
 
         public Task<IEndpointResult> CreateLoginResultAsync(ValidatedAuthorizeRequest request)
         {
-            var url = _context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.RoutePaths.Oidc.AuthorizeAfterLogin;
+            var url = _context.HttpContext.Request.PathBase.ToString().EnsureTrailingSlash() + Constants.RoutePaths.Oidc.AuthorizeAfterLogin;
             url = url.AddQueryString(request.Raw.ToQueryString());
 
             var result = new LoginPageResult(_context.Options.UserInteractionOptions, url);
@@ -51,7 +51,7 @@ namespace IdentityServer4.Endpoints.Results
 
         public Task<IEndpointResult> CreateConsentResultAsync(ValidatedAuthorizeRequest request)
         {
-            var url = _context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.RoutePaths.Oidc.AuthorizeAfterConsent;
+            var url = _context.HttpContext.Request.PathBase.ToString().EnsureTrailingSlash() + Constants.RoutePaths.Oidc.AuthorizeAfterConsent;
             url = url.AddQueryString(request.Raw.ToQueryString());
 
             var result = new ConsentPageResult(_context.Options.UserInteractionOptions, url);

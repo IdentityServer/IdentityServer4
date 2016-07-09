@@ -29,7 +29,7 @@ namespace Host.UI.Login
         {
             var vm = new LoginViewModel();
 
-            if (returnUrl != null && _interaction.IsValidReturnUrl(returnUrl))
+            if (returnUrl != null)
             {
                 var context = await _interaction.GetLoginContextAsync();
                 if (context != null)

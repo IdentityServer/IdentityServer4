@@ -49,7 +49,7 @@ namespace IdentityServer4.Services.Default
                 paramValue = _context.HttpContext.Request.Query[paramName].FirstOrDefault();
             }
 
-            if (paramValue != null)
+            if (paramValue != null && IsValidReturnUrl(paramValue))
             {
                 var parameters = paramValue.ReadQueryStringAsNameValueCollection();
                 var user = await _context.GetIdentityServerUserAsync();
@@ -97,7 +97,27 @@ namespace IdentityServer4.Services.Default
 
         public bool IsValidReturnUrl(string returnUrl)
         {
-            return true;
+            if (returnUrl.IsLocalUrl())
+            {
+                var basePath = _context.HttpContext.Request.PathBase.ToString().EnsureTrailingSlash();
+                if (returnUrl.StartsWith(basePath))
+                {
+                    returnUrl = returnUrl.Substring(basePath.Length);
+                    var index = returnUrl.IndexOf('?');
+                    if (index >= 0)
+                    {
+                        returnUrl = returnUrl.Substring(0, index);
+                    }
+
+                    if (returnUrl.Equals(Constants.RoutePaths.Oidc.AuthorizeAfterLogin, StringComparison.Ordinal) || 
+                        returnUrl.Equals(Constants.RoutePaths.Oidc.AuthorizeAfterConsent, StringComparison.Ordinal))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }

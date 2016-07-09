@@ -141,7 +141,14 @@ namespace IdentityServer4.Extensions
         [DebuggerStepThrough]
         public static bool IsLocalUrl(this string url)
         {
-            return url != null && (url.StartsWith("/") || url.StartsWith("~/"));
+            return
+                !String.IsNullOrEmpty(url) &&
+
+                // Allows "/" or "/foo" but not "//" or "/\".
+                ((url[0] == '/' && (url.Length == 1 || (url[1] != '/' && url[1] != '\\'))) ||
+
+                // Allows "~/" or "~/foo".
+                (url.Length > 1 && url[0] == '~' && url[1] == '/'));
         }
 
 
