@@ -3,7 +3,7 @@
 
 namespace IdentityServer4.Events
 {
-    class IntrospectionEndpointDetail
+    public class IntrospectionEndpointDetail
     {
         public string EndpointName { get; set; } = EventConstants.EndpointNames.Introspection;
         public string Token { get; set; }
