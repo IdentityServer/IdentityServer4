@@ -127,14 +127,14 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
                 });
             var response = await _mockPipeline.BrowserClient.GetAsync(url);
 
-            _mockPipeline.SignInRequest.Should().NotBeNull();
-            _mockPipeline.SignInRequest.ClientId.Should().Be("client1");
-            _mockPipeline.SignInRequest.DisplayMode.Should().Be("popup");
-            _mockPipeline.SignInRequest.UiLocales.Should().Be("ui_locale_value");
-            _mockPipeline.SignInRequest.IdP.Should().Be("idp_value");
-            _mockPipeline.SignInRequest.Tenant.Should().Be("tenant_value");
-            _mockPipeline.SignInRequest.LoginHint.Should().Be("login_hint_value");
-            _mockPipeline.SignInRequest.AcrValues.ShouldAllBeEquivalentTo(new string[] { "acr_2", "acr_1" });
+            _mockPipeline.LoginRequest.Should().NotBeNull();
+            _mockPipeline.LoginRequest.ClientId.Should().Be("client1");
+            _mockPipeline.LoginRequest.DisplayMode.Should().Be("popup");
+            _mockPipeline.LoginRequest.UiLocales.Should().Be("ui_locale_value");
+            _mockPipeline.LoginRequest.IdP.Should().Be("idp_value");
+            _mockPipeline.LoginRequest.Tenant.Should().Be("tenant_value");
+            _mockPipeline.LoginRequest.LoginHint.Should().Be("login_hint_value");
+            _mockPipeline.LoginRequest.AcrValues.ShouldAllBeEquivalentTo(new string[] { "acr_2", "acr_1" });
             // todo: add custom params to signin message
         }
 
@@ -143,7 +143,6 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
         public async Task signin_response_should_allow_successful_authorization_response()
         {
             _mockPipeline.Subject = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
-            _mockPipeline.SignInResponse = new SignInResponse();
             _mockPipeline.BrowserClient.StopRedirectingAfter = 2;
 
             var url = _mockPipeline.CreateAuthorizeUrl(
@@ -305,7 +304,6 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
         public async Task login_response_and_consent_response_should_receive_authorization_response()
         {
             _mockPipeline.Subject = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
-            _mockPipeline.SignInResponse = new SignInResponse();
 
             _mockPipeline.ConsentResponse = new ConsentResponse()
             {

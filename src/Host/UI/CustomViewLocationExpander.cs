@@ -9,8 +9,8 @@ namespace Host.UI
             ViewLocationExpanderContext context,
             IEnumerable<string> viewLocations)
         {
-            yield return "~/UI/{1}/Views/{0}.cshtml";
-            yield return "~/UI/SharedViews/{0}.cshtml";
+            yield return "~/ui/{1}/Views/{0}.cshtml";
+            yield return "~/ui/SharedViews/{0}.cshtml";
         }
 
         public void PopulateValues(ViewLocationExpanderContext context)

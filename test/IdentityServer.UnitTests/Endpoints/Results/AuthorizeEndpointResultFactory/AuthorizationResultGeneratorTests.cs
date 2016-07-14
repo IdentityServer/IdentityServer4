@@ -27,8 +27,6 @@ namespace UnitTests.Endpoints.Results
         IdentityServerContext _context = IdentityServerContextHelper.Create();
         MockClientListCookie _mockClientListCookie;
         StubAuthorizeResponseGenerator _stubAuthorizeResponseGenerator = new StubAuthorizeResponseGenerator();
-        MockMessageStore<SignInRequest> _mockSignInMessageStore = new MockMessageStore<SignInRequest>();
-        MockMessageStore<ConsentRequest> _mockConsentRequestMessageStore = new MockMessageStore<ConsentRequest>();
         MockMessageStore<IdentityServer4.Models.ErrorMessage> _mockErrorMessageStore = new MockMessageStore<IdentityServer4.Models.ErrorMessage>();
         TestLocalizationService _stubLocalizationService = new TestLocalizationService();
 
@@ -42,8 +40,6 @@ namespace UnitTests.Endpoints.Results
                 _context,
                 _stubAuthorizeResponseGenerator,
                 _stubLocalizationService,
-                _mockSignInMessageStore,
-                _mockConsentRequestMessageStore,
                 _mockErrorMessageStore, 
                 _mockClientListCookie);
         }
@@ -59,6 +55,9 @@ namespace UnitTests.Endpoints.Results
                 ClientName = "Test Client"
             },
             Raw = new NameValueCollection()
+            {
+                {"foo","bar"}
+            }
         };
 
         [Fact]
@@ -79,7 +78,7 @@ namespace UnitTests.Endpoints.Results
 
             var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(ErrorTypes.User, "error", _validatedRequest));
 
-            var model = _mockErrorMessageStore.Messages[result.Id];
+            var model = _mockErrorMessageStore.Messages[result.ParamValue];
             model.Data.ErrorCode.Should().Be("error");
             model.Data.ErrorDescription.Should().Be("translation");
             model.Data.RequestId.Should().Be("555");
@@ -93,7 +92,7 @@ namespace UnitTests.Endpoints.Results
 
             var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(ErrorTypes.User, "error", _validatedRequest));
 
-            var model = _mockErrorMessageStore.Messages[result.Id];
+            var model = _mockErrorMessageStore.Messages[result.ParamValue];
             model.Data.ErrorDescription.Should().Be("error");
         }
 
@@ -103,7 +102,7 @@ namespace UnitTests.Endpoints.Results
         {
             var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(ErrorTypes.User, "error", _validatedRequest));
 
-            var model = _mockErrorMessageStore.Messages[result.Id];
+            var model = _mockErrorMessageStore.Messages[result.ParamValue];
             model.Data.ReturnInfo.Should().BeNull();
         }
 
@@ -115,7 +114,7 @@ namespace UnitTests.Endpoints.Results
 
             var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(ErrorTypes.Client, "error", _validatedRequest));
 
-            var model = _mockErrorMessageStore.Messages[result.Id];
+            var model = _mockErrorMessageStore.Messages[result.ParamValue];
             model.Data.ReturnInfo.Should().NotBeNull();
             model.Data.ReturnInfo.ClientId.Should().Be("client_id");
         }
@@ -130,7 +129,7 @@ namespace UnitTests.Endpoints.Results
 
             var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(ErrorTypes.Client, "error", _validatedRequest));
 
-            var model = _mockErrorMessageStore.Messages[result.Id];
+            var model = _mockErrorMessageStore.Messages[result.ParamValue];
             model.Data.ReturnInfo.IsPost.Should().BeTrue();
             model.Data.ReturnInfo.Uri.Should().Be("http://client/callback");
             model.Data.ReturnInfo.PostBody.Should().NotBeNull();
@@ -146,7 +145,7 @@ namespace UnitTests.Endpoints.Results
 
             var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(ErrorTypes.Client, "error", _validatedRequest));
 
-            var model = _mockErrorMessageStore.Messages[result.Id];
+            var model = _mockErrorMessageStore.Messages[result.ParamValue];
             model.Data.ReturnInfo.IsPost.Should().BeFalse();
             model.Data.ReturnInfo.Uri.Should().StartWith("http://client/callback#");
             model.Data.ReturnInfo.Uri.Should().Contain("state=123");
@@ -162,7 +161,7 @@ namespace UnitTests.Endpoints.Results
 
             var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(ErrorTypes.Client, "error", _validatedRequest));
 
-            var model = _mockErrorMessageStore.Messages[result.Id];
+            var model = _mockErrorMessageStore.Messages[result.ParamValue];
             model.Data.ReturnInfo.IsPost.Should().BeFalse();
             model.Data.ReturnInfo.Uri.Should().StartWith("http://client/callback?");
             model.Data.ReturnInfo.Uri.Should().Contain("state=123");
@@ -302,29 +301,15 @@ namespace UnitTests.Endpoints.Results
         public async Task CreateLoginResultAsync_should_return_login_result()
         {
             var result = await _subject.CreateLoginResultAsync(_validatedRequest);
-
             result.Should().BeAssignableTo<LoginPageResult>();
         }
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task CreateLoginResultAsync_should_store_signin_message()
+        public async Task CreateLoginResultAsync_should_generate_returnurl_to_authorize_after_login_with_raw_params()
         {
-            _mockSignInMessageStore.Messages.Count.Should().Be(0);
-
-            await _subject.CreateLoginResultAsync(_validatedRequest);
-
-            _mockSignInMessageStore.Messages.Count.Should().Be(1);
-        }
-
-        [Fact]
-        [Trait("Category", Category)]
-        public async Task CreateLoginResultAsync_should_generate_redirect_with_signin_message_id()
-        {
-            var result = (LoginPageResult)await _subject.CreateLoginResultAsync(_validatedRequest);
-
-            var id = _mockSignInMessageStore.Messages.First().Key;
-            result.Id.Should().Be(id);
+            var result = (LoginPageResult)(await _subject.CreateLoginResultAsync(_validatedRequest));
+            result.ParamValue.Should().Be("/connect/authorize/login?foo=bar");
         }
 
 
@@ -332,42 +317,16 @@ namespace UnitTests.Endpoints.Results
         [Trait("Category", Category)]
         public async Task CreateConsentResultAsync_should_return_consent_result()
         {
-            var request = new ValidatedAuthorizeRequest()
-            {
-                Raw = new NameValueCollection()
-            };
-            var result = await _subject.CreateConsentResultAsync(request);
-
+            var result = await _subject.CreateConsentResultAsync(_validatedRequest);
             result.Should().BeAssignableTo<ConsentPageResult>();
         }
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task CreateConsentResultAsync_should_store_consent_request_message()
+        public async Task CreateConsentResultAsync_should_generate_returnurl_to_authorize_after_consent_with_raw_params()
         {
-            _mockConsentRequestMessageStore.Messages.Count.Should().Be(0);
-
-            var request = new ValidatedAuthorizeRequest()
-            {
-                Raw = new NameValueCollection()
-            };
-            var result = await _subject.CreateConsentResultAsync(request);
-
-            _mockConsentRequestMessageStore.Messages.Count.Should().Be(1);
-        }
-
-        [Fact]
-        [Trait("Category", Category)]
-        public async Task CreateConsentResultAsync_should_generate_redirect_with_consent_message_id()
-        {
-            var request = new ValidatedAuthorizeRequest()
-            {
-                Raw = new NameValueCollection()
-            };
-            var result = (ConsentPageResult)await _subject.CreateConsentResultAsync(request);
-
-            var id = _mockConsentRequestMessageStore.Messages.First().Key;
-            result.Id.Should().Be(id);
+            var result = (ConsentPageResult)(await _subject.CreateConsentResultAsync(_validatedRequest));
+            result.ParamValue.Should().Be("/connect/authorize/consent?foo=bar");
         }
     }
 }

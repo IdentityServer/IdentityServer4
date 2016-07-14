@@ -16,9 +16,9 @@ namespace IdentityServer4.Tests.Common
 {
     public class IdentityServerPipeline
     {
-        public const string LoginPage = "https://server/ui/login";
-        public const string ConsentPage = "https://server/ui/consent";
-        public const string ErrorPage = "https://server/ui/error";
+        public const string LoginPage = "https://server/account/login";
+        public const string ConsentPage = "https://server/account/consent";
+        public const string ErrorPage = "https://server/home/error";
 
         public const string DiscoveryEndpoint = "https://server/.well-known/openid-configuration";
         public const string DiscoveryKeysEndpoint = "https://server/.well-known/openid-configuration/jwks";

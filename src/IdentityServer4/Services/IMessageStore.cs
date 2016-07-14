@@ -3,12 +3,13 @@
 
 using IdentityServer4.Models;
 using System.Threading.Tasks;
+using System;
 
 namespace IdentityServer4.Services
 {
     public interface IMessageStore<TModel>
     {
-        Task WriteAsync(Message<TModel> message);
+        Task WriteAsync(string id, Message<TModel> message);
         Task<Message<TModel>> ReadAsync(string id);
         Task DeleteAsync(string id);
     }

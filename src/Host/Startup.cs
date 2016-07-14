@@ -34,6 +34,11 @@ namespace Host
                 //    RaiseInformationEvents = true,
                 //    RaiseSuccessEvents = true
                 //};
+
+                options.UserInteractionOptions.LoginUrl = "/ui/login";
+                options.UserInteractionOptions.LogoutUrl = "/ui/logout";
+                options.UserInteractionOptions.ConsentUrl = "/ui/consent";
+                options.UserInteractionOptions.ErrorUrl = "/ui/error";
             })
                 .AddInMemoryClients(Clients.Get())
                 .AddInMemoryScopes(Scopes.Get())

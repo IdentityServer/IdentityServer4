@@ -18,7 +18,6 @@ namespace IdentityServer4.Models
         public Message(TModel data)
         {
             Created = DateTimeOffsetHelper.UtcNow.Ticks;
-            Id = CryptoRandom.CreateUniqueId();
             Data = data;
         }
 
@@ -29,12 +28,16 @@ namespace IdentityServer4.Models
         /// The created UTC ticks.
         /// </value>
         public long Created { get; set; }
+        public TModel Data { get; set; }
+    }
+
+    public class MessageWithId<TModel> : Message<TModel>
+    {
+        public MessageWithId(TModel data) : base(data)
+        {
+            Id = CryptoRandom.CreateUniqueId();
+        }
 
         public string Id { get; set; }
-
-        public TModel Data { get; set; }
-
-        public string ResponseUrl { get; set; }
-        public Dictionary<string, string> AuthorizeRequestParameters { get; set; }
     }
 }

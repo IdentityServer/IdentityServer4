@@ -1,8 +1,11 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using Microsoft.AspNet.Http;
+using Microsoft.AspNetCore.WebUtilities;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -136,6 +139,20 @@ namespace IdentityServer4.Extensions
         }
 
         [DebuggerStepThrough]
+        public static bool IsLocalUrl(this string url)
+        {
+            return
+                !String.IsNullOrEmpty(url) &&
+
+                // Allows "/" or "/foo" but not "//" or "/\".
+                ((url[0] == '/' && (url.Length == 1 || (url[1] != '/' && url[1] != '\\'))) ||
+
+                // Allows "~/" or "~/foo".
+                (url.Length > 1 && url[0] == '~' && url[1] == '/'));
+        }
+
+
+        [DebuggerStepThrough]
         public static string AddQueryString(this string url, string query)
         {
             if (!url.Contains("?"))
@@ -160,7 +177,27 @@ namespace IdentityServer4.Extensions
 
             return url + query;
         }
-        
+
+        [DebuggerStepThrough]
+        public static NameValueCollection ReadQueryStringAsNameValueCollection(this string url)
+        {
+            if (url != null)
+            {
+                var idx = url.IndexOf('?');
+                if (idx >= 0)
+                {
+                    url = url.Substring(idx + 1);
+                }
+                var query = QueryHelpers.ParseNullableQuery(url);
+                if (query != null)
+                {
+                    return query.AsNameValueCollection();
+                }
+            }
+
+            return new NameValueCollection();           
+        }
+
         public static string GetOrigin(this string url)
         {
             if (url != null && (url.StartsWith("http://") || url.StartsWith("https://")))
