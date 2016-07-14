@@ -9,6 +9,13 @@ namespace IdentityServer4.Tests.Validation
 {
     class TestProfileService : IProfileService
     {
+        bool _shouldBeActive;
+
+        public TestProfileService(bool shouldBeActive = true)
+        {
+            _shouldBeActive = shouldBeActive;
+        }
+
         public Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
             return Task.FromResult(0);
@@ -16,7 +23,7 @@ namespace IdentityServer4.Tests.Validation
 
         public Task IsActiveAsync(IsActiveContext context)
         {
-            context.IsActive = true;
+            context.IsActive = _shouldBeActive;
             return Task.FromResult(0);
         }
     }
