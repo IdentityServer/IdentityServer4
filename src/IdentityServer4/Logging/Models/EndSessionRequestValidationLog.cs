@@ -6,7 +6,7 @@ using IdentityServer4.Extensions;
 using IdentityServer4.Validation;
 using System.Collections.Generic;
 
-namespace IdentityServer4.Core.Logging
+namespace IdentityServer4.Logging
 {
     internal class EndSessionRequestValidationLog
     {
@@ -41,6 +41,11 @@ namespace IdentityServer4.Core.Logging
 
             PostLogOutUri = request.PostLogOutUri;
             State = request.State;
+        }
+
+        public override string ToString()
+        {
+            return LogSerializer.Serialize(this);
         }
     }
 }

@@ -2,15 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel;
-using IdentityServer4.Configuration;
-using IdentityServer4.Core.Logging;
+using IdentityServer4.Logging;
 using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
-using IdentityServer4.Logging;
-using IdentityServer4.Models;
-using IdentityServer4.Services;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Security.Claims;
@@ -116,17 +111,13 @@ namespace IdentityServer4.Validation
         private void LogWarning(ValidatedEndSessionRequest request,  string message)
         {
             var log = new EndSessionRequestValidationLog(request);
-            var json = LogSerializer.Serialize(log);
-
-            _logger.LogWarning("{0}\n{1}", message, json);
+            _logger.LogWarning(message + "\n{details}", log);
         }
 
         private void LogSuccess(ValidatedEndSessionRequest request)
         {
             var log = new EndSessionRequestValidationLog(request);
-            var json = LogSerializer.Serialize(log);
-
-            _logger.LogInformation("{0}\n{1}", "End session request validation success", json);
+            _logger.LogInformation("End session request validation success\n{details}", log);
         }
     }
 }
