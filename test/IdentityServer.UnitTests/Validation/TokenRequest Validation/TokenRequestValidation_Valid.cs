@@ -6,8 +6,10 @@ using IdentityModel;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Services.InMemory;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -220,81 +222,75 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             result.IsError.Should().BeFalse();
         }
 
-        // todo
-        //[Fact]
-        //[Trait("Category", Category)]
-        //public async Task Valid_RefreshToken_Request()
-        //{
-        //    var mock = new Mock<IUserService>();
-        //    var subjectClaim = new Claim(Constants.ClaimTypes.Subject, "foo");
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task Valid_RefreshToken_Request()
+        {
+            var subjectClaim = new Claim(JwtClaimTypes.Subject, "foo");
 
-        //    var refreshToken = new RefreshToken
-        //    {
-        //        AccessToken = new Token("access_token")
-        //        {
-        //            Claims = new List<Claim> { subjectClaim },
-        //            Client =new Client{ClientId = "roclient"}
-        //        },
-        //        LifeTime = 600,
-        //        CreationTime = DateTimeOffset.UtcNow
-        //    };
-        //    var handle = Guid.NewGuid().ToString();
+            var refreshToken = new RefreshToken
+            {
+                AccessToken = new Token("access_token")
+                {
+                    Claims = new List<Claim> { subjectClaim },
+                    Client = new Client { ClientId = "roclient" }
+                },
+                LifeTime = 600,
+                CreationTime = DateTimeOffset.UtcNow
+            };
+            var handle = Guid.NewGuid().ToString();
 
-        //    var store = new InMemoryRefreshTokenStore();
-        //    await store.StoreAsync(handle, refreshToken);
+            var store = new InMemoryRefreshTokenStore();
+            await store.StoreAsync(handle, refreshToken);
 
-        //    var client = await _clients.FindClientByIdAsync("roclient");
+            var client = await _clients.FindClientByIdAsync("roclient");
 
-        //    var validator = Factory.CreateTokenRequestValidator(
-        //        refreshTokens: store,
-        //        userService: mock.Object);
+            var validator = Factory.CreateTokenRequestValidator(
+                refreshTokens: store);
 
-        //    var parameters = new NameValueCollection();
-        //    parameters.Add(Constants.TokenRequest.GrantType, "refresh_token");
-        //    parameters.Add(Constants.TokenRequest.RefreshToken, handle);
+            var parameters = new NameValueCollection();
+            parameters.Add(OidcConstants.TokenRequest.GrantType, "refresh_token");
+            parameters.Add(OidcConstants.TokenRequest.RefreshToken, handle);
 
-        //    var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client);
 
-        //    result.IsError.Should().BeFalse();
-        //}
+            result.IsError.Should().BeFalse();
+        }
 
-        // todo
-        //[Fact]
-        //[Trait("Category", Category)]
-        //public async Task Valid_RefreshToken_Request_using_Restricted_Client()
-        //{
-        //    var mock = new Mock<IUserService>();
-        //    var subjectClaim = new Claim(Constants.ClaimTypes.Subject, "foo");
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task Valid_RefreshToken_Request_using_Restricted_Client()
+        {
+            var subjectClaim = new Claim(JwtClaimTypes.Subject, "foo");
 
-        //    var refreshToken = new RefreshToken
-        //    {
-        //        AccessToken = new Token("access_token")
-        //        {
-        //            Claims = new List<Claim> { subjectClaim },
-        //            Client = new Client { ClientId = "roclient_restricted_refresh"}
-        //        },
-                
-        //        LifeTime = 600,
-        //        CreationTime = DateTimeOffset.UtcNow
-        //    };
-        //    var handle = Guid.NewGuid().ToString();
+            var refreshToken = new RefreshToken
+            {
+                AccessToken = new Token("access_token")
+                {
+                    Claims = new List<Claim> { subjectClaim },
+                    Client = new Client { ClientId = "roclient_restricted_refresh" }
+                },
 
-        //    var store = new InMemoryRefreshTokenStore();
-        //    await store.StoreAsync(handle, refreshToken);
+                LifeTime = 600,
+                CreationTime = DateTimeOffset.UtcNow
+            };
+            var handle = Guid.NewGuid().ToString();
 
-        //    var client = await _clients.FindClientByIdAsync("roclient_restricted_refresh");
+            var store = new InMemoryRefreshTokenStore();
+            await store.StoreAsync(handle, refreshToken);
 
-        //    var validator = Factory.CreateTokenRequestValidator(
-        //        refreshTokens: store,
-        //        userService: mock.Object);
+            var client = await _clients.FindClientByIdAsync("roclient_restricted_refresh");
 
-        //    var parameters = new NameValueCollection();
-        //    parameters.Add(Constants.TokenRequest.GrantType, "refresh_token");
-        //    parameters.Add(Constants.TokenRequest.RefreshToken, handle);
+            var validator = Factory.CreateTokenRequestValidator(
+                refreshTokens: store);
 
-        //    var result = await validator.ValidateRequestAsync(parameters, client);
+            var parameters = new NameValueCollection();
+            parameters.Add(OidcConstants.TokenRequest.GrantType, "refresh_token");
+            parameters.Add(OidcConstants.TokenRequest.RefreshToken, handle);
 
-        //    result.IsError.Should().BeFalse();
-        //}
+            var result = await validator.ValidateRequestAsync(parameters, client);
+
+            result.IsError.Should().BeFalse();
+        }
     }
 }

@@ -3,7 +3,7 @@
 
 namespace IdentityServer4.Events
 {
-    class EndpointDetail
+    public class EndpointDetail
     {
         public string EndpointName { get; set; }
     }

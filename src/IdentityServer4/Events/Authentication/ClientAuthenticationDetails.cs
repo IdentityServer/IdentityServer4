@@ -3,7 +3,7 @@
 
 namespace IdentityServer4.Events
 {
-    class ClientAuthenticationDetails
+    public class ClientAuthenticationDetails
     {
         public string ClientId { get; set; }
         public string ClientType { get; set; }
