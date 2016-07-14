@@ -45,7 +45,7 @@ namespace IdentityServer4.Tests.Validation
                             new Secret("secret".Sha256())
                         },
 
-                        AllowedGrantTypes = GrantTypes.Code,
+                        AllowedGrantTypes = GrantTypes.Hybrid,
                         AllowAccessToAllScopes = true,
                         
                         RequireConsent = false,
