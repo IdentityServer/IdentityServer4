@@ -16,7 +16,7 @@ namespace IdentityServer4.Configuration
         public string LoginReturnUrlParameter { get; set; } = Constants.RoutePathParams.Login;
 
         public string LogoutUrl { get; set; } = Constants.RoutePaths.Logout.EnsureLeadingSlash();
-        public string LogoutReturnUrlParameter { get; set; } = Constants.RoutePathParams.Logout;
+        public string LogoutIdParameter { get; set; } = Constants.RoutePathParams.Logout;
 
         public string ConsentUrl { get; set; } = Constants.RoutePaths.Consent.EnsureLeadingSlash();
         public string ConsentReturnUrlParameter { get; set; } = Constants.RoutePathParams.Consent;

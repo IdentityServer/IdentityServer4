@@ -10,19 +10,26 @@ using System.Threading.Tasks;
 using System;
 using Microsoft.AspNet.Http;
 using System.Collections.Specialized;
+using IdentityServer4.Validation;
 
 namespace IdentityServer4.Endpoints
 {
     class EndSessionEndpoint : IEndpoint
     {
         private readonly ILogger<EndSessionEndpoint> _logger;
+        private readonly IdentityServerContext _context;
+        private readonly IEndSessionRequestValidator _endSessionRequestValidator;
         private readonly ClientListCookie _clientListCookie;
 
         public EndSessionEndpoint(
             ILogger<EndSessionEndpoint> logger, 
+            IdentityServerContext context,
+            IEndSessionRequestValidator endSessionRequestValidator,
             ClientListCookie clientListCookie)
         {
             _logger = logger;
+            _context = context;
+            _endSessionRequestValidator = endSessionRequestValidator;
             _clientListCookie = clientListCookie;
         }
 
@@ -41,7 +48,7 @@ namespace IdentityServer4.Endpoints
             return new StatusCodeResult(HttpStatusCode.NotFound);
         }
 
-        private Task<IEndpointResult> ProcessSignoutAsync(IdentityServerContext context)
+        private async Task<IEndpointResult> ProcessSignoutAsync(IdentityServerContext context)
         {
             _logger.LogInformation("Processing singout request");
 
@@ -57,13 +64,18 @@ namespace IdentityServer4.Endpoints
             else
             {
                 _logger.LogWarning("Invalid HTTP method for end session endpoint.");
-                return Task.FromResult<IEndpointResult>(new StatusCodeResult(HttpStatusCode.MethodNotAllowed));
+                return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
             }
 
-
-
-
-            return Task.FromResult<IEndpointResult>(new LogoutPageResult());
+            var user = await _context.GetIdentityServerUserAsync();
+            var result = await _endSessionRequestValidator.ValidateAsync(parameters, user);
+            if (result.IsError)
+            {
+                // if anything went wrong, ignore the params the RP sent
+                return new LogoutPageResult(_context.Options.UserInteractionOptions);
+            }
+            
+            return new LogoutPageResult(_context.Options.UserInteractionOptions);
         }
 
         private Task<IEndpointResult> ProcessSignoutCallbackAsync(IdentityServerContext context)

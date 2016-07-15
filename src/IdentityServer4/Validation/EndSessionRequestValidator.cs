@@ -16,15 +16,15 @@ namespace IdentityServer4.Validation
     internal class EndSessionRequestValidator : IEndSessionRequestValidator
     {
         private readonly ILogger _logger;
-        private readonly TokenValidator _tokenValidator;
-        private readonly IRedirectUriValidator _uriValidator;
         private readonly IdentityServerContext _context;
+        private readonly ITokenValidator _tokenValidator;
+        private readonly IRedirectUriValidator _uriValidator;
 
         public EndSessionRequestValidator(
+            ILogger<EndSessionRequestValidator> logger,
             IdentityServerContext context, 
-            TokenValidator tokenValidator, 
-            IRedirectUriValidator uriValidator,
-            ILogger<EndSessionRequestValidator> logger)
+            ITokenValidator tokenValidator, 
+            IRedirectUriValidator uriValidator)
         {
             _context = context;
             _tokenValidator = tokenValidator;
@@ -36,16 +36,21 @@ namespace IdentityServer4.Validation
         {
             _logger.LogDebug("Start end session request validation");
 
-            var validatedRequest = new ValidatedEndSessionRequest();
+            var isAuthenticated = subject != null &&
+                subject.Identity != null &&
+                subject.Identity.IsAuthenticated;
 
-            validatedRequest.Raw = parameters;
-            validatedRequest.Subject = subject;
-
-            if (!subject.Identity.IsAuthenticated && _context.Options.AuthenticationOptions.RequireAuthenticatedUserForSignOutMessage)
+            if (!isAuthenticated && _context.Options.AuthenticationOptions.RequireAuthenticatedUserForSignOutMessage)
             {
                 _logger.LogWarning("User is anonymous. Ignoring end session parameters");
                 return Invalid();
             }
+
+            var validatedRequest = new ValidatedEndSessionRequest()
+            {
+                Raw = parameters,
+                Subject = subject
+            };
 
             var idTokenHint = parameters.Get(Constants.EndSessionRequest.IdTokenHint);
             if (idTokenHint.IsPresent())

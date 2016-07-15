@@ -8,7 +8,7 @@ namespace IdentityServer4.Endpoints.Results
     public class LoginPageResult : RedirectToPageWithReturnUrlResult
     {
         public LoginPageResult(UserInteractionOptions options, string returnUrl)
-            : base(options.LoginUrl, options.LogoutReturnUrlParameter, returnUrl)
+            : base(options.LoginUrl, options.LoginReturnUrlParameter, returnUrl)
         {
         }
     }

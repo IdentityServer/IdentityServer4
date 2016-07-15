@@ -151,7 +151,6 @@ namespace IdentityServer4.Extensions
                 (url.Length > 1 && url[0] == '~' && url[1] == '/'));
         }
 
-
         [DebuggerStepThrough]
         public static string AddQueryString(this string url, string query)
         {

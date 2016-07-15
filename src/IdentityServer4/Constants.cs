@@ -333,7 +333,7 @@ namespace IdentityServer4
             public const string Error = "errorId";
             public const string Login = "returnUrl";
             public const string Consent = "returnUrl";
-            public const string Logout = "returnUrl";
+            public const string Logout = "signoutId";
         }
 
         public static class RoutePaths
