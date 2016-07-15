@@ -85,6 +85,74 @@ namespace IdentityServer4.Tests.Validation.AuthorizeRequest
 
         [Fact]
         [Trait("Category", Category)]
+        public async Task Valid_OpenId_CodeIdToken_Request()
+        {
+            var parameters = new NameValueCollection();
+            parameters.Add(OidcConstants.AuthorizeRequest.ClientId, "hybridclient");
+            parameters.Add(OidcConstants.AuthorizeRequest.Scope, "openid");
+            parameters.Add(OidcConstants.AuthorizeRequest.RedirectUri, "https://server/cb");
+            parameters.Add(OidcConstants.AuthorizeRequest.Nonce, "nonce");
+            parameters.Add(OidcConstants.AuthorizeRequest.ResponseType, OidcConstants.ResponseTypes.CodeIdToken);
+
+            var validator = Factory.CreateAuthorizeRequestValidator();
+            var result = await validator.ValidateAsync(parameters);
+
+            result.IsError.Should().BeFalse();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task Valid_OpenId_CodeIdTokenToken_Request()
+        {
+            var parameters = new NameValueCollection();
+            parameters.Add(OidcConstants.AuthorizeRequest.ClientId, "hybridclient");
+            parameters.Add(OidcConstants.AuthorizeRequest.Scope, "openid");
+            parameters.Add(OidcConstants.AuthorizeRequest.RedirectUri, "https://server/cb");
+            parameters.Add(OidcConstants.AuthorizeRequest.Nonce, "nonce");
+            parameters.Add(OidcConstants.AuthorizeRequest.ResponseType, OidcConstants.ResponseTypes.CodeIdTokenToken);
+
+            var validator = Factory.CreateAuthorizeRequestValidator();
+            var result = await validator.ValidateAsync(parameters);
+
+            result.IsError.Should().BeFalse();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task Valid_Mixed_CodeIdToken_Request()
+        {
+            var parameters = new NameValueCollection();
+            parameters.Add(OidcConstants.AuthorizeRequest.ClientId, "hybridclient");
+            parameters.Add(OidcConstants.AuthorizeRequest.Scope, "openid resource");
+            parameters.Add(OidcConstants.AuthorizeRequest.RedirectUri, "https://server/cb");
+            parameters.Add(OidcConstants.AuthorizeRequest.Nonce, "nonce");
+            parameters.Add(OidcConstants.AuthorizeRequest.ResponseType, OidcConstants.ResponseTypes.CodeIdToken);
+
+            var validator = Factory.CreateAuthorizeRequestValidator();
+            var result = await validator.ValidateAsync(parameters);
+
+            result.IsError.Should().BeFalse();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task Valid_Mixed_CodeIdTokenToken_Request()
+        {
+            var parameters = new NameValueCollection();
+            parameters.Add(OidcConstants.AuthorizeRequest.ClientId, "hybridclient");
+            parameters.Add(OidcConstants.AuthorizeRequest.Scope, "openid resource");
+            parameters.Add(OidcConstants.AuthorizeRequest.RedirectUri, "https://server/cb");
+            parameters.Add(OidcConstants.AuthorizeRequest.Nonce, "nonce");
+            parameters.Add(OidcConstants.AuthorizeRequest.ResponseType, OidcConstants.ResponseTypes.CodeIdTokenToken);
+
+            var validator = Factory.CreateAuthorizeRequestValidator();
+            var result = await validator.ValidateAsync(parameters);
+
+            result.IsError.Should().BeFalse();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
         public async Task Valid_OpenId_IdTokenToken_Request()
         {
             var parameters = new NameValueCollection();

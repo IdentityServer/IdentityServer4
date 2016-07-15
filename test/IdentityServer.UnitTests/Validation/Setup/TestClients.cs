@@ -34,7 +34,6 @@ namespace IdentityServer4.Tests.Validation
 
                     AuthorizationCodeLifetime = 60
                 },
-
                 new Client
                 {
                         ClientName = "Hybrid Client",
@@ -47,9 +46,33 @@ namespace IdentityServer4.Tests.Validation
 
                         AllowedGrantTypes = GrantTypes.Hybrid,
                         AllowAccessToAllScopes = true,
+                        AllowAccessTokensViaBrowser = true,
                         
                         RequireConsent = false,
                     
+                        RedirectUris = new List<string>
+                        {
+                            "https://server/cb",
+                        },
+
+                        AuthorizationCodeLifetime = 60
+                    },
+                    new Client
+                    {
+                        ClientName = "Hybrid Client",
+                        Enabled = true,
+                        ClientId = "hybridclient_no_aavb",
+                        ClientSecrets = new List<Secret>
+                        {
+                            new Secret("secret".Sha256())
+                        },
+
+                        AllowedGrantTypes = GrantTypes.Hybrid,
+                        AllowAccessToAllScopes = true,
+                        AllowAccessTokensViaBrowser = false,
+
+                        RequireConsent = false,
+
                         RedirectUris = new List<string>
                         {
                             "https://server/cb",
@@ -68,6 +91,22 @@ namespace IdentityServer4.Tests.Validation
 
                         RequireConsent = false,
                     
+                        RedirectUris = new List<string>
+                        {
+                            "oob://implicit/cb"
+                        },
+                    },
+                    new Client
+                    {
+                        ClientName = "Implicit Client",
+                        ClientId = "implicitclient_no_aavb",
+
+                        AllowedGrantTypes = GrantTypes.Implicit,
+                        AllowAccessToAllScopes = true,
+                        AllowAccessTokensViaBrowser = false,
+
+                        RequireConsent = false,
+
                         RedirectUris = new List<string>
                         {
                             "oob://implicit/cb"
