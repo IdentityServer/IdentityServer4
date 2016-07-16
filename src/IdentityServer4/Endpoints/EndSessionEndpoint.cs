@@ -13,6 +13,10 @@ using System.Collections.Specialized;
 using IdentityServer4.Validation;
 using IdentityServer4.Services;
 using IdentityServer4.Models;
+using System.Linq;
+using IdentityModel;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 
 namespace IdentityServer4.Endpoints
 {
@@ -24,6 +28,7 @@ namespace IdentityServer4.Endpoints
         private readonly ClientListCookie _clientListCookie;
         private readonly IMessageStore<LogoutRequest> _signoutRequestMessageStore;
         private readonly SessionCookie _sessionCookie;
+        private readonly IClientStore _clientStore;
 
         public EndSessionEndpoint(
             ILogger<EndSessionEndpoint> logger, 
@@ -31,7 +36,8 @@ namespace IdentityServer4.Endpoints
             IEndSessionRequestValidator endSessionRequestValidator,
             IMessageStore<LogoutRequest> signoutRequestMessageStore,
             SessionCookie sessionCookie,
-            ClientListCookie clientListCookie)
+            ClientListCookie clientListCookie,
+            IClientStore clientStore)
         {
             _logger = logger;
             _context = context;
@@ -39,6 +45,7 @@ namespace IdentityServer4.Endpoints
             _signoutRequestMessageStore = signoutRequestMessageStore;
             _sessionCookie = sessionCookie;
             _clientListCookie = clientListCookie;
+            _clientStore = clientStore;
         }
 
         public async Task<IEndpointResult> ProcessAsync(IdentityServerContext context)
@@ -85,9 +92,9 @@ namespace IdentityServer4.Endpoints
         {
             var validatedRequest = result.IsError ? null : result.ValidatedRequest;
 
-            var sid = _sessionCookie.GetSessionId();
+            var sid = _sessionCookie.GetOrCreateSessionId();
             var signoutIframeUrl = _context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.RoutePaths.Oidc.EndSessionCallback;
-            signoutIframeUrl = signoutIframeUrl.AddQueryString("sid=" + sid);
+            signoutIframeUrl = signoutIframeUrl.AddQueryString(Constants.EndSessionRequest.Sid + "=" + sid);
 
             var msg = new LogoutRequest(signoutIframeUrl, validatedRequest);
             await _signoutRequestMessageStore.WriteAsync(sid, new Message<LogoutRequest>(msg));
@@ -95,17 +102,121 @@ namespace IdentityServer4.Endpoints
             return new LogoutPageResult(_context.Options.UserInteractionOptions, sid);
         }
 
-        private Task<IEndpointResult> ProcessSignoutCallbackAsync(IdentityServerContext context)
+        private async Task<IEndpointResult> ProcessSignoutCallbackAsync(IdentityServerContext context)
         {
             if (context.HttpContext.Request.Method != "GET")
             {
                 _logger.LogWarning("Invalid HTTP method for end session endpoint.");
-                return Task.FromResult<IEndpointResult>(new StatusCodeResult(HttpStatusCode.MethodNotAllowed));
+                return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
             }
 
             _logger.LogInformation("Processing singout callback request");
 
-            return Task.FromResult<IEndpointResult>(new StatusCodeResult(HttpStatusCode.NoContent));
+            var sid = ValidateSid(context.HttpContext.Request);
+            if (sid == null)
+            {
+                return new StatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            // get URLs for iframes
+            var urls = await GetClientEndSessionUrlsAsync(sid);
+
+            // relax CSP to allow those iframe origins
+            //ConfigureCspResponseHeader(urls);
+
+            // clear cookies
+            ClearCookies();
+
+            // get html (with iframes)
+            return new EndSessionCallbackResult(urls);
+        }
+
+        private string ValidateSid(HttpRequest request)
+        {
+            var sidCookie = _sessionCookie.GetSessionId();
+            if (sidCookie != null)
+            {
+                var sid = request.Query[Constants.EndSessionRequest.Sid].FirstOrDefault();
+                if (sid != null)
+                {
+                    if (TimeConstantComparer.IsEqual(sid, sidCookie))
+                    {
+                        _logger.LogDebug("sid validation successful");
+                        return sid;
+                    }
+                    else
+                    {
+                        _logger.LogError("sid in query string does not match sid from cookie");
+                    }
+
+                }
+                else
+                {
+                    _logger.LogError("No sid in query string");
+                }
+            }
+            else
+            {
+                _logger.LogError("No sid in cookie");
+            }
+
+            return null;
+        }
+
+        private async Task<IEnumerable<string>> GetClientEndSessionUrlsAsync(string sid)
+        {
+            // read client list to get URLs for client logout endpoints
+            var clientIds = _clientListCookie.GetClients();
+
+            // Fetch the Clients for each clientid
+            var clients = new List<Client>();
+            foreach (var clientId in clientIds)
+            {
+                var client = await _clientStore.FindClientByIdAsync(clientId);
+
+                if (client != null)
+                {
+                    clients.Add(client);
+                }
+            }
+
+            var urls = new List<string>();
+            foreach (var client in clients)
+            {
+                if (client.LogoutUri.IsPresent())
+                {
+                    var url = client.LogoutUri;
+
+                    // add session id if required
+                    if (client.LogoutSessionRequired)
+                    {
+                        url = url.AddQueryString(Constants.EndSessionRequest.Sid + "=" + sid);
+                    }
+
+                    urls.Add(url);
+                }
+            }
+
+            if (urls.Any())
+            {
+                var msg = urls.Aggregate((x, y) => x + ", " + y);
+                _logger.LogDebug("Client end session iframe URLs: {0}", msg);
+            }
+            else
+            {
+                _logger.LogDebug("No client end session iframe URLs");
+            }
+
+            return urls;
+        }
+
+        private void ClearCookies()
+        {
+            // session id cookie
+            _sessionCookie.ClearSessionId();
+
+            // client list cookie
+            _clientListCookie.Clear();
         }
     }
 }
