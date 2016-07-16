@@ -96,7 +96,7 @@ namespace Host.Configuration
                 //////////////////////////////////////////
                 new Client
                 {
-                    ClientId = "mvc_implicit",
+                    ClientId = "mvc.implicit",
                     ClientName = "MVC Implicit",
                     ClientUri = "http://identityserver.io",
 
@@ -140,13 +140,13 @@ namespace Host.Configuration
                     AllowAccessTokensViaBrowser = false,
                     RedirectUris = new List<string>
                     {
-                        "http://localhost:44077/signin-oidc"
+                        "http://localhost:21402/signin-oidc"
                     },
                     PostLogoutRedirectUris = new List<string>
                     {
-                        "http://localhost:44077/"
+                        "http://localhost:21402/"
                     },
-                    LogoutUri = "http://localhost:44077/signout-oidc",
+                    LogoutUri = "http://localhost:21402/signout-oidc",
 
                     AllowedScopes = new List<string>
                     {
