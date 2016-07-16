@@ -106,6 +106,11 @@ namespace Host.Configuration
                     {
                         "http://localhost:44077/signin-oidc"
                     },
+                    PostLogoutRedirectUris = new List<string>
+                    {
+                        "http://localhost:44077/"
+                    },
+                    LogoutUri = "http://localhost:44077/signout-oidc",
 
                     AllowedScopes = new List<string>
                     {
@@ -137,6 +142,11 @@ namespace Host.Configuration
                     {
                         "http://localhost:44077/signin-oidc"
                     },
+                    PostLogoutRedirectUris = new List<string>
+                    {
+                        "http://localhost:44077/"
+                    },
+                    LogoutUri = "http://localhost:44077/signout-oidc",
 
                     AllowedScopes = new List<string>
                     {

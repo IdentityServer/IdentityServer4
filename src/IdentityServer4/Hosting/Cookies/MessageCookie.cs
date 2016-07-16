@@ -181,7 +181,7 @@ namespace IdentityServer4.Hosting
         private void ClearOverflow()
         {
             var names = GetCookieNames();
-            var toKeep = _context.Options.AuthenticationOptions.SignInMessageThreshold;
+            var toKeep = _context.Options.UserInteractionOptions.CookieMessageThreshold;
 
             if (names.Count() >= toKeep)
             {

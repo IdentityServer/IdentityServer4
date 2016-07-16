@@ -37,7 +37,7 @@ namespace IdentityServer4
         public static readonly TimeSpan DefaultCacheDuration = TimeSpan.FromMinutes(5);
 
         // the limit after which old messages are purged
-        public const int SignInMessageThreshold = 5;
+        public const int CookieMessageThreshold = 2;
 
         public const string DefaultHashAlgorithm = "SHA256";
 
@@ -333,7 +333,7 @@ namespace IdentityServer4
             public const string Error = "errorId";
             public const string Login = "returnUrl";
             public const string Consent = "returnUrl";
-            public const string Logout = "signoutId";
+            public const string Logout = "logoutId";
         }
 
         public static class RoutePaths

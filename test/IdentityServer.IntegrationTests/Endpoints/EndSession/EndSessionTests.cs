@@ -90,7 +90,25 @@ namespace IdentityServer.IntegrationTests.Endpoints.EndSession
             _mockPipeline.Options.UserInteractionOptions.LogoutUrl = "/logout";
             _mockPipeline.Options.UserInteractionOptions.LogoutIdParameter = "id";
 
-            var response = await _mockPipeline.Client.GetAsync(MockIdSvrUiPipeline.EndSessionEndpoint);
+            await _mockPipeline.LoginAsync(IdentityServerPrincipal.Create("bob", "Bob Loblaw"));
+
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: "client1",
+                responseType: "id_token",
+                scope: "openid",
+                redirectUri: "https://client1/callback",
+                state: "123_state",
+                nonce: "123_nonce");
+
+            _mockPipeline.BrowserClient.AllowAutoRedirect = false;
+            var response = await _mockPipeline.BrowserClient.GetAsync(url);
+            var authorization = new IdentityModel.Client.AuthorizeResponse(response.Headers.Location.ToString());
+            var id_token = authorization.IdentityToken;
+
+            response = await _mockPipeline.BrowserClient.GetAsync(MockIdSvrUiPipeline.EndSessionEndpoint +
+                "?id_token_hint=" + id_token +
+                "&post_logout_redirect_uri=https://client1/signout-callback");
+
             response.StatusCode.Should().Be(HttpStatusCode.Redirect);
             response.Headers.Location.ToString().Should().StartWith("https://server/logout?id=");
         }

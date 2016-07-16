@@ -20,7 +20,7 @@ namespace IdentityServer4.Endpoints.Results
 
             if (_urls != null && _urls.Any())
             {
-                var frameUrls = _urls.Select(x => $"<iframe src='{x}'></iframe>");
+                var frameUrls = _urls.Select(x => $"<iframe style='display:none' width='0' height='0' src='{x}'></iframe>");
                 framesHtml = frameUrls.Aggregate((x, y) => x + y);
             }
 

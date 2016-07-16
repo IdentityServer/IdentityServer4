@@ -23,5 +23,7 @@ namespace IdentityServer4.Configuration
 
         public string ErrorUrl { get; set; } = Constants.RoutePaths.Error.EnsureLeadingSlash();
         public string ErrorIdParameter { get; set; } = Constants.RoutePathParams.Error;
+
+        public int CookieMessageThreshold { get; set; } = Constants.CookieMessageThreshold;
     }
 }

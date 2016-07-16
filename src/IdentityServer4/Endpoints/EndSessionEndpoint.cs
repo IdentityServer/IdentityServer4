@@ -26,7 +26,7 @@ namespace IdentityServer4.Endpoints
         private readonly IdentityServerContext _context;
         private readonly IEndSessionRequestValidator _endSessionRequestValidator;
         private readonly ClientListCookie _clientListCookie;
-        private readonly IMessageStore<LogoutRequest> _signoutRequestMessageStore;
+        private readonly IMessageStore<LogoutMessage> _logoutMessageStore;
         private readonly SessionCookie _sessionCookie;
         private readonly IClientStore _clientStore;
 
@@ -34,7 +34,7 @@ namespace IdentityServer4.Endpoints
             ILogger<EndSessionEndpoint> logger, 
             IdentityServerContext context,
             IEndSessionRequestValidator endSessionRequestValidator,
-            IMessageStore<LogoutRequest> signoutRequestMessageStore,
+            IMessageStore<LogoutMessage> logoutMessageStore,
             SessionCookie sessionCookie,
             ClientListCookie clientListCookie,
             IClientStore clientStore)
@@ -42,7 +42,7 @@ namespace IdentityServer4.Endpoints
             _logger = logger;
             _context = context;
             _endSessionRequestValidator = endSessionRequestValidator;
-            _signoutRequestMessageStore = signoutRequestMessageStore;
+            _logoutMessageStore = logoutMessageStore;
             _sessionCookie = sessionCookie;
             _clientListCookie = clientListCookie;
             _clientStore = clientStore;
@@ -92,14 +92,14 @@ namespace IdentityServer4.Endpoints
         {
             var validatedRequest = result.IsError ? null : result.ValidatedRequest;
 
-            var sid = _sessionCookie.GetOrCreateSessionId();
-            var signoutIframeUrl = _context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.RoutePaths.Oidc.EndSessionCallback;
-            signoutIframeUrl = signoutIframeUrl.AddQueryString(Constants.EndSessionRequest.Sid + "=" + sid);
+            if (validatedRequest.Client != null || validatedRequest.PostLogOutUri != null)
+            {
+                var msg = new MessageWithId<LogoutMessage>(new LogoutMessage(validatedRequest));
+                await _logoutMessageStore.WriteAsync(msg.Id, msg);
+                return new LogoutPageResult(_context.Options.UserInteractionOptions, msg.Id);
+            }
 
-            var msg = new LogoutRequest(signoutIframeUrl, validatedRequest);
-            await _signoutRequestMessageStore.WriteAsync(sid, new Message<LogoutRequest>(msg));
-
-            return new LogoutPageResult(_context.Options.UserInteractionOptions, sid);
+            return new LogoutPageResult(_context.Options.UserInteractionOptions);
         }
 
         private async Task<IEndpointResult> ProcessSignoutCallbackAsync(IdentityServerContext context)
@@ -111,6 +111,8 @@ namespace IdentityServer4.Endpoints
             }
 
             _logger.LogInformation("Processing singout callback request");
+
+            await ClearSignoutMessageIdAsync(context.HttpContext.Request);
 
             var sid = ValidateSid(context.HttpContext.Request);
             if (sid == null)
@@ -125,10 +127,24 @@ namespace IdentityServer4.Endpoints
             //ConfigureCspResponseHeader(urls);
 
             // clear cookies
-            ClearCookies();
+            ClearSessionCookies(sid);
 
             // get html (with iframes)
             return new EndSessionCallbackResult(urls);
+        }
+
+        private async Task ClearSignoutMessageIdAsync(HttpRequest request)
+        {
+            var logoutId = request.Query[_context.Options.UserInteractionOptions.LogoutIdParameter].FirstOrDefault();
+            if (logoutId != null)
+            {
+                await _logoutMessageStore.DeleteAsync(logoutId);
+            }
+        }
+
+        private void ClearSignoutMessageId(HttpRequest request)
+        {
+            throw new NotImplementedException();
         }
 
         private string ValidateSid(HttpRequest request)
@@ -168,22 +184,12 @@ namespace IdentityServer4.Endpoints
             // read client list to get URLs for client logout endpoints
             var clientIds = _clientListCookie.GetClients();
 
-            // Fetch the Clients for each clientid
-            var clients = new List<Client>();
+            var urls = new List<string>();
             foreach (var clientId in clientIds)
             {
                 var client = await _clientStore.FindClientByIdAsync(clientId);
 
-                if (client != null)
-                {
-                    clients.Add(client);
-                }
-            }
-
-            var urls = new List<string>();
-            foreach (var client in clients)
-            {
-                if (client.LogoutUri.IsPresent())
+                if (client != null && client.LogoutUri.IsPresent())
                 {
                     var url = client.LogoutUri;
 
@@ -210,7 +216,7 @@ namespace IdentityServer4.Endpoints
             return urls;
         }
 
-        private void ClearCookies()
+        private void ClearSessionCookies(string sid)
         {
             // session id cookie
             _sessionCookie.ClearSessionId();

@@ -20,9 +20,6 @@ namespace IdentityServer4.Configuration
             EnableSignOutPrompt = true;
             RequireAuthenticatedUserForSignOutMessage = false;
             //CookieOptions = new CookieOptions();
-            SignInMessageThreshold = Constants.SignInMessageThreshold;
-
-            //PrimaryAuthenticationScheme = Constants.PrimaryAuthenticationType;
         }
 
         // TODO: new
@@ -34,7 +31,7 @@ namespace IdentityServer4.Configuration
                 return PrimaryAuthenticationScheme ?? Constants.PrimaryAuthenticationType;
             }
         }
-        
+
         // TODO: maybe change this so we have a list of grant types for metadata endpoint
         /// <summary>
         /// Gets or sets a value indicating whether local login is enabled.
@@ -65,14 +62,5 @@ namespace IdentityServer4.Configuration
         /// <c>true</c> if required; otherwise, <c>false</c>.
         /// </value>
         public bool RequireAuthenticatedUserForSignOutMessage { get; set; }
-
-        /// <summary>
-        /// Gets or sets the limit after which old signin messages are purged.
-        /// Defaults to the value defined in <see cref="Constants.SignInMessageThreshold"/> value.
-        /// </summary>
-        /// <value>
-        /// The limit after which old signin messages are purged
-        /// </value>
-        public int SignInMessageThreshold { get; set; }
     }
 }

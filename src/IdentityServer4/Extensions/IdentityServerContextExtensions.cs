@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityServer4.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -68,6 +69,19 @@ namespace IdentityServer4.Hosting
         internal static async Task<ClaimsPrincipal> GetIdentityServerUserAsync(this IdentityServerContext context)
         {
             return await context.HttpContext.Authentication.AuthenticateAsync(context.Options.AuthenticationOptions.EffectivePrimaryAuthenticationScheme);
+        }
+
+        internal static string GetIdentityServerSignoutFrameCallbackUrl(this IdentityServerContext context)
+        {
+            var sessionCookie = context.HttpContext.RequestServices.GetRequiredService<SessionCookie>();
+            var sid = sessionCookie.GetSessionId();
+            if (sid != null)
+            {
+                var signoutIframeUrl = context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.RoutePaths.Oidc.EndSessionCallback;
+                signoutIframeUrl = signoutIframeUrl.AddQueryString(Constants.EndSessionRequest.Sid + "=" + sid);
+                return signoutIframeUrl;
+            }
+            return null;
         }
 
         internal static void SetRequestId(this IdentityServerContext context, string id)
