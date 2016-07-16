@@ -29,6 +29,7 @@ namespace IdentityServer4.Tests.Common
         public const string IntrospectionEndpoint = "https://server/connect/introspect";
         public const string IdentityTokenValidationEndpoint = "https://server/connect/identityTokenValidation";
         public const string EndSessionEndpoint = "https://server/connect/endsession";
+        public const string EndSessionCallbackEndpoint = "https://server/connect/endsession/callback";
         public const string CheckSessionEndpoint = "https://server/connect/checksession";
 
         public IdentityServerOptions Options { get; set; } = new IdentityServerOptions();

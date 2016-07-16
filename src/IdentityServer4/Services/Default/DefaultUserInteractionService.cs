@@ -16,18 +16,21 @@ namespace IdentityServer4.Services.Default
     class DefaultUserInteractionService : IUserInteractionService
     {
         private readonly IdentityServerContext _context;
+        private readonly IMessageStore<LogoutRequest> _logoutMessageStore;
         private readonly IMessageStore<ErrorMessage> _errorMessageStore;
-        private readonly IMessageStore<ConsentResponse> _consentMessageStore;
         private readonly IAuthorizeRequestValidator _validator;
+        private readonly IMessageStore<ConsentResponse> _consentMessageStore;
 
         public DefaultUserInteractionService(
             IdentityServerContext context,
             IAuthorizeRequestValidator validator,
+            IMessageStore<LogoutRequest> logoutMessageStore,
             IMessageStore<ErrorMessage> errorMessageStore,
             IMessageStore<ConsentResponse> consentMessageStore)
         {
             _context = context;
             _validator = validator;
+            _logoutMessageStore = logoutMessageStore;
             _errorMessageStore = errorMessageStore;
             _consentMessageStore = consentMessageStore;
         }
@@ -35,6 +38,17 @@ namespace IdentityServer4.Services.Default
         public Task<AuthorizationRequest> GetLoginContextAsync(string returnUrl = null)
         {
             return GetAuthorizeRequest(_context.Options.UserInteractionOptions.LoginReturnUrlParameter, returnUrl);
+        }
+
+        public async Task<LogoutRequest> GetLogoutContextAsync(string logoutId = null)
+        {
+            if (logoutId == null)
+            {
+                logoutId = _context.HttpContext.Request.Query[_context.Options.UserInteractionOptions.LogoutIdParameter].FirstOrDefault();
+            }
+
+            var msg = await _logoutMessageStore.ReadAsync(logoutId);
+            return msg?.Data;
         }
 
         public Task<AuthorizationRequest> GetConsentContextAsync(string returnUrl = null)

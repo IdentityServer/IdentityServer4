@@ -24,6 +24,6 @@ namespace IdentityServer4.Events
         /// <value>
         /// The sign out message.
         /// </value>
-        public SignOutRequest SignOutMessage { get; set; }
+        public LogoutRequest SignOutMessage { get; set; }
     }
 }

@@ -11,6 +11,8 @@ using System;
 using Microsoft.AspNet.Http;
 using System.Collections.Specialized;
 using IdentityServer4.Validation;
+using IdentityServer4.Services;
+using IdentityServer4.Models;
 
 namespace IdentityServer4.Endpoints
 {
@@ -20,16 +22,22 @@ namespace IdentityServer4.Endpoints
         private readonly IdentityServerContext _context;
         private readonly IEndSessionRequestValidator _endSessionRequestValidator;
         private readonly ClientListCookie _clientListCookie;
+        private readonly IMessageStore<LogoutRequest> _signoutRequestMessageStore;
+        private readonly SessionCookie _sessionCookie;
 
         public EndSessionEndpoint(
             ILogger<EndSessionEndpoint> logger, 
             IdentityServerContext context,
             IEndSessionRequestValidator endSessionRequestValidator,
+            IMessageStore<LogoutRequest> signoutRequestMessageStore,
+            SessionCookie sessionCookie,
             ClientListCookie clientListCookie)
         {
             _logger = logger;
             _context = context;
             _endSessionRequestValidator = endSessionRequestValidator;
+            _signoutRequestMessageStore = signoutRequestMessageStore;
+            _sessionCookie = sessionCookie;
             _clientListCookie = clientListCookie;
         }
 
@@ -69,13 +77,22 @@ namespace IdentityServer4.Endpoints
 
             var user = await _context.GetIdentityServerUserAsync();
             var result = await _endSessionRequestValidator.ValidateAsync(parameters, user);
-            if (result.IsError)
-            {
-                // if anything went wrong, ignore the params the RP sent
-                return new LogoutPageResult(_context.Options.UserInteractionOptions);
-            }
-            
-            return new LogoutPageResult(_context.Options.UserInteractionOptions);
+
+            return await CreateLogoutPageRedirectAsync(result);
+        }
+
+        private async Task<IEndpointResult> CreateLogoutPageRedirectAsync(EndSessionValidationResult result)
+        {
+            var validatedRequest = result.IsError ? null : result.ValidatedRequest;
+
+            var sid = _sessionCookie.GetSessionId();
+            var signoutIframeUrl = _context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.RoutePaths.Oidc.EndSessionCallback;
+            signoutIframeUrl = signoutIframeUrl.AddQueryString("sid=" + sid);
+
+            var msg = new LogoutRequest(signoutIframeUrl, validatedRequest);
+            await _signoutRequestMessageStore.WriteAsync(sid, new Message<LogoutRequest>(msg));
+
+            return new LogoutPageResult(_context.Options.UserInteractionOptions, sid);
         }
 
         private Task<IEndpointResult> ProcessSignoutCallbackAsync(IdentityServerContext context)

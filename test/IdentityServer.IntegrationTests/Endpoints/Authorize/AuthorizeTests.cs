@@ -17,7 +17,7 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
     {
         const string Category = "Authorize endpoint";
 
-        MockAuthorizationPipeline _mockPipeline = new MockAuthorizationPipeline();
+        MockIdSvrUiPipeline _mockPipeline = new MockIdSvrUiPipeline();
 
         public AuthorizeTests()
         {
@@ -77,7 +77,7 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task get_request_should_not_return_404()
         {
-            var response = await _mockPipeline.BrowserClient.GetAsync(MockAuthorizationPipeline.AuthorizeEndpoint);
+            var response = await _mockPipeline.BrowserClient.GetAsync(MockIdSvrUiPipeline.AuthorizeEndpoint);
 
             response.StatusCode.Should().NotBe(HttpStatusCode.NotFound);
         }
@@ -86,7 +86,7 @@ namespace IdentityServer4.Tests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task get_request_should_not_return_500()
         {
-            var response = await _mockPipeline.BrowserClient.GetAsync(MockAuthorizationPipeline.AuthorizeEndpoint);
+            var response = await _mockPipeline.BrowserClient.GetAsync(MockIdSvrUiPipeline.AuthorizeEndpoint);
 
             ((int)response.StatusCode).Should().BeLessThan(500);
         }

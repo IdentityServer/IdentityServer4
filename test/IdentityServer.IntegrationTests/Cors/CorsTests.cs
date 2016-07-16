@@ -18,7 +18,7 @@ namespace IdentityServer4.Tests.Cors
     {
         const string Category = "CORS Integration";
 
-        MockAuthorizationPipeline _pipeline = new MockAuthorizationPipeline();
+        MockIdSvrUiPipeline _pipeline = new MockIdSvrUiPipeline();
 
         public CorsTests()
         {
@@ -66,12 +66,12 @@ namespace IdentityServer4.Tests.Cors
         }
 
         [Theory]
-        [InlineData(MockAuthorizationPipeline.DiscoveryEndpoint)]
-        [InlineData(MockAuthorizationPipeline.DiscoveryKeysEndpoint)]
-        [InlineData(MockAuthorizationPipeline.TokenEndpoint)]
-        [InlineData(MockAuthorizationPipeline.UserInfoEndpoint)]
-        [InlineData(MockAuthorizationPipeline.IdentityTokenValidationEndpoint)]
-        [InlineData(MockAuthorizationPipeline.RevocationEndpoint)]
+        [InlineData(MockIdSvrUiPipeline.DiscoveryEndpoint)]
+        [InlineData(MockIdSvrUiPipeline.DiscoveryKeysEndpoint)]
+        [InlineData(MockIdSvrUiPipeline.TokenEndpoint)]
+        [InlineData(MockIdSvrUiPipeline.UserInfoEndpoint)]
+        [InlineData(MockIdSvrUiPipeline.IdentityTokenValidationEndpoint)]
+        [InlineData(MockIdSvrUiPipeline.RevocationEndpoint)]
         [Trait("Category", Category)]
         public async Task cors_request_to_allowed_endpoints_should_succeed(string url)
         {
@@ -86,12 +86,12 @@ namespace IdentityServer4.Tests.Cors
         }
 
         [Theory]
-        [InlineData(MockAuthorizationPipeline.AuthorizeEndpoint)]
-        [InlineData(MockAuthorizationPipeline.EndSessionEndpoint)]
-        [InlineData(MockAuthorizationPipeline.CheckSessionEndpoint)]
-        [InlineData(MockAuthorizationPipeline.LoginPage)]
-        [InlineData(MockAuthorizationPipeline.ConsentPage)]
-        [InlineData(MockAuthorizationPipeline.ErrorPage)]
+        [InlineData(MockIdSvrUiPipeline.AuthorizeEndpoint)]
+        [InlineData(MockIdSvrUiPipeline.EndSessionEndpoint)]
+        [InlineData(MockIdSvrUiPipeline.CheckSessionEndpoint)]
+        [InlineData(MockIdSvrUiPipeline.LoginPage)]
+        [InlineData(MockIdSvrUiPipeline.ConsentPage)]
+        [InlineData(MockIdSvrUiPipeline.ErrorPage)]
         [Trait("Category", Category)]
         public async Task cors_request_to_restricted_endpoints_should_not_succeed(string url)
         {

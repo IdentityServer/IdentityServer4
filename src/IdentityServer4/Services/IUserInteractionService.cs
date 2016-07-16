@@ -13,6 +13,7 @@ namespace IdentityServer4.Services
     public interface IUserInteractionService
     {
         Task<AuthorizationRequest> GetLoginContextAsync(string returnUrl = null);
+        Task<LogoutRequest> GetLogoutContextAsync(string logoutId = null);
         Task<AuthorizationRequest> GetConsentContextAsync(string returnUrl = null);
         Task<ErrorMessage> GetErrorContextAsync(string errorId = null);
 
