@@ -10,11 +10,13 @@ using IdentityModel;
 
 namespace IdentityServer4.Endpoints.Results
 {
-    class AuthorizeRedirectResult : AuthorizeResult
+    class AuthorizeRedirectResult : IEndpointResult
     {
+        public AuthorizeResponse Response { get; private set; }
+
         public AuthorizeRedirectResult(AuthorizeResponse response)
-            : base(response)
         {
+            Response = response;
         }
 
         internal static string BuildUri(AuthorizeResponse response)
@@ -40,7 +42,7 @@ namespace IdentityServer4.Endpoints.Results
             return uri;
         }
 
-        public override Task ExecuteAsync(IdentityServerContext context)
+        public Task ExecuteAsync(IdentityServerContext context)
         {
             context.HttpContext.Response.SetNoCache();
             context.HttpContext.Response.Redirect(BuildUri(Response));

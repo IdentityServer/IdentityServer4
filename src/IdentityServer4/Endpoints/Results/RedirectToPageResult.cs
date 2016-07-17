@@ -32,8 +32,9 @@ namespace IdentityServer4.Endpoints.Results
         public virtual Task ExecuteAsync(IdentityServerContext context)
         {
             var redirect = Url;
-            if (!redirect.IsLocalUrl())
+            if (redirect.IsLocalUrl())
             {
+                if (redirect.StartsWith("~/")) redirect = redirect.Substring(1);
                 redirect = context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + redirect.RemoveLeadingSlash();
             }
 

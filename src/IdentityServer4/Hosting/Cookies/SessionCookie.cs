@@ -62,25 +62,33 @@ namespace IdentityServer4.Hosting
             return options;
         }
 
-        private string GetCookieName()
+        public string GetCookieName()
         {
             // todo
             return "idsvr.session";
             //return identityServerOptions.AuthenticationOptions.CookieOptions.GetSessionCookieName();
         }
 
-        public virtual string GetSessionId()
+        public virtual string GetOrCreateSessionId()
         {
             // todo: don't re-use session id when authN changes
             // this might be hard to detect since we're relying upon
             // external authN pages
 
+            var sid = GetSessionId();
+            if (sid != null) return sid;
+
+            return IssueSessionId();
+        }
+
+        public virtual string GetSessionId()
+        {
             if (_context.HttpContext.Request.Cookies.ContainsKey(GetCookieName()))
             {
                 return _context.HttpContext.Request.Cookies[GetCookieName()];
             }
 
-            return IssueSessionId();
+            return null;
         }
 
         public virtual void ClearSessionId()

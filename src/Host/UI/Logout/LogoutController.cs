@@ -8,31 +8,36 @@ namespace Host.UI.Logout
 {
     public class LogoutController : Controller
     {
-        public LogoutController()
+        private readonly IUserInteractionService _interaction;
+
+        public LogoutController(IUserInteractionService interaction)
         {
+            _interaction = interaction;
         }
 
         [HttpGet("ui/logout", Name = "Logout")]
-        public IActionResult Index(string returnUrl)
+        public IActionResult Index(string logoutId)
         {
-            if (returnUrl != null && !Url.IsLocalUrl(returnUrl))
-            {
-                returnUrl = null;
-            }
-            return View(new LogoutViewModel { ReturnUrl = returnUrl });
+            ViewData["logoutId"] = logoutId;
+            return View();
         }
 
         [HttpPost("ui/logout")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Submit(LogoutViewModel model)
+        public async Task<IActionResult> Submit(string logoutId)
         {
             await HttpContext.Authentication.SignOutAsync(Constants.PrimaryAuthenticationType);
 
             // set this so UI rendering sees an anonymous user
             HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity());
 
+            var logout = await _interaction.GetLogoutContextAsync(logoutId);
+
             var vm = new LoggedOutViewModel()
             {
+                PostLogoutRedirectUri = logout.PostLogoutRedirectUri,
+                ClientName = logout.ClientId,
+                SignOutIframeUrl = logout.SignOutIFrameUrl
             };
             return View("LoggedOut", vm);
         }

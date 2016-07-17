@@ -114,7 +114,7 @@ namespace UnitTests.Endpoints.Authorize
 
             var result = await _subject.ProcessAsync(_context);
 
-            result.Should().BeAssignableTo<AuthorizeResult>();
+            (result is AuthorizeRedirectResult || result is AuthorizeFormPostResult).Should().BeTrue();
         }
 
         [Fact]
@@ -127,7 +127,7 @@ namespace UnitTests.Endpoints.Authorize
 
             var result = await _subject.ProcessAsync(_context);
 
-            result.Should().BeAssignableTo<AuthorizeResult>();
+            (result is AuthorizeRedirectResult || result is AuthorizeFormPostResult).Should().BeTrue();
         }
 
         [Fact]
@@ -151,7 +151,7 @@ namespace UnitTests.Endpoints.Authorize
 
             var result = await _subject.ProcessAsync(_context);
 
-            result.Should().BeAssignableTo<AuthorizeResult>();
+            (result is AuthorizeRedirectResult || result is AuthorizeFormPostResult).Should().BeTrue();
         }
 
 
@@ -239,7 +239,7 @@ namespace UnitTests.Endpoints.Authorize
         {
             var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
-            result.Should().BeAssignableTo<AuthorizeResult>();
+            (result is AuthorizeRedirectResult || result is AuthorizeFormPostResult).Should().BeTrue();
         }
 
         // after login
@@ -336,7 +336,7 @@ namespace UnitTests.Endpoints.Authorize
 
             var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
 
-            result.Should().BeAssignableTo<AuthorizeResult>();
+            (result is AuthorizeRedirectResult || result is AuthorizeFormPostResult).Should().BeTrue();
         }
 
         [Fact]

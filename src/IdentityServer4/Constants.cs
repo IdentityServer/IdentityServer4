@@ -37,7 +37,7 @@ namespace IdentityServer4
         public static readonly TimeSpan DefaultCacheDuration = TimeSpan.FromMinutes(5);
 
         // the limit after which old messages are purged
-        public const int SignInMessageThreshold = 5;
+        public const int CookieMessageThreshold = 2;
 
         public const string DefaultHashAlgorithm = "SHA256";
 
@@ -333,7 +333,7 @@ namespace IdentityServer4
             public const string Error = "errorId";
             public const string Login = "returnUrl";
             public const string Consent = "returnUrl";
-            public const string Logout = "returnUrl";
+            public const string Logout = "logoutId";
         }
 
         public static class RoutePaths
@@ -350,8 +350,8 @@ namespace IdentityServer4
             {
                 public const string Authorize = "connect/authorize";
                 // new
-                public const string AuthorizeAfterConsent = "connect/authorize/consent";
-                public const string AuthorizeAfterLogin = "connect/authorize/login";
+                public const string AuthorizeAfterConsent = Authorize + "/consent";
+                public const string AuthorizeAfterLogin = Authorize + "/login";
 
                 //public const string Consent = "connect/consent";
                 //public const string SwitchUser = "connect/switch";
@@ -363,8 +363,10 @@ namespace IdentityServer4
                 //public const string AccessTokenValidation = "connect/accessTokenValidation";
                 public const string Introspection = "connect/introspect";
                 public const string IdentityTokenValidation = "connect/identityTokenValidation";
+
                 public const string EndSession = "connect/endsession";
-                //public const string EndSessionCallback = "connect/endsessioncallback";
+                public const string EndSessionCallback = EndSession + "/callback";
+
                 public const string CheckSession = "connect/checksession";
             }
             
@@ -430,6 +432,14 @@ namespace IdentityServer4
         public static class ClaimValueTypes
         {
             public const string Json = "json";
+        }
+
+        public static class EndSessionRequest
+        {
+            public const string IdTokenHint = "id_token_hint";
+            public const string PostLogoutRedirectUri = "post_logout_redirect_uri";
+            public const string State = "state";
+            public const string Sid = "sid";
         }
     }
 }

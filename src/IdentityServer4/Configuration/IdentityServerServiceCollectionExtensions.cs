@@ -88,6 +88,10 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 map.Add(Constants.RoutePaths.Oidc.EndSession, typeof(EndSessionEndpoint));
             }
+            if (endpoints.EnableCheckSessionEndpoint)
+            {
+                map.Add(Constants.RoutePaths.Oidc.CheckSession, typeof(CheckSessionEndpoint));
+            }
 
             services.AddSingleton<IEndpointRouter>(new EndpointRouter(map));
             foreach (var item in map)
@@ -105,6 +109,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<CustomGrantValidator>();
             services.AddTransient<ClientSecretValidator>();
             services.AddTransient<BearerTokenUsageValidator>();
+            services.AddTransient<IEndSessionRequestValidator, EndSessionRequestValidator>();
 
             return services;
         }

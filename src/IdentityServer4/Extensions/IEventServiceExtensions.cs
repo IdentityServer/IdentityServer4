@@ -199,7 +199,7 @@ namespace IdentityServer4.Extensions
         }
 
         public static async Task RaiseLogoutEventAsync(this IEventService events, 
-            ClaimsPrincipal subject, string signOutId, SignOutRequest signOutMessage)
+            ClaimsPrincipal subject, string signOutId, LogoutRequest signOutMessage)
         {
             var evt = new Event<LogoutDetails>(
                 EventConstants.Categories.Authentication,

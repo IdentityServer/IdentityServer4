@@ -188,7 +188,7 @@ namespace UnitTests.Endpoints.Results
 
             var result = await _subject.CreateErrorResultAsync(ErrorTypes.Client, "access_denied", _validatedRequest);
 
-            result.Should().BeAssignableTo<AuthorizeResult>();
+            (result is AuthorizeRedirectResult || result is AuthorizeFormPostResult).Should().BeTrue();
         }
 
 
@@ -217,7 +217,7 @@ namespace UnitTests.Endpoints.Results
 
             var result = await _subject.CreateErrorResultAsync(ErrorTypes.Client, error, _validatedRequest);
 
-            result.Should().BeAssignableTo<AuthorizeResult>();
+            (result is AuthorizeRedirectResult || result is AuthorizeFormPostResult).Should().BeTrue();
         }
 
         [Fact]
@@ -240,7 +240,7 @@ namespace UnitTests.Endpoints.Results
         {
             var result = await _subject.CreateAuthorizeResultAsync(_validatedRequest);
 
-            result.Should().BeAssignableTo<AuthorizeResult>();
+            (result is AuthorizeRedirectResult || result is AuthorizeFormPostResult).Should().BeTrue();
         }
 
         [Fact]

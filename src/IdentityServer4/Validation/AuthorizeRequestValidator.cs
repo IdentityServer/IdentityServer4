@@ -485,7 +485,7 @@ namespace IdentityServer4.Validation
             if (_options.Endpoints.EnableCheckSessionEndpoint && 
                 request.Subject.Identity.IsAuthenticated)
             {
-                var sessionId = _sessionCookie.GetSessionId();
+                var sessionId = _sessionCookie.GetOrCreateSessionId();
                 if (sessionId.IsPresent())
                 {
                     request.SessionId = sessionId;

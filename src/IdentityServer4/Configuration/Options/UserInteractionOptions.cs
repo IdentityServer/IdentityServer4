@@ -16,12 +16,14 @@ namespace IdentityServer4.Configuration
         public string LoginReturnUrlParameter { get; set; } = Constants.RoutePathParams.Login;
 
         public string LogoutUrl { get; set; } = Constants.RoutePaths.Logout.EnsureLeadingSlash();
-        public string LogoutReturnUrlParameter { get; set; } = Constants.RoutePathParams.Logout;
+        public string LogoutIdParameter { get; set; } = Constants.RoutePathParams.Logout;
 
         public string ConsentUrl { get; set; } = Constants.RoutePaths.Consent.EnsureLeadingSlash();
         public string ConsentReturnUrlParameter { get; set; } = Constants.RoutePathParams.Consent;
 
         public string ErrorUrl { get; set; } = Constants.RoutePaths.Error.EnsureLeadingSlash();
         public string ErrorIdParameter { get; set; } = Constants.RoutePathParams.Error;
+
+        public int CookieMessageThreshold { get; set; } = Constants.CookieMessageThreshold;
     }
 }
