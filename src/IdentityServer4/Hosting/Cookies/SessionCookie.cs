@@ -62,7 +62,7 @@ namespace IdentityServer4.Hosting
             return options;
         }
 
-        private string GetCookieName()
+        public string GetCookieName()
         {
             // todo
             return "idsvr.session";
