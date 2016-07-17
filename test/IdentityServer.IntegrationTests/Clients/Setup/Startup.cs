@@ -16,7 +16,7 @@ namespace IdentityServer4.Tests.Clients
 
             var builder = services.AddIdentityServer(options =>
             {
-                options.IssuerUri = "https://idsrv4";
+                options.IssuerUri = "https://idsvr4";
             });
 
             builder.AddInMemoryClients(Clients.Get());

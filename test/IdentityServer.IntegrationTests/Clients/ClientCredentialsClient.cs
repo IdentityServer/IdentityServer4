@@ -54,8 +54,8 @@ namespace IdentityServer4.Tests.Clients
             var payload = GetPayload(response);
 
             payload.Count().Should().Be(6);
-            payload.Should().Contain("iss", "https://idsrv4");
-            payload.Should().Contain("aud", "https://idsrv4/resources");
+            payload.Should().Contain("iss", "https://idsvr4");
+            payload.Should().Contain("aud", "https://idsvr4/resources");
             payload.Should().Contain("client_id", "client");
             payload.Should().Contain("scope", "api1");
         }
@@ -80,8 +80,8 @@ namespace IdentityServer4.Tests.Clients
             var payload = GetPayload(response);
 
             payload.Count().Should().Be(6);
-            payload.Should().Contain("iss", "https://idsrv4");
-            payload.Should().Contain("aud", "https://idsrv4/resources");
+            payload.Should().Contain("iss", "https://idsvr4");
+            payload.Should().Contain("aud", "https://idsvr4/resources");
             payload.Should().Contain("client_id", "client");
 
             var scopes = payload["scope"] as JArray;
@@ -111,8 +111,8 @@ namespace IdentityServer4.Tests.Clients
             var payload = GetPayload(response);
 
             payload.Count().Should().Be(6);
-            payload.Should().Contain("iss", "https://idsrv4");
-            payload.Should().Contain("aud", "https://idsrv4/resources");
+            payload.Should().Contain("iss", "https://idsvr4");
+            payload.Should().Contain("aud", "https://idsvr4/resources");
             payload.Should().Contain("client_id", "client");
             payload.Should().Contain("scope", "api1");
         }

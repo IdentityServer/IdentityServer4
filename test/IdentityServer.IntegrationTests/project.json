@@ -30,6 +30,6 @@
   },
 
   "buildOptions": {
-    "copyToOutput": [ "idsrvtest.pfx" ] 
+    "copyToOutput": [ "idsvrtest.pfx" ] 
   }
 }

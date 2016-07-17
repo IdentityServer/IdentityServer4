@@ -30,7 +30,7 @@
 
   "buildOptions": {
     "copyToOutput": {
-      "include": "idsrvtest.pfx"
+      "include": "idsvrtest.pfx"
     }
   }
 }

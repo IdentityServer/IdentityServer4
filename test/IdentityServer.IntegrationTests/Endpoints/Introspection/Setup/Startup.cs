@@ -17,11 +17,11 @@ namespace IdentityServer4.Tests.Endpoints.Introspection
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            var cert = new X509Certificate2(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "idsrvtest.pfx"), "idsrv3test");
+            var cert = new X509Certificate2(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "idsvrtest.pfx"), "idsrv3test");
 
             var builder = services.AddIdentityServer(options =>
             {
-                options.IssuerUri = "https://idsrv4";
+                options.IssuerUri = "https://idsvr4";
                 options.Endpoints.EnableAuthorizeEndpoint = false;
             });
 

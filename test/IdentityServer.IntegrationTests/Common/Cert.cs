@@ -11,7 +11,7 @@ namespace IdentityServer4.Tests.Common
     {
         public static X509Certificate2 Load()
         {
-            return new X509Certificate2(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "idsrvtest.pfx"), "idsrv3test");
+            return new X509Certificate2(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "idsvrtest.pfx"), "idsrv3test");
         }
     }
 }

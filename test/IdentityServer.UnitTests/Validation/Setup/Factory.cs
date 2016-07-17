@@ -81,7 +81,7 @@ namespace IdentityServer4.Tests.Validation
                 scopeValidator = new ScopeValidator(scopes, new LoggerFactory().CreateLogger<ScopeValidator>());
             }
 
-            var idsrvContext = IdentityServerContextHelper.Create();
+            var idsvrContext = IdentityServerContextHelper.Create();
 
             return new TokenRequestValidator(
                 options, 
@@ -166,7 +166,7 @@ namespace IdentityServer4.Tests.Validation
             }
 
             var clients = CreateClientStore();
-            var idsrvContext = IdentityServerContextHelper.Create();
+            var idsvrContext = IdentityServerContextHelper.Create();
             var logger = TestLogger.Create<TokenValidator>();
 
             var validator = new TokenValidator(
@@ -178,7 +178,7 @@ namespace IdentityServer4.Tests.Validation
                     logger: TestLogger.Create<DefaultCustomTokenValidator>()),
                     keys: new[] { new InMemoryValidationKeysStore(new[] { TestCert.LoadSigningCredentials().Key }) },
                 logger: logger,
-                context: idsrvContext);
+                context: idsvrContext);
 
             return validator;
         }

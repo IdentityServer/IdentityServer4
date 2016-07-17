@@ -11,7 +11,7 @@ namespace UnitTests.Common
         {
             var options = new IdentityServerOptions
             {
-                IssuerUri = "https://idsrv.com",
+                IssuerUri = "https://idsvr.com",
                 SiteName = "IdentityServer - Test",
             };
 
