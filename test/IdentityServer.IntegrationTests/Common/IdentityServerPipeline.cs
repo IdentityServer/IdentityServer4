@@ -43,11 +43,24 @@ namespace IdentityServer4.Tests.Common
         public BrowserClient BrowserClient { get; set; }
         public HttpClient Client { get; set; }
 
-        public void Initialize()
+        public void Initialize(string basePath = null)
         {
             var builder = new WebHostBuilder();
             builder.ConfigureServices(ConfigureServices);
-            builder.Configure(ConfigureApp);
+            builder.Configure(app=>
+            {
+                if (basePath != null)
+                {
+                    app.Map(basePath, map =>
+                    {
+                        ConfigureApp(map);
+                    });
+                }
+                else
+                {
+                    ConfigureApp(app);
+                }
+            });
             var server = new TestServer(builder);
 
             Server = new TestServer(builder);

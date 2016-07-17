@@ -15,19 +15,19 @@ namespace IdentityServer4.Hosting
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            context.HttpContext.Items[Constants.OwinEnvironment.IdentityServerHost] = value;
+            context.HttpContext.Items[Constants.EnvironmentKeys.IdentityServerHost] = value;
         }
 
         public static void SetBasePath(this IdentityServerContext context, string value)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            context.HttpContext.Items[Constants.OwinEnvironment.IdentityServerBasePath] = value;
+            context.HttpContext.Items[Constants.EnvironmentKeys.IdentityServerBasePath] = value;
         }
 
         public static string GetHost(this IdentityServerContext context)
         {
-            return context.HttpContext.Items[Constants.OwinEnvironment.IdentityServerHost] as string;
+            return context.HttpContext.Items[Constants.EnvironmentKeys.IdentityServerHost] as string;
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace IdentityServer4.Hosting
         /// <returns></returns>
         public static string GetBasePath(this IdentityServerContext context)
         {
-            return context.HttpContext.Items[Constants.OwinEnvironment.IdentityServerBasePath] as string;
+            return context.HttpContext.Items[Constants.EnvironmentKeys.IdentityServerBasePath] as string;
         }
 
         /// <summary>
@@ -61,6 +61,7 @@ namespace IdentityServer4.Hosting
             {
                 uri = context.GetIdentityServerBaseUrl();
                 if (uri.EndsWith("/")) uri = uri.Substring(0, uri.Length - 1);
+                uri = uri.ToLowerInvariant();
             }
 
             return uri;
@@ -82,15 +83,6 @@ namespace IdentityServer4.Hosting
                 return signoutIframeUrl;
             }
             return null;
-        }
-
-        internal static void SetRequestId(this IdentityServerContext context, string id)
-        {
-            context.HttpContext.TraceIdentifier = id;
-        }
-        internal static string GetRequestId(this IdentityServerContext context)
-        {
-            return context.HttpContext.TraceIdentifier;
         }
     }
 }

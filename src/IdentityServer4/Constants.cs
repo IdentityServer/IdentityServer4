@@ -381,13 +381,10 @@ namespace IdentityServer4
             };
         }
 
-        public static class OwinEnvironment
+        public static class EnvironmentKeys
         {
             public const string IdentityServerBasePath = "idsrv:IdentityServerBasePath";
             public const string IdentityServerHost     = "idsrv:IdentityServerHost";
-            public const string IdentityServerOrigin = "idsrv:IdentityServerOrigin";
-
-            public const string RequestId = "idsrv:RequestId";
         }
 
         public static class Authentication

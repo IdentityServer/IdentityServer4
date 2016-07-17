@@ -111,7 +111,7 @@ namespace IdentityServer4.Endpoints.Results
 
             var errorModel = new ErrorMessage
             {
-                RequestId = _context.GetRequestId(),
+                RequestId = _context.HttpContext.TraceIdentifier,
                 ErrorCode = error,
                 ErrorDescription = msg
             };

@@ -73,7 +73,7 @@ namespace UnitTests.Endpoints.Results
         [Trait("Category", Category)]
         public async Task CreateErrorResultAsync_error_result_model_should_have_correct_data()
         {
-            _context.SetRequestId("555");
+            _context.HttpContext.TraceIdentifier = "555";
             _stubLocalizationService.Result = "translation";
 
             var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(ErrorTypes.User, "error", _validatedRequest));

@@ -1,12 +1,15 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityModel;
 using IdentityServer4.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace IdentityServer4.Models
 {
@@ -46,7 +49,14 @@ namespace IdentityServer4.Models
                     Subject,
                     Nonce,
                     normalizedScopes);
-                return value.Sha256();
+
+                using (var sha = SHA256.Create())
+                {
+                    var bytes = Encoding.UTF8.GetBytes(value);
+                    var hash = sha.ComputeHash(bytes);
+
+                    return Base64Url.Encode(hash);
+                }
             }
         }
     }
