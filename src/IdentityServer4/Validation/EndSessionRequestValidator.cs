@@ -49,7 +49,6 @@ namespace IdentityServer4.Validation
             var validatedRequest = new ValidatedEndSessionRequest()
             {
                 Raw = parameters,
-                Subject = subject
             };
 
             var idTokenHint = parameters.Get(Constants.EndSessionRequest.IdTokenHint);
@@ -74,19 +73,28 @@ namespace IdentityServer4.Validation
                         LogWarning(validatedRequest, "Current user does not match identity token");
                         return Invalid();
                     }
+
+                    validatedRequest.Subject = subject;
                 }
 
                 var redirectUri = parameters.Get(Constants.EndSessionRequest.PostLogoutRedirectUri);
                 if (redirectUri.IsPresent())
                 {
-                    validatedRequest.PostLogOutUri = redirectUri;
-
                     if (await _uriValidator.IsPostLogoutRedirectUriValidAsync(redirectUri, validatedRequest.Client) == false)
                     {
                         LogWarning(validatedRequest, "Invalid post logout URI");
                         return Invalid();
                     }
 
+                    validatedRequest.PostLogOutUri = redirectUri;
+                }
+                else if (validatedRequest.Client.PostLogoutRedirectUris.Count == 1)
+                {
+                    validatedRequest.PostLogOutUri = validatedRequest.Client.PostLogoutRedirectUris.First();
+                }
+
+                if (validatedRequest.PostLogOutUri != null)
+                {
                     var state = parameters.Get(Constants.EndSessionRequest.State);
                     if (state.IsPresent())
                     {

@@ -92,7 +92,8 @@ namespace IdentityServer4.Endpoints
         {
             var validatedRequest = result.IsError ? null : result.ValidatedRequest;
 
-            if (validatedRequest.Client != null || validatedRequest.PostLogOutUri != null)
+            if (validatedRequest != null && 
+                (validatedRequest.Client != null || validatedRequest.PostLogOutUri != null))
             {
                 var msg = new MessageWithId<LogoutMessage>(new LogoutMessage(validatedRequest));
                 await _logoutMessageStore.WriteAsync(msg.Id, msg);

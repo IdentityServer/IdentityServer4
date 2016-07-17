@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IdentityServer4.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ namespace IdentityServer4.Endpoints.Results
         {
             string framesHtml = null;
 
-            if (_urls != null && _urls.Any())
+            if (!_urls.IsNullOrEmpty())
             {
                 var frameUrls = _urls.Select(x => $"<iframe style='display:none' width='0' height='0' src='{x}'></iframe>");
                 framesHtml = frameUrls.Aggregate((x, y) => x + y);

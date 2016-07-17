@@ -7,6 +7,8 @@ namespace IdentityServer4.Endpoints.Results
 {
     class CheckSessionResult : HtmlPageResult
     {
+        private readonly string _cookieName;
+
         public CheckSessionResult(string cookieName)
         {
             _cookieName = cookieName;
@@ -314,6 +316,5 @@ if (typeof define == 'function' && define.amd) define([], function() { return Sh
 </body>
 </html>
 ";
-        private readonly string _cookieName;
     }
 }

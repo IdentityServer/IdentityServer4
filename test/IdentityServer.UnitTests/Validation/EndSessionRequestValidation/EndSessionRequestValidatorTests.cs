@@ -79,7 +79,45 @@ namespace IdentityServer.UnitTests.Validation.EndSessionRequestValidation
         }
 
         [Fact]
-        public async Task post_logout_uri_fails_validation_should_return_success()
+        public async Task no_post_logout_redirect_uri_should_use_single_registered_uri()
+        {
+            _stubTokenValidator.IdentityTokenValidationResult = new TokenValidationResult()
+            {
+                IsError = false,
+                Claims = new Claim[] { new Claim("sub", _user.GetSubjectId()) },
+                Client = new Client() { ClientId = "client1", PostLogoutRedirectUris = new List<string> { "foo" } }
+            };
+            _stubRedirectUriValidator.IsPostLogoutRedirectUriValid = true;
+
+            var parameters = new NameValueCollection();
+            parameters.Add("id_token_hint", "id_token");
+
+            var result = await _subject.ValidateAsync(parameters, _user);
+            result.IsError.Should().BeFalse();
+            result.ValidatedRequest.PostLogOutUri.Should().Be("foo");
+        }
+
+        [Fact]
+        public async Task no_post_logout_redirect_uri_should_not_use_multiple_registered_uri()
+        {
+            _stubTokenValidator.IdentityTokenValidationResult = new TokenValidationResult()
+            {
+                IsError = false,
+                Claims = new Claim[] { new Claim("sub", _user.GetSubjectId()) },
+                Client = new Client() { ClientId = "client1", PostLogoutRedirectUris = new List<string> { "foo", "bar" } }
+            };
+            _stubRedirectUriValidator.IsPostLogoutRedirectUriValid = true;
+
+            var parameters = new NameValueCollection();
+            parameters.Add("id_token_hint", "id_token");
+
+            var result = await _subject.ValidateAsync(parameters, _user);
+            result.IsError.Should().BeFalse();
+            result.ValidatedRequest.PostLogOutUri.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task post_logout_uri_fails_validation_should_return_error()
         {
             _stubTokenValidator.IdentityTokenValidationResult = new TokenValidationResult()
             {
@@ -128,7 +166,6 @@ namespace IdentityServer.UnitTests.Validation.EndSessionRequestValidation
             var result = await _subject.ValidateAsync(parameters, _user);
             result.IsError.Should().BeFalse();
             result.ValidatedRequest.Raw.Should().BeSameAs(parameters);
-            result.ValidatedRequest.Subject.Should().BeSameAs(_user);
         }
     }
 }
