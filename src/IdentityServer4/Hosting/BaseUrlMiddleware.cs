@@ -16,13 +16,13 @@ namespace IdentityServer4.Hosting
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, IdentityServerContext idsrvContext)
+        public async Task Invoke(HttpContext context, IdentityServerContext idsvrContext)
         {
             var request = context.Request;
 
             var host = request.Scheme + "://" + request.Host.Value;
-            idsrvContext.SetHost(host);
-            idsrvContext.SetBasePath(request.PathBase.Value.RemoveTrailingSlash());
+            idsvrContext.SetHost(host);
+            idsvrContext.SetBasePath(request.PathBase.Value.RemoveTrailingSlash());
 
             await _next(context);
         }

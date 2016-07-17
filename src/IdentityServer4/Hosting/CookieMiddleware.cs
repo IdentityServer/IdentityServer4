@@ -14,12 +14,15 @@ namespace IdentityServer4.Hosting
         {
             var idSvrOptions = app.ApplicationServices.GetRequiredService<IdentityServerOptions>();
             if (idSvrOptions.Endpoints.EnableAuthorizeEndpoint &&
-                idSvrOptions.AuthenticationOptions.PrimaryAuthenticationScheme.IsMissing())
+                idSvrOptions.AuthenticationOptions.AuthenticationScheme.IsMissing())
             {
                 app.UseCookieAuthentication(new CookieAuthenticationOptions
                 {
-                    AuthenticationScheme = idSvrOptions.AuthenticationOptions.EffectivePrimaryAuthenticationScheme,
-                    AutomaticAuthenticate = true
+                    AuthenticationScheme = idSvrOptions.AuthenticationOptions.EffectiveAuthenticationScheme,
+                    AutomaticAuthenticate = true,
+                    SlidingExpiration = false,
+                    ExpireTimeSpan = Constants.DefaultCookieTimeSpan,
+                    CookieName = Constants.DefaultCookieAuthenticationScheme,
                 });
             }
         }

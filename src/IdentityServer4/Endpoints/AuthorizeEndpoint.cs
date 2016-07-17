@@ -56,17 +56,17 @@ namespace IdentityServer4.Endpoints
                 return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
             }
 
-            if (context.HttpContext.Request.Path == Constants.RoutePaths.Oidc.Authorize.EnsureLeadingSlash())
+            if (context.HttpContext.Request.Path == Constants.ProtocolRoutePaths.Authorize.EnsureLeadingSlash())
             {
                 return await ProcessAuthorizeAsync(context);
             }
 
-            if (context.HttpContext.Request.Path == Constants.RoutePaths.Oidc.AuthorizeAfterLogin.EnsureLeadingSlash())
+            if (context.HttpContext.Request.Path == Constants.ProtocolRoutePaths.AuthorizeAfterLogin.EnsureLeadingSlash())
             {
                 return await ProcessAuthorizeAfterLoginAsync(context);
             }
 
-            if (context.HttpContext.Request.Path == Constants.RoutePaths.Oidc.AuthorizeAfterConsent.EnsureLeadingSlash())
+            if (context.HttpContext.Request.Path == Constants.ProtocolRoutePaths.AuthorizeAfterConsent.EnsureLeadingSlash())
             {
                 return await ProcessAuthorizeAfterConsentAsync(context);
             }

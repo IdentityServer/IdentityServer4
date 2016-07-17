@@ -43,7 +43,7 @@ namespace IdentityServer4.Tests.Common
         {
             if (CookieAuthenticationScheme != null)
             {
-                this.Options.AuthenticationOptions.PrimaryAuthenticationScheme = CookieAuthenticationScheme;
+                this.Options.AuthenticationOptions.AuthenticationScheme = CookieAuthenticationScheme;
                 app.UseCookieAuthentication(new CookieAuthenticationOptions {
                     AuthenticationScheme = CookieAuthenticationScheme
                 });
@@ -52,22 +52,22 @@ namespace IdentityServer4.Tests.Common
 
         private void MockAuthorizationPipeline_OnPostConfigure(IApplicationBuilder app)
         {
-            app.Map(Constants.RoutePaths.Login.EnsureLeadingSlash(), path =>
+            app.Map(Constants.UIConstants.DefaultRoutePaths.Login.EnsureLeadingSlash(), path =>
             {
                 path.Run(ctx => Login(ctx));
             });
 
-            app.Map(Constants.RoutePaths.Logout.EnsureLeadingSlash(), path =>
+            app.Map(Constants.UIConstants.DefaultRoutePaths.Logout.EnsureLeadingSlash(), path =>
             {
                 path.Run(ctx => Logout(ctx));
             });
 
-            app.Map(Constants.RoutePaths.Consent.EnsureLeadingSlash(), path =>
+            app.Map(Constants.UIConstants.DefaultRoutePaths.Consent.EnsureLeadingSlash(), path =>
             {
                 path.Run(ctx => Consent(ctx));
             });
 
-            app.Map(Constants.RoutePaths.Error.EnsureLeadingSlash(), path =>
+            app.Map(Constants.UIConstants.DefaultRoutePaths.Error.EnsureLeadingSlash(), path =>
             {
                 path.Run(ctx => Error(ctx));
             });

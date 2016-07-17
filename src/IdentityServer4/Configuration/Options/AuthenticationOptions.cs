@@ -23,12 +23,12 @@ namespace IdentityServer4.Configuration
         }
 
         // TODO: new
-        public string PrimaryAuthenticationScheme { get; set; }
-        internal string EffectivePrimaryAuthenticationScheme
+        public string AuthenticationScheme { get; set; }
+        internal string EffectiveAuthenticationScheme
         {
             get
             {
-                return PrimaryAuthenticationScheme ?? Constants.PrimaryAuthenticationType;
+                return AuthenticationScheme ?? Constants.DefaultCookieAuthenticationScheme;
             }
         }
 

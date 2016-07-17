@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityModel;
 using IdentityServer4.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -69,7 +70,7 @@ namespace IdentityServer4.Hosting
 
         internal static async Task<ClaimsPrincipal> GetIdentityServerUserAsync(this IdentityServerContext context)
         {
-            return await context.HttpContext.Authentication.AuthenticateAsync(context.Options.AuthenticationOptions.EffectivePrimaryAuthenticationScheme);
+            return await context.HttpContext.Authentication.AuthenticateAsync(context.Options.AuthenticationOptions.EffectiveAuthenticationScheme);
         }
 
         internal static string GetIdentityServerSignoutFrameCallbackUrl(this IdentityServerContext context)
@@ -78,8 +79,9 @@ namespace IdentityServer4.Hosting
             var sid = sessionCookie.GetSessionId();
             if (sid != null)
             {
-                var signoutIframeUrl = context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.RoutePaths.Oidc.EndSessionCallback;
-                signoutIframeUrl = signoutIframeUrl.AddQueryString(Constants.EndSessionRequest.Sid + "=" + sid);
+                var signoutIframeUrl = context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.ProtocolRoutePaths.EndSessionCallback;
+                //TODO: update sid to OidcConstants when idmodel released
+                signoutIframeUrl = signoutIframeUrl.AddQueryString("sid" + "=" + sid);
                 return signoutIframeUrl;
             }
             return null;

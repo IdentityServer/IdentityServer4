@@ -13,31 +13,18 @@ namespace IdentityServer4
     public static class Constants
     {
         public const string IdentityServerName = "IdentityServer4";
-        
-        public const string PrimaryAuthenticationType       = "idsrv";
-        public const string ExternalAuthenticationType      = "idsrv.external";
-        public const string PartialSignInAuthenticationType = "idsrv.partial";
-        public const string ExternalAuthenticationMethod = "external";
-        
-        internal static readonly string[] IdentityServerAuthenticationTypes = new string[]
-        {
-            PrimaryAuthenticationType,
-            ExternalAuthenticationType,
-            PartialSignInAuthenticationType
-        };
-        
-        public const string BuiltInIdentityProvider         = "idsrv";
+
+        public const string DefaultAuthenticationType = "password";
+        public const string DefaultCookieAuthenticationScheme = "idsvr";
+
+        public const string LocalIdentityProvider       = "local";
+        public const string ExternalIdentityProvider    = "external";
 
         public const string AccessTokenAudience             = "{0}resources";
 
         public static readonly TimeSpan DefaultCookieTimeSpan = TimeSpan.FromHours(10);
-        public static readonly TimeSpan ExternalCookieTimeSpan = TimeSpan.FromMinutes(10);
-        public static readonly TimeSpan DefaultRememberMeDuration = TimeSpan.FromDays(30);
 
         public static readonly TimeSpan DefaultCacheDuration = TimeSpan.FromMinutes(5);
-
-        // the limit after which old messages are purged
-        public const int CookieMessageThreshold = 2;
 
         public const string DefaultHashAlgorithm = "SHA256";
 
@@ -220,22 +207,7 @@ namespace IdentityServer4
             public const string Roles         = "roles";
         }
 
-        public static class ClaimTypes
-        {
-            // claims for authentication controller partial logins
-            public const string AuthorizationReturnUrl = "authorization_return_url";
-            public const string PartialLoginRestartUrl = "partial_login_restart_url";
-            public const string PartialLoginReturnUrl = "partial_login_return_url";
-
-            // internal claim types
-            // claim type to identify external user from external provider
-            public const string ExternalProviderUserId = "external_provider_user_id";
-            public const string PartialLoginResumeId = PartialLoginResumeClaimPrefix + "{0}";
-        }
-
-        public const string PartialLoginResumeClaimPrefix = "partial_login_resume_id:";
-
-        public static readonly string[] ClaimsProviderFilerClaimTypes = new string[]
+        public static readonly string[] ClaimsProviderFilterClaimTypes = new string[]
         {
             JwtClaimTypes.Audience,
             JwtClaimTypes.Issuer,
@@ -275,15 +247,6 @@ namespace IdentityServer4
             JwtClaimTypes.SessionId
         };
 
-        public static readonly string[] AuthenticateResultClaimTypes = new string[]
-        {
-            JwtClaimTypes.Subject,
-            JwtClaimTypes.Name,
-            JwtClaimTypes.AuthenticationMethod,
-            JwtClaimTypes.IdentityProvider,
-            JwtClaimTypes.AuthenticationTime,
-        };
-
         public static class ParsedSecretTypes
         {
             public const string SharedSecret = "SharedSecret";
@@ -297,102 +260,65 @@ namespace IdentityServer4
             public const string X509CertificateName       = "X509Name";
         }
 
-        public static class RouteNames
+        public static class UIConstants
         {
-            public const string Welcome = "idsrv.welcome";
-            public const string Login = "idsrv.authentication.login";
-            public const string LoginExternal = "idsrv.authentication.loginexternal";
-            public const string LoginExternalCallback = "idsrv.authentication.loginexternalcallback";
-            public const string LogoutPrompt = "idsrv.authentication.logoutprompt";
-            public const string Logout = "idsrv.authentication.logout";
-            public const string ResumeLoginFromRedirect = "idsrv.authentication.resume";
-            public const string CspReport = "idsrv.csp.report";
-            public const string ClientPermissions = "idsrv.permissions";
-            
-            public static class Oidc
+            // the limit after which old messages are purged
+            public const int CookieMessageThreshold = 2;
+
+            public static class DefaultRoutePathParams
             {
-                public const string AccessTokenValidation = "idsrv.oidc.accesstokenvalidation";
-                public const string Authorize = "idsrv.oidc.authorize";
-                public const string Consent = "idsrv.oidc.consent";
-                public const string SwitchUser = "idsrv.oidc.switch";
-                public const string CheckSession = "idsrv.oidc.checksession";
-                public const string DiscoveryConfiguration = "idsrv.oidc.discoveryconfiguration";
-                public const string DiscoveryWebKeys = "idsrv.oidc.discoverywebkeys";
-                public const string EndSession = "idsrv.oidc.endsession";
-                public const string EndSessionCallback = "idsrv.oidc.endsessioncallback";
-                public const string IdentityTokenValidation = "idsrv.oidc.identitytokenvalidation";
-                public const string Token = "idsrv.oidc.token";
-                public const string Revocation = "idsrv.oidc.revocation";
-                public const string UserInfo = "idsrv.oidc.userinfo";
-                public const string Introspection = "idsrv.oidc.introspection";
+                public const string Error = "errorId";
+                public const string Login = "returnUrl";
+                public const string Consent = "returnUrl";
+                public const string Logout = "logoutId";
+            }
+
+            public static class DefaultRoutePaths
+            {
+                public const string Error = "home/error";
+                public const string Login = "account/login";
+                public const string Consent = "account/consent";
+                public const string Logout = "account/logout";
             }
         }
 
-        public static class RoutePathParams
+        public static class ProtocolRoutePaths
         {
-            public const string Error = "errorId";
-            public const string Login = "returnUrl";
-            public const string Consent = "returnUrl";
-            public const string Logout = "logoutId";
-        }
+            public const string Authorize = "connect/authorize";
+            public const string AuthorizeAfterConsent = Authorize + "/consent";
+            public const string AuthorizeAfterLogin = Authorize + "/login";
 
-        public static class RoutePaths
-        {
-            // TODO: new
-            public const string Error = "home/error";
-            public const string Login = "account/login";
-            public const string Consent = "account/consent";
-            public const string Logout = "account/logout";
+            public const string DiscoveryConfiguration = ".well-known/openid-configuration";
+            public const string DiscoveryWebKeys = DiscoveryConfiguration + "/jwks";
 
-            public const string CspReport = "csp/report";
+            public const string Token = "connect/token";
+            //TODO
+            //public const string Revocation = "connect/revocation";
+            public const string UserInfo = "connect/userinfo";
+            public const string Introspection = "connect/introspect";
+            //TODO
+            //public const string IdentityTokenValidation = "connect/identityTokenValidation";
 
-            public static class Oidc
-            {
-                public const string Authorize = "connect/authorize";
-                // new
-                public const string AuthorizeAfterConsent = Authorize + "/consent";
-                public const string AuthorizeAfterLogin = Authorize + "/login";
-
-                //public const string Consent = "connect/consent";
-                //public const string SwitchUser = "connect/switch";
-                public const string DiscoveryConfiguration = ".well-known/openid-configuration";
-                public const string DiscoveryWebKeys = DiscoveryConfiguration + "/jwks";
-                public const string Token = "connect/token";
-                public const string Revocation = "connect/revocation";
-                public const string UserInfo = "connect/userinfo";
-                //public const string AccessTokenValidation = "connect/accessTokenValidation";
-                public const string Introspection = "connect/introspect";
-                public const string IdentityTokenValidation = "connect/identityTokenValidation";
-
-                public const string EndSession = "connect/endsession";
-                public const string EndSessionCallback = EndSession + "/callback";
-
-                public const string CheckSession = "connect/checksession";
-            }
+            public const string EndSession = "connect/endsession";
+            public const string EndSessionCallback = EndSession + "/callback";
+            public const string CheckSession = "connect/checksession";
             
             public static readonly string[] CorsPaths =
             {
-                Oidc.DiscoveryConfiguration,
-                Oidc.DiscoveryWebKeys,
-                Oidc.Token,
-                Oidc.UserInfo,
-                Oidc.IdentityTokenValidation,
-                Oidc.Revocation
+                DiscoveryConfiguration,
+                DiscoveryWebKeys,
+                Token,
+                UserInfo,
+                // TODO
+                //IdentityTokenValidation,
+                //Revocation
             };
         }
 
         public static class EnvironmentKeys
         {
-            public const string IdentityServerBasePath = "idsrv:IdentityServerBasePath";
-            public const string IdentityServerHost     = "idsrv:IdentityServerHost";
-        }
-
-        public static class Authentication
-        {
-            public const string SigninId                 = "signinid";
-            public const string SignoutId                = "id";
-            public const string KatanaAuthenticationType = "katanaAuthenticationType";
-            public const string PartialLoginRememberMe = "idsvr:rememberme";
+            public const string IdentityServerBasePath = "idsvr:IdentityServerBasePath";
+            public const string IdentityServerHost     = "idsvr:IdentityServerHost";
         }
 
         public static class LocalizationCategories
@@ -429,14 +355,6 @@ namespace IdentityServer4
         public static class ClaimValueTypes
         {
             public const string Json = "json";
-        }
-
-        public static class EndSessionRequest
-        {
-            public const string IdTokenHint = "id_token_hint";
-            public const string PostLogoutRedirectUri = "post_logout_redirect_uri";
-            public const string State = "state";
-            public const string Sid = "sid";
         }
     }
 }

@@ -64,7 +64,7 @@ namespace IdentityServer4.Tests.Clients
             payload.Should().Contain("client_id", "client.custom");
             payload.Should().Contain("scope", "api1");
             payload.Should().Contain("sub", "818727");
-            payload.Should().Contain("idp", "idsrv");
+            payload.Should().Contain("idp", "local");
 
             var amr = payload["amr"] as JArray;
             amr.Count().Should().Be(1);

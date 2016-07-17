@@ -139,7 +139,7 @@ namespace IdentityServer4.ResponseHandling
             }
 
             // check if idp is local and local logins are not allowed
-            if (currentIdp == Constants.BuiltInIdentityProvider)
+            if (currentIdp == Constants.LocalIdentityProvider)
             {
                 if (_options.AuthenticationOptions.EnableLocalLogin == false ||
                     request.Client.EnableLocalLogin == false)

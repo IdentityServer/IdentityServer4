@@ -15,8 +15,8 @@ namespace IdentityServer4
             string subject,
             string displayName,
             string authenticationMethod = OidcConstants.AuthenticationMethods.Password,
-            string idp = Constants.BuiltInIdentityProvider,
-            string authenticationType = Constants.PrimaryAuthenticationType,
+            string idp = Constants.LocalIdentityProvider,
+            string authenticationType = Constants.DefaultAuthenticationType,
             long authenticationTime = 0)
         {
             if (String.IsNullOrWhiteSpace(subject)) throw new ArgumentNullException("subject");
@@ -74,7 +74,7 @@ namespace IdentityServer4
                 claims.AddRange(additionalClaims);
             }
 
-            return Principal.Create(Constants.PrimaryAuthenticationType,
+            return Principal.Create(Constants.DefaultAuthenticationType,
                 claims.Distinct(new ClaimComparer()).ToArray());
         }
 
@@ -85,7 +85,7 @@ namespace IdentityServer4
             var idp = claims.FirstOrDefault(c => c.Type == JwtClaimTypes.IdentityProvider);
             var authTime = claims.FirstOrDefault(c => c.Type == JwtClaimTypes.AuthenticationTime);
 
-            var id = new ClaimsIdentity(Constants.BuiltInIdentityProvider);
+            var id = new ClaimsIdentity(Constants.DefaultAuthenticationType);
 
             if (sub != null)
             {

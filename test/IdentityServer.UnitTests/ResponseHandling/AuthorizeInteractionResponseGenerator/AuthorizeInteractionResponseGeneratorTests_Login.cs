@@ -70,7 +70,7 @@ namespace IdentityServer4.Tests.ResponseHandling
                 {
                     IdentityProviderRestrictions = new List<string> 
                     {
-                        Constants.BuiltInIdentityProvider
+                        Constants.LocalIdentityProvider
                     }
                 }
             };
@@ -109,7 +109,7 @@ namespace IdentityServer4.Tests.ResponseHandling
                 ClientId = "foo",
                 Client = new Client(),
                  AuthenticationContextReferenceClasses = new List<string>{
-                    "idp:" + Constants.BuiltInIdentityProvider
+                    "idp:" + Constants.LocalIdentityProvider
                 },
                 Subject = IdentityServerPrincipal.Create("123", "dom")
             };

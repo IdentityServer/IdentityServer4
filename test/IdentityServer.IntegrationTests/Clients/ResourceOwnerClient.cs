@@ -59,7 +59,7 @@ namespace IdentityServer4.Tests.Clients
             payload.Should().Contain("client_id", "roclient");
             payload.Should().Contain("scope", "api1");
             payload.Should().Contain("sub", "88421113");
-            payload.Should().Contain("idp", "idsrv");
+            payload.Should().Contain("idp", "local");
 
             var amr = payload["amr"] as JArray;
             amr.Count().Should().Be(1);
@@ -90,7 +90,7 @@ namespace IdentityServer4.Tests.Clients
             payload.Should().Contain("aud", "https://idsrv4/resources");
             payload.Should().Contain("client_id", "roclient");
             payload.Should().Contain("sub", "88421113");
-            payload.Should().Contain("idp", "idsrv");
+            payload.Should().Contain("idp", "local");
 
             var amr = payload["amr"] as JArray;
             amr.Count().Should().Be(1);
@@ -127,7 +127,7 @@ namespace IdentityServer4.Tests.Clients
             payload.Should().Contain("aud", "https://idsrv4/resources");
             payload.Should().Contain("client_id", "roclient");
             payload.Should().Contain("sub", "88421113");
-            payload.Should().Contain("idp", "idsrv");
+            payload.Should().Contain("idp", "local");
 
             var amr = payload["amr"] as JArray;
             amr.Count().Should().Be(1);

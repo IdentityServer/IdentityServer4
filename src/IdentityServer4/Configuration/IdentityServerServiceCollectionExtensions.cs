@@ -66,31 +66,31 @@ namespace Microsoft.Extensions.DependencyInjection
             var map = new Dictionary<string, Type>();
             if (endpoints.EnableTokenEndpoint)
             {
-                map.Add(Constants.RoutePaths.Oidc.Token, typeof(TokenEndpoint));
+                map.Add(Constants.ProtocolRoutePaths.Token, typeof(TokenEndpoint));
             }
             if (endpoints.EnableDiscoveryEndpoint)
             {
-                map.Add(Constants.RoutePaths.Oidc.DiscoveryConfiguration, typeof(DiscoveryEndpoint));
+                map.Add(Constants.ProtocolRoutePaths.DiscoveryConfiguration, typeof(DiscoveryEndpoint));
             }
             if (endpoints.EnableUserInfoEndpoint)
             {
-                map.Add(Constants.RoutePaths.Oidc.UserInfo, typeof(UserInfoEndpoint));
+                map.Add(Constants.ProtocolRoutePaths.UserInfo, typeof(UserInfoEndpoint));
             }
             if (endpoints.EnableIntrospectionEndpoint)
             {
-                map.Add(Constants.RoutePaths.Oidc.Introspection, typeof(IntrospectionEndpoint));
+                map.Add(Constants.ProtocolRoutePaths.Introspection, typeof(IntrospectionEndpoint));
             }
             if (endpoints.EnableAuthorizeEndpoint)
             {
-                map.Add(Constants.RoutePaths.Oidc.Authorize, typeof(AuthorizeEndpoint));
+                map.Add(Constants.ProtocolRoutePaths.Authorize, typeof(AuthorizeEndpoint));
             }
             if (endpoints.EnableEndSessionEndpoint)
             {
-                map.Add(Constants.RoutePaths.Oidc.EndSession, typeof(EndSessionEndpoint));
+                map.Add(Constants.ProtocolRoutePaths.EndSession, typeof(EndSessionEndpoint));
             }
             if (endpoints.EnableCheckSessionEndpoint)
             {
-                map.Add(Constants.RoutePaths.Oidc.CheckSession, typeof(CheckSessionEndpoint));
+                map.Add(Constants.ProtocolRoutePaths.CheckSession, typeof(CheckSessionEndpoint));
             }
 
             services.AddSingleton<IEndpointRouter>(new EndpointRouter(map));
@@ -198,7 +198,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 return new PolicyProvider(
                     provider.GetRequiredService<ILogger<PolicyProvider>>(),
-                    Constants.RoutePaths.CorsPaths,
+                    Constants.ProtocolRoutePaths.CorsPaths,
                     provider.GetRequiredService<ICorsPolicyService>());
             });
             services.AddCors();

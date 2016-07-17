@@ -50,12 +50,12 @@ namespace IdentityServer4.Endpoints
 
         public async Task<IEndpointResult> ProcessAsync(IdentityServerContext context)
         {
-            if (context.HttpContext.Request.Path == Constants.RoutePaths.Oidc.EndSession.EnsureLeadingSlash())
+            if (context.HttpContext.Request.Path == Constants.ProtocolRoutePaths.EndSession.EnsureLeadingSlash())
             {
                 return await ProcessSignoutAsync(context);
             }
 
-            if (context.HttpContext.Request.Path == Constants.RoutePaths.Oidc.EndSessionCallback.EnsureLeadingSlash())
+            if (context.HttpContext.Request.Path == Constants.ProtocolRoutePaths.EndSessionCallback.EnsureLeadingSlash())
             {
                 return await ProcessSignoutCallbackAsync(context);
             }
@@ -153,7 +153,8 @@ namespace IdentityServer4.Endpoints
             var sidCookie = _sessionCookie.GetSessionId();
             if (sidCookie != null)
             {
-                var sid = request.Query[Constants.EndSessionRequest.Sid].FirstOrDefault();
+                //TODO: update sid to OidcConstants when idmodel released
+                var sid = request.Query["sid"].FirstOrDefault();
                 if (sid != null)
                 {
                     if (TimeConstantComparer.IsEqual(sid, sidCookie))
@@ -197,7 +198,8 @@ namespace IdentityServer4.Endpoints
                     // add session id if required
                     if (client.LogoutSessionRequired)
                     {
-                        url = url.AddQueryString(Constants.EndSessionRequest.Sid + "=" + sid);
+                        //TODO: update sid to OidcConstants when idmodel released
+                        url = url.AddQueryString("sid" + "=" + sid);
                     }
 
                     urls.Add(url);

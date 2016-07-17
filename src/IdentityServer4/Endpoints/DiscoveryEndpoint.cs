@@ -160,37 +160,38 @@ namespace IdentityServer4.Endpoints
 
                 if (_options.Endpoints.EnableAuthorizeEndpoint)
                 {
-                    document.authorization_endpoint = baseUrl + Constants.RoutePaths.Oidc.Authorize;
+                    document.authorization_endpoint = baseUrl + Constants.ProtocolRoutePaths.Authorize;
                 }
 
                 if (_options.Endpoints.EnableTokenEndpoint)
                 {
-                    document.token_endpoint = baseUrl + Constants.RoutePaths.Oidc.Token;
+                    document.token_endpoint = baseUrl + Constants.ProtocolRoutePaths.Token;
                 }
 
                 if (_options.Endpoints.EnableUserInfoEndpoint)
                 {
-                    document.userinfo_endpoint = baseUrl + Constants.RoutePaths.Oidc.UserInfo;
+                    document.userinfo_endpoint = baseUrl + Constants.ProtocolRoutePaths.UserInfo;
                 }
 
                 if (_options.Endpoints.EnableEndSessionEndpoint)
                 {
-                    document.end_session_endpoint = baseUrl + Constants.RoutePaths.Oidc.EndSession;
+                    document.end_session_endpoint = baseUrl + Constants.ProtocolRoutePaths.EndSession;
                 }
 
                 if (_options.Endpoints.EnableCheckSessionEndpoint)
                 {
-                    document.check_session_iframe = baseUrl + Constants.RoutePaths.Oidc.CheckSession;
+                    document.check_session_iframe = baseUrl + Constants.ProtocolRoutePaths.CheckSession;
                 }
 
-                if (_options.Endpoints.EnableTokenRevocationEndpoint)
-                {
-                    document.revocation_endpoint = baseUrl + Constants.RoutePaths.Oidc.Revocation;
-                }
+                //TODO
+                //if (_options.Endpoints.EnableTokenRevocationEndpoint)
+                //{
+                //    document.revocation_endpoint = baseUrl + Constants.ProtocolRoutePaths.Revocation;
+                //}
 
                 if (_options.Endpoints.EnableIntrospectionEndpoint)
                 {
-                    document.introspection_endpoint = baseUrl + Constants.RoutePaths.Oidc.Introspection;
+                    document.introspection_endpoint = baseUrl + Constants.ProtocolRoutePaths.Introspection;
                 }
             }
 
@@ -198,7 +199,7 @@ namespace IdentityServer4.Endpoints
             {
                 if ((await _keys.GetKeysAsync()).Any())
                 {
-                    document.jwks_uri = baseUrl + Constants.RoutePaths.Oidc.DiscoveryWebKeys;
+                    document.jwks_uri = baseUrl + Constants.ProtocolRoutePaths.DiscoveryWebKeys;
                 }
             }
 

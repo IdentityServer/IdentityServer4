@@ -52,7 +52,7 @@ namespace IdentityServer4.Validation
             string subject, 
             string authenticationMethod,
             IEnumerable<Claim> claims = null,
-            string identityProvider = Constants.BuiltInIdentityProvider)
+            string identityProvider = Constants.LocalIdentityProvider)
         {
             var resultClaims = new List<Claim>
             {

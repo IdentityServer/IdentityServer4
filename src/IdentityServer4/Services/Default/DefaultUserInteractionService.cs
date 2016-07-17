@@ -125,8 +125,8 @@ namespace IdentityServer4.Services.Default
                     returnUrl = returnUrl.Substring(0, index);
                 }
 
-                if (returnUrl.EndsWith(Constants.RoutePaths.Oidc.AuthorizeAfterLogin, StringComparison.Ordinal) || 
-                    returnUrl.EndsWith(Constants.RoutePaths.Oidc.AuthorizeAfterConsent, StringComparison.Ordinal))
+                if (returnUrl.EndsWith(Constants.ProtocolRoutePaths.AuthorizeAfterLogin, StringComparison.Ordinal) || 
+                    returnUrl.EndsWith(Constants.ProtocolRoutePaths.AuthorizeAfterConsent, StringComparison.Ordinal))
                 {
                     return true;
                 }

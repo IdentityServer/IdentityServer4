@@ -51,7 +51,7 @@ namespace IdentityServer4.Validation
                 Raw = parameters,
             };
 
-            var idTokenHint = parameters.Get(Constants.EndSessionRequest.IdTokenHint);
+            var idTokenHint = parameters.Get(OidcConstants.EndSessionRequest.IdTokenHint);
             if (idTokenHint.IsPresent())
             {
                 // validate id_token - no need to validate token life time
@@ -77,7 +77,7 @@ namespace IdentityServer4.Validation
                     validatedRequest.Subject = subject;
                 }
 
-                var redirectUri = parameters.Get(Constants.EndSessionRequest.PostLogoutRedirectUri);
+                var redirectUri = parameters.Get(OidcConstants.EndSessionRequest.PostLogoutRedirectUri);
                 if (redirectUri.IsPresent())
                 {
                     if (await _uriValidator.IsPostLogoutRedirectUriValidAsync(redirectUri, validatedRequest.Client) == false)
@@ -95,7 +95,7 @@ namespace IdentityServer4.Validation
 
                 if (validatedRequest.PostLogOutUri != null)
                 {
-                    var state = parameters.Get(Constants.EndSessionRequest.State);
+                    var state = parameters.Get(OidcConstants.EndSessionRequest.State);
                     if (state.IsPresent())
                     {
                         validatedRequest.State = state;
