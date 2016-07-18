@@ -117,10 +117,12 @@ namespace IdentityServer4.Endpoints
             if (_options.DiscoveryOptions.ShowGrantTypes)
             {
                 var standardGrantTypes = Constants.SupportedGrantTypes.AsEnumerable();
-                if (this._options.AuthenticationOptions.EnableLocalLogin == false)
-                {
-                    standardGrantTypes = standardGrantTypes.Where(type => type != OidcConstants.GrantTypes.Password);
-                }
+                
+                // TODO: find a better way to determine if password is support (e.g. by checking the type of IResourceOwnerPasswordValidator
+                //if (this._options.AuthenticationOptions.EnableLocalLogin == false)
+                //{
+                //    standardGrantTypes = standardGrantTypes.Where(type => type != OidcConstants.GrantTypes.Password);
+                //}
 
                 var showGrantTypes = new List<string>(standardGrantTypes);
 

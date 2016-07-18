@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-
-using Microsoft.AspNetCore.Builder;
-
 namespace IdentityServer4.Configuration
 {
     /// <summary>
@@ -11,19 +8,10 @@ namespace IdentityServer4.Configuration
     /// </summary>
     public class AuthenticationOptions
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AuthenticationOptions"/> class.
-        /// </summary>
-        public AuthenticationOptions()
-        {
-            EnableLocalLogin = true;
-            EnableSignOutPrompt = true;
-            RequireAuthenticatedUserForSignOutMessage = false;
-            //CookieOptions = new CookieOptions();
-        }
-
         // TODO: new
+        // TODO: does this class still make sense? maybe consolidate UI settings somewhere else?
         public string AuthenticationScheme { get; set; }
+
         internal string EffectiveAuthenticationScheme
         {
             get
@@ -41,19 +29,7 @@ namespace IdentityServer4.Configuration
         /// <value>
         ///   <c>true</c> if local login is enabled; otherwise, <c>false</c>.
         /// </value>
-        public bool EnableLocalLogin { get; set; }
-
-        public CookieAuthenticationOptions CookieAuthenticationOptions { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether IdentityServer will show a confirmation page for sign-out.
-        /// When a client initiates a sign-out, by default IdentityServer will ask the user for confirmation. This is a mitigation technique against "logout spam".
-        /// Defaults to true.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if sign-out prompt is enabled; otherwise, <c>false</c>.
-        /// </value>
-        public bool EnableSignOutPrompt { get; set; }
+        public bool EnableLocalLogin { get; set; } = true;
 
         /// <summary>
         /// Indicates if user must be authenticated to accept parameters to end session endpoint. Defaults to false.
@@ -61,6 +37,6 @@ namespace IdentityServer4.Configuration
         /// <value>
         /// <c>true</c> if required; otherwise, <c>false</c>.
         /// </value>
-        public bool RequireAuthenticatedUserForSignOutMessage { get; set; }
+        public bool RequireAuthenticatedUserForSignOutMessage { get; set; } = false;
     }
 }
