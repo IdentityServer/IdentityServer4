@@ -6,7 +6,7 @@ layout: docs-default
 
 Most modern applications look more or less like this:
 
-![modern application architecture]({{ site.baseurl }}/assets/images/appArch.png)
+![modern application architecture](images/appArch.png)
 
 The typical interactions are:
 
@@ -30,7 +30,7 @@ but rather outsource that critical functionality to a service - the security tok
 
 This leads to the following security architecture and usage of protocols:
 
-![security protocols]({{ site.baseurl }}/assets/images/protocols.png)
+![security protocols](images/protocols.png)
 
 This divides the security concerns into two parts.
 
