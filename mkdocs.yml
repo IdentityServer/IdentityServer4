@@ -1,8 +1,8 @@
 site_name: IdentityServer4 Documentation
+site_favicon: favicon.ico
+
 pages:
 - Home: index.md
-- repo_url: https://github.com/identityserver/identityserver4/
-
 - Overview:
     - 'The big picture': overview/bigPicture.md
     - 'Features': overview/features.md
