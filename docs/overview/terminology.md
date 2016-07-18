@@ -6,7 +6,7 @@ layout: docs-default
 
 The specs, documentation and object model use a certain terminology that you should be aware of.
 
-![modern application architecture]({{ site.baseurl }}/assets/images/terminology.png)
+![modern application architecture](images/terminology.png)
 
 ## OpenID Connect Provider (OP)
 IdentityServer is an OpenID Connect provider - it implements the OpenID Connect protocol (and OAuth2 as well).
