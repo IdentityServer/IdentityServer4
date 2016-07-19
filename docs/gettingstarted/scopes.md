@@ -4,7 +4,7 @@ The first thing you typically define in your system are the resources that you w
 That could be identity information of your users like profile data or email addresses or access to APIs.
 
 **Remark** At runtime, scopes are retrieved via an implementation of the `IScopeStore`. 
-This allows loading them from arbitrary data stores.
+This allows loading them from arbitrary data sources like config files or databases.
 For this document we gonna use the in-memory version of the scope store.
 
 
@@ -13,7 +13,7 @@ For this document we gonna use the in-memory version of the scope store.
 OpenID Connect requires a scope with a name of `openid`. Since this scope is defined in the OIDC specification, 
 we have built-in support for it via the `StandardScopes` class.
 
-Alls our samples define a class called `Scope` with a method called `Get`. In this method you simply return
+Alls our samples define a class called `Scopes` with a method called `Get`. In this method you simply return
 a list of scopes you want to support in your identityserver. This list will be later used to configure the 
 identityserver service.
 
@@ -53,7 +53,7 @@ public class Scopes
 ## Defining custom identity scopes
 
 You can also define custom identity scopes. Create a new `Scope` class, give it a name and a display name and define
-which claims should be included in the identity token when this scope gets requested.
+which user claims should be included in the identity token when this scope gets requested.
 
 
 ```csharp
@@ -75,7 +75,7 @@ Add that scope to your list of supported scopes.
 
 ## Defining scopes for APIs
 
-To get access tokens for APIs, you also need to register them as a scope. This time the scope type is `Resource`.
+To get access tokens for APIs, you also need to register them as a scope. This time the scope type is of type `Resource`.
 
 ```csharp
 new Scope
@@ -87,6 +87,7 @@ new Scope
 }
 ```
 
-If you don't define any scope claims, the access token will contain the subject ID of the user (if present), client ID and the scope name.
+If you don't define any scope claims, the access token will contain the subject ID of the user (if present), 
+the client ID and the scope name.
 
 You can also add additional user claims to the token by defining scope claims as shown above.
