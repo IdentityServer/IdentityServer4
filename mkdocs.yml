@@ -13,3 +13,9 @@ pages:
     - 'Terminology': overview/terminology.md
     - 'Supported Specifications': overview/specs.md
     - 'Packaging': overview/packaging.md
+- Getting Started
+    - 'Defining Users': gettingstarted/users.md
+    - 'Defining Scopes': gettingstarted/scopes.md
+    - 'Defining Clients': gettingstarted/clients.md
+    - 'Adding IdentityServer to a new Web Application': gettingstarted/newProject.md
+    - 'Adding IdentityServer to an ASP.NET Identity Web Application': gettingstarted/aspnetid.md
