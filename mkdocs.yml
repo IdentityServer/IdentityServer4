@@ -3,11 +3,10 @@ site_description: documentation for identityserver4
 site_author: dominick baier and brock allen
 copyright: dominick baier and brock allen
 site_favicon: favicon.ico
-repo_url: https://github.com/identityserver/identityserver4
+repo_url: https://github.com/identityserver/identityserver4/
 
 pages:
 - Home: index.md
 - Overview:
     - 'The big picture': overview/bigPicture.md
-    - 'Features': overview/features.md
     - 'Terminology': overview/terminology.md
