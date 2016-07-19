@@ -19,6 +19,6 @@ pages:
     - 'Defining Clients': gettingstarted/clients.md
     - 'Adding IdentityServer to a new Web Application': gettingstarted/newProject.md
     - 'Adding IdentityServer to an ASP.NET Identity Web Application': gettingstarted/aspnetid.md
-- Reference
+- Reference:
     - 'Client': reference/client.md
     - 'Scope': reference/scope.md 
