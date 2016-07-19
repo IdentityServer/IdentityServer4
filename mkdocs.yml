@@ -4,7 +4,7 @@ site_author: dominick baier and brock allen
 copyright: dominick baier and brock allen
 site_favicon: favicon.ico
 repo_url: https://github.com/identityserver/identityserver4/
-page_edit_url: https://github.com/identityserver/identityserver4/docs
+edit_uri: blob/dev/docs/
 
 pages:
 - Home: index.md
