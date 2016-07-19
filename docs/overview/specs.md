@@ -1,8 +1,4 @@
----
-layout: docs-default
----
-
-# Features and Specifications
+# Supported Specifications
 
 IdentityServer implements the following specifications:
 

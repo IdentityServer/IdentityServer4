@@ -10,3 +10,5 @@ pages:
 - Overview:
     - 'The big picture': overview/bigPicture.md
     - 'Terminology': overview/terminology.md
+    - 'Supported Specifications': overview/specs.md
+    - 'How to get': overview/packaging.md
