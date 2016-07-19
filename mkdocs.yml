@@ -13,7 +13,7 @@ pages:
     - 'Terminology': overview/terminology.md
     - 'Supported Specifications': overview/specs.md
     - 'Packaging': overview/packaging.md
-- Getting Started
+- Getting Started:
     - 'Defining Users': gettingstarted/users.md
     - 'Defining Scopes': gettingstarted/scopes.md
     - 'Defining Clients': gettingstarted/clients.md
