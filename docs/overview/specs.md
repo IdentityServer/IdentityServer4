@@ -7,6 +7,7 @@ IdentityServer implements the following specifications:
 * OpenID Connect Session Management 1.0 - draft 22 ([spec](http://openid.net/specs/openid-connect-session-1_0.html))
 * OpenID Connect HTTP-based Logout 1.0 - draft 03 ([spec](http://openid.net/specs/openid-connect-logout-1_0.html))
 
+
 * OAuth 2.0 ([RFC 6749](http://tools.ietf.org/html/rfc6749))
 * OAuth 2.0 Bearer Token Usage ([RFC 6750](http://tools.ietf.org/html/rfc6750))
 * OAuth 2.0 Multiple Response Types ([spec](http://openid.net/specs/oauth-v2-multiple-response-types-1_0.html))
