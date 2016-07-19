@@ -8,7 +8,7 @@ repo_url: https://github.com/identityserver/identityserver4/
 pages:
 - Home: index.md
 - Overview:
-    - 'The big picture': overview/bigPicture.md
+    - 'The big Picture': overview/bigPicture.md
     - 'Terminology': overview/terminology.md
     - 'Supported Specifications': overview/specs.md
-    - 'How to get': overview/packaging.md
+    - 'Packaging': overview/packaging.md
