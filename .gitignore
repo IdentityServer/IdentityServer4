@@ -131,7 +131,7 @@ publish/
 # Publish Web Output
 *.[Pp]ublish.xml
 *.azurePubxml
-# TODO: Comment the next line if you want to checkin your web deploy settings 
+# TODO: Comment the next line if you want to checkin your web deploy settings
 # but database connection strings (with potential passwords) will be unencrypted
 *.pubxml
 *.publishproj
@@ -196,3 +196,7 @@ FakesAssemblies/
 # Visual Studio 6 workspace options file
 *.opt
 docs/_build/
+
+# Cake Build Related
+tools/Cake/
+tools/packages.config.md5sum
