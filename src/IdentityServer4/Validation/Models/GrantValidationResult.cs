@@ -37,6 +37,7 @@ namespace IdentityServer4.Validation
         /// </summary>
         public GrantValidationResult(ClaimsPrincipal principal)
         {
+            // TODO: more checks on claims (amr, etc...)
             Principal = principal;
             IsError = false;
         }
@@ -62,9 +63,9 @@ namespace IdentityServer4.Validation
                 new Claim(JwtClaimTypes.AuthenticationTime, DateTimeOffsetHelper.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer)
             };
 
-            if (claims != null && claims.Any())
+            if (!claims.IsNullOrEmpty())
             {
-                resultClaims.AddRange(claims.Where(x => !Constants.OidcProtocolClaimTypes.Contains(x.Type)));
+                resultClaims.AddRange(claims);
             }
 
             var id = new ClaimsIdentity(authenticationMethod);

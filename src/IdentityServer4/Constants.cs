@@ -207,46 +207,6 @@ namespace IdentityServer4
             public const string Roles         = "roles";
         }
 
-        public static readonly string[] ClaimsProviderFilterClaimTypes = new string[]
-        {
-            JwtClaimTypes.Audience,
-            JwtClaimTypes.Issuer,
-            JwtClaimTypes.NotBefore,
-            JwtClaimTypes.Expiration,
-            JwtClaimTypes.UpdatedAt,
-            JwtClaimTypes.IssuedAt,
-            JwtClaimTypes.AuthenticationMethod,
-            JwtClaimTypes.AuthenticationTime,
-            JwtClaimTypes.AuthorizedParty,
-            JwtClaimTypes.AccessTokenHash,
-            JwtClaimTypes.AuthorizationCodeHash,
-            JwtClaimTypes.Nonce,
-            JwtClaimTypes.IdentityProvider,
-            JwtClaimTypes.SessionId
-        };
-
-        public static readonly string[] OidcProtocolClaimTypes = new string[]
-        {
-            JwtClaimTypes.Subject,
-            JwtClaimTypes.AuthenticationMethod,
-            JwtClaimTypes.IdentityProvider,
-            JwtClaimTypes.AuthenticationTime,
-            JwtClaimTypes.Audience,
-            JwtClaimTypes.Issuer,
-            JwtClaimTypes.NotBefore,
-            JwtClaimTypes.Expiration,
-            JwtClaimTypes.UpdatedAt,
-            JwtClaimTypes.IssuedAt,
-            JwtClaimTypes.AuthenticationContextClassReference,
-            JwtClaimTypes.AuthorizedParty,
-            JwtClaimTypes.AccessTokenHash,
-            JwtClaimTypes.AuthorizationCodeHash,
-            JwtClaimTypes.Nonce,
-            JwtClaimTypes.JwtId,
-            JwtClaimTypes.Scope,
-            JwtClaimTypes.SessionId
-        };
-
         public static class ParsedSecretTypes
         {
             public const string NoSecret = "NoSecret";
@@ -356,6 +316,35 @@ namespace IdentityServer4
         public static class ClaimValueTypes
         {
             public const string Json = "json";
+        }
+
+        public class Filters
+        {
+            // filter list for claims returned from profile service prior to creating tokens
+            public static readonly string[] ClaimsProviderFilterClaimTypes = new string[]
+            {
+                // TODO: add cnf when IdModel has it
+                // TODO: consider JwtClaimTypes.AuthenticationContextClassReference,
+                JwtClaimTypes.AccessTokenHash,
+                JwtClaimTypes.Audience,
+                JwtClaimTypes.AuthenticationMethod,
+                JwtClaimTypes.AuthenticationTime,
+                JwtClaimTypes.AuthorizedParty,
+                JwtClaimTypes.AuthorizationCodeHash,
+                JwtClaimTypes.ClientId,
+                JwtClaimTypes.Expiration,
+                JwtClaimTypes.IdentityProvider,
+                JwtClaimTypes.IssuedAt,
+                JwtClaimTypes.Issuer,
+                JwtClaimTypes.JwtId,
+                JwtClaimTypes.Nonce,
+                JwtClaimTypes.NotBefore,
+                JwtClaimTypes.ReferenceTokenId,
+                JwtClaimTypes.SessionId,
+                JwtClaimTypes.Subject,
+                JwtClaimTypes.Scope,
+                JwtClaimTypes.UpdatedAt,
+            };
         }
     }
 }
