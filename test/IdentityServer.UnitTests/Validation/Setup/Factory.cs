@@ -182,5 +182,35 @@ namespace IdentityServer4.Tests.Validation
 
             return validator;
         }
+
+        public static ClientSecretValidator CreateClientSecretValidator(IClientStore clients = null, SecretParser parser = null, SecretValidator validator = null)
+        {
+            var options = TestIdentityServerOptions.Create();
+            if (clients == null) clients = new InMemoryClientStore(TestClients.Get());
+
+            if (parser == null)
+            {
+                var parsers = new List<ISecretParser>
+                {
+                    new BasicAuthenticationSecretParser(options, TestLogger.Create<BasicAuthenticationSecretParser>()),
+                    new PostBodySecretParser(options, TestLogger.Create<PostBodySecretParser>())
+                };
+
+                parser = new SecretParser(parsers, TestLogger.Create<SecretParser>());
+            }
+
+            if (validator == null)
+            {
+                var validators = new List<ISecretValidator>
+                {
+                    new HashedSharedSecretValidator(TestLogger.Create<HashedSharedSecretValidator>()),
+                    new PlainTextSharedSecretValidator(TestLogger.Create<PlainTextSharedSecretValidator>())
+                };
+
+                validator = new SecretValidator(validators, TestLogger.Create<SecretValidator>());
+            }
+
+            return new ClientSecretValidator(clients, parser, validator, new TestEventService(), TestLogger.Create<ClientSecretValidator>());
+        }
     }
 }

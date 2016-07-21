@@ -201,6 +201,16 @@ namespace IdentityServer4.Tests.Validation
                     },
                     new Client
                     {
+                        ClientName = "Resource Owner Client - Public",
+                        Enabled = true,
+                        ClientId = "roclient.public",
+                        PublicClient = true,
+                        
+                        AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+                        AllowAccessToAllScopes = true,
+                    },
+                    new Client
+                    {
                         ClientName = "Resource Owner Client",
                         Enabled = true,
                         ClientId = "roclient_absolute_refresh_expiration_one_time_only",

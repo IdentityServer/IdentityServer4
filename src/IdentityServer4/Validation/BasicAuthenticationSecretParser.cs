@@ -26,10 +26,10 @@ namespace IdentityServer4.Validation
         /// Creates the parser with a reference to identity server options
         /// </summary>
         /// <param name="options">IdentityServer options</param>
-        public BasicAuthenticationSecretParser(IdentityServerOptions options, ILoggerFactory loggerFactory)
+        public BasicAuthenticationSecretParser(IdentityServerOptions options, ILogger<BasicAuthenticationSecretParser> logger)
         {
             _options = options;
-            _logger = loggerFactory.CreateLogger<BasicAuthenticationSecretParser>();
+            _logger = logger;
         }
 
         public string AuthenticationMethod
