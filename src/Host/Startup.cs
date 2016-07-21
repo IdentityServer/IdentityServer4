@@ -9,6 +9,9 @@ using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using Serilog.Events;
 using IdentityServer4.Configuration;
+using System.Collections.Generic;
+using IdentityServer4.Services.InMemory;
+using IdentityServer4.Validation;
 
 namespace Host
 {
@@ -42,11 +45,15 @@ namespace Host
             })
                 .AddInMemoryClients(Clients.Get())
                 .AddInMemoryScopes(Scopes.Get())
-                .AddInMemoryUsers(Users.Get())
+                //.AddInMemoryUsers(Users.Get())
                 //.SetTemporarySigningCredential();
                 .SetSigningCredential(cert);
 
-            builder.AddExtensionGrantValidator<ExtensionGrantValidator>();
+            services.AddSingleton<List<InMemoryUser>>(Users.Get());
+            services.AddTransient<UI.Login.LoginService>();
+            services.AddTransient<IResourceOwnerPasswordValidator, InMemoryResourceOwnerPasswordValidator>();
+
+            builder.AddExtensionGrantValidator<Host.Extensions.ExtensionGrantValidator>();
 
             // for the UI
             services
@@ -55,7 +62,6 @@ namespace Host
                 {
                     razor.ViewLocationExpanders.Add(new UI.CustomViewLocationExpander());
                 });
-            services.AddTransient<UI.Login.LoginService>();
         }
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)

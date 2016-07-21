@@ -24,7 +24,7 @@ namespace IdentityServer4.Services.InMemory
             var user = query.SingleOrDefault();
             if (user != null)
             {
-                return Task.FromResult(new GrantValidationResult(user.Subject, "password"));
+                return Task.FromResult(new GrantValidationResult(user.Subject, "password", user.Claims));
             }
 
             return Task.FromResult(new GrantValidationResult("Invalid username or password"));

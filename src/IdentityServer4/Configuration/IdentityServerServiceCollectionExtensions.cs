@@ -38,7 +38,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services, IdentityServerOptions options)
         {
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddSingleton(options);
             
@@ -180,9 +180,10 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<ILocalizationService, DefaultLocalizationService>();
             services.TryAddTransient<IConsentService, DefaultConsentService>();
             services.TryAddTransient<ICorsPolicyService, DefaultCorsPolicyService>();
+            services.TryAddTransient<IProfileService, DefaultProfileService>();
             services.TryAddTransient(typeof(IMessageStore<>), typeof(CookieMessageStore<>));
             services.TryAddTransient<EventServiceHelper>();
-
+            
             return services;
         }
 
