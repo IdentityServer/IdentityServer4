@@ -25,7 +25,7 @@ namespace IdentityServer4.Tests.Validation.Secrets
         }
 
         [Fact]
-        public async void EmptyOwinEnvironment()
+        public async void EmptyContext()
         {
             var context = new DefaultHttpContext();
             context.Request.Body = new MemoryStream();
@@ -111,7 +111,8 @@ namespace IdentityServer4.Tests.Validation.Secrets
 
             var secret = await _parser.ParseAsync(context);
 
-            secret.Should().BeNull();
+            secret.Should().NotBeNull();
+            secret.Type.Should().Be(Constants.ParsedSecretTypes.NoSecret);
         }
 
         [Fact]

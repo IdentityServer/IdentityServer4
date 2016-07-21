@@ -32,6 +32,11 @@ namespace IdentityServer4.Models
         public List<Secret> ClientSecrets { get; set; } = new List<Secret>();
 
         /// <summary>
+        /// If set to true, no client secret is needed to request tokens at the token endpoint
+        /// </summary>
+        public bool PublicClient { get; set; } = false;
+
+        /// <summary>
         /// Client display name (used for logging and consent screen)
         /// </summary>
         public string ClientName { get; set; }

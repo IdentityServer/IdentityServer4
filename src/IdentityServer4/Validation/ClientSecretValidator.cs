@@ -55,26 +55,32 @@ namespace IdentityServer4.Validation
                 return fail;
             }
 
-            var result = await _validator.ValidateAsync(parsedSecret, client.ClientSecrets);
-
-            if (result.Success)
+            if (client.PublicClient)
             {
-                _logger.LogInformation("Client validation success");
-
-                var success = new ClientSecretValidationResult
+                _logger.LogDebug("Public Client - skipping secret validation success");
+            }
+            else
+            {
+                var result = await _validator.ValidateAsync(parsedSecret, client.ClientSecrets);
+                if (result.Success == false)
                 {
-                    IsError = false,
-                    Client = client
-                };
+                    await RaiseFailureEvent(client.ClientId, "Invalid client secret");
+                    _logger.LogError("Client validation failed for client: {clientId}.", client.ClientId);
 
-                await RaiseSuccessEvent(client.ClientId);
-                return success;
+                    return fail;
+                }
             }
 
-            await RaiseFailureEvent(client.ClientId, "Invalid client secret");
-            _logger.LogError("Client validation failed for client: {clientId}.", client.ClientId);
+            _logger.LogInformation("Client validation success");
 
-            return fail;
+            var success = new ClientSecretValidationResult
+            {
+                IsError = false,
+                Client = client
+            };
+
+            await RaiseSuccessEvent(client.ClientId);
+            return success;
         }
 
         private async Task RaiseSuccessEvent(string clientId)

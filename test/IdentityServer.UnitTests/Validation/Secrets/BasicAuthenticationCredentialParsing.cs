@@ -10,6 +10,7 @@ using Xunit;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
+using UnitTests.Common;
 
 namespace IdentityServer4.Tests.Validation.Secrets
 {
@@ -22,7 +23,7 @@ namespace IdentityServer4.Tests.Validation.Secrets
         public BasicAuthenticationSecretParsing()
         {
             _options = new IdentityServerOptions();
-            _parser = new BasicAuthenticationSecretParser(_options, new LoggerFactory());
+            _parser = new BasicAuthenticationSecretParser(_options, TestLogger.Create<BasicAuthenticationSecretParser>());
         }
 
         [Fact]

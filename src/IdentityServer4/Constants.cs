@@ -249,6 +249,7 @@ namespace IdentityServer4
 
         public static class ParsedSecretTypes
         {
+            public const string NoSecret = "NoSecret";
             public const string SharedSecret = "SharedSecret";
             public const string X509Certificate = "X509Certificate";
         }

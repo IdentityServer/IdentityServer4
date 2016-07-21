@@ -62,23 +62,41 @@ namespace IdentityServer4.Validation
                 var id = body["client_id"].FirstOrDefault();
                 var secret = body["client_secret"].FirstOrDefault();
 
-                if (id.IsPresent() && secret.IsPresent())
+                // client id must be present
+                if (id.IsPresent())
                 {
-                    if (id.Length > _options.InputLengthRestrictions.ClientId ||
-                        secret.Length > _options.InputLengthRestrictions.ClientSecret)
+                    if (id.Length > _options.InputLengthRestrictions.ClientId)
                     {
-                        _logger.LogError("Client ID or secret exceeds maximum lenght.");
+                        _logger.LogError("Client ID exceeds maximum lenght.");
                         return Task.FromResult<ParsedSecret>(null);
                     }
 
-                    var parsedSecret = new ParsedSecret
+                    if (secret.IsPresent())
                     {
-                        Id = id,
-                        Credential = secret,
-                        Type = Constants.ParsedSecretTypes.SharedSecret
-                    };
+                        if (secret.Length > _options.InputLengthRestrictions.ClientSecret)
+                        {
+                            _logger.LogError("Client secret exceeds maximum lenght.");
+                            return Task.FromResult<ParsedSecret>(null);
+                        }
 
-                    return Task.FromResult(parsedSecret);
+                        return Task.FromResult(new ParsedSecret
+                        {
+                            Id = id,
+                            Credential = secret,
+                            Type = Constants.ParsedSecretTypes.SharedSecret
+                        });
+                    }
+                    else
+                    {
+                        // client secret is optional
+                        _logger.LogDebug("client id without secret found");
+
+                        return Task.FromResult(new ParsedSecret
+                        {
+                            Id = id,
+                            Type = Constants.ParsedSecretTypes.NoSecret
+                        });
+                    }
                 }
             }
 
