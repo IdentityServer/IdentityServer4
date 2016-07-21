@@ -26,14 +26,13 @@ namespace IdentityServer4.ResponseHandling
             _logger = logger;
         }
 
-        public async Task<Dictionary<string, object>> ProcessAsync(string subject, IEnumerable<string> scopes, Client client)
+        public async Task<Dictionary<string, object>> ProcessAsync(ClaimsPrincipal subject, IEnumerable<string> scopes, Client client)
         {
             _logger.LogTrace("Creating userinfo response");
 
             var profileData = new Dictionary<string, object>();
             
             var requestedClaimTypes = await GetRequestedClaimTypesAsync(scopes);
-            var principal = Principal.Create("UserInfo", new Claim("sub", subject));
 
             IEnumerable<Claim> profileClaims;
             if (requestedClaimTypes.IncludeAllClaims)
@@ -41,7 +40,7 @@ namespace IdentityServer4.ResponseHandling
                 _logger.LogInformation("Requested claim types: all");
 
                 var context = new ProfileDataRequestContext(
-                    principal, 
+                    subject, 
                     client, 
                     Constants.ProfileDataCallers.UserInfoEndpoint);
 
@@ -53,7 +52,7 @@ namespace IdentityServer4.ResponseHandling
                 _logger.LogInformation("Requested claim types: {types}", requestedClaimTypes.ClaimTypes.ToSpaceSeparatedString());
 
                 var context = new ProfileDataRequestContext(
-                    principal,
+                    subject,
                     client,
                     Constants.ProfileDataCallers.UserInfoEndpoint,
                     requestedClaimTypes.ClaimTypes);

@@ -4,11 +4,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
+using System.Security.Claims;
 
 namespace IdentityServer4.ResponseHandling
 {
     public interface IUserInfoResponseGenerator
     {
-        Task<Dictionary<string, object>> ProcessAsync(string subject, IEnumerable<string> scopes, Client client);
+        Task<Dictionary<string, object>> ProcessAsync(ClaimsPrincipal subject, IEnumerable<string> scopes, Client client);
     }
 }

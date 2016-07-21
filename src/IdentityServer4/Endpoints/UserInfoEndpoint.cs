@@ -13,6 +13,7 @@ using IdentityServer4.Events;
 using IdentityServer4.Hosting;
 using IdentityServer4.Endpoints.Results;
 using IdentityModel;
+using System.Security.Claims;
 
 namespace IdentityServer4.Endpoints
 {
@@ -74,7 +75,8 @@ namespace IdentityServer4.Endpoints
             }
 
             // pass scopes/claims to profile service
-            var subject = tokenResult.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject).Value;
+            var claims = tokenResult.Claims.Where(x => !Constants.Filters.ProtocolClaimsFilter.Contains(x.Type));
+            var subject = Principal.Create("UserInfo", claims.ToArray());
             var scopes = tokenResult.Claims.Where(c => c.Type == JwtClaimTypes.Scope).Select(c => c.Value);
 
             var payload = await _generator.ProcessAsync(subject, scopes, tokenResult.Client);

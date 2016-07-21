@@ -320,6 +320,25 @@ namespace IdentityServer4
 
         public class Filters
         {
+            // filter for claims from an incoming access token (e.g. used at the user profile endpoint)
+            public static readonly string[] ProtocolClaimsFilter = new string[]
+            {
+                JwtClaimTypes.AccessTokenHash,
+                JwtClaimTypes.Audience,
+                JwtClaimTypes.AuthorizedParty,
+                JwtClaimTypes.AuthorizationCodeHash,
+                JwtClaimTypes.ClientId,
+                JwtClaimTypes.Expiration,
+                JwtClaimTypes.IssuedAt,
+                JwtClaimTypes.Issuer,
+                JwtClaimTypes.JwtId,
+                JwtClaimTypes.Nonce,
+                JwtClaimTypes.NotBefore,
+                JwtClaimTypes.ReferenceTokenId,
+                JwtClaimTypes.SessionId,
+                JwtClaimTypes.Scope,
+            };
+
             // filter list for claims returned from profile service prior to creating tokens
             public static readonly string[] ClaimsProviderFilterClaimTypes = new string[]
             {
@@ -343,7 +362,6 @@ namespace IdentityServer4
                 JwtClaimTypes.SessionId,
                 JwtClaimTypes.Subject,
                 JwtClaimTypes.Scope,
-                JwtClaimTypes.UpdatedAt,
             };
         }
     }
