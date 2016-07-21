@@ -20,7 +20,7 @@ namespace IdentityServer4.Validation
         private readonly ILogger _logger;
         private readonly IdentityServerOptions _options;
         private readonly IAuthorizationCodeStore _authorizationCodes;
-        private readonly CustomGrantValidator _customGrantValidator;
+        private readonly ExtensionGrantValidator _extensionGrantValidator;
         private readonly ICustomRequestValidator _customRequestValidator;
         private readonly IRefreshTokenStore _refreshTokens;
         private readonly ScopeValidator _scopeValidator;
@@ -30,7 +30,7 @@ namespace IdentityServer4.Validation
 
         private ValidatedTokenRequest _validatedRequest;
 
-        public TokenRequestValidator(IdentityServerOptions options, IAuthorizationCodeStore authorizationCodes, IRefreshTokenStore refreshTokens, IResourceOwnerPasswordValidator resourceOwnerValidator, IProfileService profile, CustomGrantValidator customGrantValidator, ICustomRequestValidator customRequestValidator, ScopeValidator scopeValidator, IEventService events, ILogger<TokenRequestValidator> logger)
+        public TokenRequestValidator(IdentityServerOptions options, IAuthorizationCodeStore authorizationCodes, IRefreshTokenStore refreshTokens, IResourceOwnerPasswordValidator resourceOwnerValidator, IProfileService profile, ExtensionGrantValidator extensionGrantValidator, ICustomRequestValidator customRequestValidator, ScopeValidator scopeValidator, IEventService events, ILogger<TokenRequestValidator> logger)
         {
             _logger = logger;
             _options = options;
@@ -38,7 +38,7 @@ namespace IdentityServer4.Validation
             _refreshTokens = refreshTokens;
             _resourceOwnerValidator = resourceOwnerValidator;
             _profile = profile;
-            _customGrantValidator = customGrantValidator;
+            _extensionGrantValidator = extensionGrantValidator;
             _customRequestValidator = customRequestValidator;
             _scopeValidator = scopeValidator;
             _events = events;
@@ -96,7 +96,7 @@ namespace IdentityServer4.Validation
             }
 
             // custom grant type
-            var result = await RunValidationAsync(ValidateCustomGrantRequestAsync, parameters);
+            var result = await RunValidationAsync(ValidateExtensionGrantRequestAsync, parameters);
 
             if (result.IsError)
             {
@@ -508,7 +508,7 @@ namespace IdentityServer4.Validation
             return Valid();
         }
 
-        private async Task<TokenRequestValidationResult> ValidateCustomGrantRequestAsync(NameValueCollection parameters)
+        private async Task<TokenRequestValidationResult> ValidateExtensionGrantRequestAsync(NameValueCollection parameters)
         {
             _logger.LogDebug("Start validation of custom grant token request");
 
@@ -524,7 +524,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // check if a validator is registered for the grant type
             /////////////////////////////////////////////
-            if (!_customGrantValidator.GetAvailableGrantTypes().Contains(_validatedRequest.GrantType, StringComparer.Ordinal))
+            if (!_extensionGrantValidator.GetAvailableGrantTypes().Contains(_validatedRequest.GrantType, StringComparer.Ordinal))
             {
                 LogError("No validator is registered for the grant type.");
                 return Invalid(OidcConstants.TokenErrors.UnsupportedGrantType);
@@ -542,7 +542,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // validate custom grant type
             /////////////////////////////////////////////
-            var result = await _customGrantValidator.ValidateAsync(_validatedRequest);
+            var result = await _extensionGrantValidator.ValidateAsync(_validatedRequest);
 
             if (result == null)
             {

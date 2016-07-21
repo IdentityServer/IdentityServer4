@@ -32,7 +32,7 @@ namespace IdentityServer4.Tests.Validation
             IRefreshTokenStore refreshTokens = null,
             IResourceOwnerPasswordValidator resourceOwnerValidator = null,
             IProfileService profile = null,
-            IEnumerable<ICustomGrantValidator> customGrantValidators = null,
+            IEnumerable<IExtensionGrantValidator> extensionGrantValidators = null,
             ICustomRequestValidator customRequestValidator = null,
             ScopeValidator scopeValidator = null)
         {
@@ -61,14 +61,14 @@ namespace IdentityServer4.Tests.Validation
                 customRequestValidator = new DefaultCustomRequestValidator();
             }
 
-            CustomGrantValidator aggregateCustomValidator;
-            if (customGrantValidators == null)
+            ExtensionGrantValidator aggregateExtensionGrantValidator;
+            if (extensionGrantValidators == null)
             {
-                aggregateCustomValidator = new CustomGrantValidator(new [] { new TestGrantValidator() }, TestLogger.Create<CustomGrantValidator>());
+                aggregateExtensionGrantValidator = new ExtensionGrantValidator(new [] { new TestGrantValidator() }, TestLogger.Create<ExtensionGrantValidator>());
             }
             else
             {
-                aggregateCustomValidator = new CustomGrantValidator(customGrantValidators, TestLogger.Create<CustomGrantValidator>());
+                aggregateExtensionGrantValidator = new ExtensionGrantValidator(extensionGrantValidators, TestLogger.Create<ExtensionGrantValidator>());
             }
                 
             if (refreshTokens == null)
@@ -89,7 +89,7 @@ namespace IdentityServer4.Tests.Validation
                 refreshTokens, 
                 resourceOwnerValidator, 
                 profile,
-                aggregateCustomValidator, 
+                aggregateExtensionGrantValidator, 
                 customRequestValidator, 
                 scopeValidator, 
                 new TestEventService(),

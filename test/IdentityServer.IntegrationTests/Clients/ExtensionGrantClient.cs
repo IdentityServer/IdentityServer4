@@ -17,14 +17,14 @@ using Xunit;
 
 namespace IdentityServer4.Tests.Clients
 {
-    public class CustomGrantClient
+    public class ExtensionGrantClient
     {
         const string TokenEndpoint = "https://server/connect/token";
 
         private readonly HttpClient _client;
         private readonly HttpMessageHandler _handler;
 
-        public CustomGrantClient()
+        public ExtensionGrantClient()
         {
             var builder = new WebHostBuilder()
                 .UseStartup<Startup>();

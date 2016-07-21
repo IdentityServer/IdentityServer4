@@ -24,20 +24,20 @@ namespace IdentityServer4.Endpoints
     public class DiscoveryEndpoint : IEndpoint
     {
         private readonly IdentityServerContext _context;
-        private readonly CustomGrantValidator _customGrants;
+        private readonly ExtensionGrantValidator _extensionGrants;
         private readonly IEnumerable<IValidationKeysStore> _keys;
         private readonly ILogger _logger;
         private readonly IdentityServerOptions _options;
         private readonly SecretParser _parsers;
         private readonly IScopeStore _scopes;
 
-        public DiscoveryEndpoint(IdentityServerOptions options, IdentityServerContext context, IScopeStore scopes, ILogger<DiscoveryEndpoint> logger, IEnumerable<IValidationKeysStore> keys, CustomGrantValidator customGrants, SecretParser parsers)
+        public DiscoveryEndpoint(IdentityServerOptions options, IdentityServerContext context, IScopeStore scopes, ILogger<DiscoveryEndpoint> logger, IEnumerable<IValidationKeysStore> keys, ExtensionGrantValidator extensionGrants, SecretParser parsers)
         {
             _options = options;
             _scopes = scopes;
             _logger = logger;
             _context = context;
-            _customGrants = customGrants;
+            _extensionGrants = extensionGrants;
             _parsers = parsers;
             _keys = keys;
         }
@@ -126,9 +126,9 @@ namespace IdentityServer4.Endpoints
 
                 var showGrantTypes = new List<string>(standardGrantTypes);
 
-                if (_options.DiscoveryOptions.ShowCustomGrantTypes)
+                if (_options.DiscoveryOptions.ShowExtensionGrantTypes)
                 {
-                    showGrantTypes.AddRange(_customGrants.GetAvailableGrantTypes());
+                    showGrantTypes.AddRange(_extensionGrants.GetAvailableGrantTypes());
                 }
 
                 document.grant_types_supported = showGrantTypes.ToArray();

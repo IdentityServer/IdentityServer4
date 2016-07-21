@@ -11,7 +11,7 @@ using Xunit;
 namespace IdentityServer4.Tests.Validation.TokenRequest
 {
 
-    public class TokenRequestValidation_CustomGrants_Invalid
+    public class TokenRequestValidation_ExtensionGrants_Invalid
     {
         const string Category = "TokenRequest Validation - AssertionFlow - Invalid";
 
@@ -19,7 +19,7 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task Invalid_Custom_Grant_Type_For_Client_Credentials_Client()
+        public async Task Invalid_Extension_Grant_Type_For_Client_Credentials_Client()
         {
             var client = await _clients.FindClientByIdAsync("client");
             var validator = Factory.CreateTokenRequestValidator();
@@ -36,7 +36,7 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task Restricted_Custom_Grant_Type()
+        public async Task Restricted_Extension_Grant_Type()
         {
             var client = await _clients.FindClientByIdAsync("customgrantclient");
 

@@ -12,7 +12,7 @@ namespace IdentityServer4.Validation
     /// <summary>
     /// Models the result of custom grant validation.
     /// </summary>
-    public class CustomGrantValidationResult : ValidationResult
+    public class GrantValidationResult : ValidationResult
     {
         /// <summary>
         /// Gets or sets the principal which represents the result of the authentication.
@@ -23,32 +23,32 @@ namespace IdentityServer4.Validation
         public ClaimsPrincipal Principal { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CustomGrantValidationResult"/> class with an error message.
+        /// Initializes a new instance of the <see cref="GrantValidationResult"/> class with an error message.
         /// </summary>
         /// <param name="errorMessage">The error message.</param>
-        public CustomGrantValidationResult(string errorMessage)
+        public GrantValidationResult(string errorMessage)
         {
             Error = errorMessage;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CustomGrantValidationResult"/> class with a given principal.
+        /// Initializes a new instance of the <see cref="GrantValidationResult"/> class with a given principal.
         /// Warning: the principal needs to include the required claims - it is recommended to use the other constructor that does validation.
         /// </summary>
-        public CustomGrantValidationResult(ClaimsPrincipal principal)
+        public GrantValidationResult(ClaimsPrincipal principal)
         {
             Principal = principal;
             IsError = false;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CustomGrantValidationResult"/> class.
+        /// Initializes a new instance of the <see cref="GrantValidationResult"/> class.
         /// </summary>
         /// <param name="subject">The subject claim used to uniquely identifier the user.</param>
         /// <param name="authenticationMethod">The authentication method which describes the custom grant type.</param>
         /// <param name="claims">Additional claims that will be maintained in the principal.</param>
         /// <param name="identityProvider">The identity provider.</param>
-        public CustomGrantValidationResult(
+        public GrantValidationResult(
             string subject, 
             string authenticationMethod,
             IEnumerable<Claim> claims = null,

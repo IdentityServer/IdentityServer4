@@ -15,6 +15,6 @@ namespace IdentityServer4.Validation
         /// </summary>
         /// <param name="request">The validated token request.</param>
         /// <returns>The validation result</returns>
-        Task<CustomGrantValidationResult> ValidateAsync(string userName, string password, ValidatedTokenRequest request);
+        Task<GrantValidationResult> ValidateAsync(string userName, string password, ValidatedTokenRequest request);
     }
 }

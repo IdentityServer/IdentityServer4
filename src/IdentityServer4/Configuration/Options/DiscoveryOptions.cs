@@ -53,7 +53,7 @@ namespace IdentityServer4.Configuration
         /// <summary>
         /// Show custom grant types
         /// </summary>
-        public bool ShowCustomGrantTypes { get; set; } = true;
+        public bool ShowExtensionGrantTypes { get; set; } = true;
 
         /// <summary>
         /// Show token endpoint authentication methods

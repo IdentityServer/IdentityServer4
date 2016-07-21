@@ -46,7 +46,7 @@ namespace Host
                 //.SetTemporarySigningCredential();
                 .SetSigningCredential(cert);
 
-            builder.AddCustomGrantValidator<CustomGrantValidator>();
+            builder.AddExtensionGrantValidator<ExtensionGrantValidator>();
 
             // for the UI
             services

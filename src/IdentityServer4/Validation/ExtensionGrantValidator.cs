@@ -9,16 +9,16 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Validation
 {
-    public class CustomGrantValidator
+    public class ExtensionGrantValidator
     {
         private readonly ILogger _logger;
-        private readonly IEnumerable<ICustomGrantValidator> _validators;
+        private readonly IEnumerable<IExtensionGrantValidator> _validators;
         
-        public CustomGrantValidator(IEnumerable<ICustomGrantValidator> validators, ILogger<CustomGrantValidator> logger)
+        public ExtensionGrantValidator(IEnumerable<IExtensionGrantValidator> validators, ILogger<ExtensionGrantValidator> logger)
         {
             if (validators == null)
             {
-                _validators = Enumerable.Empty<ICustomGrantValidator>();
+                _validators = Enumerable.Empty<IExtensionGrantValidator>();
             }
             else
             {
@@ -33,13 +33,13 @@ namespace IdentityServer4.Validation
             return _validators.Select(v => v.GrantType);
         }
 
-        public async Task<CustomGrantValidationResult> ValidateAsync(ValidatedTokenRequest request)
+        public async Task<GrantValidationResult> ValidateAsync(ValidatedTokenRequest request)
         {
             var validator = _validators.FirstOrDefault(v => v.GrantType.Equals(request.GrantType, StringComparison.Ordinal));
 
             if (validator == null)
             {
-                return new CustomGrantValidationResult("No validator found for grant type");
+                return new GrantValidationResult("No validator found for grant type");
             }
 
             try
@@ -50,7 +50,7 @@ namespace IdentityServer4.Validation
             catch (Exception e)
             {
                 _logger.LogError("Grant validation error", e);
-                return new CustomGrantValidationResult("Grant validation error");
+                return new GrantValidationResult("Grant validation error");
             }
         }
     }

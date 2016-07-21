@@ -207,7 +207,7 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task Valid_CustomGrant_Request()
+        public async Task Valid_ExtensionGrant_Request()
         {
             var client = await _clients.FindClientByIdAsync("customgrantclient");
 

@@ -19,21 +19,21 @@ using System.Threading.Tasks;
 
 namespace Host.Extensions
 {
-    public class CustomGrantValidator : ICustomGrantValidator
+    public class ExtensionGrantValidator : IExtensionGrantValidator
     {
-        public Task<CustomGrantValidationResult> ValidateAsync(ValidatedTokenRequest request)
+        public Task<GrantValidationResult> ValidateAsync(ValidatedTokenRequest request)
         {
             var credential = request.Raw.Get("custom_credential");
 
             if (credential != null)
             {
                 // valid credential
-                return Task.FromResult(new CustomGrantValidationResult("818727", "custom"));
+                return Task.FromResult(new GrantValidationResult("818727", "custom"));
             }
             else
             {
                 // custom error message
-                return Task.FromResult(new CustomGrantValidationResult("invalid custom credential"));
+                return Task.FromResult(new GrantValidationResult("invalid custom credential"));
             }
         }
 

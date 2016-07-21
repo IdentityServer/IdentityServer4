@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Tests.Validation
 {
-    class TestGrantValidator : ICustomGrantValidator
+    class TestGrantValidator : IExtensionGrantValidator
     {
-        public Task<CustomGrantValidationResult> ValidateAsync(ValidatedTokenRequest request)
+        public Task<GrantValidationResult> ValidateAsync(ValidatedTokenRequest request)
         {
-            return Task.FromResult(new CustomGrantValidationResult("bob", "CustomGrant"));
+            return Task.FromResult(new GrantValidationResult("bob", "CustomGrant"));
         }
 
         public string GrantType

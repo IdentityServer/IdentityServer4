@@ -43,10 +43,10 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
-        public static IIdentityServerBuilder AddCustomGrantValidator<T>(this IIdentityServerBuilder builder)
-            where T : class, ICustomGrantValidator
+        public static IIdentityServerBuilder AddExtensionGrantValidator<T>(this IIdentityServerBuilder builder)
+            where T : class, IExtensionGrantValidator
         {
-            builder.Services.AddTransient<ICustomGrantValidator, T>();
+            builder.Services.AddTransient<IExtensionGrantValidator, T>();
             
             return builder;
         }

@@ -24,8 +24,8 @@ namespace IdentityServer4.Tests.Clients
             builder.AddInMemoryUsers(Users.Get());
             builder.SetSigningCredential(Cert.Load());
 
-            builder.AddCustomGrantValidator<CustomGrantValidator>();
-            builder.AddCustomGrantValidator<CustomGrantValidator2>();
+            builder.AddExtensionGrantValidator<ExtensionGrantValidator>();
+            builder.AddExtensionGrantValidator<ExtensionGrantValidator2>();
         }
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)

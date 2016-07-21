@@ -106,7 +106,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.AddTransient<ScopeSecretValidator>();
             services.AddTransient<ScopeValidator>();
-            services.AddTransient<CustomGrantValidator>();
+            services.AddTransient<ExtensionGrantValidator>();
             services.AddTransient<ClientSecretValidator>();
             services.AddTransient<BearerTokenUsageValidator>();
             services.AddTransient<IEndSessionRequestValidator, EndSessionRequestValidator>();
