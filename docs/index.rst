@@ -33,7 +33,7 @@ Since IdentityServer is a framework and not a boxed product or a SaaS, you can w
    :hidden:
    :caption: Introduction
 
-   intro/bigPicture
+   intro/big_picture
    intro/terminology
    intro/specs
    intro/packaging
@@ -57,9 +57,9 @@ Since IdentityServer is a framework and not a boxed product or a SaaS, you can w
    topics/idps
    topics/signout
    topics/logging
-   topics/refreshTokens
-   topics/referenceTokens
-   topics/extensionGrants
+   topics/refresh_tokens
+   topics/reference_tokens
+   topics/extension_grants
 
 .. toctree::
    :maxdepth: 2
