@@ -49,6 +49,32 @@ Since IdentityServer is a framework and not a boxed product or a SaaS, you can w
 .. toctree::
    :maxdepth: 2
    :hidden:
+   :caption: Topics
+
+   topics/secrets
+   topics/crypto
+   topics/deployment
+   topics/idps
+   topics/signout
+   topics/logging
+   topics/refreshTokens
+   topics/referenceTokens
+   topics/extensionGrants
+
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: Endpoints
+
+   endpoints/discovery
+   endpoints/authorize
+   endpoints/token
+   endpoints/userinfo
+   endpoints/introspection
+
+.. toctree::
+   :maxdepth: 2
+   :hidden:
    :caption: Reference
 
    reference/scope
