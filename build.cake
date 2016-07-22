@@ -8,7 +8,7 @@ var isLocalBuild        = !AppVeyor.IsRunningOnAppVeyor;
 var solutionPath        = Directory("./src/IdentityServer4");
 var sourcePath          = Directory("./src");
 var testsPath           = Directory("test");
-var buildArtifacts      = Directory("./cakeartifacts/packages");
+var buildArtifacts      = Directory("./artifacts/packages");
 
 Task("Build")
     .IsDependentOn("Clean")
