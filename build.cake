@@ -54,7 +54,7 @@ Task("Pack")
 
     if(!isLocalBuild)
     {
-        settings.VersionSuffix = AppVeyor.Environment.Build.Number.ToString().PadLeft(5,'0');
+        settings.VersionSuffix = "build" + AppVeyor.Environment.Build.Number.ToString().PadLeft(5,'0');
     }
 
     DotNetCorePack(solutionPath, settings);
