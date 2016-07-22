@@ -71,6 +71,26 @@ namespace Host.Configuration
                 },
 
                 ///////////////////////////////////////////
+                // Console Public Resource Owner Flow Sample
+                //////////////////////////////////////////
+                new Client
+                {
+                    ClientId = "roclient.public",
+                    PublicClient = true,
+
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+
+                    AllowedScopes = new List<string>
+                    {
+                        StandardScopes.OpenId.Name,
+                        StandardScopes.Email.Name,
+                        StandardScopes.OfflineAccess.Name,
+
+                        "api1", "api2"
+                    }
+                },
+
+                ///////////////////////////////////////////
                 // Introspection Client Sample
                 //////////////////////////////////////////
                 new Client
