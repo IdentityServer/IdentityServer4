@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Linq;
 using System;
+using IdentityServer4.Extensions;
 
 namespace IdentityServer4.Models
 {
@@ -69,7 +70,7 @@ namespace IdentityServer4.Models
             get { return _allowedGrantTypes; }
             set
             {
-                CheckGrantTypesPlausability(value);
+                ValidateGrantTypes(value);
                 _allowedGrantTypes = value.ToArray();
             }
         }
@@ -228,10 +229,33 @@ namespace IdentityServer4.Models
         /// </value>
         public bool AllowPromptNone { get; set; } = false;
 
-        public void CheckGrantTypesPlausability(IEnumerable<string> grantTypes)
+        public void ValidateGrantTypes(IEnumerable<string> grantTypes)
         {
+            // must set at least one grant type
+            if (grantTypes.IsNullOrEmpty())
+            {
+                throw new InvalidOperationException("Grant types list is empty");
+            }
+
+            // spaces are not allowed in grant types
+            // todo: check for other characters?
+            foreach (var type in grantTypes)
+            {
+                if (type.Contains(' '))
+                {
+                    throw new InvalidOperationException("Grant types cannot contain spaces");
+                }
+            }
+
+            // single grant type, seems to be fine
             if (grantTypes.Count() == 1) return;
 
+            // don't allow duplicate grant types
+            if (grantTypes.Count() != grantTypes.Distinct().Count())
+            {
+                throw new InvalidOperationException("Grant types list contains duplicate values");
+            }
+            
             // would allow response_type downgrade attack from code to token
             DisallowGrantTypeCombination(GrantType.Implicit, GrantType.Code, grantTypes);
             DisallowGrantTypeCombination(GrantType.Implicit, GrantType.CodeWithProofKey, grantTypes);
