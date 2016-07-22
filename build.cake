@@ -20,9 +20,8 @@ Task("Build")
 	foreach(var project in projects)
 	{
 	    DotNetCoreBuild(project.GetDirectory().FullPath, new DotNetCoreBuildSettings {
-	        Configuration = configuration,
-	        Verbose = false,
-	        Runtime = IsRunningOnWindows() ? null : "unix-x64"
+	        Configuration = configuration
+	        // Runtime = IsRunningOnWindows() ? null : "unix-x64"
 	    });
     }
 });
@@ -50,8 +49,13 @@ Task("Pack")
     var settings = new DotNetCorePackSettings
     {
         Configuration = configuration,
-        OutputDirectory = buildArtifacts
+        OutputDirectory = buildArtifacts,
     };
+
+    if(!isLocalBuild)
+    {
+        settings.VersionSuffix = AppVeyor.Environment.Build.Number.ToString().PadLeft(5,'0');
+    }
 
     DotNetCorePack(solutionPath, settings);
 });
@@ -67,8 +71,6 @@ Task("Restore")
 {
   var settings = new DotNetCoreRestoreSettings
   {
-    Verbose = false,
-    Verbosity = DotNetCoreRestoreVerbosity.Warning,
     Sources = new [] {
         "https://api.nuget.org/v3/index.json",
     },
