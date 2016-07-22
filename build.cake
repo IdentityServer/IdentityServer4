@@ -5,7 +5,7 @@ var configuration   = Argument<string>("configuration", "Release");
 // GLOBAL VARIABLES
 ///////////////////////////////////////////////////////////////////////////////
 var isLocalBuild        = !AppVeyor.IsRunningOnAppVeyor;
-var solutionPath        = Directory("./src/IdentityServer4");
+var packPath            = Directory("./src/IdentityServer4");
 var sourcePath          = Directory("./src");
 var testsPath           = Directory("test");
 var buildArtifacts      = Directory("./artifacts/packages");
@@ -19,10 +19,13 @@ Task("Build")
 
 	foreach(var project in projects)
 	{
-	    DotNetCoreBuild(project.GetDirectory().FullPath, new DotNetCoreBuildSettings {
-	        Configuration = configuration
-	        // Runtime = IsRunningOnWindows() ? null : "unix-x64"
-	    });
+        var settings = new DotNetCoreBuildSettings 
+        {
+            Configuration = configuration
+            // Runtime = IsRunningOnWindows() ? null : "unix-x64"
+        };
+
+	    DotNetCoreBuild(project.GetDirectory().FullPath, settings); 
     }
 });
 
@@ -35,9 +38,12 @@ Task("RunTests")
 
     foreach(var project in projects)
 	{
-        DotNetCoreTest(project.GetDirectory().FullPath, new DotNetCoreTestSettings {
+        var settings = new DotNetCoreTestSettings
+        {
             Configuration = configuration
-      });
+        };
+
+        DotNetCoreTest(project.GetDirectory().FullPath, settings);
     }
 });
 
@@ -52,12 +58,13 @@ Task("Pack")
         OutputDirectory = buildArtifacts,
     };
 
+    // add build suffix for CI builds
     if(!isLocalBuild)
     {
         settings.VersionSuffix = "build" + AppVeyor.Environment.Build.Number.ToString().PadLeft(5,'0');
     }
 
-    DotNetCorePack(solutionPath, settings);
+    DotNetCorePack(packPath, settings);
 });
 
 Task("Clean")
@@ -69,16 +76,13 @@ Task("Clean")
 Task("Restore")
     .Does(() =>
 {
-  var settings = new DotNetCoreRestoreSettings
-  {
-    Sources = new [] {
-        "https://api.nuget.org/v3/index.json",
-    },
-  };
+    var settings = new DotNetCoreRestoreSettings
+    {
+        Sources = new [] { "https://api.nuget.org/v3/index.json" }
+    };
 
-  //Restore at root until preview1-002702 bug fixed
-  DotNetCoreRestore(sourcePath, settings);
-  DotNetCoreRestore(testsPath, settings);
+    DotNetCoreRestore(sourcePath, settings);
+    DotNetCoreRestore(testsPath, settings);
 });
 
 Task("Default")
