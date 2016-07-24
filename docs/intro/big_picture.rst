@@ -56,10 +56,10 @@ authentication and authorization can be centralized.
 
 OpenID Connect and OAuth 2.0 – better together
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-OpenID Connect and OAuth2 are very similar – in fact OpenID Connect is an extension on top of OAuth2.
+OpenID Connect and OAuth 2.0 are very similar – in fact OpenID Connect is an extension on top of OAuth 2.0.
 This means that you can combine the two fundamental security concerns – authentication and API access into a single protocol –
 and often a single round trip to the security token service.
 
-This is why we believe that the combination of OpenID Connect and OAuth2 is the best approach to secure modern
-applications for the foreseeable future. IdentityServer3 is an implementation of these two protocols and is
+This is why we believe that the combination of OpenID Connect and OAuth 2.0 is the best approach to secure modern
+applications for the foreseeable future. IdentityServer4 is an implementation of these two protocols and is
 highly optimized to solve the typical security problems of today’s mobile, native and web applications.
