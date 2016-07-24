@@ -42,8 +42,6 @@ Scope
 Scopes are identifiers for resources that a client wants to access. This identifier is sent to the OP during an
 authentication or token request.
 
-By default every client is allowed to request tokens for every scope, but you can restrict that.
-
 They come in two flavours.
 
 **Identity scopes**
