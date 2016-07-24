@@ -54,8 +54,8 @@ OAuth2 is a protocol that allows applications to request access tokens from a se
 to communicate with APIs. This reduces complexity on both the client applications as well as the APIs since
 authentication and authorization can be centralized.
 
-OpenID Connect and OAuth2 – better together
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+OpenID Connect and OAuth 2.0 – better together
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 OpenID Connect and OAuth2 are very similar – in fact OpenID Connect is an extension on top of OAuth2.
 This means that you can combine the two fundamental security concerns – authentication and API access into a single protocol –
 and often a single round trip to the security token service.
