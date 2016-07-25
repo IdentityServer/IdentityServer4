@@ -36,8 +36,8 @@ In your MVC application startup, you can use the standard Microsoft ASP.NET Open
                 
                 TokenValidationParameters = new TokenValidationParameters
                 {
-                    NameClaimType = JwtClaimTypes.Name,
-                    RoleClaimType = JwtClaimTypes.Role,
+                    NameClaimType = "name",
+                    RoleClaimType = "role"
                 }
             };
 
