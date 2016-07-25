@@ -45,6 +45,8 @@ Since IdentityServer is a framework and not a boxed product or a SaaS, you can w
 
    start/scopes
    start/clients
+   start/mvc
+   start/apis
 
 .. toctree::
    :maxdepth: 2
