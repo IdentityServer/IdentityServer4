@@ -44,6 +44,9 @@ The ``ScopeClaim`` class has the following properties:
 Introspection
 ^^^^^^^^^^^^^
 
+The introspection endpoint requires authentication. 
+Use the below settings to configure the credential as well as introspection behavior.
+
 ``ScopeSecrets``
     Adds a list of secrets to the scope for accessing the the introspection endpoint (only applicable to resource scopes).
 ``AllowUnrestrictedIntrospection``
