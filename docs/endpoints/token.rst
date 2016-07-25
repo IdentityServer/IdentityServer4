@@ -5,7 +5,7 @@ The token endpoint can be used to programmatically request tokens.
 It supports the ``password``, ``authorization_code``, ``client_credentials`` and ``refresh_token`` grant types).
 Furthermore the token endpoint can be extended to support extension grant types.
 
-.. Note:: identityserver supports a subset of the OpenID Connect and OAuth 2.0 token request parameters. For a full list, see `here <http://openid.net/specs/openid-connect-core-1_0.html#TokenRequest>`_.
+.. Note:: IdentityServer supports a subset of the OpenID Connect and OAuth 2.0 token request parameters. For a full list, see `here <http://openid.net/specs/openid-connect-core-1_0.html#TokenRequest>`_.
 
 ``client_id``
     client identifier (required)
