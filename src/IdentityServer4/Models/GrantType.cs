@@ -6,13 +6,8 @@ namespace IdentityServer4.Models
     static class GrantType
     {
         public const string Implicit = "implicit";
-
         public const string Hybrid = "hybrid";
-        public const string HybridWithProofKey = "hybrid_with_proof_key";
-
-        public const string Code = "code";
-        public const string CodeWithProofKey = "code_with_proof_key";
-
+        public const string AuthorizationCode = "authorization_code";
         public const string ClientCredentials = "client_credentials";
         public const string ResourceOwnerPassword = "password";
     }

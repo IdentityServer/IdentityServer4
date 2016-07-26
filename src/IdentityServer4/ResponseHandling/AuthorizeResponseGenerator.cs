@@ -32,7 +32,7 @@ namespace IdentityServer4.ResponseHandling
 
         public async Task<AuthorizeResponse> CreateResponseAsync(ValidatedAuthorizeRequest request)
         {
-            if (request.GrantType == GrantType.Code)
+            if (request.GrantType == GrantType.AuthorizationCode)
             {
                 return await CreateCodeFlowResponseAsync(request);
             }

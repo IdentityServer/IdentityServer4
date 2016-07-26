@@ -194,14 +194,11 @@ namespace IdentityServer4.Validation
 
             request.ResponseType = responseType;
 
-            // todo
             //////////////////////////////////////////////////////////
-            // match response_type to flow
+            // match response_type to grant type
             //////////////////////////////////////////////////////////
-            //request.Flow = Constants.ResponseTypeToFlowMapping[request.ResponseType];
             request.GrantType = Constants.ResponseTypeToGrantTypeMapping[request.ResponseType];
 
-            // todo
             //////////////////////////////////////////////////////////
             // check if flow is allowed at authorize endpoint
             //////////////////////////////////////////////////////////
@@ -209,6 +206,24 @@ namespace IdentityServer4.Validation
             {
                 LogError("Invalid grant type", request);
                 return Invalid(request);
+            }
+
+            //////////////////////////////////////////////////////////
+            // check if PKCE is required and validate parameters
+            //////////////////////////////////////////////////////////
+            if (request.GrantType == GrantType.AuthorizationCode || request.GrantType == GrantType.Hybrid)
+            {
+                if (request.Client.RequirePkce)
+                {
+                    /////////////////////////////////////////////////////////////////////////////
+                    // validate code_challenge and code_challenge_method
+                    /////////////////////////////////////////////////////////////////////////////
+                    var proofKeyResult = ValidateProofKeyParameters(request);
+                    if (proofKeyResult.IsError)
+                    {
+                        return proofKeyResult;
+                    }
+                }
             }
 
             //////////////////////////////////////////////////////////
@@ -264,6 +279,46 @@ namespace IdentityServer4.Validation
                     return Invalid(request);
                 }
             }
+
+            return Valid(request);
+        }
+
+        private AuthorizeRequestValidationResult ValidateProofKeyParameters(ValidatedAuthorizeRequest request)
+        {
+            var fail = Invalid(request, ErrorTypes.Client);
+
+            var codeChallenge = request.Raw.Get(OidcConstants.AuthorizeRequest.CodeChallenge);
+            if (codeChallenge.IsMissing())
+            {
+                LogError("code_challenge is missing", request);
+                fail.ErrorDescription = "code challenge required";
+                return fail;
+            }
+
+            if (codeChallenge.Length < _options.InputLengthRestrictions.CodeChallengeMinLength ||
+                codeChallenge.Length > _options.InputLengthRestrictions.CodeChallengeMaxLength)
+            {
+                LogError("code_challenge is either too short or too long", request);
+                return fail;
+            }
+
+            request.CodeChallenge = codeChallenge;
+
+            var codeChallengeMethod = request.Raw.Get(OidcConstants.AuthorizeRequest.CodeChallengeMethod);
+            if (codeChallengeMethod.IsMissing())
+            {
+                _logger.LogDebug("Missing code_challenge_method, defaulting to plain");
+                codeChallengeMethod = OidcConstants.CodeChallengeMethods.Plain;
+            }
+
+            if (!Constants.SupportedCodeChallengeMethods.Contains(codeChallengeMethod))
+            {
+                LogError("Unsupported code_challenge_method: " + codeChallengeMethod, request);
+                fail.ErrorDescription = "transform algorithm not supported";
+                return fail;
+            }
+
+            request.CodeChallengeMethod = codeChallengeMethod;
 
             return Valid(request);
         }

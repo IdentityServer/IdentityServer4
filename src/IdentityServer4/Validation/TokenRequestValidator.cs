@@ -149,7 +149,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // check if client is authorized for grant type
             /////////////////////////////////////////////
-            if (!_validatedRequest.Client.AllowedGrantTypes.ToList().Contains(GrantType.Code) &&
+            if (!_validatedRequest.Client.AllowedGrantTypes.ToList().Contains(GrantType.AuthorizationCode) &&
                 !_validatedRequest.Client.AllowedGrantTypes.ToList().Contains(GrantType.Hybrid))
             {
                 LogError("Client not authorized for code flow");
