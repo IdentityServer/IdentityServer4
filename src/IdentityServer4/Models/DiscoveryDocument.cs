@@ -23,5 +23,6 @@ namespace IdentityServer4.Models
         public string[] subject_types_supported { get; set; }
         public string[] id_token_signing_alg_values_supported { get; set; }
         public string[] token_endpoint_auth_methods_supported { get; set; }
+        public string[] code_challenge_methods_supported { get; set; }
     }
 }

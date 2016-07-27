@@ -81,7 +81,8 @@ namespace IdentityServer4.Endpoints
             {
                 issuer = _context.GetIssuerUri(),
                 subject_types_supported = new[] { "public" },
-                id_token_signing_alg_values_supported = new[] { Constants.SigningAlgorithms.RSA_SHA_256 }
+                id_token_signing_alg_values_supported = new[] { Constants.SigningAlgorithms.RSA_SHA_256 },
+                code_challenge_methods_supported = new[] { OidcConstants.CodeChallengeMethods.Plain, OidcConstants.CodeChallengeMethods.Sha256 }
             };
 
             // scopes
