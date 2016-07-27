@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Validation
@@ -149,7 +150,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // check if client is authorized for grant type
             /////////////////////////////////////////////
-            if (!_validatedRequest.Client.AllowedGrantTypes.ToList().Contains(GrantType.Code) &&
+            if (!_validatedRequest.Client.AllowedGrantTypes.ToList().Contains(GrantType.AuthorizationCode) &&
                 !_validatedRequest.Client.AllowedGrantTypes.ToList().Contains(GrantType.Hybrid))
             {
                 LogError("Client not authorized for code flow");
@@ -259,7 +260,31 @@ namespace IdentityServer4.Validation
                 return Invalid(OidcConstants.TokenErrors.InvalidRequest);
             }
 
+            /////////////////////////////////////////////
+            // validate PKCE parameters
+            /////////////////////////////////////////////
+            var codeVerifier = parameters.Get(OidcConstants.TokenRequest.CodeVerifier);
+            if (_validatedRequest.Client.RequirePkce)
+            {
+                _logger.LogDebug("Client required a proof key for code exchange. Starting PKCE validation");
 
+                var proofKeyResult = ValidateAuthorizationCodeWithProofKeyParameters(codeVerifier, _validatedRequest.AuthorizationCode);
+                if (proofKeyResult.IsError)
+                {
+                    return proofKeyResult;
+                }
+
+                _validatedRequest.CodeVerifier = codeVerifier;
+            }
+            else
+            {
+                if (codeVerifier.IsPresent())
+                {
+                    LogError("Unexpected code_verifier");
+                    return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+                }
+            }
+        
             /////////////////////////////////////////////
             // make sure user is enabled
             /////////////////////////////////////////////
@@ -602,6 +627,56 @@ namespace IdentityServer4.Validation
             _validatedRequest.Scopes = requestedScopes;
             _validatedRequest.ValidatedScopes = _scopeValidator;
             return true;
+        }
+
+        private TokenRequestValidationResult ValidateAuthorizationCodeWithProofKeyParameters(string codeVerifier, AuthorizationCode authZcode)
+        {
+            if (authZcode.CodeChallenge.IsMissing() || authZcode.CodeChallengeMethod.IsMissing())
+            {
+                LogError("Client uses AuthorizationCodeWithProofKey flow but missing code challenge or code challenge method in authZ code");
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+            }
+
+            if (codeVerifier.IsMissing())
+            {
+                LogError("Missing code_verifier");
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+            }
+
+            if (codeVerifier.Length < _options.InputLengthRestrictions.CodeVerifierMinLength ||
+                codeVerifier.Length > _options.InputLengthRestrictions.CodeVerifierMaxLength)
+            {
+                LogError("code_verifier is too short or too long.");
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+            }
+
+            if (Constants.SupportedCodeChallengeMethods.Contains(authZcode.CodeChallengeMethod) == false)
+            {
+                LogError("Unsupported code challenge method: " + authZcode.CodeChallengeMethod);
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+            }
+
+            if (ValidateCodeVerifierAgainstCodeChallenge(codeVerifier, authZcode.CodeChallenge, authZcode.CodeChallengeMethod) == false)
+            {
+                LogError("Transformed code verifier does not match code challenge");
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+            }
+
+            return Valid();
+        }
+
+        private bool ValidateCodeVerifierAgainstCodeChallenge(string codeVerifier, string codeChallenge, string codeChallengeMethod)
+        {
+            if (codeChallengeMethod == OidcConstants.CodeChallengeMethods.Plain)
+            {
+                return TimeConstantComparer.IsEqual(codeVerifier.Sha256(), codeChallenge);
+            }
+
+            var codeVerifierBytes = Encoding.ASCII.GetBytes(codeVerifier);
+            var hashedBytes = codeVerifierBytes.Sha256();
+            var transformedCodeVerifier = Base64Url.Encode(hashedBytes);
+
+            return TimeConstantComparer.IsEqual(transformedCodeVerifier.Sha256(), codeChallenge);
         }
 
         private TokenRequestValidationResult Valid()

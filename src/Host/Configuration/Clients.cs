@@ -91,6 +91,35 @@ namespace Host.Configuration
                 },
 
                 ///////////////////////////////////////////
+                // Console Hybrid with PKCE Sample
+                //////////////////////////////////////////
+                new Client
+                {
+                    ClientId = "console.hybrid.pkce",
+                    ClientName = "Console Hybrid with PKCE Sample",
+                    PublicClient = true,
+
+                    AllowedGrantTypes = GrantTypes.Hybrid,
+                    RequirePkce = true,
+
+                    RedirectUris = new List<string>
+                    {
+                        "http://127.0.0.1:7890/"
+                    },
+
+                    AllowedScopes = new List<string>
+                    {
+                        StandardScopes.OpenId.Name,
+                        StandardScopes.Profile.Name,
+                        StandardScopes.Email.Name,
+                        StandardScopes.Roles.Name,
+                        StandardScopes.OfflineAccess.Name,
+
+                        "api1", "api2",
+                    },
+                },
+
+                ///////////////////////////////////////////
                 // Introspection Client Sample
                 //////////////////////////////////////////
                 new Client

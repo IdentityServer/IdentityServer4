@@ -18,6 +18,8 @@ Basics
     Specifies whether this client needs a secret to request tokens from the token endpoint.
 ``AllowedGrantTypes``
     Specifies the grant types the client is allowed to use. Use the ``GrantTypes`` class for common combinations.
+``RequirePkce``
+    Specifies whether clients using an authorization code based grant type must send a proof key
 ``RedirectUris``
     Specifies the allowed URIs to return tokens or authorization codes to
 ``AllowedScopes``

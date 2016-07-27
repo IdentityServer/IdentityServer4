@@ -76,6 +76,11 @@ namespace IdentityServer4.Models
         }
 
         /// <summary>
+        /// Specifies whether a proof key is required for authorization code based token requests
+        /// </summary>
+        public bool RequirePkce { get; set; } = false;
+
+        /// <summary>
         /// Controls whether access tokens are transmitted via the browser for this client (defaults to true).
         /// This can prevent accidental leakage of access tokens when multiple response types are allowed.
         /// </summary>
@@ -257,21 +262,11 @@ namespace IdentityServer4.Models
             }
             
             // would allow response_type downgrade attack from code to token
-            DisallowGrantTypeCombination(GrantType.Implicit, GrantType.Code, grantTypes);
-            DisallowGrantTypeCombination(GrantType.Implicit, GrantType.CodeWithProofKey, grantTypes);
+            DisallowGrantTypeCombination(GrantType.Implicit, GrantType.AuthorizationCode, grantTypes);
             DisallowGrantTypeCombination(GrantType.Implicit, GrantType.Hybrid, grantTypes);
-            DisallowGrantTypeCombination(GrantType.Implicit, GrantType.HybridWithProofKey, grantTypes);
-
-            // make sure PKCE requirements are enforced
-            DisallowGrantTypeCombination(GrantType.Code, GrantType.CodeWithProofKey, grantTypes);
-            DisallowGrantTypeCombination(GrantType.Code, GrantType.Hybrid, grantTypes);
-            DisallowGrantTypeCombination(GrantType.Code, GrantType.HybridWithProofKey, grantTypes);
-
-            DisallowGrantTypeCombination(GrantType.CodeWithProofKey, GrantType.Hybrid, grantTypes);
-            DisallowGrantTypeCombination(GrantType.CodeWithProofKey, GrantType.HybridWithProofKey, grantTypes);
-
-            DisallowGrantTypeCombination(GrantType.Hybrid, GrantType.HybridWithProofKey, grantTypes);
-
+            
+            DisallowGrantTypeCombination(GrantType.AuthorizationCode, GrantType.Hybrid, grantTypes);
+            
             return;
         }
 

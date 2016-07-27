@@ -157,6 +157,22 @@ namespace IdentityServer4.Validation
         public string LoginHint { get; set; }
 
         /// <summary>
+        /// Gets or sets the code challenge
+        /// </summary>
+        /// <value>
+        /// The code challenge
+        /// </value>
+        public string CodeChallenge { get; set; }
+
+        /// <summary>
+        /// Gets or sets the code challenge method
+        /// </summary>
+        /// <value>
+        /// The code challenge method
+        /// </value>
+        public string CodeChallengeMethod { get; set; }
+
+        /// <summary>
         /// Gets a value indicating whether an access token was requested.
         /// </summary>
         /// <value>

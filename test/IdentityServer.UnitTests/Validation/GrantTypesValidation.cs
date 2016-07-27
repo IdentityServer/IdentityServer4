@@ -36,15 +36,9 @@ namespace IdentityServer.UnitTests.Validation
         
         [Theory]
         [Trait("Category", Category)]
-        [InlineData(GrantType.Implicit, GrantType.Code)]
-        [InlineData(GrantType.Implicit, GrantType.CodeWithProofKey)]
-        [InlineData(GrantType.Implicit, GrantType.HybridWithProofKey)]
-        [InlineData(GrantType.Code, GrantType.CodeWithProofKey)]
-        [InlineData(GrantType.Code, GrantType.Hybrid)]
-        [InlineData(GrantType.Code, GrantType.HybridWithProofKey)]
-        [InlineData(GrantType.CodeWithProofKey, GrantType.Hybrid)]
-        [InlineData(GrantType.CodeWithProofKey, GrantType.HybridWithProofKey)]
-        [InlineData(GrantType.Hybrid, GrantType.HybridWithProofKey)]
+        [InlineData(GrantType.Implicit, GrantType.Hybrid)]
+        [InlineData(GrantType.Implicit, GrantType.AuthorizationCode)]
+        [InlineData(GrantType.AuthorizationCode, GrantType.Hybrid)]
         public void forbidden_grant_type_combinations_should_throw(string type1, string type2)
         {
             var client = new Client();
@@ -56,15 +50,9 @@ namespace IdentityServer.UnitTests.Validation
 
         [Theory]
         [Trait("Category", Category)]
-        [InlineData(GrantType.Implicit, GrantType.Code)]
-        [InlineData(GrantType.Implicit, GrantType.CodeWithProofKey)]
-        [InlineData(GrantType.Implicit, GrantType.HybridWithProofKey)]
-        [InlineData(GrantType.Code, GrantType.CodeWithProofKey)]
-        [InlineData(GrantType.Code, GrantType.Hybrid)]
-        [InlineData(GrantType.Code, GrantType.HybridWithProofKey)]
-        [InlineData(GrantType.CodeWithProofKey, GrantType.Hybrid)]
-        [InlineData(GrantType.CodeWithProofKey, GrantType.HybridWithProofKey)]
-        [InlineData(GrantType.Hybrid, GrantType.HybridWithProofKey)]
+        [InlineData(GrantType.Implicit, GrantType.Hybrid)]
+        [InlineData(GrantType.Implicit, GrantType.AuthorizationCode)]
+        [InlineData(GrantType.AuthorizationCode, GrantType.Hybrid)]
         public void custom_and_forbidden_grant_type_combinations_should_throw(string type1, string type2)
         {
             var client = new Client();

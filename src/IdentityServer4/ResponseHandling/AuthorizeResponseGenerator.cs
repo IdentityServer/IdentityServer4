@@ -32,7 +32,7 @@ namespace IdentityServer4.ResponseHandling
 
         public async Task<AuthorizeResponse> CreateResponseAsync(ValidatedAuthorizeRequest request)
         {
-            if (request.GrantType == GrantType.Code)
+            if (request.GrantType == GrantType.AuthorizationCode)
             {
                 return await CreateCodeFlowResponseAsync(request);
             }
@@ -89,6 +89,8 @@ namespace IdentityServer4.ResponseHandling
                 Client = request.Client,
                 Subject = request.Subject,
                 SessionId = request.SessionId,
+                CodeChallenge = request.CodeChallenge.Sha256(),
+                CodeChallengeMethod = request.CodeChallengeMethod,
 
                 IsOpenId = request.IsOpenIdRequest,
                 RequestedScopes = request.ValidatedScopes.GrantedScopes,

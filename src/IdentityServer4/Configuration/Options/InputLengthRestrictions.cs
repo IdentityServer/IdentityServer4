@@ -100,5 +100,25 @@ namespace IdentityServer4.Configuration
         /// Max length for JWTs
         /// </summary>
         public int Jwt { get; set; } = 51200;
+
+        /// <summary>
+        /// Min length for the code challenge
+        /// </summary>
+        public int CodeChallengeMinLength { get; } = 43;
+
+        /// <summary>
+        /// Max length for the code challenge
+        /// </summary>
+        public int CodeChallengeMaxLength { get; } = 128;
+
+        /// <summary>
+        /// Min length for the code verifier
+        /// </summary>
+        public int CodeVerifierMinLength { get; } = 43;
+
+        /// <summary>
+        /// Max length for the code verifier
+        /// </summary>
+        public int CodeVerifierMaxLength { get; } = 128;
     }
 }

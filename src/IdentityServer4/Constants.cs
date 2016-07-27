@@ -32,35 +32,41 @@ namespace IdentityServer4
         public const string ScopeDescriptionSuffix = "_Description";
         
         public static readonly List<string> SupportedResponseTypes = new List<string> 
-                            { 
-                                OidcConstants.ResponseTypes.Code,
-                                OidcConstants.ResponseTypes.Token,
-                                OidcConstants.ResponseTypes.IdToken,
-                                OidcConstants.ResponseTypes.IdTokenToken,
-                                OidcConstants.ResponseTypes.CodeIdToken,
-                                OidcConstants.ResponseTypes.CodeToken,
-                                OidcConstants.ResponseTypes.CodeIdTokenToken
-                            };
+        { 
+            OidcConstants.ResponseTypes.Code,
+            OidcConstants.ResponseTypes.Token,
+            OidcConstants.ResponseTypes.IdToken,
+            OidcConstants.ResponseTypes.IdTokenToken,
+            OidcConstants.ResponseTypes.CodeIdToken,
+            OidcConstants.ResponseTypes.CodeToken,
+            OidcConstants.ResponseTypes.CodeIdTokenToken
+        };
 
         public static readonly Dictionary<string, string> ResponseTypeToGrantTypeMapping = new Dictionary<string, string>
-                            {
-                                { OidcConstants.ResponseTypes.Code, GrantType.Code },
-                                { OidcConstants.ResponseTypes.Token, GrantType.Implicit },
-                                { OidcConstants.ResponseTypes.IdToken, GrantType.Implicit },
-                                { OidcConstants.ResponseTypes.IdTokenToken, GrantType.Implicit },
-                                { OidcConstants.ResponseTypes.CodeIdToken, GrantType.Hybrid },
-                                { OidcConstants.ResponseTypes.CodeToken, GrantType.Hybrid },
-                                { OidcConstants.ResponseTypes.CodeIdTokenToken, GrantType.Hybrid }
-                            };
+        {
+            { OidcConstants.ResponseTypes.Code, GrantType.AuthorizationCode },
+            { OidcConstants.ResponseTypes.Token, GrantType.Implicit },
+            { OidcConstants.ResponseTypes.IdToken, GrantType.Implicit },
+            { OidcConstants.ResponseTypes.IdTokenToken, GrantType.Implicit },
+            { OidcConstants.ResponseTypes.CodeIdToken, GrantType.Hybrid },
+            { OidcConstants.ResponseTypes.CodeToken, GrantType.Hybrid },
+            { OidcConstants.ResponseTypes.CodeIdTokenToken, GrantType.Hybrid }
+        };
 
         public static readonly List<string> AllowedGrantTypesForAuthorizeEndpoint = new List<string>
-                            {
-                                GrantType.Code,
-                                GrantType.CodeWithProofKey,
-                                GrantType.Hybrid,
-                                GrantType.HybridWithProofKey,
-                                GrantType.Implicit
-                            };
+        {
+            GrantType.AuthorizationCode,
+            GrantType.Implicit,
+            GrantType.Hybrid
+        };
+
+        public static readonly List<string> SupportedCodeChallengeMethods = new List<string>
+        {
+            OidcConstants.CodeChallengeMethods.Plain,
+            OidcConstants.CodeChallengeMethods.Sha256
+        };
+
+
 
         public enum ScopeRequirement
         {
@@ -71,40 +77,38 @@ namespace IdentityServer4
         }
 
         public static readonly Dictionary<string, ScopeRequirement> ResponseTypeToScopeRequirement = new Dictionary<string, ScopeRequirement>
-                            {
-                                { OidcConstants.ResponseTypes.Code, ScopeRequirement.None },
-                                { OidcConstants.ResponseTypes.Token, ScopeRequirement.ResourceOnly },
-                                { OidcConstants.ResponseTypes.IdToken, ScopeRequirement.IdentityOnly },
-                                { OidcConstants.ResponseTypes.IdTokenToken, ScopeRequirement.Identity },
-                                { OidcConstants.ResponseTypes.CodeIdToken, ScopeRequirement.Identity },
-                                { OidcConstants.ResponseTypes.CodeToken, ScopeRequirement.Identity },
-                                { OidcConstants.ResponseTypes.CodeIdTokenToken, ScopeRequirement.Identity }
-                            };
+        {
+            { OidcConstants.ResponseTypes.Code, ScopeRequirement.None },
+            { OidcConstants.ResponseTypes.Token, ScopeRequirement.ResourceOnly },
+            { OidcConstants.ResponseTypes.IdToken, ScopeRequirement.IdentityOnly },
+            { OidcConstants.ResponseTypes.IdTokenToken, ScopeRequirement.Identity },
+            { OidcConstants.ResponseTypes.CodeIdToken, ScopeRequirement.Identity },
+            { OidcConstants.ResponseTypes.CodeToken, ScopeRequirement.Identity },
+            { OidcConstants.ResponseTypes.CodeIdTokenToken, ScopeRequirement.Identity }
+        };
                             
         public static readonly List<string> SupportedGrantTypes = new List<string> 
-                            { 
-                                OidcConstants.GrantTypes.AuthorizationCode,
-                                OidcConstants.GrantTypes.ClientCredentials,
-                                OidcConstants.GrantTypes.Password,
-                                OidcConstants.GrantTypes.RefreshToken,
-                                OidcConstants.GrantTypes.Implicit
-                            };
+        { 
+            OidcConstants.GrantTypes.AuthorizationCode,
+            OidcConstants.GrantTypes.ClientCredentials,
+            OidcConstants.GrantTypes.Password,
+            OidcConstants.GrantTypes.RefreshToken,
+            OidcConstants.GrantTypes.Implicit
+        };
 
         public static readonly Dictionary<string, IEnumerable<string>> AllowedResponseModesForGrantType = new Dictionary<string, IEnumerable<string>>
-                            {
-                                { GrantType.Code, new[] { OidcConstants.ResponseModes.Query, OidcConstants.ResponseModes.FormPost } },
-                                { GrantType.CodeWithProofKey, new[] { OidcConstants.ResponseModes.Query, OidcConstants.ResponseModes.FormPost } },
-                                { GrantType.Hybrid, new[] { OidcConstants.ResponseModes.Fragment, OidcConstants.ResponseModes.FormPost }},
-                                { GrantType.HybridWithProofKey, new[] { OidcConstants.ResponseModes.Fragment, OidcConstants.ResponseModes.FormPost }},
-                                { GrantType.Implicit, new[] { OidcConstants.ResponseModes.Fragment, OidcConstants.ResponseModes.FormPost }},
-                            };
+        {
+            { GrantType.AuthorizationCode, new[] { OidcConstants.ResponseModes.Query, OidcConstants.ResponseModes.FormPost } },
+            { GrantType.Hybrid, new[] { OidcConstants.ResponseModes.Fragment, OidcConstants.ResponseModes.FormPost }},
+            { GrantType.Implicit, new[] { OidcConstants.ResponseModes.Fragment, OidcConstants.ResponseModes.FormPost }},
+        };
 
         public static readonly List<string> SupportedResponseModes = new List<string>
-                            {
-                                OidcConstants.ResponseModes.FormPost,
-                                OidcConstants.ResponseModes.Query,
-                                OidcConstants.ResponseModes.Fragment,
-                            };
+        {
+            OidcConstants.ResponseModes.FormPost,
+            OidcConstants.ResponseModes.Query,
+            OidcConstants.ResponseModes.Fragment,
+        };
 
         public static string[] SupportedSubjectTypes =
         {
@@ -117,20 +121,20 @@ namespace IdentityServer4
         }
 
         public static readonly List<string> SupportedDisplayModes = new List<string>
-                            {
-                                OidcConstants.DisplayModes.Page,
-                                OidcConstants.DisplayModes.Popup,
-                                OidcConstants.DisplayModes.Touch,
-                                OidcConstants.DisplayModes.Wap,
-                            };
+        {
+            OidcConstants.DisplayModes.Page,
+            OidcConstants.DisplayModes.Popup,
+            OidcConstants.DisplayModes.Touch,
+            OidcConstants.DisplayModes.Wap,
+        };
 
         public static readonly List<string> SupportedPromptModes = new List<string>
-                            {
-                                OidcConstants.PromptModes.None,
-                                OidcConstants.PromptModes.Login,
-                                OidcConstants.PromptModes.Consent,
-                                OidcConstants.PromptModes.SelectAccount,
-                            };
+        {
+            OidcConstants.PromptModes.None,
+            OidcConstants.PromptModes.Login,
+            OidcConstants.PromptModes.Consent,
+            OidcConstants.PromptModes.SelectAccount,
+        };
 
         public static class KnownAcrValues
         {
