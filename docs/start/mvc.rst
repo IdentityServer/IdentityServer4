@@ -3,7 +3,7 @@ Connecting an MVC Application
 
 You can integrate identityserver into your MVC application to authenticate users and request access token.
 
-An MVC application typically uses the hybrid flow - use `this <http://127.0.0.1:8000/start/clients.html#defining-a-server-side-web-application-e-g-mvc-for-use-authentication-and-delegated-api-access>`_ sample
+An MVC application typically uses the hybrid flow - use :ref:`this <start_clients_mvc>` sample
 to register the client.
 
 In your MVC application startup, you can use the standard Microsoft ASP.NET OpenID Connect middleware to connect to identityserver::
