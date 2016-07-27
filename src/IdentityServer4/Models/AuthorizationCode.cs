@@ -20,7 +20,7 @@ namespace IdentityServer4.Models
         /// <value>
         /// The creation time.
         /// </value>
-        public DateTimeOffset CreationTime { get; set; }
+        public DateTimeOffset CreationTime { get; set; } = DateTimeOffsetHelper.UtcNow;
 
         /// <summary>
         /// Gets or sets the client.
@@ -87,12 +87,20 @@ namespace IdentityServer4.Models
         public string SessionId { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AuthorizationCode"/> class.
+        /// Gets or sets the code challenge.
         /// </summary>
-        public AuthorizationCode()
-        {
-            CreationTime = DateTimeOffsetHelper.UtcNow;
-        }
+        /// <value>
+        /// The code challenge.
+        /// </value>
+        public string CodeChallenge { get; set; }
+
+        /// <summary>
+        /// Gets or sets the code challenge method.
+        /// </summary>
+        /// <value>
+        /// The code challenge method
+        /// </value>
+        public string CodeChallengeMethod { get; set; }
 
         /// <summary>
         /// Gets the subject identifier.
