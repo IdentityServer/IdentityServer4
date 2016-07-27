@@ -18,15 +18,38 @@ namespace IdentityServer4.Tests.Validation
                     Enabled = true,
                     ClientId = "codeclient",
                     ClientSecrets = new List<Secret>
-                    { 
+                    {
                         new Secret("secret".Sha256())
                     },
 
                     AllowedGrantTypes = GrantTypes.Code,
                     AllowAccessToAllScopes = true,
-                        
+
                     RequireConsent = false,
-                    
+
+                    RedirectUris = new List<string>
+                    {
+                        "https://server/cb",
+                    },
+
+                    AuthorizationCodeLifetime = 60
+                },
+                new Client
+                {
+                    ClientName = "Code Client with PKCE",
+                    Enabled = true,
+                    ClientId = "codeclient.pkce",
+                    ClientSecrets = new List<Secret>
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RequirePkce = true,
+                    AllowAccessToAllScopes = true,
+
+                    RequireConsent = false,
+
                     RedirectUris = new List<string>
                     {
                         "https://server/cb",
@@ -40,16 +63,40 @@ namespace IdentityServer4.Tests.Validation
                         Enabled = true,
                         ClientId = "hybridclient",
                         ClientSecrets = new List<Secret>
-                        { 
+                        {
                             new Secret("secret".Sha256())
                         },
 
                         AllowedGrantTypes = GrantTypes.Hybrid,
                         AllowAccessToAllScopes = true,
                         AllowAccessTokensViaBrowser = true,
-                        
+
                         RequireConsent = false,
-                    
+
+                        RedirectUris = new List<string>
+                        {
+                            "https://server/cb",
+                        },
+
+                        AuthorizationCodeLifetime = 60
+                    },
+                    new Client
+                    {
+                        ClientName = "Hybrid Client with PKCE",
+                        Enabled = true,
+                        ClientId = "hybridclient.pkce",
+                        ClientSecrets = new List<Secret>
+                        {
+                            new Secret("secret".Sha256())
+                        },
+
+                        AllowedGrantTypes = GrantTypes.Hybrid,
+                        RequirePkce = true,
+                        AllowAccessToAllScopes = true,
+                        AllowAccessTokensViaBrowser = true,
+
+                        RequireConsent = false,
+
                         RedirectUris = new List<string>
                         {
                             "https://server/cb",
@@ -84,13 +131,13 @@ namespace IdentityServer4.Tests.Validation
                     {
                         ClientName = "Implicit Client",
                         ClientId = "implicitclient",
-                        
+
                         AllowedGrantTypes = GrantTypes.Implicit,
                         AllowAccessToAllScopes = true,
                         AllowAccessTokensViaBrowser = true,
 
                         RequireConsent = false,
-                    
+
                         RedirectUris = new List<string>
                         {
                             "oob://implicit/cb"
@@ -118,14 +165,14 @@ namespace IdentityServer4.Tests.Validation
                         Enabled = true,
                         ClientId = "implicit_and_client_creds_client",
                         ClientSecrets = new List<Secret>
-                        { 
+                        {
                             new Secret("secret".Sha256())
                         },
 
                         AllowedGrantTypes = GrantTypes.ImplicitAndClientCredentials,
                         AllowAccessToAllScopes = true,
                         RequireConsent = false,
-                    
+
                         RedirectUris = new List<string>
                         {
                             "oob://implicit/cb"
@@ -137,7 +184,7 @@ namespace IdentityServer4.Tests.Validation
                         Enabled = true,
                         ClientId = "codeclient_restricted",
                         ClientSecrets = new List<Secret>
-                        { 
+                        {
                             new Secret("secret".Sha256())
                         },
 
@@ -148,7 +195,7 @@ namespace IdentityServer4.Tests.Validation
                         {
                             "openid"
                         },
-                    
+
                         RedirectUris = new List<string>
                         {
                             "https://server/cb",
@@ -160,7 +207,7 @@ namespace IdentityServer4.Tests.Validation
                         Enabled = true,
                         ClientId = "client",
                         ClientSecrets = new List<Secret>
-                        { 
+                        {
                             new Secret("secret".Sha256())
                         },
 
@@ -175,7 +222,7 @@ namespace IdentityServer4.Tests.Validation
                         Enabled = true,
                         ClientId = "client_restricted",
                         ClientSecrets = new List<Secret>
-                        { 
+                        {
                             new Secret("secret".Sha256())
                         },
 
@@ -184,7 +231,7 @@ namespace IdentityServer4.Tests.Validation
                         AllowedScopes = new List<string>
                         {
                             "resource"
-                        },       
+                        },
                     },
                     new Client
                     {
@@ -192,7 +239,7 @@ namespace IdentityServer4.Tests.Validation
                         Enabled = true,
                         ClientId = "roclient",
                         ClientSecrets = new List<Secret>
-                        { 
+                        {
                             new Secret("secret".Sha256())
                         },
 
@@ -205,7 +252,7 @@ namespace IdentityServer4.Tests.Validation
                         Enabled = true,
                         ClientId = "roclient.public",
                         PublicClient = true,
-                        
+
                         AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                         AllowAccessToAllScopes = true,
                     },
@@ -215,7 +262,7 @@ namespace IdentityServer4.Tests.Validation
                         Enabled = true,
                         ClientId = "roclient_absolute_refresh_expiration_one_time_only",
                         ClientSecrets = new List<Secret>
-                        { 
+                        {
                             new Secret("secret".Sha256())
                         },
 
@@ -232,7 +279,7 @@ namespace IdentityServer4.Tests.Validation
                         Enabled = true,
                         ClientId = "roclient_absolute_refresh_expiration_reuse",
                         ClientSecrets = new List<Secret>
-                        { 
+                        {
                             new Secret("secret".Sha256())
                         },
 
@@ -249,7 +296,7 @@ namespace IdentityServer4.Tests.Validation
                         Enabled = true,
                         ClientId = "roclient_sliding_refresh_expiration_one_time_only",
                         ClientSecrets = new List<Secret>
-                        { 
+                        {
                             new Secret("secret".Sha256())
                         },
 
@@ -267,7 +314,7 @@ namespace IdentityServer4.Tests.Validation
                         Enabled = true,
                         ClientId = "roclient_sliding_refresh_expiration_reuse",
                         ClientSecrets = new List<Secret>
-                        { 
+                        {
                             new Secret("secret".Sha256())
                         },
 
@@ -285,7 +332,7 @@ namespace IdentityServer4.Tests.Validation
                         Enabled = true,
                         ClientId = "roclient_restricted",
                         ClientSecrets = new List<Secret>
-                        { 
+                        {
                             new Secret("secret".Sha256())
                         },
 
@@ -294,7 +341,7 @@ namespace IdentityServer4.Tests.Validation
                         AllowedScopes = new List<string>
                         {
                             "resource"
-                        },       
+                        },
                     },
                     new Client
                     {
@@ -302,7 +349,7 @@ namespace IdentityServer4.Tests.Validation
                         Enabled = true,
                         ClientId = "roclient_restricted_refresh",
                         ClientSecrets = new List<Secret>
-                        { 
+                        {
                             new Secret("secret".Sha256())
                         },
 
@@ -312,7 +359,7 @@ namespace IdentityServer4.Tests.Validation
                         {
                             "resource",
                             "offline_access"
-                        },       
+                        },
                     },
 
                     new Client
@@ -349,7 +396,7 @@ namespace IdentityServer4.Tests.Validation
                         Enabled = true,
                         ClientId = "referencetokenclient",
                         ClientSecrets = new List<Secret>
-                        { 
+                        {
                             new Secret("secret".Sha256())
                         },
 
