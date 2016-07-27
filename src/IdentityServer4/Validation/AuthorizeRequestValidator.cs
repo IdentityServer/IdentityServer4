@@ -215,10 +215,12 @@ namespace IdentityServer4.Validation
             {
                 if (request.Client.RequirePkce)
                 {
+                    _logger.LogDebug("Client requires a proof key for code exchange. Starting PKCE validation");
+
                     /////////////////////////////////////////////////////////////////////////////
                     // validate code_challenge and code_challenge_method
                     /////////////////////////////////////////////////////////////////////////////
-                    var proofKeyResult = ValidateProofKeyParameters(request);
+                    var proofKeyResult = ValidatePkceParameters(request);
                     if (proofKeyResult.IsError)
                     {
                         return proofKeyResult;
@@ -283,7 +285,7 @@ namespace IdentityServer4.Validation
             return Valid(request);
         }
 
-        private AuthorizeRequestValidationResult ValidateProofKeyParameters(ValidatedAuthorizeRequest request)
+        private AuthorizeRequestValidationResult ValidatePkceParameters(ValidatedAuthorizeRequest request)
         {
             var fail = Invalid(request, ErrorTypes.Client);
 
