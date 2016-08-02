@@ -62,7 +62,7 @@ namespace IdentityServer4.Events
             public const int ResourceOwnerFlowLoginFailure = AuthenticationEventsStart + 51;
 
             public const int ClientAuthenticationSuccess = AuthenticationEventsStart + 60;
-            public const int ClientAuthenticationFailure = AuthenticationEventsStart + 51;
+            public const int ClientAuthenticationFailure = AuthenticationEventsStart + 61;
 
             ///////////////////////////
             /// Token service related events
