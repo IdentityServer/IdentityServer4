@@ -5,8 +5,9 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Linq;
 using System;
+using IdentityServer4.Extensions;
 
-namespace IdentityServer4.Core.Models
+namespace IdentityServer4.Models
 {
     /// <summary>
     /// Models an OpenID Connect or OAuth2 client
@@ -30,6 +31,11 @@ namespace IdentityServer4.Core.Models
         /// Client secrets - only relevant for flows that require a secret
         /// </summary>
         public List<Secret> ClientSecrets { get; set; } = new List<Secret>();
+
+        /// <summary>
+        /// If set to true, no client secret is needed to request tokens at the token endpoint
+        /// </summary>
+        public bool PublicClient { get; set; } = false;
 
         /// <summary>
         /// Client display name (used for logging and consent screen)
@@ -64,10 +70,15 @@ namespace IdentityServer4.Core.Models
             get { return _allowedGrantTypes; }
             set
             {
-                CheckGrantTypesPlausability(value);
+                ValidateGrantTypes(value);
                 _allowedGrantTypes = value.ToArray();
             }
         }
+
+        /// <summary>
+        /// Specifies whether a proof key is required for authorization code based token requests
+        /// </summary>
+        public bool RequirePkce { get; set; } = false;
 
         /// <summary>
         /// Controls whether access tokens are transmitted via the browser for this client (defaults to true).
@@ -223,26 +234,39 @@ namespace IdentityServer4.Core.Models
         /// </value>
         public bool AllowPromptNone { get; set; } = false;
 
-        public void CheckGrantTypesPlausability(IEnumerable<string> grantTypes)
+        public void ValidateGrantTypes(IEnumerable<string> grantTypes)
         {
+            // must set at least one grant type
+            if (grantTypes.IsNullOrEmpty())
+            {
+                throw new InvalidOperationException("Grant types list is empty");
+            }
+
+            // spaces are not allowed in grant types
+            // todo: check for other characters?
+            foreach (var type in grantTypes)
+            {
+                if (type.Contains(' '))
+                {
+                    throw new InvalidOperationException("Grant types cannot contain spaces");
+                }
+            }
+
+            // single grant type, seems to be fine
             if (grantTypes.Count() == 1) return;
 
+            // don't allow duplicate grant types
+            if (grantTypes.Count() != grantTypes.Distinct().Count())
+            {
+                throw new InvalidOperationException("Grant types list contains duplicate values");
+            }
+            
             // would allow response_type downgrade attack from code to token
-            DisallowGrantTypeCombination(GrantType.Implicit, GrantType.Code, grantTypes);
-            DisallowGrantTypeCombination(GrantType.Implicit, GrantType.CodeWithProofKey, grantTypes);
+            DisallowGrantTypeCombination(GrantType.Implicit, GrantType.AuthorizationCode, grantTypes);
             DisallowGrantTypeCombination(GrantType.Implicit, GrantType.Hybrid, grantTypes);
-            DisallowGrantTypeCombination(GrantType.Implicit, GrantType.HybridWithProofKey, grantTypes);
-
-            // make sure PKCE requirements are enforced
-            DisallowGrantTypeCombination(GrantType.Code, GrantType.CodeWithProofKey, grantTypes);
-            DisallowGrantTypeCombination(GrantType.Code, GrantType.Hybrid, grantTypes);
-            DisallowGrantTypeCombination(GrantType.Code, GrantType.HybridWithProofKey, grantTypes);
-
-            DisallowGrantTypeCombination(GrantType.CodeWithProofKey, GrantType.Hybrid, grantTypes);
-            DisallowGrantTypeCombination(GrantType.CodeWithProofKey, GrantType.HybridWithProofKey, grantTypes);
-
-            DisallowGrantTypeCombination(GrantType.Hybrid, GrantType.HybridWithProofKey, grantTypes);
-
+            
+            DisallowGrantTypeCombination(GrantType.AuthorizationCode, GrantType.Hybrid, grantTypes);
+            
             return;
         }
 

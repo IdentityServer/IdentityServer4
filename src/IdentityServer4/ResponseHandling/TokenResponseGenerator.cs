@@ -2,16 +2,16 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel;
-using IdentityServer4.Core.Extensions;
-using IdentityServer4.Core.Models;
-using IdentityServer4.Core.Services;
-using IdentityServer4.Core.Validation;
+using IdentityServer4.Extensions;
+using IdentityServer4.Models;
+using IdentityServer4.Services;
+using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.ResponseHandling
+namespace IdentityServer4.ResponseHandling
 {
     public class TokenResponseGenerator : ITokenResponseGenerator
     {
@@ -30,7 +30,7 @@ namespace IdentityServer4.Core.ResponseHandling
 
         public async Task<TokenResponse> ProcessAsync(ValidatedTokenRequest request)
         {
-            _logger.LogVerbose("Creating token response");
+            _logger.LogTrace("Creating token response");
 
             if (request.GrantType == OidcConstants.GrantTypes.AuthorizationCode)
             {
@@ -47,7 +47,7 @@ namespace IdentityServer4.Core.ResponseHandling
 
         private async Task<TokenResponse> ProcessAuthorizationCodeRequestAsync(ValidatedTokenRequest request)
         {
-            _logger.LogVerbose("Processing authorization code request");
+            _logger.LogTrace("Processing authorization code request");
 
             //////////////////////////
             // access token
@@ -92,7 +92,7 @@ namespace IdentityServer4.Core.ResponseHandling
 
         private async Task<TokenResponse> ProcessTokenRequestAsync(ValidatedTokenRequest request)
         {
-            _logger.LogVerbose("Processing token request");
+            _logger.LogTrace("Processing token request");
 
             var accessToken = await CreateAccessTokenAsync(request);
             var response = new TokenResponse
@@ -111,7 +111,7 @@ namespace IdentityServer4.Core.ResponseHandling
 
         private async Task<TokenResponse> ProcessRefreshTokenRequestAsync(ValidatedTokenRequest request)
         {
-            _logger.LogVerbose("Processing refresh token request");
+            _logger.LogTrace("Processing refresh token request");
 
             var oldAccessToken = request.RefreshToken.AccessToken;
             string accessTokenString;

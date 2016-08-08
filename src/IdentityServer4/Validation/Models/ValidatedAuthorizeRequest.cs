@@ -2,10 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel;
-using IdentityServer4.Core.Models;
+using IdentityServer4.Models;
 using System.Collections.Generic;
 
-namespace IdentityServer4.Core.Validation
+namespace IdentityServer4.Validation
 {
     /// <summary>
     /// Models a validated request to the authorize endpoint.
@@ -155,6 +155,22 @@ namespace IdentityServer4.Core.Validation
         /// The login hint.
         /// </value>
         public string LoginHint { get; set; }
+
+        /// <summary>
+        /// Gets or sets the code challenge
+        /// </summary>
+        /// <value>
+        /// The code challenge
+        /// </value>
+        public string CodeChallenge { get; set; }
+
+        /// <summary>
+        /// Gets or sets the code challenge method
+        /// </summary>
+        /// <value>
+        /// The code challenge method
+        /// </value>
+        public string CodeChallengeMethod { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether an access token was requested.

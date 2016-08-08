@@ -2,12 +2,12 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel;
-using IdentityServer4.Core.Configuration;
-using IdentityServer4.Core.Extensions;
-using IdentityServer4.Core.Hosting;
-using IdentityServer4.Core.Logging;
-using IdentityServer4.Core.Models;
-using IdentityServer4.Core.Services;
+using IdentityServer4.Configuration;
+using IdentityServer4.Extensions;
+using IdentityServer4.Hosting;
+using IdentityServer4.Logging;
+using IdentityServer4.Models;
+using IdentityServer4.Services;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Specialized;
@@ -15,7 +15,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Validation
+namespace IdentityServer4.Validation
 {
     internal class AuthorizeRequestValidator : IAuthorizeRequestValidator
     {
@@ -25,7 +25,7 @@ namespace IdentityServer4.Core.Validation
         private readonly IRedirectUriValidator _uriValidator;
         private readonly ScopeValidator _scopeValidator;
         private readonly SessionCookie _sessionCookie;
-        private readonly ILogger<AuthorizeRequestValidator> _logger;
+        private readonly ILogger _logger;
 
         public AuthorizeRequestValidator(
             IdentityServerOptions options, 
@@ -47,7 +47,7 @@ namespace IdentityServer4.Core.Validation
 
         public async Task<AuthorizeRequestValidationResult> ValidateAsync(NameValueCollection parameters, ClaimsPrincipal subject = null)
         {
-            _logger.LogInformation("Start authorize request protocol validation");
+            _logger.LogDebug("Start authorize request protocol validation");
 
             var request = new ValidatedAuthorizeRequest
             {
@@ -57,8 +57,8 @@ namespace IdentityServer4.Core.Validation
             
             if (parameters == null)
             {
-                _logger.LogError("Parameters are null.");
-                throw new ArgumentNullException("parameters");
+                _logger.LogCritical("Parameters are null.");
+                throw new ArgumentNullException(nameof(parameters));
             }
 
             request.Raw = parameters;
@@ -92,6 +92,7 @@ namespace IdentityServer4.Core.Validation
             }
 
             // custom validator
+            _logger.LogDebug("Calling into custom validator: {type}", _customValidator.GetType().FullName);
             var customResult = await _customValidator.ValidateAuthorizeRequestAsync(request);
 
             if (customResult.IsError)
@@ -133,7 +134,7 @@ namespace IdentityServer4.Core.Validation
             Uri uri;
             if (!Uri.TryCreate(redirectUri, UriKind.Absolute, out uri))
             {
-                LogError("invalid redirect_uri: " + redirectUri, request);
+                LogError("malformed redirect_uri: " + redirectUri, request);
                 return Invalid(request);
             }
 
@@ -193,14 +194,11 @@ namespace IdentityServer4.Core.Validation
 
             request.ResponseType = responseType;
 
-            // todo
             //////////////////////////////////////////////////////////
-            // match response_type to flow
+            // match response_type to grant type
             //////////////////////////////////////////////////////////
-            //request.Flow = Constants.ResponseTypeToFlowMapping[request.ResponseType];
             request.GrantType = Constants.ResponseTypeToGrantTypeMapping[request.ResponseType];
 
-            // todo
             //////////////////////////////////////////////////////////
             // check if flow is allowed at authorize endpoint
             //////////////////////////////////////////////////////////
@@ -208,6 +206,26 @@ namespace IdentityServer4.Core.Validation
             {
                 LogError("Invalid grant type", request);
                 return Invalid(request);
+            }
+
+            //////////////////////////////////////////////////////////
+            // check if PKCE is required and validate parameters
+            //////////////////////////////////////////////////////////
+            if (request.GrantType == GrantType.AuthorizationCode || request.GrantType == GrantType.Hybrid)
+            {
+                if (request.Client.RequirePkce)
+                {
+                    _logger.LogDebug("Client requires a proof key for code exchange. Starting PKCE validation");
+
+                    /////////////////////////////////////////////////////////////////////////////
+                    // validate code_challenge and code_challenge_method
+                    /////////////////////////////////////////////////////////////////////////////
+                    var proofKeyResult = ValidatePkceParameters(request);
+                    if (proofKeyResult.IsError)
+                    {
+                        return proofKeyResult;
+                    }
+                }
             }
 
             //////////////////////////////////////////////////////////
@@ -263,6 +281,46 @@ namespace IdentityServer4.Core.Validation
                     return Invalid(request);
                 }
             }
+
+            return Valid(request);
+        }
+
+        private AuthorizeRequestValidationResult ValidatePkceParameters(ValidatedAuthorizeRequest request)
+        {
+            var fail = Invalid(request, ErrorTypes.Client);
+
+            var codeChallenge = request.Raw.Get(OidcConstants.AuthorizeRequest.CodeChallenge);
+            if (codeChallenge.IsMissing())
+            {
+                LogError("code_challenge is missing", request);
+                fail.ErrorDescription = "code challenge required";
+                return fail;
+            }
+
+            if (codeChallenge.Length < _options.InputLengthRestrictions.CodeChallengeMinLength ||
+                codeChallenge.Length > _options.InputLengthRestrictions.CodeChallengeMaxLength)
+            {
+                LogError("code_challenge is either too short or too long", request);
+                return fail;
+            }
+
+            request.CodeChallenge = codeChallenge;
+
+            var codeChallengeMethod = request.Raw.Get(OidcConstants.AuthorizeRequest.CodeChallengeMethod);
+            if (codeChallengeMethod.IsMissing())
+            {
+                _logger.LogDebug("Missing code_challenge_method, defaulting to plain");
+                codeChallengeMethod = OidcConstants.CodeChallengeMethods.Plain;
+            }
+
+            if (!Constants.SupportedCodeChallengeMethods.Contains(codeChallengeMethod))
+            {
+                LogError("Unsupported code_challenge_method: " + codeChallengeMethod, request);
+                fail.ErrorDescription = "transform algorithm not supported";
+                return fail;
+            }
+
+            request.CodeChallengeMethod = codeChallengeMethod;
 
             return Valid(request);
         }
@@ -389,7 +447,7 @@ namespace IdentityServer4.Core.Validation
                 }
                 else
                 {
-                    _logger.LogInformation("Unsupported prompt mode - ignored: " + prompt);
+                    _logger.LogDebug("Unsupported prompt mode - ignored: " + prompt);
                 }
             }
 
@@ -419,7 +477,7 @@ namespace IdentityServer4.Core.Validation
                     request.DisplayMode = display;
                 }
 
-                _logger.LogInformation("Unsupported display mode - ignored: " + display);
+                _logger.LogDebug("Unsupported display mode - ignored: " + display);
             }
 
             //////////////////////////////////////////////////////////
@@ -484,7 +542,7 @@ namespace IdentityServer4.Core.Validation
             if (_options.Endpoints.EnableCheckSessionEndpoint && 
                 request.Subject.Identity.IsAuthenticated)
             {
-                var sessionId = _sessionCookie.GetSessionId();
+                var sessionId = _sessionCookie.GetOrCreateSessionId();
                 if (sessionId.IsPresent())
                 {
                     request.SessionId = sessionId;
@@ -524,18 +582,14 @@ namespace IdentityServer4.Core.Validation
 
         private void LogError(string message, ValidatedAuthorizeRequest request)
         {
-            var validationLog = new AuthorizeRequestValidationLog(request);
-            var json = LogSerializer.Serialize(validationLog);
-
-            _logger.LogError("{0}\n {1}", message, json);
+            var details = new AuthorizeRequestValidationLog(request);
+            _logger.LogError(message + "\n{validationDetails}", details);
         }
 
         private void LogSuccess(ValidatedAuthorizeRequest request)
         {
-            var validationLog = new AuthorizeRequestValidationLog(request);
-            var json = LogSerializer.Serialize(validationLog);
-
-            _logger.LogInformation("{0}\n {1}", "Authorize request validation success", json);
+            var details = new AuthorizeRequestValidationLog(request);
+            _logger.LogInformation("Authorize request validation success\n{validationDetails}", details);
         }
     }
 }

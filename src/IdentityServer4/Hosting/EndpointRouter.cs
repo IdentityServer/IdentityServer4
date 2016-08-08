@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-using IdentityServer4.Core.Extensions;
-using Microsoft.AspNet.Http;
+using IdentityServer4.Extensions;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 
-namespace IdentityServer4.Core.Hosting
+namespace IdentityServer4.Hosting
 {
     class EndpointRouter : IEndpointRouter
     {

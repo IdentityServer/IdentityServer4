@@ -1,4 +1,4 @@
-﻿using IdentityServer4.Core.Models;
+﻿using IdentityServer4.Models;
 using System.Collections.Generic;
 
 namespace Host.Configuration
@@ -29,6 +29,25 @@ namespace Host.Configuration
                 },
 
                 ///////////////////////////////////////////
+                // Custom Grant Sample
+                //////////////////////////////////////////
+                new Client
+                {
+                    ClientId = "client.custom",
+                    ClientSecrets = new List<Secret>
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    AllowedGrantTypes = GrantTypes.List("custom"),
+
+                    AllowedScopes = new List<string>
+                    {
+                        "api1", "api2"
+                    }
+                },
+
+                ///////////////////////////////////////////
                 // Console Resource Owner Flow Sample
                 //////////////////////////////////////////
                 new Client
@@ -51,30 +70,54 @@ namespace Host.Configuration
                     }
                 },
 
-                // todo
                 ///////////////////////////////////////////
-                // Console Client Credentials Flow Sample
+                // Console Public Resource Owner Flow Sample
                 //////////////////////////////////////////
-                //new Client
-                //{
-                //    ClientId = "client.custom",
-                //    ClientSecrets = new List<Secret>
-                //    {
-                //        new Secret("secret".Sha256())
-                //    },
+                new Client
+                {
+                    ClientId = "roclient.public",
+                    PublicClient = true,
 
-                //    Flow = Flows.Custom,
-                    
-                //    AllowedCustomGrantTypes = new List<string>
-                //    {
-                //        "custom"
-                //    },
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
-                //    AllowedScopes = new List<string>
-                //    {
-                //        "api1", "api2"
-                //    }
-                //},
+                    AllowedScopes = new List<string>
+                    {
+                        StandardScopes.OpenId.Name,
+                        StandardScopes.Email.Name,
+                        StandardScopes.OfflineAccess.Name,
+
+                        "api1", "api2"
+                    }
+                },
+
+                ///////////////////////////////////////////
+                // Console Hybrid with PKCE Sample
+                //////////////////////////////////////////
+                new Client
+                {
+                    ClientId = "console.hybrid.pkce",
+                    ClientName = "Console Hybrid with PKCE Sample",
+                    PublicClient = true,
+
+                    AllowedGrantTypes = GrantTypes.Hybrid,
+                    RequirePkce = true,
+
+                    RedirectUris = new List<string>
+                    {
+                        "http://127.0.0.1:7890/"
+                    },
+
+                    AllowedScopes = new List<string>
+                    {
+                        StandardScopes.OpenId.Name,
+                        StandardScopes.Profile.Name,
+                        StandardScopes.Email.Name,
+                        StandardScopes.Roles.Name,
+                        StandardScopes.OfflineAccess.Name,
+
+                        "api1", "api2",
+                    },
+                },
 
                 ///////////////////////////////////////////
                 // Introspection Client Sample
@@ -102,7 +145,7 @@ namespace Host.Configuration
                 //////////////////////////////////////////
                 new Client
                 {
-                    ClientId = "mvc_implicit",
+                    ClientId = "mvc.implicit",
                     ClientName = "MVC Implicit",
                     ClientUri = "http://identityserver.io",
 
@@ -112,6 +155,11 @@ namespace Host.Configuration
                     {
                         "http://localhost:44077/signin-oidc"
                     },
+                    PostLogoutRedirectUris = new List<string>
+                    {
+                        "http://localhost:44077/"
+                    },
+                    LogoutUri = "http://localhost:44077/signout-oidc",
 
                     AllowedScopes = new List<string>
                     {
@@ -121,6 +169,43 @@ namespace Host.Configuration
                         StandardScopes.Roles.Name,
 
                         "api1", "api2"
+                    },
+                },
+
+                ///////////////////////////////////////////
+                // MVC Hybrid Flow Samples
+                //////////////////////////////////////////
+                new Client
+                {
+                    ClientId = "mvc.hybrid",
+                    ClientName = "MVC Hybrid",
+                    ClientSecrets = new List<Secret>
+                    {
+                        new Secret("secret".Sha256())
+                    },
+                    ClientUri = "http://identityserver.io",
+
+                    AllowedGrantTypes = GrantTypes.Hybrid,
+                    AllowAccessTokensViaBrowser = false,
+                    RedirectUris = new List<string>
+                    {
+                        "http://localhost:21402/signin-oidc"
+                    },
+                    PostLogoutRedirectUris = new List<string>
+                    {
+                        "http://localhost:21402/"
+                    },
+                    LogoutUri = "http://localhost:21402/signout-oidc",
+
+                    AllowedScopes = new List<string>
+                    {
+                        StandardScopes.OpenId.Name,
+                        StandardScopes.Profile.Name,
+                        StandardScopes.Email.Name,
+                        StandardScopes.Roles.Name,
+                        StandardScopes.OfflineAccess.Name,
+
+                        "api1", "api2",
                     },
                 },
 

@@ -2,14 +2,14 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel;
-using IdentityServer4.Core.Extensions;
-using IdentityServer4.Core.Models;
+using IdentityServer4.Extensions;
+using IdentityServer4.Models;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Validation
+namespace IdentityServer4.Validation
 {
     /// <summary>
     /// Validates a secret stored in plain text
@@ -39,7 +39,7 @@ namespace IdentityServer4.Core.Validation
 
             if (parsedSecret.Type != Constants.ParsedSecretTypes.SharedSecret)
             {
-                _logger.LogVerbose("Parsed secret should not be of type: {type}", parsedSecret.Type ?? "null");
+                _logger.LogError("Parsed secret should not be of type: {type}", parsedSecret.Type ?? "null");
                 return fail;
             }
 
@@ -57,7 +57,7 @@ namespace IdentityServer4.Core.Validation
                 // this validator is only applicable to shared secrets
                 if (secret.Type != Constants.SecretTypes.SharedSecret)
                 {
-                    _logger.LogVerbose("Skipping secret: {description}, secret is not of type {type}.", secretDescription, Constants.SecretTypes.SharedSecret);
+                    _logger.LogDebug("Skipping secret: {description}, secret is not of type {type}.", secretDescription, Constants.SecretTypes.SharedSecret);
                     continue;
                 }
 
@@ -70,7 +70,7 @@ namespace IdentityServer4.Core.Validation
                 }
             }
 
-            _logger.LogVerbose("No matching plain text secret found.");
+            _logger.LogDebug("No matching plain text secret found.");
             return fail;
         }
     }

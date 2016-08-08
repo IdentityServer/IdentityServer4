@@ -2,26 +2,26 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel;
-using IdentityServer4.Core.Configuration;
-using IdentityServer4.Core.Extensions;
-using IdentityServer4.Core.Logging;
-using IdentityServer4.Core.Models;
-using IdentityServer4.Core.Services;
+using IdentityServer4.Configuration;
+using IdentityServer4.Extensions;
+using IdentityServer4.Logging;
+using IdentityServer4.Models;
+using IdentityServer4.Services;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Validation
+namespace IdentityServer4.Validation
 {
     public class TokenRequestValidator : ITokenRequestValidator
     {
         private readonly ILogger _logger;
-
         private readonly IdentityServerOptions _options;
         private readonly IAuthorizationCodeStore _authorizationCodes;
-        private readonly CustomGrantValidator _customGrantValidator;
+        private readonly ExtensionGrantValidator _extensionGrantValidator;
         private readonly ICustomRequestValidator _customRequestValidator;
         private readonly IRefreshTokenStore _refreshTokens;
         private readonly ScopeValidator _scopeValidator;
@@ -31,16 +31,15 @@ namespace IdentityServer4.Core.Validation
 
         private ValidatedTokenRequest _validatedRequest;
 
-        public TokenRequestValidator(IdentityServerOptions options, IAuthorizationCodeStore authorizationCodes, IRefreshTokenStore refreshTokens, IResourceOwnerPasswordValidator resourceOwnerValidator, IProfileService profile, CustomGrantValidator customGrantValidator, ICustomRequestValidator customRequestValidator, ScopeValidator scopeValidator, IEventService events, ILoggerFactory loggerFactory)
+        public TokenRequestValidator(IdentityServerOptions options, IAuthorizationCodeStore authorizationCodes, IRefreshTokenStore refreshTokens, IResourceOwnerPasswordValidator resourceOwnerValidator, IProfileService profile, ExtensionGrantValidator extensionGrantValidator, ICustomRequestValidator customRequestValidator, ScopeValidator scopeValidator, IEventService events, ILogger<TokenRequestValidator> logger)
         {
-            _logger = loggerFactory.CreateLogger<TokenRequestValidator>();
-
+            _logger = logger;
             _options = options;
             _authorizationCodes = authorizationCodes;
             _refreshTokens = refreshTokens;
             _resourceOwnerValidator = resourceOwnerValidator;
             _profile = profile;
-            _customGrantValidator = customGrantValidator;
+            _extensionGrantValidator = extensionGrantValidator;
             _customRequestValidator = customRequestValidator;
             _scopeValidator = scopeValidator;
             _events = events;
@@ -48,7 +47,7 @@ namespace IdentityServer4.Core.Validation
 
         public async Task<TokenRequestValidationResult> ValidateRequestAsync(NameValueCollection parameters, Client client)
         {
-            _logger.LogVerbose("Start token request validation");
+            _logger.LogDebug("Start token request validation");
 
             _validatedRequest = new ValidatedTokenRequest();
 
@@ -98,7 +97,7 @@ namespace IdentityServer4.Core.Validation
             }
 
             // custom grant type
-            var result = await RunValidationAsync(ValidateCustomGrantRequestAsync, parameters);
+            var result = await RunValidationAsync(ValidateExtensionGrantRequestAsync, parameters);
 
             if (result.IsError)
             {
@@ -124,6 +123,7 @@ namespace IdentityServer4.Core.Validation
             }
 
             // run custom validation
+            _logger.LogTrace("Calling into custom request validator: {type}", _customRequestValidator.GetType().FullName);
             var customResult = await _customRequestValidator.ValidateTokenRequestAsync(_validatedRequest);
 
             if (customResult.IsError)
@@ -145,12 +145,12 @@ namespace IdentityServer4.Core.Validation
 
         private async Task<TokenRequestValidationResult> ValidateAuthorizationCodeRequestAsync(NameValueCollection parameters)
         {
-            _logger.LogVerbose("Start validation of authorization code token request");
+            _logger.LogDebug("Start validation of authorization code token request");
 
             /////////////////////////////////////////////
             // check if client is authorized for grant type
             /////////////////////////////////////////////
-            if (!_validatedRequest.Client.AllowedGrantTypes.ToList().Contains(GrantType.Code) &&
+            if (!_validatedRequest.Client.AllowedGrantTypes.ToList().Contains(GrantType.AuthorizationCode) &&
                 !_validatedRequest.Client.AllowedGrantTypes.ToList().Contains(GrantType.Hybrid))
             {
                 LogError("Client not authorized for code flow");
@@ -184,7 +184,7 @@ namespace IdentityServer4.Core.Validation
             var authZcode = await _authorizationCodes.GetAsync(code);
             if (authZcode == null)
             {
-                LogError("Invalid authorization code: " + code);
+                LogError("Authorization code cannot be found in the store: " + code);
                 await RaiseFailedAuthorizationCodeRedeemedEventAsync(code, "Invalid handle");
 
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
@@ -260,7 +260,31 @@ namespace IdentityServer4.Core.Validation
                 return Invalid(OidcConstants.TokenErrors.InvalidRequest);
             }
 
+            /////////////////////////////////////////////
+            // validate PKCE parameters
+            /////////////////////////////////////////////
+            var codeVerifier = parameters.Get(OidcConstants.TokenRequest.CodeVerifier);
+            if (_validatedRequest.Client.RequirePkce)
+            {
+                _logger.LogDebug("Client required a proof key for code exchange. Starting PKCE validation");
 
+                var proofKeyResult = ValidateAuthorizationCodeWithProofKeyParameters(codeVerifier, _validatedRequest.AuthorizationCode);
+                if (proofKeyResult.IsError)
+                {
+                    return proofKeyResult;
+                }
+
+                _validatedRequest.CodeVerifier = codeVerifier;
+            }
+            else
+            {
+                if (codeVerifier.IsPresent())
+                {
+                    LogError("Unexpected code_verifier");
+                    return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+                }
+            }
+        
             /////////////////////////////////////////////
             // make sure user is enabled
             /////////////////////////////////////////////
@@ -284,7 +308,7 @@ namespace IdentityServer4.Core.Validation
 
         private async Task<TokenRequestValidationResult> ValidateClientCredentialsRequestAsync(NameValueCollection parameters)
         {
-            _logger.LogVerbose("Start client credentials token request validation");
+            _logger.LogDebug("Start client credentials token request validation");
 
             /////////////////////////////////////////////
             // check if client is authorized for grant type
@@ -322,7 +346,7 @@ namespace IdentityServer4.Core.Validation
 
         private async Task<TokenRequestValidationResult> ValidateResourceOwnerCredentialRequestAsync(NameValueCollection parameters)
         {
-            _logger.LogInformation("Start password token request validation");
+            _logger.LogDebug("Start resource owner password token request validation");
 
             // if we've disabled local authentication, then fail
             if (_options.AuthenticationOptions.EnableLocalLogin == false ||
@@ -405,13 +429,13 @@ namespace IdentityServer4.Core.Validation
             _validatedRequest.Subject = resourceOwnerResult.Principal;
 
             await RaiseSuccessfulResourceOwnerAuthenticationEventAsync(userName, resourceOwnerResult.Principal.GetSubjectId());
-            _logger.LogInformation("Password token request validation success.");
+            _logger.LogInformation("Resource owner password token request validation success.");
             return Valid();
         }
 
         private async Task<TokenRequestValidationResult> ValidateRefreshTokenRequestAsync(NameValueCollection parameters)
         {
-            _logger.LogVerbose("Start validation of refresh token request");
+            _logger.LogDebug("Start validation of refresh token request");
 
             var refreshTokenHandle = parameters.Get(OidcConstants.TokenRequest.RefreshToken);
             if (refreshTokenHandle.IsMissing())
@@ -440,8 +464,8 @@ namespace IdentityServer4.Core.Validation
             var refreshToken = await _refreshTokens.GetAsync(refreshTokenHandle);
             if (refreshToken == null)
             {
-                var error = "Refresh token is invalid";
-                LogWarn(error);
+                var error = "Refresh token cannot be found in store: " + refreshTokenHandle;
+                LogError(error);
                 await RaiseRefreshTokenRefreshFailureEventAsync(refreshTokenHandle, error);
 
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
@@ -453,7 +477,7 @@ namespace IdentityServer4.Core.Validation
             if (refreshToken.CreationTime.HasExceeded(refreshToken.LifeTime))
             {
                 var error = "Refresh token has expired";
-                LogWarn(error);
+                LogError(error);
                 await RaiseRefreshTokenRefreshFailureEventAsync(refreshTokenHandle, error);
 
                 await _refreshTokens.RemoveAsync(refreshTokenHandle);
@@ -509,9 +533,9 @@ namespace IdentityServer4.Core.Validation
             return Valid();
         }
 
-        private async Task<TokenRequestValidationResult> ValidateCustomGrantRequestAsync(NameValueCollection parameters)
+        private async Task<TokenRequestValidationResult> ValidateExtensionGrantRequestAsync(NameValueCollection parameters)
         {
-            _logger.LogVerbose("Start validation of custom grant token request");
+            _logger.LogDebug("Start validation of custom grant token request");
 
             /////////////////////////////////////////////
             // check if client is allowed to use grant type
@@ -522,11 +546,10 @@ namespace IdentityServer4.Core.Validation
                 return Invalid(OidcConstants.TokenErrors.UnsupportedGrantType);
             }
 
-
             /////////////////////////////////////////////
             // check if a validator is registered for the grant type
             /////////////////////////////////////////////
-            if (!_customGrantValidator.GetAvailableGrantTypes().Contains(_validatedRequest.GrantType, StringComparer.Ordinal))
+            if (!_extensionGrantValidator.GetAvailableGrantTypes().Contains(_validatedRequest.GrantType, StringComparer.Ordinal))
             {
                 LogError("No validator is registered for the grant type.");
                 return Invalid(OidcConstants.TokenErrors.UnsupportedGrantType);
@@ -544,7 +567,7 @@ namespace IdentityServer4.Core.Validation
             /////////////////////////////////////////////
             // validate custom grant type
             /////////////////////////////////////////////
-            var result = await _customGrantValidator.ValidateAsync(_validatedRequest);
+            var result = await _extensionGrantValidator.ValidateAsync(_validatedRequest);
 
             if (result == null)
             {
@@ -580,7 +603,7 @@ namespace IdentityServer4.Core.Validation
             var scopes = parameters.Get(OidcConstants.TokenRequest.Scope);
             if (scopes.IsMissingOrTooLong(_options.InputLengthRestrictions.Scope))
             {
-                _logger.LogWarning("Scopes missing or too long");
+                _logger.LogError("Scopes missing or too long");
                 return false;
             }
 
@@ -606,6 +629,56 @@ namespace IdentityServer4.Core.Validation
             return true;
         }
 
+        private TokenRequestValidationResult ValidateAuthorizationCodeWithProofKeyParameters(string codeVerifier, AuthorizationCode authZcode)
+        {
+            if (authZcode.CodeChallenge.IsMissing() || authZcode.CodeChallengeMethod.IsMissing())
+            {
+                LogError("Client uses AuthorizationCodeWithProofKey flow but missing code challenge or code challenge method in authZ code");
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+            }
+
+            if (codeVerifier.IsMissing())
+            {
+                LogError("Missing code_verifier");
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+            }
+
+            if (codeVerifier.Length < _options.InputLengthRestrictions.CodeVerifierMinLength ||
+                codeVerifier.Length > _options.InputLengthRestrictions.CodeVerifierMaxLength)
+            {
+                LogError("code_verifier is too short or too long.");
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+            }
+
+            if (Constants.SupportedCodeChallengeMethods.Contains(authZcode.CodeChallengeMethod) == false)
+            {
+                LogError("Unsupported code challenge method: " + authZcode.CodeChallengeMethod);
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+            }
+
+            if (ValidateCodeVerifierAgainstCodeChallenge(codeVerifier, authZcode.CodeChallenge, authZcode.CodeChallengeMethod) == false)
+            {
+                LogError("Transformed code verifier does not match code challenge");
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+            }
+
+            return Valid();
+        }
+
+        private bool ValidateCodeVerifierAgainstCodeChallenge(string codeVerifier, string codeChallenge, string codeChallengeMethod)
+        {
+            if (codeChallengeMethod == OidcConstants.CodeChallengeMethods.Plain)
+            {
+                return TimeConstantComparer.IsEqual(codeVerifier.Sha256(), codeChallenge);
+            }
+
+            var codeVerifierBytes = Encoding.ASCII.GetBytes(codeVerifier);
+            var hashedBytes = codeVerifierBytes.Sha256();
+            var transformedCodeVerifier = Base64Url.Encode(hashedBytes);
+
+            return TimeConstantComparer.IsEqual(transformedCodeVerifier.Sha256(), codeChallenge);
+        }
+
         private TokenRequestValidationResult Valid()
         {
             return new TokenRequestValidationResult(_validatedRequest);
@@ -623,38 +696,15 @@ namespace IdentityServer4.Core.Validation
 
         private void LogError(string message)
         {
-            _logger.LogError(LogEvent(message));
-        }
-
-        private void LogWarn(string message)
-        {
-            _logger.LogWarning(LogEvent(message));
+            var details = new TokenRequestValidationLog(_validatedRequest);
+            _logger.LogError(message + "\n{details}", details);
         }
 
         private void LogSuccess()
         {
-            _logger.LogInformation(LogEvent("Token request validation success"));
+            var details = new TokenRequestValidationLog(_validatedRequest);
+            _logger.LogInformation("Token request validation success\n{details}", details);
         }
-
-        private string LogEvent(string message)
-        {
-            var validationLog = new TokenRequestValidationLog(_validatedRequest);
-            var json = LogSerializer.Serialize(validationLog);
-
-            return string.Format("{0}\n {1}", message, json);
-        }
-
-        // todo
-        //private Func<string> LogEvent(string message)
-        //{
-        //    return () =>
-        //    {
-        //        var validationLog = new TokenRequestValidationLog(_validatedRequest);
-        //        var json = LogSerializer.Serialize(validationLog);
-
-        //        return string.Format("{0}\n {1}", message, json);
-        //    };
-        //}
 
         private async Task RaiseSuccessfulResourceOwnerAuthenticationEventAsync(string userName, string subjectId)
         {

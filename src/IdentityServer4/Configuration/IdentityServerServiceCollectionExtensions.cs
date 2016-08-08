@@ -1,22 +1,24 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-using IdentityServer4.Core;
-using IdentityServer4.Core.Configuration;
-using IdentityServer4.Core.Endpoints;
-using IdentityServer4.Core.Endpoints.Results;
-using IdentityServer4.Core.Hosting;
-using IdentityServer4.Core.Hosting.Cors;
-using IdentityServer4.Core.ResponseHandling;
-using IdentityServer4.Core.Services;
-using IdentityServer4.Core.Services.Default;
-using IdentityServer4.Core.Services.InMemory;
-using IdentityServer4.Core.Validation;
-using Microsoft.AspNet.Cors.Infrastructure;
+using IdentityServer4;
+using IdentityServer4.Configuration;
+using IdentityServer4.Endpoints;
+using IdentityServer4.Endpoints.Results;
+using IdentityServer4.Hosting;
+using IdentityServer4.Hosting.Cors;
+using IdentityServer4.ResponseHandling;
+using IdentityServer4.Services;
+using IdentityServer4.Services.Default;
+using IdentityServer4.Services.InMemory;
+using IdentityServer4.Validation;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.AspNetCore.Http;
+using IdentityServer4.Events;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -36,8 +38,10 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services, IdentityServerOptions options)
         {
-            services.AddInstance(options);
+            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+            services.AddSingleton(options);
+            
             services.AddAuthentication();
 
             services.AddTransient<IdentityServerContext>();
@@ -57,31 +61,39 @@ namespace Microsoft.Extensions.DependencyInjection
             return new IdentityServerBuilder(services);
         }
 
-        public static IServiceCollection AddEndpoints(this IServiceCollection services, EndpointOptions endpoints)
+        public static IServiceCollection AddEndpoints(this IServiceCollection services, EndpointsOptions endpoints)
         {
             var map = new Dictionary<string, Type>();
             if (endpoints.EnableTokenEndpoint)
             {
-                map.Add(Constants.RoutePaths.Oidc.Token, typeof(TokenEndpoint));
+                map.Add(Constants.ProtocolRoutePaths.Token, typeof(TokenEndpoint));
             }
             if (endpoints.EnableDiscoveryEndpoint)
             {
-                map.Add(Constants.RoutePaths.Oidc.DiscoveryConfiguration, typeof(DiscoveryEndpoint));
+                map.Add(Constants.ProtocolRoutePaths.DiscoveryConfiguration, typeof(DiscoveryEndpoint));
             }
             if (endpoints.EnableUserInfoEndpoint)
             {
-                map.Add(Constants.RoutePaths.Oidc.UserInfo, typeof(UserInfoEndpoint));
+                map.Add(Constants.ProtocolRoutePaths.UserInfo, typeof(UserInfoEndpoint));
             }
             if (endpoints.EnableIntrospectionEndpoint)
             {
-                map.Add(Constants.RoutePaths.Oidc.Introspection, typeof(IntrospectionEndpoint));
+                map.Add(Constants.ProtocolRoutePaths.Introspection, typeof(IntrospectionEndpoint));
             }
             if (endpoints.EnableAuthorizeEndpoint)
             {
-                map.Add(Constants.RoutePaths.Oidc.Authorize, typeof(AuthorizeEndpoint));
+                map.Add(Constants.ProtocolRoutePaths.Authorize, typeof(AuthorizeEndpoint));
+            }
+            if (endpoints.EnableEndSessionEndpoint)
+            {
+                map.Add(Constants.ProtocolRoutePaths.EndSession, typeof(EndSessionEndpoint));
+            }
+            if (endpoints.EnableCheckSessionEndpoint)
+            {
+                map.Add(Constants.ProtocolRoutePaths.CheckSession, typeof(CheckSessionEndpoint));
             }
 
-            services.AddInstance<IEndpointRouter>(new EndpointRouter(map));
+            services.AddSingleton<IEndpointRouter>(new EndpointRouter(map));
             foreach (var item in map)
             {
                 services.AddTransient(item.Value);
@@ -94,9 +106,10 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.AddTransient<ScopeSecretValidator>();
             services.AddTransient<ScopeValidator>();
-            services.AddTransient<CustomGrantValidator>();
+            services.AddTransient<ExtensionGrantValidator>();
             services.AddTransient<ClientSecretValidator>();
             services.AddTransient<BearerTokenUsageValidator>();
+            services.AddTransient<IEndSessionRequestValidator, EndSessionRequestValidator>();
 
             return services;
         }
@@ -108,8 +121,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<IRedirectUriValidator, StrictRedirectUriValidator>();
             services.TryAddTransient<ITokenValidator, TokenValidator>();
             services.TryAddTransient<IIntrospectionRequestValidator, IntrospectionRequestValidator>();
-
-            // todo services.TryAddTransient<IResourceOwnerPasswordValidator, DefaultResouceOwnerPasswordValidator>();
+            services.TryAddTransient<IResourceOwnerPasswordValidator, NopResouceOwnerPasswordValidator>();
             
             return services;
         }
@@ -129,6 +141,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddSecretParsers(this IServiceCollection services)
         {
             services.AddTransient<SecretParser>();
+
             services.AddTransient<ISecretParser, BasicAuthenticationSecretParser>();
             services.AddTransient<ISecretParser, PostBodySecretParser>();
             
@@ -138,6 +151,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddSecretValidators(this IServiceCollection services)
         {
             services.AddTransient<SecretValidator>();
+
             services.AddTransient<ISecretValidator, HashedSharedSecretValidator>();
 
             return services;
@@ -155,19 +169,21 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IServiceCollection AddCoreServices(this IServiceCollection services)
         {
+            services.TryAddTransient<ISigningCredentialStore, InMemorySigningCredentialsStore>();
             services.TryAddTransient<IEventService, DefaultEventService>();
             services.TryAddTransient<ICustomRequestValidator, DefaultCustomRequestValidator>();
             services.TryAddTransient<ITokenService, DefaultTokenService>();
-            services.TryAddTransient<ITokenSigningService, DefaultTokenSigningService>();
+            services.TryAddTransient<ITokenCreationService, DefaultTokenCreationService>();
             services.TryAddTransient<IClaimsProvider, DefaultClaimsProvider>();
             services.TryAddTransient<IRefreshTokenService, DefaultRefreshTokenService>();
-            services.TryAddTransient<ISigningKeyService, DefaultSigningKeyService>();
             services.TryAddTransient<ICustomTokenValidator, DefaultCustomTokenValidator>();
             services.TryAddTransient<ILocalizationService, DefaultLocalizationService>();
             services.TryAddTransient<IConsentService, DefaultConsentService>();
             services.TryAddTransient<ICorsPolicyService, DefaultCorsPolicyService>();
+            services.TryAddTransient<IProfileService, DefaultProfileService>();
             services.TryAddTransient(typeof(IMessageStore<>), typeof(CookieMessageStore<>));
-
+            services.TryAddTransient<EventServiceHelper>();
+            
             return services;
         }
 
@@ -177,16 +193,13 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<ClientListCookie>();
             services.TryAddTransient(typeof(MessageCookie<>));
 
-            services.TryAddTransient<SignInInteraction>();
-            services.TryAddTransient<SignOutInteraction>();
-            services.TryAddTransient<ConsentInteraction>();
-            services.TryAddTransient<ErrorInteraction>();
+            services.TryAddTransient<IUserInteractionService, DefaultUserInteractionService>();
 
-            services.AddTransient<ICorsPolicyProvider>(provider=>
+            services.AddTransient<ICorsPolicyProvider>(provider =>
             {
                 return new PolicyProvider(
                     provider.GetRequiredService<ILogger<PolicyProvider>>(),
-                    Constants.RoutePaths.CorsPaths,
+                    Constants.ProtocolRoutePaths.CorsPaths,
                     provider.GetRequiredService<ICorsPolicyService>());
             });
             services.AddCors();

@@ -2,16 +2,16 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel;
-using IdentityServer4.Core.Extensions;
-using IdentityServer4.Core.Models;
-using IdentityServer4.Core.Services;
+using IdentityServer4.Extensions;
+using IdentityServer4.Models;
+using IdentityServer4.Services;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.ResponseHandling
+namespace IdentityServer4.ResponseHandling
 {
     public class UserInfoResponseGenerator : IUserInfoResponseGenerator
     {
@@ -26,14 +26,13 @@ namespace IdentityServer4.Core.ResponseHandling
             _logger = logger;
         }
 
-        public async Task<Dictionary<string, object>> ProcessAsync(string subject, IEnumerable<string> scopes, Client client)
+        public async Task<Dictionary<string, object>> ProcessAsync(ClaimsPrincipal subject, IEnumerable<string> scopes, Client client)
         {
-            _logger.LogVerbose("Creating userinfo response");
+            _logger.LogTrace("Creating userinfo response");
 
             var profileData = new Dictionary<string, object>();
             
             var requestedClaimTypes = await GetRequestedClaimTypesAsync(scopes);
-            var principal = Principal.Create("UserInfo", new Claim("sub", subject));
 
             IEnumerable<Claim> profileClaims;
             if (requestedClaimTypes.IncludeAllClaims)
@@ -41,7 +40,7 @@ namespace IdentityServer4.Core.ResponseHandling
                 _logger.LogInformation("Requested claim types: all");
 
                 var context = new ProfileDataRequestContext(
-                    principal, 
+                    subject, 
                     client, 
                     Constants.ProfileDataCallers.UserInfoEndpoint);
 
@@ -53,7 +52,7 @@ namespace IdentityServer4.Core.ResponseHandling
                 _logger.LogInformation("Requested claim types: {types}", requestedClaimTypes.ClaimTypes.ToSpaceSeparatedString());
 
                 var context = new ProfileDataRequestContext(
-                    principal,
+                    subject,
                     client,
                     Constants.ProfileDataCallers.UserInfoEndpoint,
                     requestedClaimTypes.ClaimTypes);

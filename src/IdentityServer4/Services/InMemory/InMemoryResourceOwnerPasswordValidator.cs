@@ -1,9 +1,9 @@
-﻿using IdentityServer4.Core.Validation;
+﻿using IdentityServer4.Validation;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Services.InMemory
+namespace IdentityServer4.Services.InMemory
 {
     public class InMemoryResourceOwnerPasswordValidator : IResourceOwnerPasswordValidator
     {
@@ -14,7 +14,7 @@ namespace IdentityServer4.Core.Services.InMemory
             _users = users;
         }
 
-        public Task<CustomGrantValidationResult> ValidateAsync(string userName, string password, ValidatedTokenRequest request)
+        public Task<GrantValidationResult> ValidateAsync(string userName, string password, ValidatedTokenRequest request)
         {
             var query =
                 from u in _users
@@ -24,10 +24,10 @@ namespace IdentityServer4.Core.Services.InMemory
             var user = query.SingleOrDefault();
             if (user != null)
             {
-                return Task.FromResult(new CustomGrantValidationResult(user.Subject, "password"));
+                return Task.FromResult(new GrantValidationResult(user.Subject, "password", user.Claims));
             }
 
-            return Task.FromResult(new CustomGrantValidationResult("Invalid username or password"));
+            return Task.FromResult(new GrantValidationResult("Invalid username or password"));
         }
     }
 }

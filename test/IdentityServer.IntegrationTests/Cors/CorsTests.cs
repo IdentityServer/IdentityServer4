@@ -1,0 +1,108 @@
+﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+using System.Threading.Tasks;
+using Xunit;
+using FluentAssertions;
+using System.Net;
+using IdentityServer4.Tests.Common;
+using System.Collections.Generic;
+using IdentityServer4.Models;
+using IdentityServer4.Services.InMemory;
+using System.Security.Claims;
+using System.Net.Http;
+
+namespace IdentityServer4.Tests.Cors
+{
+    public class CorsTests
+    {
+        const string Category = "CORS Integration";
+
+        MockIdSvrUiPipeline _pipeline = new MockIdSvrUiPipeline();
+
+        public CorsTests()
+        {
+            _pipeline.Clients.AddRange(new Client[] {
+                new Client
+                {
+                    ClientId = "client",
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    RequireConsent = true,
+                    AllowedScopes = new List<string> { "openid", "profile", "api1", "api2" },
+                    RedirectUris = new List<string> { "https://client/callback" },
+                    AllowedCorsOrigins = new List<string> { "https://client" }
+                }
+            });
+
+            _pipeline.Users.Add(new InMemoryUser
+            {
+                Subject = "bob",
+                Username = "bob",
+                Claims = new Claim[]
+                {
+                    new Claim("name", "Bob Loblaw"),
+                    new Claim("email", "bob@loblaw.com"),
+                    new Claim("role", "Attorney"),
+                }
+            });
+
+            _pipeline.Scopes.AddRange(new Scope[] {
+                StandardScopes.OpenId,
+                StandardScopes.Profile,
+                StandardScopes.Email,
+                new Scope
+                {
+                    Name = "api1",
+                    Type = ScopeType.Resource
+                },
+                new Scope
+                {
+                    Name = "api2",
+                    Type = ScopeType.Resource
+                }
+            });
+
+            _pipeline.Initialize();
+        }
+
+        [Theory]
+        [InlineData(MockIdSvrUiPipeline.DiscoveryEndpoint)]
+        [InlineData(MockIdSvrUiPipeline.DiscoveryKeysEndpoint)]
+        [InlineData(MockIdSvrUiPipeline.TokenEndpoint)]
+        [InlineData(MockIdSvrUiPipeline.UserInfoEndpoint)]
+        //TODO
+        //[InlineData(MockIdSvrUiPipeline.IdentityTokenValidationEndpoint)]
+        //[InlineData(MockIdSvrUiPipeline.RevocationEndpoint)]
+        [Trait("Category", Category)]
+        public async Task cors_request_to_allowed_endpoints_should_succeed(string url)
+        {
+            _pipeline.Client.DefaultRequestHeaders.Add("Origin", "https://client");
+            _pipeline.Client.DefaultRequestHeaders.Add("Access-Control-Request-Method", "GET");
+            
+            var message = new HttpRequestMessage(HttpMethod.Options, url);
+            var response = await _pipeline.Client.SendAsync(message);
+
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            response.Headers.Contains("Access-Control-Allow-Origin").Should().BeTrue();
+        }
+
+        [Theory]
+        [InlineData(MockIdSvrUiPipeline.AuthorizeEndpoint)]
+        [InlineData(MockIdSvrUiPipeline.EndSessionEndpoint)]
+        [InlineData(MockIdSvrUiPipeline.CheckSessionEndpoint)]
+        [InlineData(MockIdSvrUiPipeline.LoginPage)]
+        [InlineData(MockIdSvrUiPipeline.ConsentPage)]
+        [InlineData(MockIdSvrUiPipeline.ErrorPage)]
+        [Trait("Category", Category)]
+        public async Task cors_request_to_restricted_endpoints_should_not_succeed(string url)
+        {
+            _pipeline.Client.DefaultRequestHeaders.Add("Origin", "https://client");
+            _pipeline.Client.DefaultRequestHeaders.Add("Access-Control-Request-Method", "GET");
+
+            var message = new HttpRequestMessage(HttpMethod.Options, url);
+            var response = await _pipeline.Client.SendAsync(message);
+
+            response.Headers.Contains("Access-Control-Allow-Origin").Should().BeFalse();
+        }
+    }
+}

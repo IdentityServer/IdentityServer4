@@ -2,12 +2,12 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel;
-using IdentityServer4.Core.Extensions;
-using Microsoft.AspNet.Http;
-using System;
-using System.Linq;
 
-namespace IdentityServer4.Core.Hosting
+using IdentityServer4.Extensions;
+using Microsoft.AspNetCore.Http;
+using System;
+
+namespace IdentityServer4.Hosting
 {
     class SessionCookie
     {
@@ -62,25 +62,33 @@ namespace IdentityServer4.Core.Hosting
             return options;
         }
 
-        private string GetCookieName()
+        public string GetCookieName()
         {
             // todo
             return "idsvr.session";
             //return identityServerOptions.AuthenticationOptions.CookieOptions.GetSessionCookieName();
         }
 
-        public virtual string GetSessionId()
+        public virtual string GetOrCreateSessionId()
         {
             // todo: don't re-use session id when authN changes
             // this might be hard to detect since we're relying upon
             // external authN pages
 
-            if (_context.HttpContext.Request.Cookies.ContainsKey(GetCookieName()))
-            {
-                return _context.HttpContext.Request.Cookies[GetCookieName()].FirstOrDefault().ToString();
-            }
+            var sid = GetSessionId();
+            if (sid != null) return sid;
 
             return IssueSessionId();
+        }
+
+        public virtual string GetSessionId()
+        {
+            if (_context.HttpContext.Request.Cookies.ContainsKey(GetCookieName()))
+            {
+                return _context.HttpContext.Request.Cookies[GetCookieName()];
+            }
+
+            return null;
         }
 
         public virtual void ClearSessionId()

@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-using IdentityServer4.Core.Services;
+using IdentityServer4.Services;
 using System;
 
-namespace IdentityServer4.Core.Extensions
+namespace IdentityServer4.Extensions
 {
     /// <summary>
-    /// Extension methods for <see cref="IdentityServer3.Core.Services.ILocalizationService"/>
+    /// Extension methods for <see cref="IdentityServer3.Services.ILocalizationService"/>
     /// </summary>
     public static class ILocalizationServiceExtensions
     {

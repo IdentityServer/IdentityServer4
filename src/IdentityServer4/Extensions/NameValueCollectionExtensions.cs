@@ -1,14 +1,14 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-using Microsoft.Extensions.WebEncoders;
 using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
+using System.Text.Encodings.Web;
 
-namespace IdentityServer4.Core.Extensions
+namespace IdentityServer4.Extensions
 {
     internal static class NameValueCollectionExtensions
     {
@@ -49,7 +49,7 @@ namespace IdentityServer4.Core.Extensions
             {
                 var values = collection.GetValues(name);
                 var value = values.First();
-                value = HtmlEncoder.Default.HtmlEncode(value);
+                value = HtmlEncoder.Default.Encode(value);
                 builder.AppendFormat(inputFieldFormat, name, value);
             }
 
@@ -110,10 +110,10 @@ namespace IdentityServer4.Core.Extensions
         private static bool AppendNameValuePair(StringBuilder builder, bool first, bool urlEncode, string name, string value)
         {
             string effectiveName = name ?? String.Empty;
-            string encodedName = urlEncode ? UrlEncoder.Default.UrlEncode(effectiveName) : effectiveName;
+            string encodedName = urlEncode ? UrlEncoder.Default.Encode(effectiveName) : effectiveName;
 
             string effectiveValue = value ?? String.Empty;
-            string encodedValue = urlEncode ? UrlEncoder.Default.UrlEncode(effectiveValue) : effectiveValue;
+            string encodedValue = urlEncode ? UrlEncoder.Default.Encode(effectiveValue) : effectiveValue;
             encodedValue = ConvertFormUrlEncodedSpacesToUrlEncodedSpaces(encodedValue);
 
             if (first)

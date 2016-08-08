@@ -2,15 +2,15 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel;
-using IdentityServer4.Core.Extensions;
-using IdentityServer4.Core.Models;
-using IdentityServer4.Core.Services;
+using IdentityServer4.Extensions;
+using IdentityServer4.Models;
+using IdentityServer4.Services;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Validation
+namespace IdentityServer4.Validation
 {
     /// <summary>
     /// Default custom token validator
@@ -74,7 +74,7 @@ namespace IdentityServer4.Core.Validation
                 
                 if (isActiveCtx.IsActive == false)
                 {
-                    _logger.LogWarning("User marked as not active: {subject}", subClaim.Value);
+                    _logger.LogError("User marked as not active: {subject}", subClaim.Value);
 
                     result.IsError = true;
                     result.Error = OidcConstants.ProtectedResourceErrors.InvalidToken;
@@ -91,7 +91,7 @@ namespace IdentityServer4.Core.Validation
                 var client = await _clients.FindClientByIdAsync(clientClaim.Value);
                 if (client == null || client.Enabled == false)
                 {
-                    _logger.LogWarning("Client deleted or disabled: {clientId}", clientClaim.Value);
+                    _logger.LogError("Client deleted or disabled: {clientId}", clientClaim.Value);
 
                     result.IsError = true;
                     result.Error = OidcConstants.ProtectedResourceErrors.InvalidToken;
@@ -124,7 +124,7 @@ namespace IdentityServer4.Core.Validation
                 
                 if (isActiveCtx.IsActive == false)
                 {
-                    _logger.LogWarning("User marked as not active: {subject}", subClaim.Value);
+                    _logger.LogError("User marked as not active: {subject}", subClaim.Value);
 
                     result.IsError = true;
                     result.Error = OidcConstants.ProtectedResourceErrors.InvalidToken;

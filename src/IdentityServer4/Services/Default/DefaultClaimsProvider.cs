@@ -2,16 +2,16 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel;
-using IdentityServer4.Core.Extensions;
-using IdentityServer4.Core.Models;
-using IdentityServer4.Core.Validation;
+using IdentityServer4.Extensions;
+using IdentityServer4.Models;
+using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Services.Default
+namespace IdentityServer4.Services.Default
 {
     /// <summary>
     /// Default claims provider implementation
@@ -51,7 +51,7 @@ namespace IdentityServer4.Core.Services.Default
         /// </returns>
         public virtual async Task<IEnumerable<Claim>> GetIdentityTokenClaimsAsync(ClaimsPrincipal subject, Client client, IEnumerable<Scope> scopes, bool includeAllIdentityClaims, ValidatedRequest request)
         {
-            _logger.LogInformation("Getting claims for identity token for subject: " + subject.GetSubjectId());
+            _logger.LogDebug("Getting claims for identity token for subject: {subject} and client: {clientId}", subject.GetSubjectId(), client.ClientId);
 
             var outputClaims = new List<Claim>(GetStandardSubjectClaims(subject));
             outputClaims.AddRange(GetOptionalClaims(subject));
@@ -61,7 +61,7 @@ namespace IdentityServer4.Core.Services.Default
             // if a include all claims rule exists, call the user service without a claims filter
             if (scopes.IncludesAllClaimsForUserRule(ScopeType.Identity))
             {
-                _logger.LogInformation("All claims rule found - emitting all claims for user.");
+                _logger.LogDebug("All claims rule found - emitting all claims for user.");
 
                 var context = new ProfileDataRequestContext(
                     subject,
@@ -126,6 +126,8 @@ namespace IdentityServer4.Core.Services.Default
         /// </returns>
         public virtual async Task<IEnumerable<Claim>> GetAccessTokenClaimsAsync(ClaimsPrincipal subject, Client client, IEnumerable<Scope> scopes, ValidatedRequest request)
         {
+            _logger.LogDebug("Getting claims for access token for client: {clientId}", client.ClientId);
+            
             // add client_id
             var outputClaims = new List<Claim>
             {
@@ -160,16 +162,20 @@ namespace IdentityServer4.Core.Services.Default
             // a user is involved
             if (subject != null)
             {
+                _logger.LogDebug("Getting claims for access token for subject: {subject}", subject.GetSubjectId());
+
                 outputClaims.AddRange(GetStandardSubjectClaims(subject));
                 outputClaims.AddRange(GetOptionalClaims(subject));
 
                 // if a include all claims rule exists, call the user service without a claims filter
                 if (scopes.IncludesAllClaimsForUserRule(ScopeType.Resource))
                 {
+                    _logger.LogDebug("All claims rule found - emitting all claims for user.");
+
                     var context = new ProfileDataRequestContext(
-                    subject,
-                    client,
-                    Constants.ProfileDataCallers.ClaimsProviderAccessToken);
+                        subject,
+                        client,
+                        Constants.ProfileDataCallers.ClaimsProviderAccessToken);
 
                     await _profile.GetProfileDataAsync(context);
 
@@ -181,7 +187,6 @@ namespace IdentityServer4.Core.Services.Default
 
                     return outputClaims;
                 }
-
 
                 // fetch all resource claims that need to go into the access token
                 var additionalClaims = new List<string>();
@@ -202,10 +207,10 @@ namespace IdentityServer4.Core.Services.Default
                 if (additionalClaims.Count > 0)
                 {
                     var context = new ProfileDataRequestContext(
-                    subject,
-                    client,
-                    Constants.ProfileDataCallers.ClaimsProviderAccessToken,
-                    additionalClaims.Distinct());
+                        subject,
+                        client,
+                        Constants.ProfileDataCallers.ClaimsProviderAccessToken,
+                        additionalClaims.Distinct());
 
                     await _profile.GetProfileDataAsync(context);
 
@@ -261,7 +266,7 @@ namespace IdentityServer4.Core.Services.Default
         /// <returns></returns>
         protected virtual IEnumerable<Claim> FilterProtocolClaims(IEnumerable<Claim> claims)
         {
-            return claims.Where(x => !Constants.ClaimsProviderFilerClaimTypes.Contains(x.Type));
+            return claims.Where(x => !Constants.Filters.ClaimsProviderFilterClaimTypes.Contains(x.Type));
         }
      }
 }

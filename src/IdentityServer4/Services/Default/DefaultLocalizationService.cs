@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-namespace IdentityServer4.Core.Services.Default
+namespace IdentityServer4.Services.Default
 {
     /// <summary>
     /// Default localization services. Uses embedded resource files for strings.
@@ -20,11 +20,11 @@ namespace IdentityServer4.Core.Services.Default
             switch(category)
             {
                 case Constants.LocalizationCategories.Messages:
-                    return IdentityServer4.Core.Resources.Messages.GetString(id);
+                    return IdentityServer4.Resources.Messages.GetString(id);
                 case Constants.LocalizationCategories.Events:
-                    return IdentityServer4.Core.Resources.Events.GetString(id);
+                    return IdentityServer4.Resources.Events.GetString(id);
                 case Constants.LocalizationCategories.Scopes:
-                    return IdentityServer4.Core.Resources.Scopes.GetString(id);
+                    return IdentityServer4.Resources.Scopes.GetString(id);
             }
             
             return null;

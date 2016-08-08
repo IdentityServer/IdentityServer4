@@ -3,7 +3,7 @@
 
 using System;
 
-namespace IdentityServer4.Core.Extensions
+namespace IdentityServer4.Extensions
 {
     internal static class DateTimeOffsetHelper
     {

@@ -1,16 +1,16 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-using IdentityServer4.Core.Configuration;
-using IdentityServer4.Core.Extensions;
-using IdentityServer4.Core.Models;
-using Microsoft.AspNet.Http;
+using IdentityServer4.Configuration;
+using IdentityServer4.Extensions;
+using IdentityServer4.Models;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using System.Linq;
 using IdentityModel;
+using Microsoft.AspNetCore.Http;
 
-namespace IdentityServer4.Core.Validation
+namespace IdentityServer4.Validation
 {
     /// <summary>
     /// Parses a POST body for secrets
@@ -24,9 +24,9 @@ namespace IdentityServer4.Core.Validation
         /// Creates the parser with options
         /// </summary>
         /// <param name="options">IdentityServer options</param>
-        public PostBodySecretParser(IdentityServerOptions options, ILoggerFactory loggerFactory)
+        public PostBodySecretParser(IdentityServerOptions options, ILogger<PostBodySecretParser> logger)
         {
-            _logger = loggerFactory.CreateLogger<PostBodySecretParser>();
+            _logger = logger;
             _options = options;
         }
 
@@ -47,11 +47,11 @@ namespace IdentityServer4.Core.Validation
         /// </returns>
         public Task<ParsedSecret> ParseAsync(HttpContext context)
         {
-            _logger.LogVerbose("Start parsing for secret in post body");
+            _logger.LogDebug("Start parsing for secret in post body");
 
             if (!context.Request.HasFormContentType)
             {
-                _logger.LogWarning("Content type is not a form");
+                _logger.LogDebug("Content type is not a form");
                 return Task.FromResult<ParsedSecret>(null);
             }
 
@@ -62,27 +62,45 @@ namespace IdentityServer4.Core.Validation
                 var id = body["client_id"].FirstOrDefault();
                 var secret = body["client_secret"].FirstOrDefault();
 
-                if (id.IsPresent() && secret.IsPresent())
+                // client id must be present
+                if (id.IsPresent())
                 {
-                    if (id.Length > _options.InputLengthRestrictions.ClientId ||
-                        secret.Length > _options.InputLengthRestrictions.ClientSecret)
+                    if (id.Length > _options.InputLengthRestrictions.ClientId)
                     {
-                        _logger.LogWarning("Client ID or secret exceeds maximum lenght.");
+                        _logger.LogError("Client ID exceeds maximum lenght.");
                         return Task.FromResult<ParsedSecret>(null);
                     }
 
-                    var parsedSecret = new ParsedSecret
+                    if (secret.IsPresent())
                     {
-                        Id = id,
-                        Credential = secret,
-                        Type = Constants.ParsedSecretTypes.SharedSecret
-                    };
+                        if (secret.Length > _options.InputLengthRestrictions.ClientSecret)
+                        {
+                            _logger.LogError("Client secret exceeds maximum lenght.");
+                            return Task.FromResult<ParsedSecret>(null);
+                        }
 
-                    return Task.FromResult(parsedSecret);
+                        return Task.FromResult(new ParsedSecret
+                        {
+                            Id = id,
+                            Credential = secret,
+                            Type = Constants.ParsedSecretTypes.SharedSecret
+                        });
+                    }
+                    else
+                    {
+                        // client secret is optional
+                        _logger.LogDebug("client id without secret found");
+
+                        return Task.FromResult(new ParsedSecret
+                        {
+                            Id = id,
+                            Type = Constants.ParsedSecretTypes.NoSecret
+                        });
+                    }
                 }
             }
 
-            _logger.LogVerbose("No secret in post body found");
+            _logger.LogDebug("No secret in post body found");
             return Task.FromResult<ParsedSecret>(null);
         }
     }

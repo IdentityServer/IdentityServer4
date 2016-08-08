@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-using IdentityServer4.Core.Models;
+using IdentityServer4.Models;
 
-namespace IdentityServer4.Core.Events
+namespace IdentityServer4.Events
 {
     /// <summary>
     /// Event details for logout events
@@ -24,6 +24,6 @@ namespace IdentityServer4.Core.Events
         /// <value>
         /// The sign out message.
         /// </value>
-        public SignOutRequest SignOutMessage { get; set; }
+        public LogoutRequest SignOutMessage { get; set; }
     }
 }

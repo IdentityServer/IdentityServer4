@@ -3,7 +3,7 @@
 
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Services
+namespace IdentityServer4.Services
 {
     /// <summary>
     /// Abstract interface to model data caching

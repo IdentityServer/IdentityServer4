@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace IdentityServer4.Core.Models
+namespace IdentityServer4.Models
 {
     /// <summary>
     /// Models are resource (either identity resource or web api resource)

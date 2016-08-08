@@ -2,38 +2,40 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using System.Threading.Tasks;
-using IdentityServer4.Core.Models;
-using IdentityServer4.Core.Extensions;
-using IdentityServer4.Core.Hosting;
-using Microsoft.AspNet.Http;
+using IdentityServer4.Models;
+using IdentityServer4.Extensions;
+using IdentityServer4.Hosting;
 using System.Text;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNet.Http;
+using System;
 
-namespace IdentityServer4.Core.Endpoints.Results
+namespace IdentityServer4.Endpoints.Results
 {
-    class AuthorizeFormPostResult : AuthorizeResult
+    class AuthorizeFormPostResult : HtmlPageResult
     {
-        const string _html = "<!DOCTYPE html><html><head><title>Submit this form</title><meta name='viewport' content='width=device-width, initial-scale=1.0' /></head><body><form method='post' action='{uri}'>{body}</form><script>(function(){document.forms[0].submit();})();</script></body></html>";
+        public AuthorizeResponse Response { get; private set; }
 
         public AuthorizeFormPostResult(AuthorizeResponse response)
-            : base(response)
         {
+            Response = response;
+        }
+
+        const string _html = "<!DOCTYPE html><html><head><title>Submit this form</title><meta name='viewport' content='width=device-width, initial-scale=1.0' /></head><body><form method='post' action='{uri}'>{body}</form><script>(function(){document.forms[0].submit();})();</script></body></html>";
+
+        protected override string GetHtml()
+        {
+            var html = _html;
+
+            html = html.Replace("{uri}", Response.RedirectUri);
+            html = html.Replace("{body}", BuildFormBody(Response));
+
+            return html;
         }
 
         internal static string BuildFormBody(AuthorizeResponse response)
         {
             return response.ToNameValueCollection().ToFormPost();
-        }
-
-        public override async Task ExecuteAsync(IdentityServerContext context)
-        {
-            context.HttpContext.Response.ContentType = "text/html; charset=UTF-8";
-            context.HttpContext.Response.SetNoCache();
-
-            var html = _html;
-            html = html.Replace("{uri}", Response.RedirectUri);
-            html = html.Replace("{body}", BuildFormBody(Response));
-
-            await context.HttpContext.Response.WriteAsync(html, Encoding.UTF8);
         }
     }
 }

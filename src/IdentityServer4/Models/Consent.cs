@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace IdentityServer4.Core.Models
+namespace IdentityServer4.Models
 {
     /// <summary>
     /// Represents the permissions (in terms of scopes) granted to a client by a subject

@@ -5,7 +5,7 @@ using System.ComponentModel;
 
 #pragma warning disable 1591
 
-namespace IdentityServer4.Core.Validation
+namespace IdentityServer4.Validation
 {
     [EditorBrowsable(EditorBrowsableState.Never)]
     public enum BearerTokenUsageType

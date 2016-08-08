@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Services.Default
+namespace IdentityServer4.Services.Default
 {
     /// <summary>
     /// Default CORS policy service.
@@ -50,7 +50,7 @@ namespace IdentityServer4.Core.Services.Default
         {
             if (AllowAll)
             {
-                _logger.LogInformation("AllowAll true, so origin: {0} is allowed", origin);
+                _logger.LogDebug("AllowAll true, so origin: {0} is allowed", origin);
                 return Task.FromResult(true);
             }
 
@@ -58,16 +58,16 @@ namespace IdentityServer4.Core.Services.Default
             {
                 if (AllowedOrigins.Contains(origin, StringComparer.OrdinalIgnoreCase))
                 {
-                    _logger.LogInformation("AllowedOrigins configured and origin {0} is allowed", origin);
+                    _logger.LogDebug("AllowedOrigins configured and origin {0} is allowed", origin);
                     return Task.FromResult(true);
                 }
                 else
                 {
-                    _logger.LogInformation("AllowedOrigins configured and origin {0} is not allowed", origin);
+                    _logger.LogDebug("AllowedOrigins configured and origin {0} is not allowed", origin);
                 }
             }
 
-            _logger.LogInformation("Exiting; origin {0} is not allowed", origin);
+            _logger.LogDebug("Exiting; origin {0} is not allowed", origin);
 
             return Task.FromResult(false);
         }

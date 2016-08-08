@@ -1,15 +1,15 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-using IdentityServer4.Core.Events;
-using IdentityServer4.Core.Extensions;
-using IdentityServer4.Core.Services;
-using Microsoft.AspNet.Http;
+using IdentityServer4.Events;
+using IdentityServer4.Extensions;
+using IdentityServer4.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Validation
+namespace IdentityServer4.Validation
 {
     public class ScopeSecretValidator
     {
@@ -30,7 +30,7 @@ namespace IdentityServer4.Core.Validation
 
         public async Task<ScopeSecretValidationResult> ValidateAsync(HttpContext context)
         {
-            _logger.LogVerbose("Start scope validation");
+            _logger.LogTrace("Start scope validation");
 
             var fail = new ScopeSecretValidationResult
             {
@@ -42,7 +42,7 @@ namespace IdentityServer4.Core.Validation
             {
                 await RaiseFailureEvent("unknown", "No scope id or secret found");
 
-                _logger.LogInformation("No scope secret found");
+                _logger.LogError("No scope secret found");
                 return fail;
             }
 
@@ -52,7 +52,7 @@ namespace IdentityServer4.Core.Validation
             {
                 await RaiseFailureEvent(parsedSecret.Id, "Unknown scope");
 
-                _logger.LogInformation("No scope with that name found. aborting");
+                _logger.LogError("No scope with that name found. aborting");
                 return fail;
             }
 
@@ -72,7 +72,7 @@ namespace IdentityServer4.Core.Validation
             }
 
             await RaiseFailureEvent(scope.Name, "Invalid client secret");
-            _logger.LogInformation("Scope validation failed.");
+            _logger.LogError("Scope validation failed.");
 
             return fail;
         }

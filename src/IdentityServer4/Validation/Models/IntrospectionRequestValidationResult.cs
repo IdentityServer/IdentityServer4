@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 
-namespace IdentityServer4.Core.Validation
+namespace IdentityServer4.Validation
 {
     public class IntrospectionRequestValidationResult : ValidationResult
     {

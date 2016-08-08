@@ -1,7 +1,8 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-namespace IdentityServer4.Core.Configuration
+
+namespace IdentityServer4.Configuration
 {
     /// <summary>
     /// 
@@ -11,118 +12,113 @@ namespace IdentityServer4.Core.Configuration
         private const int Default = 100;
 
         /// <summary>
-        /// Creates InputLengthRestrictions with default values
-        /// </summary>
-        public InputLengthRestrictions()
-        {
-            ClientId = Default;
-            ClientSecret = Default;
-            Scope = 300;
-            RedirectUri = 400;
-            Nonce = 300;
-            UiLocale = Default;
-            LoginHint = Default;
-            AcrValues = 300;
-            GrantType = Default;
-            UserName = Default;
-            Password = Default;
-            CspReport = 2000;
-            IdentityProvider = Default;
-            ExternalError = Default;
-            AuthorizationCode = Default;
-            RefreshToken = Default;
-            TokenHandle = Default;
-            Jwt = 51200;
-        }
-
-        /// <summary>
         /// Max length for client_id
         /// </summary>
-        public int ClientId { get; set; }
+        public int ClientId { get; set; } = Default;
 
         /// <summary>
         /// Max length for external client secrets
         /// </summary>
-        public int ClientSecret { get; private set; }
+        public int ClientSecret { get; set; } = Default;
 
         /// <summary>
         /// Max length for scope
         /// </summary>
-        public int Scope { get; set; }
+        public int Scope { get; set; } = 300;
 
         /// <summary>
         /// Max length for redirect_uri
         /// </summary>
-        public int RedirectUri { get; set; }
+        public int RedirectUri { get; set; } = 400;
 
         /// <summary>
         /// Max length for nonce
         /// </summary>
-        public int Nonce { get; set; }
+        public int Nonce { get; set; } = 300;
 
         /// <summary>
         /// Max length for ui_locale
         /// </summary>
-        public int UiLocale { get; set; }
+        public int UiLocale { get; set; } = Default;
 
         /// <summary>
         /// Max length for login_hint
         /// </summary>
-        public int LoginHint { get; set; }
+        public int LoginHint { get; set; } = Default;
 
         /// <summary>
         /// Max length for acr_values
         /// </summary>
-        public int AcrValues { get; set; }
+        public int AcrValues { get; set; } = 300;
 
         /// <summary>
         /// Max length for grant_type
         /// </summary>
-        public int GrantType { get; set; }
+        public int GrantType { get; set; } = Default;
 
         /// <summary>
         /// Max length for username
         /// </summary>
-        public int UserName { get; set; }
+        public int UserName { get; set; } = Default;
 
         /// <summary>
         /// Max length for password
         /// </summary>
-        public int Password { get; set; }
+        public int Password { get; set; } = Default;
 
         /// <summary>
         /// Max length for CSP reports
         /// </summary>
-        public int CspReport { get; set; }
+        public int CspReport { get; set; } = 2000;
 
         /// <summary>
         /// Max length for external identity provider name
         /// </summary>
-        public int IdentityProvider { get; set; }
+        public int IdentityProvider { get; set; } = Default;
 
         /// <summary>
         /// Max length for external identity provider errors
         /// </summary>
-        public int ExternalError { get; private set; }
+        public int ExternalError { get; set; } = Default;
 
         /// <summary>
         /// Max length for authorization codes
         /// </summary>
-        public int AuthorizationCode { get; private set; }
+        public int AuthorizationCode { get; private set; } = Default;
 
         /// <summary>
         /// Max length for refresh tokens
         /// </summary>
-        public int RefreshToken { get; private set; }
+        public int RefreshToken { get; private set; } = Default;
 
         /// <summary>
         /// Max length for token handles
         /// </summary>
-        public int TokenHandle { get; private set; }
+        public int TokenHandle { get; private set; } = Default;
 
         /// <summary>
         /// Max length for JWTs
         /// </summary>
-        public int Jwt { get; private set; }
+        public int Jwt { get; set; } = 51200;
+
+        /// <summary>
+        /// Min length for the code challenge
+        /// </summary>
+        public int CodeChallengeMinLength { get; } = 43;
+
+        /// <summary>
+        /// Max length for the code challenge
+        /// </summary>
+        public int CodeChallengeMaxLength { get; } = 128;
+
+        /// <summary>
+        /// Min length for the code verifier
+        /// </summary>
+        public int CodeVerifierMinLength { get; } = 43;
+
+        /// <summary>
+        /// Max length for the code verifier
+        /// </summary>
+        public int CodeVerifierMaxLength { get; } = 128;
     }
 }

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-namespace IdentityServer4.Core.Models
+namespace IdentityServer4.Models
 {
     public class DiscoveryDocument
     {
@@ -23,5 +23,6 @@ namespace IdentityServer4.Core.Models
         public string[] subject_types_supported { get; set; }
         public string[] id_token_signing_alg_values_supported { get; set; }
         public string[] token_endpoint_auth_methods_supported { get; set; }
+        public string[] code_challenge_methods_supported { get; set; }
     }
 }

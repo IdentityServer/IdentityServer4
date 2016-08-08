@@ -1,27 +1,30 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-using IdentityServer4.Core.Events;
-using IdentityServer4.Core.Logging;
+using IdentityServer4.Events;
+using IdentityServer4.Logging;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Services.Default
+namespace IdentityServer4.Services.Default
 {
     /// <summary>
     /// Default implementation of the event service. Write events raised to the log.
     /// </summary>
     public class DefaultEventService : IEventService
     {
+        private readonly EventServiceHelper _helper;
+
         /// <summary>
         /// The logger
         /// </summary>
         private readonly ILogger _logger;
 
-        public DefaultEventService(ILoggerFactory loggerFactory)
+        public DefaultEventService(ILogger<DefaultEventService> logger, EventServiceHelper helper)
         {
-            _logger = loggerFactory.CreateLogger<DefaultEventService>();
+            _logger = logger;
+            _helper = helper;
         }
 
         /// <summary>
@@ -32,9 +35,12 @@ namespace IdentityServer4.Core.Services.Default
         public virtual Task RaiseAsync<T>(Event<T> evt)
         {
             if (evt == null) throw new ArgumentNullException("evt");
-            
-            var json = LogSerializer.Serialize(evt);
-            _logger.LogInformation(json);
+
+            if (_helper.CanRaiseEvent(evt))
+            {
+                var json = LogSerializer.Serialize(_helper.PrepareEvent(evt));
+                _logger.LogInformation(json);
+            }
 
             return Task.FromResult(0);
         }

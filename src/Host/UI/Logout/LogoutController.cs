@@ -1,7 +1,6 @@
-﻿using IdentityServer4.Core;
-using IdentityServer4.Core.Services;
-using Microsoft.AspNet.Mvc;
-using System.Linq;
+﻿using IdentityServer4;
+using IdentityServer4.Services;
+using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -9,29 +8,37 @@ namespace Host.UI.Logout
 {
     public class LogoutController : Controller
     {
-        private readonly SignOutInteraction _signOutInteraction;
+        private readonly IUserInteractionService _interaction;
 
-        public LogoutController(SignOutInteraction signOutInteraction)
+        public LogoutController(IUserInteractionService interaction)
         {
-            _signOutInteraction = signOutInteraction;
+            _interaction = interaction;
         }
 
-        [HttpGet(Constants.RoutePaths.Logout, Name = "Logout")]
-        public IActionResult Index(string id)
+        [HttpGet("ui/logout", Name = "Logout")]
+        public IActionResult Index(string logoutId)
         {
-            return View(new LogoutViewModel { SignOutId = id });
+            ViewData["logoutId"] = logoutId;
+            return View();
         }
 
-        [HttpPost(Constants.RoutePaths.Logout)]
+        [HttpPost("ui/logout")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Submit(string signOutId)
+        public async Task<IActionResult> Submit(string logoutId)
         {
-            await HttpContext.Authentication.SignOutAsync(Constants.PrimaryAuthenticationType);
+            await HttpContext.Authentication.SignOutAsync(Constants.DefaultCookieAuthenticationScheme);
 
             // set this so UI rendering sees an anonymous user
             HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity());
 
-            var vm = new LoggedOutViewModel();
+            var logout = await _interaction.GetLogoutContextAsync(logoutId);
+
+            var vm = new LoggedOutViewModel()
+            {
+                PostLogoutRedirectUri = logout.PostLogoutRedirectUri,
+                ClientName = logout.ClientId,
+                SignOutIframeUrl = logout.SignOutIFrameUrl
+            };
             return View("LoggedOut", vm);
         }
     }

@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-using IdentityServer4.Core.Extensions;
-using IdentityServer4.Core.Models;
-using Microsoft.AspNet.DataProtection;
-using Microsoft.AspNet.Http;
+using IdentityServer4.Extensions;
+using IdentityServer4.Models;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 
-namespace IdentityServer4.Core.Hosting
+namespace IdentityServer4.Hosting
 {
     class MessageCookie<TModel>
     {
@@ -26,7 +26,10 @@ namespace IdentityServer4.Core.Hosting
         private readonly IdentityServerContext _context;
         private readonly IDataProtector _protector;
 
-        public MessageCookie(ILogger<MessageCookie<TModel>> logger, IdentityServerContext context, IDataProtectionProvider provider)
+        public MessageCookie(
+            ILogger<MessageCookie<TModel>> logger, 
+            IdentityServerContext context, 
+            IDataProtectionProvider provider)
         {
             _logger = logger;
             _context = context;
@@ -53,14 +56,17 @@ namespace IdentityServer4.Core.Hosting
             return message;
         }
 
-        string GetCookieName(string id = null)
+        string CookiePrefix
         {
-            // TODO: cookie prefix
-            //return String.Format("{0}{1}.{2}",
-            //    options.AuthenticationOptions.CookieOptions.Prefix,
-            //    MessageType,
-            //    id);
-            return String.Format("idsvr.{0}.{1}", MessageType, id);
+            get
+            {
+                return MessageType + ".";
+            }
+        }
+
+        string GetCookieFullName(string id)
+        {
+            return CookiePrefix + id;
         }
 
         string CookiePath
@@ -73,7 +79,7 @@ namespace IdentityServer4.Core.Hosting
 
         private IEnumerable<string> GetCookieNames()
         {
-            var key = GetCookieName();
+            var key = CookiePrefix;
             foreach (var cookie in _context.HttpContext.Request.Cookies)
             {
                 if (cookie.Key.StartsWith(key))
@@ -91,13 +97,13 @@ namespace IdentityServer4.Core.Hosting
             }
         }
 
-        public void Write(Message<TModel> message)
+        public void Write(string id, Message<TModel> message)
         {
             ClearOverflow();
 
             if (message == null) throw new ArgumentNullException("message");
 
-            var name = GetCookieName(message.Id);
+            var name = GetCookieFullName(id);
             var data = Protect(message);
 
             _context.HttpContext.Response.Cookies.Append(
@@ -113,9 +119,9 @@ namespace IdentityServer4.Core.Hosting
 
         public Message<TModel> Read(string id)
         {
-            if (String.IsNullOrWhiteSpace(id)) return null;
+            if (id.IsMissing()) return null;
 
-            var name = GetCookieName(id);
+            var name = GetCookieFullName(id);
             return ReadByCookieName(name);
         }
 
@@ -129,9 +135,9 @@ namespace IdentityServer4.Core.Hosting
             return null;
         }
 
-        public void Clear(string id)
+        internal protected void Clear(string id)
         {
-            var name = GetCookieName(id);
+            var name = GetCookieFullName(id);
             ClearByCookieName(name);
         }
 
@@ -158,7 +164,8 @@ namespace IdentityServer4.Core.Hosting
             {
                 var message = ReadByCookieName(name);
                 if (message != null)
-                {   // valid cookies are ranked based on their creation time:
+                {
+                    // valid cookies are ranked based on their creation time:
                     rank = message.Created;
                 }
             }
@@ -174,7 +181,7 @@ namespace IdentityServer4.Core.Hosting
         private void ClearOverflow()
         {
             var names = GetCookieNames();
-            var toKeep = _context.Options.AuthenticationOptions.SignInMessageThreshold;
+            var toKeep = _context.Options.UserInteractionOptions.CookieMessageThreshold;
 
             if (names.Count() >= toKeep)
             {

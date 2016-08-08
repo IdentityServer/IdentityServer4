@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-using IdentityServer4.Core.Extensions;
+using IdentityServer4.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 
-namespace IdentityServer4.Core.Models
+namespace IdentityServer4.Models
 {
     /// <summary>
     /// Modles an authorization code.
@@ -20,7 +20,7 @@ namespace IdentityServer4.Core.Models
         /// <value>
         /// The creation time.
         /// </value>
-        public DateTimeOffset CreationTime { get; set; }
+        public DateTimeOffset CreationTime { get; set; } = DateTimeOffsetHelper.UtcNow;
 
         /// <summary>
         /// Gets or sets the client.
@@ -87,12 +87,20 @@ namespace IdentityServer4.Core.Models
         public string SessionId { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AuthorizationCode"/> class.
+        /// Gets or sets the code challenge.
         /// </summary>
-        public AuthorizationCode()
-        {
-            CreationTime = DateTimeOffsetHelper.UtcNow;
-        }
+        /// <value>
+        /// The code challenge.
+        /// </value>
+        public string CodeChallenge { get; set; }
+
+        /// <summary>
+        /// Gets or sets the code challenge method.
+        /// </summary>
+        /// <value>
+        /// The code challenge method
+        /// </value>
+        public string CodeChallengeMethod { get; set; }
 
         /// <summary>
         /// Gets the subject identifier.

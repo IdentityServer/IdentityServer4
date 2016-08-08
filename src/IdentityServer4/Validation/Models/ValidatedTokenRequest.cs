@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-using IdentityServer4.Core.Models;
+using IdentityServer4.Models;
 using System.Collections.Generic;
 
-namespace IdentityServer4.Core.Validation
+namespace IdentityServer4.Validation
 {
     /// <summary>
     /// Models a validated request to the token endpoint.
@@ -49,7 +49,7 @@ namespace IdentityServer4.Core.Validation
         /// <value>
         /// The sign in message.
         /// </value>
-        public SignInRequest SignInMessage { get; set; }
+        public AuthorizationRequest SignInMessage { get; set; }
 
         /// <summary>
         /// Gets or sets the refresh token.
@@ -82,5 +82,13 @@ namespace IdentityServer4.Core.Validation
         /// The authorization code handle.
         /// </value>
         public string AuthorizationCodeHandle { get; set; }
+
+        /// <summary>
+        /// Gets or sets the code verifier.
+        /// </summary>
+        /// <value>
+        /// The code verifier.
+        /// </value>
+        public string CodeVerifier { get; set; }
     }
 }

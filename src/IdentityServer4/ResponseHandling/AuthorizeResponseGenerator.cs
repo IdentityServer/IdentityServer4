@@ -2,10 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel;
-using IdentityServer4.Core.Extensions;
-using IdentityServer4.Core.Models;
-using IdentityServer4.Core.Services;
-using IdentityServer4.Core.Validation;
+using IdentityServer4.Extensions;
+using IdentityServer4.Models;
+using IdentityServer4.Services;
+using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
@@ -13,7 +13,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.ResponseHandling
+namespace IdentityServer4.ResponseHandling
 {
     class AuthorizeResponseGenerator : IAuthorizeResponseGenerator
     {
@@ -32,7 +32,7 @@ namespace IdentityServer4.Core.ResponseHandling
 
         public async Task<AuthorizeResponse> CreateResponseAsync(ValidatedAuthorizeRequest request)
         {
-            if (request.GrantType == GrantType.Code)
+            if (request.GrantType == GrantType.AuthorizationCode)
             {
                 return await CreateCodeFlowResponseAsync(request);
             }
@@ -89,6 +89,8 @@ namespace IdentityServer4.Core.ResponseHandling
                 Client = request.Client,
                 Subject = request.Subject,
                 SessionId = request.SessionId,
+                CodeChallenge = request.CodeChallenge.Sha256(),
+                CodeChallengeMethod = request.CodeChallengeMethod,
 
                 IsOpenId = request.IsOpenIdRequest,
                 RequestedScopes = request.ValidatedScopes.GrantedScopes,

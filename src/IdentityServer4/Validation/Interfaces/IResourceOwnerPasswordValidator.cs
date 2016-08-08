@@ -3,7 +3,7 @@
 
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Validation
+namespace IdentityServer4.Validation
 {
     /// <summary>
     /// Handles validation of resource owner password credentials
@@ -15,6 +15,6 @@ namespace IdentityServer4.Core.Validation
         /// </summary>
         /// <param name="request">The validated token request.</param>
         /// <returns>The validation result</returns>
-        Task<CustomGrantValidationResult> ValidateAsync(string userName, string password, ValidatedTokenRequest request);
+        Task<GrantValidationResult> ValidateAsync(string userName, string password, ValidatedTokenRequest request);
     }
 }

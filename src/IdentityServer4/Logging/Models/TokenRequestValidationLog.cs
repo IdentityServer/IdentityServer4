@@ -2,11 +2,11 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel;
-using IdentityServer4.Core.Extensions;
-using IdentityServer4.Core.Validation;
+using IdentityServer4.Extensions;
+using IdentityServer4.Validation;
 using System.Collections.Generic;
 
-namespace IdentityServer4.Core.Logging
+namespace IdentityServer4.Logging
 {
     internal class TokenRequestValidationLog
     {
@@ -57,6 +57,11 @@ namespace IdentityServer4.Core.Logging
             AuthorizationCode = request.AuthorizationCodeHandle;
             RefreshToken = request.RefreshTokenHandle;
             UserName = request.UserName;
+        }
+
+        public override string ToString()
+        {
+            return LogSerializer.Serialize(this);
         }
     }
 }

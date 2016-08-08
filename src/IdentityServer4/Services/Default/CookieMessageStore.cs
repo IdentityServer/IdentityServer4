@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-using IdentityServer4.Core.Hosting;
-using IdentityServer4.Core.Models;
+using IdentityServer4.Hosting;
+using IdentityServer4.Models;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Services.Default
+namespace IdentityServer4.Services.Default
 {
     internal class CookieMessageStore<TModel> : IMessageStore<TModel>
     {
@@ -27,9 +27,9 @@ namespace IdentityServer4.Core.Services.Default
             return Task.FromResult(_cookie.Read(id));
         }
 
-        public Task WriteAsync(Message<TModel> message)
+        public Task WriteAsync(string id, Message<TModel> message)
         {
-            _cookie.Write(message);
+            _cookie.Write(id, message);
             return Task.FromResult(0);
         }
     }

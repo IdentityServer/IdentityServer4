@@ -1,14 +1,14 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-using IdentityServer4.Core.Extensions;
-using IdentityServer4.Core.Models;
+using IdentityServer4.Extensions;
+using IdentityServer4.Models;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Validation
+namespace IdentityServer4.Validation
 {
     public class SecretValidator
     {
@@ -27,7 +27,7 @@ namespace IdentityServer4.Core.Validation
             if (expiredSecrets.Any())
             {
                 expiredSecrets.ToList().ForEach(
-                    ex => _logger.LogInformation("Secret [{description}] is expired", ex.Description ?? "no description"));
+                    ex => _logger.LogWarning("Secret [{description}] is expired", ex.Description ?? "no description"));
             }
 
             var currentSecrets = secrets.Where(s => !s.Expiration.HasExpired());
@@ -39,12 +39,12 @@ namespace IdentityServer4.Core.Validation
 
                 if (secretValidationResult.Success)
                 {
-                    _logger.LogVerbose("Secret validator success: {0}", validator.GetType().Name);
+                    _logger.LogDebug("Secret validator success: {0}", validator.GetType().Name);
                     return secretValidationResult;
                 }
             }
 
-            _logger.LogInformation("Secret validators could not validate secret");
+            _logger.LogError("Secret validators could not validate secret");
             return new SecretValidationResult { Success = false };
         }
     }

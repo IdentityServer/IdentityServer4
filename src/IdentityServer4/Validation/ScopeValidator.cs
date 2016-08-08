@@ -1,19 +1,18 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-using IdentityServer4.Core.Models;
-using IdentityServer4.Core.Services;
+using IdentityServer4.Models;
+using IdentityServer4.Services;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Validation
+namespace IdentityServer4.Validation
 {
     public class ScopeValidator
     {
         private readonly ILogger _logger;
-        
         private readonly IScopeStore _store;
 
         public bool ContainsOpenIdScopes { get; private set; }
@@ -23,12 +22,12 @@ namespace IdentityServer4.Core.Validation
         public List<Scope> RequestedScopes { get; private set; }
         public List<Scope> GrantedScopes { get; private set; }
 
-        public ScopeValidator(IScopeStore store, ILoggerFactory loggerFactory)
+        public ScopeValidator(IScopeStore store, ILogger<ScopeValidator> logger)
         {
             RequestedScopes = new List<Scope>();
             GrantedScopes = new List<Scope>();
 
-            _logger = loggerFactory.CreateLogger<ScopeValidator>();
+            _logger = logger;
             _store = store;
         }
 

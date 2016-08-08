@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 
-namespace IdentityServer4.Core.Models
+namespace IdentityServer4.Models
 {
     /// <summary>
     /// Models the identity of a user authenticating from an external identity provider.

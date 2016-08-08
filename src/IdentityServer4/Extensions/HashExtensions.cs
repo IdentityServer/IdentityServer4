@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-using IdentityServer4.Core.Extensions;
+using IdentityServer4.Extensions;
 using System;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace IdentityServer4.Core.Models
+namespace IdentityServer4.Models
 {
     /// <summary>
     /// Extension methods for hashing strings
@@ -28,6 +28,24 @@ namespace IdentityServer4.Core.Models
                 var hash = sha.ComputeHash(bytes);
 
                 return Convert.ToBase64String(hash);
+            }
+        }
+
+        /// <summary>
+        /// Creates a SHA256 hash of the specified input.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <returns>A hash.</returns>
+        public static byte[] Sha256(this byte[] input)
+        {
+            if (input == null)
+            {
+                return null;
+            }
+
+            using (var sha = SHA256.Create())
+            {
+                return sha.ComputeHash(input);
             }
         }
 

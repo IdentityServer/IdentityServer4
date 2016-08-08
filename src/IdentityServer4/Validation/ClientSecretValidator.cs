@@ -1,14 +1,14 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-using IdentityServer4.Core.Services;
+using IdentityServer4.Services;
 using System.Threading.Tasks;
-using IdentityServer4.Core.Extensions;
-using IdentityServer4.Core.Events;
+using IdentityServer4.Extensions;
+using IdentityServer4.Events;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNet.Http;
+using Microsoft.AspNetCore.Http;
 
-namespace IdentityServer4.Core.Validation
+namespace IdentityServer4.Validation
 {
     public class ClientSecretValidator
     {
@@ -18,18 +18,18 @@ namespace IdentityServer4.Core.Validation
         private readonly SecretValidator _validator;
         private readonly SecretParser _parser;
 
-        public ClientSecretValidator(IClientStore clients, SecretParser parser, SecretValidator validator, IEventService events, ILoggerFactory loggerFactory)
+        public ClientSecretValidator(IClientStore clients, SecretParser parser, SecretValidator validator, IEventService events, ILogger<ClientSecretValidator> logger)
         {
             _clients = clients;
             _parser = parser;
             _validator = validator;
             _events = events;
-            _logger = loggerFactory.CreateLogger<ClientSecretValidator>();
+            _logger = logger;
         }
 
         public async Task<ClientSecretValidationResult> ValidateAsync(HttpContext context)
         {
-            _logger.LogVerbose("Start client validation");
+            _logger.LogDebug("Start client validation");
 
             var fail = new ClientSecretValidationResult
             {
@@ -41,7 +41,7 @@ namespace IdentityServer4.Core.Validation
             {
                 await RaiseFailureEvent("unknown", "No client id or secret found");
 
-                _logger.LogInformation("No client secret found");
+                _logger.LogError("No client secret found");
                 return fail;
             }
 
@@ -51,30 +51,36 @@ namespace IdentityServer4.Core.Validation
             {
                 await RaiseFailureEvent(parsedSecret.Id, "Unknown client");
 
-                _logger.LogInformation("No client with that id found. aborting");
+                _logger.LogError("No client with id '{clientId}' found. aborting", parsedSecret.Id);
                 return fail;
             }
 
-            var result = await _validator.ValidateAsync(parsedSecret, client.ClientSecrets);
-
-            if (result.Success)
+            if (client.PublicClient)
             {
-                _logger.LogInformation("Client validation success");
-
-                var success = new ClientSecretValidationResult
+                _logger.LogDebug("Public Client - skipping secret validation success");
+            }
+            else
+            {
+                var result = await _validator.ValidateAsync(parsedSecret, client.ClientSecrets);
+                if (result.Success == false)
                 {
-                    IsError = false,
-                    Client = client
-                };
+                    await RaiseFailureEvent(client.ClientId, "Invalid client secret");
+                    _logger.LogError("Client validation failed for client: {clientId}.", client.ClientId);
 
-                await RaiseSuccessEvent(client.ClientId);
-                return success;
+                    return fail;
+                }
             }
 
-            await RaiseFailureEvent(client.ClientId, "Invalid client secret");
-            _logger.LogWarning("Client validation failed client {clientId}.", client.ClientId);
+            _logger.LogInformation("Client validation success");
 
-            return fail;
+            var success = new ClientSecretValidationResult
+            {
+                IsError = false,
+                Client = client
+            };
+
+            await RaiseSuccessEvent(client.ClientId);
+            return success;
         }
 
         private async Task RaiseSuccessEvent(string clientId)

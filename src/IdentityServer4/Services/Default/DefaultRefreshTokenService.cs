@@ -2,13 +2,13 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel;
-using IdentityServer4.Core.Extensions;
-using IdentityServer4.Core.Models;
+using IdentityServer4.Extensions;
+using IdentityServer4.Models;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Services.Default
+namespace IdentityServer4.Services.Default
 {
     /// <summary>
     /// Default refresh token service
@@ -53,17 +53,17 @@ namespace IdentityServer4.Core.Services.Default
         /// </returns>
         public virtual async Task<string> CreateRefreshTokenAsync(ClaimsPrincipal subject, Token accessToken, Client client)
         {
-            _logger.LogVerbose("Creating refresh token");
+            _logger.LogDebug("Creating refresh token");
 
             int lifetime;
             if (client.RefreshTokenExpiration == TokenExpiration.Absolute)
             {
-                _logger.LogVerbose("Setting an absolute lifetime: " + client.AbsoluteRefreshTokenLifetime);
+                _logger.LogDebug("Setting an absolute lifetime: " + client.AbsoluteRefreshTokenLifetime);
                 lifetime = client.AbsoluteRefreshTokenLifetime;
             }
             else
             {
-                _logger.LogVerbose("Setting a sliding lifetime: " + client.SlidingRefreshTokenLifetime);
+                _logger.LogDebug("Setting a sliding lifetime: " + client.SlidingRefreshTokenLifetime);
                 lifetime = client.SlidingRefreshTokenLifetime;
             }
 
@@ -93,13 +93,13 @@ namespace IdentityServer4.Core.Services.Default
         /// </returns>
         public virtual async Task<string> UpdateRefreshTokenAsync(string handle, RefreshToken refreshToken, Client client)
         {
-            _logger.LogVerbose("Updating refresh token");
+            _logger.LogDebug("Updating refresh token");
 
             bool needsUpdate = false;
 
             if (client.RefreshTokenUsage == TokenUsage.OneTimeOnly)
             {
-                _logger.LogVerbose("Token usage is one-time only. Generating new handle");
+                _logger.LogDebug("Token usage is one-time only. Generating new handle");
 
                 // delete old one
                 await _store.RemoveAsync(handle);
@@ -111,20 +111,20 @@ namespace IdentityServer4.Core.Services.Default
 
             if (client.RefreshTokenExpiration == TokenExpiration.Sliding)
             {
-                _logger.LogVerbose("Refresh token expiration is sliding - extending lifetime");
+                _logger.LogDebug("Refresh token expiration is sliding - extending lifetime");
 
                 // make sure we don't exceed absolute exp
                 // cap it at absolute exp
                 var currentLifetime = refreshToken.CreationTime.GetLifetimeInSeconds();
-                _logger.LogVerbose("Current lifetime: " + currentLifetime.ToString());
+                _logger.LogDebug("Current lifetime: " + currentLifetime.ToString());
 
                 var newLifetime = currentLifetime + client.SlidingRefreshTokenLifetime;
-                _logger.LogVerbose("New lifetime: " + newLifetime.ToString());
+                _logger.LogDebug("New lifetime: " + newLifetime.ToString());
 
                 if (newLifetime > client.AbsoluteRefreshTokenLifetime)
                 {
                     newLifetime = client.AbsoluteRefreshTokenLifetime;
-                    _logger.LogVerbose("New lifetime exceeds absolute lifetime, capping it to " + newLifetime.ToString());
+                    _logger.LogDebug("New lifetime exceeds absolute lifetime, capping it to " + newLifetime.ToString());
                 }
 
                 refreshToken.LifeTime = newLifetime;
@@ -134,15 +134,15 @@ namespace IdentityServer4.Core.Services.Default
             if (needsUpdate)
             {
                 await _store.StoreAsync(handle, refreshToken);
-                _logger.LogVerbose("Updated refresh token in store");
+                _logger.LogDebug("Updated refresh token in store");
             }
             else
             {
-                _logger.LogVerbose("No updates to refresh token done");
+                _logger.LogDebug("No updates to refresh token done");
             }
 
             await RaiseRefreshTokenRefreshedEventAsync(handle, handle, refreshToken);
-            _logger.LogVerbose("No updates to refresh token done");
+            _logger.LogDebug("No updates to refresh token done");
 
             return handle;
         }

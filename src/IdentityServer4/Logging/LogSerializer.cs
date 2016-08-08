@@ -4,7 +4,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace IdentityServer4.Core.Logging
+namespace IdentityServer4.Logging
 {
     /// <summary>
     /// Helper to JSON serialize object data for logging.

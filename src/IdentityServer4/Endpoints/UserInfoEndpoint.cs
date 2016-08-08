@@ -3,18 +3,19 @@
 
 using System.Linq;
 using System.Threading.Tasks;
-using IdentityServer4.Core.Configuration;
-using IdentityServer4.Core.Validation;
-using IdentityServer4.Core.Services;
-using IdentityServer4.Core.ResponseHandling;
+using IdentityServer4.Configuration;
+using IdentityServer4.Validation;
+using IdentityServer4.Services;
+using IdentityServer4.ResponseHandling;
 using Microsoft.Extensions.Logging;
-using IdentityServer4.Core.Extensions;
-using IdentityServer4.Core.Events;
-using IdentityServer4.Core.Hosting;
-using IdentityServer4.Core.Endpoints.Results;
+using IdentityServer4.Extensions;
+using IdentityServer4.Events;
+using IdentityServer4.Hosting;
+using IdentityServer4.Endpoints.Results;
 using IdentityModel;
+using System.Security.Claims;
 
-namespace IdentityServer4.Core.Endpoints
+namespace IdentityServer4.Endpoints
 {
     public class UserInfoEndpoint : IEndpoint
     {
@@ -39,15 +40,21 @@ namespace IdentityServer4.Core.Endpoints
         {
             if (context.HttpContext.Request.Method != "GET" && context.HttpContext.Request.Method != "POST")
             {
+                _logger.LogWarning("Invalid HTTP method for userinfo endpoint.");
                 return new StatusCodeResult(405);
             }
 
-            _logger.LogVerbose("Start userinfo request");
+            return await ProcessUserInfoRequestAsync(context);
+        }
+
+        private async Task<IEndpointResult> ProcessUserInfoRequestAsync(IdentityServerContext context)
+        {
+            _logger.LogDebug("Start userinfo request");
 
             var tokenUsageResult = await _tokenUsageValidator.ValidateAsync(context.HttpContext);
             if (tokenUsageResult.TokenFound == false)
             {
-                var error = "No token found.";
+                var error = "No access token found.";
 
                 _logger.LogError(error);
                 await RaiseFailureEventAsync(error);
@@ -68,7 +75,8 @@ namespace IdentityServer4.Core.Endpoints
             }
 
             // pass scopes/claims to profile service
-            var subject = tokenResult.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject).Value;
+            var claims = tokenResult.Claims.Where(x => !Constants.Filters.ProtocolClaimsFilter.Contains(x.Type));
+            var subject = Principal.Create("UserInfo", claims.ToArray());
             var scopes = tokenResult.Claims.Where(c => c.Type == JwtClaimTypes.Scope).Select(c => c.Value);
 
             var payload = await _generator.ProcessAsync(subject, scopes, tokenResult.Client);

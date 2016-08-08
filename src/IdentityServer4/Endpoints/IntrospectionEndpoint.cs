@@ -4,15 +4,15 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
-using IdentityServer4.Core.Validation;
-using IdentityServer4.Core.ResponseHandling;
-using IdentityServer4.Core.Services;
+using IdentityServer4.Validation;
+using IdentityServer4.ResponseHandling;
+using IdentityServer4.Services;
 using Microsoft.Extensions.Logging;
-using IdentityServer4.Core.Extensions;
-using IdentityServer4.Core.Hosting;
-using IdentityServer4.Core.Endpoints.Results;
+using IdentityServer4.Extensions;
+using IdentityServer4.Hosting;
+using IdentityServer4.Endpoints.Results;
 
-namespace IdentityServer4.Core.Endpoints
+namespace IdentityServer4.Endpoints
 {
     public class IntrospectionEndpoint : IEndpoint
     {
@@ -33,16 +33,26 @@ namespace IdentityServer4.Core.Endpoints
 
         public async Task<IEndpointResult> ProcessAsync(IdentityServerContext context)
         {
+            _logger.LogTrace("Processing introspection request.");
+
             // validate HTTP
             if (context.HttpContext.Request.Method != "POST")
             {
+                _logger.LogWarning("Introspection endpoint only supports POST requests");
                 return new StatusCodeResult(405);
             }
+
+            return await ProcessIntrospectionRequestAsync(context);
+        }
+
+        private async Task<IEndpointResult> ProcessIntrospectionRequestAsync(IdentityServerContext context)
+        {
+            _logger.LogDebug("Starting introspection request.");
 
             var scopeResult = await _scopeSecretValidator.ValidateAsync(context.HttpContext);
             if (scopeResult.Scope == null)
             {
-                _logger.LogWarning("Scope unauthorized to call introspection endpoint. aborting.");
+                _logger.LogError("Scope unauthorized to call introspection endpoint. aborting.");
                 return new StatusCodeResult(401);
             }
 

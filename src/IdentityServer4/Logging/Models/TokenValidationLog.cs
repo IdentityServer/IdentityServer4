@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace IdentityServer4.Core.Logging
+namespace IdentityServer4.Logging
 {
     internal class TokenValidationLog
     {
@@ -20,5 +20,10 @@ namespace IdentityServer4.Core.Logging
 
         // both
         public Dictionary<string, object> Claims { get; set; }
+
+        public override string ToString()
+        {
+            return LogSerializer.Serialize(this);
+        }
     }
 }

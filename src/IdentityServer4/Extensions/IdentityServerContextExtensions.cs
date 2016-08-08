@@ -1,12 +1,14 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-using IdentityServer4.Core.Extensions;
+using IdentityModel;
+using IdentityServer4.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Hosting
+namespace IdentityServer4.Hosting
 {
     public static class IdentityServerContextExtensions
     {
@@ -14,19 +16,19 @@ namespace IdentityServer4.Core.Hosting
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            context.HttpContext.Items[Constants.OwinEnvironment.IdentityServerHost] = value;
+            context.HttpContext.Items[Constants.EnvironmentKeys.IdentityServerHost] = value;
         }
 
         public static void SetBasePath(this IdentityServerContext context, string value)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            context.HttpContext.Items[Constants.OwinEnvironment.IdentityServerBasePath] = value;
+            context.HttpContext.Items[Constants.EnvironmentKeys.IdentityServerBasePath] = value;
         }
 
         public static string GetHost(this IdentityServerContext context)
         {
-            return context.HttpContext.Items[Constants.OwinEnvironment.IdentityServerHost] as string;
+            return context.HttpContext.Items[Constants.EnvironmentKeys.IdentityServerHost] as string;
         }
 
         /// <summary>
@@ -36,7 +38,7 @@ namespace IdentityServer4.Core.Hosting
         /// <returns></returns>
         public static string GetBasePath(this IdentityServerContext context)
         {
-            return context.HttpContext.Items[Constants.OwinEnvironment.IdentityServerBasePath] as string;
+            return context.HttpContext.Items[Constants.EnvironmentKeys.IdentityServerBasePath] as string;
         }
 
         /// <summary>
@@ -60,6 +62,7 @@ namespace IdentityServer4.Core.Hosting
             {
                 uri = context.GetIdentityServerBaseUrl();
                 if (uri.EndsWith("/")) uri = uri.Substring(0, uri.Length - 1);
+                uri = uri.ToLowerInvariant();
             }
 
             return uri;
@@ -67,16 +70,21 @@ namespace IdentityServer4.Core.Hosting
 
         internal static async Task<ClaimsPrincipal> GetIdentityServerUserAsync(this IdentityServerContext context)
         {
-            return await context.HttpContext.Authentication.AuthenticateAsync(context.Options.AuthenticationOptions.EffectivePrimaryAuthenticationScheme);
+            return await context.HttpContext.Authentication.AuthenticateAsync(context.Options.AuthenticationOptions.EffectiveAuthenticationScheme);
         }
 
-        internal static void SetRequestId(this IdentityServerContext context, string id)
+        internal static string GetIdentityServerSignoutFrameCallbackUrl(this IdentityServerContext context)
         {
-            context.HttpContext.TraceIdentifier = id;
-        }
-        internal static string GetRequestId(this IdentityServerContext context)
-        {
-            return context.HttpContext.TraceIdentifier;
+            var sessionCookie = context.HttpContext.RequestServices.GetRequiredService<SessionCookie>();
+            var sid = sessionCookie.GetSessionId();
+            if (sid != null)
+            {
+                var signoutIframeUrl = context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.ProtocolRoutePaths.EndSessionCallback;
+                //TODO: update sid to OidcConstants when idmodel released
+                signoutIframeUrl = signoutIframeUrl.AddQueryString("sid" + "=" + sid);
+                return signoutIframeUrl;
+            }
+            return null;
         }
     }
 }

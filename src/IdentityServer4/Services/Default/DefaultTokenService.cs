@@ -2,9 +2,9 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel;
-using IdentityServer4.Core.Extensions;
-using IdentityServer4.Core.Hosting;
-using IdentityServer4.Core.Models;
+using IdentityServer4.Extensions;
+using IdentityServer4.Hosting;
+using IdentityServer4.Models;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -14,7 +14,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Services.Default
+namespace IdentityServer4.Services.Default
 {
     /// <summary>
     /// Default token service
@@ -44,7 +44,7 @@ namespace IdentityServer4.Core.Services.Default
         /// <summary>
         /// The signing service
         /// </summary>
-        protected readonly ITokenSigningService _signingService;
+        protected readonly ITokenCreationService _creationService;
 
         /// <summary>
         /// The events service
@@ -60,37 +60,17 @@ namespace IdentityServer4.Core.Services.Default
         /// <param name="options">The options.</param>
         /// <param name="claimsProvider">The claims provider.</param>
         /// <param name="tokenHandles">The token handles.</param>
-        /// <param name="signingService">The signing service.</param>
+        /// <param name="creationService">The signing service.</param>
         /// <param name="events">The events service.</param>
-        public DefaultTokenService(IdentityServerContext context, IClaimsProvider claimsProvider, ITokenHandleStore tokenHandles, ITokenSigningService signingService, IEventService events, ILoggerFactory loggerFactory)
+        public DefaultTokenService(IdentityServerContext context, IClaimsProvider claimsProvider, ITokenHandleStore tokenHandles, ITokenCreationService creationService, IEventService events, ILogger<DefaultTokenService> logger)
         {
-            _logger = loggerFactory.CreateLogger<DefaultTokenService>();
+            _logger = logger;
             _context = context;
             _claimsProvider = claimsProvider;
             _tokenHandles = tokenHandles;
-            _signingService = signingService;
+            _creationService = creationService;
             _events = events;
         }
-
-        // todo
-        ///// <summary>
-        ///// Initializes a new instance of the <see cref="DefaultTokenService" /> class.
-        ///// </summary>
-        ///// <param name="options">The options.</param>
-        ///// <param name="claimsProvider">The claims provider.</param>
-        ///// <param name="tokenHandles">The token handles.</param>
-        ///// <param name="signingService">The signing service.</param>
-        ///// <param name="events">The OWIN environment service.</param>
-        ///// <param name="owinEnvironmentService">The events service.</param>
-        //public DefaultTokenService(IdentityServerOptions options, IClaimsProvider claimsProvider, ITokenHandleStore tokenHandles, ITokenSigningService signingService, IEventService events, OwinEnvironmentService owinEnvironmentService)
-        //{
-        //    _options = options;
-        //    _claimsProvider = claimsProvider;
-        //    _tokenHandles = tokenHandles;
-        //    _signingService = signingService;
-        //    _events = events;
-        //    _owinEnvironmentService = owinEnvironmentService;
-        //}
 
         /// <summary>
         /// Creates an identity token.
@@ -101,7 +81,7 @@ namespace IdentityServer4.Core.Services.Default
         /// </returns>
         public virtual async Task<Token> CreateIdentityTokenAsync(TokenCreationRequest request)
         {
-            _logger.LogVerbose("Creating identity token");
+            _logger.LogTrace("Creating identity token");
             request.Validate();
 
             // host provided claims
@@ -164,7 +144,7 @@ namespace IdentityServer4.Core.Services.Default
         /// </returns>
         public virtual async Task<Token> CreateAccessTokenAsync(TokenCreationRequest request)
         {
-            _logger.LogVerbose("Creating access token");
+            _logger.LogTrace("Creating access token");
             request.Validate();
 
             var claims = new List<Claim>();
@@ -208,13 +188,13 @@ namespace IdentityServer4.Core.Services.Default
             {
                 if (token.Client.AccessTokenType == AccessTokenType.Jwt)
                 {
-                    _logger.LogVerbose("Creating JWT access token");
+                    _logger.LogTrace("Creating JWT access token");
 
-                    tokenResult = await _signingService.SignTokenAsync(token);
+                    tokenResult = await _creationService.CreateTokenAsync(token);
                 }
                 else
                 {
-                    _logger.LogVerbose("Creating reference access token");
+                    _logger.LogTrace("Creating reference access token");
 
                     var handle = CryptoRandom.CreateUniqueId();
                     await _tokenHandles.StoreAsync(handle, token);
@@ -224,9 +204,9 @@ namespace IdentityServer4.Core.Services.Default
             }
             else if (token.Type == OidcConstants.TokenTypes.IdentityToken)
             {
-                _logger.LogVerbose("Creating JWT identity token");
+                _logger.LogTrace("Creating JWT identity token");
 
-                tokenResult = await _signingService.SignTokenAsync(token);
+                tokenResult = await _creationService.CreateTokenAsync(token);
             }
             else
             {

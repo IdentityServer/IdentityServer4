@@ -2,12 +2,12 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel;
-using IdentityServer4.Core.Hosting;
-using IdentityServer4.Core.Models;
+using IdentityServer4.Hosting;
+using IdentityServer4.Models;
 using Microsoft.AspNet.Http;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Endpoints.Results
+namespace IdentityServer4.Endpoints.Results
 {
     internal class TokenResult : IEndpointResult
     {
@@ -26,7 +26,7 @@ namespace IdentityServer4.Core.Endpoints.Results
                 access_token = TokenResponse.AccessToken,
                 refresh_token = TokenResponse.RefreshToken,
                 expires_in = TokenResponse.AccessTokenLifetime,
-                token_type = OidcConstants.TokenTypes.Bearer
+                token_type = OidcConstants.TokenResponse.BearerTokenType
             };
 
             context.HttpContext.Response.SetNoCache();

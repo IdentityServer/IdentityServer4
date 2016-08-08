@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Mvc.Razor;
+﻿using Microsoft.AspNetCore.Mvc.Razor;
 using System.Collections.Generic;
 
 namespace Host.UI
@@ -9,8 +9,8 @@ namespace Host.UI
             ViewLocationExpanderContext context,
             IEnumerable<string> viewLocations)
         {
-            yield return "~/UI/{1}/Views/{0}.cshtml";
-            yield return "~/UI/SharedViews/{0}.cshtml";
+            yield return "~/ui/{1}/Views/{0}.cshtml";
+            yield return "~/ui/SharedViews/{0}.cshtml";
         }
 
         public void PopulateValues(ViewLocationExpanderContext context)

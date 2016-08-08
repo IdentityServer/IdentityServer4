@@ -2,39 +2,40 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel;
-using IdentityServer4.Core.Events;
-using IdentityServer4.Core.Models;
-using IdentityServer4.Core.Services;
+using IdentityServer4.Events;
+using IdentityServer4.Models;
+using IdentityServer4.Services;
 using System;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Core.Extensions
+namespace IdentityServer4.Extensions
 {
     internal static class IEventServiceExtensions
     {
-        public static async Task RaisePreLoginSuccessEventAsync(this IEventService events, 
-            string signInMessageId, SignInRequest signInRequest, AuthenticateResult authResult)
-        {
-            var evt = new Event<LoginDetails>(
-                EventConstants.Categories.Authentication,
-                "Pre-Login Success",
-                EventTypes.Success, 
-                EventConstants.Ids.PreLoginSuccess,
-                new LoginDetails {
-                    SubjectId = authResult.HasSubject ?  authResult.User.GetSubjectId() : null,
-                    Name = authResult.User.Identity.Name,
-                    SignInId = signInMessageId,
-                    SignInRequest = signInRequest,
-                    PartialLogin = authResult.IsPartialSignIn
-                });
+        //TODO
+        //public static async Task RaisePreLoginSuccessEventAsync(this IEventService events, 
+        //    string signInMessageId, AuthorizationRequest authorizationRequest, AuthenticateResult authResult)
+        //{
+        //    var evt = new Event<LoginDetails>(
+        //        EventConstants.Categories.Authentication,
+        //        "Pre-Login Success",
+        //        EventTypes.Success, 
+        //        EventConstants.Ids.PreLoginSuccess,
+        //        new LoginDetails {
+        //            SubjectId = authResult.HasSubject ?  authResult.User.GetSubjectId() : null,
+        //            Name = authResult.User.Identity.Name,
+        //            SignInId = signInMessageId,
+        //            AuthorizationRequest = authorizationRequest,
+        //            PartialLogin = authResult.IsPartialSignIn
+        //        });
 
-            await events.RaiseEventAsync(evt);
-        }
+        //    await events.RaiseEventAsync(evt);
+        //}
 
         public static async Task RaisePreLoginFailureEventAsync(this IEventService events, 
-            string signInMessageId, SignInRequest signInRequest, string error)
+            string signInMessageId, AuthorizationRequest authorizationRequest, string error)
         {
             var evt = new Event<LoginDetails>(
                 EventConstants.Categories.Authentication,
@@ -44,36 +45,37 @@ namespace IdentityServer4.Core.Extensions
                 new LoginDetails
                 {
                     SignInId = signInMessageId,
-                    SignInRequest = signInRequest,
+                    AuthorizationRequest = authorizationRequest,
                 }, 
                 error);
 
             await events.RaiseEventAsync(evt);
         }
 
-        public static async Task RaiseLocalLoginSuccessEventAsync(this IEventService events, 
-            string username, string signInMessageId, SignInRequest signInRequest, AuthenticateResult authResult)
-        {
-            var evt = new Event<LocalLoginDetails>(
-                EventConstants.Categories.Authentication,
-                "Local Login Success",
-                EventTypes.Success,
-                EventConstants.Ids.LocalLoginSuccess,
-                new LocalLoginDetails
-                {
-                    SubjectId = authResult.HasSubject ? authResult.User.GetSubjectId() : null,
-                    Name = authResult.User.Identity.Name,
-                    SignInId = signInMessageId,
-                    SignInRequest = signInRequest,
-                    PartialLogin = authResult.IsPartialSignIn,
-                    LoginUserName = username
-                });
+        //TODO
+        //public static async Task RaiseLocalLoginSuccessEventAsync(this IEventService events, 
+        //    string username, string signInMessageId, AuthorizationRequest authorizationRequest, AuthenticateResult authResult)
+        //{
+        //    var evt = new Event<LocalLoginDetails>(
+        //        EventConstants.Categories.Authentication,
+        //        "Local Login Success",
+        //        EventTypes.Success,
+        //        EventConstants.Ids.LocalLoginSuccess,
+        //        new LocalLoginDetails
+        //        {
+        //            SubjectId = authResult.HasSubject ? authResult.User.GetSubjectId() : null,
+        //            Name = authResult.User.Identity.Name,
+        //            SignInId = signInMessageId,
+        //            AuthorizationRequest = authorizationRequest,
+        //            PartialLogin = authResult.IsPartialSignIn,
+        //            LoginUserName = username
+        //        });
 
-            await events.RaiseEventAsync(evt);
-        }
+        //    await events.RaiseEventAsync(evt);
+        //}
 
         public static async Task RaiseLocalLoginFailureEventAsync(this IEventService events, 
-            string username, string signInMessageId, SignInRequest signInRequest, string error)
+            string username, string signInMessageId, AuthorizationRequest authorizationRequest, string error)
         {
             var evt = new Event<LocalLoginDetails>(
                 EventConstants.Categories.Authentication,
@@ -83,7 +85,7 @@ namespace IdentityServer4.Core.Extensions
                 new LocalLoginDetails
                 {
                     SignInId = signInMessageId,
-                    SignInRequest = signInRequest,
+                    AuthorizationRequest = authorizationRequest,
                     LoginUserName = username
                 }, 
                 error);
@@ -91,30 +93,31 @@ namespace IdentityServer4.Core.Extensions
             await events.RaiseEventAsync(evt);
         }
 
-        public static async Task RaiseExternalLoginSuccessEventAsync(this IEventService events, 
-            ExternalIdentity externalIdentity, string signInMessageId, SignInRequest signInRequest, AuthenticateResult authResult)
-        {
-            var evt = new Event<ExternalLoginDetails>(
-                EventConstants.Categories.Authentication,
-                "External Login Success",
-                EventTypes.Success,
-                EventConstants.Ids.ExternalLoginSuccess,
-                new ExternalLoginDetails
-                {
-                    SubjectId = authResult.HasSubject ? authResult.User.GetSubjectId() : null,
-                    Name = authResult.User.Identity.Name,
-                    SignInId = signInMessageId,
-                    SignInRequest = signInRequest,
-                    PartialLogin = authResult.IsPartialSignIn,
-                    Provider = externalIdentity.Provider,
-                    ProviderId = externalIdentity.ProviderId,
-                });
+        //TODO
+        //public static async Task RaiseExternalLoginSuccessEventAsync(this IEventService events, 
+        //    ExternalIdentity externalIdentity, string signInMessageId, AuthorizationRequest authorizationRequest, AuthenticateResult authResult)
+        //{
+        //    var evt = new Event<ExternalLoginDetails>(
+        //        EventConstants.Categories.Authentication,
+        //        "External Login Success",
+        //        EventTypes.Success,
+        //        EventConstants.Ids.ExternalLoginSuccess,
+        //        new ExternalLoginDetails
+        //        {
+        //            SubjectId = authResult.HasSubject ? authResult.User.GetSubjectId() : null,
+        //            Name = authResult.User.Identity.Name,
+        //            SignInId = signInMessageId,
+        //            AuthorizationRequest = authorizationRequest,
+        //            PartialLogin = authResult.IsPartialSignIn,
+        //            Provider = externalIdentity.Provider,
+        //            ProviderId = externalIdentity.ProviderId,
+        //        });
 
-            await events.RaiseEventAsync(evt);
-        }
+        //    await events.RaiseEventAsync(evt);
+        //}
 
         public static async Task RaiseExternalLoginFailureEventAsync(this IEventService events, 
-            ExternalIdentity externalIdentity, string signInMessageId, SignInRequest signInRequest, string error)
+            ExternalIdentity externalIdentity, string signInMessageId, AuthorizationRequest authorizationRequest, string error)
         {
             var evt = new Event<ExternalLoginDetails>(
                 EventConstants.Categories.Authentication,
@@ -124,7 +127,7 @@ namespace IdentityServer4.Core.Extensions
                 new ExternalLoginDetails
                 {
                     SignInId = signInMessageId,
-                    SignInRequest = signInRequest,
+                    AuthorizationRequest = authorizationRequest,
                     Provider = externalIdentity.Provider,
                     ProviderId = externalIdentity.ProviderId,
                 }, 
@@ -180,7 +183,7 @@ namespace IdentityServer4.Core.Extensions
         }
 
         public static async Task RaisePartialLoginCompleteEventAsync(this IEventService events, 
-            ClaimsIdentity subject, string signInMessageId, SignInRequest signInRequest)
+            ClaimsIdentity subject, string signInMessageId, AuthorizationRequest authorizationRequest)
         {
             var evt = new Event<LoginDetails>(
                 EventConstants.Categories.Authentication,
@@ -192,14 +195,14 @@ namespace IdentityServer4.Core.Extensions
                     SubjectId = subject.GetSubjectId(),
                     Name = subject.Name,
                     SignInId = signInMessageId,
-                    SignInRequest = signInRequest
+                    AuthorizationRequest = authorizationRequest
                 });
 
             await events.RaiseEventAsync(evt);
         }
 
         public static async Task RaiseLogoutEventAsync(this IEventService events, 
-            ClaimsPrincipal subject, string signOutId, SignOutRequest signOutMessage)
+            ClaimsPrincipal subject, string signOutId, LogoutRequest signOutMessage)
         {
             var evt = new Event<LogoutDetails>(
                 EventConstants.Categories.Authentication,
