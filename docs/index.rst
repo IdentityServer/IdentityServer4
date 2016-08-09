@@ -20,8 +20,8 @@ native/mobile apps.
 
 Federation Gateway
 ^^^^^^^^^^^^^^^^^^
-Support for external identity providers like Azure Active Directoy, Google, Facebook etc.
-This shields your applicatios from the details of how to connect to these external providers.
+Support for external identity providers like Azure Active Directory, Google, Facebook etc.
+This shields your applications from the details of how to connect to these external providers.
 
 Focus on Customization
 ^^^^^^^^^^^^^^^^^^^^^^
