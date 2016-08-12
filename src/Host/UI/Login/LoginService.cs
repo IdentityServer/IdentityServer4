@@ -10,9 +10,9 @@ namespace Host.UI.Login
 {
     public class LoginService
     {
-        private readonly List<InMemoryUser> _users;
+        private readonly ICollection<InMemoryUser> _users;
 
-        public LoginService(List<InMemoryUser> users)
+        public LoginService(ICollection<InMemoryUser> users)
         {
             _users = users;
         }
