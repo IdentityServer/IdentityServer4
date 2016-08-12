@@ -17,13 +17,13 @@ namespace IdentityServer4.Services.InMemory
     /// </summary>
     public class InMemoryProfileService : IProfileService
     {
-        readonly List<InMemoryUser> _users;
+        readonly IEnumerable<InMemoryUser> _users;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InMemoryUserService"/> class.
         /// </summary>
         /// <param name="users">The users.</param>
-        public InMemoryProfileService(List<InMemoryUser> users)
+        public InMemoryProfileService(IEnumerable<InMemoryUser> users)
         {
             _users = users;
         }
