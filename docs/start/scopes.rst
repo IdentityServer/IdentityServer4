@@ -10,7 +10,7 @@ That could be identity information of your users, like profile data or email add
 
 Defining the minimal scope for OpenID Connect
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-OpenID Connect requires a scope with a name of `openid`. Since this scope is defined in the `OIDC specification <'http://openid.net/connect/>`_ we have built-in support for it via the `StandardScopes` class.
+OpenID Connect requires a scope with a name of `openid`. Since this scope is defined in the `OIDC specification <http://openid.net/connect/>`_ we have built-in support for it via the `StandardScopes` class.
 
 All of our samples define a class called `Scopes` with a method called `Get`. In this method you simply return
 a list of scopes you want to support in your identityserver. This list will be later used to configure the 
