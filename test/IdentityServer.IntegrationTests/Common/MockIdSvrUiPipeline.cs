@@ -13,6 +13,9 @@ using IdentityModel.Client;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
 using IdentityServer4.Validation;
+using FluentAssertions;
+using System.Net;
+using System.Net.Http;
 
 namespace IdentityServer4.Tests.Common
 {
@@ -44,7 +47,8 @@ namespace IdentityServer4.Tests.Common
             if (CookieAuthenticationScheme != null)
             {
                 this.Options.AuthenticationOptions.AuthenticationScheme = CookieAuthenticationScheme;
-                app.UseCookieAuthentication(new CookieAuthenticationOptions {
+                app.UseCookieAuthentication(new CookieAuthenticationOptions
+                {
                     AuthenticationScheme = CookieAuthenticationScheme
                 });
             }
@@ -199,6 +203,8 @@ namespace IdentityServer4.Tests.Common
             string loginHint = null,
             string acrValues = null,
             string responseMode = null,
+            string codeChallenge = null,
+            string codeChallengeMethod = null,
             object extra = null)
         {
             var url = new AuthorizeRequest(AuthorizeEndpoint).CreateAuthorizeUrl(
@@ -211,6 +217,8 @@ namespace IdentityServer4.Tests.Common
                 loginHint: loginHint,
                 acrValues: acrValues,
                 responseMode: responseMode,
+                codeChallenge: codeChallenge,
+                codeChallengeMethod: codeChallengeMethod,
                 extra: extra);
             return url;
         }
@@ -218,6 +226,32 @@ namespace IdentityServer4.Tests.Common
         public IdentityModel.Client.AuthorizeResponse ParseAuthorizationResponseUrl(string url)
         {
             return new IdentityModel.Client.AuthorizeResponse(url);
+        }
+
+        public IdentityModel.Client.AuthorizeResponse RequestAuthorizationEndpoint(
+            string clientId,
+            string responseType,
+            string scope = null,
+            string redirectUri = null,
+            string state = null,
+            string nonce = null,
+            string loginHint = null,
+            string acrValues = null,
+            string responseMode = null,
+            string codeChallenge = null,
+            string codeChallengeMethod = null,
+            object extra = null)
+        {
+            var old = BrowserClient.AllowAutoRedirect;
+            BrowserClient.AllowAutoRedirect = false;
+
+            var url = CreateAuthorizeUrl(clientId, responseType, scope, redirectUri, state, nonce, loginHint, acrValues, responseMode, codeChallenge, codeChallengeMethod, extra);
+            var result = BrowserClient.GetAsync(url).Result;
+            result.StatusCode.Should().Be(HttpStatusCode.Found);
+
+            BrowserClient.AllowAutoRedirect = old;
+
+            return new IdentityModel.Client.AuthorizeResponse(result.Headers.Location.ToString());
         }
     }
 }
