@@ -9,7 +9,7 @@ namespace IdentityServer4.Endpoints.Results
 {
     interface IAuthorizeEndpointResultFactory
     {
-        Task<IEndpointResult> CreateErrorResultAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request);
+        Task<IEndpointResult> CreateErrorResultAsync(ValidatedAuthorizeRequest request, ErrorTypes errorType, string error, string description = null);
         Task<IEndpointResult> CreateLoginResultAsync(ValidatedAuthorizeRequest request);
         Task<IEndpointResult> CreateConsentResultAsync(ValidatedAuthorizeRequest request);
         Task<IEndpointResult> CreateAuthorizeResultAsync(ValidatedAuthorizeRequest request);
