@@ -64,7 +64,7 @@ namespace UnitTests.Endpoints.Results
         [Trait("Category", Category)]
         public async Task CreateErrorResultAsync_should_return_error_page()
         {
-            var result = await _subject.CreateErrorResultAsync(ErrorTypes.User, "error", _validatedRequest);
+            var result = await _subject.CreateErrorResultAsync(_validatedRequest, ErrorTypes.User, "error");
 
             result.Should().BeAssignableTo<ErrorPageResult>();
         }
@@ -76,7 +76,7 @@ namespace UnitTests.Endpoints.Results
             _context.HttpContext.TraceIdentifier = "555";
             _stubLocalizationService.Result = "translation";
 
-            var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(ErrorTypes.User, "error", _validatedRequest));
+            var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(_validatedRequest, ErrorTypes.User, "error"));
 
             var model = _mockErrorMessageStore.Messages[result.ParamValue];
             model.Data.ErrorCode.Should().Be("error");
@@ -90,7 +90,7 @@ namespace UnitTests.Endpoints.Results
         {
             _stubLocalizationService.Result = null;
 
-            var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(ErrorTypes.User, "error", _validatedRequest));
+            var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(_validatedRequest, ErrorTypes.User, "error"));
 
             var model = _mockErrorMessageStore.Messages[result.ParamValue];
             model.Data.ErrorDescription.Should().Be("error");
@@ -100,7 +100,7 @@ namespace UnitTests.Endpoints.Results
         [Trait("Category", Category)]
         public async Task CreateErrorResultAsync_user_error_should_not_have_return_info()
         {
-            var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(ErrorTypes.User, "error", _validatedRequest));
+            var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(_validatedRequest, ErrorTypes.User, "error"));
 
             var model = _mockErrorMessageStore.Messages[result.ParamValue];
             model.Data.ReturnInfo.Should().BeNull();
@@ -112,7 +112,7 @@ namespace UnitTests.Endpoints.Results
         {
             _validatedRequest.RedirectUri = "http://client/callback";
 
-            var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(ErrorTypes.Client, "error", _validatedRequest));
+            var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(_validatedRequest, ErrorTypes.Client, "error"));
 
             var model = _mockErrorMessageStore.Messages[result.ParamValue];
             model.Data.ReturnInfo.Should().NotBeNull();
@@ -127,7 +127,7 @@ namespace UnitTests.Endpoints.Results
             _validatedRequest.RedirectUri = "http://client/callback";
             _validatedRequest.ResponseMode = "form_post";
 
-            var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(ErrorTypes.Client, "error", _validatedRequest));
+            var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(_validatedRequest, ErrorTypes.Client, "error"));
 
             var model = _mockErrorMessageStore.Messages[result.ParamValue];
             model.Data.ReturnInfo.IsPost.Should().BeTrue();
@@ -143,7 +143,7 @@ namespace UnitTests.Endpoints.Results
             _validatedRequest.RedirectUri = "http://client/callback";
             _validatedRequest.ResponseMode = "fragment";
 
-            var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(ErrorTypes.Client, "error", _validatedRequest));
+            var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(_validatedRequest, ErrorTypes.Client, "error"));
 
             var model = _mockErrorMessageStore.Messages[result.ParamValue];
             model.Data.ReturnInfo.IsPost.Should().BeFalse();
@@ -159,7 +159,7 @@ namespace UnitTests.Endpoints.Results
             _validatedRequest.RedirectUri = "http://client/callback";
             _validatedRequest.ResponseMode = "query";
 
-            var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(ErrorTypes.Client, "error", _validatedRequest));
+            var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(_validatedRequest, ErrorTypes.Client, "error"));
 
             var model = _mockErrorMessageStore.Messages[result.ParamValue];
             model.Data.ReturnInfo.IsPost.Should().BeFalse();
@@ -174,7 +174,7 @@ namespace UnitTests.Endpoints.Results
             _validatedRequest.ResponseMode = "unknown";
 
             await Assert.ThrowsAsync<InvalidOperationException>(async () =>
-                await _subject.CreateErrorResultAsync(ErrorTypes.Client, "error", _validatedRequest));
+                await _subject.CreateErrorResultAsync(_validatedRequest, ErrorTypes.Client, "error"));
         }
 
 
@@ -186,7 +186,7 @@ namespace UnitTests.Endpoints.Results
             _validatedRequest.RedirectUri = "http://client/callback";
             _validatedRequest.PromptMode = "none";
 
-            var result = await _subject.CreateErrorResultAsync(ErrorTypes.Client, "access_denied", _validatedRequest);
+            var result = await _subject.CreateErrorResultAsync(_validatedRequest, ErrorTypes.Client, "access_denied");
 
             (result is AuthorizeRedirectResult || result is AuthorizeFormPostResult).Should().BeTrue();
         }
@@ -200,7 +200,7 @@ namespace UnitTests.Endpoints.Results
             _validatedRequest.RedirectUri = "http://client/callback";
             _validatedRequest.PromptMode = "none";
 
-            var result = await _subject.CreateErrorResultAsync(ErrorTypes.Client, "login_required", _validatedRequest);
+            var result = await _subject.CreateErrorResultAsync(_validatedRequest, ErrorTypes.Client, "login_required");
 
             result.Should().BeAssignableTo<ErrorPageResult>();
         }
@@ -215,7 +215,7 @@ namespace UnitTests.Endpoints.Results
             _validatedRequest.PromptMode = "none";
             _validatedRequest.Client.AllowPromptNone = true;
 
-            var result = await _subject.CreateErrorResultAsync(ErrorTypes.Client, error, _validatedRequest);
+            var result = await _subject.CreateErrorResultAsync(_validatedRequest, ErrorTypes.Client, error);
 
             (result is AuthorizeRedirectResult || result is AuthorizeFormPostResult).Should().BeTrue();
         }
@@ -229,7 +229,7 @@ namespace UnitTests.Endpoints.Results
             _validatedRequest.PromptMode = "none";
             _validatedRequest.Client.AllowPromptNone = true;
 
-            var result = await _subject.CreateErrorResultAsync(ErrorTypes.Client, "foo", _validatedRequest);
+            var result = await _subject.CreateErrorResultAsync(_validatedRequest, ErrorTypes.Client, "foo");
 
             result.Should().BeAssignableTo<ErrorPageResult>();
         }

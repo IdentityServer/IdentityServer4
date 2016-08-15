@@ -228,7 +228,7 @@ namespace IdentityServer4.Tests.Common
             return new IdentityModel.Client.AuthorizeResponse(url);
         }
 
-        public IdentityModel.Client.AuthorizeResponse RequestAuthorizationEndpoint(
+        public async Task<IdentityModel.Client.AuthorizeResponse> RequestAuthorizationEndpointAsync(
             string clientId,
             string responseType,
             string scope = null,
@@ -246,12 +246,23 @@ namespace IdentityServer4.Tests.Common
             BrowserClient.AllowAutoRedirect = false;
 
             var url = CreateAuthorizeUrl(clientId, responseType, scope, redirectUri, state, nonce, loginHint, acrValues, responseMode, codeChallenge, codeChallengeMethod, extra);
-            var result = BrowserClient.GetAsync(url).Result;
+            var result = await BrowserClient.GetAsync(url);
             result.StatusCode.Should().Be(HttpStatusCode.Found);
 
             BrowserClient.AllowAutoRedirect = old;
 
-            return new IdentityModel.Client.AuthorizeResponse(result.Headers.Location.ToString());
+            var redirect = result.Headers.Location.ToString();
+            if (redirect.StartsWith(IdentityServerPipeline.ErrorPage))
+            {
+                await BrowserClient.GetAsync(redirect);
+                redirect = ErrorMessage?.ReturnInfo?.Uri;
+                if (redirect.EndsWith("#_=_"))
+                {
+                    redirect = redirect.Substring(0, redirect.Length - 4);
+                }
+            }
+
+            return new IdentityModel.Client.AuthorizeResponse(redirect);
         }
     }
 }

@@ -77,7 +77,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
 
             var nonce = Guid.NewGuid().ToString();
             var code_challenge = code_verifier;
-            var authorizeResponse = _pipeline.RequestAuthorizationEndpoint(client_id,
+            var authorizeResponse = await _pipeline.RequestAuthorizationEndpointAsync(client_id,
                 response_type,
                 Constants.StandardScopes.OpenId,
                 redirect_uri,
@@ -107,7 +107,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
 
             var nonce = Guid.NewGuid().ToString();
             var code_challenge = Sha256OfCodeVerifier(code_verifier);
-            var authorizeResponse = _pipeline.RequestAuthorizationEndpoint(client_id,
+            var authorizeResponse = await _pipeline.RequestAuthorizationEndpointAsync(client_id,
                 response_type,
                 Constants.StandardScopes.OpenId,
                 redirect_uri,
@@ -129,7 +129,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
             tokenResponse.ExpiresIn.Should().BeGreaterThan(0);
         }
 
-        [Fact(Skip = "unsupported response mode")]
+        [Fact(Skip = "need url decoding on error_message")]
         [Trait("Category", Category)]
         public async Task Authorize_request_needs_code_challenge()
         {
@@ -137,7 +137,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
 
             var nonce = Guid.NewGuid().ToString();
             var code_challenge = code_verifier;
-            var authorizeResponse = _pipeline.RequestAuthorizationEndpoint(client_id,
+            var authorizeResponse = await _pipeline.RequestAuthorizationEndpointAsync(client_id,
                 response_type,
                 Constants.StandardScopes.OpenId,
                 redirect_uri,
@@ -145,10 +145,10 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
 
             authorizeResponse.IsError.Should().BeTrue();
             authorizeResponse.Error.Should().Be(AuthorizeErrors.InvalidRequest);
-            authorizeResponse.Values["error_description"].Should().Be("code challenge required");
+            authorizeResponse.Values["error_description"].Should().Be("code%20challenge%20required");
         }
 
-        [Fact(Skip = "unsupported response mode")]
+        [Fact]
         [Trait("Category", Category)]
         public async Task Authorize_request_code_challenge_cannot_be_too_short()
         {
@@ -156,7 +156,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
 
             var nonce = Guid.NewGuid().ToString();
             var code_challenge = code_verifier;
-            var authorizeResponse = _pipeline.RequestAuthorizationEndpoint(client_id,
+            var authorizeResponse = await _pipeline.RequestAuthorizationEndpointAsync(client_id,
                 response_type,
                 Constants.StandardScopes.OpenId,
                 redirect_uri,
@@ -167,7 +167,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
             authorizeResponse.Error.Should().Be(AuthorizeErrors.InvalidRequest);
         }
 
-        [Fact(Skip = "unsupported response mode")]
+        [Fact]
         [Trait("Category", Category)]
         public async Task Authorize_request_code_challenge_cannot_be_too_long()
         {
@@ -175,7 +175,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
 
             var nonce = Guid.NewGuid().ToString();
             var code_challenge = code_verifier;
-            var authorizeResponse = _pipeline.RequestAuthorizationEndpoint(client_id,
+            var authorizeResponse = await _pipeline.RequestAuthorizationEndpointAsync(client_id,
                 response_type,
                 Constants.StandardScopes.OpenId,
                 redirect_uri,
@@ -187,7 +187,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
             authorizeResponse.Error.Should().Be(AuthorizeErrors.InvalidRequest);
         }
 
-        [Fact(Skip = "unsupported response mode")]
+        [Fact(Skip = "need url decoding on error_message")]
         [Trait("Category", Category)]
         public async Task Authorize_request_needs_supported_code_challenge_method()
         {
@@ -195,7 +195,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
 
             var nonce = Guid.NewGuid().ToString();
             var code_challenge = code_verifier;
-            var authorizeResponse = _pipeline.RequestAuthorizationEndpoint(client_id,
+            var authorizeResponse = await _pipeline.RequestAuthorizationEndpointAsync(client_id,
                 response_type,
                 Constants.StandardScopes.OpenId,
                 redirect_uri,
@@ -206,7 +206,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
 
             authorizeResponse.IsError.Should().BeTrue();
             authorizeResponse.Error.Should().Be(AuthorizeErrors.InvalidRequest);
-            authorizeResponse.Values["error_description"].Should().Be("transform algorithm not supported");
+            authorizeResponse.Values["error_description"].Should().Be("transform%20algorithm%20not%20supported");
         }
 
         [Fact]
@@ -217,7 +217,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
 
             var nonce = Guid.NewGuid().ToString();
             var code_challenge = code_verifier;
-            var authorizeResponse = _pipeline.RequestAuthorizationEndpoint(client_id,
+            var authorizeResponse = await _pipeline.RequestAuthorizationEndpointAsync(client_id,
                 response_type,
                 Constants.StandardScopes.OpenId,
                 redirect_uri,
@@ -244,7 +244,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
 
             var nonce = Guid.NewGuid().ToString();
             var code_challenge = code_verifier;
-            var authorizeResponse = _pipeline.RequestAuthorizationEndpoint(client_id,
+            var authorizeResponse = await _pipeline.RequestAuthorizationEndpointAsync(client_id,
                 response_type,
                 Constants.StandardScopes.OpenId,
                 redirect_uri,
@@ -272,7 +272,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
 
             var nonce = Guid.NewGuid().ToString();
             var code_challenge = code_verifier;
-            var authorizeResponse = _pipeline.RequestAuthorizationEndpoint(client_id,
+            var authorizeResponse = await _pipeline.RequestAuthorizationEndpointAsync(client_id,
                 response_type,
                 Constants.StandardScopes.OpenId,
                 redirect_uri,
@@ -300,7 +300,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
 
             var nonce = Guid.NewGuid().ToString();
             var code_challenge = code_verifier;
-            var authorizeResponse = _pipeline.RequestAuthorizationEndpoint(client_id,
+            var authorizeResponse = await _pipeline.RequestAuthorizationEndpointAsync(client_id,
                 response_type,
                 Constants.StandardScopes.OpenId,
                 redirect_uri,

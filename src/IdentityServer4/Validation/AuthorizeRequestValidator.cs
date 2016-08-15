@@ -193,11 +193,14 @@ namespace IdentityServer4.Validation
             }
 
             request.ResponseType = responseType;
-
+            
             //////////////////////////////////////////////////////////
             // match response_type to grant type
             //////////////////////////////////////////////////////////
             request.GrantType = Constants.ResponseTypeToGrantTypeMapping[request.ResponseType];
+
+            // set default response mode for flow; this is needed for any client error processing below
+            request.ResponseMode = Constants.AllowedResponseModesForGrantType[request.GrantType].First();
 
             //////////////////////////////////////////////////////////
             // check if flow is allowed at authorize endpoint
@@ -231,9 +234,6 @@ namespace IdentityServer4.Validation
             //////////////////////////////////////////////////////////
             // check response_mode parameter and set response_mode
             //////////////////////////////////////////////////////////
-
-            // set default response mode for flow first
-            request.ResponseMode = Constants.AllowedResponseModesForGrantType[request.GrantType].First();
 
             // check if response_mode parameter is present and valid
             var responseMode = request.Raw.Get(OidcConstants.AuthorizeRequest.ResponseMode);

@@ -96,7 +96,7 @@ namespace IdentityServer4.Endpoints
             if (user == null)
             {
                 _logger.LogError("User is not authenticated.");
-                return await ErrorPageAsync(ErrorTypes.User, nameof(Messages.UnexpectedError), null);
+                return await ErrorPageAsync(null, ErrorTypes.User, nameof(Messages.UnexpectedError));
             }
 
             var parameters = context.HttpContext.Request.Query.AsNameValueCollection();
@@ -115,7 +115,7 @@ namespace IdentityServer4.Endpoints
             if (user == null)
             {
                 _logger.LogError("User is not authenticated.");
-                return await ErrorPageAsync(ErrorTypes.User, nameof(Messages.UnexpectedError), null);
+                return await ErrorPageAsync(null, ErrorTypes.User, nameof(Messages.UnexpectedError));
             }
 
             var parameters = context.HttpContext.Request.Query.AsNameValueCollection();
@@ -125,12 +125,12 @@ namespace IdentityServer4.Endpoints
             if (consent == null)
             {
                 _logger.LogError("consent message is missing.");
-                return await ErrorPageAsync(ErrorTypes.User, nameof(Messages.UnexpectedError), null);
+                return await ErrorPageAsync(null, ErrorTypes.User, nameof(Messages.UnexpectedError));
             }
             if (consent.Data == null)
             {
                 _logger.LogError("consent message is missing Consent data.");
-                return await ErrorPageAsync(ErrorTypes.User, nameof(Messages.UnexpectedError), null);
+                return await ErrorPageAsync(null, ErrorTypes.User, nameof(Messages.UnexpectedError));
             }
 
             var result = await ProcessAuthorizeRequestAsync(parameters, user, consent.Data);
@@ -157,9 +157,10 @@ namespace IdentityServer4.Endpoints
             if (result.IsError)
             {
                 return await ErrorPageAsync(
+                    result.ValidatedRequest,
                     result.ErrorType, 
-                    result.Error, 
-                    result.ValidatedRequest);
+                    result.Error,
+                    result.ErrorDescription);
             }
 
             var request = result.ValidatedRequest;
@@ -169,9 +170,9 @@ namespace IdentityServer4.Endpoints
             if (interactionResult.IsError)
             {
                 return await ErrorPageAsync(
+                    request,
                     interactionResult.Error.ErrorType,
-                    interactionResult.Error.Error,
-                    request);
+                    interactionResult.Error.Error);
             }
             if (interactionResult.IsLogin)
             {
@@ -209,14 +210,15 @@ namespace IdentityServer4.Endpoints
             return result;
         }
 
-        async Task<IEndpointResult> ErrorPageAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request)
+        async Task<IEndpointResult> ErrorPageAsync(ValidatedAuthorizeRequest request, ErrorTypes errorType, string error, string description = null)
         {
             _logger.LogDebug("Showing error page");
 
             var result = await _resultGenerator.CreateErrorResultAsync(
+                request,
                 errorType,
                 error,
-                request);
+                description);
 
             await RaiseFailureEventAsync(error);
 

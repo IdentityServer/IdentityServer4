@@ -58,7 +58,7 @@ namespace IdentityServer4.Endpoints.Results
             return Task.FromResult<IEndpointResult>(result);
         }
 
-        public async Task<IEndpointResult> CreateErrorResultAsync(ErrorTypes errorType, string error, ValidatedAuthorizeRequest request)
+        public async Task<IEndpointResult> CreateErrorResultAsync(ValidatedAuthorizeRequest request, ErrorTypes errorType, string error, string errorDescription = null)
         {
             if (errorType == ErrorTypes.Client && request == null)
             {
@@ -74,6 +74,7 @@ namespace IdentityServer4.Endpoints.Results
                     Request = request,
                     IsError = true,
                     Error = error,
+                    ErrorDescription = errorDescription,
                     State = request.State,
                     RedirectUri = request.RedirectUri
                 };
