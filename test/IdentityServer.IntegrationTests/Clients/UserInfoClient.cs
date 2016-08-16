@@ -45,7 +45,7 @@ namespace IdentityServer4.Tests.Clients
             response.IsError.Should().BeFalse();
 
             var userInfoclient = new UserInfoClient(
-                new Uri(UserInfoEndpoint),
+                UserInfoEndpoint,
                 response.AccessToken,
                 _handler);
 
@@ -71,7 +71,7 @@ namespace IdentityServer4.Tests.Clients
             response.IsError.Should().BeFalse();
 
             var userInfoclient = new UserInfoClient(
-                new Uri(UserInfoEndpoint),
+                UserInfoEndpoint,
                 response.AccessToken,
                 _handler);
 
@@ -94,7 +94,7 @@ namespace IdentityServer4.Tests.Clients
             response.IsError.Should().BeFalse();
 
             var userInfoclient = new UserInfoClient(
-                new Uri(UserInfoEndpoint),
+                UserInfoEndpoint,
                 response.AccessToken,
                 _handler);
 
@@ -117,7 +117,7 @@ namespace IdentityServer4.Tests.Clients
             response.IsError.Should().BeFalse();
 
             var userInfoclient = new UserInfoClient(
-                new Uri(UserInfoEndpoint),
+                UserInfoEndpoint,
                 response.AccessToken,
                 _handler);
 

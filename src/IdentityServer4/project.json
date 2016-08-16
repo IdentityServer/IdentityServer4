@@ -16,7 +16,7 @@
     "Microsoft.AspNetCore.Cors": "1.0.0",
     "Microsoft.AspNetCore.Authentication.Cookies": "1.0.0",
     "Microsoft.IdentityModel.Protocols.OpenIdConnect": "2.0.0",
-    "IdentityModel": "2.0.0-*"
+    "IdentityModel": "2.0.0-beta6"
   },
 
   "frameworks": {
