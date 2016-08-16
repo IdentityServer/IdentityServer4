@@ -7,9 +7,6 @@ using IdentityServer4.Services.InMemory;
 using IdentityServer4.Tests.Common;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -129,7 +126,6 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
             tokenResponse.ExpiresIn.Should().BeGreaterThan(0);
         }
 
-        [Fact(Skip = "need url decoding on error_message")]
         [Trait("Category", Category)]
         public async Task Authorize_request_needs_code_challenge()
         {
@@ -145,7 +141,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
 
             authorizeResponse.IsError.Should().BeTrue();
             authorizeResponse.Error.Should().Be(AuthorizeErrors.InvalidRequest);
-            authorizeResponse.Values["error_description"].Should().Be("code%20challenge%20required");
+            authorizeResponse.ErrorDescription.Should().Be("code challenge required");
         }
 
         [Fact]
@@ -187,7 +183,6 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
             authorizeResponse.Error.Should().Be(AuthorizeErrors.InvalidRequest);
         }
 
-        [Fact(Skip = "need url decoding on error_message")]
         [Trait("Category", Category)]
         public async Task Authorize_request_needs_supported_code_challenge_method()
         {
@@ -206,7 +201,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
 
             authorizeResponse.IsError.Should().BeTrue();
             authorizeResponse.Error.Should().Be(AuthorizeErrors.InvalidRequest);
-            authorizeResponse.Values["error_description"].Should().Be("transform%20algorithm%20not%20supported");
+            authorizeResponse.ErrorDescription.Should().Be("transform algorithm not supported");
         }
 
         [Fact]
