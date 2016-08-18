@@ -126,11 +126,11 @@ namespace IdentityServer4.Tests.Endpoints.Introspection
             response.IsError.Should().Be(false);
 
             var scopes = from c in response.Claims
-                         where c.Item1 == "scope"
+                         where c.Type == "scope"
                          select c;
 
             scopes.Count().Should().Be(1);
-            scopes.First().Item2.Should().Be("api1");
+            scopes.First().Value.Should().Be("api1");
         }
 
         [Fact]
@@ -160,7 +160,7 @@ namespace IdentityServer4.Tests.Endpoints.Introspection
             response.IsError.Should().Be(false);
 
             var scopes = from c in response.Claims
-                         where c.Item1 == "scope"
+                         where c.Type == "scope"
                          select c;
 
             scopes.Count().Should().Be(3);
@@ -193,11 +193,11 @@ namespace IdentityServer4.Tests.Endpoints.Introspection
             response.IsError.Should().Be(false);
 
             var scopes = from c in response.Claims
-                         where c.Item1 == "scope"
+                         where c.Type == "scope"
                          select c;
 
             scopes.Count().Should().Be(1);
-            scopes.First().Item2.Should().Be("api1");
+            scopes.First().Value.Should().Be("api1");
         }
 
         [Fact]
