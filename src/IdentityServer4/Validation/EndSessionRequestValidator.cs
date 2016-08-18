@@ -66,7 +66,7 @@ namespace IdentityServer4.Validation
 
                 // validate sub claim against currently logged on user
                 var subClaim = tokenValidationResult.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject);
-                if (subClaim != null && subject.Identity.IsAuthenticated)
+                if (subClaim != null && isAuthenticated)
                 {
                     if (subject.GetSubjectId() != subClaim.Value)
                     {
