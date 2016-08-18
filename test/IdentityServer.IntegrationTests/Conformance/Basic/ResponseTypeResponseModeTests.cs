@@ -86,27 +86,27 @@ namespace IdentityServer4.Tests.Conformance.Basic
             authorization.State.Should().Be(state);
         }
 
-        // todo brock: update to new behavior
-        //[Fact]
-        //[Trait("Category", Category)]
-        //public void Request_missing_response_type_rejected()
-        //{
-        //    host.Login();
+       [Fact(Skip = "Not sure if this is following conformance since we don't redirect back to client")]
+       [Trait("Category", Category)]
+        public async Task Request_missing_response_type_rejected()
+        {
+            await _mockPipeline.LoginAsync("bob");
 
-        //    var state = Guid.NewGuid().ToString();
-        //    var nonce = Guid.NewGuid().ToString();
+            var state = Guid.NewGuid().ToString();
+            var nonce = Guid.NewGuid().ToString();
 
-        //    var url = host.GetAuthorizeUrl(client_id, redirect_uri, "openid", /*response_type*/ null, state, nonce);
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: "code_client",
+                responseType: null,
+                scope: "openid",
+                redirectUri: "https://code_client/callback",
+                state: state,
+                nonce: nonce);
 
-        //    var result = host.Client.GetAsync(url).Result;
-        //    result.StatusCode.Should().Be(HttpStatusCode.Found);
-        //    result.Headers.Location.AbsoluteUri.Should().Contain("#");
+            _mockPipeline.BrowserClient.AllowAutoRedirect = true;
+            var response = await _mockPipeline.BrowserClient.GetAsync(url);
 
-        //    var query = result.Headers.Location.ParseHashFragment();
-        //    query.AllKeys.Should().Contain("state");
-        //    query["state"].Should().Be(state);
-        //    query.AllKeys.Should().Contain("error");
-        //    query["error"].Should().Be("unsupported_response_type");
-        //}
+            _mockPipeline.ErrorMessage.ErrorCode.Should().Be("unsupported_response_type");
+        }
     }
 }

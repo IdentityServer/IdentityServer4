@@ -256,7 +256,7 @@ namespace IdentityServer4.Tests.Common
             {
                 await BrowserClient.GetAsync(redirect);
                 redirect = ErrorMessage?.ReturnInfo?.Uri;
-                if (redirect.EndsWith("#_=_"))
+                if (redirect != null && redirect.EndsWith("#_=_"))
                 {
                     redirect = redirect.Substring(0, redirect.Length - 4);
                 }
