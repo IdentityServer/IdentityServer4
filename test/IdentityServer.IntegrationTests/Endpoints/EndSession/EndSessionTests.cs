@@ -122,29 +122,53 @@ namespace IdentityServer.IntegrationTests.Endpoints.EndSession
         {
             await _mockPipeline.LoginAsync(IdentityServerPrincipal.Create("bob", "Bob Loblaw"));
 
-            var url = _mockPipeline.CreateAuthorizeUrl(
-                clientId: "client1",
+            var authorization = await _mockPipeline.RequestAuthorizationEndpointAsync(
+                clientId: "client2",
                 responseType: "id_token",
                 scope: "openid",
-                redirectUri: "https://client1/callback",
+                redirectUri: "https://client2/callback",
                 state: "123_state",
                 nonce: "123_nonce");
 
-            _mockPipeline.BrowserClient.AllowAutoRedirect = false;
-            var response = await _mockPipeline.BrowserClient.GetAsync(url);
-            var authorization = new IdentityModel.Client.AuthorizeResponse(response.Headers.Location.ToString());
             var id_token = authorization.IdentityToken;
 
-            _mockPipeline.BrowserClient.AllowAutoRedirect = true;
-            response = await _mockPipeline.BrowserClient.GetAsync(MockIdSvrUiPipeline.EndSessionEndpoint +
+            var response = await _mockPipeline.BrowserClient.GetAsync(MockIdSvrUiPipeline.EndSessionEndpoint +
                 "?id_token_hint=" + id_token +
-                "&post_logout_redirect_uri=https://client1/signout-callback");
+                "&post_logout_redirect_uri=https://client2/signout-callback2");
 
             _mockPipeline.LogoutWasCalled.Should().BeTrue();
             _mockPipeline.LogoutRequest.Should().NotBeNull();
-            _mockPipeline.LogoutRequest.ClientId.Should().Be("client1");
-            _mockPipeline.LogoutRequest.PostLogoutRedirectUri.Should().Be("https://client1/signout-callback");
+            _mockPipeline.LogoutRequest.ClientId.Should().Be("client2");
+            _mockPipeline.LogoutRequest.PostLogoutRedirectUri.Should().Be("https://client2/signout-callback2");
             _mockPipeline.LogoutRequest.SignOutIFrameUrl.Should().StartWith(MockIdSvrUiPipeline.EndSessionCallbackEndpoint + "?sid=");
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task logout_request_with_params_but_user_no_longer_authenticated_should_pass_redirect_info_to_logout()
+        {
+            await _mockPipeline.LoginAsync("bob");
+
+            var authorization = await _mockPipeline.RequestAuthorizationEndpointAsync(
+                clientId: "client2",
+                responseType: "id_token",
+                scope: "openid",
+                redirectUri: "https://client2/callback",
+                state: "123_state",
+                nonce: "123_nonce");
+
+            var id_token = authorization.IdentityToken;
+
+            _mockPipeline.RemoveLoginCookie();
+
+            var response = await _mockPipeline.BrowserClient.GetAsync(MockIdSvrUiPipeline.EndSessionEndpoint +
+                "?id_token_hint=" + id_token +
+                "&post_logout_redirect_uri=https://client2/signout-callback2");
+
+            _mockPipeline.LogoutWasCalled.Should().BeTrue();
+            _mockPipeline.LogoutRequest.Should().NotBeNull();
+            _mockPipeline.LogoutRequest.ClientId.Should().Be("client2");
+            _mockPipeline.LogoutRequest.PostLogoutRedirectUri.Should().Be("https://client2/signout-callback2");
         }
 
         [Fact]
