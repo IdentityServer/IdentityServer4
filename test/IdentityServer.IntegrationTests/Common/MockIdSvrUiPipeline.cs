@@ -193,6 +193,15 @@ namespace IdentityServer4.Tests.Common
             await LoginAsync(IdentityServerPrincipal.Create(subject, name));
         }
 
+        public void RemoveLoginCookie()
+        {
+            BrowserClient.RemoveCookie("https://server/", ".AspNetCore.cookie_authn");
+        }
+        public void RemoveSessionCookie()
+        {
+            BrowserClient.RemoveCookie("https://server/", "idsvr.session");
+        }
+
         public string CreateAuthorizeUrl(
             string clientId,
             string responseType,
@@ -259,6 +268,11 @@ namespace IdentityServer4.Tests.Common
                 if (redirect != null && redirect.EndsWith("#_=_"))
                 {
                     redirect = redirect.Substring(0, redirect.Length - 4);
+                }
+                else
+                {
+                    // no redirect to client
+                    return null;
                 }
             }
 

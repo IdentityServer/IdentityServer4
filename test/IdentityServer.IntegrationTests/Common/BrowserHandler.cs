@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -54,6 +55,15 @@ namespace IdentityServer4.Tests.Common
             }
 
             return response;
+        }
+
+        internal void RemoveCookie(string uri, string name)
+        {
+            var cookie = _cookieContainer.GetCookies(new Uri(uri)).Cast<Cookie>().Where(x=>x.Name == name).FirstOrDefault();
+            if (cookie != null)
+            {
+                cookie.Expired = true;
+            }
         }
 
         protected async Task<HttpResponseMessage> SendCookiesAsync(HttpRequestMessage request, CancellationToken cancellationToken)
