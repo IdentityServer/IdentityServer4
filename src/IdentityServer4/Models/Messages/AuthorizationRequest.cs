@@ -101,42 +101,23 @@ namespace IdentityServer4.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizationRequest"/> class.
         /// </summary>
+        public AuthorizationRequest()
+        {
+            // public for testing
+            Parameters = new NameValueCollection();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthorizationRequest"/> class.
+        /// </summary>
         internal AuthorizationRequest(ValidatedAuthorizeRequest request)
         {
-            // let the login page know the client requesting authorization
             ClientId = request.ClientId;
-
-            // pass through display mode to signin service
-            if (request.DisplayMode.IsPresent())
-            {
-                DisplayMode = request.DisplayMode;
-            }
-
-            // pass through ui locales to signin service
-            if (request.UiLocales.IsPresent())
-            {
-                UiLocales = request.UiLocales;
-            }
-
-            // pass through login_hint
-            if (request.LoginHint.IsPresent())
-            {
-                LoginHint = request.LoginHint;
-            }
-
-            // look for well-known acr value -- idp
-            var idp = request.GetIdP();
-            if (idp.IsPresent())
-            {
-                IdP = idp;
-            }
-
-            // look for well-known acr value -- tenant
-            var tenant = request.GetTenant();
-            if (tenant.IsPresent())
-            {
-                Tenant = tenant;
-            }
+            DisplayMode = request.DisplayMode;
+            UiLocales = request.UiLocales;
+            LoginHint = request.LoginHint;
+            IdP = request.GetIdP();
+            Tenant = request.GetTenant();
 
             // process acr values
             var acrValues = request.GetAcrValues();
