@@ -47,16 +47,19 @@ namespace IdentityServer4.Services.Default
                 logoutId = _context.HttpContext.Request.Query[_context.Options.UserInteractionOptions.LogoutIdParameter].FirstOrDefault();
             }
 
-            // TODO: should we return null if none of these are found?
-
             var iframeUrl = _context.GetIdentityServerSignoutFrameCallbackUrl();
-            var msg = await _logoutMessageStore.ReadAsync(logoutId);
-
-            if (logoutId != null && msg != null && iframeUrl != null)
+            if (iframeUrl != null)
             {
-                iframeUrl = iframeUrl.AddQueryString(_context.Options.UserInteractionOptions.LogoutIdParameter + "=" + logoutId);
+                var msg = await _logoutMessageStore.ReadAsync(logoutId);
+                if (logoutId != null && msg != null)
+                {
+                    iframeUrl = iframeUrl.AddQueryString(_context.Options.UserInteractionOptions.LogoutIdParameter + "=" + logoutId);
+                }
+
+                return new LogoutRequest(iframeUrl, msg?.Data);
             }
-            return new LogoutRequest(iframeUrl, msg?.Data);
+
+            return null;
         }
 
         public Task<AuthorizationRequest> GetConsentContextAsync(string returnUrl = null)
@@ -119,6 +122,7 @@ namespace IdentityServer4.Services.Default
 
         public bool IsValidReturnUrl(string returnUrl)
         {
+            // TODO: allow remote urls, once supported
             if (returnUrl.IsLocalUrl())
             {
                 var index = returnUrl.IndexOf('?');
