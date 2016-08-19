@@ -242,6 +242,7 @@ namespace Host.Configuration
 
                     AllowedGrantTypes = GrantTypes.Implicit,
                     AllowAccessTokensViaBrowser = true,
+                    AllowPromptNone = true,
                     RedirectUris = new List<string>
                     {
                         "http://localhost:7017/index.html",
