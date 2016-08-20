@@ -79,7 +79,7 @@ namespace IdentityServer4.Configuration
         /// <value>
         /// <c>true</c> if the token revocation endpoint is enabled; otherwise, <c>false</c>.
         /// </value>
-        public bool EnableTokenRevocationEndpoint { get; set; } = false;
+        public bool EnableTokenRevocationEndpoint { get; set; } = true;
 
         /// <summary>
         /// Gets or sets a value indicating whether the introspection endpoint is enabled.

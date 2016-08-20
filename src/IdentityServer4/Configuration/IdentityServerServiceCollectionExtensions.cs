@@ -68,6 +68,10 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 map.Add(Constants.ProtocolRoutePaths.Token, typeof(TokenEndpoint));
             }
+            if (endpoints.EnableTokenRevocationEndpoint)
+            {
+                map.Add(Constants.ProtocolRoutePaths.Revocation, typeof(RevocationEndpoint));
+            }
             if (endpoints.EnableDiscoveryEndpoint)
             {
                 map.Add(Constants.ProtocolRoutePaths.DiscoveryConfiguration, typeof(DiscoveryEndpoint));
@@ -110,6 +114,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<ClientSecretValidator>();
             services.AddTransient<BearerTokenUsageValidator>();
             services.AddTransient<IEndSessionRequestValidator, EndSessionRequestValidator>();
+            services.AddTransient<ITokenRevocationRequestValidator, TokenRevocationRequestValidator>();
 
             return services;
         }

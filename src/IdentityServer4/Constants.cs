@@ -257,8 +257,7 @@ namespace IdentityServer4
             public const string DiscoveryWebKeys = DiscoveryConfiguration + "/jwks";
 
             public const string Token = "connect/token";
-            //TODO
-            //public const string Revocation = "connect/revocation";
+            public const string Revocation = "connect/revocation";
             public const string UserInfo = "connect/userinfo";
             public const string Introspection = "connect/introspect";
             //TODO
