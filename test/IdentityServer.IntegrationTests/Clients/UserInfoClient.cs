@@ -33,7 +33,6 @@ namespace IdentityServer4.Tests.Clients
             _client = server.CreateClient();
         }
 
-        [Fact(Skip = "Needs update to new identitymodel")]
         public async Task Valid_Client()
         {
             var tokenClient = new TokenClient(
@@ -54,9 +53,10 @@ namespace IdentityServer4.Tests.Clients
 
             userInfo.IsError.Should().BeFalse();
             userInfo.Claims.Count().Should().Be(3);
-            userInfo.Claims.Should().Contain(new Claim("sub", "88421113"));
-            userInfo.Claims.Should().Contain(new Claim("email", "BobSmith@email.com"));
-            userInfo.Claims.Should().Contain(new Claim("email_verified", "True"));
+
+            userInfo.Claims.Should().Contain(c => c.Type == "sub" && c.Value == "88421113");
+            userInfo.Claims.Should().Contain(c => c.Type == "email" && c.Value == "BobSmith@email.com");
+            userInfo.Claims.Should().Contain(c => c.Type == "email_verified" && c.Value == "True");
         }
 
         [Fact]
