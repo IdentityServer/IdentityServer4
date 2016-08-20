@@ -60,7 +60,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.Revocation
                 StandardScopes.OfflineAccess,
                 new Scope
                 {
-                    Name = scope_name,l
+                    Name = scope_name,
                     ScopeSecrets = new List<Secret> { new Secret(scope_secret.Sha256()) },
                     Type = ScopeType.Resource
                 }
