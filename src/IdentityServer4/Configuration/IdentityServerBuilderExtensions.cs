@@ -15,7 +15,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class IdentityServerBuilderExtensions
     {
-        public static IIdentityServerBuilder AddInMemoryUsers(this IIdentityServerBuilder builder, List<InMemoryUser> users)
+        public static IIdentityServerBuilder AddInMemoryUsers(this IIdentityServerBuilder builder, IEnumerable<InMemoryUser> users)
         {
             builder.Services.AddSingleton(users);
 

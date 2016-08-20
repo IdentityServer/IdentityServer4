@@ -12,6 +12,7 @@ using IdentityServer4.Configuration;
 using System.Collections.Generic;
 using IdentityServer4.Services.InMemory;
 using IdentityServer4.Validation;
+using System.Linq;
 
 namespace Host
 {
@@ -28,6 +29,7 @@ namespace Host
         {
             var cert = new X509Certificate2(Path.Combine(_environment.ContentRootPath, "idsrv3test.pfx"), "idsrv3test");
 
+            var users = Users.Get().ToList();
             var builder = services.AddIdentityServer(options =>
             {
                 //options.EventsOptions = new EventsOptions
@@ -45,11 +47,11 @@ namespace Host
             })
                 .AddInMemoryClients(Clients.Get())
                 .AddInMemoryScopes(Scopes.Get())
-                //.AddInMemoryUsers(Users.Get())
+                .AddInMemoryUsers(users)
                 //.SetTemporarySigningCredential();
                 .SetSigningCredential(cert);
 
-            services.AddSingleton<List<InMemoryUser>>(Users.Get());
+            services.AddSingleton<ICollection<InMemoryUser>>(users);
             services.AddTransient<UI.Login.LoginService>();
             services.AddTransient<IResourceOwnerPasswordValidator, InMemoryResourceOwnerPasswordValidator>();
 
@@ -76,7 +78,7 @@ namespace Host
                         e.Level == LogEventLevel.Error ||
                         e.Level == LogEventLevel.Fatal);
             };
-        
+
             // built-in logging filter
             Func<string, LogLevel, bool> filter = (scope, level) =>
                 scope.StartsWith("IdentityServer") ||

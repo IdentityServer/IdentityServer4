@@ -7,9 +7,9 @@ namespace IdentityServer4.Services.InMemory
 {
     public class InMemoryResourceOwnerPasswordValidator : IResourceOwnerPasswordValidator
     {
-        private readonly List<InMemoryUser> _users;
+        private readonly IEnumerable<InMemoryUser> _users;
 
-        public InMemoryResourceOwnerPasswordValidator(List<InMemoryUser> users)
+        public InMemoryResourceOwnerPasswordValidator(IEnumerable<InMemoryUser> users)
         {
             _users = users;
         }
