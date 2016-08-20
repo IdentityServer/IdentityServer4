@@ -217,5 +217,22 @@ namespace IdentityServer4.Tests.Validation.AuthorizeRequest
             
             result.IsError.Should().BeFalse();
         }
+
+        [Fact]
+        [Trait("Category", "AuthorizeRequest Client Validation - Valid")]
+        public async Task Valid_OpenId_TokenIdToken_Request()
+        {
+            var parameters = new NameValueCollection();
+            parameters.Add(OidcConstants.AuthorizeRequest.ClientId, "implicitclient");
+            parameters.Add(OidcConstants.AuthorizeRequest.Scope, "openid");
+            parameters.Add(OidcConstants.AuthorizeRequest.RedirectUri, "oob://implicit/cb");
+            parameters.Add(OidcConstants.AuthorizeRequest.ResponseType, "token id_token"); // Unconventional order
+            parameters.Add(OidcConstants.AuthorizeRequest.Nonce, "abc");
+
+            var validator = Factory.CreateAuthorizeRequestValidator();
+            var result = await validator.ValidateAsync(parameters);
+
+            result.IsError.Should().BeFalse();
+        }
     }
 }
