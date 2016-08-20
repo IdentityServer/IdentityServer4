@@ -84,7 +84,7 @@ namespace IdentityServer4.Endpoints
             var client = clientResult.Client;
             if (client == null)
             {
-                return new TokenErrorResult(OidcConstants.TokenErrors.InvalidClient);
+                return new RevocationErrorResult(OidcConstants.TokenErrors.InvalidClient);
             }
 
             // validate the token request
