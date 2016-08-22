@@ -5,6 +5,7 @@ using IdentityServer4;
 using IdentityServer4.Configuration;
 using IdentityServer4.Endpoints;
 using IdentityServer4.Endpoints.Results;
+using IdentityServer4.Events;
 using IdentityServer4.Hosting;
 using IdentityServer4.Hosting.Cors;
 using IdentityServer4.ResponseHandling;
@@ -12,18 +13,58 @@ using IdentityServer4.Services;
 using IdentityServer4.Services.Default;
 using IdentityServer4.Services.InMemory;
 using IdentityServer4.Validation;
+using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Cors.Infrastructure;
-using Microsoft.AspNetCore.Http;
-using IdentityServer4.Events;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class IdentityServerServiceCollectionExtensions
     {
+        public static IIdentityServerBuilder AddIdentityServerCore(this IServiceCollection services, Action<IdentityServerOptions> setupAction)
+        {
+            services.AddOptions();
+            services.Configure(setupAction);
+
+            var options = new IdentityServerOptions();
+            setupAction(options);
+            
+            services.AddRequiredPlatformServices();
+            services.AddRequiredServices(options);
+
+            return new IdentityServerBuilder(services);
+        }
+
+        public static IServiceCollection AddRequiredPlatformServices(this IServiceCollection services)
+        {
+            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddAuthentication();
+
+            return services;
+        }
+
+        public static IServiceCollection AddRequiredServices(this IServiceCollection services, IdentityServerOptions options)
+        {
+            services.AddTransient<IdentityServerContext>();
+            services.AddEndpoints(options.Endpoints);
+            services.AddValidators();
+
+            
+            services.AddResponseGenerators();
+
+            services.AddSecretParsers();
+            services.AddSecretValidators();
+
+            services.AddCoreServices();
+            services.AddHostServices();
+
+            return services;
+        }
+
+
         public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services, Action<IdentityServerOptions> setupAction = null)
         {
             var options = new IdentityServerOptions();
@@ -47,8 +88,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<IdentityServerContext>();
 
             services.AddEndpoints(options.Endpoints);
-            services.AddCoreValidators();
-            services.AddPluggableValidators();
+            services.AddValidators();
             services.AddResponseGenerators();
 
             services.AddSecretParsers();
@@ -106,28 +146,27 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
-        public static IServiceCollection AddCoreValidators(this IServiceCollection services)
+        public static IServiceCollection AddValidators(this IServiceCollection services)
         {
             services.AddTransient<ScopeSecretValidator>();
+            services.AddTransient<SecretParser>();
+
+            services.AddTransient<ClientSecretValidator>();
+            services.AddTransient<SecretValidator>();
+
             services.AddTransient<ScopeValidator>();
             services.AddTransient<ExtensionGrantValidator>();
-            services.AddTransient<ClientSecretValidator>();
             services.AddTransient<BearerTokenUsageValidator>();
-            services.AddTransient<IEndSessionRequestValidator, EndSessionRequestValidator>();
-            services.AddTransient<ITokenRevocationRequestValidator, TokenRevocationRequestValidator>();
 
-            return services;
-        }
-
-        public static IServiceCollection AddPluggableValidators(this IServiceCollection services)
-        {
+            services.TryAddTransient<IEndSessionRequestValidator, EndSessionRequestValidator>();
+            services.TryAddTransient<ITokenRevocationRequestValidator, TokenRevocationRequestValidator>();
             services.TryAddTransient<IAuthorizeRequestValidator, AuthorizeRequestValidator>();
             services.TryAddTransient<ITokenRequestValidator, TokenRequestValidator>();
             services.TryAddTransient<IRedirectUriValidator, StrictRedirectUriValidator>();
             services.TryAddTransient<ITokenValidator, TokenValidator>();
             services.TryAddTransient<IIntrospectionRequestValidator, IntrospectionRequestValidator>();
-            services.TryAddTransient<IResourceOwnerPasswordValidator, NopResouceOwnerPasswordValidator>();
-            
+            services.TryAddTransient<IResourceOwnerPasswordValidator, NotSupportedResouceOwnerPasswordValidator>();
+
             return services;
         }
 
@@ -145,8 +184,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IServiceCollection AddSecretParsers(this IServiceCollection services)
         {
-            services.AddTransient<SecretParser>();
-
             services.AddTransient<ISecretParser, BasicAuthenticationSecretParser>();
             services.AddTransient<ISecretParser, PostBodySecretParser>();
             
@@ -155,8 +192,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IServiceCollection AddSecretValidators(this IServiceCollection services)
         {
-            services.AddTransient<SecretValidator>();
-
             services.AddTransient<ISecretValidator, HashedSharedSecretValidator>();
 
             return services;
