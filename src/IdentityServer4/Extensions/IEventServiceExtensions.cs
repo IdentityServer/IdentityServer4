@@ -93,7 +93,7 @@ namespace IdentityServer4.Extensions
             await events.RaiseEventAsync(evt);
         }
 
-        //TODO
+        // TODO
         //public static async Task RaiseExternalLoginSuccessEventAsync(this IEventService events, 
         //    ExternalIdentity externalIdentity, string signInMessageId, AuthorizationRequest authorizationRequest, AuthenticateResult authResult)
         //{
@@ -116,25 +116,26 @@ namespace IdentityServer4.Extensions
         //    await events.RaiseEventAsync(evt);
         //}
 
-        public static async Task RaiseExternalLoginFailureEventAsync(this IEventService events, 
-            ExternalIdentity externalIdentity, string signInMessageId, AuthorizationRequest authorizationRequest, string error)
-        {
-            var evt = new Event<ExternalLoginDetails>(
-                EventConstants.Categories.Authentication,
-                "External Login Failure",
-                EventTypes.Failure,
-                EventConstants.Ids.ExternalLoginFailure,
-                new ExternalLoginDetails
-                {
-                    SignInId = signInMessageId,
-                    AuthorizationRequest = authorizationRequest,
-                    Provider = externalIdentity.Provider,
-                    ProviderId = externalIdentity.ProviderId,
-                }, 
-                error);
+        // TODO
+        //public static async Task RaiseExternalLoginFailureEventAsync(this IEventService events, 
+        //    ExternalIdentity externalIdentity, string signInMessageId, AuthorizationRequest authorizationRequest, string error)
+        //{
+        //    var evt = new Event<ExternalLoginDetails>(
+        //        EventConstants.Categories.Authentication,
+        //        "External Login Failure",
+        //        EventTypes.Failure,
+        //        EventConstants.Ids.ExternalLoginFailure,
+        //        new ExternalLoginDetails
+        //        {
+        //            SignInId = signInMessageId,
+        //            AuthorizationRequest = authorizationRequest,
+        //            Provider = externalIdentity.Provider,
+        //            ProviderId = externalIdentity.ProviderId,
+        //        }, 
+        //        error);
 
-            await events.RaiseEventAsync(evt);
-        }
+        //    await events.RaiseEventAsync(evt);
+        //}
 
         public static async Task RaiseExternalLoginErrorEventAsync(this IEventService events, string error)
         {
