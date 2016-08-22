@@ -17,9 +17,7 @@ namespace IdentityServer4.Models
         /// Initializes a new instance of the <see cref="ProfileDataRequestContext"/> class.
         /// </summary>
         public ProfileDataRequestContext()
-        {
-            IssuedClaims = Enumerable.Empty<Claim>();
-        }
+        { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProfileDataRequestContext" /> class.
@@ -42,8 +40,6 @@ namespace IdentityServer4.Models
             {
                 RequestedClaimTypes = requestedClaimTypes;
             }
-
-            IssuedClaims = Enumerable.Empty<Claim>();
         }
 
         /// <summary>
@@ -92,6 +88,6 @@ namespace IdentityServer4.Models
         /// <value>
         /// The issued claims.
         /// </value>
-        public IEnumerable<Claim> IssuedClaims { get; set; }
+        public IEnumerable<Claim> IssuedClaims { get; set; } = Enumerable.Empty<Claim>();
     }
 }
