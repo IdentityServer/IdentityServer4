@@ -3,9 +3,11 @@
 
 using IdentityModel;
 using IdentityServer4.Extensions;
+using IdentityServer4.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System;
 
 namespace IdentityServer4.Validation
 {
@@ -23,12 +25,26 @@ namespace IdentityServer4.Validation
         public ClaimsPrincipal Subject { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GrantValidationResult"/> class with an error message.
+        /// Initializes a new instance of the <see cref="GrantValidationResult"/> class with an error and description.
         /// </summary>
-        /// <param name="errorMessage">The error message.</param>
-        public GrantValidationResult(string errorMessage)
+        /// <param name="error">The error.</param>
+        /// /// <param name="errorDescription">The error description.</param>
+        public GrantValidationResult(TokenErrors error, string errorDescription = null)
         {
-            Error = errorMessage;
+            Error = ConvertTokenErrorEnumToString(error);
+            ErrorDescription = errorDescription;
+        }
+
+        private string ConvertTokenErrorEnumToString(TokenErrors error)
+        {
+            if (error == TokenErrors.InvalidClient)        return OidcConstants.TokenErrors.InvalidClient;
+            if (error == TokenErrors.InvalidGrant)         return OidcConstants.TokenErrors.InvalidGrant;
+            if (error == TokenErrors.InvalidRequest)       return OidcConstants.TokenErrors.InvalidRequest;
+            if (error == TokenErrors.InvalidScope)         return OidcConstants.TokenErrors.InvalidScope;
+            if (error == TokenErrors.UnauthorizedClient)   return OidcConstants.TokenErrors.UnauthorizedClient;
+            if (error == TokenErrors.UnsupportedGrantType) return OidcConstants.TokenErrors.UnsupportedGrantType;
+
+            throw new InvalidOperationException("invalid token error");
         }
 
         /// <summary>

@@ -198,6 +198,27 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
+            result.ErrorDescription.Should().Be("invalid_username_or_password");
+        }
+
+        [Fact(Skip = "Update identitymodel to handle error_description")]
+        [Trait("Category", Category)]
+        public async Task Password_GrantType_Not_Supported()
+        {
+            var client = await _clients.FindClientByIdAsync("roclient");
+            var validator = Factory.CreateTokenRequestValidator(resourceOwnerValidator: new TestResourceOwnerPasswordValidator(OidcConstants.TokenErrors.UnsupportedGrantType));
+
+            var parameters = new NameValueCollection();
+            parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.Password);
+            parameters.Add(OidcConstants.TokenRequest.Scope, "resource");
+            parameters.Add(OidcConstants.TokenRequest.UserName, "bob");
+            parameters.Add(OidcConstants.TokenRequest.Password, "bob");
+
+            var result = await validator.ValidateRequestAsync(parameters, client);
+
+            result.IsError.Should().BeTrue();
+            result.Error.Should().Be(OidcConstants.TokenErrors.UnsupportedGrantType);
+            result.ErrorDescription.Should().BeNull();
         }
 
         [Fact]
@@ -217,6 +238,26 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
+        }
+
+        [Fact(Skip = "Update identitymodel to handle error_description")]
+        [Trait("Category", Category)]
+        public async Task Password_GrantType_With_Custom_ErrorDescription()
+        {
+            var client = await _clients.FindClientByIdAsync("roclient");
+            var validator = Factory.CreateTokenRequestValidator(resourceOwnerValidator: new TestResourceOwnerPasswordValidator(OidcConstants.TokenErrors.InvalidGrant, "custom error description"));
+
+            var parameters = new NameValueCollection();
+            parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.Password);
+            parameters.Add(OidcConstants.TokenRequest.Scope, "resource");
+            parameters.Add(OidcConstants.TokenRequest.UserName, "bob");
+            parameters.Add(OidcConstants.TokenRequest.Password, "notbob");
+
+            var result = await validator.ValidateRequestAsync(parameters, client);
+
+            result.IsError.Should().BeTrue();
+            result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
+            result.ErrorDescription.Should().Be("custom error description");
         }
     }
 }

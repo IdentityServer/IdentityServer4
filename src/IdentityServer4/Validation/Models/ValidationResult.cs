@@ -9,20 +9,12 @@ namespace IdentityServer4.Validation
     public class ValidationResult
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ValidationResult"/> class.
-        /// </summary>
-        public ValidationResult()
-        {
-            IsError = true;
-        }
-
-        /// <summary>
         /// Gets or sets a value indicating whether the validation was successful.
         /// </summary>
         /// <value>
         ///   <c>true</c> if the validation is failed; otherwise, <c>false</c>.
         /// </value>
-        public bool IsError { get; set; }
+        public bool IsError { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the error.

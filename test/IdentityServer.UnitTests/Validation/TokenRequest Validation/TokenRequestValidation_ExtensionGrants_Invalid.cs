@@ -51,5 +51,24 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.UnsupportedGrantType);
         }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task Customer_Error_and_Description_Extension_Grant_Type()
+        {
+            var client = await _clients.FindClientByIdAsync("customgrantclient");
+
+            var validator = Factory.CreateTokenRequestValidator(extensionGrantValidators: new[] { new TestGrantValidator(isInvalid: true, errorDescription: "custom error description") });
+
+            var parameters = new NameValueCollection();
+            parameters.Add(OidcConstants.TokenRequest.GrantType, "custom_grant");
+            parameters.Add(OidcConstants.TokenRequest.Scope, "resource");
+
+            var result = await validator.ValidateRequestAsync(parameters, client);
+
+            result.IsError.Should().BeTrue();
+            result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
+            result.ErrorDescription.Should().Be("custom error description");
+        }
     }
 }

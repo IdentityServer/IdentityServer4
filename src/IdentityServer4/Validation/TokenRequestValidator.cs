@@ -348,14 +348,6 @@ namespace IdentityServer4.Validation
         {
             _logger.LogDebug("Start resource owner password token request validation");
 
-            // if we've disabled local authentication, then fail
-            if (_options.AuthenticationOptions.EnableLocalLogin == false ||
-                _validatedRequest.Client.EnableLocalLogin == false)
-            {
-                LogError("EnableLocalLogin is disabled, failing with UnsupportedGrantType");
-                return Invalid(OidcConstants.TokenErrors.UnsupportedGrantType);
-            }
-
             /////////////////////////////////////////////
             // check if client is authorized for grant type
             /////////////////////////////////////////////
@@ -409,17 +401,25 @@ namespace IdentityServer4.Validation
 
             if (resourceOwnerContext.Result.IsError)
             {
-                var error = "invalid_username_or_password";
-
-                if (resourceOwnerContext.Result.Error.IsPresent())
+                if (resourceOwnerContext.Result.Error == OidcConstants.TokenErrors.UnsupportedGrantType)
                 {
-                    error = resourceOwnerContext.Result.Error;
+                    LogError("Resource owner password credential grant type not supported");
+                    await RaiseFailedResourceOwnerAuthenticationEventAsync(userName, "password grant type not supported");
+
+                    return Invalid(OidcConstants.TokenErrors.UnsupportedGrantType);
                 }
 
-                LogError("User authentication failed: " + error);
-                await RaiseFailedResourceOwnerAuthenticationEventAsync(userName, error);
+                var errorDescription = "invalid_username_or_password";
 
-                return Invalid(OidcConstants.TokenErrors.InvalidGrant, error);
+                if (resourceOwnerContext.Result.ErrorDescription.IsPresent())
+                {
+                    errorDescription = resourceOwnerContext.Result.ErrorDescription;
+                }
+               
+                LogError("User authentication failed: " + errorDescription ?? resourceOwnerContext.Result.Error);
+                await RaiseFailedResourceOwnerAuthenticationEventAsync(userName, errorDescription);
+
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant, errorDescription);
             }
 
             if (resourceOwnerContext.Result.Subject == null)
@@ -601,7 +601,7 @@ namespace IdentityServer4.Validation
                 if (result.Error.IsPresent())
                 {
                     LogError("Invalid custom grant: " + result.Error);
-                    return Invalid(result.Error);
+                    return Invalid(result.Error, result.ErrorDescription);
                 }
                 else
                 {

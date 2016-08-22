@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityServer4.Models;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -39,18 +40,26 @@ namespace IdentityServer4.Validation
 
             if (validator == null)
             {
-                return new GrantValidationResult("No validator found for grant type");
+                _logger.LogError("No validator found for grant type");
+                return new GrantValidationResult(TokenErrors.UnsupportedGrantType);
             }
 
             try
             {
                 _logger.LogTrace("Calling into custom grant validator: {type}", validator.GetType().FullName);
-                return await validator.ValidateAsync(request);
+
+                var context = new ExtensionGrantValidationContext
+                {
+                    Request = request
+                };
+            
+                await validator.ValidateAsync(context);
+                return context.Result;
             }
             catch (Exception e)
             {
                 _logger.LogError("Grant validation error", e);
-                return new GrantValidationResult("Grant validation error");
+                return new GrantValidationResult(TokenErrors.InvalidGrant);
             }
         }
     }

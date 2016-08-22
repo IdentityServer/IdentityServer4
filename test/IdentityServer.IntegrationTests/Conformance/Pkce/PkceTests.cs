@@ -11,7 +11,6 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using static IdentityModel.OidcConstants;
 
 namespace IdentityServer.IntegrationTests.Conformance.Pkce
 {
@@ -80,7 +79,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
                 redirect_uri,
                 nonce: nonce,
                 codeChallenge: code_challenge,
-                codeChallengeMethod: CodeChallengeMethods.Plain);
+                codeChallengeMethod: OidcConstants.CodeChallengeMethods.Plain);
 
             authorizeResponse.IsError.Should().BeFalse();
 
@@ -110,7 +109,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
                 redirect_uri,
                 nonce: nonce,
                 codeChallenge: code_challenge,
-                codeChallengeMethod: CodeChallengeMethods.Sha256);
+                codeChallengeMethod: OidcConstants.CodeChallengeMethods.Sha256);
 
             authorizeResponse.IsError.Should().BeFalse();
 
@@ -140,7 +139,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
                 nonce: nonce);
 
             authorizeResponse.IsError.Should().BeTrue();
-            authorizeResponse.Error.Should().Be(AuthorizeErrors.InvalidRequest);
+            authorizeResponse.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
             authorizeResponse.ErrorDescription.Should().Be("code challenge required");
         }
 
@@ -160,7 +159,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
                 codeChallenge:"a");
 
             authorizeResponse.IsError.Should().BeTrue();
-            authorizeResponse.Error.Should().Be(AuthorizeErrors.InvalidRequest);
+            authorizeResponse.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
         }
 
         [Fact]
@@ -180,7 +179,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
             );
 
             authorizeResponse.IsError.Should().BeTrue();
-            authorizeResponse.Error.Should().Be(AuthorizeErrors.InvalidRequest);
+            authorizeResponse.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
         }
 
         [Trait("Category", Category)]
@@ -200,7 +199,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
             );
 
             authorizeResponse.IsError.Should().BeTrue();
-            authorizeResponse.Error.Should().Be(AuthorizeErrors.InvalidRequest);
+            authorizeResponse.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
             authorizeResponse.ErrorDescription.Should().Be("transform algorithm not supported");
         }
 
@@ -218,7 +217,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
                 redirect_uri,
                 nonce: nonce,
                 codeChallenge: code_challenge,
-                codeChallengeMethod: CodeChallengeMethods.Plain);
+                codeChallengeMethod: OidcConstants.CodeChallengeMethods.Plain);
 
             authorizeResponse.IsError.Should().BeFalse();
 
@@ -228,7 +227,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
             var tokenResponse = await tokenClient.RequestAuthorizationCodeAsync(code, redirect_uri);
 
             tokenResponse.IsError.Should().BeTrue();
-            tokenResponse.Error.Should().Be(TokenErrors.InvalidGrant);
+            tokenResponse.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
         }
 
         [Fact]
@@ -245,7 +244,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
                 redirect_uri,
                 nonce: nonce,
                 codeChallenge: code_challenge,
-                codeChallengeMethod: CodeChallengeMethods.Plain);
+                codeChallengeMethod: OidcConstants.CodeChallengeMethods.Plain);
 
             authorizeResponse.IsError.Should().BeFalse();
 
@@ -256,7 +255,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
                 "a");
 
             tokenResponse.IsError.Should().BeTrue();
-            tokenResponse.Error.Should().Be(TokenErrors.InvalidGrant);
+            tokenResponse.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
         }
 
         [Fact]
@@ -273,7 +272,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
                 redirect_uri,
                 nonce: nonce,
                 codeChallenge: code_challenge,
-                codeChallengeMethod: CodeChallengeMethods.Plain);
+                codeChallengeMethod: OidcConstants.CodeChallengeMethods.Plain);
 
             authorizeResponse.IsError.Should().BeFalse();
 
@@ -284,7 +283,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
                 new string('a', _pipeline.Options.InputLengthRestrictions.CodeVerifierMaxLength + 1));
 
             tokenResponse.IsError.Should().BeTrue();
-            tokenResponse.Error.Should().Be(TokenErrors.InvalidGrant);
+            tokenResponse.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
         }
 
         [Fact]
@@ -301,7 +300,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
                 redirect_uri,
                 nonce: nonce,
                 codeChallenge: code_challenge,
-                codeChallengeMethod: CodeChallengeMethods.Plain);
+                codeChallengeMethod: OidcConstants.CodeChallengeMethods.Plain);
 
             authorizeResponse.IsError.Should().BeFalse();
 
@@ -312,7 +311,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
                 "mismatched_code_verifier");
 
             tokenResponse.IsError.Should().BeTrue();
-            tokenResponse.Error.Should().Be(TokenErrors.InvalidGrant);
+            tokenResponse.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
         }
 
         private static string Sha256OfCodeVerifier(string codeVerifier)

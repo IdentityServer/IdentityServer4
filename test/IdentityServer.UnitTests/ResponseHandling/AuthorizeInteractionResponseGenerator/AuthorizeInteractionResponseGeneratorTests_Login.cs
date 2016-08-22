@@ -136,47 +136,5 @@ namespace IdentityServer4.Tests.ResponseHandling
 
             result.IsLogin.Should().BeTrue();
         }
-
-        [Fact]
-        public async Task Authenticated_User_with_local_Idp_must_SignIn_when_global_options_does_not_allow_local_logins()
-        {
-            _options.AuthenticationOptions.EnableLocalLogin = false;
-
-            var request = new ValidatedAuthorizeRequest
-            {
-                ClientId = "foo",
-                Subject = IdentityServerPrincipal.Create("123", "dom"),
-                Client = new Client
-                {
-                    ClientId = "foo",
-                    EnableLocalLogin = true
-                },
-            };
-
-            var result = await _subject.ProcessLoginAsync(request);
-
-            result.IsLogin.Should().BeTrue();
-        }
-
-        [Fact]
-        public async Task Authenticated_User_with_local_Idp_must_SignIn_when_client_options_does_not_allow_local_logins()
-        {
-            _options.AuthenticationOptions.EnableLocalLogin = true;
-
-            var request = new ValidatedAuthorizeRequest
-            {
-                ClientId = "foo",
-                Subject = IdentityServerPrincipal.Create("123", "dom"),
-                Client = new Client
-                {
-                    ClientId = "foo",
-                    EnableLocalLogin = false
-                }
-            };
-
-            var result = await _subject.ProcessLoginAsync(request);
-
-            result.IsLogin.Should().BeTrue();
-        }
     }
 }

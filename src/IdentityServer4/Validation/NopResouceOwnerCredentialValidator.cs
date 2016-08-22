@@ -4,7 +4,6 @@
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
-using IdentityModel;
 
 namespace IdentityServer4.Validation
 {
@@ -19,7 +18,7 @@ namespace IdentityServer4.Validation
 
         public Task ValidateAsync(ResourceOwnerPasswordValidationContext context)
         {
-            context.Result = new GrantValidationResult(OidcConstants.TokenErrors.UnsupportedGrantType);
+            context.Result = new GrantValidationResult(TokenErrors.UnsupportedGrantType);
 
             _logger.LogWarning("Resource owner password credential type not supported. Configure an IResourceOwnerPasswordValidator.");
             return Task.FromResult(0);

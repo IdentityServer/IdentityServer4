@@ -138,17 +138,6 @@ namespace IdentityServer4.ResponseHandling
                 }
             }
 
-            // check if idp is local and local logins are not allowed
-            if (currentIdp == Constants.LocalIdentityProvider)
-            {
-                if (_options.AuthenticationOptions.EnableLocalLogin == false ||
-                    request.Client.EnableLocalLogin == false)
-                {
-                    _logger.LogWarning("User is logged in with local idp, but local logins not enabled.");
-                    return new InteractionResponse() { IsLogin = true };
-                }
-            }
-
             return new InteractionResponse();
         }
 

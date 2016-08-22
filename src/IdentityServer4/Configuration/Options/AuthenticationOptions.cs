@@ -20,17 +20,6 @@ namespace IdentityServer4.Configuration
             }
         }
 
-        // TODO: maybe change this so we have a list of grant types for metadata endpoint
-        /// <summary>
-        /// Gets or sets a value indicating whether local login is enabled.
-        /// Disabling this setting will not display the username/password form on the login page. This also will disable the resource owner password flow.
-        /// Defaults to true.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if local login is enabled; otherwise, <c>false</c>.
-        /// </value>
-        public bool EnableLocalLogin { get; set; } = true;
-
         /// <summary>
         /// Indicates if user must be authenticated to accept parameters to end session endpoint. Defaults to false.
         /// </summary>

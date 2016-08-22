@@ -71,7 +71,7 @@ namespace IdentityServer4.Tests.Clients
             amr.First().ToString().Should().Be("custom");
         }
 
-        [Fact]
+        [Fact(Skip = "Update identitymodel to handle error_description")]
         public async Task Valid_Client_Missing_Grant_Specific_Data()
         {
             var client = new TokenClient(
@@ -83,7 +83,10 @@ namespace IdentityServer4.Tests.Clients
             var response = await client.RequestCustomGrantAsync("custom", "api1");
 
             response.IsError.Should().Be(true);
-            response.Error.Should().Be("invalid_custom_credential");
+            response.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
+
+            // todo: check error_description
+            //response.Error.Should().Be("invalid_custom_credential");
         }
 
         [Fact]

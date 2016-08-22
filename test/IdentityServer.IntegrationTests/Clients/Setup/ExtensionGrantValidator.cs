@@ -3,25 +3,28 @@
 
 using IdentityServer4.Validation;
 using System.Threading.Tasks;
+using IdentityServer4.Models;
 
 namespace IdentityServer4.Tests.Clients
 {
     public class ExtensionGrantValidator : IExtensionGrantValidator
     {
-        public Task<GrantValidationResult> ValidateAsync(ValidatedTokenRequest request)
+        public Task ValidateAsync(ExtensionGrantValidationContext context)
         {
-            var credential = request.Raw.Get("custom_credential");
+            var credential = context.Request.Raw.Get("custom_credential");
 
             if (credential != null)
             {
                 // valid credential
-                return Task.FromResult(new GrantValidationResult("818727", "custom"));
+                context.Result = new GrantValidationResult("818727", "custom");
             }
             else
             {
                 // custom error message
-                return Task.FromResult(new GrantValidationResult("invalid_custom_credential"));
+                context.Result = new GrantValidationResult(Models.TokenErrors.InvalidGrant, "invalid_custom_credential");
             }
+
+            return Task.CompletedTask;
         }
 
         public string GrantType
