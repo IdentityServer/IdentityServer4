@@ -378,7 +378,7 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var result = await validator.ValidateRequestAsync(parameters, client);
 
             result.IsError.Should().BeTrue();
-            result.Error.Should().Be(OidcConstants.TokenErrors.InvalidRequest);
+            result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
         }
     }
 }

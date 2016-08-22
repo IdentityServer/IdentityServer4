@@ -297,7 +297,7 @@ namespace IdentityServer4.Validation
                 LogError(error);
                 await RaiseFailedAuthorizationCodeRedeemedEventAsync(code, error);
 
-                return Invalid(OidcConstants.TokenErrors.InvalidRequest);
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
             _logger.LogInformation("Validation of authorization code token request success");
@@ -443,7 +443,7 @@ namespace IdentityServer4.Validation
                 LogError(error);
                 await RaiseFailedResourceOwnerAuthenticationEventAsync(userName, "user is inactive");
 
-                return Invalid(OidcConstants.TokenErrors.InvalidRequest);
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
             _validatedRequest.UserName = userName;
@@ -547,7 +547,7 @@ namespace IdentityServer4.Validation
                 LogError(error);
                 await RaiseRefreshTokenRefreshFailureEventAsync(refreshTokenHandle, error);
 
-                return Invalid(OidcConstants.TokenErrors.InvalidRequest);
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
             _logger.LogInformation("Validation of refresh token request success");
