@@ -20,7 +20,7 @@ namespace IdentityServer4.Validation
         /// <value>
         /// The principal.
         /// </value>
-        public ClaimsPrincipal Principal { get; set; }
+        public ClaimsPrincipal Subject { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GrantValidationResult"/> class with an error message.
@@ -38,7 +38,7 @@ namespace IdentityServer4.Validation
         public GrantValidationResult(ClaimsPrincipal principal)
         {
             // TODO: more checks on claims (amr, etc...)
-            Principal = principal;
+            Subject = principal;
             IsError = false;
         }
 
@@ -71,7 +71,7 @@ namespace IdentityServer4.Validation
             var id = new ClaimsIdentity(authenticationMethod);
             id.AddClaims(resultClaims.Distinct(new ClaimComparer()));
 
-            Principal = new ClaimsPrincipal(id);
+            Subject = new ClaimsPrincipal(id);
 
             IsError = false;
         }

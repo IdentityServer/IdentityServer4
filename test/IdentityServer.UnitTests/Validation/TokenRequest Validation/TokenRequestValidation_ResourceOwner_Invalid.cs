@@ -199,5 +199,24 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
         }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task Inactive_ResourceOwner()
+        {
+            var client = await _clients.FindClientByIdAsync("roclient");
+            var validator = Factory.CreateTokenRequestValidator(profile: new TestProfileService(shouldBeActive: false));
+
+            var parameters = new NameValueCollection();
+            parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.Password);
+            parameters.Add(OidcConstants.TokenRequest.Scope, "resource");
+            parameters.Add(OidcConstants.TokenRequest.UserName, "bob");
+            parameters.Add(OidcConstants.TokenRequest.Password, "bob");
+
+            var result = await validator.ValidateRequestAsync(parameters, client);
+
+            result.IsError.Should().BeTrue();
+            result.Error.Should().Be(OidcConstants.TokenErrors.InvalidRequest);
+        }
     }
 }

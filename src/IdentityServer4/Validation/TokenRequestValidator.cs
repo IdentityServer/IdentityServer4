@@ -293,7 +293,7 @@ namespace IdentityServer4.Validation
 
             if (isActiveCtx.IsActive == false)
             {
-                var error = "User has been disabled: " + _validatedRequest.AuthorizationCode.Subject;
+                var error = "User has been disabled: " + _validatedRequest.AuthorizationCode.Subject.GetSubjectId();
                 LogError(error);
                 await RaiseFailedAuthorizationCodeRedeemedEventAsync(code, error);
 
@@ -359,7 +359,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // check if client is authorized for grant type
             /////////////////////////////////////////////
-            if (!_validatedRequest.Client.AllowedGrantTypes.ToList().Contains(GrantType.ResourceOwnerPassword))
+            if (!_validatedRequest.Client.AllowedGrantTypes.Contains(GrantType.ResourceOwnerPassword))
             {
                 LogError("Client not authorized for resource owner flow");
                 return Invalid(OidcConstants.TokenErrors.UnauthorizedClient);
@@ -422,7 +422,7 @@ namespace IdentityServer4.Validation
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant, error);
             }
 
-            if (resourceOwnerContext.Result.Principal == null)
+            if (resourceOwnerContext.Result.Subject == null)
             {
                 var error = "User authentication failed: no principal returned";
                 LogError(error);
@@ -431,10 +431,25 @@ namespace IdentityServer4.Validation
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
-            _validatedRequest.UserName = userName;
-            _validatedRequest.Subject = resourceOwnerContext.Result.Principal;
+            /////////////////////////////////////////////
+            // make sure user is enabled
+            /////////////////////////////////////////////
+            var isActiveCtx = new IsActiveContext(resourceOwnerContext.Result.Subject, _validatedRequest.Client);
+            await _profile.IsActiveAsync(isActiveCtx);
 
-            await RaiseSuccessfulResourceOwnerAuthenticationEventAsync(userName, resourceOwnerContext.Result.Principal.GetSubjectId());
+            if (isActiveCtx.IsActive == false)
+            {
+                var error = "User has been disabled: " + resourceOwnerContext.Result.Subject.GetSubjectId();
+                LogError(error);
+                await RaiseFailedResourceOwnerAuthenticationEventAsync(userName, "user is inactive");
+
+                return Invalid(OidcConstants.TokenErrors.InvalidRequest);
+            }
+
+            _validatedRequest.UserName = userName;
+            _validatedRequest.Subject = resourceOwnerContext.Result.Subject;
+
+            await RaiseSuccessfulResourceOwnerAuthenticationEventAsync(userName, resourceOwnerContext.Result.Subject.GetSubjectId());
             _logger.LogInformation("Resource owner password token request validation success.");
             return Valid();
         }
@@ -595,9 +610,9 @@ namespace IdentityServer4.Validation
                 }
             }
 
-            if (result.Principal != null)
+            if (result.Subject != null)
             {
-                _validatedRequest.Subject = result.Principal;
+                _validatedRequest.Subject = result.Subject;
             }
 
             _logger.LogInformation("Validation of custom grant token request success");
