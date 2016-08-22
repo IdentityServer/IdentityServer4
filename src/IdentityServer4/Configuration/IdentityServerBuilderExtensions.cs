@@ -19,8 +19,8 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.Services.AddSingleton(users);
 
-            builder.Services.AddTransient<IProfileService, InMemoryProfileService>();
-            builder.Services.AddTransient<IResourceOwnerPasswordValidator, InMemoryResourceOwnerPasswordValidator>();
+            builder.Services.AddTransient<IProfileService, InMemoryUserProfileService>();
+            builder.Services.AddTransient<IResourceOwnerPasswordValidator, InMemoryUserResourceOwnerPasswordValidator>();
             
             return builder;
         }

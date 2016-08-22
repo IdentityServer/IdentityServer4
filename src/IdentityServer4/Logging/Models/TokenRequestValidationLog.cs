@@ -46,13 +46,6 @@ namespace IdentityServer4.Logging
                 Scopes = request.Scopes.ToSpaceSeparatedString();
             }
 
-            if (request.SignInMessage != null)
-            {
-                IdP = request.SignInMessage.IdP;
-                Tenant = request.SignInMessage.Tenant;
-                AuthenticationContextReferenceClasses = request.SignInMessage.AcrValues;
-            }
-
             GrantType = request.GrantType;
             AuthorizationCode = request.AuthorizationCodeHandle;
             RefreshToken = request.RefreshTokenHandle;

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityServer4.Models;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Validation
@@ -13,8 +14,7 @@ namespace IdentityServer4.Validation
         /// <summary>
         /// Validates the resource owner password credential
         /// </summary>
-        /// <param name="request">The validated token request.</param>
-        /// <returns>The validation result</returns>
-        Task<GrantValidationResult> ValidateAsync(string userName, string password, ValidatedTokenRequest request);
+        /// <param name="context">The context.</param>
+        Task ValidateAsync(ResourceOwnerPasswordValidationContext context);
     }
 }

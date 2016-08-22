@@ -1,5 +1,4 @@
 ﻿using Host.Configuration;
-using Host.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,8 +7,6 @@ using System;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using Serilog.Events;
-using IdentityServer4.Configuration;
-using System.Collections.Generic;
 using IdentityServer4.Services.InMemory;
 using IdentityServer4.Validation;
 
@@ -45,13 +42,13 @@ namespace Host
             })
                 .AddInMemoryClients(Clients.Get())
                 .AddInMemoryScopes(Scopes.Get())
-                //.AddInMemoryUsers(Users.Get())
                 //.SetTemporarySigningCredential();
                 .SetSigningCredential(cert);
 
-            services.AddSingleton<List<InMemoryUser>>(Users.Get());
+            // in-memory users
+            services.AddSingleton(Users.Get());
             services.AddTransient<UI.Login.LoginService>();
-            services.AddTransient<IResourceOwnerPasswordValidator, InMemoryResourceOwnerPasswordValidator>();
+            services.AddTransient<IResourceOwnerPasswordValidator, InMemoryUserResourceOwnerPasswordValidator>();
 
             builder.AddExtensionGrantValidator<Host.Extensions.ExtensionGrantValidator>();
 

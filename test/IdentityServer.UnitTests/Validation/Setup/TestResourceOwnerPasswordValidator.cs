@@ -1,22 +1,19 @@
 ﻿using IdentityServer4.Validation;
 using System.Threading.Tasks;
+using IdentityServer4.Models;
 
 namespace IdentityServer4.Tests.Validation
 {
     public class TestResourceOwnerPasswordValidator : IResourceOwnerPasswordValidator
     {
-        public Task<GrantValidationResult> ValidateAsync(string userName, string password, ValidatedTokenRequest request)
+        public Task ValidateAsync(ResourceOwnerPasswordValidationContext context)
         {
-            if (userName == password)
+            if (context.UserName == context.Password)
             {
-                var result = new GrantValidationResult(request.UserName, "password");
-                return Task.FromResult(result);
+                context.Result = new GrantValidationResult(context.UserName, "password");
             }
-            else
-            {
-                var result = new GrantValidationResult("Username and/or password incorrect");
-                return Task.FromResult(result);
-            }
+
+            return Task.FromResult(0);
         }
     }
 }

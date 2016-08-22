@@ -399,15 +399,21 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // authenticate user
             /////////////////////////////////////////////
-            var resourceOwnerResult = await _resourceOwnerValidator.ValidateAsync(userName, password, _validatedRequest);
+            var resourceOwnerContext = new ResourceOwnerPasswordValidationContext
+            {
+                UserName = userName,
+                Password = password,
+                Request = _validatedRequest
+            };
+            await _resourceOwnerValidator.ValidateAsync(resourceOwnerContext);
 
-            if (resourceOwnerResult.IsError)
+            if (resourceOwnerContext.Result.IsError)
             {
                 var error = "invalid_username_or_password";
 
-                if (resourceOwnerResult.Error.IsPresent())
+                if (resourceOwnerContext.Result.Error.IsPresent())
                 {
-                    error = resourceOwnerResult.Error;
+                    error = resourceOwnerContext.Result.Error;
                 }
 
                 LogError("User authentication failed: " + error);
@@ -416,7 +422,7 @@ namespace IdentityServer4.Validation
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant, error);
             }
 
-            if (resourceOwnerResult.Principal == null)
+            if (resourceOwnerContext.Result.Principal == null)
             {
                 var error = "User authentication failed: no principal returned";
                 LogError(error);
@@ -426,9 +432,9 @@ namespace IdentityServer4.Validation
             }
 
             _validatedRequest.UserName = userName;
-            _validatedRequest.Subject = resourceOwnerResult.Principal;
+            _validatedRequest.Subject = resourceOwnerContext.Result.Principal;
 
-            await RaiseSuccessfulResourceOwnerAuthenticationEventAsync(userName, resourceOwnerResult.Principal.GetSubjectId());
+            await RaiseSuccessfulResourceOwnerAuthenticationEventAsync(userName, resourceOwnerContext.Result.Principal.GetSubjectId());
             _logger.LogInformation("Resource owner password token request validation success.");
             return Valid();
         }

@@ -44,14 +44,6 @@ namespace IdentityServer4.Validation
         public string UserName { get; set; }
         
         /// <summary>
-        /// Gets or sets the sign in message.
-        /// </summary>
-        /// <value>
-        /// The sign in message.
-        /// </value>
-        public AuthorizationRequest SignInMessage { get; set; }
-
-        /// <summary>
         /// Gets or sets the refresh token.
         /// </summary>
         /// <value>

@@ -1,5 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
+﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
+using IdentityServer4.Models;
+using IdentityModel;
 
 namespace IdentityServer4.Validation
 {
@@ -12,12 +17,12 @@ namespace IdentityServer4.Validation
             _logger = logger;
         }
 
-        public Task<GrantValidationResult> ValidateAsync(string userName, string password, ValidatedTokenRequest request)
+        public Task ValidateAsync(ResourceOwnerPasswordValidationContext context)
         {
-            var result = new GrantValidationResult("unsupported_grant_type");
+            context.Result = new GrantValidationResult(OidcConstants.TokenErrors.UnsupportedGrantType);
 
             _logger.LogWarning("Resource owner password credential type not supported. Configure an IResourceOwnerPasswordValidator.");
-            return Task.FromResult(result);
+            return Task.FromResult(0);
         }
     }
 }
