@@ -29,9 +29,10 @@ namespace IdentityServer4.Endpoints
         private readonly ILogger _logger;
         private readonly IdentityServerOptions _options;
         private readonly SecretParser _parsers;
+        private readonly IResourceOwnerPasswordValidator _resourceOwnerValidator;
         private readonly IScopeStore _scopes;
 
-        public DiscoveryEndpoint(IdentityServerOptions options, IdentityServerContext context, IScopeStore scopes, ILogger<DiscoveryEndpoint> logger, IEnumerable<IValidationKeysStore> keys, ExtensionGrantValidator extensionGrants, SecretParser parsers)
+        public DiscoveryEndpoint(IdentityServerOptions options, IdentityServerContext context, IScopeStore scopes, ILogger<DiscoveryEndpoint> logger, IEnumerable<IValidationKeysStore> keys, ExtensionGrantValidator extensionGrants, SecretParser parsers, IResourceOwnerPasswordValidator resourceOwnerValidator)
         {
             _options = options;
             _scopes = scopes;
@@ -40,6 +41,7 @@ namespace IdentityServer4.Endpoints
             _extensionGrants = extensionGrants;
             _parsers = parsers;
             _keys = keys;
+            _resourceOwnerValidator = resourceOwnerValidator;
         }
 
         public Task<IEndpointResult> ProcessAsync(IdentityServerContext context)
@@ -117,14 +119,19 @@ namespace IdentityServer4.Endpoints
             // grant types
             if (_options.DiscoveryOptions.ShowGrantTypes)
             {
-                var standardGrantTypes = Constants.SupportedGrantTypes.AsEnumerable();
-                
-                // TODO: find a better way to determine if password is support (e.g. by checking the type of IResourceOwnerPasswordValidator
-                //if (this._options.AuthenticationOptions.EnableLocalLogin == false)
-                //{
-                //    standardGrantTypes = standardGrantTypes.Where(type => type != OidcConstants.GrantTypes.Password);
-                //}
+                var standardGrantTypes = new List<string>
+                {
+                    OidcConstants.GrantTypes.AuthorizationCode,
+                    OidcConstants.GrantTypes.ClientCredentials,
+                    OidcConstants.GrantTypes.RefreshToken,
+                    OidcConstants.GrantTypes.Implicit
+                };
 
+                if (!(_resourceOwnerValidator is NotSupportedResouceOwnerPasswordValidator))
+                {
+                    standardGrantTypes.Add(OidcConstants.GrantTypes.Password);
+                }
+                
                 var showGrantTypes = new List<string>(standardGrantTypes);
 
                 if (_options.DiscoveryOptions.ShowExtensionGrantTypes)

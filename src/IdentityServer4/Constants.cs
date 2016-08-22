@@ -87,15 +87,6 @@ namespace IdentityServer4
             { OidcConstants.ResponseTypes.CodeIdTokenToken, ScopeRequirement.Identity }
         };
                             
-        public static readonly List<string> SupportedGrantTypes = new List<string> 
-        { 
-            OidcConstants.GrantTypes.AuthorizationCode,
-            OidcConstants.GrantTypes.ClientCredentials,
-            OidcConstants.GrantTypes.Password,
-            OidcConstants.GrantTypes.RefreshToken,
-            OidcConstants.GrantTypes.Implicit
-        };
-
         public static readonly Dictionary<string, IEnumerable<string>> AllowedResponseModesForGrantType = new Dictionary<string, IEnumerable<string>>
         {
             { GrantType.AuthorizationCode, new[] { OidcConstants.ResponseModes.Query, OidcConstants.ResponseModes.FormPost } },

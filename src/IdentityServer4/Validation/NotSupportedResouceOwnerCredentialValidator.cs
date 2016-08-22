@@ -7,11 +7,11 @@ using IdentityServer4.Models;
 
 namespace IdentityServer4.Validation
 {
-    public class NopResouceOwnerPasswordValidator : IResourceOwnerPasswordValidator
+    public class NotSupportedResouceOwnerPasswordValidator : IResourceOwnerPasswordValidator
     {
-        private readonly ILogger<NopResouceOwnerPasswordValidator> _logger;
+        private readonly ILogger<NotSupportedResouceOwnerPasswordValidator> _logger;
 
-        public NopResouceOwnerPasswordValidator(ILogger<NopResouceOwnerPasswordValidator> logger)
+        public NotSupportedResouceOwnerPasswordValidator(ILogger<NotSupportedResouceOwnerPasswordValidator> logger)
         {
             _logger = logger;
         }
