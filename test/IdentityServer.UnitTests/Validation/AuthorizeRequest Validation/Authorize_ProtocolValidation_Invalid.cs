@@ -383,5 +383,43 @@ namespace IdentityServer4.Tests.Validation.AuthorizeRequest
             result.ErrorType.Should().Be(ErrorTypes.Client);
             result.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
         }
+
+        [Fact]
+        [Trait("Category", "AuthorizeRequest Protocol Validation")]
+        public async Task Invalid_ResponseMode_For_TokenIdToken_ResponseType()
+        {
+            var parameters = new NameValueCollection();
+            parameters.Add(OidcConstants.AuthorizeRequest.ClientId, "implicitclient");
+            parameters.Add(OidcConstants.AuthorizeRequest.Scope, "openid");
+            parameters.Add(OidcConstants.AuthorizeRequest.RedirectUri, "oob://implicit/cb");
+            parameters.Add(OidcConstants.AuthorizeRequest.ResponseType, "token id_token"); // Unconventional order
+            parameters.Add(OidcConstants.AuthorizeRequest.ResponseMode, OidcConstants.ResponseModes.Query);
+
+            var validator = Factory.CreateAuthorizeRequestValidator();
+            var result = await validator.ValidateAsync(parameters);
+
+            result.IsError.Should().BeTrue();
+            result.ErrorType.Should().Be(ErrorTypes.User);
+            result.Error.Should().Be(OidcConstants.AuthorizeErrors.UnsupportedResponseType);
+        }
+
+        [Fact]
+        [Trait("Category", "AuthorizeRequest Protocol Validation")]
+        public async Task Invalid_ResponseMode_For_IdTokenCodeToken_ResponseType()
+        {
+            var parameters = new NameValueCollection();
+            parameters.Add(OidcConstants.AuthorizeRequest.ClientId, "hybridclient");
+            parameters.Add(OidcConstants.AuthorizeRequest.Scope, "openid");
+            parameters.Add(OidcConstants.AuthorizeRequest.RedirectUri, "https://server/cb");
+            parameters.Add(OidcConstants.AuthorizeRequest.ResponseType, "id_token code token"); // Unconventional ordering
+            parameters.Add(OidcConstants.AuthorizeRequest.ResponseMode, OidcConstants.ResponseModes.Query);
+
+            var validator = Factory.CreateAuthorizeRequestValidator();
+            var result = await validator.ValidateAsync(parameters);
+
+            result.IsError.Should().BeTrue();
+            result.ErrorType.Should().Be(ErrorTypes.User);
+            result.Error.Should().Be(OidcConstants.AuthorizeErrors.UnsupportedResponseType);
+        }
     }
 }
