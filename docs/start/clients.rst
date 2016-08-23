@@ -77,7 +77,7 @@ This client uses the so called implicit flow to request an identity and access t
         },
     };
 
-.. _start-clients-mvc:
+.. _startClientsMVC:
 
 Defining a server-side web application (e.g. MVC) for use authentication and delegated API access
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
