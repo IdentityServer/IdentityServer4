@@ -236,7 +236,7 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
                     Claims = new List<Claim> { subjectClaim },
                     Client = new Client { ClientId = "roclient" }
                 },
-                LifeTime = 600,
+                Lifetime = 600,
                 CreationTime = DateTimeOffset.UtcNow
             };
             var handle = Guid.NewGuid().ToString();
@@ -272,7 +272,7 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
                     Client = new Client { ClientId = "roclient_restricted_refresh" }
                 },
 
-                LifeTime = 600,
+                Lifetime = 600,
                 CreationTime = DateTimeOffset.UtcNow
             };
             var handle = Guid.NewGuid().ToString();

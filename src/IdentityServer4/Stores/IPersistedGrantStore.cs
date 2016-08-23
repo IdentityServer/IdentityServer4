@@ -14,5 +14,6 @@ namespace IdentityServer4.Stores
         Task StoreAsync(PersistedGrant token);
         Task<PersistedGrant> GetAsync(string key);
         Task RemoveAsync(string key);
+        Task RemoveAsync(string subjectId, string clientId, string type);
     }
 }

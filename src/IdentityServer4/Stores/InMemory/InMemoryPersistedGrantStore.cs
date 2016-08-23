@@ -1,13 +1,10 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System;
 
 namespace IdentityServer4.Stores.InMemory
 {
@@ -40,6 +37,25 @@ namespace IdentityServer4.Stores.InMemory
         {
             PersistedGrant val;
             _repository.TryRemove(key, out val);
+
+            return Task.FromResult(0);
+        }
+
+        public Task RemoveAsync(string subjectId, string clientId, string type)
+        {
+            var query =
+                from item in _repository
+                where item.Value.ClientId == clientId &&
+                    item.Value.SubjectId == subjectId &&
+                    item.Value.Type == type
+                select item.Key;
+
+            var keys = query.ToArray();
+            foreach(var key in keys)
+            {
+                PersistedGrant grant;
+                _repository.TryRemove(key, out grant);
+            }
 
             return Task.FromResult(0);
         }

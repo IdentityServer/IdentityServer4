@@ -493,7 +493,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // check if refresh token has expired
             /////////////////////////////////////////////
-            if (refreshToken.CreationTime.HasExceeded(refreshToken.LifeTime))
+            if (refreshToken.CreationTime.HasExceeded(refreshToken.Lifetime))
             {
                 var error = "Refresh token has expired";
                 LogError(error);

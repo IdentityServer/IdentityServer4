@@ -71,7 +71,7 @@ namespace IdentityServer4.Services.Default
             var refreshToken = new RefreshToken
             {
                 CreationTime = DateTimeOffsetHelper.UtcNow,
-                LifeTime = lifetime,
+                Lifetime = lifetime,
                 AccessToken = accessToken,
                 Subject = subject
             };
@@ -127,7 +127,7 @@ namespace IdentityServer4.Services.Default
                     _logger.LogDebug("New lifetime exceeds absolute lifetime, capping it to " + newLifetime.ToString());
                 }
 
-                refreshToken.LifeTime = newLifetime;
+                refreshToken.Lifetime = newLifetime;
                 needsUpdate = true;
             }
 

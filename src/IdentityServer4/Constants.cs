@@ -289,6 +289,13 @@ namespace IdentityServer4
             public const string AccessToken  = "access_token";
         }
 
+        public static class PersistedGrantTypes
+        {
+            public const string AuthorizationCode = "authorization_code";
+            public const string ReferenceToken = "reference_token";
+            public const string RefreshToken = "refresh_token";
+        }
+
         public static List<string> SupportedTokenTypeHints = new List<string>
         {
             TokenTypeHints.RefreshToken,

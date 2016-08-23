@@ -4,7 +4,6 @@
 using System.Threading.Tasks;
 using IdentityServer4.Hosting;
 using IdentityServer4.Extensions;
-using System.Text.Encodings.Web;
 
 namespace IdentityServer4.Endpoints.Results
 {

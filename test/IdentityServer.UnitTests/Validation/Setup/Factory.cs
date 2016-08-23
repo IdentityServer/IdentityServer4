@@ -73,7 +73,7 @@ namespace IdentityServer4.Tests.Validation
 
             if (grants == null)
             {
-                grants = new DefaultPersistedGrantService(new InMemoryPersistedGrantStore(), TestLogger.Create<DefaultPersistedGrantService>());
+                grants = new InMemoryPersistedGrantService();
             }
 
             if (scopeValidator == null)
@@ -161,7 +161,7 @@ namespace IdentityServer4.Tests.Validation
 
             if (grants == null)
             {
-                grants = new DefaultPersistedGrantService(new InMemoryPersistedGrantStore(), TestLogger.Create<DefaultPersistedGrantService>());
+                grants = new InMemoryPersistedGrantService();
             }
 
             var clients = CreateClientStore();
@@ -214,7 +214,7 @@ namespace IdentityServer4.Tests.Validation
 
         public static IPersistedGrantService CreateGrantService()
         {
-            return new TestPersistedGrantService();
+            return new InMemoryPersistedGrantService();
         }
     }
 }

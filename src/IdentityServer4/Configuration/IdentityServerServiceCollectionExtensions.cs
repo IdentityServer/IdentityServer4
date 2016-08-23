@@ -14,6 +14,7 @@ using IdentityServer4.Services.Default;
 using IdentityServer4.Services.InMemory;
 using IdentityServer4.Stores;
 using IdentityServer4.Stores.InMemory;
+using IdentityServer4.Stores.Serialization;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http;
@@ -209,6 +210,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IServiceCollection AddCoreServices(this IServiceCollection services)
         {
+            services.AddTransient<PersistentGrantSerializer>();
             services.TryAddTransient<IPersistedGrantService, DefaultPersistedGrantService>();
             services.TryAddTransient<ISigningCredentialStore, InMemorySigningCredentialsStore>();
             services.TryAddTransient<IEventService, DefaultEventService>();

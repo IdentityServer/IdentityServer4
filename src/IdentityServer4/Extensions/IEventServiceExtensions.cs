@@ -351,7 +351,8 @@ namespace IdentityServer4.Extensions
                 Scopes = code.Scopes,
                 SubjectId = code.Subject.GetSubjectId(),
                 RedirectUri = code.RedirectUri,
-                Lifetime = code.Client.AuthorizationCodeLifetime
+                // TODO:
+                //Lifetime = code.Client.AuthorizationCodeLifetime
             };
 
             await events.RaiseEventAsync(evt);
@@ -371,7 +372,7 @@ namespace IdentityServer4.Extensions
                 ClientId = token.ClientId,
                 Scopes = token.Scopes,
                 SubjectId = token.SubjectId,
-                Lifetime = token.LifeTime,
+                Lifetime = token.Lifetime,
                 Version = token.Version
             };
 
@@ -391,7 +392,7 @@ namespace IdentityServer4.Extensions
                 OldHandle = oldHandle,
                 NewHandle = newHandle,
                 ClientId = token.ClientId,
-                Lifetime = token.LifeTime
+                Lifetime = token.Lifetime
             };
 
             await events.RaiseEventAsync(evt);

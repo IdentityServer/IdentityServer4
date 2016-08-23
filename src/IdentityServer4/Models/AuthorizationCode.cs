@@ -102,37 +102,12 @@ namespace IdentityServer4.Models
         /// </value>
         public string CodeChallengeMethod { get; set; }
 
-        ///// <summary>
-        ///// Gets the subject identifier.
-        ///// </summary>
-        ///// <value>
-        ///// The subject identifier.
-        ///// </value>
-        //public string SubjectId
-        //{
-        //    get { return Subject.GetSubjectId(); }
-        //}
-
-        ///// <summary>
-        ///// Gets the client identifier.
-        ///// </summary>
-        ///// <value>
-        ///// The client identifier.
-        ///// </value>
-        //public string ClientId
-        //{
-        //    get { return Client.ClientId; }
-        //}
-
         /// <summary>
         /// Gets the scopes.
         /// </summary>
         /// <value>
         /// The scopes.
         /// </value>
-        public IEnumerable<string> Scopes
-        {
-            get { return RequestedScopes.Select(x => x.Name); }
-        }
+        public IEnumerable<string> Scopes => RequestedScopes.Select(x => x.Name);
     }
 }

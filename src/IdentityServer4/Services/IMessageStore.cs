@@ -3,7 +3,6 @@
 
 using IdentityServer4.Models;
 using System.Threading.Tasks;
-using System;
 
 namespace IdentityServer4.Services
 {

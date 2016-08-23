@@ -13,29 +13,11 @@ namespace IdentityServer4.Models
     public class RefreshToken
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="RefreshToken"/> class.
-        /// </summary>
-        public RefreshToken()
-        {
-            Version = 4;
-        }
-
-        /// <summary>
-        /// Gets the client identifier.
-        /// </summary>
-        /// <value>
-        /// The client identifier.
-        /// </value>
-        //public string ClientId { get { return AccessToken.ClientId; } }
-        public string ClientId { get; set; }
-
-        /// <summary>
         /// Gets or sets the creation time.
         /// </summary>
         /// <value>
         /// The creation time.
         /// </value>
-
         public DateTimeOffset CreationTime { get; set; }
 
         /// <summary>
@@ -44,7 +26,7 @@ namespace IdentityServer4.Models
         /// <value>
         /// The life time.
         /// </value>
-        public int LifeTime { get; set; }
+        public int Lifetime { get; set; }
 
         /// <summary>
         /// Gets or sets the access token.
@@ -68,7 +50,15 @@ namespace IdentityServer4.Models
         /// <value>
         /// The version.
         /// </value>
-        public int Version { get; set; }
+        public int Version { get; set; } = 4;
+
+        /// <summary>
+        /// Gets the client identifier.
+        /// </summary>
+        /// <value>
+        /// The client identifier.
+        /// </value>
+        public string ClientId => AccessToken.Client.ClientId;
 
         /// <summary>
         /// Gets the subject identifier.
@@ -76,10 +66,7 @@ namespace IdentityServer4.Models
         /// <value>
         /// The subject identifier.
         /// </value>
-        public string SubjectId
-        {
-            get { return AccessToken.SubjectId; }
-        }
+        public string SubjectId => AccessToken.SubjectId;
 
         /// <summary>
         /// Gets the scopes.
@@ -87,9 +74,6 @@ namespace IdentityServer4.Models
         /// <value>
         /// The scopes.
         /// </value>
-        public IEnumerable<string> Scopes
-        {
-            get { return AccessToken.Scopes; }
-        }
+        public IEnumerable<string> Scopes => AccessToken.Scopes;
     }
 }

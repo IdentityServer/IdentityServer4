@@ -13,7 +13,6 @@ using IdentityServer4.Events;
 using IdentityServer4.Hosting;
 using IdentityServer4.Endpoints.Results;
 using IdentityModel;
-using System.Security.Claims;
 
 namespace IdentityServer4.Endpoints
 {

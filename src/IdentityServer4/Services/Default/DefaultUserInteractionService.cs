@@ -2,12 +2,8 @@
 using IdentityServer4.Hosting;
 using IdentityServer4.Models;
 using IdentityServer4.Validation;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 

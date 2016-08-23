@@ -70,7 +70,7 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var refreshToken = new RefreshToken
             {
                 AccessToken = new Token("access_token") { Client = new Client() { ClientId = "roclient" } },
-                LifeTime = 10,
+                Lifetime = 10,
                 CreationTime = DateTimeOffset.UtcNow.AddSeconds(-15)
             };
             var handle = Guid.NewGuid().ToString();
@@ -142,7 +142,7 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
                         ClientId = "roclient_restricted"
                     },
                 },
-                LifeTime = 600,
+                Lifetime = 600,
                 CreationTime = DateTimeOffset.UtcNow
             };
             var handle = Guid.NewGuid().ToString();
@@ -178,7 +178,7 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
                     Claims = new List<Claim> { subjectClaim },
                     Client = new Client() { ClientId = "roclient" }
                 },
-                LifeTime = 600,
+                Lifetime = 600,
                 CreationTime = DateTimeOffset.UtcNow
             };
             var handle = Guid.NewGuid().ToString();

@@ -10,7 +10,6 @@ using IdentityServer4.Services;
 using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Endpoints.Results

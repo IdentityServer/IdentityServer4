@@ -16,6 +16,22 @@ namespace IdentityServer4.Models
     public class Token
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="Token"/> class.
+        /// </summary>
+        public Token()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Token"/> class.
+        /// </summary>
+        /// <param name="tokenType">Type of the token.</param>
+        public Token(string tokenType)
+        {
+            Type = tokenType;
+        }
+
+        /// <summary>
         /// Gets or sets the audience.
         /// </summary>
         /// <value>
@@ -37,7 +53,7 @@ namespace IdentityServer4.Models
         /// <value>
         /// The creation time.
         /// </value>
-        public DateTimeOffset CreationTime { get; set; }
+        public DateTimeOffset CreationTime { get; set; } = DateTimeOffsetHelper.UtcNow;
         
         /// <summary>
         /// Gets or sets the lifetime.
@@ -46,15 +62,15 @@ namespace IdentityServer4.Models
         /// The lifetime.
         /// </value>
         public int Lifetime { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the type.
         /// </summary>
         /// <value>
         /// The type.
         /// </value>
-        public string Type { get; set; }
-        
+        public string Type { get; set; } = OidcConstants.TokenTypes.AccessToken;
+
         /// <summary>
         /// Gets or sets the client.
         /// </summary>
@@ -69,7 +85,7 @@ namespace IdentityServer4.Models
         /// <value>
         /// The claims.
         /// </value>
-        public List<Claim> Claims { get; set; }
+        public List<Claim> Claims { get; set; } = new List<Claim>();
 
         /// <summary>
         /// Gets or sets the version.
@@ -77,26 +93,7 @@ namespace IdentityServer4.Models
         /// <value>
         /// The version.
         /// </value>
-        public int Version { get; set; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Token"/> class.
-        /// </summary>
-        public Token()
-        {
-            Version = 3;
-            Type = OidcConstants.TokenTypes.AccessToken;
-            CreationTime = DateTimeOffsetHelper.UtcNow;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Token"/> class.
-        /// </summary>
-        /// <param name="tokenType">Type of the token.</param>
-        public Token(string tokenType) : this()
-        {
-            Type = tokenType;
-        }
+        public int Version { get; set; } = 4;
 
         /// <summary>
         /// Gets the subject identifier.
@@ -104,37 +101,14 @@ namespace IdentityServer4.Models
         /// <value>
         /// The subject identifier.
         /// </value>
-        public string SubjectId
-        {
-            get
-            {
-                return Claims.Where(x => x.Type == JwtClaimTypes.Subject).Select(x => x.Value).SingleOrDefault();
-            }
-        }
-
-        ///// <summary>
-        ///// Gets the client identifier.
-        ///// </summary>
-        ///// <value>
-        ///// The client identifier.
-        ///// </value>
-        //public string ClientId
-        //{
-        //    get
-        //    {
-        //        return Client.ClientId;
-        //    }
-        //}
-
+        public string SubjectId => Claims.Where(x => x.Type == JwtClaimTypes.Subject).Select(x => x.Value).SingleOrDefault();
+      
         /// <summary>
         /// Gets the scopes.
         /// </summary>
         /// <value>
         /// The scopes.
         /// </value>
-        public IEnumerable<string> Scopes
-        {
-            get { return Claims.Where(x => x.Type == JwtClaimTypes.Scope).Select(x => x.Value); }
-        }
+        public IEnumerable<string> Scopes => Claims.Where(x => x.Type == JwtClaimTypes.Scope).Select(x => x.Value);
     }
 }
