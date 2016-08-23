@@ -534,9 +534,8 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // make sure user is enabled
             /////////////////////////////////////////////
-            var principal = IdentityServerPrincipal.FromSubjectId(_validatedRequest.RefreshToken.SubjectId, refreshToken.AccessToken.Claims);
-
-            var isActiveCtx = new IsActiveContext(principal, _validatedRequest.Client);
+            var subject = _validatedRequest.RefreshToken.Subject;
+            var isActiveCtx = new IsActiveContext(subject, _validatedRequest.Client);
             await _profile.IsActiveAsync(isActiveCtx);
 
             if (isActiveCtx.IsActive == false)
@@ -547,6 +546,8 @@ namespace IdentityServer4.Validation
 
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
+
+            _validatedRequest.Subject = subject;
 
             _logger.LogInformation("Validation of refresh token request success");
             return Valid();

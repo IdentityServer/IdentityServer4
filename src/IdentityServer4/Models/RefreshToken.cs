@@ -42,7 +42,7 @@ namespace IdentityServer4.Models
         /// <value>
         /// The subject.
         /// </value>
-        public ClaimsPrincipal Subject { get; set; }
+        public ClaimsPrincipal Subject => IdentityServerPrincipal.FromSubjectId(SubjectId, AccessToken.Claims);
 
         /// <summary>
         /// Gets or sets the version number.

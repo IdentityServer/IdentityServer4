@@ -73,7 +73,6 @@ namespace IdentityServer4.Services.Default
                 CreationTime = DateTimeOffsetHelper.UtcNow,
                 Lifetime = lifetime,
                 AccessToken = accessToken,
-                Subject = subject
             };
 
             await _grants.StoreRefreshTokenAsync(handle, refreshToken);
