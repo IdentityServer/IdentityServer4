@@ -3,9 +3,12 @@
 
 using FluentAssertions;
 using IdentityModel;
+using IdentityServer4.Models;
 using IdentityServer4.Services;
+using IdentityServer4.Validation;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
+using UnitTests.Common;
 using Xunit;
 
 namespace IdentityServer4.Tests.Validation.TokenRequest
@@ -201,12 +204,12 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             result.ErrorDescription.Should().Be("invalid_username_or_password");
         }
 
-        [Fact(Skip = "Update identitymodel to handle error_description")]
+        [Fact]
         [Trait("Category", Category)]
         public async Task Password_GrantType_Not_Supported()
         {
             var client = await _clients.FindClientByIdAsync("roclient");
-            var validator = Factory.CreateTokenRequestValidator(resourceOwnerValidator: new TestResourceOwnerPasswordValidator(OidcConstants.TokenErrors.UnsupportedGrantType));
+            var validator = Factory.CreateTokenRequestValidator(resourceOwnerValidator: new NotSupportedResouceOwnerPasswordValidator(TestLogger.Create<NotSupportedResouceOwnerPasswordValidator>()));
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.Password);
@@ -240,12 +243,12 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
         }
 
-        [Fact(Skip = "Update identitymodel to handle error_description")]
+        [Fact]
         [Trait("Category", Category)]
         public async Task Password_GrantType_With_Custom_ErrorDescription()
         {
             var client = await _clients.FindClientByIdAsync("roclient");
-            var validator = Factory.CreateTokenRequestValidator(resourceOwnerValidator: new TestResourceOwnerPasswordValidator(OidcConstants.TokenErrors.InvalidGrant, "custom error description"));
+            var validator = Factory.CreateTokenRequestValidator(resourceOwnerValidator: new TestResourceOwnerPasswordValidator(TokenErrors.InvalidGrant, "custom error description"));
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.Password);

@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -50,7 +51,8 @@ namespace IdentityServer4.Tests.Clients
 
             var response = await client.RequestCustomGrantAsync("custom", "api1", customParameters);
 
-            response.IsError.Should().Be(false);
+            response.IsError.Should().BeFalse();
+            response.HttpStatusCode.Should().Be(HttpStatusCode.OK);
             response.ExpiresIn.Should().Be(3600);
             response.TokenType.Should().Be("Bearer");
             response.IdentityToken.Should().BeNull();
@@ -71,7 +73,7 @@ namespace IdentityServer4.Tests.Clients
             amr.First().ToString().Should().Be("custom");
         }
 
-        [Fact(Skip = "Update identitymodel to handle error_description")]
+        [Fact]
         public async Task Valid_Client_Missing_Grant_Specific_Data()
         {
             var client = new TokenClient(
@@ -83,10 +85,9 @@ namespace IdentityServer4.Tests.Clients
             var response = await client.RequestCustomGrantAsync("custom", "api1");
 
             response.IsError.Should().Be(true);
+            response.ErrorType.Should().Be(TokenResponse.ResponseErrorType.Protocol);
             response.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
-
-            // todo: check error_description
-            //response.Error.Should().Be("invalid_custom_credential");
+            response.ErrorDescription.Should().Be("invalid_custom_credential");
         }
 
         [Fact]
@@ -106,6 +107,8 @@ namespace IdentityServer4.Tests.Clients
             var response = await client.RequestCustomGrantAsync("invalid", "api1", customParameters);
 
             response.IsError.Should().Be(true);
+            response.ErrorType.Should().Be(TokenResponse.ResponseErrorType.Protocol);
+            response.HttpStatusCode.Should().Be(HttpStatusCode.BadRequest);
             response.Error.Should().Be("unsupported_grant_type");
         }
 
@@ -126,6 +129,8 @@ namespace IdentityServer4.Tests.Clients
             var response = await client.RequestCustomGrantAsync("custom2", "api1", customParameters);
 
             response.IsError.Should().Be(true);
+            response.ErrorType.Should().Be(TokenResponse.ResponseErrorType.Protocol);
+            response.HttpStatusCode.Should().Be(HttpStatusCode.BadRequest);
             response.Error.Should().Be("unsupported_grant_type");
         }
 

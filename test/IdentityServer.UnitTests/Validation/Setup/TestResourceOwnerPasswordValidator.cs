@@ -1,25 +1,28 @@
 ﻿using IdentityServer4.Validation;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
-using IdentityModel;
-using IdentityServer4.Extensions;
 
 namespace IdentityServer4.Tests.Validation
 {
     public class TestResourceOwnerPasswordValidator : IResourceOwnerPasswordValidator
     {
         private string _erroDescription;
-        private string _error;
+        private TokenErrors _error;
+        private readonly bool _sendError;
 
-        public TestResourceOwnerPasswordValidator(string error = null, string errorDescription = null)
+        public TestResourceOwnerPasswordValidator()
+        { }
+
+        public TestResourceOwnerPasswordValidator(TokenErrors error, string errorDescription = null)
         {
+            _sendError = true;
             _error = error;
             _erroDescription = errorDescription;
         }
 
         public Task ValidateAsync(ResourceOwnerPasswordValidationContext context)
         {
-            if (_error.IsPresent())
+            if (_sendError)
             {
                 context.Result = new GrantValidationResult(_error, _erroDescription);
                 return Task.FromResult(0);

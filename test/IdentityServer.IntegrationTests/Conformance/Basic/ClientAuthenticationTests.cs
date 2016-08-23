@@ -87,7 +87,7 @@ namespace IdentityServer4.Tests.Conformance.Basic
             var tokenResult = await tokenClient.RequestAuthorizationCodeAsync(code, "https://code_pipeline.Client/callback?foo=bar&baz=quux");
 
             tokenResult.IsError.Should().BeFalse();
-            tokenResult.IsHttpError.Should().BeFalse();
+            tokenResult.HttpErrorReason.Should().BeNull();
             tokenResult.TokenType.Should().Be("Bearer");
             tokenResult.AccessToken.Should().NotBeNull();
             tokenResult.ExpiresIn.Should().BeGreaterThan(0);
@@ -124,7 +124,7 @@ namespace IdentityServer4.Tests.Conformance.Basic
             var tokenResult = await tokenClient.RequestAuthorizationCodeAsync(code, "https://code_pipeline.Client/callback?foo=bar&baz=quux");
 
             tokenResult.IsError.Should().BeFalse();
-            tokenResult.IsHttpError.Should().BeFalse();
+            tokenResult.HttpErrorReason.Should().BeNull();
             tokenResult.TokenType.Should().Be("Bearer");
             tokenResult.AccessToken.Should().NotBeNull();
             tokenResult.ExpiresIn.Should().BeGreaterThan(0);

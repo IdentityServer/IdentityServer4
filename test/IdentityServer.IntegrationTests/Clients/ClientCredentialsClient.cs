@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -144,6 +145,8 @@ namespace IdentityServer4.Tests.Clients
             var response = await client.RequestClientCredentialsAsync("api1");
 
             response.IsError.Should().Be(true);
+            response.ErrorType.Should().Be(TokenResponse.ResponseErrorType.Protocol);
+            response.HttpStatusCode.Should().Be(HttpStatusCode.BadRequest);
             response.Error.Should().Be("invalid_client");
         }
 
@@ -159,6 +162,8 @@ namespace IdentityServer4.Tests.Clients
             var response = await client.RequestClientCredentialsAsync("unknown");
 
             response.IsError.Should().Be(true);
+            response.ErrorType.Should().Be(TokenResponse.ResponseErrorType.Protocol);
+            response.HttpStatusCode.Should().Be(HttpStatusCode.BadRequest);
             response.Error.Should().Be("invalid_scope");
         }
 
@@ -174,6 +179,8 @@ namespace IdentityServer4.Tests.Clients
             var response = await client.RequestClientCredentialsAsync("api3");
 
             response.IsError.Should().Be(true);
+            response.ErrorType.Should().Be(TokenResponse.ResponseErrorType.Protocol);
+            response.HttpStatusCode.Should().Be(HttpStatusCode.BadRequest);
             response.Error.Should().Be("invalid_scope");
         }
 
@@ -189,6 +196,8 @@ namespace IdentityServer4.Tests.Clients
             var response = await client.RequestClientCredentialsAsync("api1 api3");
 
             response.IsError.Should().Be(true);
+            response.ErrorType.Should().Be(TokenResponse.ResponseErrorType.Protocol);
+            response.HttpStatusCode.Should().Be(HttpStatusCode.BadRequest);
             response.Error.Should().Be("invalid_scope");
         }
 

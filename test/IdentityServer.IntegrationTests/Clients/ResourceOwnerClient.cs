@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -153,6 +154,8 @@ namespace IdentityServer4.Tests.Clients
             var response = await client.RequestResourceOwnerPasswordAsync("unknown", "bob", "api1");
 
             response.IsError.Should().Be(true);
+            response.ErrorType.Should().Be(TokenResponse.ResponseErrorType.Protocol);
+            response.HttpStatusCode.Should().Be(HttpStatusCode.BadRequest);
             response.Error.Should().Be("invalid_grant");
         }
 
@@ -168,6 +171,8 @@ namespace IdentityServer4.Tests.Clients
             var response = await client.RequestResourceOwnerPasswordAsync("bob", "invalid", "api1");
 
             response.IsError.Should().Be(true);
+            response.ErrorType.Should().Be(TokenResponse.ResponseErrorType.Protocol);
+            response.HttpStatusCode.Should().Be(HttpStatusCode.BadRequest);
             response.Error.Should().Be("invalid_grant");
         }
 
