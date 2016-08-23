@@ -18,13 +18,10 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
         IClientStore _clients = new InMemoryClientStore(TestClients.Get());
 
         [Fact]
-        
         [Trait("Category", "TokenRequest Validation - General - Invalid")]
         public void Parameters_Null()
         {
-            var store = new InMemoryAuthorizationCodeStore();
-            var validator = Factory.CreateTokenRequestValidator(
-                authorizationCodeStore: store);
+            var validator = Factory.CreateTokenRequestValidator();
 
             Func<Task> act = () => validator.ValidateRequestAsync(null, null);
 
@@ -32,13 +29,10 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
         }
 
         [Fact]
-        
         [Trait("Category", "TokenRequest Validation - General - Invalid")]
         public void Client_Null()
         {
-            var store = new InMemoryAuthorizationCodeStore();
-            var validator = Factory.CreateTokenRequestValidator(
-                authorizationCodeStore: store);
+            var validator = Factory.CreateTokenRequestValidator();
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.AuthorizationCode);
@@ -55,7 +49,7 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
         public async Task Unknown_Grant_Type()
         {
             var client = await _clients.FindClientByIdAsync("codeclient");
-            var store = new InMemoryAuthorizationCodeStore();
+            var grants = Factory.CreateGrantService();
 
             var code = new AuthorizationCode
             {
@@ -64,10 +58,10 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
                 RedirectUri = "https://server/cb",
             };
 
-            await store.StoreAsync("valid", code);
+            await grants.StoreAuthorizationCodeAsync("valid", code);
 
             var validator = Factory.CreateTokenRequestValidator(
-                authorizationCodeStore: store);
+                grants: grants);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, "unknown");
@@ -85,7 +79,7 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
         public async Task Missing_Grant_Type()
         {
             var client = await _clients.FindClientByIdAsync("codeclient");
-            var store = new InMemoryAuthorizationCodeStore();
+            var grants = Factory.CreateGrantService();
 
             var code = new AuthorizationCode
             {
@@ -94,10 +88,10 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
                 RedirectUri = "https://server/cb",
             };
 
-            await store.StoreAsync("valid", code);
+            await grants.StoreAuthorizationCodeAsync("valid", code);
 
             var validator = Factory.CreateTokenRequestValidator(
-                authorizationCodeStore: store);
+                grants: grants);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.Code, "valid");

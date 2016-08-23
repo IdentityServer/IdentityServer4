@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using UnitTests.Common;
 using Xunit;
 
 namespace IdentityServer4.Tests.Validation.TokenRequest
@@ -26,7 +27,7 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
         public async Task Valid_Code_Request()
         {
             var client = await _clients.FindClientByIdAsync("codeclient");
-            var store = new InMemoryAuthorizationCodeStore();
+            var grants = Factory.CreateGrantService();
 
             var code = new AuthorizationCode
             {
@@ -42,10 +43,10 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
                 }
             };
 
-            await store.StoreAsync("valid", code);
+            await grants.StoreAuthorizationCodeAsync("valid", code);
 
             var validator = Factory.CreateTokenRequestValidator(
-                authorizationCodeStore: store);
+                grants: grants);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.AuthorizationCode);
@@ -62,7 +63,7 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
         public async Task Valid_Code_Request_with_Refresh_Token()
         {
             var client = await _clients.FindClientByIdAsync("codeclient");
-            var store = new InMemoryAuthorizationCodeStore();
+            var grants = Factory.CreateGrantService();
 
             var code = new AuthorizationCode
             {
@@ -82,10 +83,10 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
                 }
             };
 
-            await store.StoreAsync("valid", code);
+            await grants.StoreAuthorizationCodeAsync("valid", code);
 
             var validator = Factory.CreateTokenRequestValidator(
-                authorizationCodeStore: store);
+                grants: grants);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.AuthorizationCode);
@@ -240,13 +241,13 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             };
             var handle = Guid.NewGuid().ToString();
 
-            var store = new InMemoryRefreshTokenStore();
-            await store.StoreAsync(handle, refreshToken);
+            var grants = Factory.CreateGrantService();
+            await grants.StoreRefreshTokenAsync(handle, refreshToken);
 
             var client = await _clients.FindClientByIdAsync("roclient");
 
             var validator = Factory.CreateTokenRequestValidator(
-                refreshTokens: store);
+                grants: grants);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, "refresh_token");
@@ -276,13 +277,13 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             };
             var handle = Guid.NewGuid().ToString();
 
-            var store = new InMemoryRefreshTokenStore();
-            await store.StoreAsync(handle, refreshToken);
+            var grants = Factory.CreateGrantService();
+            await grants.StoreRefreshTokenAsync(handle, refreshToken);
 
             var client = await _clients.FindClientByIdAsync("roclient_restricted_refresh");
 
             var validator = Factory.CreateTokenRequestValidator(
-                refreshTokens: store);
+                grants: grants);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, "refresh_token");

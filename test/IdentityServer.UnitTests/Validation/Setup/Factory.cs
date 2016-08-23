@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using IdentityServer4.Hosting;
 using UnitTests.Common;
+using IdentityServer4.Stores.InMemory;
 
 namespace IdentityServer4.Tests.Validation
 {
@@ -28,8 +29,7 @@ namespace IdentityServer4.Tests.Validation
         public static TokenRequestValidator CreateTokenRequestValidator(
             IdentityServerOptions options = null,
             IScopeStore scopes = null,
-            IAuthorizationCodeStore authorizationCodeStore = null,
-            IRefreshTokenStore refreshTokens = null,
+            IPersistedGrantService grants = null,
             IResourceOwnerPasswordValidator resourceOwnerValidator = null,
             IProfileService profile = null,
             IEnumerable<IExtensionGrantValidator> extensionGrantValidators = null,
@@ -64,16 +64,16 @@ namespace IdentityServer4.Tests.Validation
             ExtensionGrantValidator aggregateExtensionGrantValidator;
             if (extensionGrantValidators == null)
             {
-                aggregateExtensionGrantValidator = new ExtensionGrantValidator(new [] { new TestGrantValidator() }, TestLogger.Create<ExtensionGrantValidator>());
+                aggregateExtensionGrantValidator = new ExtensionGrantValidator(new[] { new TestGrantValidator() }, TestLogger.Create<ExtensionGrantValidator>());
             }
             else
             {
                 aggregateExtensionGrantValidator = new ExtensionGrantValidator(extensionGrantValidators, TestLogger.Create<ExtensionGrantValidator>());
             }
-                
-            if (refreshTokens == null)
+
+            if (grants == null)
             {
-                refreshTokens = new InMemoryRefreshTokenStore();
+                grants = new DefaultPersistedGrantService(new InMemoryPersistedGrantStore(), TestLogger.Create<DefaultPersistedGrantService>());
             }
 
             if (scopeValidator == null)
@@ -84,14 +84,13 @@ namespace IdentityServer4.Tests.Validation
             var idsvrContext = IdentityServerContextHelper.Create();
 
             return new TokenRequestValidator(
-                options, 
-                authorizationCodeStore, 
-                refreshTokens, 
-                resourceOwnerValidator, 
+                options,
+                grants,
+                resourceOwnerValidator,
                 profile,
-                aggregateExtensionGrantValidator, 
-                customRequestValidator, 
-                scopeValidator, 
+                aggregateExtensionGrantValidator,
+                customRequestValidator,
+                scopeValidator,
                 new TestEventService(),
                 TestLogger.Create<TokenRequestValidator>());
         }
@@ -153,16 +152,16 @@ namespace IdentityServer4.Tests.Validation
                 TestLogger.Create<AuthorizeRequestValidator>());
         }
 
-        public static TokenValidator CreateTokenValidator(ITokenHandleStore tokenStore = null, IProfileService profile = null)
+        public static TokenValidator CreateTokenValidator(IPersistedGrantService grants = null, IProfileService profile = null)
         {
             if (profile == null)
             {
                 profile = new TestProfileService();
             }
 
-            if (tokenStore == null)
+            if (grants == null)
             {
-                tokenStore = new InMemoryTokenHandleStore();
+                grants = new DefaultPersistedGrantService(new InMemoryPersistedGrantStore(), TestLogger.Create<DefaultPersistedGrantService>());
             }
 
             var clients = CreateClientStore();
@@ -171,7 +170,7 @@ namespace IdentityServer4.Tests.Validation
 
             var validator = new TokenValidator(
                 clients: clients,
-                tokenHandles: tokenStore,
+                grants: grants,
                 customValidator: new DefaultCustomTokenValidator(
                     profile: profile,
                     clients: clients,
@@ -211,6 +210,11 @@ namespace IdentityServer4.Tests.Validation
             }
 
             return new ClientSecretValidator(clients, parser, validator, new TestEventService(), TestLogger.Create<ClientSecretValidator>());
+        }
+
+        public static IPersistedGrantService CreateGrantService()
+        {
+            return new TestPersistedGrantService();
         }
     }
 }

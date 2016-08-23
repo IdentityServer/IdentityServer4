@@ -24,22 +24,19 @@ namespace IdentityServer4.Endpoints
         private readonly ILogger _logger;
         private readonly ClientSecretValidator _clientValidator;
         private readonly ITokenRevocationRequestValidator _requestValidator;
-        private readonly ITokenHandleStore _tokenHandles;
-        private readonly IRefreshTokenStore _refreshTokens;
+        private readonly IPersistedGrantService _grants;
         private readonly IEventService _events;
 
         public RevocationEndpoint(ILogger<RevocationEndpoint> logger,
             ClientSecretValidator clientValidator,
             ITokenRevocationRequestValidator requestValidator,
-            ITokenHandleStore tokenHandles, 
-            IRefreshTokenStore refreshTokens, 
+            IPersistedGrantService grants,
             IEventService events)
         {
             _logger = logger;
             _clientValidator = clientValidator;
             _requestValidator = requestValidator;
-            _tokenHandles = tokenHandles;
-            _refreshTokens = refreshTokens;
+            _grants = grants;
             _events = events;
         }
 
@@ -121,17 +118,17 @@ namespace IdentityServer4.Endpoints
         // revoke access token only if it belongs to client doing the request
         private async Task<bool> RevokeAccessTokenAsync(string handle, Client client)
         {
-            var token = await _tokenHandles.GetAsync(handle);
+            var token = await _grants.GetReferenceTokenAsync(handle);
 
             if (token != null)
             {
-                if (token.ClientId == client.ClientId)
+                if (token.Client.ClientId == client.ClientId)
                 {
-                    await _tokenHandles.RemoveAsync(handle);
+                    await _grants.RemoveReferenceTokenAsync(handle);
                 }
                 else
                 {
-                    var message = string.Format("Client {0} tried to revoke an access token belonging to a different client: {1}", client.ClientId, token.ClientId);
+                    var message = string.Format("Client {0} tried to revoke an access token belonging to a different client: {1}", client.ClientId, token.Client.ClientId);
 
                     _logger.LogWarning(message);
                     await RaiseFailureEventAsync(message);
@@ -146,14 +143,14 @@ namespace IdentityServer4.Endpoints
         // revoke refresh token only if it belongs to client doing the request
         private async Task<bool> RevokeRefreshTokenAsync(string handle, Client client)
         {
-            var token = await _refreshTokens.GetAsync(handle);
+            var token = await _grants.GetRefreshTokenAsync(handle);
 
             if (token != null)
             {
                 if (token.ClientId == client.ClientId)
                 {
-                    await _refreshTokens.RevokeAsync(token.SubjectId, token.ClientId);
-                    await _tokenHandles.RevokeAsync(token.SubjectId, token.ClientId);
+                    await _grants.RemoveRefreshTokensAsync(token.SubjectId, token.ClientId);
+                    await _grants.RemoveReferenceTokensAsync(token.SubjectId, token.ClientId);
                 }
                 else
                 {

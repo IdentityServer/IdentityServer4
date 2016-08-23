@@ -13,7 +13,7 @@ namespace IdentityServer4.Models
     /// <summary>
     /// Models a token.
     /// </summary>
-    public class Token : ITokenMetadata
+    public class Token
     {
         /// <summary>
         /// Gets or sets the audience.
@@ -112,19 +112,19 @@ namespace IdentityServer4.Models
             }
         }
 
-        /// <summary>
-        /// Gets the client identifier.
-        /// </summary>
-        /// <value>
-        /// The client identifier.
-        /// </value>
-        public string ClientId
-        {
-            get
-            {
-                return Client.ClientId;
-            }
-        }
+        ///// <summary>
+        ///// Gets the client identifier.
+        ///// </summary>
+        ///// <value>
+        ///// The client identifier.
+        ///// </value>
+        //public string ClientId
+        //{
+        //    get
+        //    {
+        //        return Client.ClientId;
+        //    }
+        //}
 
         /// <summary>
         /// Gets the scopes.

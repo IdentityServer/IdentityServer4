@@ -305,10 +305,11 @@ namespace IdentityServer4.Extensions
             evt.DetailsFunc = () => new AccessTokenIssuedDetails
             {
                 SubjectId = token.SubjectId ?? "no subject id",
-                ClientId = token.ClientId,
+                ClientId = token.Client.ClientId,
                 TokenType = token.Client.AccessTokenType,
                 Lifetime = token.Lifetime,
-                Scopes = token.Scopes,
+                // TODO: extract scopes from claims collection
+                //Scopes = token.Claims.Scopes,
                 Claims = token.Claims.ToClaimsDictionary(),
                 ReferenceTokenHandle = referenceTokenHandle
             };
@@ -327,7 +328,7 @@ namespace IdentityServer4.Extensions
             evt.DetailsFunc = () => new TokenIssuedDetailsBase
             {
                 SubjectId = token.SubjectId,
-                ClientId = token.ClientId,
+                ClientId = token.Client.ClientId,
                 Lifetime = token.Lifetime,
                 Claims = token.Claims.ToClaimsDictionary()
             };
@@ -346,9 +347,9 @@ namespace IdentityServer4.Extensions
             evt.DetailsFunc = () => new AuthorizationCodeDetails
             {
                 HandleId = id,
-                ClientId = code.ClientId,
+                ClientId = code.Client.ClientId,
                 Scopes = code.Scopes,
-                SubjectId = code.SubjectId,
+                SubjectId = code.Subject.GetSubjectId(),
                 RedirectUri = code.RedirectUri,
                 Lifetime = code.Client.AuthorizationCodeLifetime
             };

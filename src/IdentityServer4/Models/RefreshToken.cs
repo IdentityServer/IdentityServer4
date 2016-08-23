@@ -10,7 +10,7 @@ namespace IdentityServer4.Models
     /// <summary>
     /// Models a refresh token.
     /// </summary>
-    public class RefreshToken : ITokenMetadata
+    public class RefreshToken
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RefreshToken"/> class.
@@ -26,15 +26,16 @@ namespace IdentityServer4.Models
         /// <value>
         /// The client identifier.
         /// </value>
-        public string ClientId { get { return AccessToken.ClientId; } }
-     
+        //public string ClientId { get { return AccessToken.ClientId; } }
+        public string ClientId { get; set; }
+
         /// <summary>
         /// Gets or sets the creation time.
         /// </summary>
         /// <value>
         /// The creation time.
         /// </value>
-        
+
         public DateTimeOffset CreationTime { get; set; }
 
         /// <summary>
@@ -89,18 +90,6 @@ namespace IdentityServer4.Models
         public IEnumerable<string> Scopes
         {
             get { return AccessToken.Scopes; }
-        }
-
-        internal ClaimsPrincipal GetOriginalSubject()
-        {
-            if (Version <= 3)
-            {
-                return IdentityServerPrincipal.FromClaims(AccessToken.Claims, allowMissing: true);
-            }
-            else
-            {
-                return Subject;
-            }
         }
     }
 }

@@ -37,9 +37,9 @@ namespace IdentityServer4.Services.Default
         protected readonly IClaimsProvider _claimsProvider;
 
         /// <summary>
-        /// The token handles
+        /// The persisted grants
         /// </summary>
-        protected readonly ITokenHandleStore _tokenHandles;
+        protected readonly IPersistedGrantService _grants;
 
         /// <summary>
         /// The signing service
@@ -51,9 +51,6 @@ namespace IdentityServer4.Services.Default
         /// </summary>
         protected readonly IEventService _events;
         
-        // todo
-        //protected readonly OwinEnvironmentService _owinEnvironmentService;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultTokenService" /> class. This overloaded constructor is deprecated and will be removed in 3.0.0.
         /// </summary>
@@ -62,12 +59,12 @@ namespace IdentityServer4.Services.Default
         /// <param name="tokenHandles">The token handles.</param>
         /// <param name="creationService">The signing service.</param>
         /// <param name="events">The events service.</param>
-        public DefaultTokenService(IdentityServerContext context, IClaimsProvider claimsProvider, ITokenHandleStore tokenHandles, ITokenCreationService creationService, IEventService events, ILogger<DefaultTokenService> logger)
+        public DefaultTokenService(IdentityServerContext context, IClaimsProvider claimsProvider, IPersistedGrantService grants, ITokenCreationService creationService, IEventService events, ILogger<DefaultTokenService> logger)
         {
             _logger = logger;
             _context = context;
             _claimsProvider = claimsProvider;
-            _tokenHandles = tokenHandles;
+            _grants = grants;
             _creationService = creationService;
             _events = events;
         }
@@ -197,7 +194,7 @@ namespace IdentityServer4.Services.Default
                     _logger.LogTrace("Creating reference access token");
 
                     var handle = CryptoRandom.CreateUniqueId();
-                    await _tokenHandles.StoreAsync(handle, token);
+                    await _grants.StoreReferenceTokenAsync(handle, token);
 
                     tokenResult = handle;
                 }

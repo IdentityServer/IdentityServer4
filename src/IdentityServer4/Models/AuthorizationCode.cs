@@ -12,7 +12,7 @@ namespace IdentityServer4.Models
     /// <summary>
     /// Modles an authorization code.
     /// </summary>
-    public class AuthorizationCode : ITokenMetadata
+    public class AuthorizationCode
     {
         /// <summary>
         /// Gets or sets the creation time.
@@ -102,27 +102,27 @@ namespace IdentityServer4.Models
         /// </value>
         public string CodeChallengeMethod { get; set; }
 
-        /// <summary>
-        /// Gets the subject identifier.
-        /// </summary>
-        /// <value>
-        /// The subject identifier.
-        /// </value>
-        public string SubjectId
-        {
-            get { return Subject.GetSubjectId(); }
-        }
+        ///// <summary>
+        ///// Gets the subject identifier.
+        ///// </summary>
+        ///// <value>
+        ///// The subject identifier.
+        ///// </value>
+        //public string SubjectId
+        //{
+        //    get { return Subject.GetSubjectId(); }
+        //}
 
-        /// <summary>
-        /// Gets the client identifier.
-        /// </summary>
-        /// <value>
-        /// The client identifier.
-        /// </value>
-        public string ClientId
-        {
-            get { return Client.ClientId; }
-        }
+        ///// <summary>
+        ///// Gets the client identifier.
+        ///// </summary>
+        ///// <value>
+        ///// The client identifier.
+        ///// </value>
+        //public string ClientId
+        //{
+        //    get { return Client.ClientId; }
+        //}
 
         /// <summary>
         /// Gets the scopes.

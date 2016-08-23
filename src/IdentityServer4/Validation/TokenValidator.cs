@@ -22,18 +22,18 @@ namespace IdentityServer4.Validation
     {
         private readonly ILogger _logger;
         private readonly IdentityServerContext _context;
-        private readonly ITokenHandleStore _tokenHandles;
+        private readonly IPersistedGrantService _grants;
         private readonly ICustomTokenValidator _customValidator;
         private readonly IClientStore _clients;
         private readonly IEnumerable<IValidationKeysStore> _keys;
 
         private readonly TokenValidationLog _log;
         
-        public TokenValidator(IdentityServerContext context, IClientStore clients, ITokenHandleStore tokenHandles, ICustomTokenValidator customValidator, IEnumerable<IValidationKeysStore> keys, ILogger<TokenValidator> logger)
+        public TokenValidator(IdentityServerContext context, IClientStore clients, IPersistedGrantService grants, ICustomTokenValidator customValidator, IEnumerable<IValidationKeysStore> keys, ILogger<TokenValidator> logger)
         {
             _context = context;
             _clients = clients;
-            _tokenHandles = tokenHandles;
+            _grants = grants;
             _customValidator = customValidator;
             _keys = keys;
             _logger = logger;
@@ -238,7 +238,7 @@ namespace IdentityServer4.Validation
         private async Task<TokenValidationResult> ValidateReferenceAccessTokenAsync(string tokenHandle)
         {
             _log.TokenHandle = tokenHandle;
-            var token = await _tokenHandles.GetAsync(tokenHandle);
+            var token = await _grants.GetReferenceTokenAsync(tokenHandle);
 
             if (token == null)
             {
@@ -246,19 +246,20 @@ namespace IdentityServer4.Validation
                 return Invalid(OidcConstants.ProtectedResourceErrors.InvalidToken);
             }
 
-            if (token.Type != OidcConstants.TokenTypes.AccessToken)
-            {
-                LogError("Token handle does not resolve to an access token - but instead to: " + token.Type);
+            // TODO: review
+            //if (token.Type != OidcConstants.TokenTypes.AccessToken)
+            //{
+            //    LogError("Token handle does not resolve to an access token - but instead to: " + token.Type);
 
-                await _tokenHandles.RemoveAsync(tokenHandle);
-                return Invalid(OidcConstants.ProtectedResourceErrors.InvalidToken);
-            }
+            //    await _tokenHandles.RemoveAsync(tokenHandle);
+            //    return Invalid(OidcConstants.ProtectedResourceErrors.InvalidToken);
+            //}
 
             if (DateTimeOffsetHelper.UtcNow >= token.CreationTime.AddSeconds(token.Lifetime))
             {
                 LogError("Token expired.");
 
-                await _tokenHandles.RemoveAsync(tokenHandle);
+                await _grants.RemoveReferenceTokenAsync(tokenHandle);
                 return Invalid(OidcConstants.ProtectedResourceErrors.ExpiredToken);
             }
 

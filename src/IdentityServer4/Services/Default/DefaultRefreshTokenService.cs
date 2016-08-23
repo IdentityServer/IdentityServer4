@@ -23,7 +23,7 @@ namespace IdentityServer4.Services.Default
         /// <summary>
         /// The refresh token store
         /// </summary>
-        protected readonly IRefreshTokenStore _store;
+        protected readonly IPersistedGrantService _grants;
 
         /// <summary>
         /// The _events
@@ -33,12 +33,12 @@ namespace IdentityServer4.Services.Default
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultRefreshTokenService" /> class.
         /// </summary>
-        /// <param name="store">The refresh token store.</param>
+        /// <param name="grants">The grants store.</param>
         /// <param name="events">The events.</param>
-        public DefaultRefreshTokenService(IRefreshTokenStore store, IEventService events, ILoggerFactory loggerFactory)
+        public DefaultRefreshTokenService(IPersistedGrantService grants, IEventService events, ILogger<DefaultRefreshTokenService> logger)
         {
-            _logger = loggerFactory.CreateLogger<DefaultRefreshTokenService>();
-            _store = store;
+            _logger = logger;
+            _grants = grants;
             _events = events;
         }
 
@@ -76,7 +76,7 @@ namespace IdentityServer4.Services.Default
                 Subject = subject
             };
 
-            await _store.StoreAsync(handle, refreshToken);
+            await _grants.StoreRefreshTokenAsync(handle, refreshToken);
 
             await RaiseRefreshTokenIssuedEventAsync(handle, refreshToken);
             return handle;
@@ -102,7 +102,7 @@ namespace IdentityServer4.Services.Default
                 _logger.LogDebug("Token usage is one-time only. Generating new handle");
 
                 // delete old one
-                await _store.RemoveAsync(handle);
+                await _grants.RemoveRefreshTokenAsync(handle);
 
                 // create new one
                 handle = CryptoRandom.CreateUniqueId();
@@ -133,7 +133,7 @@ namespace IdentityServer4.Services.Default
 
             if (needsUpdate)
             {
-                await _store.StoreAsync(handle, refreshToken);
+                await _grants.StoreRefreshTokenAsync(handle, refreshToken);
                 _logger.LogDebug("Updated refresh token in store");
             }
             else

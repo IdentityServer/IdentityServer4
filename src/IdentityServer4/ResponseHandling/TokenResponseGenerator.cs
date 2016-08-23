@@ -118,7 +118,7 @@ namespace IdentityServer4.ResponseHandling
             
             if (request.Client.UpdateAccessTokenClaimsOnRefresh)
             {
-                var subject = request.RefreshToken.GetOriginalSubject();
+                var subject = request.RefreshToken.Subject;
 
                 var creationRequest = new TokenCreationRequest
                 {

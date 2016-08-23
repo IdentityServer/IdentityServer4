@@ -19,14 +19,14 @@ namespace IdentityServer4.ResponseHandling
     {
         private readonly ILogger<AuthorizeResponseGenerator> _logger;
         private readonly ITokenService _tokenService;
-        private readonly IAuthorizationCodeStore _authorizationCodes;
+        private readonly IPersistedGrantService _grants;
         private readonly IEventService _events;
 
-        public AuthorizeResponseGenerator(ILogger<AuthorizeResponseGenerator> logger, ITokenService tokenService, IAuthorizationCodeStore authorizationCodes, IEventService events)
+        public AuthorizeResponseGenerator(ILogger<AuthorizeResponseGenerator> logger, ITokenService tokenService, IPersistedGrantService grants, IEventService events)
         {
             _logger = logger;
             _tokenService = tokenService;
-            _authorizationCodes = authorizationCodes;
+            _grants = grants;
             _events = events;
         }
 
@@ -102,7 +102,7 @@ namespace IdentityServer4.ResponseHandling
 
             // store id token and access token and return authorization code
             var id = CryptoRandom.CreateUniqueId();
-            await _authorizationCodes.StoreAsync(id, code);
+            await _grants.StoreAuthorizationCodeAsync(id, code);
 
             await RaiseCodeIssuedEventAsync(id, code);
 
