@@ -9,14 +9,12 @@ namespace IdentityServer4.Stores.Serialization
     {
         private readonly JsonSerializerSettings _settings;
 
-        public PersistentGrantSerializer(IClientStore clientStore, IScopeStore scopeStore)
+        public PersistentGrantSerializer()
         {
             _settings = new JsonSerializerSettings();
             _settings.ContractResolver = new CustomContractResolver();
             _settings.Converters.Add(new ClaimConverter());
             _settings.Converters.Add(new ClaimsPrincipalConverter());
-            _settings.Converters.Add(new ClientConverter(clientStore));
-            _settings.Converters.Add(new ScopeConverter(scopeStore));
         }
 
         public virtual string Serialize<T>(T value)

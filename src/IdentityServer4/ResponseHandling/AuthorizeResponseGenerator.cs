@@ -86,14 +86,15 @@ namespace IdentityServer4.ResponseHandling
         {
             var code = new AuthorizationCode
             {
-                Client = request.Client,
+                ClientId = request.Client.ClientId,
+                Lifetime = request.Client.AuthorizationCodeLifetime,
                 Subject = request.Subject,
                 SessionId = request.SessionId,
                 CodeChallenge = request.CodeChallenge.Sha256(),
                 CodeChallengeMethod = request.CodeChallengeMethod,
 
                 IsOpenId = request.IsOpenIdRequest,
-                RequestedScopes = request.ValidatedScopes.GrantedScopes,
+                RequestedScopes = request.ValidatedScopes.GrantedScopes.Select(a => a.Name),
                 RedirectUri = request.RedirectUri,
                 Nonce = request.Nonce,
 

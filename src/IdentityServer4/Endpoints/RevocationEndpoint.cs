@@ -119,13 +119,13 @@ namespace IdentityServer4.Endpoints
 
             if (token != null)
             {
-                if (token.Client.ClientId == client.ClientId)
+                if (token.ClientId == client.ClientId)
                 {
                     await _grants.RemoveReferenceTokenAsync(handle);
                 }
                 else
                 {
-                    var message = string.Format("Client {0} tried to revoke an access token belonging to a different client: {1}", client.ClientId, token.Client.ClientId);
+                    var message = string.Format("Client {0} tried to revoke an access token belonging to a different client: {1}", client.ClientId, token.ClientId);
 
                     _logger.LogWarning(message);
                     await RaiseFailureEventAsync(message);

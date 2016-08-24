@@ -68,7 +68,7 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
         {
             var refreshToken = new RefreshToken
             {
-                AccessToken = new Token("access_token") { Client = new Client() { ClientId = "roclient" } },
+                AccessToken = new Token("access_token") { ClientId = "roclient" },
                 Lifetime = 10,
                 CreationTime = DateTimeOffset.UtcNow.AddSeconds(-15)
             };
@@ -100,10 +100,7 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             {
                 AccessToken = new Token("access_token")
                 {
-                    Client = new Client
-                    {
-                        ClientId = "otherclient"
-                    },
+                    ClientId = "otherclient",
                     Lifetime = 600,
                     CreationTime = DateTimeOffset.UtcNow
                 }
@@ -136,10 +133,7 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             {
                 AccessToken = new Token("access_token")
                 {
-                    Client = new Client
-                    {
-                        ClientId = "roclient_restricted"
-                    },
+                    ClientId = "roclient_restricted"
                 },
                 Lifetime = 600,
                 CreationTime = DateTimeOffset.UtcNow
@@ -175,7 +169,7 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
                 AccessToken = new Token("access_token")
                 {
                     Claims = new List<Claim> { subjectClaim },
-                    Client = new Client() { ClientId = "roclient" }
+                    ClientId = "roclient"
                 },
                 Lifetime = 600,
                 CreationTime = DateTimeOffset.UtcNow
