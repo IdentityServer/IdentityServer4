@@ -5,17 +5,14 @@ using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
-using System;
 using System.Linq;
 using IdentityServer4.Services;
 using System.Security.Claims;
 using IdentityModel.Client;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
-using IdentityServer4.Validation;
 using FluentAssertions;
 using System.Net;
-using System.Net.Http;
 
 namespace IdentityServer4.Tests.Common
 {

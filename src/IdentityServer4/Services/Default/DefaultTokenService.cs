@@ -34,7 +34,7 @@ namespace IdentityServer4.Services.Default
         /// <summary>
         /// The claims provider
         /// </summary>
-        protected readonly IClaimsProvider _claimsProvider;
+        protected readonly IClaimsService _claimsProvider;
 
         /// <summary>
         /// The persisted grants
@@ -59,7 +59,7 @@ namespace IdentityServer4.Services.Default
         /// <param name="tokenHandles">The token handles.</param>
         /// <param name="creationService">The signing service.</param>
         /// <param name="events">The events service.</param>
-        public DefaultTokenService(IdentityServerContext context, IClaimsProvider claimsProvider, IPersistedGrantService grants, ITokenCreationService creationService, IEventService events, ILogger<DefaultTokenService> logger)
+        public DefaultTokenService(IdentityServerContext context, IClaimsService claimsProvider, IPersistedGrantService grants, ITokenCreationService creationService, IEventService events, ILogger<DefaultTokenService> logger)
         {
             _logger = logger;
             _context = context;

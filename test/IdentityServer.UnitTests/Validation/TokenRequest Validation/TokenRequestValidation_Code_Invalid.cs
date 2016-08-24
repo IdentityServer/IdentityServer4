@@ -5,8 +5,7 @@ using FluentAssertions;
 using IdentityModel;
 using IdentityServer4.Configuration;
 using IdentityServer4.Models;
-using IdentityServer4.Services;
-using IdentityServer4.Services.InMemory;
+using IdentityServer4.Stores;
 using IdentityServer4.Validation;
 using System;
 using System.Collections.Generic;
@@ -16,14 +15,13 @@ using Xunit;
 
 namespace IdentityServer4.Tests.Validation.TokenRequest
 {
-
     public class TokenRequestValidation_Code_Invalid
     {
         IClientStore _clients = Factory.CreateClientStore();
         const string Category = "TokenRequest Validation - AuthorizationCode - Invalid";
 
         [Fact]
-        [Trait("Category", "TokenRequest Validation - AuthorizationCode - Invalid")]
+        [Trait("Category", Category)]
         public async Task Missing_AuthorizationCode()
         {
             var client = await _clients.FindClientByIdAsync("codeclient");
@@ -52,7 +50,7 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
         }
 
         [Fact]
-        [Trait("Category", "TokenRequest Validation - AuthorizationCode - Invalid")]
+        [Trait("Category", Category)]
         public async Task Invalid_AuthorizationCode()
         {
             var client = await _clients.FindClientByIdAsync("codeclient");
@@ -82,7 +80,7 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
         }
 
         [Fact]
-        [Trait("Category", "TokenRequest Validation - AuthorizationCode - Invalid")]
+        [Trait("Category", Category)]
         public async Task AuthorizationCodeTooLong()
         {
             var client = await _clients.FindClientByIdAsync("codeclient");
@@ -144,7 +142,7 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
         }
 
         [Fact]
-        [Trait("Category", "TokenRequest Validation - AuthorizationCode - Invalid")]
+        [Trait("Category", Category)]
         public async Task Client_Not_Authorized_For_AuthorizationCode_Flow()
         {
             var client = await _clients.FindClientByIdAsync("implicitclient");
@@ -174,7 +172,7 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
         }
 
         [Fact]
-        [Trait("Category", "TokenRequest Validation - AuthorizationCode - Invalid")]
+        [Trait("Category", Category)]
         public async Task Client_Trying_To_Request_Token_Using_Another_Clients_Code()
         {
             var client1 = await _clients.FindClientByIdAsync("codeclient");
@@ -205,7 +203,7 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
         }
 
         [Fact]
-        [Trait("Category", "TokenRequest Validation - AuthorizationCode - Invalid")]
+        [Trait("Category", Category)]
         public async Task Missing_RedirectUri()
         {
             var client = await _clients.FindClientByIdAsync("codeclient");
@@ -234,7 +232,7 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
         }
 
         [Fact]
-        [Trait("Category", "TokenRequest Validation - AuthorizationCode - Invalid")]
+        [Trait("Category", Category)]
         public async Task Different_RedirectUri_Between_Authorize_And_Token_Request()
         {
             var client = await _clients.FindClientByIdAsync("codeclient");
@@ -264,7 +262,7 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
         }
 
         [Fact]
-        [Trait("Category", "TokenRequest Validation - AuthorizationCode - Invalid")]
+        [Trait("Category", Category)]
         public async Task Expired_AuthorizationCode()
         {
             var client = await _clients.FindClientByIdAsync("codeclient");
@@ -295,7 +293,7 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
         }
 
         [Fact]
-        [Trait("Category", "TokenRequest Validation - AuthorizationCode - Invalid")]
+        [Trait("Category", Category)]
         public async Task Reused_AuthorizationCode()
         {
             var client = await _clients.FindClientByIdAsync("codeclient");

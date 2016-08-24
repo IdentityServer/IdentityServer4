@@ -6,7 +6,7 @@ using IdentityModel;
 using IdentityServer4.Configuration;
 using IdentityServer4.Models;
 using IdentityServer4.ResponseHandling;
-using IdentityServer4.Services.InMemory;
+using IdentityServer4.Stores.InMemory;
 using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
 using System;
@@ -262,7 +262,7 @@ namespace IdentityServer4.Tests.ResponseHandling
         {
             RequiresConsent(true);
             var client = new Client {};
-            var scopeValidator = new ScopeValidator(new InMemoryScopeStore(GetScopes()), new LoggerFactory().CreateLogger<ScopeValidator>());
+            var scopeValidator = new ScopeValidator(new InMemoryScopeStore(GetScopes()), TestLogger.Create<ScopeValidator>());
             var request = new ValidatedAuthorizeRequest()
             {
                 ResponseMode = OidcConstants.ResponseModes.Fragment,

@@ -11,12 +11,12 @@ using System;
 using Microsoft.AspNet.Http;
 using System.Collections.Specialized;
 using IdentityServer4.Validation;
-using IdentityServer4.Services;
 using IdentityServer4.Models;
 using System.Linq;
 using IdentityModel;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
+using IdentityServer4.Stores;
 
 namespace IdentityServer4.Endpoints
 {

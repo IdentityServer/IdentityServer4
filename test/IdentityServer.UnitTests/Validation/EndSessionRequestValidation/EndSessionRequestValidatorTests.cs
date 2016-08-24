@@ -1,13 +1,10 @@
 ﻿using FluentAssertions;
-using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
 using IdentityServer4.Models;
 using IdentityServer4.Validation;
-using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using UnitTests.Common;

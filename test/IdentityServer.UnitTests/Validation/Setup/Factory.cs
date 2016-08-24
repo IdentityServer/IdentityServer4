@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using IdentityServer4.Hosting;
 using UnitTests.Common;
 using IdentityServer4.Stores.InMemory;
+using IdentityServer4.Stores;
 
 namespace IdentityServer4.Tests.Validation
 {

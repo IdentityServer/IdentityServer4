@@ -4,7 +4,7 @@
 using IdentityServer4.Models;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Services
+namespace IdentityServer4.Stores
 {
     /// <summary>
     /// Retrieval of client configuration

@@ -11,7 +11,6 @@ using IdentityServer4.Hosting.Cors;
 using IdentityServer4.ResponseHandling;
 using IdentityServer4.Services;
 using IdentityServer4.Services.Default;
-using IdentityServer4.Services.InMemory;
 using IdentityServer4.Stores;
 using IdentityServer4.Stores.InMemory;
 using IdentityServer4.Stores.Serialization;
@@ -167,7 +166,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<IEventService, DefaultEventService>();
             services.TryAddTransient<ITokenService, DefaultTokenService>();
             services.TryAddTransient<ITokenCreationService, DefaultTokenCreationService>();
-            services.TryAddTransient<IClaimsProvider, DefaultClaimsProvider>();
+            services.TryAddTransient<IClaimsService, DefaultClaimsService>();
             services.TryAddTransient<IRefreshTokenService, DefaultRefreshTokenService>();
             services.TryAddTransient<ILocalizationService, DefaultLocalizationService>();
             services.TryAddTransient<IConsentService, DefaultConsentService>();

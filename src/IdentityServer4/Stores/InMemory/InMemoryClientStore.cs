@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Services.InMemory
+namespace IdentityServer4.Stores.InMemory
 {
     /// <summary>
     /// In-memory client store

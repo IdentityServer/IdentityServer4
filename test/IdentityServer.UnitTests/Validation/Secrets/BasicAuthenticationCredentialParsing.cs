@@ -8,7 +8,6 @@ using System;
 using System.Text;
 using Xunit;
 using Microsoft.Extensions.Primitives;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using UnitTests.Common;
 

@@ -15,7 +15,6 @@ using IdentityServer4.Events;
 using IdentityServer4.Models;
 using IdentityServer4;
 using IdentityServer4.Endpoints.Results;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Extensions;
 

@@ -16,6 +16,7 @@ using IdentityServer4.Events;
 using IdentityServer4.Models;
 using IdentityServer4.Resources;
 using IdentityServer4.Endpoints.Results;
+using IdentityServer4.Stores;
 
 namespace IdentityServer4.Endpoints
 {

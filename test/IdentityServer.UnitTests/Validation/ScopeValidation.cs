@@ -3,12 +3,12 @@
 
 using FluentAssertions;
 using IdentityServer4.Models;
-using IdentityServer4.Services;
-using IdentityServer4.Services.InMemory;
 using IdentityServer4.Extensions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
+using IdentityServer4.Stores;
+using IdentityServer4.Stores.InMemory;
 
 namespace IdentityServer4.Tests.Validation
 {

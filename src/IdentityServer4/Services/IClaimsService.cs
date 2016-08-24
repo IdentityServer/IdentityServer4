@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 namespace IdentityServer4.Services
 {
     /// <summary>
-    /// The claims provider is responsible for determining which claims to include in tokens
+    /// The claims service is responsible for determining which claims to include in tokens
     /// </summary>
-    public interface IClaimsProvider
+    public interface IClaimsService
     {
         /// <summary>
         /// Returns claims for an identity token
