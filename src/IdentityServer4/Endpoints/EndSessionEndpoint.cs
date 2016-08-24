@@ -17,22 +17,25 @@ using IdentityModel;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Stores;
+using IdentityServer4.Configuration;
 
 namespace IdentityServer4.Endpoints
 {
     class EndSessionEndpoint : IEndpoint
     {
         private readonly ILogger<EndSessionEndpoint> _logger;
-        private readonly IdentityServerContext _context;
+        private readonly IHttpContextAccessor _context;
         private readonly IEndSessionRequestValidator _endSessionRequestValidator;
         private readonly ClientListCookie _clientListCookie;
         private readonly IMessageStore<LogoutMessage> _logoutMessageStore;
         private readonly SessionCookie _sessionCookie;
         private readonly IClientStore _clientStore;
+        private readonly IdentityServerOptions _options;
 
         public EndSessionEndpoint(
             ILogger<EndSessionEndpoint> logger, 
-            IdentityServerContext context,
+            IdentityServerOptions options,
+            IHttpContextAccessor context,
             IEndSessionRequestValidator endSessionRequestValidator,
             IMessageStore<LogoutMessage> logoutMessageStore,
             SessionCookie sessionCookie,
@@ -40,6 +43,7 @@ namespace IdentityServer4.Endpoints
             IClientStore clientStore)
         {
             _logger = logger;
+            _options = options;
             _context = context;
             _endSessionRequestValidator = endSessionRequestValidator;
             _logoutMessageStore = logoutMessageStore;
@@ -48,14 +52,14 @@ namespace IdentityServer4.Endpoints
             _clientStore = clientStore;
         }
 
-        public async Task<IEndpointResult> ProcessAsync(IdentityServerContext context)
+        public async Task<IEndpointResult> ProcessAsync(HttpContext context)
         {
-            if (context.HttpContext.Request.Path == Constants.ProtocolRoutePaths.EndSession.EnsureLeadingSlash())
+            if (context.Request.Path == Constants.ProtocolRoutePaths.EndSession.EnsureLeadingSlash())
             {
                 return await ProcessSignoutAsync(context);
             }
 
-            if (context.HttpContext.Request.Path == Constants.ProtocolRoutePaths.EndSessionCallback.EnsureLeadingSlash())
+            if (context.Request.Path == Constants.ProtocolRoutePaths.EndSessionCallback.EnsureLeadingSlash())
             {
                 return await ProcessSignoutCallbackAsync(context);
             }
@@ -63,18 +67,18 @@ namespace IdentityServer4.Endpoints
             return new StatusCodeResult(HttpStatusCode.NotFound);
         }
 
-        private async Task<IEndpointResult> ProcessSignoutAsync(IdentityServerContext context)
+        private async Task<IEndpointResult> ProcessSignoutAsync(HttpContext context)
         {
             _logger.LogInformation("Processing singout request");
 
             NameValueCollection parameters = null;
-            if (context.HttpContext.Request.Method == "GET")
+            if (context.Request.Method == "GET")
             {
-                parameters = context.HttpContext.Request.Query.AsNameValueCollection();
+                parameters = context.Request.Query.AsNameValueCollection();
             }
-            else if (context.HttpContext.Request.Method == "POST")
+            else if (context.Request.Method == "POST")
             {
-                parameters = context.HttpContext.Request.Form.AsNameValueCollection();
+                parameters = context.Request.Form.AsNameValueCollection();
             }
             else
             {
@@ -82,7 +86,7 @@ namespace IdentityServer4.Endpoints
                 return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
             }
 
-            var user = await _context.GetIdentityServerUserAsync();
+            var user = await _context.HttpContext.GetIdentityServerUserAsync();
             var result = await _endSessionRequestValidator.ValidateAsync(parameters, user);
 
             return await CreateLogoutPageRedirectAsync(result);
@@ -97,15 +101,15 @@ namespace IdentityServer4.Endpoints
             {
                 var msg = new MessageWithId<LogoutMessage>(new LogoutMessage(validatedRequest));
                 await _logoutMessageStore.WriteAsync(msg.Id, msg);
-                return new LogoutPageResult(_context.Options.UserInteractionOptions, msg.Id);
+                return new LogoutPageResult(_options.UserInteractionOptions, msg.Id);
             }
 
-            return new LogoutPageResult(_context.Options.UserInteractionOptions);
+            return new LogoutPageResult(_options.UserInteractionOptions);
         }
 
-        private async Task<IEndpointResult> ProcessSignoutCallbackAsync(IdentityServerContext context)
+        private async Task<IEndpointResult> ProcessSignoutCallbackAsync(HttpContext context)
         {
-            if (context.HttpContext.Request.Method != "GET")
+            if (context.Request.Method != "GET")
             {
                 _logger.LogWarning("Invalid HTTP method for end session endpoint.");
                 return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
@@ -113,9 +117,9 @@ namespace IdentityServer4.Endpoints
 
             _logger.LogInformation("Processing singout callback request");
 
-            await ClearSignoutMessageIdAsync(context.HttpContext.Request);
+            await ClearSignoutMessageIdAsync(context.Request);
 
-            var sid = ValidateSid(context.HttpContext.Request);
+            var sid = ValidateSid(context.Request);
             if (sid == null)
             {
                 return new StatusCodeResult(HttpStatusCode.BadRequest);
@@ -136,7 +140,7 @@ namespace IdentityServer4.Endpoints
 
         private async Task ClearSignoutMessageIdAsync(HttpRequest request)
         {
-            var logoutId = request.Query[_context.Options.UserInteractionOptions.LogoutIdParameter].FirstOrDefault();
+            var logoutId = request.Query[_options.UserInteractionOptions.LogoutIdParameter].FirstOrDefault();
             if (logoutId != null)
             {
                 await _logoutMessageStore.DeleteAsync(logoutId);

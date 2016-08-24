@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
 using IdentityServer4.Endpoints.Results;
+using Microsoft.AspNetCore.Http;
 
 namespace IdentityServer4.Endpoints
 {
@@ -31,12 +32,12 @@ namespace IdentityServer4.Endpoints
             _logger = logger;
         }
 
-        public async Task<IEndpointResult> ProcessAsync(IdentityServerContext context)
+        public async Task<IEndpointResult> ProcessAsync(HttpContext context)
         {
             _logger.LogTrace("Processing introspection request.");
 
             // validate HTTP
-            if (context.HttpContext.Request.Method != "POST")
+            if (context.Request.Method != "POST")
             {
                 _logger.LogWarning("Introspection endpoint only supports POST requests");
                 return new StatusCodeResult(405);
@@ -45,18 +46,18 @@ namespace IdentityServer4.Endpoints
             return await ProcessIntrospectionRequestAsync(context);
         }
 
-        private async Task<IEndpointResult> ProcessIntrospectionRequestAsync(IdentityServerContext context)
+        private async Task<IEndpointResult> ProcessIntrospectionRequestAsync(HttpContext context)
         {
             _logger.LogDebug("Starting introspection request.");
 
-            var scopeResult = await _scopeSecretValidator.ValidateAsync(context.HttpContext);
+            var scopeResult = await _scopeSecretValidator.ValidateAsync(context);
             if (scopeResult.Scope == null)
             {
                 _logger.LogError("Scope unauthorized to call introspection endpoint. aborting.");
                 return new StatusCodeResult(401);
             }
 
-            var parameters = context.HttpContext.Request.Form.AsNameValueCollection();
+            var parameters = context.Request.Form.AsNameValueCollection();
 
             var validationResult = await _requestValidator.ValidateAsync(parameters, scopeResult.Scope);
             var response = await _generator.ProcessAsync(validationResult, scopeResult.Scope);

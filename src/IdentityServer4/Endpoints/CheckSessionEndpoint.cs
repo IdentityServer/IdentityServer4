@@ -3,6 +3,7 @@
 
 using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Threading.Tasks;
@@ -22,9 +23,9 @@ namespace IdentityServer4.Endpoints
             _sessionCookie = sessionCookie;
         }
 
-        public Task<IEndpointResult> ProcessAsync(IdentityServerContext context)
+        public Task<IEndpointResult> ProcessAsync(HttpContext context)
         {
-            if (context.HttpContext.Request.Method != "GET")
+            if (context.Request.Method != "GET")
             {
                 return Task.FromResult<IEndpointResult>(new StatusCodeResult(HttpStatusCode.MethodNotAllowed));
             }

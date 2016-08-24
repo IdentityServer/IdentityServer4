@@ -11,9 +11,9 @@ namespace IdentityServer4.Hosting
 {
     class SessionCookie
     {
-        private readonly IdentityServerContext _context;
+        private readonly IHttpContextAccessor _context;
 
-        public SessionCookie(IdentityServerContext context)
+        public SessionCookie(IHttpContextAccessor context)
         {
             _context = context;
         }
@@ -33,7 +33,7 @@ namespace IdentityServer4.Hosting
         private CookieOptions CreateCookieOptions(bool? persistent, DateTimeOffset? expires = null)
         {
             var secure = _context.HttpContext.Request.IsHttps;
-            var path = _context.GetBasePath().CleanUrlPath();
+            var path = _context.HttpContext.GetBasePath().CleanUrlPath();
 
             var options = new CookieOptions
             {

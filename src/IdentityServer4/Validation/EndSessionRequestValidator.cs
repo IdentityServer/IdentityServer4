@@ -10,23 +10,24 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using IdentityServer4.Configuration;
 
 namespace IdentityServer4.Validation
 {
     internal class EndSessionRequestValidator : IEndSessionRequestValidator
     {
         private readonly ILogger _logger;
-        private readonly IdentityServerContext _context;
+        private readonly IdentityServerOptions _options;
         private readonly ITokenValidator _tokenValidator;
         private readonly IRedirectUriValidator _uriValidator;
 
         public EndSessionRequestValidator(
             ILogger<EndSessionRequestValidator> logger,
-            IdentityServerContext context, 
+            IdentityServerOptions options, 
             ITokenValidator tokenValidator, 
             IRedirectUriValidator uriValidator)
         {
-            _context = context;
+            _options = options;
             _tokenValidator = tokenValidator;
             _uriValidator = uriValidator;
             _logger = logger;
@@ -40,7 +41,7 @@ namespace IdentityServer4.Validation
                 subject.Identity != null &&
                 subject.Identity.IsAuthenticated;
 
-            if (!isAuthenticated && _context.Options.AuthenticationOptions.RequireAuthenticatedUserForSignOutMessage)
+            if (!isAuthenticated && _options.AuthenticationOptions.RequireAuthenticatedUserForSignOutMessage)
             {
                 _logger.LogWarning("User is anonymous. Ignoring end session parameters");
                 return Invalid();

@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Security.Claims;
@@ -9,25 +11,25 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Hosting
 {
-    public static class IdentityServerContextExtensions
+    public static class HttpContextExtensions
     {
-        public static void SetHost(this IdentityServerContext context, string value)
+        public static void SetHost(this HttpContext context, string value)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            context.HttpContext.Items[Constants.EnvironmentKeys.IdentityServerHost] = value;
+            context.Items[Constants.EnvironmentKeys.IdentityServerHost] = value;
         }
 
-        public static void SetBasePath(this IdentityServerContext context, string value)
+        public static void SetBasePath(this HttpContext context, string value)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            context.HttpContext.Items[Constants.EnvironmentKeys.IdentityServerBasePath] = value;
+            context.Items[Constants.EnvironmentKeys.IdentityServerBasePath] = value;
         }
 
-        public static string GetHost(this IdentityServerContext context)
+        public static string GetHost(this HttpContext context)
         {
-            return context.HttpContext.Items[Constants.EnvironmentKeys.IdentityServerHost] as string;
+            return context.Items[Constants.EnvironmentKeys.IdentityServerHost] as string;
         }
 
         /// <summary>
@@ -35,9 +37,9 @@ namespace IdentityServer4.Hosting
         /// </summary>
         /// <param name="env">The OWIN environment.</param>
         /// <returns></returns>
-        public static string GetBasePath(this IdentityServerContext context)
+        public static string GetBasePath(this HttpContext context)
         {
-            return context.HttpContext.Items[Constants.EnvironmentKeys.IdentityServerBasePath] as string;
+            return context.Items[Constants.EnvironmentKeys.IdentityServerBasePath] as string;
         }
 
         /// <summary>
@@ -45,18 +47,19 @@ namespace IdentityServer4.Hosting
         /// </summary>
         /// <param name="env">The OWIN environment.</param>
         /// <returns></returns>
-        public static string GetIdentityServerBaseUrl(this IdentityServerContext context)
+        public static string GetIdentityServerBaseUrl(this HttpContext context)
         {
             return context.GetHost() + context.GetBasePath();
         }
 
-        public static string GetIssuerUri(this IdentityServerContext context)
+        public static string GetIssuerUri(this HttpContext context)
         {
             if (context == null) throw new ArgumentNullException("context");
 
             // if they've explicitly configured a URI then use it,
             // otherwise dynamically calculate it
-            var uri = context.Options.IssuerUri;
+            var options = context.RequestServices.GetRequiredService<IdentityServerOptions>();
+            var uri = options.IssuerUri;
             if (uri.IsMissing())
             {
                 uri = context.GetIdentityServerBaseUrl();
@@ -67,14 +70,15 @@ namespace IdentityServer4.Hosting
             return uri;
         }
 
-        internal static async Task<ClaimsPrincipal> GetIdentityServerUserAsync(this IdentityServerContext context)
+        internal static async Task<ClaimsPrincipal> GetIdentityServerUserAsync(this HttpContext context)
         {
-            return await context.HttpContext.Authentication.AuthenticateAsync(context.Options.AuthenticationOptions.EffectiveAuthenticationScheme);
+            var options = context.RequestServices.GetRequiredService<IdentityServerOptions>();
+            return await context.Authentication.AuthenticateAsync(options.AuthenticationOptions.EffectiveAuthenticationScheme);
         }
 
-        internal static string GetIdentityServerSignoutFrameCallbackUrl(this IdentityServerContext context)
+        internal static string GetIdentityServerSignoutFrameCallbackUrl(this HttpContext context)
         {
-            var sessionCookie = context.HttpContext.RequestServices.GetRequiredService<SessionCookie>();
+            var sessionCookie = context.RequestServices.GetRequiredService<SessionCookie>();
             var sid = sessionCookie.GetSessionId();
             if (sid != null)
             {

@@ -4,6 +4,7 @@
 using IdentityServer4.Hosting;
 using IdentityServer4.Models;
 using Microsoft.AspNet.Http;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace IdentityServer4.Endpoints.Results
             CustomEntries = customEntries;
         }
         
-        public Task ExecuteAsync(IdentityServerContext context)
+        public Task ExecuteAsync(HttpContext context)
         {
             if (CustomEntries != null && CustomEntries.Any())
             {
@@ -39,11 +40,11 @@ namespace IdentityServer4.Endpoints.Results
 
                     jobject.Add(new JProperty(item.Key, item.Value));
 
-                    return context.HttpContext.Response.WriteJsonAsync(jobject);
+                    return context.Response.WriteJsonAsync(jobject);
                 }
             }
 
-            return context.HttpContext.Response.WriteJsonAsync(Document);
+            return context.Response.WriteJsonAsync(Document);
         }
     }
 }

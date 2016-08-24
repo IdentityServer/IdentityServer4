@@ -17,6 +17,7 @@ using IdentityServer4;
 using IdentityServer4.Endpoints.Results;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Extensions;
+using IdentityServer.UnitTests.Common;
 
 namespace UnitTests.Endpoints.Authorize
 {
@@ -29,7 +30,7 @@ namespace UnitTests.Endpoints.Authorize
         NameValueCollection _params = new NameValueCollection();
         ClaimsPrincipal _user = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
 
-        IdentityServerContext _context;
+        HttpContext _context;
         ValidatedAuthorizeRequest _validatedAuthorizeRequest;
 
         TestEventService _fakeEventService = new TestEventService();
@@ -46,7 +47,7 @@ namespace UnitTests.Endpoints.Authorize
 
         public void Init()
         {
-            _context = IdentityServerContextHelper.Create();
+            _context = new MockHttpContextAccessor().HttpContext;
 
             _validatedAuthorizeRequest = new ValidatedAuthorizeRequest()
             {
@@ -69,7 +70,6 @@ namespace UnitTests.Endpoints.Authorize
             _subject = new AuthorizeEndpoint(
                 _fakeEventService,
                 _fakeLogger,
-                _context,
                 _stubAuthorizeRequestValidator,
                 _stubInteractionGenerator,
                 _stubResultFactory,
@@ -80,7 +80,7 @@ namespace UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task ProcessAsync_post_to_entry_point_should_return_405()
         {
-            _context.HttpContext.Request.Method = "POST";
+            _context.Request.Method = "POST";
 
             var result = await _subject.ProcessAsync(_context);
 
@@ -93,8 +93,8 @@ namespace UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task ProcessAsync_invalid_path_should_return_404()
         {
-            _context.HttpContext.Request.Method = "GET";
-            _context.HttpContext.Request.Path = new PathString("/foo");
+            _context.Request.Method = "GET";
+            _context.Request.Path = new PathString("/foo");
 
             var result = await _subject.ProcessAsync(_context);
 
@@ -107,9 +107,9 @@ namespace UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task ProcessAsync_authorize_path_should_return_authorization_result()
         {
-            _context.HttpContext.Request.Method = "GET";
-            _context.HttpContext.Request.Path = new PathString("/connect/authorize");
-            _context.HttpContext.SetUser(_user);
+            _context.Request.Method = "GET";
+            _context.Request.Path = new PathString("/connect/authorize");
+            _context.SetUser(_user);
 
             var result = await _subject.ProcessAsync(_context);
 
@@ -120,9 +120,9 @@ namespace UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task ProcessAsync_authorize_after_login_path_should_return_authorization_result()
         {
-            _context.HttpContext.Request.Method = "GET";
-            _context.HttpContext.Request.Path = new PathString("/connect/authorize/login");
-            _context.HttpContext.SetUser(_user);
+            _context.Request.Method = "GET";
+            _context.Request.Path = new PathString("/connect/authorize/login");
+            _context.SetUser(_user);
 
             var result = await _subject.ProcessAsync(_context);
 
@@ -142,11 +142,11 @@ namespace UnitTests.Endpoints.Authorize
             var request = new ConsentRequest(parameters, _user.GetSubjectId());
             _mockUserConsentResponseMessageStore.Messages.Add(request.Id, new Message<ConsentResponse>(new ConsentResponse()));
 
-            _context.HttpContext.SetUser(_user);
+            _context.SetUser(_user);
 
-            _context.HttpContext.Request.Method = "GET";
-            _context.HttpContext.Request.Path = new PathString("/connect/authorize/consent");
-            _context.HttpContext.Request.QueryString = new QueryString("?" + parameters.ToQueryString());
+            _context.Request.Method = "GET";
+            _context.Request.Path = new PathString("/connect/authorize/consent");
+            _context.Request.QueryString = new QueryString("?" + parameters.ToQueryString());
 
             var result = await _subject.ProcessAsync(_context);
 
@@ -246,7 +246,7 @@ namespace UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task ProcessAuthorizeAfterLoginAsync_no_user_should_return_error_page()
         {
-            _context.HttpContext.SetUser(null);
+            _context.SetUser(null);
 
             var result = await _subject.ProcessAuthorizeAfterLoginAsync(_context);
 
@@ -259,7 +259,7 @@ namespace UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task ProcessAuthorizeWithConsentAsync_no_user_should_return_error_page()
         {
-            _context.HttpContext.SetUser(null);
+            _context.SetUser(null);
 
             var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
 
@@ -279,11 +279,11 @@ namespace UnitTests.Endpoints.Authorize
             var request = new ConsentRequest(parameters, _user.GetSubjectId());
             _mockUserConsentResponseMessageStore.Messages.Add(request.Id, null);
 
-            _context.HttpContext.SetUser(_user);
+            _context.SetUser(_user);
 
-            _context.HttpContext.Request.Method = "GET";
-            _context.HttpContext.Request.Path = new PathString("/connect/authorize/consent");
-            _context.HttpContext.Request.QueryString = new QueryString("?" + parameters.ToQueryString());
+            _context.Request.Method = "GET";
+            _context.Request.Path = new PathString("/connect/authorize/consent");
+            _context.Request.QueryString = new QueryString("?" + parameters.ToQueryString());
 
             var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
 
@@ -303,11 +303,11 @@ namespace UnitTests.Endpoints.Authorize
             var request = new ConsentRequest(parameters, _user.GetSubjectId());
             _mockUserConsentResponseMessageStore.Messages.Add(request.Id, new Message<ConsentResponse>(null));
 
-            _context.HttpContext.SetUser(_user);
+            _context.SetUser(_user);
 
-            _context.HttpContext.Request.Method = "GET";
-            _context.HttpContext.Request.Path = new PathString("/connect/authorize/consent");
-            _context.HttpContext.Request.QueryString = new QueryString("?" + parameters.ToQueryString());
+            _context.Request.Method = "GET";
+            _context.Request.Path = new PathString("/connect/authorize/consent");
+            _context.Request.QueryString = new QueryString("?" + parameters.ToQueryString());
 
             var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
 
@@ -327,11 +327,11 @@ namespace UnitTests.Endpoints.Authorize
             var request = new ConsentRequest(parameters, _user.GetSubjectId());
             _mockUserConsentResponseMessageStore.Messages.Add(request.Id, new Message<ConsentResponse>(new ConsentResponse() {ScopesConsented = new string[] { "api1", "api2" } }));
 
-            _context.HttpContext.SetUser(_user);
+            _context.SetUser(_user);
 
-            _context.HttpContext.Request.Method = "GET";
-            _context.HttpContext.Request.Path = new PathString("/connect/authorize/consent");
-            _context.HttpContext.Request.QueryString = new QueryString("?" + parameters.ToQueryString());
+            _context.Request.Method = "GET";
+            _context.Request.Path = new PathString("/connect/authorize/consent");
+            _context.Request.QueryString = new QueryString("?" + parameters.ToQueryString());
 
             var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
 
@@ -351,11 +351,11 @@ namespace UnitTests.Endpoints.Authorize
             var request = new ConsentRequest(parameters, _user.GetSubjectId());
             _mockUserConsentResponseMessageStore.Messages.Add(request.Id, new Message<ConsentResponse>(new ConsentResponse() { ScopesConsented = new string[] { "api1", "api2" } }));
 
-            _context.HttpContext.SetUser(_user);
+            _context.SetUser(_user);
 
-            _context.HttpContext.Request.Method = "GET";
-            _context.HttpContext.Request.Path = new PathString("/connect/authorize/consent");
-            _context.HttpContext.Request.QueryString = new QueryString("?" + parameters.ToQueryString());
+            _context.Request.Method = "GET";
+            _context.Request.Path = new PathString("/connect/authorize/consent");
+            _context.Request.QueryString = new QueryString("?" + parameters.ToQueryString());
 
             var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
 

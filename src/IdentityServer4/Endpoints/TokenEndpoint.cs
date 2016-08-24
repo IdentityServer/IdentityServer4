@@ -7,6 +7,7 @@ using IdentityServer4.Hosting;
 using IdentityServer4.ResponseHandling;
 using IdentityServer4.Validation;
 using Microsoft.AspNet.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 
@@ -27,12 +28,12 @@ namespace IdentityServer4.Endpoints
             _logger = logger;
         }
 
-        public async Task<IEndpointResult> ProcessAsync(IdentityServerContext context)
+        public async Task<IEndpointResult> ProcessAsync(HttpContext context)
         {
             _logger.LogTrace("Processing token request.");
 
             // validate HTTP
-            if (context.HttpContext.Request.Method != "POST" || !context.HttpContext.Request.HasFormContentType)
+            if (context.Request.Method != "POST" || !context.Request.HasFormContentType)
             {
                 _logger.LogWarning("Invalid HTTP request for token endpoint");
                 return new TokenErrorResult(OidcConstants.TokenErrors.InvalidRequest);
@@ -41,12 +42,12 @@ namespace IdentityServer4.Endpoints
             return await ProcessTokenRequestAsync(context);
         }
 
-        private async Task<IEndpointResult> ProcessTokenRequestAsync(IdentityServerContext context)
+        private async Task<IEndpointResult> ProcessTokenRequestAsync(HttpContext context)
         {
             _logger.LogInformation("Start token request.");
 
             // validate client
-            var clientResult = await _clientValidator.ValidateAsync(context.HttpContext);
+            var clientResult = await _clientValidator.ValidateAsync(context);
 
             if (clientResult.Client == null)
             {
@@ -55,7 +56,7 @@ namespace IdentityServer4.Endpoints
 
             // validate request
             var requestResult = await _requestValidator.ValidateRequestAsync(
-                context.HttpContext.Request.Form.AsNameValueCollection(),
+                context.Request.Form.AsNameValueCollection(),
                 clientResult.Client);
 
             if (requestResult.IsError)

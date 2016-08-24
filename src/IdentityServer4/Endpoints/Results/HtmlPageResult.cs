@@ -15,16 +15,16 @@ namespace IdentityServer4.Endpoints.Results
 
         protected abstract string GetHtml();
 
-        public async Task ExecuteAsync(IdentityServerContext context)
+        public async Task ExecuteAsync(HttpContext context)
         {
-            context.HttpContext.Response.ContentType = "text/html; charset=UTF-8";
+            context.Response.ContentType = "text/html; charset=UTF-8";
             if (DisableCache)
             {
-                context.HttpContext.Response.SetNoCache();
+                context.Response.SetNoCache();
             }
 
             var html = GetHtml();
-            await context.HttpContext.Response.WriteAsync(html, Encoding.UTF8);
+            await context.Response.WriteAsync(html, Encoding.UTF8);
         }
     }
 }

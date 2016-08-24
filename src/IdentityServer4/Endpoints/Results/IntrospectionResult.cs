@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
 using IdentityServer4.Hosting;
+using Microsoft.AspNetCore.Http;
 
 namespace IdentityServer4.Endpoints.Results
 {
@@ -17,10 +18,10 @@ namespace IdentityServer4.Endpoints.Results
             Result = result;
         }
         
-        public Task ExecuteAsync(IdentityServerContext context)
+        public Task ExecuteAsync(HttpContext context)
         {
-            context.HttpContext.Response.SetNoCache();
-            return context.HttpContext.Response.WriteJsonAsync(Result);
+            context.Response.SetNoCache();
+            return context.Response.WriteJsonAsync(Result);
         }
     }
 }

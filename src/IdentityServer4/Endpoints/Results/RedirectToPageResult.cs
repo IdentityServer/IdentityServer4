@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using IdentityServer4.Hosting;
 using IdentityServer4.Extensions;
 using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Http;
 
 namespace IdentityServer4.Endpoints.Results
 {
@@ -29,7 +30,7 @@ namespace IdentityServer4.Endpoints.Results
             }
         }
 
-        public virtual Task ExecuteAsync(IdentityServerContext context)
+        public virtual Task ExecuteAsync(HttpContext context)
         {
             var redirect = Url;
             if (redirect.IsLocalUrl())
@@ -43,7 +44,7 @@ namespace IdentityServer4.Endpoints.Results
                 redirect = redirect.AddQueryString(ParamName + "=" + UrlEncoder.Default.Encode(ParamValue));
             }
 
-            context.HttpContext.Response.Redirect(redirect);
+            context.Response.Redirect(redirect);
 
             return Task.FromResult(0);
         }

@@ -2,7 +2,9 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using FluentAssertions;
+using IdentityServer.UnitTests.Common;
 using IdentityServer4;
+using IdentityServer4.Configuration;
 using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Hosting;
 using IdentityServer4.Models;
@@ -23,18 +25,21 @@ namespace UnitTests.Endpoints.Results
         AuthorizeEndpointResultFactory _subject;
 
         ILogger<AuthorizeEndpointResultFactory> _fakeLogger = TestLogger.Create<AuthorizeEndpointResultFactory>();
-        IdentityServerContext _context = IdentityServerContextHelper.Create();
+        IdentityServerOptions _options = TestIdentityServerOptions.Create();
+        MockHttpContextAccessor _context;
         MockClientListCookie _mockClientListCookie;
         StubAuthorizeResponseGenerator _stubAuthorizeResponseGenerator = new StubAuthorizeResponseGenerator();
         MockMessageStore<IdentityServer4.Models.ErrorMessage> _mockErrorMessageStore = new MockMessageStore<IdentityServer4.Models.ErrorMessage>();
 
         public AuthorizationResultFactoryTests()
         {
-            _mockClientListCookie = new MockClientListCookie(_context);
+            _context = new MockHttpContextAccessor(_options);
+            _mockClientListCookie = new MockClientListCookie(_options, _context);
             _stubAuthorizeResponseGenerator.Response.Request = _validatedRequest;
 
             _subject = new AuthorizeEndpointResultFactory(
                 _fakeLogger,
+                _options,
                 _context,
                 _stubAuthorizeResponseGenerator,
                 _mockErrorMessageStore, 

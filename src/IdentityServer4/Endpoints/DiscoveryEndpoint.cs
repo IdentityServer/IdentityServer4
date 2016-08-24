@@ -24,45 +24,43 @@ namespace IdentityServer4.Endpoints
 {
     public class DiscoveryEndpoint : IEndpoint
     {
-        private readonly IdentityServerContext _context;
+        private readonly IdentityServerOptions _options;
         private readonly ExtensionGrantValidator _extensionGrants;
         private readonly IKeyMaterialService _keys;
         private readonly ILogger _logger;
-        private readonly IdentityServerOptions _options;
         private readonly SecretParser _parsers;
         private readonly IResourceOwnerPasswordValidator _resourceOwnerValidator;
         private readonly IScopeStore _scopes;
 
-        public DiscoveryEndpoint(IdentityServerOptions options, IdentityServerContext context, IScopeStore scopes, ILogger<DiscoveryEndpoint> logger, IKeyMaterialService keys, ExtensionGrantValidator extensionGrants, SecretParser parsers, IResourceOwnerPasswordValidator resourceOwnerValidator)
+        public DiscoveryEndpoint(IdentityServerOptions options, IScopeStore scopes, ILogger<DiscoveryEndpoint> logger, IKeyMaterialService keys, ExtensionGrantValidator extensionGrants, SecretParser parsers, IResourceOwnerPasswordValidator resourceOwnerValidator)
         {
             _options = options;
             _scopes = scopes;
             _logger = logger;
-            _context = context;
             _extensionGrants = extensionGrants;
             _parsers = parsers;
             _keys = keys;
             _resourceOwnerValidator = resourceOwnerValidator;
         }
 
-        public Task<IEndpointResult> ProcessAsync(IdentityServerContext context)
+        public Task<IEndpointResult> ProcessAsync(HttpContext context)
         {
             _logger.LogTrace("Processing discovery request.");
 
             // validate HTTP
-            if (context.HttpContext.Request.Method != "GET")
+            if (context.Request.Method != "GET")
             {
                 _logger.LogWarning("Discovery endpoint only supports GET requests");
                 return Task.FromResult<IEndpointResult>(new StatusCodeResult(HttpStatusCode.MethodNotAllowed));
             }
 
-            if (context.HttpContext.Request.Path.Value.EndsWith("/jwks"))
+            if (context.Request.Path.Value.EndsWith("/jwks"))
             {
-                return ExecuteJwksAsync(context.HttpContext);
+                return ExecuteJwksAsync(context);
             }
             else
             {
-                return ExecuteDiscoDocAsync(context.HttpContext);
+                return ExecuteDiscoDocAsync(context);
             }
         }
 
@@ -76,13 +74,13 @@ namespace IdentityServer4.Endpoints
                 return new StatusCodeResult(404);
             }
 
-            var baseUrl = _context.GetIdentityServerBaseUrl().EnsureTrailingSlash();
+            var baseUrl = context.GetIdentityServerBaseUrl().EnsureTrailingSlash();
             var allScopes = await _scopes.GetScopesAsync(publicOnly: true);
             var showScopes = new List<Scope>();
 
             var document = new DiscoveryDocument
             {
-                issuer = _context.GetIssuerUri(),
+                issuer = context.GetIssuerUri(),
                 subject_types_supported = new[] { "public" },
                 id_token_signing_alg_values_supported = new[] { Constants.SigningAlgorithms.RSA_SHA_256 },
                 code_challenge_methods_supported = new[] { OidcConstants.CodeChallengeMethods.Plain, OidcConstants.CodeChallengeMethods.Sha256 }
