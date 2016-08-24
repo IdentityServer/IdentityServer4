@@ -39,12 +39,9 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
                 CodeChallenge = verifier.Sha256(),
                 CodeChallengeMethod = OidcConstants.CodeChallengeMethods.Plain,
 
-                RequestedScopes = new List<Scope>
+                RequestedScopes = new List<string>
                 {
-                    new Scope
-                    {
-                        Name = "openid"
-                    }
+                    "openid"
                 }
             };
 
@@ -81,12 +78,9 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
                 CodeChallenge = verifier.Sha256(),
                 CodeChallengeMethod = OidcConstants.CodeChallengeMethods.Plain,
 
-                RequestedScopes = new List<Scope>
+                RequestedScopes = new List<string>
                 {
-                    new Scope
-                    {
-                        Name = "openid"
-                    }
+                    "openid"
                 }
             };
 
@@ -125,12 +119,9 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
                 CodeChallenge = challenge.Sha256(),
                 CodeChallengeMethod = OidcConstants.CodeChallengeMethods.Sha256,
 
-                RequestedScopes = new List<Scope>
+                RequestedScopes = new List<string>
                 {
-                    new Scope
-                    {
-                        Name = "openid"
-                    }
+                    "openid"
                 }
             };
 
@@ -163,12 +154,9 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
                 ClientId = client.ClientId,
                 Lifetime = client.AuthorizationCodeLifetime,
                 RedirectUri = "https://server/cb",
-                RequestedScopes = new List<Scope>
+                RequestedScopes = new List<string>
                 {
-                    new Scope
-                    {
-                        Name = "openid"
-                    }
+                    "openid"
                 }
             };
 
@@ -202,12 +190,9 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
                 Lifetime = client.AuthorizationCodeLifetime,
                 RedirectUri = "https://server/cb",
 
-                RequestedScopes = new List<Scope>
+                RequestedScopes = new List<string>
                 {
-                    new Scope
-                    {
-                        Name = "openid"
-                    }
+                    "openid"
                 }
             };
 
@@ -245,12 +230,9 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
                 CodeChallenge = verifier.Sha256(),
                 CodeChallengeMethod = OidcConstants.CodeChallengeMethods.Plain,
 
-                RequestedScopes = new List<Scope>
+                RequestedScopes = new List<string>
                 {
-                    new Scope
-                    {
-                        Name = "openid"
-                    }
+                    "openid"
                 }
             };
 
@@ -290,12 +272,9 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
                 CodeChallenge = challenge.Sha256(),
                 CodeChallengeMethod = OidcConstants.CodeChallengeMethods.Sha256,
 
-                RequestedScopes = new List<Scope>
+                RequestedScopes = new List<string>
                 {
-                    new Scope
-                    {
-                        Name = "openid"
-                    }
+                    "openid"
                 }
             };
 
@@ -333,12 +312,9 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
                 CodeChallenge = verifier.Sha256(),
                 CodeChallengeMethod = OidcConstants.CodeChallengeMethods.Plain,
 
-                RequestedScopes = new List<Scope>
+                RequestedScopes = new List<string>
                 {
-                    new Scope
-                    {
-                        Name = "openid"
-                    }
+                    "openid"
                 }
             };
 

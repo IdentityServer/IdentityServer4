@@ -60,7 +60,7 @@ namespace IdentityServer4.Models
         /// <value>
         /// The requested scopes.
         /// </value>
-        public IEnumerable<Scope> RequestedScopes { get; set; }
+        public IEnumerable<string> RequestedScopes { get; set; }
 
         /// <summary>
         /// Gets or sets the redirect URI.
@@ -116,6 +116,6 @@ namespace IdentityServer4.Models
         /// <value>
         /// The scopes.
         /// </value>
-        public IEnumerable<string> Scopes => RequestedScopes.Select(x => x.Name);
+        public IEnumerable<string> Scopes => RequestedScopes;
     }
 }

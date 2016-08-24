@@ -94,7 +94,7 @@ namespace IdentityServer4.ResponseHandling
                 CodeChallengeMethod = request.CodeChallengeMethod,
 
                 IsOpenId = request.IsOpenIdRequest,
-                RequestedScopes = request.ValidatedScopes.GrantedScopes,
+                RequestedScopes = request.ValidatedScopes.GrantedScopes.Select(a => a.Name),
                 RedirectUri = request.RedirectUri,
                 Nonce = request.Nonce,
 

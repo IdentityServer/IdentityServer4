@@ -317,12 +317,9 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
                 Lifetime = client.AuthorizationCodeLifetime,
                 IsOpenId = true,
                 RedirectUri = "https://server/cb",
-                RequestedScopes = new List<Scope>
+                RequestedScopes = new List<string>
                 {
-                    new Scope
-                    {
-                        Name = "openid"
-                    }
+                    "openid"
                 }
             };
 
@@ -366,12 +363,9 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
                 Lifetime = client.AuthorizationCodeLifetime,
                 Subject = IdentityServerPrincipal.Create("123", "bob"),
                 RedirectUri = "https://server/cb",
-                RequestedScopes = new List<Scope>
+                RequestedScopes = new List<string>
                 {
-                    new Scope
-                    {
-                        Name = "openid"
-                    }
+                    "openid"
                 }
             };
 

@@ -85,11 +85,14 @@ namespace IdentityServer4.ResponseHandling
                     throw new InvalidOperationException("Client does not exist anymore.");
                 }
 
+                var scopes = await _scopes.FindScopesAsync(request.AuthorizationCode.RequestedScopes);
+
+
                 var tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.AuthorizationCode.Subject,
                     Client = client,
-                    Scopes = request.AuthorizationCode.RequestedScopes,
+                    Scopes = scopes,
                     Nonce = request.AuthorizationCode.Nonce,
 
                     ValidatedRequest = request
@@ -169,7 +172,7 @@ namespace IdentityServer4.ResponseHandling
 
             if (request.AuthorizationCode != null)
             {
-                createRefreshToken = request.AuthorizationCode.RequestedScopes.Select(s => s.Name).Contains(Constants.StandardScopes.OfflineAccess);
+                createRefreshToken = request.AuthorizationCode.RequestedScopes.Contains(Constants.StandardScopes.OfflineAccess);
 
                 // load the client that belongs to the authorization code
                 Client client = null;
@@ -182,11 +185,13 @@ namespace IdentityServer4.ResponseHandling
                     throw new InvalidOperationException("Client does not exist anymore.");
                 }
 
+                var scopes = await _scopes.FindScopesAsync(request.AuthorizationCode.RequestedScopes);
+
                 tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.AuthorizationCode.Subject,
                     Client = client,
-                    Scopes = request.AuthorizationCode.RequestedScopes,
+                    Scopes = scopes,
                     ValidatedRequest = request
                 };
             }
