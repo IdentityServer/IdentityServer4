@@ -72,12 +72,20 @@ namespace IdentityServer4.Models
         public string Type { get; set; } = OidcConstants.TokenTypes.AccessToken;
 
         /// <summary>
-        /// Gets or sets the client.
+        /// Gets or sets the ID of the client.
         /// </summary>
         /// <value>
-        /// The client.
+        /// The ID of the client.
         /// </value>
-        public Client Client { get; set; }
+        public string ClientId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of access token of the client
+        /// </summary>
+        /// <value>
+        /// The access token type specified by the client.
+        /// </value>
+        public AccessTokenType AccessTokenType { get; set; }
 
         /// <summary>
         /// Gets or sets the claims.

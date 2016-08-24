@@ -201,9 +201,9 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // validate client binding
             /////////////////////////////////////////////
-            if (authZcode.Client.ClientId != _validatedRequest.Client.ClientId)
+            if (authZcode.ClientId != _validatedRequest.Client.ClientId)
             {
-                LogError(string.Format("Client {0} is trying to use a code from client {1}", _validatedRequest.Client.ClientId, authZcode.Client.ClientId));
+                LogError(string.Format("Client {0} is trying to use a code from client {1}", _validatedRequest.Client.ClientId, authZcode.ClientId));
                 await RaiseFailedAuthorizationCodeRedeemedEventAsync(code, "Invalid client binding");
 
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);

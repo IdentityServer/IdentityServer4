@@ -297,7 +297,7 @@ namespace IdentityServer4.Extensions
                 EventConstants.Ids.AccessTokenIssued);
 
             string referenceTokenHandle = null;
-            if (token.Client.AccessTokenType == AccessTokenType.Reference)
+            if (token.AccessTokenType == AccessTokenType.Reference)
             {
                 referenceTokenHandle = rawToken;
             }
@@ -305,8 +305,8 @@ namespace IdentityServer4.Extensions
             evt.DetailsFunc = () => new AccessTokenIssuedDetails
             {
                 SubjectId = token.SubjectId ?? "no subject id",
-                ClientId = token.Client.ClientId,
-                TokenType = token.Client.AccessTokenType,
+                ClientId = token.ClientId,
+                TokenType = token.AccessTokenType,
                 Lifetime = token.Lifetime,
                 // TODO: extract scopes from claims collection
                 //Scopes = token.Claims.Scopes,
@@ -328,7 +328,7 @@ namespace IdentityServer4.Extensions
             evt.DetailsFunc = () => new TokenIssuedDetailsBase
             {
                 SubjectId = token.SubjectId,
-                ClientId = token.Client.ClientId,
+                ClientId = token.ClientId,
                 Lifetime = token.Lifetime,
                 Claims = token.Claims.ToClaimsDictionary()
             };
@@ -347,7 +347,7 @@ namespace IdentityServer4.Extensions
             evt.DetailsFunc = () => new AuthorizationCodeDetails
             {
                 HandleId = id,
-                ClientId = code.Client.ClientId,
+                ClientId = code.ClientId,
                 Scopes = code.Scopes,
                 SubjectId = code.Subject.GetSubjectId(),
                 RedirectUri = code.RedirectUri,

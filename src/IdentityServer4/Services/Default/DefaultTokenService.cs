@@ -126,7 +126,8 @@ namespace IdentityServer4.Services.Default
                 Issuer = issuer,
                 Lifetime = request.Client.IdentityTokenLifetime,
                 Claims = claims.Distinct(new ClaimComparer()).ToList(),
-                Client = request.Client
+                ClientId = request.Client.ClientId,
+                AccessTokenType = request.Client.AccessTokenType
             };
 
             return token;
@@ -163,7 +164,8 @@ namespace IdentityServer4.Services.Default
                 Issuer = issuer,
                 Lifetime = request.Client.AccessTokenLifetime,
                 Claims = claims.Distinct(new ClaimComparer()).ToList(),
-                Client = request.Client
+                ClientId = request.Client.ClientId,
+                AccessTokenType = request.Client.AccessTokenType
             };
 
             return token;
@@ -183,7 +185,7 @@ namespace IdentityServer4.Services.Default
 
             if (token.Type == OidcConstants.TokenTypes.AccessToken)
             {
-                if (token.Client.AccessTokenType == AccessTokenType.Jwt)
+                if (token.AccessTokenType == AccessTokenType.Jwt)
                 {
                     _logger.LogTrace("Creating JWT access token");
 

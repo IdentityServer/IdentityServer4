@@ -23,12 +23,20 @@ namespace IdentityServer4.Models
         public DateTimeOffset CreationTime { get; set; } = DateTimeOffsetHelper.UtcNow;
 
         /// <summary>
-        /// Gets or sets the client.
+        /// Gets or sets the life time.
         /// </summary>
         /// <value>
-        /// The client.
+        /// The life time.
         /// </value>
-        public Client Client { get; set; }
+        public int Lifetime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the ID of the client.
+        /// </summary>
+        /// <value>
+        /// The ID of the client.
+        /// </value>
+        public string ClientId { get; set; }
 
         /// <summary>
         /// Gets or sets the subject.

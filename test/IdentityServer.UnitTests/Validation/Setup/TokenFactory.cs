@@ -27,7 +27,8 @@ namespace IdentityServer4.Tests.Validation
                 Issuer = "https://idsvr.com",
                 Lifetime = lifetime,
                 Claims = claims,
-                Client = client
+                ClientId = client.ClientId,
+                AccessTokenType = client.AccessTokenType
             };
 
             return token;
@@ -54,7 +55,8 @@ namespace IdentityServer4.Tests.Validation
                 Issuer = "https://idsvr.com",
                 Lifetime = lifetime,
                 Claims = claims,
-                Client = client
+                ClientId = client.ClientId,
+                AccessTokenType = client.AccessTokenType
             };
 
             return token;
@@ -72,7 +74,7 @@ namespace IdentityServer4.Tests.Validation
             var token = new Token(OidcConstants.TokenTypes.IdentityToken)
             {
                 Audience = clientId,
-                Client = clients.FindClientByIdAsync(clientId).Result,
+                ClientId = clientId,
                 Issuer = "https://idsvr.com",
                 Lifetime = 600,
                 Claims = claims
@@ -98,7 +100,7 @@ namespace IdentityServer4.Tests.Validation
             var token = new Token(OidcConstants.TokenTypes.IdentityToken)
             {
                 Audience = clientId,
-                Client = clients.FindClientByIdAsync(clientId).Result,
+                ClientId = clientId,
                 Issuer = "https://idsvr.com",
                 Lifetime = 600,
                 Claims = claims

@@ -32,7 +32,8 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var code = new AuthorizationCode
             {
                 Subject = IdentityServerPrincipal.Create("123", "bob"),
-                Client = client,
+                ClientId = client.ClientId,
+                Lifetime = client.AuthorizationCodeLifetime,
                 RedirectUri = "https://server/cb",
                 RequestedScopes = new List<Scope>
                 {
@@ -67,7 +68,8 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
 
             var code = new AuthorizationCode
             {
-                Client = client,
+                ClientId = client.ClientId,
+                Lifetime = client.AuthorizationCodeLifetime,
                 Subject = IdentityServerPrincipal.Create("123", "bob"),
                 RedirectUri = "https://server/cb",
                 RequestedScopes = new List<Scope>
@@ -234,7 +236,7 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
                 AccessToken = new Token("access_token")
                 {
                     Claims = new List<Claim> { subjectClaim },
-                    Client = new Client { ClientId = "roclient" }
+                    ClientId = "roclient"
                 },
                 Lifetime = 600,
                 CreationTime = DateTimeOffset.UtcNow
@@ -269,7 +271,7 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
                 AccessToken = new Token("access_token")
                 {
                     Claims = new List<Claim> { subjectClaim },
-                    Client = new Client { ClientId = "roclient_restricted_refresh" }
+                    ClientId = "roclient_restricted_refresh"
                 },
 
                 Lifetime = 600,

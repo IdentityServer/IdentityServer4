@@ -31,7 +31,8 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
 
             var code = new AuthorizationCode
             {
-                Client = client,
+                ClientId = client.ClientId,
+                Lifetime = client.AuthorizationCodeLifetime,
                 IsOpenId = true,
                 RedirectUri = "https://server/cb",
             };
@@ -60,7 +61,8 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
 
             var code = new AuthorizationCode
             {
-                Client = client,
+                ClientId = client.ClientId,
+                Lifetime = client.AuthorizationCodeLifetime,
                 IsOpenId = true,
                 RedirectUri = "https://server/cb",
             };
@@ -91,7 +93,8 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
 
             var code = new AuthorizationCode
             {
-                Client = client,
+                ClientId = client.ClientId,
+                Lifetime = client.AuthorizationCodeLifetime,
                 IsOpenId = true,
                 RedirectUri = "https://server/cb",
             };
@@ -122,7 +125,8 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
 
             var code = new AuthorizationCode
             {
-                Client = client,
+                ClientId = client.ClientId,
+                Lifetime = client.AuthorizationCodeLifetime,
                 IsOpenId = true,
                 RedirectUri = "https://server/cb",
             };
@@ -152,7 +156,8 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
 
             var code = new AuthorizationCode
             {
-                Client = client,
+                ClientId = client.ClientId,
+                Lifetime = client.AuthorizationCodeLifetime,
                 IsOpenId = true,
                 RedirectUri = "https://server/cb",
             };
@@ -183,7 +188,8 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
 
             var code = new AuthorizationCode
             {
-                Client = client1,
+                ClientId = client1.ClientId,
+                Lifetime = client1.AuthorizationCodeLifetime,
                 IsOpenId = true,
                 RedirectUri = "https://server/cb",
             };
@@ -213,7 +219,8 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
 
             var code = new AuthorizationCode
             {
-                Client = client,
+                ClientId = client.ClientId,
+                Lifetime = client.AuthorizationCodeLifetime,
                 IsOpenId = true,
                 RedirectUri = "https://server/cb",
             };
@@ -242,7 +249,8 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
 
             var code = new AuthorizationCode
             {
-                Client = client,
+                ClientId = client.ClientId,
+                Lifetime = client.AuthorizationCodeLifetime,
                 IsOpenId = true,
                 RedirectUri = "https://server1/cb",
             };
@@ -272,7 +280,8 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
 
             var code = new AuthorizationCode
             {
-                Client = client,
+                ClientId = client.ClientId,
+                Lifetime = client.AuthorizationCodeLifetime,
                 IsOpenId = true,
                 RedirectUri = "https://server/cb",
                 CreationTime = DateTimeOffset.UtcNow.AddSeconds(-100)
@@ -304,7 +313,8 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var code = new AuthorizationCode
             {
                 Subject = IdentityServerPrincipal.Create("123", "bob"),
-                Client = client,
+                ClientId = client.ClientId,
+                Lifetime = client.AuthorizationCodeLifetime,
                 IsOpenId = true,
                 RedirectUri = "https://server/cb",
                 RequestedScopes = new List<Scope>
@@ -352,7 +362,8 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
 
             var code = new AuthorizationCode
             {
-                Client = client,
+                ClientId = client.ClientId,
+                Lifetime = client.AuthorizationCodeLifetime,
                 Subject = IdentityServerPrincipal.Create("123", "bob"),
                 RedirectUri = "https://server/cb",
                 RequestedScopes = new List<Scope>

@@ -58,7 +58,7 @@ namespace IdentityServer4.Models
         /// <value>
         /// The client identifier.
         /// </value>
-        public string ClientId => AccessToken.Client.ClientId;
+        public string ClientId => AccessToken.ClientId;
 
         /// <summary>
         /// Gets the subject identifier.

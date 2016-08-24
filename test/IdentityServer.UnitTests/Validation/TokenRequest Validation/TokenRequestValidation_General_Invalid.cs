@@ -53,7 +53,8 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
 
             var code = new AuthorizationCode
             {
-                Client = client,
+                ClientId = client.ClientId,
+                Lifetime = client.AuthorizationCodeLifetime,
                 IsOpenId = true,
                 RedirectUri = "https://server/cb",
             };
@@ -83,7 +84,8 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
 
             var code = new AuthorizationCode
             {
-                Client = client,
+                ClientId = client.ClientId,
+                Lifetime = client.AuthorizationCodeLifetime,
                 IsOpenId = true,
                 RedirectUri = "https://server/cb",
             };

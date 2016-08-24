@@ -33,7 +33,8 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var code = new AuthorizationCode
             {
                 Subject = IdentityServerPrincipal.Create("123", "bob"),
-                Client = client,
+                ClientId = client.ClientId,
+                Lifetime = client.AuthorizationCodeLifetime,
                 RedirectUri = "https://server/cb",
                 CodeChallenge = verifier.Sha256(),
                 CodeChallengeMethod = OidcConstants.CodeChallengeMethods.Plain,
@@ -74,7 +75,8 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var code = new AuthorizationCode
             {
                 Subject = IdentityServerPrincipal.Create("123", "bob"),
-                Client = client,
+                ClientId = client.ClientId,
+                Lifetime = client.AuthorizationCodeLifetime,
                 RedirectUri = "https://server/cb",
                 CodeChallenge = verifier.Sha256(),
                 CodeChallengeMethod = OidcConstants.CodeChallengeMethods.Plain,
@@ -117,7 +119,8 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var code = new AuthorizationCode
             {
                 Subject = IdentityServerPrincipal.Create("123", "bob"),
-                Client = client,
+                ClientId = client.ClientId,
+                Lifetime = client.AuthorizationCodeLifetime,
                 RedirectUri = "https://server/cb",
                 CodeChallenge = challenge.Sha256(),
                 CodeChallengeMethod = OidcConstants.CodeChallengeMethods.Sha256,
@@ -157,7 +160,8 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var code = new AuthorizationCode
             {
                 Subject = IdentityServerPrincipal.Create("123", "bob"),
-                Client = client,
+                ClientId = client.ClientId,
+                Lifetime = client.AuthorizationCodeLifetime,
                 RedirectUri = "https://server/cb",
                 RequestedScopes = new List<Scope>
                 {
@@ -194,9 +198,10 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var code = new AuthorizationCode
             {
                 Subject = IdentityServerPrincipal.Create("123", "bob"),
-                Client = client,
+                ClientId = client.ClientId,
+                Lifetime = client.AuthorizationCodeLifetime,
                 RedirectUri = "https://server/cb",
-            
+
                 RequestedScopes = new List<Scope>
                 {
                     new Scope
@@ -234,7 +239,8 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var code = new AuthorizationCode
             {
                 Subject = IdentityServerPrincipal.Create("123", "bob"),
-                Client = client,
+                ClientId = client.ClientId,
+                Lifetime = client.AuthorizationCodeLifetime,
                 RedirectUri = "https://server/cb",
                 CodeChallenge = verifier.Sha256(),
                 CodeChallengeMethod = OidcConstants.CodeChallengeMethods.Plain,
@@ -278,7 +284,8 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var code = new AuthorizationCode
             {
                 Subject = IdentityServerPrincipal.Create("123", "bob"),
-                Client = client,
+                ClientId = client.ClientId,
+                Lifetime = client.AuthorizationCodeLifetime,
                 RedirectUri = "https://server/cb",
                 CodeChallenge = challenge.Sha256(),
                 CodeChallengeMethod = OidcConstants.CodeChallengeMethods.Sha256,
@@ -320,7 +327,8 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             var code = new AuthorizationCode
             {
                 Subject = IdentityServerPrincipal.Create("123", "bob"),
-                Client = client,
+                ClientId = client.ClientId,
+                Lifetime = client.AuthorizationCodeLifetime,
                 RedirectUri = "https://server/cb",
                 CodeChallenge = verifier.Sha256(),
                 CodeChallengeMethod = OidcConstants.CodeChallengeMethods.Plain,

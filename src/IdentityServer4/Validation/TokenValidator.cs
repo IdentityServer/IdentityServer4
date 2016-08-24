@@ -263,11 +263,24 @@ namespace IdentityServer4.Validation
                 return Invalid(OidcConstants.ProtectedResourceErrors.ExpiredToken);
             }
 
+            // load the client that is defined in the token
+            Client client = null;
+            if (token.ClientId != null)
+            {
+                client = await _clients.FindClientByIdAsync(token.ClientId);
+            }
+
+            if (client == null)
+            {
+                LogError($"Client deleted or disabled: {token.ClientId}");
+                return Invalid(OidcConstants.ProtectedResourceErrors.InvalidToken);
+            }
+
             return new TokenValidationResult
             {
                 IsError = false,
 
-                Client = token.Client,
+                Client = client,
                 Claims = ReferenceTokenToClaims(token),
                 ReferenceToken = token,
                 ReferenceTokenId = tokenHandle

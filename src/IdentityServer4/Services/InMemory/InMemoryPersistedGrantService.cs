@@ -55,7 +55,7 @@ namespace IdentityServer4.Services.InMemory
 
         public Task RemoveReferenceTokensAsync(string subjectId, string clientId)
         {
-            var keys = _referenceTokens.Where(x => x.Value.SubjectId == subjectId && x.Value.Client.ClientId == clientId).Select(x=>x.Key);
+            var keys = _referenceTokens.Where(x => x.Value.SubjectId == subjectId && x.Value.ClientId == clientId).Select(x=>x.Key);
             foreach(var key in keys.ToArray())
             {
                 _referenceTokens.Remove(key);
