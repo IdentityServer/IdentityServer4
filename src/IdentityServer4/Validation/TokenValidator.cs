@@ -15,6 +15,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
+using IdentityServer4.Stores;
 
 namespace IdentityServer4.Validation
 {
@@ -25,11 +26,11 @@ namespace IdentityServer4.Validation
         private readonly IPersistedGrantService _grants;
         private readonly ICustomTokenValidator _customValidator;
         private readonly IClientStore _clients;
-        private readonly IEnumerable<IValidationKeysStore> _keys;
+        private readonly IKeyMaterialService _keys;
 
         private readonly TokenValidationLog _log;
         
-        public TokenValidator(IdentityServerContext context, IClientStore clients, IPersistedGrantService grants, ICustomTokenValidator customValidator, IEnumerable<IValidationKeysStore> keys, ILogger<TokenValidator> logger)
+        public TokenValidator(IdentityServerContext context, IClientStore clients, IPersistedGrantService grants, ICustomTokenValidator customValidator, IKeyMaterialService keys, ILogger<TokenValidator> logger)
         {
             _context = context;
             _clients = clients;
@@ -75,7 +76,7 @@ namespace IdentityServer4.Validation
             _log.ClientName = client.ClientName;
             _logger.LogDebug("Client found: {clientId} / {clientName}", client.ClientId, client.ClientName);
 
-            var keys = await _keys.GetKeysAsync();
+            var keys = await _keys.GetValidationKeysAsync();
             var result = await ValidateJwtAsync(token, clientId, keys, validateLifetime);
 
             result.Client = client;
@@ -130,7 +131,7 @@ namespace IdentityServer4.Validation
                 result = await ValidateJwtAsync(
                     token,
                     string.Format(Constants.AccessTokenAudience, _context.GetIssuerUri().EnsureTrailingSlash()),
-                    await _keys.GetKeysAsync());
+                    await _keys.GetValidationKeysAsync());
             }
             else
             {

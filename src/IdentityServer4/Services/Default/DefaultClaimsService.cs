@@ -16,7 +16,7 @@ namespace IdentityServer4.Services.Default
     /// <summary>
     /// Default claims provider implementation
     /// </summary>
-    public class DefaultClaimsProvider : IClaimsProvider
+    public class DefaultClaimsService : IClaimsService
     {
         /// <summary>
         /// The logger
@@ -32,9 +32,9 @@ namespace IdentityServer4.Services.Default
         /// Initializes a new instance of the <see cref="DefaultClaimsProvider"/> class.
         /// </summary>
         /// <param name="users">The users service</param>
-        public DefaultClaimsProvider(IProfileService profile, ILoggerFactory loggerFactory)
+        public DefaultClaimsService(IProfileService profile, ILoggerFactory loggerFactory)
         {
-            _logger = loggerFactory.CreateLogger<DefaultClaimsProvider>();
+            _logger = loggerFactory.CreateLogger<DefaultClaimsService>();
             _profile = profile;
         }
 

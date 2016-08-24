@@ -5,7 +5,7 @@ using IdentityServer4.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Services
+namespace IdentityServer4.Stores
 {
     /// <summary>
     /// Models storage of a subject's permissions for clients. 

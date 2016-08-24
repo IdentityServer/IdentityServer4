@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using Newtonsoft.Json.Linq;
@@ -20,11 +19,11 @@ namespace IdentityServer4.Services.Default
     /// </summary>
     public class DefaultTokenCreationService : ITokenCreationService
     {
-        private readonly ISigningCredentialStore _credentialStore;
+        private readonly IKeyMaterialService _keys;
 
-        public DefaultTokenCreationService(ISigningCredentialStore credentialStore)
+        public DefaultTokenCreationService(IKeyMaterialService keys)
         {
-            _credentialStore = credentialStore;
+            _keys = keys;
         }
 
         /// <summary>
@@ -50,7 +49,7 @@ namespace IdentityServer4.Services.Default
         /// <returns>The JWT header</returns>
         protected virtual async Task<JwtHeader> CreateHeaderAsync(Token token)
         {
-            var credential = await _credentialStore.GetSigningCredentialsAsync();
+            var credential = await _keys.GetSigningCredentialsAsync();
 
             if (credential == null)
             {

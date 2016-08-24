@@ -10,7 +10,6 @@ using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Specialized;
-using System.Linq;
 using System.Threading.Tasks;
 using UnitTests.Common;
 using Xunit;

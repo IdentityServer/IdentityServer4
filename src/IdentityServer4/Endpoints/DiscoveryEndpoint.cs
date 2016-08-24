@@ -8,6 +8,7 @@ using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
+using IdentityServer4.Stores;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -25,14 +26,14 @@ namespace IdentityServer4.Endpoints
     {
         private readonly IdentityServerContext _context;
         private readonly ExtensionGrantValidator _extensionGrants;
-        private readonly IEnumerable<IValidationKeysStore> _keys;
+        private readonly IKeyMaterialService _keys;
         private readonly ILogger _logger;
         private readonly IdentityServerOptions _options;
         private readonly SecretParser _parsers;
         private readonly IResourceOwnerPasswordValidator _resourceOwnerValidator;
         private readonly IScopeStore _scopes;
 
-        public DiscoveryEndpoint(IdentityServerOptions options, IdentityServerContext context, IScopeStore scopes, ILogger<DiscoveryEndpoint> logger, IEnumerable<IValidationKeysStore> keys, ExtensionGrantValidator extensionGrants, SecretParser parsers, IResourceOwnerPasswordValidator resourceOwnerValidator)
+        public DiscoveryEndpoint(IdentityServerOptions options, IdentityServerContext context, IScopeStore scopes, ILogger<DiscoveryEndpoint> logger, IKeyMaterialService keys, ExtensionGrantValidator extensionGrants, SecretParser parsers, IResourceOwnerPasswordValidator resourceOwnerValidator)
         {
             _options = options;
             _scopes = scopes;
@@ -193,11 +194,10 @@ namespace IdentityServer4.Endpoints
                     document.check_session_iframe = baseUrl + Constants.ProtocolRoutePaths.CheckSession;
                 }
 
-                //TODO
-                //if (_options.Endpoints.EnableTokenRevocationEndpoint)
-                //{
-                //    document.revocation_endpoint = baseUrl + Constants.ProtocolRoutePaths.Revocation;
-                //}
+                if (_options.Endpoints.EnableTokenRevocationEndpoint)
+                {
+                    document.revocation_endpoint = baseUrl + Constants.ProtocolRoutePaths.Revocation;
+                }
 
                 if (_options.Endpoints.EnableIntrospectionEndpoint)
                 {
@@ -207,7 +207,7 @@ namespace IdentityServer4.Endpoints
 
             if (_options.DiscoveryOptions.ShowKeySet)
             {
-                if ((await _keys.GetKeysAsync()).Any())
+                if ((await _keys.GetValidationKeysAsync()).Any())
                 {
                     document.jwks_uri = baseUrl + Constants.ProtocolRoutePaths.DiscoveryWebKeys;
                 }
@@ -227,7 +227,7 @@ namespace IdentityServer4.Endpoints
             }
 
             var webKeys = new List<Models.JsonWebKey>();
-            foreach (var key in await _keys.GetKeysAsync())
+            foreach (var key in await _keys.GetValidationKeysAsync())
             {
                 // todo
                 //if (!(key is AsymmetricSecurityKey) &&

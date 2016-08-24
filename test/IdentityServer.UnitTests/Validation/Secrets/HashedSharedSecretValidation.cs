@@ -3,8 +3,8 @@
 
 using FluentAssertions;
 using IdentityServer4.Models;
-using IdentityServer4.Services;
-using IdentityServer4.Services.InMemory;
+using IdentityServer4.Stores;
+using IdentityServer4.Stores.InMemory;
 using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
 using System;

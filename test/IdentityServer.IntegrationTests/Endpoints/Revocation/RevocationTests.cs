@@ -1,12 +1,9 @@
 ﻿using FluentAssertions;
 using IdentityModel.Client;
-using IdentityServer4;
 using IdentityServer4.Models;
 using IdentityServer4.Services.InMemory;
 using IdentityServer4.Tests.Common;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
