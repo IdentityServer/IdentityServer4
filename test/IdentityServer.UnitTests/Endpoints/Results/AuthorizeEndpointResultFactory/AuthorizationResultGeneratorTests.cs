@@ -27,7 +27,6 @@ namespace UnitTests.Endpoints.Results
         MockClientListCookie _mockClientListCookie;
         StubAuthorizeResponseGenerator _stubAuthorizeResponseGenerator = new StubAuthorizeResponseGenerator();
         MockMessageStore<IdentityServer4.Models.ErrorMessage> _mockErrorMessageStore = new MockMessageStore<IdentityServer4.Models.ErrorMessage>();
-        TestLocalizationService _stubLocalizationService = new TestLocalizationService();
 
         public AuthorizationResultFactoryTests()
         {
@@ -38,7 +37,6 @@ namespace UnitTests.Endpoints.Results
                 _fakeLogger,
                 _context,
                 _stubAuthorizeResponseGenerator,
-                _stubLocalizationService,
                 _mockErrorMessageStore, 
                 _mockClientListCookie);
         }
@@ -73,26 +71,12 @@ namespace UnitTests.Endpoints.Results
         public async Task CreateErrorResultAsync_error_result_model_should_have_correct_data()
         {
             _context.HttpContext.TraceIdentifier = "555";
-            _stubLocalizationService.Result = "translation";
 
             var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(_validatedRequest, ErrorTypes.User, "error"));
 
             var model = _mockErrorMessageStore.Messages[result.ParamValue];
-            model.Data.ErrorCode.Should().Be("error");
-            model.Data.ErrorDescription.Should().Be("translation");
+            model.Data.Error.Should().Be("error");
             model.Data.RequestId.Should().Be("555");
-        }
-
-        [Fact]
-        [Trait("Category", Category)]
-        public async Task CreateErrorResultAsync_error_result_should_use_error_code_for_error_message_when_no_localization()
-        {
-            _stubLocalizationService.Result = null;
-
-            var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(_validatedRequest, ErrorTypes.User, "error"));
-
-            var model = _mockErrorMessageStore.Messages[result.ParamValue];
-            model.Data.ErrorDescription.Should().Be("error");
         }
 
         [Fact]

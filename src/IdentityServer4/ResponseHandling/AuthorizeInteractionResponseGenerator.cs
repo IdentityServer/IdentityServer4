@@ -20,20 +20,17 @@ namespace IdentityServer4.ResponseHandling
         private readonly IdentityServerOptions _options;
         private readonly IConsentService _consent;
         private readonly IProfileService _profile;
-        private readonly ILocalizationService _localizationService;
 
         public AuthorizeInteractionResponseGenerator(
             ILogger<AuthorizeInteractionResponseGenerator> logger, 
             IdentityServerOptions options, 
             IConsentService consent, 
-            IProfileService profile, 
-            ILocalizationService localizationService)
+            IProfileService profile)
         {
             _logger = logger;
             _options = options;
             _consent = consent;
             _profile = profile;
-            _localizationService = localizationService;
         }
 
         public async Task<InteractionResponse> ProcessInteractionAsync(ValidatedAuthorizeRequest request, ConsentResponse consent = null)

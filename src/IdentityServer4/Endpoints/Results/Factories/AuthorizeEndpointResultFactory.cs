@@ -20,7 +20,6 @@ namespace IdentityServer4.Endpoints.Results
         private readonly ILogger<AuthorizeEndpointResultFactory> _logger;
         private readonly IdentityServerContext _context;
         private readonly IAuthorizeResponseGenerator _responseGenerator;
-        private readonly ILocalizationService _localizationService;
         private readonly IMessageStore<ErrorMessage> _errorMessageStore;
         private readonly ClientListCookie _clientListCookie;
 
@@ -28,14 +27,12 @@ namespace IdentityServer4.Endpoints.Results
             ILogger<AuthorizeEndpointResultFactory> logger,
             IdentityServerContext context,
             IAuthorizeResponseGenerator responseGenerator,
-            ILocalizationService localizationService,
             IMessageStore<ErrorMessage> errorMessageStore,
             ClientListCookie clientListCookie)
         {
             _logger = logger;
             _context = context;
             _responseGenerator = responseGenerator;
-            _localizationService = localizationService;
             _errorMessageStore = errorMessageStore;
             _clientListCookie = clientListCookie;
         }
@@ -104,17 +101,10 @@ namespace IdentityServer4.Endpoints.Results
             }
 
             // we now know we must show error page
-            var msg = _localizationService.GetMessage(error);
-            if (msg.IsMissing())
-            {
-                msg = error;
-            }
-
             var errorModel = new ErrorMessage
             {
                 RequestId = _context.HttpContext.TraceIdentifier,
-                ErrorCode = error,
-                ErrorDescription = msg
+                Error = error,
             };
 
             if (errorType == ErrorTypes.Client)

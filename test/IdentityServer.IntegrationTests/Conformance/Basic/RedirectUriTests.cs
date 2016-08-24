@@ -79,7 +79,7 @@ namespace IdentityServer4.Tests.Conformance.Basic
             var response = await _mockPipeline.BrowserClient.GetAsync(url);
 
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
-            _mockPipeline.ErrorMessage.ErrorCode.Should().Be("unauthorized_client");
+            _mockPipeline.ErrorMessage.Error.Should().Be("unauthorized_client");
         }
 
         [Fact]
@@ -102,7 +102,7 @@ namespace IdentityServer4.Tests.Conformance.Basic
             var response = await _mockPipeline.BrowserClient.GetAsync(url);
 
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
-            _mockPipeline.ErrorMessage.ErrorCode.Should().Be("invalid_request");
+            _mockPipeline.ErrorMessage.Error.Should().Be("invalid_request");
         }
 
         [Fact]
@@ -153,7 +153,7 @@ namespace IdentityServer4.Tests.Conformance.Basic
             var response = await _mockPipeline.BrowserClient.GetAsync(url);
 
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
-            _mockPipeline.ErrorMessage.ErrorCode.Should().Be("unauthorized_client");
+            _mockPipeline.ErrorMessage.Error.Should().Be("unauthorized_client");
         }
     }
 }
