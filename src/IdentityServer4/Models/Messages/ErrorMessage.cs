@@ -31,15 +31,7 @@ namespace IdentityServer4.Models
         /// <value>
         /// The error code.
         /// </value>
-        public string ErrorCode { get; set; }
-
-        /// <summary>
-        /// Gets or sets the error message.
-        /// </summary>
-        /// <value>
-        /// The error message.
-        /// </value>
-        public string ErrorDescription { get; set; }
+        public string Error { get; set; }
 
         /// <summary>
         /// The per-request identifier. This can be used to display to the end user and can be used in diagnostics.

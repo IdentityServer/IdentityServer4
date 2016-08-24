@@ -14,20 +14,17 @@ namespace Host.UI.Consent
         private readonly IClientStore _clientStore;
         private readonly IUserInteractionService _interaction;
         private readonly IScopeStore _scopeStore;
-        private readonly ILocalizationService _localization;
 
         public ConsentController(
             ILogger<ConsentController> logger,
             IUserInteractionService interaction,
             IClientStore clientStore,
-            IScopeStore scopeStore,
-            ILocalizationService localization)
+            IScopeStore scopeStore)
         {
             _logger = logger;
             _interaction = interaction;
             _clientStore = clientStore;
             _scopeStore = scopeStore;
-            _localization = localization;
         }
 
         [HttpGet("ui/consent", Name = "Consent")]
@@ -111,7 +108,7 @@ namespace Host.UI.Consent
                         var scopes = await _scopeStore.FindScopesAsync(request.ScopesRequested);
                         if (scopes != null && scopes.Any())
                         {
-                            return new ConsentViewModel(model, returnUrl, request, client, scopes, _localization);
+                            return new ConsentViewModel(model, returnUrl, request, client, scopes);
                         }
                         else
                         {

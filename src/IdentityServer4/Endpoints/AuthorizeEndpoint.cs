@@ -17,6 +17,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Resources;
 using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Stores;
+using IdentityModel;
 
 namespace IdentityServer4.Endpoints
 {
@@ -96,7 +97,7 @@ namespace IdentityServer4.Endpoints
             if (user == null)
             {
                 _logger.LogError("User is not authenticated.");
-                return await ErrorPageAsync(null, ErrorTypes.User, nameof(Messages.UnexpectedError));
+                return await ErrorPageAsync(null, ErrorTypes.User, OidcConstants.AuthorizeErrors.ServerError);
             }
 
             var parameters = context.HttpContext.Request.Query.AsNameValueCollection();
@@ -115,7 +116,7 @@ namespace IdentityServer4.Endpoints
             if (user == null)
             {
                 _logger.LogError("User is not authenticated.");
-                return await ErrorPageAsync(null, ErrorTypes.User, nameof(Messages.UnexpectedError));
+                return await ErrorPageAsync(null, ErrorTypes.User, OidcConstants.AuthorizeErrors.ServerError);
             }
 
             var parameters = context.HttpContext.Request.Query.AsNameValueCollection();
@@ -125,12 +126,12 @@ namespace IdentityServer4.Endpoints
             if (consent == null)
             {
                 _logger.LogError("consent message is missing.");
-                return await ErrorPageAsync(null, ErrorTypes.User, nameof(Messages.UnexpectedError));
+                return await ErrorPageAsync(null, ErrorTypes.User, OidcConstants.AuthorizeErrors.ServerError);
             }
             if (consent.Data == null)
             {
                 _logger.LogError("consent message is missing Consent data.");
-                return await ErrorPageAsync(null, ErrorTypes.User, nameof(Messages.UnexpectedError));
+                return await ErrorPageAsync(null, ErrorTypes.User, OidcConstants.AuthorizeErrors.ServerError);
             }
 
             var result = await ProcessAuthorizeRequestAsync(parameters, user, consent.Data);
