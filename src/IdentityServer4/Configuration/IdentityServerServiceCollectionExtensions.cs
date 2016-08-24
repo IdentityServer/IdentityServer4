@@ -162,7 +162,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddPluggableServices(this IServiceCollection services)
         {
             services.TryAddTransient<IPersistedGrantService, DefaultPersistedGrantService>();
-            services.TryAddTransient<ISigningCredentialStore, InMemorySigningCredentialsStore>();
+            services.TryAddTransient<IKeyMaterialService, DefaultKeyMaterialService>();
             services.TryAddTransient<IEventService, DefaultEventService>();
             services.TryAddTransient<ITokenService, DefaultTokenService>();
             services.TryAddTransient<ITokenCreationService, DefaultTokenCreationService>();

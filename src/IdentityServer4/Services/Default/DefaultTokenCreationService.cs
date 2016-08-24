@@ -11,7 +11,6 @@ using System.Linq;
 using IdentityModel;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
-using IdentityServer4.Stores;
 
 namespace IdentityServer4.Services.Default
 {
@@ -20,11 +19,11 @@ namespace IdentityServer4.Services.Default
     /// </summary>
     public class DefaultTokenCreationService : ITokenCreationService
     {
-        private readonly ISigningCredentialStore _credentialStore;
+        private readonly IKeyMaterialService _keys;
 
-        public DefaultTokenCreationService(ISigningCredentialStore credentialStore)
+        public DefaultTokenCreationService(IKeyMaterialService keys)
         {
-            _credentialStore = credentialStore;
+            _keys = keys;
         }
 
         /// <summary>
@@ -50,7 +49,7 @@ namespace IdentityServer4.Services.Default
         /// <returns>The JWT header</returns>
         protected virtual async Task<JwtHeader> CreateHeaderAsync(Token token)
         {
-            var credential = await _credentialStore.GetSigningCredentialsAsync();
+            var credential = await _keys.GetSigningCredentialsAsync();
 
             if (credential == null)
             {

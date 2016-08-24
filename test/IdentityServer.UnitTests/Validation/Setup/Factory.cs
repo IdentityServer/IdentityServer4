@@ -99,7 +99,7 @@ namespace IdentityServer4.Tests.Validation
         internal static ITokenCreationService CreateDefaultTokenCreator()
         {
             return new DefaultTokenCreationService(
-                new InMemorySigningCredentialsStore(TestCert.LoadSigningCredentials()));
+                new DefaultKeyMaterialService(new IValidationKeysStore[] { }, new InMemorySigningCredentialsStore(TestCert.LoadSigningCredentials())));
         }
 
         public static AuthorizeRequestValidator CreateAuthorizeRequestValidator(
@@ -176,7 +176,7 @@ namespace IdentityServer4.Tests.Validation
                     profile: profile,
                     clients: clients,
                     logger: TestLogger.Create<DefaultCustomTokenValidator>()),
-                    keys: new[] { new InMemoryValidationKeysStore(new[] { TestCert.LoadSigningCredentials().Key }) },
+                    keys: new DefaultKeyMaterialService(new[] { new InMemoryValidationKeysStore(new[] { TestCert.LoadSigningCredentials().Key }) }),
                 logger: logger,
                 context: idsvrContext);
 
