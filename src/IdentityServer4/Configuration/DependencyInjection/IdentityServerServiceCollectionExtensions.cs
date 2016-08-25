@@ -17,10 +17,12 @@ using IdentityServer4.Stores.Serialization;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -33,14 +35,14 @@ namespace Microsoft.Extensions.DependencyInjection
 
         //    var options = new IdentityServerOptions();
         //    setupAction(options);
-            
+
         //    services.AddRequiredPlatformServices();
         //    services.AddRequiredServices(options);
 
         //    return new IdentityServerBuilder(services);
         //}
 
-        
+
 
         //public static IServiceCollection AddRequiredServices(this IServiceCollection services, IdentityServerOptions options)
         //{
@@ -48,7 +50,7 @@ namespace Microsoft.Extensions.DependencyInjection
         //    services.AddEndpoints(options.Endpoints);
         //    services.AddValidators();
 
-            
+
         //    services.AddResponseGenerators();
 
         //    services.AddSecretParsers();
@@ -60,22 +62,17 @@ namespace Microsoft.Extensions.DependencyInjection
         //    return services;
         //}
 
-
-        public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services, Action<IdentityServerOptions> setupAction = null)
+        public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services)
         {
-            var options = new IdentityServerOptions();
-            setupAction?.Invoke(options);
+            services.AddSingleton(resolver =>
+            {
+                return resolver.GetRequiredService<IOptions<IdentityServerOptions>>().Value;
+            });
 
-            return services.AddIdentityServer(options);
-        }
-
-        public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services, IdentityServerOptions options)
-        {
-            services.AddSingleton(options);
             services.AddRequiredPlatformServices();
 
-            services.AddEndpoints(options.Endpoints);
             services.AddCoreServices();
+            services.AddEndpoints();
             services.AddHostServices();
             services.AddPluggableServices();
             services.AddValidators();
@@ -85,15 +82,27 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddDefaultSecretValidators();
 
             services.AddInMemoryTransientStores();
-            
 
             return new IdentityServerBuilder(services);
+        }
+
+        public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services, Action<IdentityServerOptions> setupAction)
+        {
+            services.Configure(setupAction);
+            return services.AddIdentityServer();
+        }
+
+        public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<IdentityServerOptions>(configuration);
+            return services.AddIdentityServer();
         }
 
         public static IServiceCollection AddRequiredPlatformServices(this IServiceCollection services)
         {
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddAuthentication();
+            services.AddOptions();
 
             return services;
         }
@@ -107,7 +116,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
-        public static IServiceCollection AddEndpoints(this IServiceCollection services, EndpointsOptions endpoints)
+        public static IServiceCollection AddEndpoints(this IServiceCollection services)
         {
             services.AddSingleton<IEndpointRouter>(resolver=>
             {

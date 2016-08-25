@@ -32,7 +32,7 @@ namespace IdentityServer4.Tests.Common
         public const string EndSessionCallbackEndpoint = "https://server/connect/endsession/callback";
         public const string CheckSessionEndpoint = "https://server/connect/checksession";
 
-        public IdentityServerOptions Options { get; set; } = new IdentityServerOptions();
+        public IdentityServerOptions Options { get; set; }
         public List<Client> Clients { get; set; } = new List<Client>();
         public List<Scope> Scopes { get; set; } = new List<Scope>();
         public List<InMemoryUser> Users { get; set; } = new List<InMemoryUser>();
@@ -78,11 +78,14 @@ namespace IdentityServer4.Tests.Common
 
             services.AddDataProtection();
 
-            services.AddIdentityServer(Options)
-                .AddInMemoryClients(Clients)
-                .AddInMemoryScopes(Scopes)
-                .AddInMemoryUsers(Users)
-                .SetSigningCredential(Cert.Load());
+            services.AddIdentityServer(options=>
+            {
+                Options = options;
+            })
+            .AddInMemoryClients(Clients)
+            .AddInMemoryScopes(Scopes)
+            .AddInMemoryUsers(Users)
+            .SetSigningCredential(Cert.Load());
         }
 
         public event Action<IApplicationBuilder> OnPreConfigure = x => { };
