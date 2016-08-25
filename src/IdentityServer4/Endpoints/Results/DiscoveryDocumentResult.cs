@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Endpoints.Results
@@ -38,10 +39,17 @@ namespace IdentityServer4.Endpoints.Results
                         throw new Exception("Item does already exist - cannot add it via a custom entry: " + item.Key);
                     }
 
-                    jobject.Add(new JProperty(item.Key, item.Value));
-
-                    return context.Response.WriteJsonAsync(jobject);
+                    if (item.Value.GetType().GetTypeInfo().IsClass)
+                    {
+                        jobject.Add(new JProperty(item.Key, JToken.FromObject(item.Value)));
+                    }
+                    else
+                    {
+                        jobject.Add(new JProperty(item.Key, item.Value));
+                    }
                 }
+
+                return context.Response.WriteJsonAsync(jobject);
             }
 
             return context.Response.WriteJsonAsync(Document);
