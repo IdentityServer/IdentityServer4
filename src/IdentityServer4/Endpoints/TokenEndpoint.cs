@@ -4,6 +4,7 @@
 using IdentityModel;
 using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Hosting;
+using IdentityServer4.Models;
 using IdentityServer4.ResponseHandling;
 using IdentityServer4.Validation;
 using Microsoft.AspNet.Http;
@@ -36,7 +37,7 @@ namespace IdentityServer4.Endpoints
             if (context.Request.Method != "POST" || !context.Request.HasFormContentType)
             {
                 _logger.LogWarning("Invalid HTTP request for token endpoint");
-                return new TokenErrorResult(OidcConstants.TokenErrors.InvalidRequest);
+                return Error(OidcConstants.TokenErrors.InvalidRequest);
             }
 
             return await ProcessTokenRequestAsync(context);
@@ -51,7 +52,7 @@ namespace IdentityServer4.Endpoints
 
             if (clientResult.Client == null)
             {
-                return new TokenErrorResult(OidcConstants.TokenErrors.InvalidClient);
+                return Error(OidcConstants.TokenErrors.InvalidClient);
             }
 
             // validate request
@@ -61,7 +62,7 @@ namespace IdentityServer4.Endpoints
 
             if (requestResult.IsError)
             {
-                return new TokenErrorResult(requestResult.Error, requestResult.ErrorDescription);
+                return Error(requestResult.Error, requestResult.ErrorDescription);
             }
 
             // create response
@@ -70,6 +71,17 @@ namespace IdentityServer4.Endpoints
             // return result
             _logger.LogInformation("Token request success.");
             return new TokenResult(response);
+        }
+
+        private TokenErrorResult Error(string error, string errorDescription = null)
+        {
+            var response = new TokenErrorResponse
+            {
+                Error = error,
+                ErrorDescription = errorDescription
+            };
+
+            return new TokenErrorResult(response);
         }
     }
 }
