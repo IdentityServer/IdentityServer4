@@ -39,34 +39,9 @@ namespace IdentityServer4.Hosting
             return null;
         }
 
-        private bool IsEndpointEnabled(EndpointName endpointName)
-        {
-            switch(endpointName)
-            {
-                case EndpointName.Authorize:
-                    return _options.Endpoints.EnableAuthorizeEndpoint;
-                case EndpointName.CheckSession:
-                    return _options.Endpoints.EnableCheckSessionEndpoint;
-                case EndpointName.Discovery:
-                    return _options.Endpoints.EnableDiscoveryEndpoint;
-                case EndpointName.EndSession:
-                    return _options.Endpoints.EnableEndSessionEndpoint;
-                case EndpointName.Introspection:
-                    return _options.Endpoints.EnableIntrospectionEndpoint;
-                case EndpointName.Revocation:
-                    return _options.Endpoints.EnableTokenRevocationEndpoint;
-                case EndpointName.Token:
-                    return _options.Endpoints.EnableTokenEndpoint;
-                case EndpointName.UserInfo:
-                    return _options.Endpoints.EnableUserInfoEndpoint;
-                default:
-                    return false;
-            }
-        }
-
         private IEndpoint GetEndpoint(EndpointName endpointName, HttpContext context)
         {
-            if (IsEndpointEnabled(endpointName))
+            if (_options.Endpoints.IsEndpointEnabled(endpointName))
             {
                 var mapping = _mappings.Where(x => x.Endpoint == endpointName).LastOrDefault();
                 if (mapping != null)
