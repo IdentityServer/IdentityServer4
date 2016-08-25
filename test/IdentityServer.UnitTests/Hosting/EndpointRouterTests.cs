@@ -6,6 +6,7 @@ using IdentityServer4.Hosting;
 using Xunit;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Configuration;
+using UnitTests.Common;
 
 namespace UnitTests.Hosting
 {
@@ -21,7 +22,7 @@ namespace UnitTests.Hosting
             _pathMap = new Dictionary<string, EndpointName>();
             _mappings = new List<EndpointMapping>();
             _options = new IdentityServerOptions();
-            _subject = new EndpointRouter(_pathMap, _options, _mappings);
+            _subject = new EndpointRouter(_pathMap, _options, _mappings, TestLogger.Create<EndpointRouter>());
         }
 
         [Fact]

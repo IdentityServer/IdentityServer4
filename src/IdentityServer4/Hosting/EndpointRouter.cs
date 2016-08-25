@@ -4,6 +4,7 @@
 using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,12 +16,14 @@ namespace IdentityServer4.Hosting
         private readonly Dictionary<string, EndpointName> _pathToNameMap;
         private readonly IdentityServerOptions _options;
         private readonly IEnumerable<EndpointMapping> _mappings;
+        private readonly ILogger<EndpointRouter> _logger;
 
-        public EndpointRouter(Dictionary<string, EndpointName> pathToNameMap, IdentityServerOptions options, IEnumerable<EndpointMapping> mappings)
+        public EndpointRouter(Dictionary<string, EndpointName> pathToNameMap, IdentityServerOptions options, IEnumerable<EndpointMapping> mappings, ILogger<EndpointRouter> logger)
         {
             _pathToNameMap = pathToNameMap;
             _options = options;
             _mappings = mappings;
+            _logger = logger;
         }
 
         public IEndpoint Find(HttpContext context)
@@ -32,9 +35,14 @@ namespace IdentityServer4.Hosting
                 var path = key.EnsureLeadingSlash();
                 if (context.Request.Path.StartsWithSegments(path))
                 {
-                    return GetEndpoint(_pathToNameMap[key], context);
+                    var endpointName = _pathToNameMap[key];
+                    _logger.LogDebug("Request path {0} matched to endpoint type {1}", context.Request.Path, endpointName);
+
+                    return GetEndpoint(endpointName, context);
                 }
             }
+
+            _logger.LogTrace("No endpoint entry found for request path: {0}", context.Request.Path);
 
             return null;
         }
@@ -46,9 +54,19 @@ namespace IdentityServer4.Hosting
                 var mapping = _mappings.Where(x => x.Endpoint == endpointName).LastOrDefault();
                 if (mapping != null)
                 {
+                    _logger.LogDebug("Mapping found for endpoint: {0}, creating handler: {1}", endpointName, mapping.Handler.FullName);
                     return context.RequestServices.GetService(mapping.Handler) as IEndpoint;
                 }
+                else
+                {
+                    _logger.LogError("No mapping found for endpoint: {0}", endpointName);
+                }
             }
+            else
+            {
+                _logger.LogWarning("{0} endpoint requested, but is diabled in endpoint options.", endpointName);
+            }
+
             return null;
         }
     }

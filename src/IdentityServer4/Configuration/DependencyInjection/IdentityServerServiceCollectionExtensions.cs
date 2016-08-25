@@ -122,7 +122,8 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 return new EndpointRouter(Constants.EndpointPathToNameMap,
                     resolver.GetRequiredService<IdentityServerOptions>(), 
-                    resolver.GetServices<EndpointMapping>());
+                    resolver.GetServices<EndpointMapping>(),
+                    resolver.GetRequiredService<ILogger<EndpointRouter>>());
             });
             services.AddEndpoint<AuthorizeEndpoint>(EndpointName.Authorize);
             services.AddEndpoint<CheckSessionEndpoint>(EndpointName.CheckSession);
