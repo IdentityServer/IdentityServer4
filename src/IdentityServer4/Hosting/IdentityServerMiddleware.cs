@@ -19,7 +19,7 @@ namespace IdentityServer4.Hosting
             _logger = logger;
         }
 
-        public async Task Invoke(HttpContext context, IEndpointRouter router, IdentityServerContext idSvrContext)
+        public async Task Invoke(HttpContext context, IEndpointRouter router)
         {
             try
             {
@@ -28,12 +28,12 @@ namespace IdentityServer4.Hosting
                 {
                     _logger.LogTrace("Invoking IdentityServer endpoint: {type}", endpoint.GetType().FullName);
 
-                    var result = await endpoint.ProcessAsync(idSvrContext);
+                    var result = await endpoint.ProcessAsync(context);
 
                     if (result != null)
                     {
                         _logger.LogTrace("Invoking result: {type}", result.GetType().FullName);
-                        await result.ExecuteAsync(idSvrContext);
+                        await result.ExecuteAsync(context);
                     }
 
                     return;

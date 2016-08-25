@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel;
+using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
 using IdentityServer4.Models;
@@ -9,6 +10,7 @@ using IdentityServer4.ResponseHandling;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using IdentityServer4.Validation;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
@@ -18,19 +20,22 @@ namespace IdentityServer4.Endpoints.Results
     class AuthorizeEndpointResultFactory : IAuthorizeEndpointResultFactory
     {
         private readonly ILogger<AuthorizeEndpointResultFactory> _logger;
-        private readonly IdentityServerContext _context;
+        private readonly IHttpContextAccessor _context;
         private readonly IAuthorizeResponseGenerator _responseGenerator;
         private readonly IMessageStore<ErrorMessage> _errorMessageStore;
         private readonly ClientListCookie _clientListCookie;
+        private readonly IdentityServerOptions _options;
 
         public AuthorizeEndpointResultFactory(
             ILogger<AuthorizeEndpointResultFactory> logger,
-            IdentityServerContext context,
+            IdentityServerOptions options,
+            IHttpContextAccessor context,
             IAuthorizeResponseGenerator responseGenerator,
             IMessageStore<ErrorMessage> errorMessageStore,
             ClientListCookie clientListCookie)
         {
             _logger = logger;
+            _options = options;
             _context = context;
             _responseGenerator = responseGenerator;
             _errorMessageStore = errorMessageStore;
@@ -42,7 +47,7 @@ namespace IdentityServer4.Endpoints.Results
             var url = _context.HttpContext.Request.PathBase.ToString().EnsureTrailingSlash() + Constants.ProtocolRoutePaths.AuthorizeAfterLogin;
             url = url.AddQueryString(request.Raw.ToQueryString());
 
-            var result = new LoginPageResult(_context.Options.UserInteractionOptions, url);
+            var result = new LoginPageResult(_options.UserInteractionOptions, url);
             return Task.FromResult<IEndpointResult>(result);
         }
 
@@ -51,7 +56,7 @@ namespace IdentityServer4.Endpoints.Results
             var url = _context.HttpContext.Request.PathBase.ToString().EnsureTrailingSlash() + Constants.ProtocolRoutePaths.AuthorizeAfterConsent;
             url = url.AddQueryString(request.Raw.ToQueryString());
 
-            var result = new ConsentPageResult(_context.Options.UserInteractionOptions, url);
+            var result = new ConsentPageResult(_options.UserInteractionOptions, url);
             return Task.FromResult<IEndpointResult>(result);
         }
 
@@ -137,7 +142,7 @@ namespace IdentityServer4.Endpoints.Results
             var message = new MessageWithId<ErrorMessage>(errorModel);
             await _errorMessageStore.WriteAsync(message.Id, message);
 
-            return new ErrorPageResult(_context.Options.UserInteractionOptions, message.Id);
+            return new ErrorPageResult(_options.UserInteractionOptions, message.Id);
         }
 
         public async Task<IEndpointResult> CreateAuthorizeResultAsync(ValidatedAuthorizeRequest request)

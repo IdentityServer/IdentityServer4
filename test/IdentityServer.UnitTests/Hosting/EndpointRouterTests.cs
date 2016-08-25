@@ -28,7 +28,7 @@ namespace UnitTests.Hosting
 
         private class MyEndpoint: IEndpoint
         {
-            public Task<IEndpointResult> ProcessAsync(IdentityServerContext context)
+            public Task<IEndpointResult> ProcessAsync(HttpContext context)
             {
                 throw new NotImplementedException();
             }

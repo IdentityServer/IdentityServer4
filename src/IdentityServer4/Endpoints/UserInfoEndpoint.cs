@@ -13,6 +13,7 @@ using IdentityServer4.Events;
 using IdentityServer4.Hosting;
 using IdentityServer4.Endpoints.Results;
 using IdentityModel;
+using Microsoft.AspNetCore.Http;
 
 namespace IdentityServer4.Endpoints
 {
@@ -35,9 +36,9 @@ namespace IdentityServer4.Endpoints
             _logger = logger;
         }
 
-        public async Task<IEndpointResult> ProcessAsync(IdentityServerContext context)
+        public async Task<IEndpointResult> ProcessAsync(HttpContext context)
         {
-            if (context.HttpContext.Request.Method != "GET" && context.HttpContext.Request.Method != "POST")
+            if (context.Request.Method != "GET" && context.Request.Method != "POST")
             {
                 _logger.LogWarning("Invalid HTTP method for userinfo endpoint.");
                 return new StatusCodeResult(405);
@@ -46,11 +47,11 @@ namespace IdentityServer4.Endpoints
             return await ProcessUserInfoRequestAsync(context);
         }
 
-        private async Task<IEndpointResult> ProcessUserInfoRequestAsync(IdentityServerContext context)
+        private async Task<IEndpointResult> ProcessUserInfoRequestAsync(HttpContext context)
         {
             _logger.LogDebug("Start userinfo request");
 
-            var tokenUsageResult = await _tokenUsageValidator.ValidateAsync(context.HttpContext);
+            var tokenUsageResult = await _tokenUsageValidator.ValidateAsync(context);
             if (tokenUsageResult.TokenFound == false)
             {
                 var error = "No access token found.";

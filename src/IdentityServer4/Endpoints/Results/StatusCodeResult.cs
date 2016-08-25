@@ -4,6 +4,7 @@
 using System.Threading.Tasks;
 using System.Net;
 using IdentityServer4.Hosting;
+using Microsoft.AspNetCore.Http;
 
 namespace IdentityServer4.Endpoints.Results
 {
@@ -21,9 +22,9 @@ namespace IdentityServer4.Endpoints.Results
             StatusCode = statusCode;
         }
 
-        public Task ExecuteAsync(IdentityServerContext context)
+        public Task ExecuteAsync(HttpContext context)
         {
-            context.HttpContext.Response.StatusCode = StatusCode;
+            context.Response.StatusCode = StatusCode;
 
             return Task.FromResult(0);
         }

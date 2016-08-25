@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -20,10 +22,12 @@ namespace IdentityServer4.Hosting
             DefaultValueHandling = DefaultValueHandling.Ignore,
         };
 
-        private readonly IdentityServerContext _context;
+        private readonly IdentityServerOptions _options;
+        private readonly IHttpContextAccessor _context;
 
-        public ClientListCookie(IdentityServerContext context)
+        public ClientListCookie(IdentityServerOptions options, IHttpContextAccessor context)
         {
+            _options = options;
             _context = context;
         }
 
@@ -34,7 +38,7 @@ namespace IdentityServer4.Hosting
 
         public virtual void AddClient(string clientId)
         {
-            if (_context.Options.Endpoints.EnableEndSessionEndpoint)
+            if (_options.Endpoints.EnableEndSessionEndpoint)
             {
                 var clients = GetClients();
                 if (!clients.Contains(clientId))
@@ -85,7 +89,7 @@ namespace IdentityServer4.Hosting
         {
             get
             {
-                return _context.GetBasePath().CleanUrlPath();
+                return _context.HttpContext.GetBasePath().CleanUrlPath();
             }
         }
 
@@ -113,7 +117,7 @@ namespace IdentityServer4.Hosting
                 expires = DateTime.Now.AddYears(-1);
             }
 
-            var opts = new Microsoft.AspNetCore.Http.CookieOptions
+            var opts = new CookieOptions
             {
                 HttpOnly = true,
                 Secure = Secure,

@@ -16,13 +16,16 @@ using System.Threading.Tasks;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using IdentityServer4.Stores;
+using IdentityServer4.Configuration;
+using Microsoft.AspNetCore.Http;
 
 namespace IdentityServer4.Validation
 {
     public class TokenValidator : ITokenValidator
     {
         private readonly ILogger _logger;
-        private readonly IdentityServerContext _context;
+        private readonly IdentityServerOptions _options;
+        private readonly IHttpContextAccessor _context;
         private readonly IPersistedGrantService _grants;
         private readonly ICustomTokenValidator _customValidator;
         private readonly IClientStore _clients;
@@ -30,8 +33,9 @@ namespace IdentityServer4.Validation
 
         private readonly TokenValidationLog _log;
         
-        public TokenValidator(IdentityServerContext context, IClientStore clients, IPersistedGrantService grants, ICustomTokenValidator customValidator, IKeyMaterialService keys, ILogger<TokenValidator> logger)
+        public TokenValidator(IdentityServerOptions options, IHttpContextAccessor context, IClientStore clients, IPersistedGrantService grants, ICustomTokenValidator customValidator, IKeyMaterialService keys, ILogger<TokenValidator> logger)
         {
+            _options = options;
             _context = context;
             _clients = clients;
             _grants = grants;
@@ -46,7 +50,7 @@ namespace IdentityServer4.Validation
         {
             _logger.LogDebug("Start identity token validation");
 
-            if (token.Length > _context.Options.InputLengthRestrictions.Jwt)
+            if (token.Length > _options.InputLengthRestrictions.Jwt)
             {
                 _logger.LogError("JWT too long");
                 return Invalid(OidcConstants.ProtectedResourceErrors.InvalidToken);
@@ -115,7 +119,7 @@ namespace IdentityServer4.Validation
 
             if (token.Contains("."))
             {
-                if (token.Length > _context.Options.InputLengthRestrictions.Jwt)
+                if (token.Length > _options.InputLengthRestrictions.Jwt)
                 {
                     _logger.LogError("JWT too long");
 
@@ -130,12 +134,12 @@ namespace IdentityServer4.Validation
                 _log.AccessTokenType = AccessTokenType.Jwt.ToString();
                 result = await ValidateJwtAsync(
                     token,
-                    string.Format(Constants.AccessTokenAudience, _context.GetIssuerUri().EnsureTrailingSlash()),
+                    string.Format(Constants.AccessTokenAudience, _context.HttpContext.GetIssuerUri().EnsureTrailingSlash()),
                     await _keys.GetValidationKeysAsync());
             }
             else
             {
-                if (token.Length > _context.Options.InputLengthRestrictions.TokenHandle)
+                if (token.Length > _options.InputLengthRestrictions.TokenHandle)
                 {
                     _logger.LogError("token handle too long");
 
@@ -190,7 +194,7 @@ namespace IdentityServer4.Validation
 
             var parameters = new TokenValidationParameters
             {
-                ValidIssuer = _context.GetIssuerUri(),
+                ValidIssuer = _context.HttpContext.GetIssuerUri(),
                 IssuerSigningKeys = validationKeys,
                 ValidateLifetime = validateLifetime,
                 ValidAudience = audience

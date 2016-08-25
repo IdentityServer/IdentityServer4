@@ -13,6 +13,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Extensions;
 using IdentityServer4.Events;
+using Microsoft.AspNetCore.Http;
 
 namespace IdentityServer4.Endpoints
 {
@@ -37,17 +38,17 @@ namespace IdentityServer4.Endpoints
             _events = events;
         }
 
-        public async Task<IEndpointResult> ProcessAsync(IdentityServerContext context)
+        public async Task<IEndpointResult> ProcessAsync(HttpContext context)
         {
             _logger.LogTrace("Processing revocation request.");
 
-            if (context.HttpContext.Request.Method != "POST")
+            if (context.Request.Method != "POST")
             {
                 _logger.LogWarning("Invalid HTTP method");
                 return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
             }
 
-            if (!context.HttpContext.Request.HasFormContentType)
+            if (!context.Request.HasFormContentType)
             {
                 _logger.LogWarning("Invalid media type");
                 return new StatusCodeResult(HttpStatusCode.UnsupportedMediaType);
@@ -68,12 +69,12 @@ namespace IdentityServer4.Endpoints
             return response;
         }
 
-        private async Task<IEndpointResult> ProcessRevocationRequestAsync(IdentityServerContext context)
+        private async Task<IEndpointResult> ProcessRevocationRequestAsync(HttpContext context)
         {
             _logger.LogInformation("Start revocation request.");
 
             // validate client
-            var clientResult = await _clientValidator.ValidateAsync(context.HttpContext);
+            var clientResult = await _clientValidator.ValidateAsync(context);
 
             var client = clientResult.Client;
             if (client == null)
@@ -82,7 +83,7 @@ namespace IdentityServer4.Endpoints
             }
 
             // validate the token request
-            var form = context.HttpContext.Request.Form.AsNameValueCollection();
+            var form = context.Request.Form.AsNameValueCollection();
             var requestResult = await _requestValidator.ValidateRequestAsync(form, client);
 
             if (requestResult.IsError)

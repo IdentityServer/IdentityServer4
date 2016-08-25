@@ -12,6 +12,7 @@ using IdentityServer4.Hosting;
 using UnitTests.Common;
 using IdentityServer4.Stores.InMemory;
 using IdentityServer4.Stores;
+using IdentityServer.UnitTests.Common;
 
 namespace IdentityServer4.Tests.Validation
 {
@@ -82,8 +83,6 @@ namespace IdentityServer4.Tests.Validation
                 scopeValidator = new ScopeValidator(scopes, new LoggerFactory().CreateLogger<ScopeValidator>());
             }
 
-            var idsvrContext = IdentityServerContextHelper.Create();
-
             return new TokenRequestValidator(
                 options,
                 grants,
@@ -141,7 +140,7 @@ namespace IdentityServer4.Tests.Validation
                 scopeValidator = new ScopeValidator(scopes, new LoggerFactory().CreateLogger<ScopeValidator>());
             }
 
-            var sessionCookie = new SessionCookie(IdentityServerContextHelper.Create(null, options));
+            var sessionCookie = new SessionCookie(new MockHttpContextAccessor(options));
 
             return new AuthorizeRequestValidator(
                 options,
@@ -166,7 +165,8 @@ namespace IdentityServer4.Tests.Validation
             }
 
             var clients = CreateClientStore();
-            var idsvrContext = IdentityServerContextHelper.Create();
+            var options = TestIdentityServerOptions.Create();
+            var context = new MockHttpContextAccessor(options);
             var logger = TestLogger.Create<TokenValidator>();
 
             var validator = new TokenValidator(
@@ -178,7 +178,8 @@ namespace IdentityServer4.Tests.Validation
                     logger: TestLogger.Create<DefaultCustomTokenValidator>()),
                     keys: new DefaultKeyMaterialService(new[] { new InMemoryValidationKeysStore(new[] { TestCert.LoadSigningCredentials().Key }) }),
                 logger: logger,
-                context: idsvrContext);
+                options: options,
+                context: context);
 
             return validator;
         }

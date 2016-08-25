@@ -4,6 +4,7 @@
 using IdentityServer4.Hosting;
 using IdentityServer4.Models;
 using Microsoft.AspNet.Http;
+using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -18,9 +19,9 @@ namespace IdentityServer4.Endpoints.Results
             WebKeys = webKeys;
         }
         
-        public Task ExecuteAsync(IdentityServerContext context)
+        public Task ExecuteAsync(HttpContext context)
         {
-            return context.HttpContext.Response.WriteJsonAsync(new { keys = WebKeys });
+            return context.Response.WriteJsonAsync(new { keys = WebKeys });
         }
     }
 }

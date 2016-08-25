@@ -1,11 +1,13 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using IdentityServer4.Validation;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using System;
 using System.Linq;
@@ -15,19 +17,22 @@ namespace IdentityServer4.Services.Default
 {
     class DefaultUserInteractionService : IUserInteractionService
     {
-        private readonly IdentityServerContext _context;
+        private readonly IdentityServerOptions _options;
+        private readonly IHttpContextAccessor _context;
         private readonly IAuthorizeRequestValidator _validator;
         private readonly IMessageStore<LogoutMessage> _logoutMessageStore;
         private readonly IMessageStore<ErrorMessage> _errorMessageStore;
         private readonly IMessageStore<ConsentResponse> _consentMessageStore;
 
         public DefaultUserInteractionService(
-            IdentityServerContext context,
+            IdentityServerOptions options,
+            IHttpContextAccessor context,
             IAuthorizeRequestValidator validator,
             IMessageStore<LogoutMessage> logoutMessageStore,
             IMessageStore<ErrorMessage> errorMessageStore,
             IMessageStore<ConsentResponse> consentMessageStore)
         {
+            _options = options;
             _context = context;
             _validator = validator;
             _logoutMessageStore = logoutMessageStore;
@@ -37,23 +42,23 @@ namespace IdentityServer4.Services.Default
 
         public Task<AuthorizationRequest> GetLoginContextAsync(string returnUrl = null)
         {
-            return GetAuthorizeRequest(_context.Options.UserInteractionOptions.LoginReturnUrlParameter, returnUrl);
+            return GetAuthorizeRequest(_options.UserInteractionOptions.LoginReturnUrlParameter, returnUrl);
         }
 
         public async Task<LogoutRequest> GetLogoutContextAsync(string logoutId = null)
         {
             if (logoutId == null)
             {
-                logoutId = _context.HttpContext.Request.Query[_context.Options.UserInteractionOptions.LogoutIdParameter].FirstOrDefault();
+                logoutId = _context.HttpContext.Request.Query[_options.UserInteractionOptions.LogoutIdParameter].FirstOrDefault();
             }
 
-            var iframeUrl = _context.GetIdentityServerSignoutFrameCallbackUrl();
+            var iframeUrl = _context.HttpContext.GetIdentityServerSignoutFrameCallbackUrl();
             if (iframeUrl != null)
             {
                 var msg = await _logoutMessageStore.ReadAsync(logoutId);
                 if (logoutId != null && msg != null)
                 {
-                    iframeUrl = iframeUrl.AddQueryString(_context.Options.UserInteractionOptions.LogoutIdParameter + "=" + logoutId);
+                    iframeUrl = iframeUrl.AddQueryString(_options.UserInteractionOptions.LogoutIdParameter + "=" + logoutId);
                 }
 
                 return new LogoutRequest(iframeUrl, msg?.Data);
@@ -64,7 +69,7 @@ namespace IdentityServer4.Services.Default
 
         public Task<AuthorizationRequest> GetConsentContextAsync(string returnUrl = null)
         {
-            return GetAuthorizeRequest(_context.Options.UserInteractionOptions.ConsentReturnUrlParameter, returnUrl);
+            return GetAuthorizeRequest(_options.UserInteractionOptions.ConsentReturnUrlParameter, returnUrl);
         }
 
         async Task<AuthorizationRequest> GetAuthorizeRequest(string paramName, string paramValue)
@@ -77,7 +82,7 @@ namespace IdentityServer4.Services.Default
             if (paramValue != null && IsValidReturnUrl(paramValue))
             {
                 var parameters = paramValue.ReadQueryStringAsNameValueCollection();
-                var user = await _context.GetIdentityServerUserAsync();
+                var user = await _context.HttpContext.GetIdentityServerUserAsync();
                 var result = await _validator.ValidateAsync(parameters, user);
                 if (!result.IsError)
                 {
@@ -93,7 +98,7 @@ namespace IdentityServer4.Services.Default
             if (errorId == null)
             {
                 StringValues values;
-                if (_context.HttpContext.Request.Query.TryGetValue(_context.Options.UserInteractionOptions.ErrorIdParameter, out values))
+                if (_context.HttpContext.Request.Query.TryGetValue(_options.UserInteractionOptions.ErrorIdParameter, out values))
                 {
                     errorId = values.First();
                 }
@@ -112,7 +117,7 @@ namespace IdentityServer4.Services.Default
         {
             if (subject == null)
             {
-                var user = await _context.GetIdentityServerUserAsync();
+                var user = await _context.HttpContext.GetIdentityServerUserAsync();
                 subject = user.GetSubjectId();
             }
 

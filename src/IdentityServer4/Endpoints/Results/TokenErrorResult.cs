@@ -5,6 +5,7 @@ using Microsoft.AspNet.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using IdentityServer4.Hosting;
+using Microsoft.AspNetCore.Http;
 
 namespace IdentityServer4.Endpoints.Results
 {
@@ -24,7 +25,7 @@ namespace IdentityServer4.Endpoints.Results
             ErrorDescription = errorDescription;
         }
 
-        public async Task ExecuteAsync(IdentityServerContext context)
+        public async Task ExecuteAsync(HttpContext context)
         {
             var dto = new ErrorDto
             {
@@ -32,9 +33,9 @@ namespace IdentityServer4.Endpoints.Results
                 error_description = ErrorDescription
             };
 
-            context.HttpContext.Response.StatusCode = 400;
-            context.HttpContext.Response.SetNoCache();
-            await context.HttpContext.Response.WriteJsonAsync(dto);
+            context.Response.StatusCode = 400;
+            context.Response.SetNoCache();
+            await context.Response.WriteJsonAsync(dto);
         }
 
         internal class ErrorDto

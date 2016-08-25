@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
 using IdentityServer4.Models;
@@ -15,7 +16,7 @@ namespace IdentityServer.UnitTests.Validation.EndSessionRequestValidation
     public class EndSessionRequestValidatorTests
     {
         EndSessionRequestValidator _subject;
-        IdentityServerContext _context;
+        IdentityServerOptions _options;
         StubTokenValidator _stubTokenValidator = new StubTokenValidator();
         StubRedirectUriValidator _stubRedirectUriValidator = new StubRedirectUriValidator();
 
@@ -25,10 +26,10 @@ namespace IdentityServer.UnitTests.Validation.EndSessionRequestValidation
         {
             _user = IdentityServer4.IdentityServerPrincipal.Create("alice", "Alice");
 
-            _context = IdentityServerContextHelper.Create();
+            _options = TestIdentityServerOptions.Create();
             _subject = new EndSessionRequestValidator(
                 TestLogger.Create<EndSessionRequestValidator>(),
-                _context, 
+                _options, 
                 _stubTokenValidator,
                 _stubRedirectUriValidator);
         }
@@ -36,7 +37,7 @@ namespace IdentityServer.UnitTests.Validation.EndSessionRequestValidation
         [Fact]
         public async Task anonymous_user_when_options_require_authenticated_user_should_return_error()
         {
-            _context.Options.AuthenticationOptions.RequireAuthenticatedUserForSignOutMessage = true;
+            _options.AuthenticationOptions.RequireAuthenticatedUserForSignOutMessage = true;
 
             var parameters = new NameValueCollection();
             var result = await _subject.ValidateAsync(parameters, null);

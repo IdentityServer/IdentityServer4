@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.DataProtection;
@@ -23,15 +24,18 @@ namespace IdentityServer4.Hosting
         };
 
         private readonly ILogger<MessageCookie<TModel>> _logger;
-        private readonly IdentityServerContext _context;
+        private readonly IdentityServerOptions _options;
+        private readonly IHttpContextAccessor _context;
         private readonly IDataProtector _protector;
 
         public MessageCookie(
             ILogger<MessageCookie<TModel>> logger, 
-            IdentityServerContext context, 
+            IdentityServerOptions options,
+            IHttpContextAccessor context, 
             IDataProtectionProvider provider)
         {
             _logger = logger;
+            _options = options;
             _context = context;
             _protector = provider.CreateProtector(MessageType);
         }
@@ -73,7 +77,7 @@ namespace IdentityServer4.Hosting
         {
             get
             {
-                return _context.GetBasePath().CleanUrlPath();
+                return _context.HttpContext.GetBasePath().CleanUrlPath();
             }
         }
 
@@ -181,7 +185,7 @@ namespace IdentityServer4.Hosting
         private void ClearOverflow()
         {
             var names = GetCookieNames();
-            var toKeep = _context.Options.UserInteractionOptions.CookieMessageThreshold;
+            var toKeep = _options.UserInteractionOptions.CookieMessageThreshold;
 
             if (names.Count() >= toKeep)
             {

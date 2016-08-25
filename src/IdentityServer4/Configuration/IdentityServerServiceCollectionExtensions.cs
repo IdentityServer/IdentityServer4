@@ -72,7 +72,6 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services, IdentityServerOptions options)
         {
             services.AddSingleton(options);
-            services.AddTransient<IdentityServerContext>();
             services.AddRequiredPlatformServices();
 
             services.AddEndpoints(options.Endpoints);

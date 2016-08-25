@@ -2,15 +2,19 @@
 using System;
 using System.Diagnostics;
 using IdentityModel;
+using Microsoft.AspNetCore.Http;
+using IdentityServer4.Configuration;
 
 namespace IdentityServer4.Events
 {
     public class EventServiceHelper
     {
-        private readonly IdentityServerContext _context;
+        private readonly IdentityServerOptions _options;
+        private readonly IHttpContextAccessor _context;
 
-        public EventServiceHelper(IdentityServerContext context)
+        public EventServiceHelper(IdentityServerOptions options, IHttpContextAccessor context)
         {
+            _options = options;
             _context = context;
         }
 
@@ -19,13 +23,13 @@ namespace IdentityServer4.Events
             switch (evt.EventType)
             {
                 case EventTypes.Failure:
-                    return _context.Options.EventsOptions.RaiseFailureEvents;
+                    return _options.EventsOptions.RaiseFailureEvents;
                 case EventTypes.Information:
-                    return _context.Options.EventsOptions.RaiseInformationEvents;
+                    return _options.EventsOptions.RaiseInformationEvents;
                 case EventTypes.Success:
-                    return _context.Options.EventsOptions.RaiseSuccessEvents;
+                    return _options.EventsOptions.RaiseSuccessEvents;
                 case EventTypes.Error:
-                    return _context.Options.EventsOptions.RaiseErrorEvents;
+                    return _options.EventsOptions.RaiseErrorEvents;
             }
 
             return false;

@@ -5,6 +5,7 @@ using IdentityModel;
 using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
 using IdentityServer4.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -27,9 +28,9 @@ namespace IdentityServer4.Services.Default
         private readonly ILogger _logger;
 
         /// <summary>
-        /// The identity server context
+        /// The HTTP context accessor
         /// </summary>
-        protected readonly IdentityServerContext _context;
+        protected readonly IHttpContextAccessor _context;
 
         /// <summary>
         /// The claims provider
@@ -50,16 +51,17 @@ namespace IdentityServer4.Services.Default
         /// The events service
         /// </summary>
         protected readonly IEventService _events;
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultTokenService" /> class. This overloaded constructor is deprecated and will be removed in 3.0.0.
         /// </summary>
-        /// <param name="options">The options.</param>
+        /// <param name="context">The context.</param>
         /// <param name="claimsProvider">The claims provider.</param>
-        /// <param name="tokenHandles">The token handles.</param>
+        /// <param name="grants">The grants.</param>
         /// <param name="creationService">The signing service.</param>
         /// <param name="events">The events service.</param>
-        public DefaultTokenService(IdentityServerContext context, IClaimsService claimsProvider, IPersistedGrantService grants, ITokenCreationService creationService, IEventService events, ILogger<DefaultTokenService> logger)
+        /// <param name="logger">The logger.</param>
+        public DefaultTokenService(IHttpContextAccessor context, IClaimsService claimsProvider, IPersistedGrantService grants, ITokenCreationService creationService, IEventService events, ILogger<DefaultTokenService> logger)
         {
             _logger = logger;
             _context = context;
@@ -118,7 +120,7 @@ namespace IdentityServer4.Services.Default
                 request.IncludeAllIdentityClaims,
                 request.ValidatedRequest));
 
-            var issuer = _context.GetIssuerUri();
+            var issuer = _context.HttpContext.GetIssuerUri();
 
             var token = new Token(OidcConstants.TokenTypes.IdentityToken)
             {
@@ -157,7 +159,7 @@ namespace IdentityServer4.Services.Default
                 claims.Add(new Claim(JwtClaimTypes.JwtId, CryptoRandom.CreateUniqueId()));
             }
 
-            var issuer = _context.GetIssuerUri();
+            var issuer = _context.HttpContext.GetIssuerUri();
             var token = new Token(OidcConstants.TokenTypes.AccessToken)
             {
                 Audience = string.Format(Constants.AccessTokenAudience, issuer.EnsureTrailingSlash()),

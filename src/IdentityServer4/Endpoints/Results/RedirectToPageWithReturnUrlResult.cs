@@ -4,6 +4,7 @@
 using System.Threading.Tasks;
 using IdentityServer4.Hosting;
 using IdentityServer4.Extensions;
+using Microsoft.AspNetCore.Http;
 
 namespace IdentityServer4.Endpoints.Results
 {
@@ -14,7 +15,7 @@ namespace IdentityServer4.Endpoints.Results
         {
         }
 
-        public override Task ExecuteAsync(IdentityServerContext context)
+        public override Task ExecuteAsync(HttpContext context)
         {
             if (!Url.IsLocalUrl())
             {

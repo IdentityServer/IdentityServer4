@@ -7,6 +7,7 @@ using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
 using Microsoft.AspNet.Http;
 using IdentityModel;
+using Microsoft.AspNetCore.Http;
 
 namespace IdentityServer4.Endpoints.Results
 {
@@ -42,10 +43,10 @@ namespace IdentityServer4.Endpoints.Results
             return uri;
         }
 
-        public Task ExecuteAsync(IdentityServerContext context)
+        public Task ExecuteAsync(HttpContext context)
         {
-            context.HttpContext.Response.SetNoCache();
-            context.HttpContext.Response.Redirect(BuildUri(Response));
+            context.Response.SetNoCache();
+            context.Response.Redirect(BuildUri(Response));
             return Task.FromResult(0);
         }
     }

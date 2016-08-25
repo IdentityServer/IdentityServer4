@@ -5,6 +5,7 @@ using IdentityModel;
 using IdentityServer4.Hosting;
 using IdentityServer4.Models;
 using Microsoft.AspNet.Http;
+using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Endpoints.Results
@@ -18,7 +19,7 @@ namespace IdentityServer4.Endpoints.Results
             TokenResponse = response;
         }
 
-        public async Task ExecuteAsync(IdentityServerContext context)
+        public async Task ExecuteAsync(HttpContext context)
         {
             var dto = new TokenResponseDto
             {
@@ -29,8 +30,8 @@ namespace IdentityServer4.Endpoints.Results
                 token_type = OidcConstants.TokenResponse.BearerTokenType
             };
 
-            context.HttpContext.Response.SetNoCache();
-            await context.HttpContext.Response.WriteJsonAsync(dto);
+            context.Response.SetNoCache();
+            await context.Response.WriteJsonAsync(dto);
         }
 
         internal class TokenResponseDto
