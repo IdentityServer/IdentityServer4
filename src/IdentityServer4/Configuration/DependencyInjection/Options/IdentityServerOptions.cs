@@ -27,13 +27,14 @@ namespace IdentityServer4.Configuration
         /// </value>
         public string IssuerUri { get; set; }
 
+        // todo
         /// <summary>
         /// Gets or sets a value indicating whether SSL is required for IdentityServer. Defaults to `true`.
         /// </summary>
         /// <value>
         ///   <c>true</c> if SSL is required; otherwise, <c>false</c>.
         /// </value>
-        public bool RequireSsl { get; set; } = true;
+        //public bool RequireSsl { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the endpoint configuration.
@@ -73,7 +74,8 @@ namespace IdentityServer4.Configuration
         /// <value>
         /// The CSP options.
         /// </value>
-        public CspOptions CspOptions { get; set; } = new CspOptions();
+        // todo
+        //public CspOptions CspOptions { get; set; } = new CspOptions();
 
         /// <summary>
         /// Gets or sets the events options.
