@@ -6,6 +6,7 @@ using IdentityServer4.Hosting;
 using Xunit;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace UnitTests.Hosting
 {
@@ -24,26 +25,73 @@ namespace UnitTests.Hosting
             _subject = new EndpointRouter(_pathMap, _options, _mappings);
         }
 
-        [Theory(Skip = "rework for new structure")]
-        [InlineData("/endpoint1")]
-        [InlineData("endpoint1")]
-        public void todo(string endpointPath)
+        [Fact]
+        public void Find_should_find_path()
         {
-            //_subject.Find();
+            _pathMap.Add("/endpoint", EndpointName.Authorize);
+            _mappings.Add(new EndpointMapping { Endpoint = EndpointName.Authorize, Handler = typeof(MyEndpoint) });
 
-            //    var map = new Dictionary<string, Type> { { endpointPath, typeof(MyEndpoint) } };
-            //    var mappings = new List<EndpointMapping> { new EndpointMapping {   };
-            //    var subject = new EndpointRouter(map);
+            var ctx = new DefaultHttpContext();
+            ctx.Request.Path = new PathString("/endpoint");
+            ctx.RequestServices = new StubServiceProvider();
 
-            //    var ctx = new DefaultHttpContext();
-            //    ctx.Request.Path = new PathString("/endpoint1");
-            //    ctx.RequestServices = new StubServiceProvider();
+            var result = _subject.Find(ctx);
+            result.Should().BeOfType<MyEndpoint>();
+        }
 
-            //    var result = subject.Find(ctx);
-            //    result.Should().BeOfType<MyEndpoint>();
+        [Fact]
+        public void Find_should_find_unprefixed_path()
+        {
+            _pathMap.Add("endpoint", EndpointName.Authorize);
+            _mappings.Add(new EndpointMapping { Endpoint = EndpointName.Authorize, Handler = typeof(MyEndpoint) });
+
+            var ctx = new DefaultHttpContext();
+            ctx.Request.Path = new PathString("/endpoint");
+            ctx.RequestServices = new StubServiceProvider();
+
+            var result = _subject.Find(ctx);
+            result.Should().BeOfType<MyEndpoint>();
+        }
+
+        [Fact]
+        public void Find_should_find_last_registered_mapping()
+        {
+            _pathMap.Add("/endpoint", EndpointName.Authorize);
+            _mappings.Add(new EndpointMapping { Endpoint = EndpointName.Authorize, Handler = typeof(MyEndpoint) });
+            _mappings.Add(new EndpointMapping { Endpoint = EndpointName.Authorize, Handler = typeof(MyOtherEndpoint) });
+
+            var ctx = new DefaultHttpContext();
+            ctx.Request.Path = new PathString("/endpoint");
+            ctx.RequestServices = new StubServiceProvider();
+
+            var result = _subject.Find(ctx);
+            result.Should().BeOfType<MyOtherEndpoint>();
+        }
+
+        [Fact]
+        public void Find_should_return_null_for_disabled_endpoint()
+        {
+            _pathMap.Add("/endpoint", EndpointName.Authorize);
+            _mappings.Add(new EndpointMapping { Endpoint = EndpointName.Authorize, Handler = typeof(MyEndpoint) });
+            _options.Endpoints.EnableAuthorizeEndpoint = false;
+
+            var ctx = new DefaultHttpContext();
+            ctx.Request.Path = new PathString("/endpoint");
+            ctx.RequestServices = new StubServiceProvider();
+
+            var result = _subject.Find(ctx);
+            result.Should().BeNull();
         }
 
         private class MyEndpoint: IEndpoint
+        {
+            public Task<IEndpointResult> ProcessAsync(HttpContext context)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        private class MyOtherEndpoint : IEndpoint
         {
             public Task<IEndpointResult> ProcessAsync(HttpContext context)
             {
@@ -55,7 +103,10 @@ namespace UnitTests.Hosting
         {
             public object GetService(Type serviceType)
             {
-                return serviceType == typeof (MyEndpoint) ? new MyEndpoint() : null;
+                if (serviceType == typeof(MyEndpoint)) return new MyEndpoint();
+                if (serviceType == typeof(MyOtherEndpoint)) return new MyOtherEndpoint();
+
+                return null;
             }
         }
     }
