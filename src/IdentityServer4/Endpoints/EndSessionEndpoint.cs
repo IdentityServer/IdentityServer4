@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Threading.Tasks;
 using System;
-using Microsoft.AspNet.Http;
 using System.Collections.Specialized;
 using IdentityServer4.Validation;
 using IdentityServer4.Models;

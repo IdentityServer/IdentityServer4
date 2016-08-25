@@ -5,7 +5,6 @@ using IdentityModel;
 using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Hosting;
 using IdentityServer4.Validation;
-using Microsoft.AspNet.Http;
 using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Threading.Tasks;

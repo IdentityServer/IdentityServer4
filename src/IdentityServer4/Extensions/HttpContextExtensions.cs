@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityModel;
 using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Http;
@@ -83,10 +84,10 @@ namespace IdentityServer4.Hosting
             if (sid != null)
             {
                 var signoutIframeUrl = context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.ProtocolRoutePaths.EndSessionCallback;
-                //TODO: update sid to OidcConstants when idmodel released
-                signoutIframeUrl = signoutIframeUrl.AddQueryString("sid" + "=" + sid);
+                signoutIframeUrl = signoutIframeUrl.AddQueryString(OidcConstants.EndSessionRequest.Sid + "=" + sid);
                 return signoutIframeUrl;
             }
+
             return null;
         }
     }

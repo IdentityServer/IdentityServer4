@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
-using Microsoft.AspNet.Http;
 using IdentityModel;
 using Microsoft.AspNetCore.Http;
 

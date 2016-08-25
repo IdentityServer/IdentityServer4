@@ -6,8 +6,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 
-// TODO Brock: rename namespace to Core
-namespace Microsoft.AspNet.Http
+namespace Microsoft.AspNetCore.Http
 {
     public static class IReadableStringCollectionExtensions
     {

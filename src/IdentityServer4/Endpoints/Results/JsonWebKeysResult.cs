@@ -3,7 +3,6 @@
 
 using IdentityServer4.Hosting;
 using IdentityServer4.Models;
-using Microsoft.AspNet.Http;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
