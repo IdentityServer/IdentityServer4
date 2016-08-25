@@ -17,7 +17,6 @@ namespace IdentityServer4.ResponseHandling
     class AuthorizeInteractionResponseGenerator : IAuthorizeInteractionResponseGenerator
     {
         private readonly ILogger<AuthorizeInteractionResponseGenerator> _logger;
-        private readonly IdentityServerOptions _options;
         private readonly IConsentService _consent;
         private readonly IProfileService _profile;
 
@@ -28,7 +27,6 @@ namespace IdentityServer4.ResponseHandling
             IProfileService profile)
         {
             _logger = logger;
-            _options = options;
             _consent = consent;
             _profile = profile;
         }

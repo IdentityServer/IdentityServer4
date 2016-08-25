@@ -98,47 +98,26 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
+        public static IServiceCollection AddEndpoint<T>(this IServiceCollection services, EndpointName endpoint)
+            where T : class, IEndpoint
+        {
+            services.AddTransient<T>();
+            services.AddSingleton(new EndpointMapping { Endpoint = endpoint, Handler = typeof(T) });
+
+            return services;
+        }
+
         public static IServiceCollection AddEndpoints(this IServiceCollection services, EndpointsOptions endpoints)
         {
-            var map = new Dictionary<string, Type>();
-            if (endpoints.EnableTokenEndpoint)
-            {
-                map.Add(Constants.ProtocolRoutePaths.Token, typeof(TokenEndpoint));
-            }
-            if (endpoints.EnableTokenRevocationEndpoint)
-            {
-                map.Add(Constants.ProtocolRoutePaths.Revocation, typeof(RevocationEndpoint));
-            }
-            if (endpoints.EnableDiscoveryEndpoint)
-            {
-                map.Add(Constants.ProtocolRoutePaths.DiscoveryConfiguration, typeof(DiscoveryEndpoint));
-            }
-            if (endpoints.EnableUserInfoEndpoint)
-            {
-                map.Add(Constants.ProtocolRoutePaths.UserInfo, typeof(UserInfoEndpoint));
-            }
-            if (endpoints.EnableIntrospectionEndpoint)
-            {
-                map.Add(Constants.ProtocolRoutePaths.Introspection, typeof(IntrospectionEndpoint));
-            }
-            if (endpoints.EnableAuthorizeEndpoint)
-            {
-                map.Add(Constants.ProtocolRoutePaths.Authorize, typeof(AuthorizeEndpoint));
-            }
-            if (endpoints.EnableEndSessionEndpoint)
-            {
-                map.Add(Constants.ProtocolRoutePaths.EndSession, typeof(EndSessionEndpoint));
-            }
-            if (endpoints.EnableCheckSessionEndpoint)
-            {
-                map.Add(Constants.ProtocolRoutePaths.CheckSession, typeof(CheckSessionEndpoint));
-            }
-
-            services.AddSingleton<IEndpointRouter>(new EndpointRouter(map));
-            foreach (var item in map)
-            {
-                services.AddTransient(item.Value);
-            }
+            services.AddSingleton<IEndpointRouter, EndpointRouter>();
+            services.AddEndpoint<AuthorizeEndpoint>(EndpointName.Authorize);
+            services.AddEndpoint<CheckSessionEndpoint>(EndpointName.CheckSession);
+            services.AddEndpoint<DiscoveryEndpoint>(EndpointName.Discovery);
+            services.AddEndpoint<EndSessionEndpoint>(EndpointName.EndSession);
+            services.AddEndpoint<IntrospectionEndpoint>(EndpointName.Introspection);
+            services.AddEndpoint<RevocationEndpoint>(EndpointName.Revocation);
+            services.AddEndpoint<TokenEndpoint>(EndpointName.Token);
+            services.AddEndpoint<UserInfoEndpoint>(EndpointName.UserInfo);
 
             return services;
         }
