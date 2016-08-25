@@ -27,9 +27,9 @@ namespace IdentityServer4.Models
 
         public ConsentRequest(NameValueCollection parameters, string subject)
         {
-            ClientId = parameters[IdentityModel.OidcConstants.AuthorizeRequest.ClientId];
-            Nonce = parameters[IdentityModel.OidcConstants.AuthorizeRequest.Nonce];
-            ScopesRequested = parameters[IdentityModel.OidcConstants.AuthorizeRequest.Scope].ParseScopesString();
+            ClientId = parameters[OidcConstants.AuthorizeRequest.ClientId];
+            Nonce = parameters[OidcConstants.AuthorizeRequest.Nonce];
+            ScopesRequested = parameters[OidcConstants.AuthorizeRequest.Scope].ParseScopesString();
             Subject = subject;
         }
 
