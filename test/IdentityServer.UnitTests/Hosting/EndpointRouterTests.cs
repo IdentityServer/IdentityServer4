@@ -5,26 +5,42 @@ using FluentAssertions;
 using IdentityServer4.Hosting;
 using Xunit;
 using Microsoft.AspNetCore.Http;
+using IdentityServer4.Configuration;
 
 namespace UnitTests.Hosting
 {
     public class EndpointRouterTests
     {
+        Dictionary<string, EndpointName> _pathMap;
+        List<EndpointMapping> _mappings;
+        IdentityServerOptions _options;
+        EndpointRouter _subject;
+
+        public EndpointRouterTests()
+        {
+            _pathMap = new Dictionary<string, EndpointName>();
+            _mappings = new List<EndpointMapping>();
+            _options = new IdentityServerOptions();
+            _subject = new EndpointRouter(_pathMap, _options, _mappings);
+        }
+
         [Theory(Skip = "rework for new structure")]
         [InlineData("/endpoint1")]
         [InlineData("endpoint1")]
-        public void endpoints_should_be_bound_to_requests(string endpointPath)
+        public void todo(string endpointPath)
         {
-        //    var map = new Dictionary<string, Type> { { endpointPath, typeof(MyEndpoint) } };
-        //    var mappings = new List<EndpointMapping> { new EndpointMapping {   };
-        //    var subject = new EndpointRouter(map);
+            //_subject.Find();
 
-        //    var ctx = new DefaultHttpContext();
-        //    ctx.Request.Path = new PathString("/endpoint1");
-        //    ctx.RequestServices = new StubServiceProvider();
+            //    var map = new Dictionary<string, Type> { { endpointPath, typeof(MyEndpoint) } };
+            //    var mappings = new List<EndpointMapping> { new EndpointMapping {   };
+            //    var subject = new EndpointRouter(map);
 
-        //    var result = subject.Find(ctx);
-        //    result.Should().BeOfType<MyEndpoint>();
+            //    var ctx = new DefaultHttpContext();
+            //    ctx.Request.Path = new PathString("/endpoint1");
+            //    ctx.RequestServices = new StubServiceProvider();
+
+            //    var result = subject.Find(ctx);
+            //    result.Should().BeOfType<MyEndpoint>();
         }
 
         private class MyEndpoint: IEndpoint

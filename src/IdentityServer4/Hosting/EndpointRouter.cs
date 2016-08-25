@@ -12,23 +12,13 @@ namespace IdentityServer4.Hosting
 {
     class EndpointRouter : IEndpointRouter
     {
-        static Dictionary<string, EndpointName> _map = new Dictionary<string, EndpointName>
-        {
-            { Constants.ProtocolRoutePaths.Authorize, EndpointName.Authorize },
-            { Constants.ProtocolRoutePaths.CheckSession, EndpointName.CheckSession},
-            { Constants.ProtocolRoutePaths.DiscoveryConfiguration, EndpointName.Discovery},
-            { Constants.ProtocolRoutePaths.EndSession, EndpointName.EndSession },
-            { Constants.ProtocolRoutePaths.Introspection, EndpointName.Introspection },
-            { Constants.ProtocolRoutePaths.Revocation, EndpointName.Revocation },
-            { Constants.ProtocolRoutePaths.Token, EndpointName.Token },
-            { Constants.ProtocolRoutePaths.UserInfo, EndpointName.UserInfo },
-        };
-
-        private readonly IEnumerable<EndpointMapping> _mappings;
+        private readonly Dictionary<string, EndpointName> _pathToNameMap;
         private readonly IdentityServerOptions _options;
+        private readonly IEnumerable<EndpointMapping> _mappings;
 
-        public EndpointRouter(IdentityServerOptions options, IEnumerable<EndpointMapping> mappings)
+        public EndpointRouter(Dictionary<string, EndpointName> pathToNameMap, IdentityServerOptions options, IEnumerable<EndpointMapping> mappings)
         {
+            _pathToNameMap = pathToNameMap;
             _options = options;
             _mappings = mappings;
         }
@@ -37,12 +27,12 @@ namespace IdentityServer4.Hosting
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            foreach(var key in _map.Keys)
+            foreach(var key in _pathToNameMap.Keys)
             {
                 var path = key.EnsureLeadingSlash();
                 if (context.Request.Path.StartsWithSegments(path))
                 {
-                    return GetEndpoint(_map[key], context);
+                    return GetEndpoint(_pathToNameMap[key], context);
                 }
             }
 

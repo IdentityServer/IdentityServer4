@@ -109,7 +109,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IServiceCollection AddEndpoints(this IServiceCollection services, EndpointsOptions endpoints)
         {
-            services.AddSingleton<IEndpointRouter, EndpointRouter>();
+            services.AddSingleton<IEndpointRouter>(resolver=>
+            {
+                return new EndpointRouter(Constants.EndpointPathToNameMap,
+                    resolver.GetRequiredService<IdentityServerOptions>(), 
+                    resolver.GetServices<EndpointMapping>());
+            });
             services.AddEndpoint<AuthorizeEndpoint>(EndpointName.Authorize);
             services.AddEndpoint<CheckSessionEndpoint>(EndpointName.CheckSession);
             services.AddEndpoint<DiscoveryEndpoint>(EndpointName.Discovery);

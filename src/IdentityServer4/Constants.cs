@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel;
+using IdentityServer4.Hosting;
 using IdentityServer4.Models;
 using System;
 using System.Collections.Generic;
@@ -269,6 +270,18 @@ namespace IdentityServer4
                 //Revocation
             };
         }
+
+        public static readonly Dictionary<string, EndpointName> EndpointPathToNameMap = new Dictionary<string, EndpointName>
+        {
+            { ProtocolRoutePaths.Authorize, EndpointName.Authorize },
+            { ProtocolRoutePaths.CheckSession, EndpointName.CheckSession},
+            { ProtocolRoutePaths.DiscoveryConfiguration, EndpointName.Discovery},
+            { ProtocolRoutePaths.EndSession, EndpointName.EndSession },
+            { ProtocolRoutePaths.Introspection, EndpointName.Introspection },
+            { ProtocolRoutePaths.Revocation, EndpointName.Revocation },
+            { ProtocolRoutePaths.Token, EndpointName.Token },
+            { ProtocolRoutePaths.UserInfo, EndpointName.UserInfo },
+        };
 
         public static class EnvironmentKeys
         {

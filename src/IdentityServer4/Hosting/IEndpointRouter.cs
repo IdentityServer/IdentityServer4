@@ -7,7 +7,6 @@ namespace IdentityServer4.Hosting
 {
     public interface IEndpointRouter
     {
-        // TODO: does this need to be async?
         IEndpoint Find(HttpContext context);
     }
 }
