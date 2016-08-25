@@ -6,7 +6,6 @@ using IdentityServer4.Hosting;
 using Xunit;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace UnitTests.Hosting
 {
@@ -23,6 +22,20 @@ namespace UnitTests.Hosting
             _mappings = new List<EndpointMapping>();
             _options = new IdentityServerOptions();
             _subject = new EndpointRouter(_pathMap, _options, _mappings);
+        }
+
+        [Fact]
+        public void Find_should_return_null_for_incorrect_path()
+        {
+            _pathMap.Add("/endpoint", EndpointName.Authorize);
+            _mappings.Add(new EndpointMapping { Endpoint = EndpointName.Authorize, Handler = typeof(MyEndpoint) });
+
+            var ctx = new DefaultHttpContext();
+            ctx.Request.Path = new PathString("/wrong");
+            ctx.RequestServices = new StubServiceProvider();
+
+            var result = _subject.Find(ctx);
+            result.Should().BeNull();
         }
 
         [Fact]
@@ -47,6 +60,20 @@ namespace UnitTests.Hosting
 
             var ctx = new DefaultHttpContext();
             ctx.Request.Path = new PathString("/endpoint");
+            ctx.RequestServices = new StubServiceProvider();
+
+            var result = _subject.Find(ctx);
+            result.Should().BeOfType<MyEndpoint>();
+        }
+
+        [Fact]
+        public void Find_should_find_nested_paths()
+        {
+            _pathMap.Add("/endpoint", EndpointName.Authorize);
+            _mappings.Add(new EndpointMapping { Endpoint = EndpointName.Authorize, Handler = typeof(MyEndpoint) });
+
+            var ctx = new DefaultHttpContext();
+            ctx.Request.Path = new PathString("/endpoint/subpath");
             ctx.RequestServices = new StubServiceProvider();
 
             var result = _subject.Find(ctx);
@@ -106,7 +133,7 @@ namespace UnitTests.Hosting
                 if (serviceType == typeof(MyEndpoint)) return new MyEndpoint();
                 if (serviceType == typeof(MyOtherEndpoint)) return new MyOtherEndpoint();
 
-                return null;
+                throw new InvalidOperationException();
             }
         }
     }
