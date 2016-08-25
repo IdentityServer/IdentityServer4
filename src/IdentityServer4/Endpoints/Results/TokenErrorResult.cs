@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using IdentityServer4.Models;
 using IdentityServer4.Extensions;
 using System;
+using Newtonsoft.Json.Linq;
 
 namespace IdentityServer4.Endpoints.Results
 {
@@ -24,18 +25,29 @@ namespace IdentityServer4.Endpoints.Results
 
         public async Task ExecuteAsync(HttpContext context)
         {
-            var dto = new ErrorDto
+            context.Response.StatusCode = 400;
+            context.Response.SetNoCache();
+
+            var dto = new ResultDto
             {
                 error = Error.Error,
                 error_description = Error.ErrorDescription
             };
 
-            context.Response.StatusCode = 400;
-            context.Response.SetNoCache();
-            await context.Response.WriteJsonAsync(dto);
+            if (Error.Custom.IsNullOrEmpty())
+            {
+                await context.Response.WriteJsonAsync(dto);
+            }
+            else
+            {
+                var jobject = JObject.FromObject(dto);
+                jobject.AddDictionary(Error.Custom);
+
+                await context.Response.WriteJsonAsync(jobject);
+            }
         }
 
-        internal class ErrorDto
+        internal class ResultDto
         {
             public string error { get; set; }
 

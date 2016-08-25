@@ -65,7 +65,7 @@ namespace IdentityServer4.Endpoints
             }
 
             // create response
-            var response = await _responseGenerator.ProcessAsync(requestResult.ValidatedRequest);
+            var response = await _responseGenerator.ProcessAsync(requestResult);
 
             // return result
             _logger.LogInformation("Token request success.");

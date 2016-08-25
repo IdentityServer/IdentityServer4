@@ -31,21 +31,21 @@ namespace IdentityServer4.ResponseHandling
             _logger = loggerFactory.CreateLogger<TokenResponseGenerator>();
         }
 
-        public async Task<TokenResponse> ProcessAsync(ValidatedTokenRequest request)
+        public async Task<TokenResponse> ProcessAsync(TokenRequestValidationResult validationResult)
         {
             _logger.LogTrace("Creating token response");
 
-            if (request.GrantType == OidcConstants.GrantTypes.AuthorizationCode)
+            if (validationResult.ValidatedRequest.GrantType == OidcConstants.GrantTypes.AuthorizationCode)
             {
-                return await ProcessAuthorizationCodeRequestAsync(request);
+                return await ProcessAuthorizationCodeRequestAsync(validationResult.ValidatedRequest);
             }
 
-            if (request.GrantType == OidcConstants.GrantTypes.RefreshToken)
+            if (validationResult.ValidatedRequest.GrantType == OidcConstants.GrantTypes.RefreshToken)
             {
-                return await ProcessRefreshTokenRequestAsync(request);
+                return await ProcessRefreshTokenRequestAsync(validationResult.ValidatedRequest);
             }
 
-            return await ProcessTokenRequestAsync(request);
+            return await ProcessTokenRequestAsync(validationResult);
         }
 
         private async Task<TokenResponse> ProcessAuthorizationCodeRequestAsync(ValidatedTokenRequest request)
@@ -107,15 +107,15 @@ namespace IdentityServer4.ResponseHandling
             return response;
         }
 
-        private async Task<TokenResponse> ProcessTokenRequestAsync(ValidatedTokenRequest request)
+        private async Task<TokenResponse> ProcessTokenRequestAsync(TokenRequestValidationResult validationResult)
         {
             _logger.LogTrace("Processing token request");
 
-            var accessToken = await CreateAccessTokenAsync(request);
+            var accessToken = await CreateAccessTokenAsync(validationResult.ValidatedRequest);
             var response = new TokenResponse
             {
                 AccessToken = accessToken.Item1,
-                AccessTokenLifetime = request.Client.AccessTokenLifetime
+                AccessTokenLifetime = validationResult.ValidatedRequest.Client.AccessTokenLifetime
             };
 
             if (accessToken.Item2.IsPresent())

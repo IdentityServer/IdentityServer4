@@ -9,6 +9,6 @@ namespace IdentityServer4.ResponseHandling
 {
     public interface ITokenResponseGenerator
     {
-        Task<TokenResponse> ProcessAsync(ValidatedTokenRequest request);
+        Task<TokenResponse> ProcessAsync(TokenRequestValidationResult validationResult);
     }
 }
