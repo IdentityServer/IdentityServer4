@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityServer4.Models;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Validation
@@ -8,14 +9,13 @@ namespace IdentityServer4.Validation
     /// <summary>
     /// Allows inserting custom validation logic into authorize and token requests
     /// </summary>
-    public interface ICustomRequestValidator
+    public interface ICustomTokenRequestValidator
     {
         /// <summary>
-        /// Custom validation logic for the authorize request.
+        /// Custom validation logic for the token request.
         /// </summary>
-        /// <param name="request">The validated request.</param>
+        /// <param name="validationResult">The validation model.</param>
         /// <returns>The validation result</returns>
-        // postpone
-        Task<AuthorizeRequestValidationResult> ValidateAuthorizeRequestAsync(ValidatedAuthorizeRequest request);
+        Task ValidateAsync(CustomTokenRequestValidationContext context);
     }
 }

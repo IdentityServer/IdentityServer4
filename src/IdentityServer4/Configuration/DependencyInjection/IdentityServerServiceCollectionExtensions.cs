@@ -201,6 +201,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<IResourceOwnerPasswordValidator, NotSupportedResouceOwnerPasswordValidator>();
             services.TryAddTransient<ICustomTokenValidator, DefaultCustomTokenValidator>();
             services.TryAddTransient<ICustomRequestValidator, DefaultCustomRequestValidator>();
+            services.TryAddTransient<ICustomTokenRequestValidator, DefaultCustomTokenRequestValidator>();
 
             return services;
         }

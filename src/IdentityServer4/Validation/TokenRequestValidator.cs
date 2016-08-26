@@ -23,7 +23,7 @@ namespace IdentityServer4.Validation
         private readonly IdentityServerOptions _options;
         private readonly IPersistedGrantService _grants;
         private readonly ExtensionGrantValidator _extensionGrantValidator;
-        private readonly ICustomRequestValidator _customRequestValidator;
+        private readonly ICustomTokenRequestValidator _customRequestValidator;
         private readonly ScopeValidator _scopeValidator;
         private readonly IEventService _events;
         private readonly IResourceOwnerPasswordValidator _resourceOwnerValidator;
@@ -31,7 +31,7 @@ namespace IdentityServer4.Validation
 
         private ValidatedTokenRequest _validatedRequest;
 
-        public TokenRequestValidator(IdentityServerOptions options, IPersistedGrantService grants, IResourceOwnerPasswordValidator resourceOwnerValidator, IProfileService profile, ExtensionGrantValidator extensionGrantValidator, ICustomRequestValidator customRequestValidator, ScopeValidator scopeValidator, IEventService events, ILogger<TokenRequestValidator> logger)
+        public TokenRequestValidator(IdentityServerOptions options, IPersistedGrantService grants, IResourceOwnerPasswordValidator resourceOwnerValidator, IProfileService profile, ExtensionGrantValidator extensionGrantValidator, ICustomTokenRequestValidator customRequestValidator, ScopeValidator scopeValidator, IEventService events, ILogger<TokenRequestValidator> logger)
         {
             _logger = logger;
             _options = options;
@@ -123,23 +123,25 @@ namespace IdentityServer4.Validation
 
             // run custom validation
             _logger.LogTrace("Calling into custom request validator: {type}", _customRequestValidator.GetType().FullName);
-            var customResult = await _customRequestValidator.ValidateTokenRequestAsync(result);
 
-            if (customResult.IsError)
+            var customValidationContext = new CustomTokenRequestValidationContext { Result = result };
+            await _customRequestValidator.ValidateAsync(customValidationContext);
+
+            if (customValidationContext.Result.IsError)
             {
                 var message = "Custom token request validator error";
 
-                if (customResult.Error.IsPresent())
+                if (customValidationContext.Result.Error.IsPresent())
                 {
-                    message += ": " + customResult.Error;
+                    message += ": " + customValidationContext.Result.Error;
                 }
 
                 LogError(message);
-                return customResult;
+                return customValidationContext.Result;
             }
 
             LogSuccess();
-            return customResult;
+            return customValidationContext.Result;
         }
 
         private async Task<TokenRequestValidationResult> ValidateAuthorizationCodeRequestAsync(NameValueCollection parameters)

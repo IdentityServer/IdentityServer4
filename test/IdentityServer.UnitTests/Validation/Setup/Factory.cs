@@ -35,7 +35,7 @@ namespace IdentityServer4.Tests.Validation
             IResourceOwnerPasswordValidator resourceOwnerValidator = null,
             IProfileService profile = null,
             IEnumerable<IExtensionGrantValidator> extensionGrantValidators = null,
-            ICustomRequestValidator customRequestValidator = null,
+            ICustomTokenRequestValidator customRequestValidator = null,
             ScopeValidator scopeValidator = null)
         {
             if (options == null)
@@ -60,7 +60,7 @@ namespace IdentityServer4.Tests.Validation
 
             if (customRequestValidator == null)
             {
-                customRequestValidator = new DefaultCustomRequestValidator();
+                customRequestValidator = new DefaultCustomTokenRequestValidator();
             }
 
             ExtensionGrantValidator aggregateExtensionGrantValidator;

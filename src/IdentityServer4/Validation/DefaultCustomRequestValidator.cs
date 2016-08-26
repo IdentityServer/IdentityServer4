@@ -25,17 +25,5 @@ namespace IdentityServer4.Validation
                 IsError = false
             });
         }
-
-        /// <summary>
-        /// Custom validation logic for the token request.
-        /// </summary>
-        /// <param name="request">The validated request.</param>
-        /// <returns>
-        /// The validation result
-        /// </returns>
-        public Task<TokenRequestValidationResult> ValidateTokenRequestAsync(TokenRequestValidationResult validationResult)
-        {
-            return Task.FromResult(validationResult);
-        }
     }
 }
