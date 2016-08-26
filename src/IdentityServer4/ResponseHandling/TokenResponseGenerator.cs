@@ -115,7 +115,8 @@ namespace IdentityServer4.ResponseHandling
             var response = new TokenResponse
             {
                 AccessToken = accessToken.Item1,
-                AccessTokenLifetime = validationResult.ValidatedRequest.Client.AccessTokenLifetime
+                AccessTokenLifetime = validationResult.ValidatedRequest.Client.AccessTokenLifetime,
+                Custom = validationResult.CustomResponse
             };
 
             if (accessToken.Item2.IsPresent())

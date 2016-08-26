@@ -1,22 +1,16 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-using Newtonsoft.Json;
+using IdentityServer4;
 using System.Threading.Tasks;
 
 namespace Microsoft.AspNetCore.Http
 {
     public static class HttpResponseExtensions
     {
-        private readonly static JsonSerializerSettings settings = new JsonSerializerSettings
-        {
-            DefaultValueHandling = DefaultValueHandling.Ignore,
-            NullValueHandling = NullValueHandling.Ignore
-        };
-
         public static async Task WriteJsonAsync(this HttpResponse response, object o)
-        { 
-            var json = JsonConvert.SerializeObject(o, settings);
+        {
+            var json = ObjectSerializer.ToString(o);
             await response.WriteJsonAsync(json);
         }
 

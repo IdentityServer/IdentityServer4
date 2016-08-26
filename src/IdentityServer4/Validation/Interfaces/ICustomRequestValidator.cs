@@ -23,6 +23,6 @@ namespace IdentityServer4.Validation
         /// </summary>
         /// <param name="request">The validated request.</param>
         /// <returns>The validation result</returns>
-        Task<TokenRequestValidationResult> ValidateTokenRequestAsync(ValidatedTokenRequest request);
+        Task<TokenRequestValidationResult> ValidateTokenRequestAsync(TokenRequestValidationResult validationResult);
     }
 }

@@ -6,7 +6,6 @@ using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Endpoints.Results
@@ -39,7 +38,7 @@ namespace IdentityServer4.Endpoints.Results
             }
             else
             {
-                var jobject = JObject.FromObject(dto);
+                var jobject = ObjectSerializer.ToJObject(dto);
                 jobject.AddDictionary(Response.Custom);
 
                 await context.Response.WriteJsonAsync(jobject);

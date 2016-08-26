@@ -26,7 +26,7 @@ namespace IdentityServer4.Endpoints.Results
         {
             if (!CustomEntries.IsNullOrEmpty())
             {
-                var jobject = JObject.FromObject(Document);
+                var jobject = ObjectSerializer.ToJObject(Document);
                 jobject.AddDictionary(CustomEntries);
 
                 return context.Response.WriteJsonAsync(jobject);

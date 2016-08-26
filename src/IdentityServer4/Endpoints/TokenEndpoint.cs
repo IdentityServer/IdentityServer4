@@ -9,6 +9,7 @@ using IdentityServer4.ResponseHandling;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Endpoints
@@ -61,7 +62,7 @@ namespace IdentityServer4.Endpoints
 
             if (requestResult.IsError)
             {
-                return Error(requestResult.Error, requestResult.ErrorDescription);
+                return Error(requestResult.Error, requestResult.ErrorDescription, requestResult.CustomResponse);
             }
 
             // create response
@@ -72,12 +73,13 @@ namespace IdentityServer4.Endpoints
             return new TokenResult(response);
         }
 
-        private TokenErrorResult Error(string error, string errorDescription = null)
+        private TokenErrorResult Error(string error, string errorDescription = null, Dictionary<string, object> custom = null)
         {
             var response = new TokenErrorResponse
             {
                 Error = error,
-                ErrorDescription = errorDescription
+                ErrorDescription = errorDescription,
+                Custom = custom
             };
 
             return new TokenErrorResult(response);

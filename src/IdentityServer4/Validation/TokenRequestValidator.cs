@@ -123,7 +123,7 @@ namespace IdentityServer4.Validation
 
             // run custom validation
             _logger.LogTrace("Calling into custom request validator: {type}", _customRequestValidator.GetType().FullName);
-            var customResult = await _customRequestValidator.ValidateTokenRequestAsync(_validatedRequest);
+            var customResult = await _customRequestValidator.ValidateTokenRequestAsync(result);
 
             if (customResult.IsError)
             {
@@ -450,7 +450,7 @@ namespace IdentityServer4.Validation
 
             await RaiseSuccessfulResourceOwnerAuthenticationEventAsync(userName, resourceOwnerContext.Result.Subject.GetSubjectId());
             _logger.LogInformation("Resource owner password token request validation success.");
-            return Valid();
+            return Valid(resourceOwnerContext.Result.CustomResponse);
         }
 
         private async Task<TokenRequestValidationResult> ValidateRefreshTokenRequestAsync(NameValueCollection parameters)
