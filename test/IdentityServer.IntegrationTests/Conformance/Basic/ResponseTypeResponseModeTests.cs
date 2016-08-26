@@ -86,8 +86,11 @@ namespace IdentityServer4.Tests.Conformance.Basic
             authorization.State.Should().Be(state);
         }
 
-       [Fact(Skip = "Not sure if this is following conformance since we don't redirect back to client")]
-       [Trait("Category", Category)]
+        // this might not be in sync with the actual conformance tests
+        // since we dead-end on the error page due to changes 
+        // to follow the RFC to address open redirect in original OAuth RFC
+        [Fact]
+        [Trait("Category", Category)]
         public async Task Request_missing_response_type_rejected()
         {
             await _mockPipeline.LoginAsync("bob");
@@ -97,7 +100,7 @@ namespace IdentityServer4.Tests.Conformance.Basic
 
             var url = _mockPipeline.CreateAuthorizeUrl(
                 clientId: "code_client",
-                responseType: null,
+                responseType: null, // missing
                 scope: "openid",
                 redirectUri: "https://code_client/callback",
                 state: state,
