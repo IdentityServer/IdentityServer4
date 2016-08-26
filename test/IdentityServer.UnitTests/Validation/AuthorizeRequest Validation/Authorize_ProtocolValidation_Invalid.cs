@@ -32,7 +32,6 @@ namespace IdentityServer4.Tests.Validation.AuthorizeRequest
             var result = await validator.ValidateAsync(new NameValueCollection());
 
             result.IsError.Should().BeTrue();
-            result.ErrorType.Should().Be(ErrorTypes.User);
             result.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
         }
 
@@ -51,7 +50,6 @@ namespace IdentityServer4.Tests.Validation.AuthorizeRequest
             var result = await validator.ValidateAsync(parameters);
 
             result.IsError.Should().BeTrue();
-            result.ErrorType.Should().Be(ErrorTypes.Client);
             result.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidScope);
         }
 
@@ -70,7 +68,6 @@ namespace IdentityServer4.Tests.Validation.AuthorizeRequest
             var result = await validator.ValidateAsync(parameters);
 
             result.IsError.Should().BeTrue();
-            result.ErrorType.Should().Be(ErrorTypes.Client);
             result.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
         }
 
@@ -88,7 +85,6 @@ namespace IdentityServer4.Tests.Validation.AuthorizeRequest
             var result = await validator.ValidateAsync(parameters);
 
             result.IsError.Should().BeTrue();
-            result.ErrorType.Should().Be(ErrorTypes.Client);
             result.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidScope);
         }
 
@@ -106,7 +102,6 @@ namespace IdentityServer4.Tests.Validation.AuthorizeRequest
             var result = await validator.ValidateAsync(parameters);
 
             result.IsError.Should().BeTrue();
-            result.ErrorType.Should().Be(ErrorTypes.Client);
             result.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
         }
 
@@ -123,7 +118,6 @@ namespace IdentityServer4.Tests.Validation.AuthorizeRequest
             var result = await validator.ValidateAsync(parameters);
 
             result.IsError.Should().BeTrue();
-            result.ErrorType.Should().Be(ErrorTypes.User);
             result.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
         }
 
@@ -140,7 +134,6 @@ namespace IdentityServer4.Tests.Validation.AuthorizeRequest
             var result = await validator.ValidateAsync(parameters);
 
             result.IsError.Should().BeTrue();
-            result.ErrorType.Should().Be(ErrorTypes.Client);
             result.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
         }
 
@@ -157,7 +150,6 @@ namespace IdentityServer4.Tests.Validation.AuthorizeRequest
             var result = await validator.ValidateAsync(parameters);
 
             result.IsError.Should().BeTrue();
-            result.ErrorType.Should().Be(ErrorTypes.User);
             result.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
         }
 
@@ -175,7 +167,6 @@ namespace IdentityServer4.Tests.Validation.AuthorizeRequest
             var result = await validator.ValidateAsync(parameters);
 
             result.IsError.Should().BeTrue();
-            result.ErrorType.Should().Be(ErrorTypes.User);
             result.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
         }
 
@@ -193,7 +184,6 @@ namespace IdentityServer4.Tests.Validation.AuthorizeRequest
             var result = await validator.ValidateAsync(parameters);
 
             result.IsError.Should().BeTrue();
-            result.ErrorType.Should().Be(ErrorTypes.User);
             result.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
         }
 
@@ -210,7 +200,6 @@ namespace IdentityServer4.Tests.Validation.AuthorizeRequest
             var result = await validator.ValidateAsync(parameters);
 
             result.IsError.Should().BeTrue();
-            result.ErrorType.Should().Be(ErrorTypes.User);
             result.Error.Should().Be(OidcConstants.AuthorizeErrors.UnsupportedResponseType);
         }
 
@@ -228,7 +217,6 @@ namespace IdentityServer4.Tests.Validation.AuthorizeRequest
             var result = await validator.ValidateAsync(parameters);
 
             result.IsError.Should().BeTrue();
-            result.ErrorType.Should().Be(ErrorTypes.User);
             result.Error.Should().Be(OidcConstants.AuthorizeErrors.UnsupportedResponseType);
         }
 
@@ -247,7 +235,6 @@ namespace IdentityServer4.Tests.Validation.AuthorizeRequest
             var result = await validator.ValidateAsync(parameters);
 
             result.IsError.Should().BeTrue();
-            result.ErrorType.Should().Be(ErrorTypes.User);
             result.Error.Should().Be(OidcConstants.AuthorizeErrors.UnsupportedResponseType);
         }
 
@@ -266,7 +253,6 @@ namespace IdentityServer4.Tests.Validation.AuthorizeRequest
             var result = await validator.ValidateAsync(parameters);
 
             result.IsError.Should().BeTrue();
-            result.ErrorType.Should().Be(ErrorTypes.User);
             result.Error.Should().Be(OidcConstants.AuthorizeErrors.UnsupportedResponseType);
         }
 
@@ -285,7 +271,6 @@ namespace IdentityServer4.Tests.Validation.AuthorizeRequest
             var result = await validator.ValidateAsync(parameters);
 
             result.IsError.Should().BeTrue();
-            result.ErrorType.Should().Be(ErrorTypes.User);
             result.Error.Should().Be(OidcConstants.AuthorizeErrors.UnsupportedResponseType);
         }
 
@@ -304,7 +289,6 @@ namespace IdentityServer4.Tests.Validation.AuthorizeRequest
             var result = await validator.ValidateAsync(parameters);
 
             result.IsError.Should().BeTrue();
-            result.ErrorType.Should().Be(ErrorTypes.User);
             result.Error.Should().Be(OidcConstants.AuthorizeErrors.UnsupportedResponseType);
         }
 
@@ -323,7 +307,6 @@ namespace IdentityServer4.Tests.Validation.AuthorizeRequest
             var result = await validator.ValidateAsync(parameters);
 
             result.IsError.Should().BeTrue();
-            result.ErrorType.Should().Be(ErrorTypes.User);
             result.Error.Should().Be(OidcConstants.AuthorizeErrors.UnsupportedResponseType);
         }
 
@@ -342,7 +325,6 @@ namespace IdentityServer4.Tests.Validation.AuthorizeRequest
             var result = await validator.ValidateAsync(parameters);
 
             result.IsError.Should().BeTrue();
-            result.ErrorType.Should().Be(ErrorTypes.User);
             result.Error.Should().Be(OidcConstants.AuthorizeErrors.UnsupportedResponseType);
         }
 
@@ -361,7 +343,6 @@ namespace IdentityServer4.Tests.Validation.AuthorizeRequest
             var result = await validator.ValidateAsync(parameters);
 
             result.IsError.Should().BeTrue();
-            result.ErrorType.Should().Be(ErrorTypes.Client);
             result.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
         }
 
@@ -380,7 +361,6 @@ namespace IdentityServer4.Tests.Validation.AuthorizeRequest
             var result = await validator.ValidateAsync(parameters);
 
             result.IsError.Should().BeTrue();
-            result.ErrorType.Should().Be(ErrorTypes.Client);
             result.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
         }
 
@@ -399,7 +379,6 @@ namespace IdentityServer4.Tests.Validation.AuthorizeRequest
             var result = await validator.ValidateAsync(parameters);
 
             result.IsError.Should().BeTrue();
-            result.ErrorType.Should().Be(ErrorTypes.User);
             result.Error.Should().Be(OidcConstants.AuthorizeErrors.UnsupportedResponseType);
         }
 
@@ -418,7 +397,6 @@ namespace IdentityServer4.Tests.Validation.AuthorizeRequest
             var result = await validator.ValidateAsync(parameters);
 
             result.IsError.Should().BeTrue();
-            result.ErrorType.Should().Be(ErrorTypes.User);
             result.Error.Should().Be(OidcConstants.AuthorizeErrors.UnsupportedResponseType);
         }
     }

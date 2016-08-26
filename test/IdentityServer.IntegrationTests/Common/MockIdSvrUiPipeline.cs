@@ -262,17 +262,11 @@ namespace IdentityServer4.Tests.Common
             var redirect = result.Headers.Location.ToString();
             if (redirect.StartsWith(IdentityServerPipeline.ErrorPage))
             {
+                // request error page in pipeline so we can get error info
                 await BrowserClient.GetAsync(redirect);
-                redirect = ErrorMessage?.ReturnInfo?.Uri;
-                if (redirect != null && redirect.EndsWith("#_=_"))
-                {
-                    redirect = redirect.Substring(0, redirect.Length - 4);
-                }
-                else
-                {
-                    // no redirect to client
-                    return null;
-                }
+                
+                // no redirect to client
+                return null;
             }
 
             return new IdentityModel.Client.AuthorizeResponse(redirect);

@@ -9,6 +9,8 @@ using System.Security.Cryptography.X509Certificates;
 using Serilog.Events;
 using IdentityServer4.Services.InMemory;
 using IdentityServer4.Validation;
+using Microsoft.AspNetCore.Authentication.OAuth;
+using System.Threading.Tasks;
 
 namespace Host
 {
@@ -107,7 +109,17 @@ namespace Host
                 AuthenticationScheme = "Google",
                 SignInScheme = "Temp",
                 ClientId = "998042782978-s07498t8i8jas7npj4crve1skpromf37.apps.googleusercontent.com",
-                ClientSecret = "HsnwJri_53zn7VcO1Fm7THBb"
+                ClientSecret = "HsnwJri_53zn7VcO1Fm7THBb",
+                //Scope = { "openid", "fookyou" }
+                Events = new OAuthEvents
+                {
+                    OnRedirectToAuthorizationEndpoint = ctx =>
+                    {
+                        var url = ctx.RedirectUri + "&prompt=none";
+                        ctx.HttpContext.Response.Redirect(url);
+                        return Task.FromResult(0);
+                    }
+                }
             });
 
             app.UseIdentityServer();

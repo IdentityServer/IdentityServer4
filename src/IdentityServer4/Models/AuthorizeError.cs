@@ -7,7 +7,6 @@ namespace IdentityServer4.Models
 {
     class AuthorizeError
     {
-        public ErrorTypes ErrorType { get; set; }
         public string Error { get; set; }
         public string ResponseMode { get; set; }
         public string ErrorUri { get; set; }

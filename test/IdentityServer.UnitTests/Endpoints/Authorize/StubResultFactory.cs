@@ -26,7 +26,7 @@ namespace UnitTests.Endpoints.Authorize
             return Task.FromResult(ConsentResult);
         }
 
-        public Task<IEndpointResult> CreateErrorResultAsync(ValidatedAuthorizeRequest request, ErrorTypes errorType, string error, string description)
+        public Task<IEndpointResult> CreateErrorResultAsync(ValidatedAuthorizeRequest request, string error, string description)
         {
             return Task.FromResult(ErrorResult);
         }

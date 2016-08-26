@@ -60,17 +60,26 @@ namespace IdentityServer4.Endpoints.Results
             return Task.FromResult<IEndpointResult>(result);
         }
 
-        public async Task<IEndpointResult> CreateErrorResultAsync(ValidatedAuthorizeRequest request, ErrorTypes errorType, string error, string errorDescription = null)
+        public async Task<IEndpointResult> CreateErrorResultAsync(ValidatedAuthorizeRequest request, string error, string errorDescription = null)
         {
-            if (errorType == ErrorTypes.Client && request == null)
-            {
-                throw new ArgumentNullException(nameof(request), "Request must be passed when error type is Client.");
-            }
-
             AuthorizeResponse response = null;
 
-            if (errorType == ErrorTypes.Client)
+            // these are the conditions where we can send a response 
+            // back directly to the client, otherwise we're only showing the error UI
+            var isPromptNoneError = error == OidcConstants.AuthorizeErrors.AccountSelectionRequired ||
+                error == OidcConstants.AuthorizeErrors.LoginRequired ||
+                error == OidcConstants.AuthorizeErrors.ConsentRequired ||
+                error == OidcConstants.AuthorizeErrors.InteractionRequired;
+
+            if (error == OidcConstants.AuthorizeErrors.AccessDenied ||
+                (request.PromptMode == OidcConstants.PromptModes.None && isPromptNoneError)
+            )
             {
+                if (request == null)
+                {
+                    throw new ArgumentNullException(nameof(request), "Request must be passed when error type is client error.");
+                }
+
                 response = new AuthorizeResponse
                 {
                     Request = request,
@@ -81,28 +90,7 @@ namespace IdentityServer4.Endpoints.Results
                     RedirectUri = request.RedirectUri
                 };
 
-                // do some early checks to see if we will end up not generating an error page
-                if (error == OidcConstants.AuthorizeErrors.AccessDenied)
-                {
-                    return await CreateAuthorizeResultAsync(response);
-                }
-
-                if (request.PromptMode == OidcConstants.PromptModes.None &&
-                    request.Client.AllowPromptNone == true &&
-                    (error == OidcConstants.AuthorizeErrors.LoginRequired ||
-                     error == OidcConstants.AuthorizeErrors.ConsentRequired ||
-                     error == OidcConstants.AuthorizeErrors.InteractionRequired)
-                )
-                {
-                    // todo: verify these are the right conditions to allow
-                    // redirecting back to client
-                    // https://tools.ietf.org/html/draft-bradley-oauth-open-redirector-00
-                    return await CreateAuthorizeResultAsync(response);
-                }
-                else
-                {
-                    //_logger.LogWarning("Rendering error page due to prompt=none, client does not allow prompt mode none, response is query, and ");
-                }
+                return await CreateAuthorizeResultAsync(response);
             }
 
             // we now know we must show error page
@@ -111,33 +99,6 @@ namespace IdentityServer4.Endpoints.Results
                 RequestId = _context.HttpContext.TraceIdentifier,
                 Error = error,
             };
-
-            if (errorType == ErrorTypes.Client)
-            {
-                // if this is a client error, we need to build up the 
-                // response back to the client, and provide it in the 
-                // error view model so the UI can build the link/form
-                errorModel.ReturnInfo = new ClientReturnInfo
-                {
-                    ClientId = request.ClientId,
-                };
-
-                if (request.ResponseMode == OidcConstants.ResponseModes.Query ||
-                    request.ResponseMode == OidcConstants.ResponseModes.Fragment)
-                {
-                    errorModel.ReturnInfo.Uri = request.RedirectUri = AuthorizeRedirectResult.BuildUri(response);
-                }
-                else if (request.ResponseMode == OidcConstants.ResponseModes.FormPost)
-                {
-                    errorModel.ReturnInfo.Uri = request.RedirectUri;
-                    errorModel.ReturnInfo.PostBody = AuthorizeFormPostResult.BuildFormBody(response);
-                }
-                else
-                {
-                    _logger.LogError("Unsupported response mode.");
-                    throw new InvalidOperationException("Unsupported response mode");
-                }
-            }
 
             var message = new MessageWithId<ErrorMessage>(errorModel);
             await _errorMessageStore.WriteAsync(message.Id, message);

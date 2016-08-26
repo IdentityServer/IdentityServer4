@@ -66,7 +66,7 @@ namespace UnitTests.Endpoints.Results
         [Trait("Category", Category)]
         public async Task CreateErrorResultAsync_should_return_error_page()
         {
-            var result = await _subject.CreateErrorResultAsync(_validatedRequest, ErrorTypes.User, "error");
+            var result = await _subject.CreateErrorResultAsync(_validatedRequest, "error");
 
             result.Should().BeAssignableTo<ErrorPageResult>();
         }
@@ -77,82 +77,11 @@ namespace UnitTests.Endpoints.Results
         {
             _context.HttpContext.TraceIdentifier = "555";
 
-            var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(_validatedRequest, ErrorTypes.User, "error"));
+            var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(_validatedRequest, "error"));
 
             var model = _mockErrorMessageStore.Messages[result.ParamValue];
             model.Data.Error.Should().Be("error");
             model.Data.RequestId.Should().Be("555");
-        }
-
-        [Fact]
-        [Trait("Category", Category)]
-        public async Task CreateErrorResultAsync_user_error_should_not_have_return_info()
-        {
-            var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(_validatedRequest, ErrorTypes.User, "error"));
-
-            var model = _mockErrorMessageStore.Messages[result.ParamValue];
-            model.Data.ReturnInfo.Should().BeNull();
-        }
-
-        [Fact]
-        [Trait("Category", Category)]
-        public async Task CreateErrorResultAsync_client_error_should_have_return_info()
-        {
-            _validatedRequest.RedirectUri = "http://client/callback";
-
-            var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(_validatedRequest, ErrorTypes.Client, "error"));
-
-            var model = _mockErrorMessageStore.Messages[result.ParamValue];
-            model.Data.ReturnInfo.Should().NotBeNull();
-            model.Data.ReturnInfo.ClientId.Should().Be("client_id");
-        }
-
-        [Fact]
-        [Trait("Category", Category)]
-        public async Task CreateErrorResultAsync_client_error_with_response_mode_form_post_should_have_correct_url_and_post_body()
-        {
-            _validatedRequest.State = "123";
-            _validatedRequest.RedirectUri = "http://client/callback";
-            _validatedRequest.ResponseMode = "form_post";
-
-            var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(_validatedRequest, ErrorTypes.Client, "error"));
-
-            var model = _mockErrorMessageStore.Messages[result.ParamValue];
-            model.Data.ReturnInfo.IsPost.Should().BeTrue();
-            model.Data.ReturnInfo.Uri.Should().Be("http://client/callback");
-            model.Data.ReturnInfo.PostBody.Should().NotBeNull();
-        }
-
-        [Fact]
-        [Trait("Category", Category)]
-        public async Task CreateErrorResultAsync_client_error_with_response_mode_fragment_should_have_correct_url()
-        {
-            _validatedRequest.State = "123";
-            _validatedRequest.RedirectUri = "http://client/callback";
-            _validatedRequest.ResponseMode = "fragment";
-
-            var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(_validatedRequest, ErrorTypes.Client, "error"));
-
-            var model = _mockErrorMessageStore.Messages[result.ParamValue];
-            model.Data.ReturnInfo.IsPost.Should().BeFalse();
-            model.Data.ReturnInfo.Uri.Should().StartWith("http://client/callback#");
-            model.Data.ReturnInfo.Uri.Should().Contain("state=123");
-        }
-
-        [Fact]
-        [Trait("Category", Category)]
-        public async Task CreateErrorResultAsync_client_error_with_response_mode_query_should_have_correct_url()
-        {
-            _validatedRequest.State = "123";
-            _validatedRequest.RedirectUri = "http://client/callback";
-            _validatedRequest.ResponseMode = "query";
-
-            var result = (ErrorPageResult)(await _subject.CreateErrorResultAsync(_validatedRequest, ErrorTypes.Client, "error"));
-
-            var model = _mockErrorMessageStore.Messages[result.ParamValue];
-            model.Data.ReturnInfo.IsPost.Should().BeFalse();
-            model.Data.ReturnInfo.Uri.Should().StartWith("http://client/callback?");
-            model.Data.ReturnInfo.Uri.Should().Contain("state=123");
         }
 
         [Fact]
@@ -162,9 +91,8 @@ namespace UnitTests.Endpoints.Results
             _validatedRequest.ResponseMode = "unknown";
 
             await Assert.ThrowsAsync<InvalidOperationException>(async () =>
-                await _subject.CreateErrorResultAsync(_validatedRequest, ErrorTypes.Client, "error"));
+                await _subject.CreateErrorResultAsync(_validatedRequest, "access_denied"));
         }
-
 
         [Fact]
         [Trait("Category", Category)]
@@ -174,50 +102,36 @@ namespace UnitTests.Endpoints.Results
             _validatedRequest.RedirectUri = "http://client/callback";
             _validatedRequest.PromptMode = "none";
 
-            var result = await _subject.CreateErrorResultAsync(_validatedRequest, ErrorTypes.Client, "access_denied");
+            var result = await _subject.CreateErrorResultAsync(_validatedRequest, "access_denied");
 
             (result is AuthorizeRedirectResult || result is AuthorizeFormPostResult).Should().BeTrue();
         }
 
-
-        [Fact]
-        [Trait("Category", Category)]
-        public async Task CreateErrorResultAsync_client_error_with_prompt_mode_none_client_does_not_allow_none_should_return_error_page()
-        {
-            _validatedRequest.State = "123";
-            _validatedRequest.RedirectUri = "http://client/callback";
-            _validatedRequest.PromptMode = "none";
-
-            var result = await _subject.CreateErrorResultAsync(_validatedRequest, ErrorTypes.Client, "login_required");
-
-            result.Should().BeAssignableTo<ErrorPageResult>();
-        }
-
         [Theory]
+        [InlineData("access_denied")]
+        [InlineData("account_selection_required")]
         [InlineData("login_required")]
         [InlineData("interaction_required")]
         [InlineData("consent_required")]
         [Trait("Category", Category)]
-        public async Task CreateErrorResultAsync_client_error_with_prompt_mode_none_client_allows_none_for_valid_errors_should_return_authorize_result(string error)
+        public async Task CreateErrorResultAsync_client_error_with_prompt_mode_none_for_valid_errors_should_return_authorize_result(string error)
         {
             _validatedRequest.PromptMode = "none";
-            _validatedRequest.Client.AllowPromptNone = true;
 
-            var result = await _subject.CreateErrorResultAsync(_validatedRequest, ErrorTypes.Client, error);
+            var result = await _subject.CreateErrorResultAsync(_validatedRequest, error);
 
             (result is AuthorizeRedirectResult || result is AuthorizeFormPostResult).Should().BeTrue();
         }
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task CreateErrorResultAsync_client_error_with_prompt_mode_none_client_allows_none_for_invalid_error_should_return_error_page()
+        public async Task CreateErrorResultAsync_client_error_with_prompt_mode_none_for_invalid_error_should_return_error_page()
         {
             _validatedRequest.State = "123";
             _validatedRequest.RedirectUri = "http://client/callback";
             _validatedRequest.PromptMode = "none";
-            _validatedRequest.Client.AllowPromptNone = true;
 
-            var result = await _subject.CreateErrorResultAsync(_validatedRequest, ErrorTypes.Client, "foo");
+            var result = await _subject.CreateErrorResultAsync(_validatedRequest, "foo");
 
             result.Should().BeAssignableTo<ErrorPageResult>();
         }

@@ -170,7 +170,6 @@ namespace UnitTests.Endpoints.Authorize
         public async Task authorize_request_validation_produces_error_should_raise_failed_endpoint_event()
         {
             _stubAuthorizeRequestValidator.Result.IsError = true;
-            _stubAuthorizeRequestValidator.Result.ErrorType = ErrorTypes.Client;
             _stubAuthorizeRequestValidator.Result.Error = "some error";
 
             var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);

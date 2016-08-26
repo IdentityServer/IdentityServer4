@@ -40,13 +40,5 @@ namespace IdentityServer4.Models
         /// The request identifier.
         /// </value>
         public string RequestId { get; set; }
-
-        /// <summary>
-        /// Information about the client where a user is allowed to navigate after the error page is displayed.
-        /// </summary>
-        /// <value>
-        /// The return information.
-        /// </value>
-        public ClientReturnInfo ReturnInfo { get; set; }
     }
 }

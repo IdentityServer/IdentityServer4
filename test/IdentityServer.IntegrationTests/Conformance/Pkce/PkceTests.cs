@@ -158,8 +158,8 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
                 nonce: nonce,
                 codeChallenge:"a");
 
-            authorizeResponse.IsError.Should().BeTrue();
-            authorizeResponse.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
+            _pipeline.ErrorWasCalled.Should().BeTrue();
+            _pipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
         }
 
         [Fact]
@@ -178,8 +178,8 @@ namespace IdentityServer.IntegrationTests.Conformance.Pkce
                 codeChallenge: new string('a', _pipeline.Options.InputLengthRestrictions.CodeChallengeMaxLength + 1)
             );
 
-            authorizeResponse.IsError.Should().BeTrue();
-            authorizeResponse.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
+            _pipeline.ErrorWasCalled.Should().BeTrue();
+            _pipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
         }
 
         [Trait("Category", Category)]

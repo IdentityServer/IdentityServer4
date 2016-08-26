@@ -226,14 +226,6 @@ namespace IdentityServer4.Models
         /// </value>
         public List<string> AllowedCorsOrigins { get; set; } = new List<string>();
 
-        /// <summary>
-        /// Gets or sets if client is allowed to use prompt=none OIDC parameter value.
-        /// </summary>
-        /// <value>
-        /// true if client can use prompt=none, false otherwise.
-        /// </value>
-        public bool AllowPromptNone { get; set; } = false;
-
         public void ValidateGrantTypes(IEnumerable<string> grantTypes)
         {
             // must set at least one grant type

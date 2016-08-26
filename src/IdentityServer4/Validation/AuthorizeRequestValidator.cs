@@ -101,7 +101,7 @@ namespace IdentityServer4.Validation
             if (customResult.IsError)
             {
                 LogError("Error in custom validation: " + customResult.Error, request);
-                return Invalid(request, customResult.ErrorType, customResult.Error);
+                return Invalid(request, customResult.Error);
             }
 
             LogSuccess(request);
@@ -151,7 +151,7 @@ namespace IdentityServer4.Validation
             if (client == null || client.Enabled == false)
             {
                 LogError("Unknown client or not enabled: " + request.ClientId, request);
-                return Invalid(request, ErrorTypes.User, OidcConstants.AuthorizeErrors.UnauthorizedClient);
+                return Invalid(request, OidcConstants.AuthorizeErrors.UnauthorizedClient);
             }
 
             request.Client = client;
@@ -162,7 +162,7 @@ namespace IdentityServer4.Validation
             if (await _uriValidator.IsRedirectUriValidAsync(request.RedirectUri, request.Client) == false)
             {
                 LogError("Invalid redirect_uri: " + request.RedirectUri, request);
-                return Invalid(request, ErrorTypes.User, OidcConstants.AuthorizeErrors.UnauthorizedClient);
+                return Invalid(request, OidcConstants.AuthorizeErrors.UnauthorizedClient);
             }
 
             return Valid(request);
@@ -186,7 +186,7 @@ namespace IdentityServer4.Validation
             if (responseType.IsMissing())
             {
                 LogError("Missing response_type", request);
-                return Invalid(request, ErrorTypes.User, OidcConstants.AuthorizeErrors.UnsupportedResponseType);
+                return Invalid(request, OidcConstants.AuthorizeErrors.UnsupportedResponseType);
             }
 
             // The responseType may come in in an unconventional order.  
@@ -201,7 +201,7 @@ namespace IdentityServer4.Validation
             if (!Constants.SupportedResponseTypes.Contains(responseType, _responseTypeEqualityComparer))
             {
                 LogError("Response type not supported: " + responseType, request);
-                return Invalid(request, ErrorTypes.User, OidcConstants.AuthorizeErrors.UnsupportedResponseType);
+                return Invalid(request, OidcConstants.AuthorizeErrors.UnsupportedResponseType);
             }
 
             // Even though the responseType may have come in in an unconventional order,
@@ -264,13 +264,13 @@ namespace IdentityServer4.Validation
                     else
                     {
                         LogError("Invalid response_mode for flow: " + responseMode, request);
-                        return Invalid(request, ErrorTypes.User, OidcConstants.AuthorizeErrors.UnsupportedResponseType);
+                        return Invalid(request, OidcConstants.AuthorizeErrors.UnsupportedResponseType);
                     }
                 }
                 else
                 {
                     LogError("Unsupported response_mode: " + responseMode, request);
-                    return Invalid(request, ErrorTypes.User, OidcConstants.AuthorizeErrors.UnsupportedResponseType);
+                    return Invalid(request, OidcConstants.AuthorizeErrors.UnsupportedResponseType);
                 }
             }
 
@@ -281,7 +281,7 @@ namespace IdentityServer4.Validation
             if (!request.Client.AllowedGrantTypes.Contains(request.GrantType))
             {
                 LogError("Invalid grant type for client: " + request.GrantType, request);
-                return Invalid(request, ErrorTypes.User, OidcConstants.AuthorizeErrors.UnauthorizedClient);
+                return Invalid(request, OidcConstants.AuthorizeErrors.UnauthorizedClient);
             }
 
             //////////////////////////////////////////////////////////
@@ -303,7 +303,7 @@ namespace IdentityServer4.Validation
 
         private AuthorizeRequestValidationResult ValidatePkceParameters(ValidatedAuthorizeRequest request)
         {
-            var fail = Invalid(request, ErrorTypes.Client);
+            var fail = Invalid(request);
 
             var codeChallenge = request.Raw.Get(OidcConstants.AuthorizeRequest.CodeChallenge);
             if (codeChallenge.IsMissing())
@@ -350,13 +350,13 @@ namespace IdentityServer4.Validation
             if (scope.IsMissing())
             {
                 LogError("scope is missing", request);
-                return Invalid(request, ErrorTypes.Client);
+                return Invalid(request);
             }
 
             if (scope.Length > _options.InputLengthRestrictions.Scope)
             {
                 LogError("scopes too long.", request);
-                return Invalid(request, ErrorTypes.Client);
+                return Invalid(request);
             }
 
             request.RequestedScopes = scope.FromSpaceSeparatedString().Distinct().ToList();
@@ -376,7 +376,7 @@ namespace IdentityServer4.Validation
                 if (request.IsOpenIdRequest == false)
                 {
                     LogError("response_type requires the openid scope", request);
-                    return Invalid(request, ErrorTypes.Client);
+                    return Invalid(request);
                 }
             }
 
@@ -385,13 +385,13 @@ namespace IdentityServer4.Validation
             //////////////////////////////////////////////////////////
             if (await _scopeValidator.AreScopesValidAsync(request.RequestedScopes) == false)
             {
-                return Invalid(request, ErrorTypes.Client, OidcConstants.AuthorizeErrors.InvalidScope);
+                return Invalid(request, OidcConstants.AuthorizeErrors.InvalidScope);
             }
 
             if (_scopeValidator.ContainsOpenIdScopes && !request.IsOpenIdRequest)
             {
                 LogError("Identity related scope requests, but no openid scope", request);
-                return Invalid(request, ErrorTypes.Client, OidcConstants.AuthorizeErrors.InvalidScope);
+                return Invalid(request, OidcConstants.AuthorizeErrors.InvalidScope);
             }
 
             if (_scopeValidator.ContainsResourceScopes)
@@ -404,7 +404,7 @@ namespace IdentityServer4.Validation
             //////////////////////////////////////////////////////////
             if (!_scopeValidator.AreScopesAllowed(request.Client, request.RequestedScopes))
             {
-                return Invalid(request, ErrorTypes.User, OidcConstants.AuthorizeErrors.UnauthorizedClient);
+                return Invalid(request, OidcConstants.AuthorizeErrors.UnauthorizedClient);
             }
 
             request.ValidatedScopes = _scopeValidator;
@@ -414,7 +414,7 @@ namespace IdentityServer4.Validation
             //////////////////////////////////////////////////////////
             if (!_scopeValidator.IsResponseTypeValid(request.ResponseType))
             {
-                return Invalid(request, ErrorTypes.Client, OidcConstants.AuthorizeErrors.InvalidScope);
+                return Invalid(request, OidcConstants.AuthorizeErrors.InvalidScope);
             }
 
             return Valid(request);
@@ -431,7 +431,7 @@ namespace IdentityServer4.Validation
                 if (nonce.Length > _options.InputLengthRestrictions.Nonce)
                 {
                     LogError("Nonce too long", request);
-                    return Invalid(request, ErrorTypes.Client);
+                    return Invalid(request);
                 }
 
                 request.Nonce = nonce;
@@ -445,7 +445,7 @@ namespace IdentityServer4.Validation
                     if (request.IsOpenIdRequest)
                     {
                         LogError("Nonce required for implicit and hybrid flow with openid scope", request);
-                        return Invalid(request, ErrorTypes.Client);
+                        return Invalid(request);
                     }
                 }
             }
@@ -476,7 +476,7 @@ namespace IdentityServer4.Validation
                 if (uilocales.Length > _options.InputLengthRestrictions.UiLocale)
                 {
                     LogError("UI locale too long", request);
-                    return Invalid(request, ErrorTypes.Client);
+                    return Invalid(request);
                 }
 
                 request.UiLocales = uilocales;
@@ -512,13 +512,13 @@ namespace IdentityServer4.Validation
                     else
                     {
                         LogError("Invalid max_age.", request);
-                        return Invalid(request, ErrorTypes.Client);
+                        return Invalid(request);
                     }
                 }
                 else
                 {
                     LogError("Invalid max_age.", request);
-                    return Invalid(request, ErrorTypes.Client);
+                    return Invalid(request);
                 }
             }
 
@@ -531,7 +531,7 @@ namespace IdentityServer4.Validation
                 if (loginHint.Length > _options.InputLengthRestrictions.LoginHint)
                 {
                     LogError("Login hint too long", request);
-                    return Invalid(request, ErrorTypes.Client);
+                    return Invalid(request);
                 }
 
                 request.LoginHint = loginHint;
@@ -546,7 +546,7 @@ namespace IdentityServer4.Validation
                 if (acrValues.Length > _options.InputLengthRestrictions.AcrValues)
                 {
                     LogError("Acr values too long", request);
-                    return Invalid(request, ErrorTypes.Client);
+                    return Invalid(request);
                 }
 
                 request.AuthenticationContextReferenceClasses = acrValues.FromSpaceSeparatedString().Distinct().ToList();
@@ -572,13 +572,12 @@ namespace IdentityServer4.Validation
             return Valid(request);
         }
 
-        private AuthorizeRequestValidationResult Invalid(ValidatedAuthorizeRequest request, ErrorTypes errorType = ErrorTypes.User, string error = OidcConstants.AuthorizeErrors.InvalidRequest)
+        private AuthorizeRequestValidationResult Invalid(ValidatedAuthorizeRequest request, string error = OidcConstants.AuthorizeErrors.InvalidRequest)
         {
             var result = new AuthorizeRequestValidationResult
             {
                 IsError = true,
                 Error = error,
-                ErrorType = errorType,
                 ValidatedRequest = request
             };
 

@@ -87,7 +87,6 @@ namespace IdentityServer4.Tests.Validation.AuthorizeRequest
             result.IsError.Should().Be(true);
             result.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
             result.ErrorDescription.Should().Be("code challenge required");
-            result.ErrorType.Should().Be(ErrorTypes.Client);
         }
 
         [Fact]
@@ -106,7 +105,6 @@ namespace IdentityServer4.Tests.Validation.AuthorizeRequest
             result.IsError.Should().Be(true);
             result.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
             result.ErrorDescription.Should().Be("code challenge required");
-            result.ErrorType.Should().Be(ErrorTypes.Client);
         }
 
         [Fact]
@@ -127,7 +125,6 @@ namespace IdentityServer4.Tests.Validation.AuthorizeRequest
             result.IsError.Should().Be(true);
             result.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
             result.ErrorDescription.Should().Be("transform algorithm not supported");
-            result.ErrorType.Should().Be(ErrorTypes.Client);
         }
 
         [Fact]
@@ -147,7 +144,6 @@ namespace IdentityServer4.Tests.Validation.AuthorizeRequest
 
             result.IsError.Should().Be(true);
             result.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
-            result.ErrorType.Should().Be(ErrorTypes.Client);
         }
 
         [Fact]
@@ -167,7 +163,6 @@ namespace IdentityServer4.Tests.Validation.AuthorizeRequest
 
             result.IsError.Should().Be(true);
             result.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
-            result.ErrorType.Should().Be(ErrorTypes.Client);
         }
     }
 }

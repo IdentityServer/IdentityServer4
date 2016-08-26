@@ -167,7 +167,6 @@ namespace IdentityServer4.Tests.ResponseHandling
 
             request.WasConsentShown.Should().BeFalse();
             result.IsError.Should().BeTrue();
-            result.Error.ErrorType.Should().Be(ErrorTypes.Client);
             result.Error.Error.Should().Be(OidcConstants.AuthorizeErrors.ConsentRequired);
             AssertErrorReturnsRequestValues(result.Error, request);
             AssertUpdateConsentNotCalled();
@@ -225,7 +224,6 @@ namespace IdentityServer4.Tests.ResponseHandling
             var result = _subject.ProcessConsentAsync(request, consent).Result;
             request.WasConsentShown.Should().BeTrue();
             result.IsError.Should().BeTrue();
-            result.Error.ErrorType.Should().Be(ErrorTypes.Client);
             result.Error.Error.Should().Be(OidcConstants.AuthorizeErrors.AccessDenied);
             AssertErrorReturnsRequestValues(result.Error, request);
             AssertUpdateConsentNotCalled();
@@ -249,7 +247,6 @@ namespace IdentityServer4.Tests.ResponseHandling
             var result = _subject.ProcessConsentAsync(request, consent).Result;
             request.WasConsentShown.Should().BeTrue();
             result.IsError.Should().BeTrue();
-            result.Error.ErrorType.Should().Be(ErrorTypes.Client);
             result.Error.Error.Should().Be(OidcConstants.AuthorizeErrors.AccessDenied);
             AssertErrorReturnsRequestValues(result.Error, request);
             AssertUpdateConsentNotCalled();
@@ -280,7 +277,6 @@ namespace IdentityServer4.Tests.ResponseHandling
 
             var result = _subject.ProcessConsentAsync(request, consent).Result;
             result.IsError.Should().BeTrue();
-            result.Error.ErrorType.Should().Be(ErrorTypes.Client);
             result.Error.Error.Should().Be(OidcConstants.AuthorizeErrors.AccessDenied);
             AssertErrorReturnsRequestValues(result.Error, request);
             AssertUpdateConsentNotCalled();

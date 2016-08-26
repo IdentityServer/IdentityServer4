@@ -83,7 +83,6 @@ namespace IdentityServer4.ResponseHandling
                     {
                         Error = new AuthorizeError
                         {
-                            ErrorType = ErrorTypes.Client,
                             Error = OidcConstants.AuthorizeErrors.LoginRequired,
                             ResponseMode = request.ResponseMode,
                             ErrorUri = request.RedirectUri,
@@ -157,7 +156,6 @@ namespace IdentityServer4.ResponseHandling
                 {
                     Error = new AuthorizeError
                     {
-                        ErrorType = ErrorTypes.Client,
                         Error = OidcConstants.AuthorizeErrors.ConsentRequired,
                         ResponseMode = request.ResponseMode,
                         ErrorUri = request.RedirectUri,
@@ -187,7 +185,6 @@ namespace IdentityServer4.ResponseHandling
                         // build access denied error to return to client
                         response.Error = new AuthorizeError
                         {
-                            ErrorType = ErrorTypes.Client,
                             Error = OidcConstants.AuthorizeErrors.AccessDenied,
                             ResponseMode = request.ResponseMode,
                             ErrorUri = request.RedirectUri,
@@ -202,7 +199,6 @@ namespace IdentityServer4.ResponseHandling
                         {
                             response.Error = new AuthorizeError
                             {
-                                ErrorType = ErrorTypes.Client,
                                 Error = OidcConstants.AuthorizeErrors.AccessDenied,
                                 ResponseMode = request.ResponseMode,
                                 ErrorUri = request.RedirectUri,
