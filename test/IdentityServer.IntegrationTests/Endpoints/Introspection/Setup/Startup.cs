@@ -17,8 +17,6 @@ namespace IdentityServer4.Tests.Endpoints.Introspection
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            var cert = new X509Certificate2(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "idsvrtest.pfx"), "idsrv3test");
-
             var builder = services.AddIdentityServer(options =>
             {
                 options.IssuerUri = "https://idsvr4";
@@ -28,7 +26,6 @@ namespace IdentityServer4.Tests.Endpoints.Introspection
             builder.AddInMemoryClients(Clients.Get());
             builder.AddInMemoryScopes(Scopes.Get());
             builder.AddInMemoryUsers(new List<InMemoryUser>());
-            builder.SetSigningCredential(cert);
         }
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)

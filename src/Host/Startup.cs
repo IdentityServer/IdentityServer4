@@ -25,8 +25,6 @@ namespace Host
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var cert = new X509Certificate2(Path.Combine(_environment.ContentRootPath, "idsrv3test.pfx"), "idsrv3test");
-
             var builder = services.AddIdentityServer(options =>
             {
                 //options.EventsOptions = new EventsOptions
@@ -42,10 +40,8 @@ namespace Host
                 options.UserInteractionOptions.ConsentUrl = "/ui/consent";
                 options.UserInteractionOptions.ErrorUrl = "/ui/error";
             })
-                .AddInMemoryClients(Clients.Get())
-                .AddInMemoryScopes(Scopes.Get())
-                //.SetTemporarySigningCredential();
-                .SetSigningCredential(cert);
+            .AddInMemoryClients(Clients.Get())
+            .AddInMemoryScopes(Scopes.Get());
 
             // in-memory users
             services.AddSingleton(Users.Get());

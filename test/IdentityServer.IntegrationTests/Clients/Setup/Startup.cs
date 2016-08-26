@@ -29,7 +29,6 @@ namespace IdentityServer4.Tests.Clients
             builder.AddInMemoryClients(Clients.Get());
             builder.AddInMemoryScopes(Scopes.Get());
             builder.AddInMemoryUsers(Users.Get());
-            builder.SetTemporarySigningCredential();
 
             builder.AddExtensionGrantValidator<ExtensionGrantValidator>();
             builder.AddExtensionGrantValidator<ExtensionGrantValidator2>();

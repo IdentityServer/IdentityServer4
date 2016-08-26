@@ -18,7 +18,6 @@ using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -28,62 +27,11 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class IdentityServerServiceCollectionExtensions
     {
-        //public static IIdentityServerBuilder AddIdentityServerCore(this IServiceCollection services, Action<IdentityServerOptions> setupAction)
-        //{
-        //    services.AddOptions();
-        //    services.Configure(setupAction);
-
-        //    var options = new IdentityServerOptions();
-        //    setupAction(options);
-
-        //    services.AddRequiredPlatformServices();
-        //    services.AddRequiredServices(options);
-
-        //    return new IdentityServerBuilder(services);
-        //}
-
-
-
-        //public static IServiceCollection AddRequiredServices(this IServiceCollection services, IdentityServerOptions options)
-        //{
-        //    services.AddTransient<IdentityServerContext>();
-        //    services.AddEndpoints(options.Endpoints);
-        //    services.AddValidators();
-
-
-        //    services.AddResponseGenerators();
-
-        //    services.AddSecretParsers();
-        //    services.AddSecretValidators();
-
-        //    services.AddCoreServices();
-        //    services.AddHostServices();
-
-        //    return services;
-        //}
-
         public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services)
         {
-            services.AddSingleton(resolver =>
-            {
-                return resolver.GetRequiredService<IOptions<IdentityServerOptions>>().Value;
-            });
-
-            services.AddRequiredPlatformServices();
-
-            services.AddCoreServices();
-            services.AddEndpoints();
-            services.AddHostServices();
-            services.AddPluggableServices();
-            services.AddValidators();
-            services.AddResponseGenerators();
-
-            services.AddDefaultSecretParsers();
-            services.AddDefaultSecretValidators();
-
-            services.AddInMemoryTransientStores();
-
-            return new IdentityServerBuilder(services);
+            services.AddInMemoryStores();
+            return services.AddIdentityServerCore()
+                .SetTemporarySigningCredential();
         }
 
         public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services, Action<IdentityServerOptions> setupAction)
@@ -96,6 +44,39 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.Configure<IdentityServerOptions>(configuration);
             return services.AddIdentityServer();
+        }
+
+        public static IIdentityServerBuilder AddIdentityServerCore(this IServiceCollection services)
+        {
+            services.AddSingleton(resolver =>
+            {
+                return resolver.GetRequiredService<IOptions<IdentityServerOptions>>().Value;
+            });
+
+            services.AddRequiredPlatformServices();
+
+            services.AddCoreServices();
+            services.AddEndpoints();
+            services.AddPluggableServices();
+            services.AddValidators();
+            services.AddResponseGenerators();
+
+            services.AddDefaultSecretParsers();
+            services.AddDefaultSecretValidators();
+
+            return new IdentityServerBuilder(services);
+        }
+
+        public static IIdentityServerBuilder AddIdentityServerCore(this IServiceCollection services, Action<IdentityServerOptions> setupAction)
+        {
+            services.Configure(setupAction);
+            return services.AddIdentityServerCore();
+        }
+
+        public static IIdentityServerBuilder AddIdentityServerCore(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<IdentityServerOptions>(configuration);
+            return services.AddIdentityServerCore();
         }
 
         public static IServiceCollection AddRequiredPlatformServices(this IServiceCollection services)
@@ -149,6 +130,19 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<PersistentGrantSerializer>();
             services.AddTransient<EventServiceHelper>();
 
+            services.AddTransient<SessionCookie>();
+            services.AddTransient<ClientListCookie>();
+            services.AddTransient(typeof(MessageCookie<>));
+
+            services.AddCors();
+            services.AddTransient<ICorsPolicyProvider>(provider =>
+            {
+                return new PolicyProvider(
+                    provider.GetRequiredService<ILogger<PolicyProvider>>(),
+                    Constants.ProtocolRoutePaths.CorsPaths,
+                    provider.GetRequiredService<ICorsPolicyService>());
+            });
+
             return services;
         }
 
@@ -165,26 +159,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<ICorsPolicyService, DefaultCorsPolicyService>();
             services.TryAddTransient<IProfileService, DefaultProfileService>();
             services.TryAddTransient(typeof(IMessageStore<>), typeof(CookieMessageStore<>));
-
-            return services;
-        }
-
-        public static IServiceCollection AddHostServices(this IServiceCollection services)
-        {
-            services.TryAddTransient<SessionCookie>();
-            services.TryAddTransient<ClientListCookie>();
-            services.TryAddTransient(typeof(MessageCookie<>));
-
             services.TryAddTransient<IUserInteractionService, DefaultUserInteractionService>();
-
-            services.AddTransient<ICorsPolicyProvider>(provider =>
-            {
-                return new PolicyProvider(
-                    provider.GetRequiredService<ILogger<PolicyProvider>>(),
-                    Constants.ProtocolRoutePaths.CorsPaths,
-                    provider.GetRequiredService<ICorsPolicyService>());
-            });
-            services.AddCors();
 
             return services;
         }
@@ -233,7 +208,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
-        public static IServiceCollection AddInMemoryTransientStores(this IServiceCollection services)
+        public static IServiceCollection AddInMemoryStores(this IServiceCollection services)
         {
             services.TryAddSingleton<IPersistedGrantStore, InMemoryPersistedGrantStore>();
             services.TryAddSingleton<IConsentStore, InMemoryConsentStore>();

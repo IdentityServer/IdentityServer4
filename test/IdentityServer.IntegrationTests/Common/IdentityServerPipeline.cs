@@ -92,8 +92,7 @@ namespace IdentityServer4.Tests.Common
             })
             .AddInMemoryClients(Clients)
             .AddInMemoryScopes(Scopes)
-            .AddInMemoryUsers(Users)
-            .SetTemporarySigningCredential();
+            .AddInMemoryUsers(Users);
         }
 
         public event Action<IApplicationBuilder> OnPreConfigure = x => { };

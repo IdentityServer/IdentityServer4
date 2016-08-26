@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using CryptoRandom = IdentityModel.CryptoRandom;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -118,7 +119,7 @@ namespace Microsoft.Extensions.DependencyInjection
             var rsa = RSA.Create();
             var key = new RsaSecurityKey(rsa)
             {
-                KeyId = "1"
+                KeyId = CryptoRandom.CreateUniqueId()
             };
 
             var credential = new SigningCredentials(key, "RS256");

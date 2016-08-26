@@ -29,7 +29,6 @@ namespace IdentityServer4.Tests.Clients
 
             builder.AddInMemoryClients(Clients.Get());
             builder.AddInMemoryScopes(Scopes.Get());
-            builder.SetTemporarySigningCredential();
 
             services.AddTransient<IResourceOwnerPasswordValidator, CustomResponseResourceOwnerValidator>();
             builder.AddExtensionGrantValidator<CustomResponseExtensionGrantValidator>();

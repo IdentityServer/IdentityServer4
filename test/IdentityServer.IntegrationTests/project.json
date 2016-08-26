@@ -27,9 +27,5 @@
         "portable-net45+win8"
       ]
     }
-  },
-
-  "buildOptions": {
-    "copyToOutput": [ "idsvrtest.pfx" ] 
   }
 }
