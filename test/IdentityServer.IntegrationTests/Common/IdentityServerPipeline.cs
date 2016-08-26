@@ -78,14 +78,22 @@ namespace IdentityServer4.Tests.Common
 
             services.AddDataProtection();
 
-            services.AddIdentityServer(options=>
+            services.AddIdentityServer(options =>
             {
                 Options = options;
+
+                options.EventsOptions = new EventsOptions
+                {
+                    RaiseErrorEvents = true,
+                    RaiseFailureEvents = true,
+                    RaiseInformationEvents = true,
+                    RaiseSuccessEvents = true
+                };
             })
             .AddInMemoryClients(Clients)
             .AddInMemoryScopes(Scopes)
             .AddInMemoryUsers(Users)
-            .SetSigningCredential(Cert.Load());
+            .SetTemporarySigningCredential();
         }
 
         public event Action<IApplicationBuilder> OnPreConfigure = x => { };
