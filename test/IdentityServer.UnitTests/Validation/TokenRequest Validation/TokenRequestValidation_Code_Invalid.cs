@@ -324,8 +324,7 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
             await grants.StoreAuthorizationCodeAsync("valid", code);
 
             var validator = Factory.CreateTokenRequestValidator(
-                grants: grants,
-                customRequestValidator: new DefaultCustomRequestValidator());
+                grants: grants);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.AuthorizationCode);
@@ -339,8 +338,7 @@ namespace IdentityServer4.Tests.Validation.TokenRequest
 
             // request second time
             validator = Factory.CreateTokenRequestValidator(
-                grants: grants,
-                customRequestValidator: new DefaultCustomRequestValidator());
+                grants: grants);
             
             result = await validator.ValidateRequestAsync(parameters, client);
 
