@@ -44,9 +44,16 @@ namespace IdentityServer4.Events
                 ActivityId = _context.HttpContext.TraceIdentifier,
                 TimeStamp = DateTimeOffset.UtcNow,
                 ProcessId = Process.GetCurrentProcess().Id,
-                //MachineName = Environment..MachineName,
-                RemoteIpAddress = _context.HttpContext.Connection.RemoteIpAddress.ToString()
             };
+
+            if (_context.HttpContext.Connection.RemoteIpAddress != null)
+            {
+                evt.Context.RemoteIpAddress = _context.HttpContext.Connection.RemoteIpAddress.ToString();
+            }
+            else
+            {
+                evt.Context.RemoteIpAddress = "unknown";
+            }
 
             var principal = _context.HttpContext.User;
             if (principal != null && principal.Identity != null)
