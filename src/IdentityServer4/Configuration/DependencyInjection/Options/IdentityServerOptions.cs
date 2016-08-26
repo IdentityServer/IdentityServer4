@@ -99,5 +99,13 @@ namespace IdentityServer4.Configuration
         /// The user interaction options.
         /// </value>
         public UserInteractionOptions UserInteractionOptions { get; set; } = new UserInteractionOptions();
+
+        /// <summary>
+        /// Gets or sets the caching options.
+        /// </summary>
+        /// <value>
+        /// The caching options.
+        /// </value>
+        public CachingOptions CachingOptions { get; set; } = new CachingOptions();
     }
 }

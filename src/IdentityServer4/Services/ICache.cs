@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using System;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Services
@@ -24,7 +25,8 @@ namespace IdentityServer4.Services
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="item">The item.</param>
+        /// <param name="expiration">The expiration.</param>
         /// <returns></returns>
-        Task SetAsync(string key, T item);
+        Task SetAsync(string key, T item, TimeSpan expiration);
     }
 }

@@ -38,6 +38,13 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
+        public static IIdentityServerBuilder AddClientStoreCache<T>(this IIdentityServerBuilder builder)
+            where T : IClientStore
+        {
+            builder.Services.AddTransient<IClientStore, CachingClientStore<T>>();
+            return builder;
+        }
+
         public static IIdentityServerBuilder AddInMemoryScopes(this IIdentityServerBuilder builder, IEnumerable<Scope> scopes)
         {
             builder.Services.AddSingleton(scopes);

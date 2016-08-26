@@ -8,9 +8,11 @@ using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Events;
 using IdentityServer4.Hosting;
 using IdentityServer4.Hosting.Cors;
+using IdentityServer4.Models;
 using IdentityServer4.ResponseHandling;
 using IdentityServer4.Services;
 using IdentityServer4.Services.Default;
+using IdentityServer4.Services.InMemory;
 using IdentityServer4.Stores;
 using IdentityServer4.Stores.InMemory;
 using IdentityServer4.Stores.Serialization;
@@ -29,9 +31,13 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services)
         {
-            services.AddInMemoryStores();
-            return services.AddIdentityServerCore()
+            var builder = services.AddIdentityServerCore()
                 .SetTemporarySigningCredential();
+
+            services.AddInMemoryStores();
+            services.AddInMemoryCaching();
+
+            return builder;
         }
 
         public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services, Action<IdentityServerOptions> setupAction)
@@ -212,6 +218,13 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.TryAddSingleton<IPersistedGrantStore, InMemoryPersistedGrantStore>();
             services.TryAddSingleton<IConsentStore, InMemoryConsentStore>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddInMemoryCaching(this IServiceCollection services)
+        {
+            services.TryAddTransient(typeof(ICache<>), typeof(InMemoryCache<>));
 
             return services;
         }
