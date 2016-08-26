@@ -17,7 +17,7 @@ namespace IdentityServer4.Validation
     public class GrantValidationResult : ValidationResult
     {
         /// <summary>
-        /// Gets or sets the principal which represents the result of the authentication.
+        /// Gets or sets the principal which represents the result of the validation.
         /// </summary>
         /// <value>
         /// The principal.
@@ -25,37 +25,33 @@ namespace IdentityServer4.Validation
         public ClaimsPrincipal Subject { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GrantValidationResult"/> class with an error and description.
+        /// Custom fields for the token response
         /// </summary>
-        /// <param name="error">The error.</param>
-        /// /// <param name="errorDescription">The error description.</param>
-        public GrantValidationResult(TokenErrors error, string errorDescription = null)
-        {
-            Error = ConvertTokenErrorEnumToString(error);
-            ErrorDescription = errorDescription;
-        }
-
-        private string ConvertTokenErrorEnumToString(TokenErrors error)
-        {
-            if (error == TokenErrors.InvalidClient)        return OidcConstants.TokenErrors.InvalidClient;
-            if (error == TokenErrors.InvalidGrant)         return OidcConstants.TokenErrors.InvalidGrant;
-            if (error == TokenErrors.InvalidRequest)       return OidcConstants.TokenErrors.InvalidRequest;
-            if (error == TokenErrors.InvalidScope)         return OidcConstants.TokenErrors.InvalidScope;
-            if (error == TokenErrors.UnauthorizedClient)   return OidcConstants.TokenErrors.UnauthorizedClient;
-            if (error == TokenErrors.UnsupportedGrantType) return OidcConstants.TokenErrors.UnsupportedGrantType;
-
-            throw new InvalidOperationException("invalid token error");
-        }
+        public Dictionary<string, object> CustomResponse { get; set; } = new Dictionary<string, object>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GrantValidationResult"/> class with a given principal.
         /// Warning: the principal needs to include the required claims - it is recommended to use the other constructor that does validation.
         /// </summary>
-        public GrantValidationResult(ClaimsPrincipal principal)
+        public GrantValidationResult(ClaimsPrincipal principal, Dictionary<string, object> customResponse = null)
         {
+            IsError = false;
+
             // TODO: more checks on claims (amr, etc...)
             Subject = principal;
-            IsError = false;
+            CustomResponse = customResponse;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GrantValidationResult"/> class with an error and description.
+        /// </summary>
+        /// <param name="error">The error.</param>
+        /// /// <param name="errorDescription">The error description.</param>
+        public GrantValidationResult(TokenErrors error, string errorDescription = null, Dictionary<string, object> customResponse = null)
+        {
+            Error = ConvertTokenErrorEnumToString(error);
+            ErrorDescription = errorDescription;
+            CustomResponse = customResponse;
         }
 
         /// <summary>
@@ -69,8 +65,11 @@ namespace IdentityServer4.Validation
             string subject, 
             string authenticationMethod,
             IEnumerable<Claim> claims = null,
-            string identityProvider = Constants.LocalIdentityProvider)
+            string identityProvider = Constants.LocalIdentityProvider,
+            Dictionary<string, object> customResponse = null)
         {
+            IsError = false;
+
             var resultClaims = new List<Claim>
             {
                 new Claim(JwtClaimTypes.Subject, subject),
@@ -88,8 +87,19 @@ namespace IdentityServer4.Validation
             id.AddClaims(resultClaims.Distinct(new ClaimComparer()));
 
             Subject = new ClaimsPrincipal(id);
+            CustomResponse = customResponse;
+        }
 
-            IsError = false;
+        private string ConvertTokenErrorEnumToString(TokenErrors error)
+        {
+            if (error == TokenErrors.InvalidClient) return OidcConstants.TokenErrors.InvalidClient;
+            if (error == TokenErrors.InvalidGrant) return OidcConstants.TokenErrors.InvalidGrant;
+            if (error == TokenErrors.InvalidRequest) return OidcConstants.TokenErrors.InvalidRequest;
+            if (error == TokenErrors.InvalidScope) return OidcConstants.TokenErrors.InvalidScope;
+            if (error == TokenErrors.UnauthorizedClient) return OidcConstants.TokenErrors.UnauthorizedClient;
+            if (error == TokenErrors.UnsupportedGrantType) return OidcConstants.TokenErrors.UnsupportedGrantType;
+
+            throw new InvalidOperationException("invalid token error");
         }
     }
 }

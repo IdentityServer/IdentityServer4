@@ -9,6 +9,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Services;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
@@ -122,7 +123,7 @@ namespace IdentityServer4.Validation
 
             // run custom validation
             _logger.LogTrace("Calling into custom request validator: {type}", _customRequestValidator.GetType().FullName);
-            var customResult = await _customRequestValidator.ValidateTokenRequestAsync(_validatedRequest);
+            var customResult = await _customRequestValidator.ValidateTokenRequestAsync(result);
 
             if (customResult.IsError)
             {
@@ -404,7 +405,7 @@ namespace IdentityServer4.Validation
                     LogError("Resource owner password credential grant type not supported");
                     await RaiseFailedResourceOwnerAuthenticationEventAsync(userName, "password grant type not supported");
 
-                    return Invalid(OidcConstants.TokenErrors.UnsupportedGrantType);
+                    return Invalid(OidcConstants.TokenErrors.UnsupportedGrantType, customResponse: resourceOwnerContext.Result.CustomResponse);
                 }
 
                 var errorDescription = "invalid_username_or_password";
@@ -417,7 +418,7 @@ namespace IdentityServer4.Validation
                 LogError("User authentication failed: " + errorDescription ?? resourceOwnerContext.Result.Error);
                 await RaiseFailedResourceOwnerAuthenticationEventAsync(userName, errorDescription);
 
-                return Invalid(OidcConstants.TokenErrors.InvalidGrant, errorDescription);
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant, errorDescription, resourceOwnerContext.Result.CustomResponse);
             }
 
             if (resourceOwnerContext.Result.Subject == null)
@@ -449,7 +450,7 @@ namespace IdentityServer4.Validation
 
             await RaiseSuccessfulResourceOwnerAuthenticationEventAsync(userName, resourceOwnerContext.Result.Subject.GetSubjectId());
             _logger.LogInformation("Resource owner password token request validation success.");
-            return Valid();
+            return Valid(resourceOwnerContext.Result.CustomResponse);
         }
 
         private async Task<TokenRequestValidationResult> ValidateRefreshTokenRequestAsync(NameValueCollection parameters)
@@ -600,12 +601,12 @@ namespace IdentityServer4.Validation
                 if (result.Error.IsPresent())
                 {
                     LogError("Invalid custom grant: " + result.Error);
-                    return Invalid(result.Error, result.ErrorDescription);
+                    return Invalid(result.Error, result.ErrorDescription, result.CustomResponse);
                 }
                 else
                 {
                     LogError("Invalid custom grant.");
-                    return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+                    return Invalid(OidcConstants.TokenErrors.InvalidGrant, customResponse: result.CustomResponse);
                 }
             }
 
@@ -615,7 +616,7 @@ namespace IdentityServer4.Validation
             }
 
             _logger.LogInformation("Validation of custom grant token request success");
-            return Valid();
+            return Valid(result.CustomResponse);
         }
 
         private async Task<bool> ValidateRequestedScopesAsync(NameValueCollection parameters)
@@ -699,19 +700,14 @@ namespace IdentityServer4.Validation
             return TimeConstantComparer.IsEqual(transformedCodeVerifier.Sha256(), codeChallenge);
         }
 
-        private TokenRequestValidationResult Valid()
+        private TokenRequestValidationResult Valid(Dictionary<string, object> customResponse = null)
         {
-            return new TokenRequestValidationResult(_validatedRequest);
+            return new TokenRequestValidationResult(_validatedRequest, customResponse);
         }
 
-        private TokenRequestValidationResult Invalid(string error)
+        private TokenRequestValidationResult Invalid(string error, string errorDescription = null, Dictionary<string, object> customResponse = null)
         {
-            return new TokenRequestValidationResult(error);
-        }
-
-        private TokenRequestValidationResult Invalid(string error, string errorDescription)
-        {
-            return new TokenRequestValidationResult(error, errorDescription);
+            return new TokenRequestValidationResult(error, errorDescription, customResponse);
         }
 
         private void LogError(string message)
