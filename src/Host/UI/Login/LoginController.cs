@@ -29,14 +29,11 @@ namespace Host.UI.Login
         {
             var vm = new LoginViewModel();
 
-            if (returnUrl != null)
+            var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
+            if (context != null)
             {
-                var context = await _interaction.GetLoginContextAsync();
-                if (context != null)
-                {
-                    vm.Username = context.LoginHint;
-                    vm.ReturnUrl = returnUrl;
-                }
+                vm.Username = context.LoginHint;
+                vm.ReturnUrl = returnUrl;
             }
 
             return View(vm);
@@ -53,7 +50,7 @@ namespace Host.UI.Login
                     var user = _loginService.FindByUsername(model.Username);
                     await IssueCookie(user, "idsvr", "password");
 
-                    if (model.ReturnUrl != null && _interaction.IsValidReturnUrl(model.ReturnUrl))
+                    if (_interaction.IsValidReturnUrl(model.ReturnUrl))
                     {
                         return Redirect(model.ReturnUrl);
                     }

@@ -93,7 +93,7 @@ namespace IdentityServer4.Tests.Common
         async Task ReadLoginRequest(HttpContext ctx)
         {
             var interaction = ctx.RequestServices.GetRequiredService<IUserInteractionService>();
-            LoginRequest = await interaction.GetLoginContextAsync();
+            LoginRequest = await interaction.GetAuthorizationContextAsync(ctx.Request.Query["returnUrl"].FirstOrDefault());
         }
 
         async Task IssueLoginCookie(HttpContext ctx)
@@ -122,7 +122,7 @@ namespace IdentityServer4.Tests.Common
         private async Task ReadLogoutRequest(HttpContext ctx)
         {
             var interaction = ctx.RequestServices.GetRequiredService<IUserInteractionService>();
-            LogoutRequest = await interaction.GetLogoutContextAsync();
+            LogoutRequest = await interaction.GetLogoutContextAsync(ctx.Request.Query["logoutId"].FirstOrDefault());
         }
 
         public bool ConsentWasCalled { get; set; }
@@ -139,7 +139,7 @@ namespace IdentityServer4.Tests.Common
         async Task ReadConsentMessage(HttpContext ctx)
         {
             var interaction = ctx.RequestServices.GetRequiredService<IUserInteractionService>();
-            ConsentRequest = await interaction.GetConsentContextAsync();
+            ConsentRequest = await interaction.GetAuthorizationContextAsync(ctx.Request.Query["returnUrl"].FirstOrDefault());
         }
 
         async Task CreateConsentResponse(HttpContext ctx)
@@ -170,7 +170,7 @@ namespace IdentityServer4.Tests.Common
         async Task ReadErrorMessage(HttpContext ctx)
         {
             var interaction = ctx.RequestServices.GetRequiredService<IUserInteractionService>();
-            ErrorMessage = await interaction.GetErrorContextAsync();
+            ErrorMessage = await interaction.GetErrorContextAsync(ctx.Request.Query["errorId"].FirstOrDefault());
         }
 
         /* helpers */

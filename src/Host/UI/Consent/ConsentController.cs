@@ -43,7 +43,7 @@ namespace Host.UI.Consent
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(string button, ConsentInputModel model)
         {
-            var request = await _interaction.GetConsentContextAsync(model.ReturnUrl);
+            var request = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl);
             ConsentResponse response = null;
 
             if (button == "no")
@@ -97,37 +97,30 @@ namespace Host.UI.Consent
 
         async Task<ConsentViewModel> BuildViewModelAsync(string returnUrl, ConsentInputModel model = null)
         {
-            if (returnUrl != null)
+            var request = await _interaction.GetAuthorizationContextAsync(returnUrl);
+            if (request != null)
             {
-                var request = await _interaction.GetConsentContextAsync(returnUrl);
-                if (request != null)
+                var client = await _clientStore.FindClientByIdAsync(request.ClientId);
+                if (client != null)
                 {
-                    var client = await _clientStore.FindClientByIdAsync(request.ClientId);
-                    if (client != null)
+                    var scopes = await _scopeStore.FindScopesAsync(request.ScopesRequested);
+                    if (scopes != null && scopes.Any())
                     {
-                        var scopes = await _scopeStore.FindScopesAsync(request.ScopesRequested);
-                        if (scopes != null && scopes.Any())
-                        {
-                            return new ConsentViewModel(model, returnUrl, request, client, scopes);
-                        }
-                        else
-                        {
-                            _logger.LogError("No scopes matching: {0}", request.ScopesRequested.Aggregate((x, y) => x + ", " + y));
-                        }
+                        return new ConsentViewModel(model, returnUrl, request, client, scopes);
                     }
                     else
                     {
-                        _logger.LogError("Invalid client id: {0}", request.ClientId);
+                        _logger.LogError("No scopes matching: {0}", request.ScopesRequested.Aggregate((x, y) => x + ", " + y));
                     }
                 }
                 else
                 {
-                    _logger.LogError("No consent request matching id: {0}", returnUrl);
+                    _logger.LogError("Invalid client id: {0}", request.ClientId);
                 }
             }
             else
             {
-                _logger.LogError("No returnUrl passed");
+                _logger.LogError("No consent request matching request: {0}", returnUrl);
             }
 
             return null;

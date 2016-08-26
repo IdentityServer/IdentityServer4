@@ -18,13 +18,10 @@ namespace Host.UI.Error
         {
             var vm = new ErrorViewModel();
 
-            if (errorId != null)
+            var message = await _interaction.GetErrorContextAsync(errorId);
+            if (message != null)
             {
-                var message = await _interaction.GetErrorContextAsync(errorId);
-                if (message != null)
-                {
-                    vm.Error = message;
-                }
+                vm.Error = message;
             }
 
             return View("Error", vm);

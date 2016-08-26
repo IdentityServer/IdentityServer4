@@ -40,18 +40,24 @@ namespace IdentityServer4.Services.Default
             _consentMessageStore = consentMessageStore;
         }
 
-        public Task<AuthorizationRequest> GetLoginContextAsync(string returnUrl = null)
+        public async Task<AuthorizationRequest> GetAuthorizationContextAsync(string returnUrl)
         {
-            return GetAuthorizeRequest(_options.UserInteractionOptions.LoginReturnUrlParameter, returnUrl);
-        }
-
-        public async Task<LogoutRequest> GetLogoutContextAsync(string logoutId = null)
-        {
-            if (logoutId == null)
+            if (returnUrl != null && IsValidReturnUrl(returnUrl))
             {
-                logoutId = _context.HttpContext.Request.Query[_options.UserInteractionOptions.LogoutIdParameter].FirstOrDefault();
+                var parameters = returnUrl.ReadQueryStringAsNameValueCollection();
+                var user = await _context.HttpContext.GetIdentityServerUserAsync();
+                var result = await _validator.ValidateAsync(parameters, user);
+                if (!result.IsError)
+                {
+                    return new AuthorizationRequest(result.ValidatedRequest);
+                }
             }
 
+            return null;
+        }
+
+        public async Task<LogoutRequest> GetLogoutContextAsync(string logoutId)
+        {
             var iframeUrl = _context.HttpContext.GetIdentityServerSignoutFrameCallbackUrl();
             if (iframeUrl != null)
             {
@@ -67,43 +73,8 @@ namespace IdentityServer4.Services.Default
             return null;
         }
 
-        public Task<AuthorizationRequest> GetConsentContextAsync(string returnUrl = null)
+        public async Task<ErrorMessage> GetErrorContextAsync(string errorId)
         {
-            return GetAuthorizeRequest(_options.UserInteractionOptions.ConsentReturnUrlParameter, returnUrl);
-        }
-
-        async Task<AuthorizationRequest> GetAuthorizeRequest(string paramName, string paramValue)
-        {
-            if (paramValue == null)
-            {
-                paramValue = _context.HttpContext.Request.Query[paramName].FirstOrDefault();
-            }
-
-            if (paramValue != null && IsValidReturnUrl(paramValue))
-            {
-                var parameters = paramValue.ReadQueryStringAsNameValueCollection();
-                var user = await _context.HttpContext.GetIdentityServerUserAsync();
-                var result = await _validator.ValidateAsync(parameters, user);
-                if (!result.IsError)
-                {
-                    return new AuthorizationRequest(result.ValidatedRequest);
-                }
-            }
-
-            return null;
-        }
-
-        public async Task<ErrorMessage> GetErrorContextAsync(string errorId = null)
-        {
-            if (errorId == null)
-            {
-                StringValues values;
-                if (_context.HttpContext.Request.Query.TryGetValue(_options.UserInteractionOptions.ErrorIdParameter, out values))
-                {
-                    errorId = values.First();
-                }
-            }
-
             if (errorId != null)
             { 
                 var result = await _errorMessageStore.ReadAsync(errorId);

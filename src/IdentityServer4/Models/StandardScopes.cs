@@ -68,6 +68,7 @@ namespace IdentityServer4.Models
                 return new Scope
                 {
                     Name = Constants.StandardScopes.OpenId,
+                    DisplayName = "Your user identifier",
                     Required = true,
                     Type = ScopeType.Identity,
                     Claims = new List<ScopeClaim>
@@ -91,6 +92,8 @@ namespace IdentityServer4.Models
                 return new Scope
                 {
                     Name = Constants.StandardScopes.Profile,
+                    DisplayName = "User profile",
+                    Description = "Your user profile information (first name, last name, etc.)",
                     Type = ScopeType.Identity,
                     Emphasize = true,
                     Claims = (Constants.ScopeToClaimsMapping[Constants.StandardScopes.Profile].Select(claim => new ScopeClaim(claim)).ToList())
@@ -111,6 +114,8 @@ namespace IdentityServer4.Models
                 return new Scope
                 {
                     Name = Constants.StandardScopes.Profile,
+                    DisplayName = "User profile",
+                    Description = "Your user profile information (first name, last name, etc.)",
                     Type = ScopeType.Identity,
                     Emphasize = true,
                     Claims = (Constants.ScopeToClaimsMapping[Constants.StandardScopes.Profile].Select(claim => new ScopeClaim(claim, alwaysInclude: true)).ToList())
@@ -131,6 +136,7 @@ namespace IdentityServer4.Models
                 return new Scope
                 {
                     Name = Constants.StandardScopes.Email,
+                    DisplayName = "Your email address",
                     Type = ScopeType.Identity,
                     Emphasize = true,
                     Claims = (Constants.ScopeToClaimsMapping[Constants.StandardScopes.Email].Select(claim => new ScopeClaim(claim)).ToList())
@@ -151,6 +157,7 @@ namespace IdentityServer4.Models
                 return new Scope
                 {
                     Name = Constants.StandardScopes.Email,
+                    DisplayName = "Your email address",
                     Type = ScopeType.Identity,
                     Emphasize = true,
                     Claims = (Constants.ScopeToClaimsMapping[Constants.StandardScopes.Email].Select(claim => new ScopeClaim(claim, alwaysInclude: true)).ToList())
@@ -171,6 +178,7 @@ namespace IdentityServer4.Models
                 return new Scope
                 {
                     Name = Constants.StandardScopes.Phone,
+                    DisplayName = "Your phone number",
                     Type = ScopeType.Identity,
                     Emphasize = true,
                     Claims = (Constants.ScopeToClaimsMapping[Constants.StandardScopes.Phone].Select(claim => new ScopeClaim(claim)).ToList())
@@ -191,6 +199,7 @@ namespace IdentityServer4.Models
                 return new Scope
                 {
                     Name = Constants.StandardScopes.Phone,
+                    DisplayName = "Your phone number",
                     Type = ScopeType.Identity,
                     Emphasize = true,
                     Claims = (Constants.ScopeToClaimsMapping[Constants.StandardScopes.Phone].Select(claim => new ScopeClaim(claim, alwaysInclude: true)).ToList())
@@ -211,6 +220,7 @@ namespace IdentityServer4.Models
                 return new Scope
                 {
                     Name = Constants.StandardScopes.Address,
+                    DisplayName = "Your postal address",
                     Type = ScopeType.Identity,
                     Emphasize = true,
                     Claims = (Constants.ScopeToClaimsMapping[Constants.StandardScopes.Address].Select(claim => new ScopeClaim(claim)).ToList())
@@ -231,6 +241,7 @@ namespace IdentityServer4.Models
                 return new Scope
                 {
                     Name = Constants.StandardScopes.Address,
+                    DisplayName = "Your postal address",
                     Type = ScopeType.Identity,
                     Emphasize = true,
                     Claims = (Constants.ScopeToClaimsMapping[Constants.StandardScopes.Address].Select(claim => new ScopeClaim(claim, alwaysInclude: true)).ToList())
@@ -251,6 +262,7 @@ namespace IdentityServer4.Models
                 return new Scope
                 {
                     Name = Constants.StandardScopes.AllClaims,
+                    DisplayName = "All user information",
                     Type = ScopeType.Identity,
                     Emphasize = true,
                     IncludeAllClaimsForUser = true
@@ -271,6 +283,7 @@ namespace IdentityServer4.Models
                 return new Scope
                 {
                     Name = Constants.StandardScopes.Roles,
+                    DisplayName = "User roles",
                     Type = ScopeType.Identity,
                     Emphasize = true,
                     Claims = new List<ScopeClaim> 
@@ -294,6 +307,7 @@ namespace IdentityServer4.Models
                 return new Scope
                 {
                     Name = Constants.StandardScopes.Roles,
+                    DisplayName = "User roles",
                     Type = ScopeType.Identity,
                     Emphasize = true,
                     Claims = new List<ScopeClaim>
@@ -317,6 +331,7 @@ namespace IdentityServer4.Models
                 return new Scope
                 {
                     Name = Constants.StandardScopes.OfflineAccess,
+                    DisplayName = "Offline access",
                     Type = ScopeType.Resource,
                     Emphasize = true
                 };

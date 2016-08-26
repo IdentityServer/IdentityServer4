@@ -8,10 +8,9 @@ namespace IdentityServer4.Services
 {
     public interface IUserInteractionService
     {
-        Task<AuthorizationRequest> GetLoginContextAsync(string returnUrl = null);
-        Task<LogoutRequest> GetLogoutContextAsync(string logoutId = null);
-        Task<AuthorizationRequest> GetConsentContextAsync(string returnUrl = null);
-        Task<ErrorMessage> GetErrorContextAsync(string errorId = null);
+        Task<AuthorizationRequest> GetAuthorizationContextAsync(string returnUrl);
+        Task<LogoutRequest> GetLogoutContextAsync(string logoutId);
+        Task<ErrorMessage> GetErrorContextAsync(string errorId);
 
         bool IsValidReturnUrl(string returnUrl);
         Task GrantConsentAsync(AuthorizationRequest request, ConsentResponse consent, string subject = null);
