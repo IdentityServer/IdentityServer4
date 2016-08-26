@@ -38,10 +38,29 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
+        /// <summary>
+        /// Adds the client store cache.
+        /// </summary>
+        /// <typeparam name="T">The type of the concrete client store class that is registered in DI.</typeparam>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
         public static IIdentityServerBuilder AddClientStoreCache<T>(this IIdentityServerBuilder builder)
             where T : IClientStore
         {
             builder.Services.AddTransient<IClientStore, CachingClientStore<T>>();
+            return builder;
+        }
+        
+        /// <summary>
+        /// Adds the client store cache.
+        /// </summary>
+        /// <typeparam name="T">The type of the concrete scope store class that is registered in DI.</typeparam>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddScopeStoreCache<T>(this IIdentityServerBuilder builder)
+            where T : IScopeStore
+        {
+            builder.Services.AddTransient<IScopeStore, CachingScopeStore<T>>();
             return builder;
         }
 
