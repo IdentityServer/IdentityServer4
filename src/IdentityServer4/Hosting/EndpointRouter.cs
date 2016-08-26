@@ -1,40 +1,73 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace IdentityServer4.Hosting
 {
     class EndpointRouter : IEndpointRouter
     {
-        IDictionary<string, Type> _map;
+        private readonly Dictionary<string, EndpointName> _pathToNameMap;
+        private readonly IdentityServerOptions _options;
+        private readonly IEnumerable<EndpointMapping> _mappings;
+        private readonly ILogger<EndpointRouter> _logger;
 
-        public EndpointRouter(IDictionary<string, Type> map)
+        public EndpointRouter(Dictionary<string, EndpointName> pathToNameMap, IdentityServerOptions options, IEnumerable<EndpointMapping> mappings, ILogger<EndpointRouter> logger)
         {
-            if (map == null) throw new ArgumentNullException(nameof(map));
-
-            _map = map;
+            _pathToNameMap = pathToNameMap;
+            _options = options;
+            _mappings = mappings;
+            _logger = logger;
         }
 
         public IEndpoint Find(HttpContext context)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            IEndpoint endpoint = null;
-            foreach(var key in _map.Keys)
+            foreach(var key in _pathToNameMap.Keys)
             {
                 var path = key.EnsureLeadingSlash();
                 if (context.Request.Path.StartsWithSegments(path))
                 {
-                    endpoint = context.RequestServices.GetService(_map[key]) as IEndpoint;
-                    break;
+                    var endpointName = _pathToNameMap[key];
+                    _logger.LogDebug("Request path {0} matched to endpoint type {1}", context.Request.Path, endpointName);
+
+                    return GetEndpoint(endpointName, context);
                 }
             }
 
-            return endpoint;
+            _logger.LogTrace("No endpoint entry found for request path: {0}", context.Request.Path);
+
+            return null;
+        }
+
+        private IEndpoint GetEndpoint(EndpointName endpointName, HttpContext context)
+        {
+            if (_options.Endpoints.IsEndpointEnabled(endpointName))
+            {
+                var mapping = _mappings.Where(x => x.Endpoint == endpointName).LastOrDefault();
+                if (mapping != null)
+                {
+                    _logger.LogDebug("Mapping found for endpoint: {0}, creating handler: {1}", endpointName, mapping.Handler.FullName);
+                    return context.RequestServices.GetService(mapping.Handler) as IEndpoint;
+                }
+                else
+                {
+                    _logger.LogError("No mapping found for endpoint: {0}", endpointName);
+                }
+            }
+            else
+            {
+                _logger.LogWarning("{0} endpoint requested, but is diabled in endpoint options.", endpointName);
+            }
+
+            return null;
         }
     }
 }

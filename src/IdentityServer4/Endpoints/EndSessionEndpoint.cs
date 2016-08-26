@@ -68,7 +68,7 @@ namespace IdentityServer4.Endpoints
 
         private async Task<IEndpointResult> ProcessSignoutAsync(HttpContext context)
         {
-            _logger.LogInformation("Processing singout request");
+            _logger.LogInformation("Processing signout request");
 
             NameValueCollection parameters = null;
             if (context.Request.Method == "GET")

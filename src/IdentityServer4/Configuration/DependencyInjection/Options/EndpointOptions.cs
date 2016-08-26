@@ -47,24 +47,7 @@ namespace IdentityServer4.Configuration
         /// <c>true</c> if the end session endpoint is enabled; otherwise, <c>false</c>.
         /// </value>
         public bool EnableEndSessionEndpoint { get; set; } = true;
-
-        // todo
-        /// <summary>
-        /// Gets or sets a value indicating whether the client permissions endpoint is enabled.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if the client permissions endpoint is enabled; otherwise, <c>false</c>.
-        /// </value>
-        //public bool EnableClientPermissionsEndpoint { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the CSP report endpoint is enabled.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if the CSP report endpoint is enabled; otherwise, <c>false</c>.
-        /// </value>
-        public bool EnableCspReportEndpoint { get; set; } = true;
-
+        
         /// <summary>
         /// Gets or sets a value indicating whether the check session endpoint is enabled.
         /// </summary>

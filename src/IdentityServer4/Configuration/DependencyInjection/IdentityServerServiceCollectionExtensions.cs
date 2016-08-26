@@ -17,10 +17,12 @@ using IdentityServer4.Stores.Serialization;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -33,14 +35,14 @@ namespace Microsoft.Extensions.DependencyInjection
 
         //    var options = new IdentityServerOptions();
         //    setupAction(options);
-            
+
         //    services.AddRequiredPlatformServices();
         //    services.AddRequiredServices(options);
 
         //    return new IdentityServerBuilder(services);
         //}
 
-        
+
 
         //public static IServiceCollection AddRequiredServices(this IServiceCollection services, IdentityServerOptions options)
         //{
@@ -48,7 +50,7 @@ namespace Microsoft.Extensions.DependencyInjection
         //    services.AddEndpoints(options.Endpoints);
         //    services.AddValidators();
 
-            
+
         //    services.AddResponseGenerators();
 
         //    services.AddSecretParsers();
@@ -60,22 +62,17 @@ namespace Microsoft.Extensions.DependencyInjection
         //    return services;
         //}
 
-
-        public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services, Action<IdentityServerOptions> setupAction = null)
+        public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services)
         {
-            var options = new IdentityServerOptions();
-            setupAction?.Invoke(options);
+            services.AddSingleton(resolver =>
+            {
+                return resolver.GetRequiredService<IOptions<IdentityServerOptions>>().Value;
+            });
 
-            return services.AddIdentityServer(options);
-        }
-
-        public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services, IdentityServerOptions options)
-        {
-            services.AddSingleton(options);
             services.AddRequiredPlatformServices();
 
-            services.AddEndpoints(options.Endpoints);
             services.AddCoreServices();
+            services.AddEndpoints();
             services.AddHostServices();
             services.AddPluggableServices();
             services.AddValidators();
@@ -85,60 +82,57 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddDefaultSecretValidators();
 
             services.AddInMemoryTransientStores();
-            
 
             return new IdentityServerBuilder(services);
+        }
+
+        public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services, Action<IdentityServerOptions> setupAction)
+        {
+            services.Configure(setupAction);
+            return services.AddIdentityServer();
+        }
+
+        public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<IdentityServerOptions>(configuration);
+            return services.AddIdentityServer();
         }
 
         public static IServiceCollection AddRequiredPlatformServices(this IServiceCollection services)
         {
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddAuthentication();
+            services.AddOptions();
 
             return services;
         }
 
-        public static IServiceCollection AddEndpoints(this IServiceCollection services, EndpointsOptions endpoints)
+        public static IServiceCollection AddEndpoint<T>(this IServiceCollection services, EndpointName endpoint)
+            where T : class, IEndpoint
         {
-            var map = new Dictionary<string, Type>();
-            if (endpoints.EnableTokenEndpoint)
-            {
-                map.Add(Constants.ProtocolRoutePaths.Token, typeof(TokenEndpoint));
-            }
-            if (endpoints.EnableTokenRevocationEndpoint)
-            {
-                map.Add(Constants.ProtocolRoutePaths.Revocation, typeof(RevocationEndpoint));
-            }
-            if (endpoints.EnableDiscoveryEndpoint)
-            {
-                map.Add(Constants.ProtocolRoutePaths.DiscoveryConfiguration, typeof(DiscoveryEndpoint));
-            }
-            if (endpoints.EnableUserInfoEndpoint)
-            {
-                map.Add(Constants.ProtocolRoutePaths.UserInfo, typeof(UserInfoEndpoint));
-            }
-            if (endpoints.EnableIntrospectionEndpoint)
-            {
-                map.Add(Constants.ProtocolRoutePaths.Introspection, typeof(IntrospectionEndpoint));
-            }
-            if (endpoints.EnableAuthorizeEndpoint)
-            {
-                map.Add(Constants.ProtocolRoutePaths.Authorize, typeof(AuthorizeEndpoint));
-            }
-            if (endpoints.EnableEndSessionEndpoint)
-            {
-                map.Add(Constants.ProtocolRoutePaths.EndSession, typeof(EndSessionEndpoint));
-            }
-            if (endpoints.EnableCheckSessionEndpoint)
-            {
-                map.Add(Constants.ProtocolRoutePaths.CheckSession, typeof(CheckSessionEndpoint));
-            }
+            services.AddTransient<T>();
+            services.AddSingleton(new EndpointMapping { Endpoint = endpoint, Handler = typeof(T) });
 
-            services.AddSingleton<IEndpointRouter>(new EndpointRouter(map));
-            foreach (var item in map)
+            return services;
+        }
+
+        public static IServiceCollection AddEndpoints(this IServiceCollection services)
+        {
+            services.AddSingleton<IEndpointRouter>(resolver=>
             {
-                services.AddTransient(item.Value);
-            }
+                return new EndpointRouter(Constants.EndpointPathToNameMap,
+                    resolver.GetRequiredService<IdentityServerOptions>(), 
+                    resolver.GetServices<EndpointMapping>(),
+                    resolver.GetRequiredService<ILogger<EndpointRouter>>());
+            });
+            services.AddEndpoint<AuthorizeEndpoint>(EndpointName.Authorize);
+            services.AddEndpoint<CheckSessionEndpoint>(EndpointName.CheckSession);
+            services.AddEndpoint<DiscoveryEndpoint>(EndpointName.Discovery);
+            services.AddEndpoint<EndSessionEndpoint>(EndpointName.EndSession);
+            services.AddEndpoint<IntrospectionEndpoint>(EndpointName.Introspection);
+            services.AddEndpoint<RevocationEndpoint>(EndpointName.Revocation);
+            services.AddEndpoint<TokenEndpoint>(EndpointName.Token);
+            services.AddEndpoint<UserInfoEndpoint>(EndpointName.UserInfo);
 
             return services;
         }

@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
 using FluentAssertions;
 using System.Net;
+using IdentityServer4.Configuration;
 
 namespace IdentityServer4.Tests.Common
 {
@@ -43,7 +44,8 @@ namespace IdentityServer4.Tests.Common
         {
             if (CookieAuthenticationScheme != null)
             {
-                this.Options.AuthenticationOptions.AuthenticationScheme = CookieAuthenticationScheme;
+                var idSvrOptions = app.ApplicationServices.GetRequiredService<IdentityServerOptions>();
+                idSvrOptions.AuthenticationOptions.AuthenticationScheme = CookieAuthenticationScheme;
                 app.UseCookieAuthentication(new CookieAuthenticationOptions
                 {
                     AuthenticationScheme = CookieAuthenticationScheme
