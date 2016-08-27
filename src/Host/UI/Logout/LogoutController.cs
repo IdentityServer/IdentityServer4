@@ -33,11 +33,15 @@ namespace Host.UI.Logout
 
             var logout = await _interaction.GetLogoutContextAsync(logoutId);
 
-            var vm = new LoggedOutViewModel()
+            LoggedOutViewModel vm = null;
+            if (logout != null)
             {
-                PostLogoutRedirectUri = logout.PostLogoutRedirectUri,
-                ClientName = logout.ClientId,
-                SignOutIframeUrl = logout.SignOutIFrameUrl
+                vm = new LoggedOutViewModel
+                {
+                    PostLogoutRedirectUri = logout?.PostLogoutRedirectUri,
+                    ClientName = logout?.ClientId,
+                    SignOutIframeUrl = logout?.SignOutIFrameUrl
+                };
             };
             return View("LoggedOut", vm);
         }

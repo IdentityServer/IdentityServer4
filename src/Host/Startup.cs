@@ -104,16 +104,6 @@ namespace Host
                 SignInScheme = "Temp",
                 ClientId = "998042782978-s07498t8i8jas7npj4crve1skpromf37.apps.googleusercontent.com",
                 ClientSecret = "HsnwJri_53zn7VcO1Fm7THBb",
-                //Scope = { "openid", "fookyou" }
-                Events = new OAuthEvents
-                {
-                    OnRedirectToAuthorizationEndpoint = ctx =>
-                    {
-                        var url = ctx.RedirectUri + "&prompt=none";
-                        ctx.HttpContext.Response.Redirect(url);
-                        return Task.FromResult(0);
-                    }
-                }
             });
 
             app.UseIdentityServer();
