@@ -4,7 +4,6 @@
 using IdentityModel;
 using IdentityServer4.Logging;
 using IdentityServer4.Extensions;
-using IdentityServer4.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Collections.Specialized;
 using System.Linq;

@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
-using System.IO;
-using System.Security.Cryptography.X509Certificates;
 using Serilog.Events;
 using IdentityServer4.Services.InMemory;
 using IdentityServer4.Validation;

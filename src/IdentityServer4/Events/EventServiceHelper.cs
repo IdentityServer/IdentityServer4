@@ -1,5 +1,4 @@
-﻿using IdentityServer4.Hosting;
-using System;
+﻿using System;
 using System.Diagnostics;
 using IdentityModel;
 using Microsoft.AspNetCore.Http;

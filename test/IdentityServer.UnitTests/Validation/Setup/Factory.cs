@@ -106,7 +106,7 @@ namespace IdentityServer4.Tests.Validation
             IScopeStore scopes = null,
             IClientStore clients = null,
             IProfileService profile = null,
-            ICustomRequestValidator customValidator = null,
+            ICustomAuthorizeRequestValidator customValidator = null,
             IRedirectUriValidator uriValidator = null,
             ScopeValidator scopeValidator = null)
         {
@@ -127,7 +127,7 @@ namespace IdentityServer4.Tests.Validation
 
             if (customValidator == null)
             {
-                customValidator = new DefaultCustomRequestValidator();
+                customValidator = new DefaultCustomAuthorizeRequestValidator();
             }
 
             if (uriValidator == null)

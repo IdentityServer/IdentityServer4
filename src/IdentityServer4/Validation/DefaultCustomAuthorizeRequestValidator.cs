@@ -8,7 +8,7 @@ namespace IdentityServer4.Validation
     /// <summary>
     /// Default custom request validator
     /// </summary>
-    public class DefaultCustomRequestValidator : ICustomRequestValidator
+    public class DefaultCustomAuthorizeRequestValidator : ICustomAuthorizeRequestValidator
     {
         /// <summary>
         /// Custom validation logic for the authorize request.
@@ -18,7 +18,7 @@ namespace IdentityServer4.Validation
         /// The validation result
         /// </returns>
         // todo - maybe split up in two interfaces - semantics for tokens have changed because of custom response fields
-        public Task<AuthorizeRequestValidationResult> ValidateAuthorizeRequestAsync(ValidatedAuthorizeRequest request)
+        public Task<AuthorizeRequestValidationResult> ValidateAsync(ValidatedAuthorizeRequest request)
         {
             return Task.FromResult(new AuthorizeRequestValidationResult
             {

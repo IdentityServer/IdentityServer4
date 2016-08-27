@@ -8,7 +8,6 @@ using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Events;
 using IdentityServer4.Hosting;
 using IdentityServer4.Hosting.Cors;
-using IdentityServer4.Models;
 using IdentityServer4.ResponseHandling;
 using IdentityServer4.Services;
 using IdentityServer4.Services.Default;
@@ -181,7 +180,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<IIntrospectionRequestValidator, IntrospectionRequestValidator>();
             services.TryAddTransient<IResourceOwnerPasswordValidator, NotSupportedResouceOwnerPasswordValidator>();
             services.TryAddTransient<ICustomTokenValidator, DefaultCustomTokenValidator>();
-            services.TryAddTransient<ICustomRequestValidator, DefaultCustomRequestValidator>();
+            services.TryAddTransient<ICustomAuthorizeRequestValidator, DefaultCustomAuthorizeRequestValidator>();
             services.TryAddTransient<ICustomTokenRequestValidator, DefaultCustomTokenRequestValidator>();
 
             return services;

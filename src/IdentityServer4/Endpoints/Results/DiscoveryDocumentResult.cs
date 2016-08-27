@@ -5,7 +5,6 @@ using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

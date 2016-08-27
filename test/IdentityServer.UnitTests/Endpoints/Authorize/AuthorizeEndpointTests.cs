@@ -6,7 +6,6 @@ using IdentityServer4.Endpoints;
 using System.Threading.Tasks;
 using Xunit;
 using UnitTests.Common;
-using IdentityServer4.Hosting;
 using System.Collections.Specialized;
 using System.Security.Claims;
 using IdentityServer4.Validation;

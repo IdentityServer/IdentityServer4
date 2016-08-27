@@ -5,7 +5,6 @@ using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using System.Threading.Tasks;
-using System;
 using IdentityServer4.Configuration;
 using System.Collections.Generic;
 using System.Linq;

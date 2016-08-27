@@ -6,7 +6,6 @@ using IdentityServer.UnitTests.Common;
 using IdentityServer4;
 using IdentityServer4.Configuration;
 using IdentityServer4.Endpoints.Results;
-using IdentityServer4.Hosting;
 using IdentityServer4.Models;
 using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;

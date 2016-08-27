@@ -3,7 +3,6 @@
 
 using IdentityServer4.Validation;
 using System.Threading.Tasks;
-using IdentityServer4.Models;
 
 namespace IdentityServer4.Tests.Clients
 {

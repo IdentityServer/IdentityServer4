@@ -21,7 +21,7 @@ namespace IdentityServer4.Validation
     {
         private readonly IdentityServerOptions _options;
         private readonly IClientStore _clients;
-        private readonly ICustomRequestValidator _customValidator;
+        private readonly ICustomAuthorizeRequestValidator _customValidator;
         private readonly IRedirectUriValidator _uriValidator;
         private readonly ScopeValidator _scopeValidator;
         private readonly SessionCookie _sessionCookie;
@@ -33,7 +33,7 @@ namespace IdentityServer4.Validation
         public AuthorizeRequestValidator(
             IdentityServerOptions options, 
             IClientStore clients, 
-            ICustomRequestValidator customValidator, 
+            ICustomAuthorizeRequestValidator customValidator, 
             IRedirectUriValidator uriValidator, 
             ScopeValidator scopeValidator,
             SessionCookie sessionCookie,
@@ -96,7 +96,7 @@ namespace IdentityServer4.Validation
 
             // custom validator
             _logger.LogDebug("Calling into custom validator: {type}", _customValidator.GetType().FullName);
-            var customResult = await _customValidator.ValidateAuthorizeRequestAsync(request);
+            var customResult = await _customValidator.ValidateAsync(request);
 
             if (customResult.IsError)
             {

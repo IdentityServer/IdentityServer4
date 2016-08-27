@@ -8,14 +8,14 @@ namespace IdentityServer4.Validation
     /// <summary>
     /// Allows inserting custom validation logic into authorize and token requests
     /// </summary>
-    public interface ICustomRequestValidator
+    public interface ICustomAuthorizeRequestValidator
     {
         /// <summary>
         /// Custom validation logic for the authorize request.
         /// </summary>
         /// <param name="request">The validated request.</param>
         /// <returns>The validation result</returns>
-        // postpone
-        Task<AuthorizeRequestValidationResult> ValidateAuthorizeRequestAsync(ValidatedAuthorizeRequest request);
+        // todo
+        Task<AuthorizeRequestValidationResult> ValidateAsync(ValidatedAuthorizeRequest request);
     }
 }

@@ -8,9 +8,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Services.Default

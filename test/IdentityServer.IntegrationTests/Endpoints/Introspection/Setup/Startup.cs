@@ -6,10 +6,7 @@ using IdentityServer4.Services.InMemory;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.PlatformAbstractions;
 using System.Collections.Generic;
-using System.IO;
-using System.Security.Cryptography.X509Certificates;
 
 namespace IdentityServer4.Tests.Endpoints.Introspection
 {
