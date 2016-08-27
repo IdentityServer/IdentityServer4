@@ -16,7 +16,7 @@ namespace IdentityServer4.Models
         /// </summary>
         public Message(TModel data)
         {
-            Created = DateTimeOffsetHelper.UtcNow.Ticks;
+            Created = DateTimeHelper.UtcNow.Ticks;
             Data = data;
         }
 

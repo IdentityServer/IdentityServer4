@@ -114,7 +114,7 @@ namespace IdentityServer4.Hosting
                 }
 
                 value = ".";
-                expires = DateTime.Now.AddYears(-1);
+                expires = DateTimeHelper.UtcNow.AddYears(-1);
             }
 
             var opts = new CookieOptions

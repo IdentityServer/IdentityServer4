@@ -21,9 +21,9 @@ namespace IdentityServer4.Extensions
         /// <param name="principal">The principal.</param>
         /// <returns></returns>
         [DebuggerStepThrough]
-        public static DateTimeOffset GetAuthenticationTime(this IPrincipal principal)
+        public static DateTime GetAuthenticationTime(this IPrincipal principal)
         {
-            return principal.GetAuthenticationTimeEpoch().ToDateTimeOffsetFromEpoch();
+            return principal.GetAuthenticationTimeEpoch().ToDateTimeFromEpoch();
         }
 
         /// <summary>

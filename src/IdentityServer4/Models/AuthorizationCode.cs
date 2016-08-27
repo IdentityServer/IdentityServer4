@@ -19,7 +19,7 @@ namespace IdentityServer4.Models
         /// <value>
         /// The creation time.
         /// </value>
-        public DateTimeOffset CreationTime { get; set; } = DateTimeOffsetHelper.UtcNow;
+        public DateTime CreationTime { get; set; } = DateTimeHelper.UtcNow;
 
         /// <summary>
         /// Gets or sets the life time.

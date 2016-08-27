@@ -108,17 +108,17 @@ namespace IdentityServer4.Services.Default
 
         public Task StoreRefreshTokenAsync(string handle, RefreshToken refreshToken)
         {
-            return StoreItem(handle, refreshToken, Constants.PersistedGrantTypes.RefreshToken, refreshToken.ClientId, refreshToken.SubjectId, refreshToken.CreationTime.UtcDateTime, refreshToken.Lifetime);
+            return StoreItem(handle, refreshToken, Constants.PersistedGrantTypes.RefreshToken, refreshToken.ClientId, refreshToken.SubjectId, refreshToken.CreationTime, refreshToken.Lifetime);
         }
 
         public Task StoreAuthorizationCodeAsync(string id, AuthorizationCode code)
         {
-            return StoreItem(id, code, Constants.PersistedGrantTypes.AuthorizationCode, code.ClientId, code.Subject.GetSubjectId(), code.CreationTime.UtcDateTime, code.Lifetime);
+            return StoreItem(id, code, Constants.PersistedGrantTypes.AuthorizationCode, code.ClientId, code.Subject.GetSubjectId(), code.CreationTime, code.Lifetime);
         }
 
         public Task StoreReferenceTokenAsync(string handle, Token token)
         {
-            return StoreItem(handle, token, Constants.PersistedGrantTypes.ReferenceToken, token.ClientId, token.SubjectId, token.CreationTime.UtcDateTime, token.Lifetime);
+            return StoreItem(handle, token, Constants.PersistedGrantTypes.ReferenceToken, token.ClientId, token.SubjectId, token.CreationTime, token.Lifetime);
         }
 
         public Task RemoveRefreshTokensAsync(string subjectId, string clientId)

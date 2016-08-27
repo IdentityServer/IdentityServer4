@@ -228,7 +228,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                     ClientId = "roclient"
                 },
                 Lifetime = 600,
-                CreationTime = DateTimeOffset.UtcNow
+                CreationTime = DateTime.UtcNow
             };
             var handle = Guid.NewGuid().ToString();
 
@@ -264,7 +264,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 },
 
                 Lifetime = 600,
-                CreationTime = DateTimeOffset.UtcNow
+                CreationTime = DateTime.UtcNow
             };
             var handle = Guid.NewGuid().ToString();
 

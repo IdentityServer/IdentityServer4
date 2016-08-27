@@ -18,7 +18,7 @@ namespace IdentityServer4.Hosting
             _context = context;
         }
 
-        public virtual string IssueSessionId(bool? persistent = null, DateTimeOffset? expires = null)
+        public virtual string IssueSessionId(bool? persistent = null, DateTime? expires = null)
         {
             var id = CryptoRandom.CreateUniqueId();
 
@@ -30,7 +30,7 @@ namespace IdentityServer4.Hosting
             return id;
         }
 
-        private CookieOptions CreateCookieOptions(bool? persistent, DateTimeOffset? expires = null)
+        private CookieOptions CreateCookieOptions(bool? persistent, DateTime? expires = null)
         {
             var secure = _context.HttpContext.Request.IsHttps;
             var path = _context.HttpContext.GetBasePath().CleanUrlPath();

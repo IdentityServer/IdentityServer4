@@ -70,7 +70,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             {
                 AccessToken = new Token("access_token") { ClientId = "roclient" },
                 Lifetime = 10,
-                CreationTime = DateTimeOffset.UtcNow.AddSeconds(-15)
+                CreationTime = DateTime.UtcNow.AddSeconds(-15)
             };
             var handle = Guid.NewGuid().ToString();
 
@@ -102,7 +102,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 {
                     ClientId = "otherclient",
                     Lifetime = 600,
-                    CreationTime = DateTimeOffset.UtcNow
+                    CreationTime = DateTime.UtcNow
                 }
             };
             var handle = Guid.NewGuid().ToString();
@@ -136,7 +136,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                     ClientId = "roclient_restricted"
                 },
                 Lifetime = 600,
-                CreationTime = DateTimeOffset.UtcNow
+                CreationTime = DateTime.UtcNow
             };
             var handle = Guid.NewGuid().ToString();
 
@@ -172,7 +172,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                     ClientId = "roclient"
                 },
                 Lifetime = 600,
-                CreationTime = DateTimeOffset.UtcNow
+                CreationTime = DateTime.UtcNow
             };
             var handle = Guid.NewGuid().ToString();
 

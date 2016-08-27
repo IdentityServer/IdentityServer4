@@ -24,7 +24,7 @@ namespace IdentityServer4.Events
         /// <value>
         /// The time stamp.
         /// </value>
-        public DateTimeOffset TimeStamp { get; set; }
+        public DateTime TimeStamp { get; set; }
         
         /// <summary>
         /// Gets or sets the server process identifier.

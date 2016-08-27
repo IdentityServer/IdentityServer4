@@ -24,6 +24,6 @@ namespace IdentityServer4.Events
         /// <value>
         /// The signing certificate expiration.
         /// </value>
-        public DateTimeOffset SigningCertificateExpiration { get; set; }
+        public DateTime SigningCertificateExpiration { get; set; }
     }
 }

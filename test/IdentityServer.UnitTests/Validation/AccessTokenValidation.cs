@@ -27,29 +27,29 @@ namespace IdentityServer4.UnitTests.Validation
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
         }
 
-        DateTimeOffset now;
-        public DateTimeOffset UtcNow
+        DateTime now;
+        public DateTime UtcNow
         {
             get
             {
-                if (now > DateTimeOffset.MinValue) return now;
-                return DateTimeOffset.UtcNow;
+                if (now > DateTime.MinValue) return now;
+                return DateTime.UtcNow;
             }
         }
 
-        Func<DateTimeOffset> originalNowFunc;
+        Func<DateTime> originalNowFunc;
         
         public AccessTokenValidation()
         {
-            originalNowFunc = DateTimeOffsetHelper.UtcNowFunc;
-            DateTimeOffsetHelper.UtcNowFunc = () => UtcNow;
+            originalNowFunc = DateTimeHelper.UtcNowFunc;
+            DateTimeHelper.UtcNowFunc = () => UtcNow;
         }
 
         public void Dispose()
         {
             if (originalNowFunc != null)
             {
-                DateTimeOffsetHelper.UtcNowFunc = originalNowFunc;
+                DateTimeHelper.UtcNowFunc = originalNowFunc;
             }
         }
 
@@ -138,7 +138,7 @@ namespace IdentityServer4.UnitTests.Validation
         [Trait("Category", Category)]
         public async Task Expired_Reference_Token()
         {
-            now = DateTimeOffset.UtcNow;
+            now = DateTime.UtcNow;
 
             var grants = Factory.CreateGrantService();
             var validator = Factory.CreateTokenValidator(grants);

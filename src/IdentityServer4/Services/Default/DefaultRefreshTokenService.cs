@@ -70,7 +70,7 @@ namespace IdentityServer4.Services.Default
             var handle = CryptoRandom.CreateUniqueId();
             var refreshToken = new RefreshToken
             {
-                CreationTime = DateTimeOffsetHelper.UtcNow,
+                CreationTime = DateTimeHelper.UtcNow,
                 Lifetime = lifetime,
                 AccessToken = accessToken,
             };

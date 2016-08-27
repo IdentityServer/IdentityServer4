@@ -162,7 +162,7 @@ namespace IdentityServer4.Hosting
         private long GetCookieRank(string name)
         {   
             // empty and invalid cookies are considered to be the oldest:
-            var rank = DateTimeOffset.MinValue.Ticks;
+            var rank = DateTime.MinValue.Ticks;
 
             try
             {

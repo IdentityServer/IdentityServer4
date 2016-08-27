@@ -6,25 +6,25 @@ using System.Diagnostics;
 
 namespace IdentityServer4.Extensions
 {
-    internal static class DateTimeOffsetExtensions
+    internal static class DateTimeExtensions
     {
         [DebuggerStepThrough]
-        public static bool HasExceeded(this DateTimeOffset creationTime, int seconds)
+        public static bool HasExceeded(this DateTime creationTime, int seconds)
         {
-            return (DateTimeOffsetHelper.UtcNow > creationTime.AddSeconds(seconds));
+            return (DateTimeHelper.UtcNow > creationTime.AddSeconds(seconds));
         }
 
         [DebuggerStepThrough]
-        public static int GetLifetimeInSeconds(this DateTimeOffset creationTime)
+        public static int GetLifetimeInSeconds(this DateTime creationTime)
         {
-            return ((int)(DateTimeOffsetHelper.UtcNow - creationTime).TotalSeconds);
+            return ((int)(DateTimeHelper.UtcNow - creationTime).TotalSeconds);
         }
 
         [DebuggerStepThrough]
-        public static bool HasExpired(this DateTimeOffset? expirationTime)
+        public static bool HasExpired(this DateTime? expirationTime)
         {
             if (expirationTime.HasValue &&
-                expirationTime < DateTimeOffsetHelper.UtcNow)
+                expirationTime < DateTimeHelper.UtcNow)
             {
                 return true;
             }

@@ -93,7 +93,7 @@ namespace IdentityServer4.Services.Default
             }
 
             // add iat claim
-            claims.Add(new Claim(JwtClaimTypes.IssuedAt, DateTimeOffsetHelper.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer));
+            claims.Add(new Claim(JwtClaimTypes.IssuedAt, DateTimeHelper.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer));
 
             // add at_hash claim
             if (request.AccessTokenToHash.IsPresent())

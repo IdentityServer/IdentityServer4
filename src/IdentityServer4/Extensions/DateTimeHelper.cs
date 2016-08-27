@@ -7,11 +7,13 @@ namespace IdentityServer4.Extensions
 {
     internal static class DateTimeHelper
     {
+        internal static Func<DateTime> UtcNowFunc = () => DateTime.UtcNow;
+
         internal static DateTime UtcNow
         {
             get
             {
-                return DateTime.SpecifyKind(DateTimeOffsetHelper.UtcNow.DateTime, DateTimeKind.Utc);
+                return UtcNowFunc();
             }
         }
     }

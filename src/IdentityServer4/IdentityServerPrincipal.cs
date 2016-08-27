@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel;
+using IdentityServer4.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace IdentityServer4
             if (String.IsNullOrWhiteSpace(idp)) throw new ArgumentNullException("idp");
             if (String.IsNullOrWhiteSpace(authenticationType)) throw new ArgumentNullException("authenticationType");
 
-            if (authenticationTime <= 0) authenticationTime = DateTimeOffset.UtcNow.ToEpochTime();
+            if (authenticationTime <= 0) authenticationTime = DateTimeHelper.UtcNow.ToEpochTime();
 
             var claims = new List<Claim>
             {

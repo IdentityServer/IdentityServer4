@@ -32,7 +32,7 @@ namespace IdentityServer4.Models
         /// <value>
         /// The expiration.
         /// </value>
-        public DateTimeOffset? Expiration { get; set; }
+        public DateTime? Expiration { get; set; }
 
         /// <summary>
         /// Gets or sets the type of the client secret.
@@ -55,7 +55,7 @@ namespace IdentityServer4.Models
         /// </summary>
         /// <param name="value">The value.</param>
         /// <param name="expiration">The expiration.</param>
-        public Secret(string value, DateTimeOffset? expiration = null)
+        public Secret(string value, DateTime? expiration = null)
             : this()
         {
             Value = value;
@@ -68,7 +68,7 @@ namespace IdentityServer4.Models
         /// <param name="value">The value.</param>
         /// <param name="description">The description.</param>
         /// <param name="expiration">The expiration.</param>
-        public Secret(string value, string description, DateTimeOffset? expiration = null)
+        public Secret(string value, string description, DateTime? expiration = null)
             : this()
         {
             Description = description;

@@ -4,6 +4,7 @@
 using FluentAssertions;
 using IdentityModel;
 using IdentityServer4.Configuration;
+using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using IdentityServer4.UnitTests.Common;
@@ -282,7 +283,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 Lifetime = client.AuthorizationCodeLifetime,
                 IsOpenId = true,
                 RedirectUri = "https://server/cb",
-                CreationTime = DateTimeOffset.UtcNow.AddSeconds(-100)
+                CreationTime = DateTime.UtcNow.AddSeconds(-100)
             };
 
             await grants.StoreAuthorizationCodeAsync("valid", code);

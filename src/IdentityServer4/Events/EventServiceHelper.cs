@@ -3,6 +3,7 @@ using System.Diagnostics;
 using IdentityModel;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Configuration;
+using IdentityServer4.Extensions;
 
 namespace IdentityServer4.Events
 {
@@ -41,7 +42,7 @@ namespace IdentityServer4.Events
             evt.Context = new EventContext
             {
                 ActivityId = _context.HttpContext.TraceIdentifier,
-                TimeStamp = DateTimeOffset.UtcNow,
+                TimeStamp = DateTimeHelper.UtcNow,
                 ProcessId = Process.GetCurrentProcess().Id,
             };
 

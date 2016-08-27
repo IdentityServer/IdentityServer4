@@ -151,7 +151,7 @@ namespace IdentityServer4.ResponseHandling
             }
             else
             {
-                oldAccessToken.CreationTime = DateTimeOffsetHelper.UtcNow;
+                oldAccessToken.CreationTime = DateTimeHelper.UtcNow;
                 oldAccessToken.Lifetime = request.Client.AccessTokenLifetime;
 
                 accessTokenString = await _tokenService.CreateSecurityTokenAsync(oldAccessToken);
