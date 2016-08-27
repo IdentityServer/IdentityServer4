@@ -14,7 +14,8 @@ namespace IdentityServer4.Models
         public string check_session_iframe { get; set; }
         public string revocation_endpoint { get; set; }
         public string introspection_endpoint { get; set; }
-        public bool? http_logout_supported { get; set; }
+        public bool? frontchannel_logout_supported { get; set; }
+        public bool? frontchannel_logout_session_supported { get; set; }
         public string[] scopes_supported { get; set; }
         public string[] claims_supported { get; set; }
         public string[] response_types_supported { get; set; }

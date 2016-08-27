@@ -162,11 +162,6 @@ namespace IdentityServer4.Endpoints
             // endpoints
             if (_options.DiscoveryOptions.ShowEndpoints)
             {
-                if (_options.Endpoints.EnableEndSessionEndpoint)
-                {
-                    document.http_logout_supported = true;
-                }
-
                 if (_options.Endpoints.EnableAuthorizeEndpoint)
                 {
                     document.authorization_endpoint = baseUrl + Constants.ProtocolRoutePaths.Authorize;
@@ -184,6 +179,8 @@ namespace IdentityServer4.Endpoints
 
                 if (_options.Endpoints.EnableEndSessionEndpoint)
                 {
+                    document.frontchannel_logout_session_supported = true;
+                    document.frontchannel_logout_supported = true;
                     document.end_session_endpoint = baseUrl + Constants.ProtocolRoutePaths.EndSession;
                 }
 
