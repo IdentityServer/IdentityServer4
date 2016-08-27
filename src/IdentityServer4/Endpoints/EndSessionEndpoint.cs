@@ -201,8 +201,9 @@ namespace IdentityServer4.Endpoints
                     // add session id if required
                     if (client.LogoutSessionRequired)
                     {
+                        url = url.AddQueryString(OidcConstants.EndSessionRequest.Sid, sid);
                         //TODO: update sid to OidcConstants when idmodel released
-                        url = url.AddQueryString("sid" + "=" + sid);
+                        url = url.AddQueryString("iss", _context.HttpContext.GetIssuerUri());
                     }
 
                     urls.Add(url);
