@@ -4,7 +4,7 @@
 using IdentityServer4.Validation;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Tests.Clients
+namespace IdentityServer4.IntegrationTests.Clients
 {
     public class ExtensionGrantValidator2 : IExtensionGrantValidator
     {

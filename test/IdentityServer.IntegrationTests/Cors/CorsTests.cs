@@ -5,14 +5,14 @@ using System.Threading.Tasks;
 using Xunit;
 using FluentAssertions;
 using System.Net;
-using IdentityServer4.Tests.Common;
 using System.Collections.Generic;
 using IdentityServer4.Models;
 using IdentityServer4.Services.InMemory;
 using System.Security.Claims;
 using System.Net.Http;
+using IdentityServer4.IntegrationTests.Common;
 
-namespace IdentityServer4.Tests.Cors
+namespace IdentityServer4.IntegrationTests.Cors
 {
     public class CorsTests
     {

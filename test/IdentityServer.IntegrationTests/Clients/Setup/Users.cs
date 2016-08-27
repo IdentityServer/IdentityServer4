@@ -6,7 +6,7 @@ using IdentityServer4.Services.InMemory;
 using System.Collections.Generic;
 using System.Security.Claims;
 
-namespace IdentityServer4.Tests.Clients
+namespace IdentityServer4.IntegrationTests.Clients
 {
     static class Users
     {

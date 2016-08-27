@@ -15,7 +15,7 @@ using FluentAssertions;
 using System.Net;
 using IdentityServer4.Configuration;
 
-namespace IdentityServer4.Tests.Common
+namespace IdentityServer4.IntegrationTests.Common
 {
     public class MockIdSvrUiPipeline : IdentityServerPipeline
     {

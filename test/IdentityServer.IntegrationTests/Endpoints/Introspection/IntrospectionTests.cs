@@ -12,7 +12,7 @@ using IdentityModel.Client;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 
-namespace IdentityServer4.Tests.Endpoints.Introspection
+namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
 {
     public class IntrospectionTests
     {

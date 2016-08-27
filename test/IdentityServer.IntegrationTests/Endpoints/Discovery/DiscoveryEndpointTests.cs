@@ -1,10 +1,13 @@
-﻿using FluentAssertions;
-using IdentityServer4.Tests.Common;
+﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+using FluentAssertions;
+using IdentityServer4.IntegrationTests.Common;
 using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace IdentityServer.IntegrationTests.Endpoints.Discovery
+namespace IdentityServer4.IntegrationTests.Endpoints.Discovery
 {
     public class DiscoveryEndpointTests
     {

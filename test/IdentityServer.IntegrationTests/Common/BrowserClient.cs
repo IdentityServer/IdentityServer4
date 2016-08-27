@@ -3,7 +3,7 @@
 
 using System.Net.Http;
 
-namespace IdentityServer4.Tests.Common
+namespace IdentityServer4.IntegrationTests.Common
 {
     public class BrowserClient : HttpClient
     {

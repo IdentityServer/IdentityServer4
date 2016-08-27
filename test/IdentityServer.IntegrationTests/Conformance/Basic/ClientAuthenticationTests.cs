@@ -3,9 +3,9 @@
 
 using FluentAssertions;
 using IdentityModel.Client;
+using IdentityServer4.IntegrationTests.Common;
 using IdentityServer4.Models;
 using IdentityServer4.Services.InMemory;
-using IdentityServer4.Tests.Common;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 using Xunit;
 
 
-namespace IdentityServer4.Tests.Conformance.Basic
+namespace IdentityServer4.IntegrationTests.Conformance.Basic
 {
     public class ClientAuthenticationTests 
     {

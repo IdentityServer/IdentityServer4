@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using IdentityServer4.Models;
 using System.Collections.Generic;
 
-namespace IdentityServer4.Tests.Clients
+namespace IdentityServer4.IntegrationTests.Clients
 {
     public class CustomResponseExtensionGrantValidator : IExtensionGrantValidator
     {

@@ -4,7 +4,7 @@
 using IdentityServer4.Models;
 using System.Collections.Generic;
 
-namespace IdentityServer4.Tests.Endpoints.Introspection
+namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
 {
     class Scopes
     {
