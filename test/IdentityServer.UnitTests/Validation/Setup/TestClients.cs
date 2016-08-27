@@ -4,7 +4,7 @@
 using IdentityServer4.Models;
 using System.Collections.Generic;
 
-namespace IdentityServer4.Tests.Validation
+namespace IdentityServer4.UnitTests.Validation
 {
     class TestClients
     {

@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -6,9 +9,9 @@ using IdentityServer4.Hosting;
 using Xunit;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Configuration;
-using UnitTests.Common;
+using IdentityServer4.UnitTests.Common;
 
-namespace UnitTests.Hosting
+namespace IdentityServer4.UnitTests.Hosting
 {
     public class EndpointRouterTests
     {

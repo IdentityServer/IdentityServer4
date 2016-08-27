@@ -1,12 +1,14 @@
-﻿using FluentAssertions;
-using IdentityServer4.Tests.Validation;
+﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace IdentityServer.UnitTests.Validation.Secrets
+namespace IdentityServer4.UnitTests.Validation.Secrets
 {
     public class ClientSecretValidation
     {

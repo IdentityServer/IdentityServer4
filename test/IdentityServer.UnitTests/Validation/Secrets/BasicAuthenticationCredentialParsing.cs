@@ -9,13 +9,14 @@ using System.Text;
 using Xunit;
 using Microsoft.Extensions.Primitives;
 using Microsoft.AspNetCore.Http;
-using UnitTests.Common;
+using IdentityServer4.UnitTests.Common;
 
-namespace IdentityServer4.Tests.Validation.Secrets
+namespace IdentityServer4.UnitTests.Validation.Secrets
 {
     public class BasicAuthenticationSecretParsing
     {
         const string Category = "Secrets - Basic Authentication Secret Parsing";
+
         IdentityServerOptions _options;
         BasicAuthenticationSecretParser _parser;
 
@@ -26,6 +27,7 @@ namespace IdentityServer4.Tests.Validation.Secrets
         }
 
         [Fact]
+        [Trait("Category", Category)]
         public async void EmptyContext()
         {
             var context = new DefaultHttpContext();

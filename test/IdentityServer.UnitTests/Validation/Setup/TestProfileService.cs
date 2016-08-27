@@ -5,7 +5,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Services;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Tests.Validation
+namespace IdentityServer4.UnitTests.Validation
 {
     class TestProfileService : IProfileService
     {

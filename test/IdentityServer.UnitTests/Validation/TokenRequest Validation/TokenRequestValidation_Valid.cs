@@ -12,7 +12,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace IdentityServer4.Tests.Validation.TokenRequest
+namespace IdentityServer4.UnitTests.Validation.TokenRequest
 {
     public class TokenRequestValidation_Valid
     {

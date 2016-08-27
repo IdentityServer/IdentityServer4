@@ -6,7 +6,7 @@ using IdentityServer4.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 
-namespace UnitTests.Common
+namespace IdentityServer4.UnitTests.Common
 {
     class MockClientListCookie : ClientListCookie
     {

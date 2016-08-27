@@ -7,9 +7,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace IdentityServer4.Tests.Validation
+namespace IdentityServer4.UnitTests.Validation
 {
-
     public class IdentityTokenValidation
     {
         const string Category = "Identity token validation";

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using IdentityServer4.Events;
 using FluentAssertions;
 
-namespace UnitTests.Common
+namespace IdentityServer4.UnitTests.Common
 {
     public class TestEventService : IEventService
     {

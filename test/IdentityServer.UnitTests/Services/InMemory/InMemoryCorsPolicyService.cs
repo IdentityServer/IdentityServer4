@@ -4,11 +4,11 @@
 using FluentAssertions;
 using IdentityServer4.Models;
 using IdentityServer4.Services.InMemory;
+using IdentityServer4.UnitTests.Common;
 using System.Collections.Generic;
-using UnitTests.Common;
 using Xunit;
 
-namespace UnitTests.Services.InMemory
+namespace IdentityServer4.UnitTests.Services.InMemory
 {
     public class InMemoryCorsPolicyServiceTests
     {

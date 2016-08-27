@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Collections.Specialized;
 using System.Security.Claims;
 
-namespace UnitTests.Endpoints.Authorize
+namespace IdentityServer4.UnitTests.Endpoints.Authorize
 {
     public class StubAuthorizeRequestValidator : IAuthorizeRequestValidator
     {

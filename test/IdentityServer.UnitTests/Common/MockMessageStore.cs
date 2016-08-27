@@ -6,7 +6,7 @@ using IdentityServer4.Stores;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace UnitTests.Common
+namespace IdentityServer4.UnitTests.Common
 {
     public class MockMessageStore<TModel> : IMessageStore<TModel>
     {

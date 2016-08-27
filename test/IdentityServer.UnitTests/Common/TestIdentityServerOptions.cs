@@ -3,7 +3,7 @@
 
 using IdentityServer4.Configuration;
 
-namespace UnitTests.Common
+namespace IdentityServer4.UnitTests.Common
 {
     class TestIdentityServerOptions
     {

@@ -3,6 +3,7 @@
 
 using FluentAssertions;
 using IdentityServer4.Configuration;
+using IdentityServer4.UnitTests.Common;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -10,11 +11,12 @@ using System.IO;
 using System.Text;
 using Xunit;
 
-namespace IdentityServer4.Tests.Validation.Secrets
+namespace IdentityServer4.UnitTests.Validation.Secrets
 {
     public class FormPostCredentialExtraction
     {
         const string Category = "Secrets - Form Post Secret Parsing";
+
         IdentityServerOptions _options;
         PostBodySecretParser _parser;
 
@@ -25,6 +27,7 @@ namespace IdentityServer4.Tests.Validation.Secrets
         }
 
         [Fact]
+        [Trait("Category", Category)]
         public async void EmptyContext()
         {
             var context = new DefaultHttpContext();
@@ -36,6 +39,7 @@ namespace IdentityServer4.Tests.Validation.Secrets
         }
 
         [Fact]
+        [Trait("Category", Category)]
         public async void Valid_PostBody()
         {
             var context = new DefaultHttpContext();
@@ -53,6 +57,7 @@ namespace IdentityServer4.Tests.Validation.Secrets
         }
 
         [Fact]
+        [Trait("Category", Category)]
         public async void ClientId_Too_Long()
         {
             var context = new DefaultHttpContext();
@@ -69,6 +74,7 @@ namespace IdentityServer4.Tests.Validation.Secrets
         }
 
         [Fact]
+        [Trait("Category", Category)]
         public async void ClientSecret_Too_Long()
         {
             var context = new DefaultHttpContext();
@@ -85,6 +91,7 @@ namespace IdentityServer4.Tests.Validation.Secrets
         }
 
         [Fact]
+        [Trait("Category", Category)]
         public async void Missing_ClientId()
         {
             var context = new DefaultHttpContext();
@@ -100,6 +107,7 @@ namespace IdentityServer4.Tests.Validation.Secrets
         }
 
         [Fact]
+        [Trait("Category", Category)]
         public async void Missing_ClientSecret()
         {
             var context = new DefaultHttpContext();
@@ -116,6 +124,7 @@ namespace IdentityServer4.Tests.Validation.Secrets
         }
 
         [Fact]
+        [Trait("Category", Category)]
         public async void Malformed_PostBody()
         {
             var context = new DefaultHttpContext();

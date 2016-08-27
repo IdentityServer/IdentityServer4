@@ -11,7 +11,7 @@ using System.Collections.Specialized;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace IdentityServer4.Tests.Validation.TokenRequest
+namespace IdentityServer4.UnitTests.Validation.TokenRequest
 {
     public class TokenRequestValidation_General_Invalid
     {

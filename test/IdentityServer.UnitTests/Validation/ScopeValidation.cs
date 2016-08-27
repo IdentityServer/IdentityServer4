@@ -10,9 +10,8 @@ using Xunit;
 using IdentityServer4.Stores;
 using IdentityServer4.Stores.InMemory;
 
-namespace IdentityServer4.Tests.Validation
+namespace IdentityServer4.UnitTests.Validation
 {
-
     public class ScopeValidation
     {
         const string Category = "Scope Validation";

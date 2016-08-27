@@ -7,13 +7,14 @@ using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
+using IdentityServer4.UnitTests.Common;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace IdentityServer4.Tests.Validation.Tokens
+namespace IdentityServer4.UnitTests.Validation
 {
     public class AccessTokenValidation : IDisposable
     {

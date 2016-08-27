@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using IdentityServer4.Models;
 using System.Security.Claims;
 
-namespace UnitTests.Common
+namespace IdentityServer4.UnitTests.Common
 {
     public class MockConsentService : IConsentService
     {

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features.Authentication;
 using System.Security.Claims;
 
-namespace UnitTests.Common
+namespace IdentityServer4.UnitTests.Common
 {
     public static class HttpContextExtensions
     {

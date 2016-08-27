@@ -6,6 +6,7 @@ using IdentityModel;
 using IdentityServer4.Configuration;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
+using IdentityServer4.UnitTests.Common;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -13,9 +14,8 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace IdentityServer4.Tests.Validation.TokenRequest
+namespace IdentityServer4.UnitTests.Validation.TokenRequest
 {
-
     public class TokenRequestValidation_RefreshToken_Invalid
     {
         const string Category = "TokenRequest Validation - RefreshToken - Invalid";

@@ -5,15 +5,14 @@ using FluentAssertions;
 using IdentityModel;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
+using IdentityServer4.UnitTests.Common;
 using IdentityServer4.Validation;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
-using UnitTests.Common;
 using Xunit;
 
-namespace IdentityServer4.Tests.Validation.TokenRequest
+namespace IdentityServer4.UnitTests.Validation.TokenRequest
 {
-
     public class TokenRequestValidation_ResourceOwner_Invalid
     {
         const string Category = "TokenRequest Validation - ResourceOwner - Invalid";

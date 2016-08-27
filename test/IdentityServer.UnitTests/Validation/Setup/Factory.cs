@@ -9,12 +9,11 @@ using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using IdentityServer4.Hosting;
-using UnitTests.Common;
 using IdentityServer4.Stores.InMemory;
 using IdentityServer4.Stores;
-using IdentityServer.UnitTests.Common;
+using IdentityServer4.UnitTests.Common;
 
-namespace IdentityServer4.Tests.Validation
+namespace IdentityServer4.UnitTests.Validation
 {
     static class Factory
     {

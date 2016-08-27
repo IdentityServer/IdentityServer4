@@ -2,10 +2,11 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityServer4.Models;
+using IdentityServer4.UnitTests.Common;
 using System;
 using System.Collections.Generic;
 
-namespace IdentityServer4.Tests.Validation
+namespace IdentityServer4.UnitTests.Validation
 {
     static class ClientValidationTestClients
     {

@@ -11,7 +11,7 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace IdentityServer4.Tests.Validation.Secrets
+namespace IdentityServer4.UnitTests.Validation.Secrets
 {
     public class HashedSharedSecretValidation
     {

@@ -5,7 +5,7 @@ using IdentityServer4.Services;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 
-namespace UnitTests.Common
+namespace IdentityServer4.UnitTests.Common
 {
     public class TestProfileService : IProfileService
     {

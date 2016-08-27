@@ -7,7 +7,7 @@ using IdentityServer4.Hosting;
 using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Configuration;
 
-namespace UnitTests.Endpoints.Authorize
+namespace IdentityServer4.UnitTests.Endpoints.Authorize
 {
     class StubResultFactory : IAuthorizeEndpointResultFactory
     {

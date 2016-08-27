@@ -4,11 +4,12 @@
 using FluentAssertions;
 using IdentityModel;
 using IdentityServer4.Configuration;
+using IdentityServer4.UnitTests.Common;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace IdentityServer4.Tests.Validation.AuthorizeRequest
+namespace IdentityServer4.UnitTests.Validation.AuthorizeRequest
 {
     public class Authorize_ProtocolValidation_Valid_PKCE
     {

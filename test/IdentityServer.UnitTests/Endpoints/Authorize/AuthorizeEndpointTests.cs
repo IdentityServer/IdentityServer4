@@ -5,20 +5,18 @@ using FluentAssertions;
 using IdentityServer4.Endpoints;
 using System.Threading.Tasks;
 using Xunit;
-using UnitTests.Common;
 using System.Collections.Specialized;
 using System.Security.Claims;
 using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
 using IdentityServer4.Events;
 using IdentityServer4.Models;
-using IdentityServer4;
 using IdentityServer4.Endpoints.Results;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Extensions;
-using IdentityServer.UnitTests.Common;
+using IdentityServer4.UnitTests.Common;
 
-namespace UnitTests.Endpoints.Authorize
+namespace IdentityServer4.UnitTests.Endpoints.Authorize
 {
     public class AuthorizeEndpointTests
     {

@@ -3,7 +3,7 @@
 
 using System.Linq;
 
-namespace IdentityServer4.Tests
+namespace IdentityServer4.UnitTests.Common
 {
     internal static class TestExtensions
     {

@@ -3,11 +3,12 @@
 
 using IdentityModel;
 using IdentityServer4.Models;
+using IdentityServer4.UnitTests.Common;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 
-namespace IdentityServer4.Tests.Validation
+namespace IdentityServer4.UnitTests.Validation
 {
     static class TokenFactory
     {

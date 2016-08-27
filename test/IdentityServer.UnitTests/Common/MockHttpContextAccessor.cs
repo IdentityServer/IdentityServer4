@@ -4,10 +4,9 @@
 using IdentityServer4.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using UnitTests.Common;
 using IdentityServer4.Hosting;
 
-namespace IdentityServer.UnitTests.Common
+namespace IdentityServer4.UnitTests.Common
 {
     public class MockHttpContextAccessor : IHttpContextAccessor
     {

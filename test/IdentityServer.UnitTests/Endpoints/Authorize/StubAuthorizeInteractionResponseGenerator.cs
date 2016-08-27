@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Validation;
 
-namespace UnitTests.Endpoints.Authorize
+namespace IdentityServer4.UnitTests.Endpoints.Authorize
 {
     class StubAuthorizeInteractionResponseGenerator : IAuthorizeInteractionResponseGenerator
     {

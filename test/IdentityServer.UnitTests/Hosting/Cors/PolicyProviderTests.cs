@@ -1,12 +1,15 @@
-﻿using FluentAssertions;
+﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+using FluentAssertions;
 using IdentityServer4.Hosting.Cors;
+using IdentityServer4.UnitTests.Common;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using UnitTests.Common;
 using Xunit;
 
-namespace UnitTests.Hosting.Cors
+namespace IdentityServer4.UnitTests.Hosting.Cors
 {
     public class PolicyProviderTests
     {
