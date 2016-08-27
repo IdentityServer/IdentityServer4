@@ -62,7 +62,7 @@ namespace IdentityServer4.Services.Default
                 var msg = await _logoutMessageStore.ReadAsync(logoutId);
                 if (logoutId != null && msg != null)
                 {
-                    iframeUrl = iframeUrl.AddQueryString(_options.UserInteractionOptions.LogoutIdParameter + "=" + logoutId);
+                    iframeUrl = iframeUrl.AddQueryString(_options.UserInteractionOptions.LogoutIdParameter, logoutId);
                 }
 
                 return new LogoutRequest(iframeUrl, msg?.Data);

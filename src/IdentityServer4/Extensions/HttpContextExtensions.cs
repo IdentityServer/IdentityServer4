@@ -84,7 +84,7 @@ namespace IdentityServer4.Hosting
             if (sid != null)
             {
                 var signoutIframeUrl = context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.ProtocolRoutePaths.EndSessionCallback;
-                signoutIframeUrl = signoutIframeUrl.AddQueryString(OidcConstants.EndSessionRequest.Sid + "=" + sid);
+                signoutIframeUrl = signoutIframeUrl.AddQueryString(OidcConstants.EndSessionRequest.Sid, sid);
                 return signoutIframeUrl;
             }
 

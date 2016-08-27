@@ -41,7 +41,7 @@ namespace IdentityServer4.Endpoints.Results
 
             if (ParamValue.IsPresent())
             {
-                redirect = redirect.AddQueryString(ParamName + "=" + UrlEncoder.Default.Encode(ParamValue));
+                redirect = redirect.AddQueryString(ParamName, ParamValue);
             }
 
             context.Response.Redirect(redirect);

@@ -26,7 +26,7 @@ namespace IdentityServer4.Models
                     PostLogoutRedirectUri = request.PostLogOutUri;
                     if (request.State != null)
                     {
-                        PostLogoutRedirectUri = PostLogoutRedirectUri.AddQueryString(OidcConstants.EndSessionRequest.State + "=" + request.State);
+                        PostLogoutRedirectUri = PostLogoutRedirectUri.AddQueryString(OidcConstants.EndSessionRequest.State, request.State);
                     }
                 }
             }

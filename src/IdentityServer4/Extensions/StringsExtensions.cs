@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Encodings.Web;
 
 namespace IdentityServer4.Extensions
 {
@@ -164,6 +165,12 @@ namespace IdentityServer4.Extensions
             }
 
             return url + query;
+        }
+
+        [DebuggerStepThrough]
+        public static string AddQueryString(this string url, string name, string value)
+        {
+            return url.AddQueryString(name + "=" + UrlEncoder.Default.Encode(value));
         }
 
         [DebuggerStepThrough]
