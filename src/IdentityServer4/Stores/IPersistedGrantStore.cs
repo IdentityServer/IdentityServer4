@@ -11,7 +11,7 @@ namespace IdentityServer4.Stores
     /// </summary>
     public interface IPersistedGrantStore
     {
-        Task StoreAsync(PersistedGrant token);
+        Task StoreAsync(PersistedGrant grant);
         Task<PersistedGrant> GetAsync(string key);
         Task RemoveAsync(string key);
         Task RemoveAsync(string subjectId, string clientId, string type);

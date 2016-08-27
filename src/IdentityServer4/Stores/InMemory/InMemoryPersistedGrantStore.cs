@@ -15,9 +15,9 @@ namespace IdentityServer4.Stores.InMemory
     {
         private readonly ConcurrentDictionary<string, PersistedGrant> _repository = new ConcurrentDictionary<string, PersistedGrant>();
 
-        public Task StoreAsync(PersistedGrant token)
+        public Task StoreAsync(PersistedGrant grant)
         {
-            _repository[token.Key] = token;
+            _repository[grant.Key] = grant;
 
             return Task.FromResult(0);
         }
