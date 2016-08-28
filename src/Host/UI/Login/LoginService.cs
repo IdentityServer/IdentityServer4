@@ -8,11 +8,11 @@ using IdentityModel;
 
 namespace Host.UI.Login
 {
-    public class LoginService
+    public class InMemoryUserLoginService
     {
         private readonly List<InMemoryUser> _users;
 
-        public LoginService(List<InMemoryUser> users)
+        public InMemoryUserLoginService(List<InMemoryUser> users)
         {
             _users = users;
         }

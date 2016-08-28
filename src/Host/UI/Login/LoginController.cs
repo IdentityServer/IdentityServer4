@@ -13,11 +13,11 @@ namespace Host.UI.Login
 {
     public class LoginController : Controller
     {
-        private readonly LoginService _loginService;
+        private readonly InMemoryUserLoginService _loginService;
         private readonly IUserInteractionService _interaction;
 
         public LoginController(
-            LoginService loginService,
+            InMemoryUserLoginService loginService,
             IUserInteractionService interaction)
         {
             _loginService = loginService;

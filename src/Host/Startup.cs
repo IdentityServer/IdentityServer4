@@ -9,6 +9,7 @@ using IdentityServer4.Services.InMemory;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using System.Threading.Tasks;
+using Host.UI.Login;
 
 namespace Host
 {
@@ -41,12 +42,11 @@ namespace Host
             .AddInMemoryClients(Clients.Get())
             .AddInMemoryScopes(Scopes.Get());
 
-            // in-memory users
-            services.AddSingleton(Users.Get());
-            services.AddTransient<UI.Login.LoginService>();
-            services.AddTransient<IResourceOwnerPasswordValidator, InMemoryUserResourceOwnerPasswordValidator>();
+            // UI service for in-memory users
+            services.AddSingleton(new InMemoryUserLoginService(Users.Get()));
+            builder.AddResourceOwnerValidator<InMemoryUserResourceOwnerPasswordValidator>();
 
-            builder.AddExtensionGrantValidator<Host.Extensions.ExtensionGrantValidator>();
+            builder.AddExtensionGrantValidator<Extensions.ExtensionGrantValidator>();
 
             // for the UI
             services

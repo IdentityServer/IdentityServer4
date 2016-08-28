@@ -58,7 +58,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Basic
             });
         }
 
-        [Fact(Skip = "starts to fail with change to 'AddInMemoryUsers'")]
+        [Fact]
         [Trait("Category", Category)]
         public async Task Request_with_response_type_code_supported()
         {
