@@ -61,18 +61,14 @@ namespace IdentityServer4.Services.Default
         public async Task<LogoutRequest> GetLogoutContextAsync(string logoutId)
         {
             var iframeUrl = _context.HttpContext.GetIdentityServerSignoutFrameCallbackUrl();
-            if (iframeUrl != null)
-            {
-                var msg = await _logoutMessageStore.ReadAsync(logoutId);
-                if (logoutId != null && msg != null)
-                {
-                    iframeUrl = iframeUrl.AddQueryString(_options.UserInteractionOptions.LogoutIdParameter, logoutId);
-                }
+            var msg = await _logoutMessageStore.ReadAsync(logoutId);
 
-                return new LogoutRequest(iframeUrl, msg?.Data);
+            if (iframeUrl != null && logoutId != null && msg != null)
+            {
+                iframeUrl = iframeUrl.AddQueryString(_options.UserInteractionOptions.LogoutIdParameter, logoutId);
             }
 
-            return null;
+            return new LogoutRequest(iframeUrl, msg?.Data);
         }
 
         public async Task<ErrorMessage> GetErrorContextAsync(string errorId)
