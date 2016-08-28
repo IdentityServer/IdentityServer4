@@ -146,7 +146,7 @@ namespace IdentityServer4.ResponseHandling
                 throw new ArgumentException("Invalid PromptMode");
             }
 
-            var consentRequired = await _consent.RequiresConsentAsync(request.Client, request.Subject, request.RequestedScopes);
+            var consentRequired = await _consent.RequiresConsentAsync(request.Subject, request.Client, request.RequestedScopes);
 
             if (consentRequired && request.PromptMode == OidcConstants.PromptModes.None)
             {
@@ -220,7 +220,7 @@ namespace IdentityServer4.ResponseHandling
                                     scopes = request.ValidatedScopes.GrantedScopes.Select(x => x.Name);
                                 }
 
-                                await _consent.UpdateConsentAsync(request.Client, request.Subject, scopes);
+                                await _consent.UpdateConsentAsync(request.Subject, request.Client, scopes);
                             }
                         }
                     }

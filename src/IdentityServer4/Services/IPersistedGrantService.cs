@@ -11,7 +11,7 @@ namespace IdentityServer4.Services
     /// </summary>
     public interface IPersistedGrantService
     {
-        Task StoreAuthorizationCodeAsync(string id, AuthorizationCode code);
+        Task StoreAuthorizationCodeAsync(string handle, AuthorizationCode code);
         Task<AuthorizationCode> GetAuthorizationCodeAsync(string code);
         Task RemoveAuthorizationCodeAsync(string code);
 
@@ -24,5 +24,9 @@ namespace IdentityServer4.Services
         Task<Token> GetReferenceTokenAsync(string handle);
         Task RemoveReferenceTokenAsync(string handle);
         Task RemoveReferenceTokensAsync(string subjectId, string clientId);
+
+        Task StoreUserConsent(Consent consent);
+        Task<Consent> GetUserConsent(string subjectId, string clientId);
+        Task RemoveUserConsent(string subjectId, string clientId);
     }
 }

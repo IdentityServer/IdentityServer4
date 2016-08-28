@@ -111,9 +111,9 @@ namespace IdentityServer4.Services.Default
             return StoreItem(handle, refreshToken, Constants.PersistedGrantTypes.RefreshToken, refreshToken.ClientId, refreshToken.SubjectId, refreshToken.CreationTime, refreshToken.Lifetime);
         }
 
-        public Task StoreAuthorizationCodeAsync(string id, AuthorizationCode code)
+        public Task StoreAuthorizationCodeAsync(string handle, AuthorizationCode code)
         {
-            return StoreItem(id, code, Constants.PersistedGrantTypes.AuthorizationCode, code.ClientId, code.Subject.GetSubjectId(), code.CreationTime, code.Lifetime);
+            return StoreItem(handle, code, Constants.PersistedGrantTypes.AuthorizationCode, code.ClientId, code.Subject.GetSubjectId(), code.CreationTime, code.Lifetime);
         }
 
         public Task StoreReferenceTokenAsync(string handle, Token token)
@@ -129,6 +129,30 @@ namespace IdentityServer4.Services.Default
         public Task RemoveReferenceTokensAsync(string subjectId, string clientId)
         {
             return _store.RemoveAsync(subjectId, clientId, Constants.PersistedGrantTypes.ReferenceToken);
+        }
+
+        string GetConsentKey(string subjectId, string clientId)
+        {
+            var key = subjectId + "|" + clientId;
+            return key;
+        }
+
+        public Task StoreUserConsent(Consent consent)
+        {
+            var key = GetConsentKey(consent.ClientId, consent.SubjectId);
+            return StoreItem(key, consent, Constants.PersistedGrantTypes.UserConsent, consent.ClientId, consent.SubjectId, DateTimeHelper.UtcNow, Int32.MaxValue);
+        }
+
+        public Task<Consent> GetUserConsent(string subjectId, string clientId)
+        {
+            var key = GetConsentKey(clientId, subjectId);
+            return GetItem<Consent>(key, Constants.PersistedGrantTypes.UserConsent);
+        }
+
+        public Task RemoveUserConsent(string subjectId, string clientId)
+        {
+            var key = GetConsentKey(clientId, subjectId);
+            return RemoveItem(key);
         }
     }
 }

@@ -13,19 +13,19 @@ namespace IdentityServer4.UnitTests.Common
     {
         public bool RequiresConsentResult { get; set; }
 
-        public Task<bool> RequiresConsentAsync(Client client, ClaimsPrincipal subject, IEnumerable<string> scopes)
+        public Task<bool> RequiresConsentAsync(ClaimsPrincipal subject, Client client, IEnumerable<string> scopes)
         {
             return Task.FromResult(RequiresConsentResult);
         }
 
-        public Client ConsentClient { get; set; }
         public ClaimsPrincipal ConsentSubject { get; set; }
+        public Client ConsentClient { get; set; }
         public IEnumerable<string> ConsentScopes { get; set; }
 
-        public Task UpdateConsentAsync(Client client, ClaimsPrincipal subject, IEnumerable<string> scopes)
+        public Task UpdateConsentAsync(ClaimsPrincipal subject, Client client, IEnumerable<string> scopes)
         {
-            ConsentClient = client;
             ConsentSubject = subject;
+            ConsentClient = client;
             ConsentScopes = scopes;
 
             return Task.FromResult(0);

@@ -2,17 +2,20 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityServer4.Models;
+using IdentityServer4.Services;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
 
-namespace IdentityServer4.Services.InMemory
+namespace IdentityServer4.UnitTests.Common
 {
     public class InMemoryPersistedGrantService : IPersistedGrantService
     {
         Dictionary<string, AuthorizationCode> _codes = new Dictionary<string, AuthorizationCode>();
         Dictionary<string, Token> _referenceTokens = new Dictionary<string, Token>();
         Dictionary<string, RefreshToken> _refreshTokens = new Dictionary<string, RefreshToken>();
+        Dictionary<string, Consent> _userConsent = new Dictionary<string, Consent>();
 
         public Task<AuthorizationCode> GetAuthorizationCodeAsync(string code)
         {
@@ -95,6 +98,37 @@ namespace IdentityServer4.Services.InMemory
         {
             _refreshTokens[handle] = refreshToken;
             return Task.FromResult(0);
+        }
+
+        string GetConsentKey(string subjectId, string clientId)
+        {
+            return subjectId + "|" + clientId;
+        }
+
+        public Task RemoveUserConsent(string subjectId, string clientId)
+        {
+            var key = GetConsentKey(subjectId, clientId);
+            if(_userConsent.ContainsKey(key))
+            {
+                _userConsent.Remove(key);
+            }
+            return Task.FromResult(0);
+        }
+        public Task StoreUserConsent(Consent consent)
+        {
+            var key = GetConsentKey(consent.SubjectId, consent.ClientId);
+            _userConsent[key] = consent;
+            return Task.FromResult(0);
+        }
+        public Task<Consent> GetUserConsent(string subjectId, string clientId)
+        {
+            Consent result = null;
+            var key = GetConsentKey(subjectId, clientId);
+            if (_userConsent.ContainsKey(key))
+            {
+                result = _userConsent[key];
+            }
+            return Task.FromResult(result);
         }
     }
 }

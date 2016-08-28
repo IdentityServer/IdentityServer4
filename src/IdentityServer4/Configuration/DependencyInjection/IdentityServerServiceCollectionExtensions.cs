@@ -216,7 +216,6 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddInMemoryStores(this IServiceCollection services)
         {
             services.TryAddSingleton<IPersistedGrantStore, InMemoryPersistedGrantStore>();
-            services.TryAddSingleton<IConsentStore, InMemoryConsentStore>();
 
             return services;
         }
