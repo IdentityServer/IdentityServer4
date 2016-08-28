@@ -10,6 +10,7 @@ using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using System.Threading.Tasks;
 using Host.UI.Login;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Host
 {
@@ -104,6 +105,22 @@ namespace Host
                 SignInScheme = "Temp",
                 ClientId = "998042782978-s07498t8i8jas7npj4crve1skpromf37.apps.googleusercontent.com",
                 ClientSecret = "HsnwJri_53zn7VcO1Fm7THBb",
+            });
+
+            app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
+            {
+                SignInScheme = "Temp",
+                DisplayName = "IdentityServer3",
+                Authority = "https://demo.identityserver.io/",
+                ClientId = "implicit",
+                ResponseType = "id_token",
+                ResponseMode = "form_post",
+                Scope = { "openid profile" },
+                TokenValidationParameters = new TokenValidationParameters
+                {
+                    NameClaimType = "name",
+                    RoleClaimType = "role"
+                }
             });
 
             app.UseIdentityServer();

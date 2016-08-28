@@ -28,7 +28,7 @@ namespace Host.UI.Login
         [HttpGet("ui/login", Name = "Login")]
         public async Task<IActionResult> Index(string returnUrl)
         {
-            var vm = new LoginViewModel();
+            var vm = new LoginViewModel(HttpContext);
 
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
             if (context != null)
@@ -62,7 +62,7 @@ namespace Host.UI.Login
                 ModelState.AddModelError("", "Invalid username or password.");
             }
 
-            var vm = new LoginViewModel(model);
+            var vm = new LoginViewModel(HttpContext, model);
             return View(vm);
         }
 
