@@ -5,10 +5,13 @@ using FluentAssertions;
 using IdentityServer4.IntegrationTests.Common;
 using IdentityServer4.Models;
 using IdentityServer4.Services.InMemory;
+using Microsoft.AspNetCore.WebUtilities;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -116,7 +119,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
             response.Headers.Location.ToString().Should().StartWith("https://server/logout?id=");
         }
 
-        [Fact(Skip ="revisit for iss")]
+        [Fact]
         [Trait("Category", Category)]
         public async Task logout_request_with_params_should_pass_values_in_logout_context()
         {
@@ -140,7 +143,11 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
             _mockPipeline.LogoutRequest.Should().NotBeNull();
             _mockPipeline.LogoutRequest.ClientId.Should().Be("client2");
             _mockPipeline.LogoutRequest.PostLogoutRedirectUri.Should().Be("https://client2/signout-callback2");
-            _mockPipeline.LogoutRequest.SignOutIFrameUrl.Should().StartWith(MockIdSvrUiPipeline.EndSessionCallbackEndpoint + "?sid=");
+
+            var parts = _mockPipeline.LogoutRequest.SignOutIFrameUrl.Split('?');
+            parts[0].Should().Be(MockIdSvrUiPipeline.EndSessionCallbackEndpoint);
+            var iframeUrl = QueryHelpers.ParseNullableQuery(parts[1]);
+            iframeUrl["sid"].FirstOrDefault().Should().NotBeNull();
         }
 
         [Fact]
@@ -171,7 +178,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
             _mockPipeline.LogoutRequest.PostLogoutRedirectUri.Should().Be("https://client2/signout-callback2");
         }
 
-        [Fact(Skip = "revisit for iss")]
+        [Fact]
         [Trait("Category", Category)]
         public async Task signout_should_support_POST()
         {
@@ -202,7 +209,11 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
             _mockPipeline.LogoutRequest.Should().NotBeNull();
             _mockPipeline.LogoutRequest.ClientId.Should().Be("client1");
             _mockPipeline.LogoutRequest.PostLogoutRedirectUri.Should().Be("https://client1/signout-callback");
-            _mockPipeline.LogoutRequest.SignOutIFrameUrl.Should().StartWith(MockIdSvrUiPipeline.EndSessionCallbackEndpoint + "?sid=");
+
+            var parts = _mockPipeline.LogoutRequest.SignOutIFrameUrl.Split('?');
+            parts[0].Should().Be(MockIdSvrUiPipeline.EndSessionCallbackEndpoint);
+            var iframeUrl = QueryHelpers.ParseNullableQuery(parts[1]);
+            iframeUrl["sid"].FirstOrDefault().Should().NotBeNull();
         }
 
         [Fact]
@@ -309,7 +320,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
             response.Content.Headers.ContentType.MediaType.Should().Be("text/html");
         }
 
-        [Fact(Skip = "revisit for iss")]
+        [Fact]
         [Trait("Category", Category)]
         public async Task valid_signout_callback_should_render_iframes_for_all_clients()
         {
@@ -342,8 +353,8 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
 
             response = await _mockPipeline.BrowserClient.GetAsync(signoutFrameUrl);
             var html = await response.Content.ReadAsStringAsync();
-            html.Should().Contain("https://client1/signout?sid=" + sid);
-            html.Should().Contain("https://client2/signout?sid=" + sid);
+            html.Should().Contain("https://client1/signout?sid=" + sid + "&iss=" + UrlEncoder.Default.Encode("https://server"));
+            html.Should().Contain("https://client2/signout?sid=" + sid + "&iss=" + UrlEncoder.Default.Encode("https://server"));
         }
 
         [Fact]
