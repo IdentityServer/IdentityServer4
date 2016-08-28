@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.OAuth;
 using System.Threading.Tasks;
 using Host.UI.Login;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace Host
 {
@@ -34,11 +35,12 @@ namespace Host
                 //    RaiseInformationEvents = true,
                 //    RaiseSuccessEvents = true
                 //};
-
                 options.UserInteractionOptions.LoginUrl = "/ui/login";
                 options.UserInteractionOptions.LogoutUrl = "/ui/logout";
                 options.UserInteractionOptions.ConsentUrl = "/ui/consent";
                 options.UserInteractionOptions.ErrorUrl = "/ui/error";
+
+                options.AuthenticationOptions.FederatedSignOutPaths.Add("/signout-oidc");
             })
             .AddInMemoryClients(Clients.Get())
             .AddInMemoryScopes(Scopes.Get());
@@ -92,6 +94,8 @@ namespace Host
 
             app.UseDeveloperExceptionPage();
 
+            app.UseIdentityServer();
+
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
                 AuthenticationScheme = "Temp",
@@ -110,20 +114,25 @@ namespace Host
             app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
             {
                 SignInScheme = "Temp",
+                SignOutScheme = "idsvr",
                 DisplayName = "IdentityServer3",
                 Authority = "https://demo.identityserver.io/",
                 ClientId = "implicit",
                 ResponseType = "id_token",
-                ResponseMode = "form_post",
                 Scope = { "openid profile" },
                 TokenValidationParameters = new TokenValidationParameters
                 {
                     NameClaimType = "name",
                     RoleClaimType = "role"
+                },
+                Events = new OpenIdConnectEvents
+                {
+                    OnRemoteSignOut = ctx =>
+                    {
+                        return Task.FromResult(0);
+                    }
                 }
             });
-
-            app.UseIdentityServer();
 
             app.UseStaticFiles();
             app.UseMvcWithDefaultRoute();

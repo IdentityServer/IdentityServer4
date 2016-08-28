@@ -5,6 +5,7 @@ using IdentityServer4.Services.InMemory;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
@@ -69,17 +70,23 @@ namespace Host.UI.Login
         private async Task IssueCookie(
             InMemoryUser user, 
             string idp,
-            string amr)
+            string amr, 
+            string sid = null)
         {
             var name = user.Claims.Where(x => x.Type == JwtClaimTypes.Name).Select(x => x.Value).FirstOrDefault() ?? user.Username;
 
-            var claims = new Claim[] {
+            var claims = new List<Claim> {
                 new Claim(JwtClaimTypes.Subject, user.Subject),
                 new Claim(JwtClaimTypes.Name, name),
                 new Claim(JwtClaimTypes.IdentityProvider, idp),
                 new Claim(JwtClaimTypes.AuthenticationTime, DateTime.UtcNow.ToEpochTime().ToString()),
                 new Claim("role", "some_role")
             };
+            if (sid != null)
+            {
+                claims.Add(new Claim("sid", sid));
+            }
+
             var ci = new ClaimsIdentity(claims, amr, JwtClaimTypes.Name, JwtClaimTypes.Role);
             var cp = new ClaimsPrincipal(ci);
 
@@ -127,7 +134,8 @@ namespace Host.UI.Login
                 user = _loginService.AutoProvisionUser(provider, userId, claims);
             }
 
-            await IssueCookie(user, provider, "external");
+            var sid = claims.FirstOrDefault(x => x.Type == "sid")?.Value;
+            await IssueCookie(user, provider, "external", sid);
             await HttpContext.Authentication.SignOutAsync("Temp");
 
             if (_interaction.IsValidReturnUrl(returnUrl))

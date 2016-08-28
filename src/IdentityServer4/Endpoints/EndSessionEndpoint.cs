@@ -130,8 +130,7 @@ namespace IdentityServer4.Endpoints
             // relax CSP to allow those iframe origins
             //ConfigureCspResponseHeader(urls);
 
-            // clear cookies
-            ClearSessionCookies(sid);
+            ClearCookies(sid);
 
             // get html (with iframes)
             return new EndSessionCallbackResult(urls);
@@ -223,7 +222,7 @@ namespace IdentityServer4.Endpoints
             return urls;
         }
 
-        private void ClearSessionCookies(string sid)
+        private void ClearCookies(string sid)
         {
             // session id cookie
             _sessionCookie.ClearSessionId();

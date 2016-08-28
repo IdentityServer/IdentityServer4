@@ -14,7 +14,8 @@ namespace Microsoft.AspNetCore.Builder
             app.ConfigureCookies();
             app.UseMiddleware<BaseUrlMiddleware>();
             app.UseMiddleware<IdentityServerMiddleware>();
-            
+            app.UseMiddleware<FederatedSignOutMiddleware>();
+
             return app;
         }
     }
