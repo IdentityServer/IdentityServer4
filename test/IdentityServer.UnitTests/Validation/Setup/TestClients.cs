@@ -251,7 +251,7 @@ namespace IdentityServer4.UnitTests.Validation
                         ClientName = "Resource Owner Client - Public",
                         Enabled = true,
                         ClientId = "roclient.public",
-                        PublicClient = true,
+                        RequireClientSecret = false,
 
                         AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                         AllowAccessToAllScopes = true,

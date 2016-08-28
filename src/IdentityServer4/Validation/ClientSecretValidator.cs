@@ -56,7 +56,7 @@ namespace IdentityServer4.Validation
                 return fail;
             }
 
-            if (client.PublicClient)
+            if (!client.RequireClientSecret)
             {
                 _logger.LogDebug("Public Client - skipping secret validation success");
             }

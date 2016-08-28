@@ -65,7 +65,7 @@ namespace IdentityServer4.UnitTests.Validation.Secrets
 
             result.IsError.Should().BeFalse();
             result.Client.ClientId.Should().Be("roclient.public");
-            result.Client.PublicClient.Should().BeTrue();
+            result.Client.RequireClientSecret.Should().BeFalse();
         }
 
     }

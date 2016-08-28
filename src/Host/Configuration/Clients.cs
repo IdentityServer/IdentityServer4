@@ -76,7 +76,7 @@ namespace Host.Configuration
                 new Client
                 {
                     ClientId = "roclient.public",
-                    PublicClient = true,
+                    RequireClientSecret = false,
 
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
@@ -97,7 +97,7 @@ namespace Host.Configuration
                 {
                     ClientId = "console.hybrid.pkce",
                     ClientName = "Console Hybrid with PKCE Sample",
-                    PublicClient = true,
+                    RequireClientSecret = false,
 
                     AllowedGrantTypes = GrantTypes.Hybrid,
                     RequirePkce = true,
