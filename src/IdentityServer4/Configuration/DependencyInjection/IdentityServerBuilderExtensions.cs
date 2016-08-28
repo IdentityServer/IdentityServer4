@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityModel;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Services.InMemory;
@@ -10,6 +11,7 @@ using IdentityServer4.Validation;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using CryptoRandom = IdentityModel.CryptoRandom;
@@ -120,6 +122,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IIdentityServerBuilder SetSigningCredential(this IIdentityServerBuilder builder, X509Certificate2 certificate)
         {
+            if (certificate == null) throw new ArgumentNullException(nameof(certificate));
+
             if (!certificate.HasPrivateKey)
             {
                 throw new InvalidOperationException("X509 certificate does not have a private key.");
@@ -127,6 +131,24 @@ namespace Microsoft.Extensions.DependencyInjection
 
             var credential = new SigningCredentials(new X509SecurityKey(certificate), "RS256");
             return builder.SetSigningCredential(credential);
+        }
+
+        public static IIdentityServerBuilder SetSigningCredential(this IIdentityServerBuilder builder, string name, StoreLocation location = StoreLocation.LocalMachine)
+        {
+            X509Certificate2 certificate;
+
+            if (location == StoreLocation.LocalMachine)
+            {
+                certificate = X509.LocalMachine.My.SubjectDistinguishedName.Find(name, validOnly: false).FirstOrDefault();
+            }
+            else
+            {
+                certificate = X509.CurrentUser.My.SubjectDistinguishedName.Find(name, validOnly: false).FirstOrDefault();
+            }
+
+            if (certificate == null) throw new InvalidOperationException($"certificate: '{name}' not found in certificate store");
+
+            return builder.SetSigningCredential(certificate);
         }
 
         public static IIdentityServerBuilder SetSigningCredential(this IIdentityServerBuilder builder, RsaSecurityKey rsaKey)
