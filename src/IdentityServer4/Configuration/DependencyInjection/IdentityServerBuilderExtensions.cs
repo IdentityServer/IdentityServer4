@@ -22,6 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IIdentityServerBuilder AddInMemoryUsers(this IIdentityServerBuilder builder, IEnumerable<InMemoryUser> users)
         {
+            // todo: why do 2 unit tests fail when users are changed to IENumerable? (and then changed back to List)
             builder.Services.AddSingleton(new List<InMemoryUser>(users));
 
             builder.Services.AddTransient<IProfileService, InMemoryUserProfileService>();
