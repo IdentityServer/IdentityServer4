@@ -3,7 +3,7 @@
 
 namespace IdentityServer4.Models
 {
-    static class GrantType
+    public static class GrantType
     {
         public const string Implicit = "implicit";
         public const string Hybrid = "hybrid";
