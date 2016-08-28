@@ -14,13 +14,15 @@ namespace IdentityServer4.Services
         Task StoreAuthorizationCodeAsync(string id, AuthorizationCode code);
         Task<AuthorizationCode> GetAuthorizationCodeAsync(string code);
         Task RemoveAuthorizationCodeAsync(string code);
+
+        Task StoreRefreshTokenAsync(string handle, RefreshToken refreshToken);
         Task<RefreshToken> GetRefreshTokenAsync(string refreshTokenHandle);
         Task RemoveRefreshTokenAsync(string refreshTokenHandle);
+        Task RemoveRefreshTokensAsync(string subjectId, string clientId);
+
+        Task StoreReferenceTokenAsync(string handle, Token token);
         Task<Token> GetReferenceTokenAsync(string handle);
         Task RemoveReferenceTokenAsync(string handle);
-        Task RemoveRefreshTokensAsync(string subjectId, string clientId);
         Task RemoveReferenceTokensAsync(string subjectId, string clientId);
-        Task StoreReferenceTokenAsync(string handle, Token token);
-        Task StoreRefreshTokenAsync(string handle, RefreshToken refreshToken);
     }
 }

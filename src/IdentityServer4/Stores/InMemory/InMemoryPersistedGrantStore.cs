@@ -41,6 +41,24 @@ namespace IdentityServer4.Stores.InMemory
             return Task.FromResult(0);
         }
 
+        public Task RemoveAsync(string subjectId, string clientId)
+        {
+            var query =
+                from item in _repository
+                where item.Value.ClientId == clientId &&
+                    item.Value.SubjectId == subjectId
+                select item.Key;
+
+            var keys = query.ToArray();
+            foreach (var key in keys)
+            {
+                PersistedGrant grant;
+                _repository.TryRemove(key, out grant);
+            }
+
+            return Task.FromResult(0);
+        }
+
         public Task RemoveAsync(string subjectId, string clientId, string type)
         {
             var query =
@@ -51,7 +69,7 @@ namespace IdentityServer4.Stores.InMemory
                 select item.Key;
 
             var keys = query.ToArray();
-            foreach(var key in keys)
+            foreach (var key in keys)
             {
                 PersistedGrant grant;
                 _repository.TryRemove(key, out grant);
