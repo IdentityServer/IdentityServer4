@@ -73,7 +73,7 @@ namespace IdentityServer4.Validation
                 }
                 catch (FormatException)
                 {
-                    _logger.LogError("Secret: {description} uses invalid hashing algorithm.", secretDescription);
+                    _logger.LogInformation("Secret: {description} uses invalid hashing algorithm.", secretDescription);
                     return fail;
                 }
 
@@ -87,7 +87,7 @@ namespace IdentityServer4.Validation
                 }
                 else
                 {
-                    _logger.LogError("Secret: {description} uses invalid hashing algorithm.", secretDescription);
+                    _logger.LogInformation("Secret: {description} uses invalid hashing algorithm.", secretDescription);
                     return fail;
                 }
 

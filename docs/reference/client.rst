@@ -14,8 +14,8 @@ Basics
     Unique ID of the client
 ``ClientSecrets``
     List of client secrets - credentials to access the token endpoint.
-``PublicClient``
-    Specifies whether this client needs a secret to request tokens from the token endpoint.
+``RequireClientSecret``
+    Specifies whether this client needs a secret to request tokens from the token endpoint (defaults to ``true``)
 ``AllowedGrantTypes``
     Specifies the grant types the client is allowed to use. Use the ``GrantTypes`` class for common combinations.
 ``RequirePkce``
