@@ -74,7 +74,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             if (grants == null)
             {
-                grants = new InMemoryPersistedGrantService();
+                grants = new TestPersistedGrantService();
             }
 
             if (scopeValidator == null)
@@ -160,7 +160,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             if (grants == null)
             {
-                grants = new InMemoryPersistedGrantService();
+                grants = new TestPersistedGrantService();
             }
 
             var clients = CreateClientStore();
@@ -215,7 +215,7 @@ namespace IdentityServer4.UnitTests.Validation
 
         public static IPersistedGrantService CreateGrantService()
         {
-            return new InMemoryPersistedGrantService();
+            return new TestPersistedGrantService();
         }
     }
 }

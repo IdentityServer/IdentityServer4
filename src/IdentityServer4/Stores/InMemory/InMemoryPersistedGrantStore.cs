@@ -5,6 +5,8 @@ using IdentityServer4.Models;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
+using System.Collections.Generic;
 
 namespace IdentityServer4.Stores.InMemory
 {
@@ -31,6 +33,18 @@ namespace IdentityServer4.Stores.InMemory
             }
 
             return Task.FromResult<PersistedGrant>(null);
+        }
+
+        public Task<IEnumerable<PersistedGrant>> GetAsync(string subjectId, string type)
+        {
+            var query =
+                from item in _repository
+                where item.Value.SubjectId == subjectId &&
+                    item.Value.Type == type
+                select item.Value;
+
+            var items = query.ToArray().AsEnumerable();
+            return Task.FromResult(items);
         }
 
         public Task RemoveAsync(string key)
@@ -63,8 +77,8 @@ namespace IdentityServer4.Stores.InMemory
         {
             var query =
                 from item in _repository
-                where item.Value.ClientId == clientId &&
-                    item.Value.SubjectId == subjectId &&
+                where item.Value.SubjectId == subjectId &&
+                    item.Value.ClientId == clientId &&
                     item.Value.Type == type
                 select item.Key;
 

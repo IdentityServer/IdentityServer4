@@ -10,6 +10,7 @@ using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace IdentityServer4.Services.Default
 {
@@ -21,6 +22,7 @@ namespace IdentityServer4.Services.Default
         private readonly IMessageStore<LogoutMessage> _logoutMessageStore;
         private readonly IMessageStore<ErrorMessage> _errorMessageStore;
         private readonly IMessageStore<ConsentResponse> _consentMessageStore;
+        private readonly IPersistedGrantService _grants;
 
         public DefaultUserInteractionService(
             IdentityServerOptions options,
@@ -28,7 +30,8 @@ namespace IdentityServer4.Services.Default
             IAuthorizeRequestValidator validator,
             IMessageStore<LogoutMessage> logoutMessageStore,
             IMessageStore<ErrorMessage> errorMessageStore,
-            IMessageStore<ConsentResponse> consentMessageStore)
+            IMessageStore<ConsentResponse> consentMessageStore,
+            IPersistedGrantService grants)
         {
             _options = options;
             _context = context;
@@ -36,6 +39,7 @@ namespace IdentityServer4.Services.Default
             _logoutMessageStore = logoutMessageStore;
             _errorMessageStore = errorMessageStore;
             _consentMessageStore = consentMessageStore;
+            _grants = grants;
         }
 
         public async Task<AuthorizationRequest> GetAuthorizationContextAsync(string returnUrl)
@@ -113,6 +117,16 @@ namespace IdentityServer4.Services.Default
             }
 
             return false;
+        }
+
+        public Task<IEnumerable<Consent>> GetUserConsent(string subjectId)
+        {
+            return _grants.GetUserConsent(subjectId);
+        }
+
+        public Task RevokeUserConsent(string subjectId, string clientId)
+        {
+            return _grants.RemoveUserConsent(subjectId, clientId);
         }
     }
 }

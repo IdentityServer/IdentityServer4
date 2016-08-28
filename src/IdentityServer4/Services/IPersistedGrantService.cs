@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityServer4.Models;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Services
@@ -28,5 +29,8 @@ namespace IdentityServer4.Services
         Task StoreUserConsent(Consent consent);
         Task<Consent> GetUserConsent(string subjectId, string clientId);
         Task RemoveUserConsent(string subjectId, string clientId);
+
+        Task<IEnumerable<Consent>> GetUserConsent(string subjectId);
+        Task RemoveAllGrants(string subjectId, string clientId);
     }
 }

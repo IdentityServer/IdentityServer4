@@ -7,10 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
+using IdentityServer4.Extensions;
 
 namespace IdentityServer4.UnitTests.Common
 {
-    public class InMemoryPersistedGrantService : IPersistedGrantService
+    public class TestPersistedGrantService : IPersistedGrantService
     {
         Dictionary<string, AuthorizationCode> _codes = new Dictionary<string, AuthorizationCode>();
         Dictionary<string, Token> _referenceTokens = new Dictionary<string, Token>();
@@ -129,6 +130,52 @@ namespace IdentityServer4.UnitTests.Common
                 result = _userConsent[key];
             }
             return Task.FromResult(result);
+        }
+
+        public Task<IEnumerable<Consent>> GetUserConsent(string subjectId)
+        {
+            var query =
+                from grant in _userConsent
+                where grant.Value.SubjectId == subjectId
+                select grant.Value;
+            return Task.FromResult(query.ToArray().AsEnumerable());
+        }
+
+        public Task RemoveAllGrants(string subjectId, string clientId)
+        {
+            {
+                var keys = _codes.Where(x => x.Value.Subject.GetSubjectId() == subjectId && x.Value.ClientId == clientId).Select(x => x.Key).ToArray();
+                foreach (var key in keys)
+                {
+                    _codes.Remove(key);
+                }
+            }
+
+            {
+                var keys = _refreshTokens.Where(x => x.Value.SubjectId == subjectId && x.Value.ClientId == clientId).Select(x => x.Key).ToArray();
+                foreach (var key in keys)
+                {
+                    _refreshTokens.Remove(key);
+                }
+            }
+
+            {
+                var keys = _referenceTokens.Where(x => x.Value.SubjectId == subjectId && x.Value.ClientId == clientId).Select(x => x.Key).ToArray();
+                foreach (var key in keys)
+                {
+                    _referenceTokens.Remove(key);
+                }
+            }
+
+            {
+                var keys = _userConsent.Where(x => x.Value.SubjectId == subjectId && x.Value.ClientId == clientId).Select(x => x.Key).ToArray();
+                foreach (var key in keys)
+                {
+                    _userConsent.Remove(key);
+                }
+            }
+
+            return Task.FromResult(0);
         }
     }
 }

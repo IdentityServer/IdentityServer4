@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System;
 using IdentityServer4.Stores;
 using IdentityServer4.Stores.Serialization;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace IdentityServer4.Services.Default
 {
@@ -76,19 +78,15 @@ namespace IdentityServer4.Services.Default
             await _store.RemoveAsync(key);
         }
 
+
+        public Task StoreAuthorizationCodeAsync(string handle, AuthorizationCode code)
+        {
+            return StoreItem(handle, code, Constants.PersistedGrantTypes.AuthorizationCode, code.ClientId, code.Subject.GetSubjectId(), code.CreationTime, code.Lifetime);
+        }
+
         public Task<AuthorizationCode> GetAuthorizationCodeAsync(string code)
         {
             return GetItem<AuthorizationCode>(code, Constants.PersistedGrantTypes.AuthorizationCode);
-        }
-
-        public Task<Token> GetReferenceTokenAsync(string handle)
-        {
-            return GetItem<Token>(handle, Constants.PersistedGrantTypes.ReferenceToken);
-        }
-
-        public Task<RefreshToken> GetRefreshTokenAsync(string refreshTokenHandle)
-        {
-            return GetItem<RefreshToken>(refreshTokenHandle, Constants.PersistedGrantTypes.RefreshToken);
         }
 
         public Task RemoveAuthorizationCodeAsync(string code)
@@ -96,40 +94,48 @@ namespace IdentityServer4.Services.Default
             return RemoveItem(code);
         }
 
-        public Task RemoveReferenceTokenAsync(string handle)
-        {
-            return RemoveItem(handle);
-        }
-
-        public Task RemoveRefreshTokenAsync(string refreshTokenHandle)
-        {
-            return RemoveItem(refreshTokenHandle);
-        }
-
-        public Task StoreRefreshTokenAsync(string handle, RefreshToken refreshToken)
-        {
-            return StoreItem(handle, refreshToken, Constants.PersistedGrantTypes.RefreshToken, refreshToken.ClientId, refreshToken.SubjectId, refreshToken.CreationTime, refreshToken.Lifetime);
-        }
-
-        public Task StoreAuthorizationCodeAsync(string handle, AuthorizationCode code)
-        {
-            return StoreItem(handle, code, Constants.PersistedGrantTypes.AuthorizationCode, code.ClientId, code.Subject.GetSubjectId(), code.CreationTime, code.Lifetime);
-        }
 
         public Task StoreReferenceTokenAsync(string handle, Token token)
         {
             return StoreItem(handle, token, Constants.PersistedGrantTypes.ReferenceToken, token.ClientId, token.SubjectId, token.CreationTime, token.Lifetime);
         }
 
-        public Task RemoveRefreshTokensAsync(string subjectId, string clientId)
+        public Task<Token> GetReferenceTokenAsync(string handle)
         {
-            return _store.RemoveAsync(subjectId, clientId, Constants.PersistedGrantTypes.RefreshToken);
+            return GetItem<Token>(handle, Constants.PersistedGrantTypes.ReferenceToken);
+        }
+
+        public Task RemoveReferenceTokenAsync(string handle)
+        {
+            return RemoveItem(handle);
         }
 
         public Task RemoveReferenceTokensAsync(string subjectId, string clientId)
         {
             return _store.RemoveAsync(subjectId, clientId, Constants.PersistedGrantTypes.ReferenceToken);
         }
+
+
+        public Task StoreRefreshTokenAsync(string handle, RefreshToken refreshToken)
+        {
+            return StoreItem(handle, refreshToken, Constants.PersistedGrantTypes.RefreshToken, refreshToken.ClientId, refreshToken.SubjectId, refreshToken.CreationTime, refreshToken.Lifetime);
+        }
+
+        public Task<RefreshToken> GetRefreshTokenAsync(string refreshTokenHandle)
+        {
+            return GetItem<RefreshToken>(refreshTokenHandle, Constants.PersistedGrantTypes.RefreshToken);
+        }
+
+        public Task RemoveRefreshTokenAsync(string refreshTokenHandle)
+        {
+            return RemoveItem(refreshTokenHandle);
+        }
+        
+        public Task RemoveRefreshTokensAsync(string subjectId, string clientId)
+        {
+            return _store.RemoveAsync(subjectId, clientId, Constants.PersistedGrantTypes.RefreshToken);
+        }
+
 
         string GetConsentKey(string subjectId, string clientId)
         {
@@ -153,6 +159,21 @@ namespace IdentityServer4.Services.Default
         {
             var key = GetConsentKey(clientId, subjectId);
             return RemoveItem(key);
+        }
+
+        public async Task<IEnumerable<Consent>> GetUserConsent(string subjectId)
+        {
+            var grants = await _store.GetAsync(subjectId, Constants.PersistedGrantTypes.UserConsent);
+            var consents =
+                from grant in grants
+                select _serializer.Deserialize<Consent>(grant.Data);
+            return consents.ToArray();
+        }
+
+
+        public Task RemoveAllGrants(string subjectId, string clientId)
+        {
+            return _store.RemoveAsync(subjectId, clientId);
         }
     }
 }
