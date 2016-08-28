@@ -13,7 +13,7 @@ namespace IdentityServer4.Models
         /// <summary>
         /// Indicates if scope is enabled and can be requested. Defaults to true.
         /// </summary>
-        public bool Enabled { get; set; }
+        public bool Enabled { get; set; } = true;
 
         /// <summary>
         /// Name of the scope. This is the value a client will use to request the scope.
@@ -29,31 +29,31 @@ namespace IdentityServer4.Models
         /// Description. This value will be used e.g. on the consent screen.
         /// </summary>
         public string Description { get; set; }
-        
+
         /// <summary>
         /// Specifies whether the user can de-select the scope on the consent screen. Defaults to false.
         /// </summary>
-        public bool Required { get; set; }
+        public bool Required { get; set; } = false;
 
         /// <summary>
         /// Specifies whether the consent screen will emphasize this scope. Use this setting for sensitive or important scopes. Defaults to false.
         /// </summary>
-        public bool Emphasize { get; set; }
+        public bool Emphasize { get; set; } = false;
 
         /// <summary>
         /// Specifies whether this scope is about identity information from the userinfo endpoint, or a resource (e.g. a Web API). Defaults to Resource.
         /// </summary>
-        public ScopeType Type { get; set; }
-        
+        public ScopeType Type { get; set; } = ScopeType.Resource;
+
         /// <summary>
         /// List of user claims that should be included in the identity (identity scope) or access token (resource scope). 
         /// </summary>
-        public List<ScopeClaim> Claims { get; set; }
-        
+        public List<ScopeClaim> Claims { get; set; } = new List<ScopeClaim>();
+
         /// <summary>
         /// If enabled, all claims for the user will be included in the token. Defaults to false.
         /// </summary>
-        public bool IncludeAllClaimsForUser { get; set; }
+        public bool IncludeAllClaimsForUser { get; set; } = false;
         
         /// <summary>
         /// Rule for determining which claims should be included in the token (this is implementation specific)
@@ -63,7 +63,7 @@ namespace IdentityServer4.Models
         /// <summary>
         /// Specifies whether this scope is shown in the discovery document. Defaults to true.
         /// </summary>
-        public bool ShowInDiscoveryDocument { get; set; }
+        public bool ShowInDiscoveryDocument { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the scope secrets.
@@ -71,25 +71,11 @@ namespace IdentityServer4.Models
         /// <value>
         /// The scope secrets.
         /// </value>
-        public List<Secret> ScopeSecrets { get; set; }
+        public List<Secret> ScopeSecrets { get; set; } = new List<Secret>();
 
         /// <summary>
         /// Specifies whether this scope is allowed to see other scopes when using the introspection endpoint
         /// </summary>
-        public bool AllowUnrestrictedIntrospection { get; set; }
-
-        /// <summary>
-        /// Creates a Scope with default values
-        /// </summary>
-        public Scope()
-        {
-            Type = ScopeType.Resource;
-            Claims = new List<ScopeClaim>();
-            ScopeSecrets = new List<Secret>();
-            IncludeAllClaimsForUser = false;
-            Enabled = true;
-            ShowInDiscoveryDocument = true;
-            AllowUnrestrictedIntrospection = false;
-        }
+        public bool AllowUnrestrictedIntrospection { get; set; } = false;
     }
 }
