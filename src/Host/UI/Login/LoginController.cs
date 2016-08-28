@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
 using System.Security.Claims;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
 namespace Host.UI.Login
@@ -90,7 +91,7 @@ namespace Host.UI.Login
         {
             return new ChallengeResult(provider, new AuthenticationProperties
             {
-                RedirectUri = "/ui/external-callback?returnUrl=" + returnUrl
+                RedirectUri = "/ui/external-callback?returnUrl=" + UrlEncoder.Default.Encode(returnUrl)
             });
         }
 
@@ -129,10 +130,9 @@ namespace Host.UI.Login
             await IssueCookie(user, provider, "external");
             await HttpContext.Authentication.SignOutAsync("Temp");
 
-            if (returnUrl != null)
+            if (_interaction.IsValidReturnUrl(returnUrl))
             {
-                // todo: signin
-                //return new SignInResult(signInId);
+                return Redirect(returnUrl);
             }
 
             return Redirect("~/");
