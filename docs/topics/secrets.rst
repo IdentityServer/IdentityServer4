@@ -38,7 +38,7 @@ the expiration date for enforcing a secret lifetime::
     var secret = new Secret(
         "secret".Sha256(), 
         "primary secret", 
-        new DateTimeOffset(new DateTime(2016, 12,31)));  
+        new DateTime(2016, 12,31));  
 
 Authentication using a shared secret
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
