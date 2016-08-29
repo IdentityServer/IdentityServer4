@@ -35,28 +35,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services)
         {
-            var builder = services.AddIdentityServerCore();
-                //.AddInMemoryCaching();
-
-            //builder.AddInMemoryCaching();
-
-            return builder;
-        }
-
-        public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services, Action<IdentityServerOptions> setupAction)
-        {
-            services.Configure(setupAction);
-            return services.AddIdentityServer();
-        }
-
-        public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.Configure<IdentityServerOptions>(configuration);
-            return services.AddIdentityServer();
-        }
-
-        public static IIdentityServerBuilder AddIdentityServerCore(this IServiceCollection services)
-        {
             var builder = services.AddIdentityServerBuilder();
 
             builder.AddRequiredPlatformServices();
@@ -73,16 +51,16 @@ namespace Microsoft.Extensions.DependencyInjection
             return new IdentityServerBuilder(services);
         }
 
-        public static IIdentityServerBuilder AddIdentityServerCore(this IServiceCollection services, Action<IdentityServerOptions> setupAction)
+        public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services, Action<IdentityServerOptions> setupAction)
         {
             services.Configure(setupAction);
-            return services.AddIdentityServerCore();
+            return services.AddIdentityServer();
         }
 
-        public static IIdentityServerBuilder AddIdentityServerCore(this IServiceCollection services, IConfiguration configuration)
+        public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<IdentityServerOptions>(configuration);
-            return services.AddIdentityServerCore();
+            return services.AddIdentityServer();
         }
 
         public static IIdentityServerBuilder AddRequiredPlatformServices(this IIdentityServerBuilder builder)
