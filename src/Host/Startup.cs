@@ -5,12 +5,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using Serilog.Events;
-using IdentityServer4.Services.InMemory;
 using System.Threading.Tasks;
 using Host.UI.Login;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using System.Linq;
+using IdentityServer4.Quickstart;
 
 namespace Host
 {

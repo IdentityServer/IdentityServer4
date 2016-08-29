@@ -3,7 +3,6 @@
 
 using IdentityModel;
 using IdentityServer4.Stores;
-using IdentityServer4.Stores.InMemory;
 using IdentityServer4.Validation;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -83,8 +82,8 @@ namespace Microsoft.Extensions.DependencyInjection
             //    throw new InvalidOperationException("Signing key is not asymmetric and does not support RS256");
             //}
 
-            builder.Services.AddSingleton<ISigningCredentialStore>(new InMemorySigningCredentialsStore(credential));
-            builder.Services.AddSingleton<IValidationKeysStore>(new InMemoryValidationKeysStore(new[] { credential.Key }));
+            builder.Services.AddSingleton<ISigningCredentialStore>(new DefaultSigningCredentialsStore(credential));
+            builder.Services.AddSingleton<IValidationKeysStore>(new DefaultValidationKeysStore(new[] { credential.Key }));
 
             return builder;
         }
@@ -145,7 +144,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IIdentityServerBuilder AddValidationKeys(this IIdentityServerBuilder builder, params AsymmetricSecurityKey[] keys)
         {
-            builder.Services.AddSingleton<IValidationKeysStore>(new InMemoryValidationKeysStore(keys));
+            builder.Services.AddSingleton<IValidationKeysStore>(new DefaultValidationKeysStore(keys));
 
             return builder;
         }

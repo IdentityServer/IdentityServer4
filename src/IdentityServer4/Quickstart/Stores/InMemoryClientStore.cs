@@ -2,11 +2,12 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityServer4.Models;
+using IdentityServer4.Stores;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Stores.InMemory
+namespace IdentityServer4.Quickstart
 {
     /// <summary>
     /// In-memory client store

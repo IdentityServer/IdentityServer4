@@ -7,9 +7,9 @@ using FluentAssertions;
 using System.Net;
 using System.Collections.Generic;
 using IdentityServer4.Models;
-using IdentityServer4.Services.InMemory;
 using System.Security.Claims;
 using IdentityServer4.IntegrationTests.Common;
+using IdentityServer4.Quickstart;
 
 namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 {

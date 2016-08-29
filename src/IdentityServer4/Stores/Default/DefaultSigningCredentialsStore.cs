@@ -4,13 +4,13 @@
 using Microsoft.IdentityModel.Tokens;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Stores.InMemory
+namespace IdentityServer4.Stores
 {
-    public class InMemorySigningCredentialsStore : ISigningCredentialStore
+    public class DefaultSigningCredentialsStore : ISigningCredentialStore
     {
         private readonly SigningCredentials _credential;
 
-        public InMemorySigningCredentialsStore(SigningCredentials credential)
+        public DefaultSigningCredentialsStore(SigningCredentials credential)
         {
             _credential = credential;
         }

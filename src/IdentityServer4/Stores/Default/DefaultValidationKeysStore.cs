@@ -6,13 +6,13 @@ using System.Collections.Generic;
 using Microsoft.IdentityModel.Tokens;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Stores.InMemory
+namespace IdentityServer4.Stores
 {
-    public class InMemoryValidationKeysStore : IValidationKeysStore
+    public class DefaultValidationKeysStore : IValidationKeysStore
     {
         private readonly IEnumerable<SecurityKey> _keys;
 
-        public InMemoryValidationKeysStore(IEnumerable<SecurityKey> keys)
+        public DefaultValidationKeysStore(IEnumerable<SecurityKey> keys)
         {
             if (keys == null) throw new ArgumentNullException(nameof(keys));
 

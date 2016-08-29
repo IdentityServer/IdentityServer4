@@ -3,7 +3,7 @@
 
 using IdentityServer4.Configuration;
 using IdentityServer4.Models;
-using IdentityServer4.Services.InMemory;
+using IdentityServer4.Quickstart;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;

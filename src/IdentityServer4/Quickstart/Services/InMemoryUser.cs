@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 
-namespace IdentityServer4.Services.InMemory
+namespace IdentityServer4.Quickstart
 {
     /// <summary>
     /// In-memory user
