@@ -1,6 +1,6 @@
 ﻿using IdentityModel;
 using IdentityServer4;
-using IdentityServer4.Services.InMemory;
+using IdentityServer4.Quickstart;
 using System.Collections.Generic;
 using System.Security.Claims;
 

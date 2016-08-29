@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 using IdentityServer4.Stores;
-using IdentityServer4.Stores.InMemory;
+using IdentityServer4.Quickstart;
 
 namespace IdentityServer4.UnitTests.Validation
 {

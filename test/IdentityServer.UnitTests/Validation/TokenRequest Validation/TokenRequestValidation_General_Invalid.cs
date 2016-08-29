@@ -4,8 +4,8 @@
 using FluentAssertions;
 using IdentityModel;
 using IdentityServer4.Models;
+using IdentityServer4.Quickstart;
 using IdentityServer4.Stores;
-using IdentityServer4.Stores.InMemory;
 using System;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
