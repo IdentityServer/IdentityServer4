@@ -265,9 +265,7 @@ namespace IdentityServer4
                 DiscoveryWebKeys,
                 Token,
                 UserInfo,
-                // TODO
-                //IdentityTokenValidation,
-                //Revocation
+                Revocation
             };
         }
 

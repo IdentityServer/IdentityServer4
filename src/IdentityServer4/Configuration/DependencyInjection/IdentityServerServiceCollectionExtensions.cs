@@ -3,6 +3,7 @@
 
 using IdentityServer4;
 using IdentityServer4.Configuration;
+using IdentityServer4.Configuration.DependencyInjection;
 using IdentityServer4.Endpoints;
 using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Events;
@@ -22,6 +23,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Linq;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -125,13 +127,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddScoped<AuthenticationHandler>();
             
             builder.Services.AddCors();
-            builder.Services.AddTransient<ICorsPolicyProvider>(provider =>
-            {
-                return new PolicyProvider(
-                    provider.GetRequiredService<ILogger<PolicyProvider>>(),
-                    Constants.ProtocolRoutePaths.CorsPaths,
-                    provider.GetRequiredService<ICorsPolicyService>());
-            });
+            builder.Services.AddTransientDecorator<ICorsPolicyProvider, PolicyProvider>();
 
             return builder;
         }
@@ -203,6 +199,51 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient(typeof(ICache<>), typeof(DefaultCache<>));
 
             return builder;
+        }
+
+        static void AddTransientDecorator<TService, TImplementation>(this IServiceCollection services)
+            where TService : class
+            where TImplementation : class, TService
+        {
+            services.AddDecorator<TService>();
+            services.AddTransient<TService, TImplementation>();
+        }
+
+        static void AddDecorator<TService>(this IServiceCollection services)
+        { 
+            var registration = services.FirstOrDefault(x => x.ServiceType == typeof(TService));
+            if (registration == null)
+            {
+                throw new InvalidOperationException("Service type: " + typeof(TService).Name + " not registered.");
+            }
+            if (services.Any(x => x.ServiceType == typeof(Decorator<TService>)))
+            {
+                throw new InvalidOperationException("Decorator already registered for type: " + typeof(TService).Name + ".");
+            }
+
+            services.Remove(registration);
+
+            if (registration.ImplementationInstance != null)
+            {
+                var type = registration.ImplementationInstance.GetType();
+                var innerType = typeof(Decorator<,>).MakeGenericType(typeof(TService), type);
+                services.Add(new ServiceDescriptor(typeof(Decorator<TService>), innerType, ServiceLifetime.Transient));
+                services.Add(new ServiceDescriptor(type, registration.ImplementationInstance));
+            }
+            else if (registration.ImplementationFactory != null)
+            {
+                services.Add(new ServiceDescriptor(typeof(Decorator<TService>), provider =>
+                {
+                    return new DisposableDecorator<TService>((TService)registration.ImplementationFactory(provider));
+                }, registration.Lifetime));
+            }
+            else
+            {
+                var type = registration.ImplementationType;
+                var innerType = typeof(Decorator<,>).MakeGenericType(typeof(TService), registration.ImplementationType);
+                services.Add(new ServiceDescriptor(typeof(Decorator<TService>), innerType, ServiceLifetime.Transient));
+                services.Add(new ServiceDescriptor(type, type, registration.Lifetime));
+            }
         }
     }
 }

@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityServer4.Configuration;
 using IdentityServer4.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 
 namespace Microsoft.AspNetCore.Builder
@@ -10,7 +12,9 @@ namespace Microsoft.AspNetCore.Builder
     {
         public static IApplicationBuilder UseIdentityServer(this IApplicationBuilder app)
         {
-            app.UseCors(String.Empty);
+            var options = app.ApplicationServices.GetRequiredService<IdentityServerOptions>();
+            app.UseCors(options.CorsOptions.CorsPolicyName);
+
             app.ConfigureCookies();
             app.UseMiddleware<AuthenticationMiddleware>();
             app.UseMiddleware<BaseUrlMiddleware>();

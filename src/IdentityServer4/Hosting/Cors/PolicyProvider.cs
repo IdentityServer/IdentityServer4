@@ -1,38 +1,50 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using IdentityServer4.Configuration;
+using IdentityServer4.Configuration.DependencyInjection;
 
 namespace IdentityServer4.Hosting.Cors
 {
     public class PolicyProvider : ICorsPolicyProvider
     {
         private readonly ICorsPolicyService _corsPolicyService;
-        private readonly string[] _allowedPaths;
         private readonly ILogger<PolicyProvider> _logger;
+        private readonly ICorsPolicyProvider _inner;
+        private readonly IdentityServerOptions _options;
 
         public PolicyProvider(
             ILogger<PolicyProvider> logger,
-            IEnumerable<string> allowedPaths, 
+            Decorator<ICorsPolicyProvider> inner,
+            IdentityServerOptions options,
             ICorsPolicyService corsPolicyService)
         {
-            if (allowedPaths == null) throw new ArgumentNullException("allowedPaths");
-
             _logger = logger;
-            _allowedPaths = allowedPaths.Select(Normalize).ToArray();
+            _inner = inner.Instance;
+            _options = options;
             _corsPolicyService = corsPolicyService;
         }
 
-        public async Task<CorsPolicy> GetPolicyAsync(HttpContext context, string policyName)
+        public Task<CorsPolicy> GetPolicyAsync(HttpContext context, string policyName)
         {
-            var path = context.Request.Path.ToString();
+            if (_options.CorsOptions.CorsPolicyName == policyName)
+            {
+                return ProcessAsync(context);
+            }
+            else
+            {
+                return _inner.GetPolicyAsync(context, policyName);
+            }
+        }
+
+        async Task<CorsPolicy> ProcessAsync(HttpContext context)
+        {
             var origin = context.Request.Headers["Origin"].First();
             var thisOrigin = context.Request.Scheme + "://" + context.Request.Host;
 
@@ -42,6 +54,7 @@ namespace IdentityServer4.Hosting.Cors
             // todo: do we still need this check?
             if (origin != null && origin != thisOrigin)
             {
+                var path = context.Request.Path;
                 if (IsPathAllowed(path))
                 {
                     _logger.LogInformation("CORS request made for path: {0} from origin: {1}", path, origin);
@@ -78,31 +91,9 @@ namespace IdentityServer4.Hosting.Cors
             return policy;
         }
 
-        private bool IsPathAllowed(string pathToCheck)
+        private bool IsPathAllowed(PathString path)
         {
-            var requestPath = Normalize(pathToCheck);
-            return _allowedPaths.Any(path => requestPath.Equals(path, StringComparison.OrdinalIgnoreCase));
-        }
-
-        private string Normalize(string path)
-        {
-            if (String.IsNullOrWhiteSpace(path) || path == "/")
-            {
-                path = "/";
-            }
-            else
-            {
-                if (!path.StartsWith("/"))
-                {
-                    path = "/" + path;
-                }
-                if (path.EndsWith("/"))
-                {
-                    path = path.Substring(0, path.Length - 1);
-                }
-            }
-
-            return path;
+            return _options.CorsOptions.CorsPaths.Any(x => path == x);
         }
     }
 }
