@@ -30,6 +30,17 @@ namespace IdentityServer4.IntegrationTests.Clients
                         "api1", "api2"
                     }
                 },
+                new Client
+                {
+                    ClientId = "client.no_default_scopes",
+                    ClientSecrets = new List<Secret>
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+                    AllowAccessToAllScopes = true
+                },
 
                 ///////////////////////////////////////////
                 // Console Resource Owner Flow Sample

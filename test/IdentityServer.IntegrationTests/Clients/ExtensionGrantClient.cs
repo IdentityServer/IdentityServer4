@@ -74,6 +74,48 @@ namespace IdentityServer4.IntegrationTests.Clients
         }
 
         [Fact]
+        public async Task Valid_Client_with_default_Scopes()
+        {
+            var client = new TokenClient(
+                TokenEndpoint,
+                "client.custom",
+                "secret",
+                innerHttpMessageHandler: _handler);
+
+            var customParameters = new Dictionary<string, string>
+                {
+                    { "custom_credential", "custom credential"}
+                };
+
+            var response = await client.RequestCustomGrantAsync("custom", extra: customParameters);
+
+            response.IsError.Should().BeFalse();
+            response.HttpStatusCode.Should().Be(HttpStatusCode.OK);
+            response.ExpiresIn.Should().Be(3600);
+            response.TokenType.Should().Be("Bearer");
+            response.IdentityToken.Should().BeNull();
+            response.RefreshToken.Should().BeNull();
+
+            var payload = GetPayload(response);
+
+            payload.Count().Should().Be(10);
+            payload.Should().Contain("iss", "https://idsvr4");
+            payload.Should().Contain("aud", "https://idsvr4/resources");
+            payload.Should().Contain("client_id", "client.custom");
+            payload.Should().Contain("sub", "818727");
+            payload.Should().Contain("idp", "local");
+
+            var amr = payload["amr"] as JArray;
+            amr.Count().Should().Be(1);
+            amr.First().ToString().Should().Be("custom");
+
+            var scopes = payload["scope"] as JArray;
+            scopes.Count().Should().Be(2);
+            scopes.First().ToString().Should().Be("api1");
+            scopes.Skip(1).First().ToString().Should().Be("api2");
+        }
+
+        [Fact]
         public async Task Valid_Client_Missing_Grant_Specific_Data()
         {
             var client = new TokenClient(

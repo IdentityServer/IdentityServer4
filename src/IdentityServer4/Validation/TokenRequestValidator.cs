@@ -624,9 +624,26 @@ namespace IdentityServer4.Validation
         private async Task<bool> ValidateRequestedScopesAsync(NameValueCollection parameters)
         {
             var scopes = parameters.Get(OidcConstants.TokenRequest.Scope);
-            if (scopes.IsMissingOrTooLong(_options.InputLengthRestrictions.Scope))
+
+            if (scopes.IsMissing())
             {
-                _logger.LogError("Scopes missing or too long");
+                _logger.LogTrace("Client provided no scopes - checking allowed scopes list");
+
+                if (!_validatedRequest.Client.AllowedScopes.IsNullOrEmpty())
+                {
+                    scopes = _validatedRequest.Client.AllowedScopes.ToSpaceSeparatedString();
+                    _logger.LogTrace("Defaulting to: {scopes}", scopes);
+                }
+                else
+                {
+                    _logger.LogError("No allowed scopes configured. aborting.");
+                    return false;
+                }
+            }
+
+            if (scopes.Length > _options.InputLengthRestrictions.Scope)
+            {
+                _logger.LogError("Scope parameter exceeds max allowed length");
                 return false;
             }
 

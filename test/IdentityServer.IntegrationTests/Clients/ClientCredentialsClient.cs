@@ -92,6 +92,55 @@ namespace IdentityServer4.IntegrationTests.Clients
         }
 
         [Fact]
+        public async Task Valid_Client_with_Default_Scopes()
+        {
+            var client = new TokenClient(
+                TokenEndpoint,
+                "client",
+                "secret",
+                innerHttpMessageHandler: _handler);
+
+            var response = await client.RequestClientCredentialsAsync();
+
+            response.IsError.Should().Be(false);
+            response.ExpiresIn.Should().Be(3600);
+            response.TokenType.Should().Be("Bearer");
+            response.IdentityToken.Should().BeNull();
+            response.RefreshToken.Should().BeNull();
+
+            var payload = GetPayload(response);
+
+            payload.Count().Should().Be(6);
+            payload.Should().Contain("iss", "https://idsvr4");
+            payload.Should().Contain("aud", "https://idsvr4/resources");
+            payload.Should().Contain("client_id", "client");
+
+            var scopes = payload["scope"] as JArray;
+            scopes.Count().Should().Be(2);
+            scopes.First().ToString().Should().Be("api1");
+            scopes.Skip(1).First().ToString().Should().Be("api2");
+        }
+
+        [Fact]
+        public async Task Valid_Client_without_Default_Scopes_Skipping_Scope_Parameter()
+        {
+            var client = new TokenClient(
+                TokenEndpoint,
+                "client.no_default_scopes",
+                "secret",
+                innerHttpMessageHandler: _handler);
+
+            var response = await client.RequestClientCredentialsAsync();
+
+            response.IsError.Should().Be(true);
+            response.ExpiresIn.Should().Be(0);
+            response.TokenType.Should().BeNull();
+            response.IdentityToken.Should().BeNull();
+            response.RefreshToken.Should().BeNull();
+            response.Error.Should().Be(OidcConstants.TokenErrors.InvalidScope);
+        }
+
+        [Fact]
         public async Task Valid_Client_PostBody()
         {
             var client = new TokenClient(

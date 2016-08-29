@@ -108,6 +108,23 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
 
         [Fact]
         [Trait("Category", Category)]
+        public async Task Valid_ClientCredentials_Request_with_default_Scopes()
+        {
+            var client = await _clients.FindClientByIdAsync("client_restricted");
+
+            var validator = Factory.CreateTokenRequestValidator();
+
+            var parameters = new NameValueCollection();
+            parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.ClientCredentials);
+            
+
+            var result = await validator.ValidateRequestAsync(parameters, client);
+
+            result.IsError.Should().BeFalse();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
         public async Task Valid_ClientCredentials_Request_for_Implicit_and_ClientCredentials_Client()
         {
             var client = await _clients.FindClientByIdAsync("implicit_and_client_creds_client");
