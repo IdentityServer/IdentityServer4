@@ -201,7 +201,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IIdentityServerBuilder AddInMemoryCaching(this IIdentityServerBuilder builder)
         {
-            builder.Services.TryAddTransient(typeof(ICache<>), typeof(InMemoryCache<>));
+            builder.Services.TryAddTransient(typeof(ICache<>), typeof(DefaultCache<>));
 
             return builder;
         }

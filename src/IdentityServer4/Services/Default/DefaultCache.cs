@@ -5,16 +5,16 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using System;
 
-namespace IdentityServer4.Services.InMemory
+namespace IdentityServer4.Services.Default
 {
-    public class InMemoryCache<T> : ICache<T>
+    public class DefaultCache<T> : ICache<T>
         where T : class
     {
         const string KeySeparator = ":";
 
         IMemoryCache _cache;
 
-        public InMemoryCache(IMemoryCache cache)
+        public DefaultCache(IMemoryCache cache)
         {
             _cache = cache;
         }
