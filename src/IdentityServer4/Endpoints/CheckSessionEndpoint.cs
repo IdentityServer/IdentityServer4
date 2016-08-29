@@ -24,16 +24,19 @@ namespace IdentityServer4.Endpoints
             _sessionId = sessionId;
         }
 
-        public Task<IEndpointResult> ProcessAsync(HttpContext context)
+        public async Task<IEndpointResult> ProcessAsync(HttpContext context)
         {
             if (context.Request.Method != "GET")
             {
-                return Task.FromResult<IEndpointResult>(new StatusCodeResult(HttpStatusCode.MethodNotAllowed));
+                return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
             }
 
             _logger.LogInformation("Check session iframe request");
 
-            return Task.FromResult<IEndpointResult>(new CheckSessionResult(_sessionId.GetCookieName()));
+            // ensure we have a session id cookie written
+            var sid = await _sessionId.GetCurrentSessionIdAsync();
+
+            return new CheckSessionResult(_sessionId.GetCookieName());
         }
    }
 }
