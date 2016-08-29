@@ -12,7 +12,6 @@ using IdentityServer4.Hosting.Cors;
 using IdentityServer4.ResponseHandling;
 using IdentityServer4.Services;
 using IdentityServer4.Services.Default;
-using IdentityServer4.Services.InMemory;
 using IdentityServer4.Stores;
 using IdentityServer4.Stores.Serialization;
 using IdentityServer4.Validation;

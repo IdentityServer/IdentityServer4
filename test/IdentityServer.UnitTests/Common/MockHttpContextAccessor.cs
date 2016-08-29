@@ -4,7 +4,6 @@
 using IdentityServer4.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using IdentityServer4.Hosting;
 using IdentityServer4.Services;
 using IdentityServer4.Services.Default;
 

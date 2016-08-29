@@ -6,8 +6,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using Serilog.Events;
 using IdentityServer4.Services.InMemory;
-using IdentityServer4.Validation;
-using Microsoft.AspNetCore.Authentication.OAuth;
 using System.Threading.Tasks;
 using Host.UI.Login;
 using Microsoft.IdentityModel.Tokens;
