@@ -4,21 +4,33 @@
 using FluentAssertions;
 using IdentityServer4.Hosting.Cors;
 using IdentityServer4.UnitTests.Common;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
+using System;
+using IdentityServer4.Configuration;
 
 namespace IdentityServer4.UnitTests.Hosting.Cors
 {
+    public class FakePolicyProvider : ICorsPolicyProvider
+    {
+        public Task<CorsPolicy> GetPolicyAsync(HttpContext context, string policyName)
+        {
+            return Task.FromResult<CorsPolicy>(null);
+        }
+    }
+
     public class PolicyProviderTests
     {
         const string Category = "PolicyProvider";
 
-        PolicyProvider _subject;
+        PolicyProvider<FakePolicyProvider> _subject;
         List<string> _allowedPaths = new List<string>();
 
         MockCorsPolicyService _mockPolicy = new MockCorsPolicyService();
+        IdentityServerOptions _options;
 
         public PolicyProviderTests()
         {
@@ -27,16 +39,22 @@ namespace IdentityServer4.UnitTests.Hosting.Cors
 
         public void Init()
         {
-            _subject = new PolicyProvider(
-                TestLogger.Create<PolicyProvider>(),
-                _allowedPaths,
+            _options = new IdentityServerOptions();
+            _options.CorsOptions.CorsPaths.Clear();
+            foreach(var path in _allowedPaths)
+            {
+                _options.CorsOptions.CorsPaths.Add(new PathString(path));
+            }
+
+            _subject = new PolicyProvider<FakePolicyProvider>(
+                TestLogger.Create<PolicyProvider<FakePolicyProvider>>(),
+                new FakePolicyProvider(),
+                _options,
                 _mockPolicy);
         }
 
         [Theory]
         [InlineData("/foo")]
-        [InlineData("/foo/")]
-        [InlineData("/bar")]
         [InlineData("/bar/")]
         [InlineData("/baz/quux")]
         [InlineData("/baz/quux/")]
@@ -57,12 +75,13 @@ namespace IdentityServer4.UnitTests.Hosting.Cors
             ctx.Request.Path = new PathString(path);
             ctx.Request.Headers.Add("Origin", "http://notserver");
 
-            var response = await _subject.GetPolicyAsync(ctx, null);
+            var response = await _subject.GetPolicyAsync(ctx, _options.CorsOptions.CorsPolicyName);
 
             _mockPolicy.WasCalled.Should().BeTrue();
         }
 
         [Theory]
+        [InlineData("/foo/")]
         [InlineData("/xoxo")]
         [InlineData("/xoxo/")]
         [InlineData("/foo/xoxo")]
@@ -83,7 +102,7 @@ namespace IdentityServer4.UnitTests.Hosting.Cors
             ctx.Request.Path = new PathString(path);
             ctx.Request.Headers.Add("Origin", "http://notserver");
 
-            var response = await _subject.GetPolicyAsync(ctx, null);
+            var response = await _subject.GetPolicyAsync(ctx, _options.CorsOptions.CorsPolicyName);
 
             _mockPolicy.WasCalled.Should().BeFalse();
         }
@@ -103,7 +122,7 @@ namespace IdentityServer4.UnitTests.Hosting.Cors
             ctx.Request.Path = new PathString("/foo");
             ctx.Request.Headers.Add("Origin", "https://server");
 
-            var response = await _subject.GetPolicyAsync(ctx, null);
+            var response = await _subject.GetPolicyAsync(ctx, _options.CorsOptions.CorsPolicyName);
 
             _mockPolicy.WasCalled.Should().BeFalse();
         }
@@ -125,7 +144,7 @@ namespace IdentityServer4.UnitTests.Hosting.Cors
             ctx.Request.Path = new PathString("/foo");
             ctx.Request.Headers.Add("Origin", origin);
 
-            var response = await _subject.GetPolicyAsync(ctx, null);
+            var response = await _subject.GetPolicyAsync(ctx, _options.CorsOptions.CorsPolicyName);
 
             _mockPolicy.WasCalled.Should().BeTrue();
         }

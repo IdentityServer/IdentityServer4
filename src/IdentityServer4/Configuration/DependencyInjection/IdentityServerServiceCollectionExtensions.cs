@@ -22,6 +22,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Linq;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -125,13 +126,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddScoped<AuthenticationHandler>();
             
             builder.Services.AddCors();
-            builder.Services.AddTransient<ICorsPolicyProvider>(provider =>
-            {
-                return new PolicyProvider(
-                    provider.GetRequiredService<ILogger<PolicyProvider>>(),
-                    Constants.ProtocolRoutePaths.CorsPaths,
-                    provider.GetRequiredService<ICorsPolicyService>());
-            });
+            builder.Services.DecorateTransient<ICorsPolicyProvider>(typeof(PolicyProvider<>));
 
             return builder;
         }
@@ -204,5 +199,42 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return builder;
         }
+
+        static void DecorateTransient<TService>(this IServiceCollection services, Type decoratorType)
+        {
+            var type = services.Decorate<TService>();
+            var concerteDecoratorType = decoratorType.MakeGenericType(type);
+            services.AddTransient(typeof(TService), concerteDecoratorType);
+        }
+
+        static Type Decorate<TService>(this IServiceCollection services)
+        {
+            var registration = services.FirstOrDefault(x => x.ServiceType == typeof(TService));
+            if (registration == null)
+            {
+                throw new InvalidOperationException("Service type: " + typeof(TService).Name + " not registered.");
+            }
+
+            services.Remove(registration);
+
+            if (registration.ImplementationInstance != null)
+            {
+                services.Add(new ServiceDescriptor(registration.ImplementationInstance.GetType(), registration.ImplementationInstance));
+            }
+            else if (registration.ImplementationFactory != null)
+            {
+                //services.Add(new ServiceDescriptor(typeof(Inner<TService>), provider =>
+                //{
+                //    return new DisposableInner<TService>((TService)registration.ImplementationFactory(provider));
+                //}, registration.Lifetime));
+            }
+            else
+            {
+                services.Add(new ServiceDescriptor(registration.ImplementationType, registration.ImplementationType, registration.Lifetime));
+            }
+
+            return registration.ImplementationType;
+        }
+
     }
 }
