@@ -11,24 +11,18 @@ using System.Threading.Tasks;
 using Xunit;
 using System;
 using IdentityServer4.Configuration;
+using IdentityServer4.Configuration.DependencyInjection;
 
 namespace IdentityServer4.UnitTests.Hosting.Cors
 {
-    public class FakePolicyProvider : ICorsPolicyProvider
-    {
-        public Task<CorsPolicy> GetPolicyAsync(HttpContext context, string policyName)
-        {
-            return Task.FromResult<CorsPolicy>(null);
-        }
-    }
-
     public class PolicyProviderTests
     {
         const string Category = "PolicyProvider";
 
-        PolicyProvider<FakePolicyProvider> _subject;
+        PolicyProvider _subject;
         List<string> _allowedPaths = new List<string>();
 
+        MockCorsPolicyProvider _mockInner = new MockCorsPolicyProvider();
         MockCorsPolicyService _mockPolicy = new MockCorsPolicyService();
         IdentityServerOptions _options;
 
@@ -46,9 +40,9 @@ namespace IdentityServer4.UnitTests.Hosting.Cors
                 _options.CorsOptions.CorsPaths.Add(new PathString(path));
             }
 
-            _subject = new PolicyProvider<FakePolicyProvider>(
-                TestLogger.Create<PolicyProvider<FakePolicyProvider>>(),
-                new FakePolicyProvider(),
+            _subject = new PolicyProvider(
+                TestLogger.Create<PolicyProvider>(),
+                new Decorator<ICorsPolicyProvider>(_mockInner),
                 _options,
                 _mockPolicy);
         }
@@ -78,6 +72,7 @@ namespace IdentityServer4.UnitTests.Hosting.Cors
             var response = await _subject.GetPolicyAsync(ctx, _options.CorsOptions.CorsPolicyName);
 
             _mockPolicy.WasCalled.Should().BeTrue();
+            _mockInner.WasCalled.Should().BeFalse();
         }
 
         [Theory]
@@ -105,6 +100,30 @@ namespace IdentityServer4.UnitTests.Hosting.Cors
             var response = await _subject.GetPolicyAsync(ctx, _options.CorsOptions.CorsPolicyName);
 
             _mockPolicy.WasCalled.Should().BeFalse();
+            _mockInner.WasCalled.Should().BeFalse();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task different_policy_name_should_call_inner_policy_service()
+        {
+            _allowedPaths.AddRange(new string[] {
+                "/foo",
+                "/bar",
+                "/baz/quux"
+            });
+            Init();
+
+            var ctx = new DefaultHttpContext();
+            ctx.Request.Scheme = "https";
+            ctx.Request.Host = new HostString("server");
+            ctx.Request.Path = new PathString("/foo");
+            ctx.Request.Headers.Add("Origin", "http://notserver");
+
+            var response = await _subject.GetPolicyAsync(ctx, "wrong_name");
+
+            _mockPolicy.WasCalled.Should().BeFalse();
+            _mockInner.WasCalled.Should().BeTrue();
         }
 
         [Fact]
@@ -125,6 +144,7 @@ namespace IdentityServer4.UnitTests.Hosting.Cors
             var response = await _subject.GetPolicyAsync(ctx, _options.CorsOptions.CorsPolicyName);
 
             _mockPolicy.WasCalled.Should().BeFalse();
+            _mockInner.WasCalled.Should().BeFalse();
         }
 
         [Theory]
@@ -147,6 +167,7 @@ namespace IdentityServer4.UnitTests.Hosting.Cors
             var response = await _subject.GetPolicyAsync(ctx, _options.CorsOptions.CorsPolicyName);
 
             _mockPolicy.WasCalled.Should().BeTrue();
+            _mockInner.WasCalled.Should().BeFalse();
         }
     }
 }
