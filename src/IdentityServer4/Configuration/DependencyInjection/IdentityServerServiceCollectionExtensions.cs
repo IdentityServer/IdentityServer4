@@ -7,6 +7,7 @@ using IdentityServer4.Endpoints;
 using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Events;
 using IdentityServer4.Hosting;
+using IdentityServer4.Hosting.Cookies;
 using IdentityServer4.Hosting.Cors;
 using IdentityServer4.ResponseHandling;
 using IdentityServer4.Services;
@@ -135,9 +136,10 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<PersistentGrantSerializer>();
             services.AddTransient<EventServiceHelper>();
 
-            services.AddTransient<SessionCookie>();
+            services.AddTransient<ISessionIdService, DefaultSessionIdService>();
             services.AddTransient<ClientListCookie>();
             services.AddTransient(typeof(MessageCookie<>));
+            services.AddScoped<AuthenticationHandler>();
 
             services.AddCors();
             services.AddTransient<ICorsPolicyProvider>(provider =>

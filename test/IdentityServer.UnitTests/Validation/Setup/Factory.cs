@@ -139,7 +139,7 @@ namespace IdentityServer4.UnitTests.Validation
                 scopeValidator = new ScopeValidator(scopes, new LoggerFactory().CreateLogger<ScopeValidator>());
             }
 
-            var sessionCookie = new SessionCookie(new MockHttpContextAccessor(options));
+            var sessionId = new StubSessionIdService();
 
             return new AuthorizeRequestValidator(
                 options,
@@ -147,7 +147,7 @@ namespace IdentityServer4.UnitTests.Validation
                 customValidator,
                 uriValidator,
                 scopeValidator,
-                sessionCookie,
+                sessionId,
                 TestLogger.Create<AuthorizeRequestValidator>());
         }
 

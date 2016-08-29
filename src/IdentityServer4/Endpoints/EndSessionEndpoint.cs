@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Stores;
 using IdentityServer4.Configuration;
+using IdentityServer4.Services;
 
 namespace IdentityServer4.Endpoints
 {
@@ -27,9 +28,9 @@ namespace IdentityServer4.Endpoints
         private readonly IEndSessionRequestValidator _endSessionRequestValidator;
         private readonly ClientListCookie _clientListCookie;
         private readonly IMessageStore<LogoutMessage> _logoutMessageStore;
-        private readonly SessionCookie _sessionCookie;
         private readonly IClientStore _clientStore;
         private readonly IdentityServerOptions _options;
+        private readonly ISessionIdService _sessionId;
 
         public EndSessionEndpoint(
             ILogger<EndSessionEndpoint> logger, 
@@ -37,7 +38,7 @@ namespace IdentityServer4.Endpoints
             IHttpContextAccessor context,
             IEndSessionRequestValidator endSessionRequestValidator,
             IMessageStore<LogoutMessage> logoutMessageStore,
-            SessionCookie sessionCookie,
+            ISessionIdService sessionId,
             ClientListCookie clientListCookie,
             IClientStore clientStore)
         {
@@ -46,7 +47,7 @@ namespace IdentityServer4.Endpoints
             _context = context;
             _endSessionRequestValidator = endSessionRequestValidator;
             _logoutMessageStore = logoutMessageStore;
-            _sessionCookie = sessionCookie;
+            _sessionId = sessionId;
             _clientListCookie = clientListCookie;
             _clientStore = clientStore;
         }
@@ -145,18 +146,12 @@ namespace IdentityServer4.Endpoints
             }
         }
 
-        private void ClearSignoutMessageId(HttpRequest request)
-        {
-            throw new NotImplementedException();
-        }
-
         private string ValidateSid(HttpRequest request)
         {
-            var sidCookie = _sessionCookie.GetSessionId();
+            var sidCookie = _sessionId.GetCookieValue();
             if (sidCookie != null)
             {
-                //TODO: update sid to OidcConstants when idmodel released
-                var sid = request.Query["sid"].FirstOrDefault();
+                var sid = request.Query[OidcConstants.EndSessionRequest.Sid].FirstOrDefault();
                 if (sid != null)
                 {
                     if (TimeConstantComparer.IsEqual(sid, sidCookie))
@@ -225,7 +220,7 @@ namespace IdentityServer4.Endpoints
         private void ClearCookies(string sid)
         {
             // session id cookie
-            _sessionCookie.ClearSessionId();
+            _sessionId.RemoveCookie();
 
             // client list cookie
             _clientListCookie.Clear();

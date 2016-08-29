@@ -40,14 +40,13 @@ namespace IdentityServer4.Hosting
             var user = await context.GetIdentityServerUserAsync();
             if (user != null)
             {
-                // TODO: get sid from IdentityModel JwtClaimTypes
-                var sid = user.FindFirst("sid")?.Value;
+                var sid = user.FindFirst(OidcConstants.EndSessionRequest.Sid)?.Value;
                 if (sid != null)
                 {
                     var sidParam = await GetSidRequestParamAsync(context.Request);
                     if (TimeConstantComparer.IsEqual(sid, sidParam))
                     {
-                        var iframeUrl = context.GetIdentityServerSignoutFrameCallbackUrl();
+                        var iframeUrl = await context.GetIdentityServerSignoutFrameCallbackUrlAsync();
                         if (iframeUrl != null)
                         {
                             await RenderResponseAsync(context, iframeUrl, sid);
@@ -61,7 +60,7 @@ namespace IdentityServer4.Hosting
         {
             if (String.Equals(request.Method, "GET", StringComparison.OrdinalIgnoreCase))
             {
-                return request.Query["sid"].FirstOrDefault();
+                return request.Query[OidcConstants.EndSessionRequest.Sid].FirstOrDefault();
             }
             else if (String.Equals(request.Method, "POST", StringComparison.OrdinalIgnoreCase) && 
               !String.IsNullOrEmpty(request.ContentType) &&
@@ -69,7 +68,7 @@ namespace IdentityServer4.Hosting
               request.Body.CanRead)
             {
                 var form = await request.ReadFormAsync();
-                return form["sid"].FirstOrDefault();
+                return form[OidcConstants.EndSessionRequest.Sid].FirstOrDefault();
             }
 
             return null;

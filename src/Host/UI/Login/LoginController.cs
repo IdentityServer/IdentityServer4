@@ -84,7 +84,7 @@ namespace Host.UI.Login
             };
             if (sid != null)
             {
-                claims.Add(new Claim("sid", sid));
+                claims.Add(new Claim(OidcConstants.EndSessionRequest.Sid, sid));
             }
 
             var ci = new ClaimsIdentity(claims, amr, JwtClaimTypes.Name, JwtClaimTypes.Role);
@@ -134,7 +134,7 @@ namespace Host.UI.Login
                 user = _loginService.AutoProvisionUser(provider, userId, claims);
             }
 
-            var sid = claims.FirstOrDefault(x => x.Type == "sid")?.Value;
+            var sid = claims.FirstOrDefault(x => x.Type == OidcConstants.EndSessionRequest.Sid)?.Value;
             await IssueCookie(user, provider, "external", sid);
             await HttpContext.Authentication.SignOutAsync("Temp");
 

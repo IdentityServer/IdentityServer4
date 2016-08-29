@@ -7,6 +7,7 @@ using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
 using IdentityServer4.Logging;
 using IdentityServer4.Models;
+using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.Extensions.Logging;
 using System;
@@ -24,7 +25,7 @@ namespace IdentityServer4.Validation
         private readonly ICustomAuthorizeRequestValidator _customValidator;
         private readonly IRedirectUriValidator _uriValidator;
         private readonly ScopeValidator _scopeValidator;
-        private readonly SessionCookie _sessionCookie;
+        private readonly ISessionIdService _sessionId;
         private readonly ILogger _logger;
 
         private readonly ResponseTypeEqualityComparer
@@ -36,7 +37,7 @@ namespace IdentityServer4.Validation
             ICustomAuthorizeRequestValidator customValidator, 
             IRedirectUriValidator uriValidator, 
             ScopeValidator scopeValidator,
-            SessionCookie sessionCookie,
+            ISessionIdService sessionId,
             ILogger<AuthorizeRequestValidator> logger)
         {
             _options = options;
@@ -44,7 +45,7 @@ namespace IdentityServer4.Validation
             _customValidator = customValidator;
             _uriValidator = uriValidator;
             _scopeValidator = scopeValidator;
-            _sessionCookie = sessionCookie;
+            _sessionId = sessionId;
             _logger = logger;
         }
 
@@ -88,7 +89,7 @@ namespace IdentityServer4.Validation
             }
 
             // nonce, prompt, acr_values, login_hint etc.
-            var optionalResult = ValidateOptionalParameters(request);
+            var optionalResult = await ValidateOptionalParametersAsync(request);
             if (optionalResult.IsError)
             {
                 return optionalResult;
@@ -420,7 +421,7 @@ namespace IdentityServer4.Validation
             return Valid(request);
         }
 
-        private AuthorizeRequestValidationResult ValidateOptionalParameters(ValidatedAuthorizeRequest request)
+        private async Task<AuthorizeRequestValidationResult> ValidateOptionalParametersAsync(ValidatedAuthorizeRequest request)
         {
             //////////////////////////////////////////////////////////
             // check nonce
@@ -558,7 +559,7 @@ namespace IdentityServer4.Validation
             if (_options.Endpoints.EnableCheckSessionEndpoint && 
                 request.Subject.Identity.IsAuthenticated)
             {
-                var sessionId = _sessionCookie.GetOrCreateSessionId();
+                var sessionId = await _sessionId.GetCurrentSessionIdAsync();
                 if (sessionId.IsPresent())
                 {
                     request.SessionId = sessionId;

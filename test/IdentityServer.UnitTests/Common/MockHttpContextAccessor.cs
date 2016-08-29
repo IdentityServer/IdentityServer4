@@ -5,6 +5,8 @@ using IdentityServer4.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using IdentityServer4.Hosting;
+using IdentityServer4.Services;
+using IdentityServer4.Services.Default;
 
 namespace IdentityServer4.UnitTests.Common
 {
@@ -18,7 +20,7 @@ namespace IdentityServer4.UnitTests.Common
 
             var services = new ServiceCollection();
             services.AddSingleton(options);
-            services.AddTransient<SessionCookie>();
+            services.AddTransient<ISessionIdService, DefaultSessionIdService>();
 
             _context.RequestServices = services.BuildServiceProvider();
         }

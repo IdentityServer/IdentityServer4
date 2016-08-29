@@ -4,6 +4,7 @@
 using IdentityModel;
 using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
+using IdentityServer4.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -77,10 +78,10 @@ namespace IdentityServer4.Hosting
             return await context.Authentication.AuthenticateAsync(options.AuthenticationOptions.EffectiveAuthenticationScheme);
         }
 
-        internal static string GetIdentityServerSignoutFrameCallbackUrl(this HttpContext context)
+        internal static async Task<string> GetIdentityServerSignoutFrameCallbackUrlAsync(this HttpContext context)
         {
-            var sessionCookie = context.RequestServices.GetRequiredService<SessionCookie>();
-            var sid = sessionCookie.GetSessionId();
+            var sessionId = context.RequestServices.GetRequiredService<ISessionIdService>();
+            var sid = await sessionId.GetCurrentSessionIdAsync();
             if (sid != null)
             {
                 var signoutIframeUrl = context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.ProtocolRoutePaths.EndSessionCallback;
