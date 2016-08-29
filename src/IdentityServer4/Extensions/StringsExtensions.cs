@@ -19,6 +19,11 @@ namespace IdentityServer4.Extensions
         [DebuggerStepThrough]
         public static string ToSpaceSeparatedString(this IEnumerable<string> list)
         {
+            if (list == null)
+            {
+                return "";
+            }
+
             var sb = new StringBuilder(100);
 
             foreach (var element in list)

@@ -68,6 +68,49 @@ namespace IdentityServer4.IntegrationTests.Clients
         }
 
         [Fact]
+        public async Task Valid_User_with_Default_Scopes()
+        {
+            var client = new TokenClient(
+                TokenEndpoint,
+                "roclient",
+                "secret",
+                innerHttpMessageHandler: _handler);
+
+            var response = await client.RequestResourceOwnerPasswordAsync("bob", "bob");
+
+            response.IsError.Should().Be(false);
+            response.ExpiresIn.Should().Be(3600);
+            response.TokenType.Should().Be("Bearer");
+            response.IdentityToken.Should().BeNull();
+            response.RefreshToken.Should().NotBeNull();
+
+            var payload = GetPayload(response);
+
+            payload.Count().Should().Be(10);
+            payload.Should().Contain("iss", "https://idsvr4");
+            payload.Should().Contain("aud", "https://idsvr4/resources");
+            payload.Should().Contain("client_id", "roclient");
+            payload.Should().Contain("sub", "88421113");
+            payload.Should().Contain("idp", "local");
+
+            var amr = payload["amr"] as JArray;
+            amr.Count().Should().Be(1);
+            amr.First().ToString().Should().Be("password");
+
+            var scopes = payload["scope"] as JArray;
+            scopes.Count.Should().Be(6);
+
+            // {[  "address",  "api1",  "api2",  "email",  "offline_access",  "openid"]}
+
+            scopes.First().ToString().Should().Be("address");
+            scopes.Skip(1).First().ToString().Should().Be("api1");
+            scopes.Skip(2).First().ToString().Should().Be("api2");
+            scopes.Skip(3).First().ToString().Should().Be("email");
+            scopes.Skip(4).First().ToString().Should().Be("offline_access");
+            scopes.Skip(5).First().ToString().Should().Be("openid");
+        }
+
+        [Fact]
         public async Task Valid_User_IdentityScopes()
         {
             var client = new TokenClient(
@@ -177,7 +220,7 @@ namespace IdentityServer4.IntegrationTests.Clients
         }
 
 
-        private Dictionary<string, object> GetPayload(TokenResponse response)
+        private Dictionary<string, object> GetPayload(IdentityModel.Client.TokenResponse response)
         {
             var token = response.AccessToken.Split('.').Skip(1).Take(1).First();
             var dictionary = JsonConvert.DeserializeObject<Dictionary<string, object>>(
