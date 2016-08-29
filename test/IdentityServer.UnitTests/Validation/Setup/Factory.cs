@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using IdentityServer4.Stores;
 using IdentityServer4.UnitTests.Common;
 using IdentityServer4.Quickstart;
+using IdentityServer4.Stores.Serialization;
 
 namespace IdentityServer4.UnitTests.Validation
 {
@@ -72,7 +73,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             if (grants == null)
             {
-                grants = new TestPersistedGrantService();
+                grants = CreateGrantService();
             }
 
             if (scopeValidator == null)
@@ -158,7 +159,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             if (grants == null)
             {
-                grants = new TestPersistedGrantService();
+                grants = CreateGrantService();
             }
 
             var clients = CreateClientStore();
@@ -213,7 +214,10 @@ namespace IdentityServer4.UnitTests.Validation
 
         public static IPersistedGrantService CreateGrantService()
         {
-            return new TestPersistedGrantService();
+            return new DefaultPersistedGrantService(new InMemoryPersistedGrantStore(),
+                CreateClientStore(),
+                new PersistentGrantSerializer(),
+                TestLogger.Create<DefaultPersistedGrantService>());
         }
     }
 }

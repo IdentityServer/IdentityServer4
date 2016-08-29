@@ -15,10 +15,10 @@ namespace IdentityServer4.Stores
         Task StoreAsync(PersistedGrant grant);
 
         Task<PersistedGrant> GetAsync(string key);
-        Task<IEnumerable<PersistedGrant>> GetAsync(string subjectId, string type);
+        Task<IEnumerable<PersistedGrant>> GetAllAsync(string subjectId);
 
         Task RemoveAsync(string key);
-        Task RemoveAsync(string subjectId, string clientId);
-        Task RemoveAsync(string subjectId, string clientId, string type);
+        Task RemoveAllAsync(string subjectId, string clientId);
+        Task RemoveAllAsync(string subjectId, string clientId, string type);
     }
 }

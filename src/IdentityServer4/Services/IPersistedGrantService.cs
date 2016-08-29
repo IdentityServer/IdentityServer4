@@ -30,7 +30,7 @@ namespace IdentityServer4.Services
         Task<Consent> GetUserConsent(string subjectId, string clientId);
         Task RemoveUserConsent(string subjectId, string clientId);
 
-        Task<IEnumerable<Consent>> GetUserConsent(string subjectId);
+        Task<IEnumerable<Consent>> GetAllGrants(string subjectId);
         Task RemoveAllGrants(string subjectId, string clientId);
     }
 }

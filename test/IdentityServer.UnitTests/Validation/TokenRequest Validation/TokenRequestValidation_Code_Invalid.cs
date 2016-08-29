@@ -10,6 +10,7 @@ using IdentityServer4.UnitTests.Common;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -19,6 +20,8 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
     {
         IClientStore _clients = Factory.CreateClientStore();
         const string Category = "TokenRequest Validation - AuthorizationCode - Invalid";
+
+        ClaimsPrincipal _subject = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
 
         [Fact]
         [Trait("Category", Category)]
@@ -33,6 +36,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 Lifetime = client.AuthorizationCodeLifetime,
                 IsOpenId = true,
                 RedirectUri = "https://server/cb",
+                Subject = _subject
             };
 
             await grants.StoreAuthorizationCodeAsync("valid", code);
@@ -63,6 +67,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 Lifetime = client.AuthorizationCodeLifetime,
                 IsOpenId = true,
                 RedirectUri = "https://server/cb",
+                Subject = _subject
             };
 
             await grants.StoreAuthorizationCodeAsync("valid", code);
@@ -95,6 +100,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 Lifetime = client.AuthorizationCodeLifetime,
                 IsOpenId = true,
                 RedirectUri = "https://server/cb",
+                Subject = _subject
             };
 
             await grants.StoreAuthorizationCodeAsync("valid", code);
@@ -127,6 +133,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 Lifetime = client.AuthorizationCodeLifetime,
                 IsOpenId = true,
                 RedirectUri = "https://server/cb",
+                Subject = _subject
             };
 
             await grants.StoreAuthorizationCodeAsync("valid", code);
@@ -158,6 +165,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 Lifetime = client.AuthorizationCodeLifetime,
                 IsOpenId = true,
                 RedirectUri = "https://server/cb",
+                Subject = _subject
             };
 
             await grants.StoreAuthorizationCodeAsync("valid", code);
@@ -190,6 +198,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 Lifetime = client1.AuthorizationCodeLifetime,
                 IsOpenId = true,
                 RedirectUri = "https://server/cb",
+                Subject = _subject
             };
 
             await grants.StoreAuthorizationCodeAsync("valid", code);
@@ -221,6 +230,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 Lifetime = client.AuthorizationCodeLifetime,
                 IsOpenId = true,
                 RedirectUri = "https://server/cb",
+                Subject = _subject
             };
 
             await grants.StoreAuthorizationCodeAsync("valid", code);
@@ -251,6 +261,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 Lifetime = client.AuthorizationCodeLifetime,
                 IsOpenId = true,
                 RedirectUri = "https://server1/cb",
+                Subject = _subject
             };
 
             await grants.StoreAuthorizationCodeAsync("valid", code);
@@ -282,7 +293,8 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 Lifetime = client.AuthorizationCodeLifetime,
                 IsOpenId = true,
                 RedirectUri = "https://server/cb",
-                CreationTime = DateTime.UtcNow.AddSeconds(-100)
+                CreationTime = DateTime.UtcNow.AddSeconds(-100),
+                Subject = _subject
             };
 
             await grants.StoreAuthorizationCodeAsync("valid", code);

@@ -35,12 +35,11 @@ namespace IdentityServer4.Quickstart
             return Task.FromResult<PersistedGrant>(null);
         }
 
-        public Task<IEnumerable<PersistedGrant>> GetAsync(string subjectId, string type)
+        public Task<IEnumerable<PersistedGrant>> GetAllAsync(string subjectId)
         {
             var query =
                 from item in _repository
-                where item.Value.SubjectId == subjectId &&
-                    item.Value.Type == type
+                where item.Value.SubjectId == subjectId
                 select item.Value;
 
             var items = query.ToArray().AsEnumerable();
@@ -55,7 +54,7 @@ namespace IdentityServer4.Quickstart
             return Task.FromResult(0);
         }
 
-        public Task RemoveAsync(string subjectId, string clientId)
+        public Task RemoveAllAsync(string subjectId, string clientId)
         {
             var query =
                 from item in _repository
@@ -73,7 +72,7 @@ namespace IdentityServer4.Quickstart
             return Task.FromResult(0);
         }
 
-        public Task RemoveAsync(string subjectId, string clientId, string type)
+        public Task RemoveAllAsync(string subjectId, string clientId, string type)
         {
             var query =
                 from item in _repository

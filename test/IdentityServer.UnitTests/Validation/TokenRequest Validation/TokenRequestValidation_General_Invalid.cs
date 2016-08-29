@@ -8,6 +8,7 @@ using IdentityServer4.Quickstart;
 using IdentityServer4.Stores;
 using System;
 using System.Collections.Specialized;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -16,6 +17,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
     public class TokenRequestValidation_General_Invalid
     {
         IClientStore _clients = new InMemoryClientStore(TestClients.Get());
+        ClaimsPrincipal _subject = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
 
         [Fact]
         [Trait("Category", "TokenRequest Validation - General - Invalid")]
@@ -57,6 +59,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 Lifetime = client.AuthorizationCodeLifetime,
                 IsOpenId = true,
                 RedirectUri = "https://server/cb",
+                Subject = _subject
             };
 
             await grants.StoreAuthorizationCodeAsync("valid", code);
@@ -88,6 +91,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 Lifetime = client.AuthorizationCodeLifetime,
                 IsOpenId = true,
                 RedirectUri = "https://server/cb",
+                Subject = _subject
             };
 
             await grants.StoreAuthorizationCodeAsync("valid", code);
