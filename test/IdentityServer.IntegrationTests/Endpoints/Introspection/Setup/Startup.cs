@@ -13,7 +13,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            var builder = services.AddIdentityServer(options =>
+            var builder = services.AddIdentityServerQuickstart(options =>
             {
                 options.IssuerUri = "https://idsvr4";
                 options.Endpoints.EnableAuthorizeEndpoint = false;

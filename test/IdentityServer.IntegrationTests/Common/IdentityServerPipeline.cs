@@ -78,7 +78,7 @@ namespace IdentityServer4.IntegrationTests.Common
 
             services.AddDataProtection();
 
-            services.AddIdentityServer(options =>
+            services.AddIdentityServerQuickstart(options =>
             {
                 Options = options;
 

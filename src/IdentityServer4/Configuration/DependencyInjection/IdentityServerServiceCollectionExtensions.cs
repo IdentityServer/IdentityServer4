@@ -14,7 +14,6 @@ using IdentityServer4.Services;
 using IdentityServer4.Services.Default;
 using IdentityServer4.Services.InMemory;
 using IdentityServer4.Stores;
-using IdentityServer4.Stores.InMemory;
 using IdentityServer4.Stores.Serialization;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Cors.Infrastructure;
@@ -29,15 +28,27 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class IdentityServerServiceCollectionExtensions
     {
+        public static IIdentityServerBuilder AddIdentityServerBuilder(this IServiceCollection services)
+        {
+            return new IdentityServerBuilder(services);
+        }
+
         public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services)
         {
-            var builder = services.AddIdentityServerCore()
-                .SetTemporarySigningCredential();
+            var builder = services.AddIdentityServerBuilder();
 
-            services.AddInMemoryStores();
-            services.AddInMemoryCaching();
+            builder.AddRequiredPlatformServices();
+            
+            builder.AddCoreServices();
+            builder.AddDefaultEndpoints();
+            builder.AddPluggableServices();
+            builder.AddValidators();
+            builder.AddResponseGenerators();
+            
+            builder.AddDefaultSecretParsers();
+            builder.AddDefaultSecretValidators();
 
-            return builder;
+            return new IdentityServerBuilder(services);
         }
 
         public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services, Action<IdentityServerOptions> setupAction)
@@ -52,97 +63,70 @@ namespace Microsoft.Extensions.DependencyInjection
             return services.AddIdentityServer();
         }
 
-        public static IIdentityServerBuilder AddIdentityServerCore(this IServiceCollection services)
+        public static IIdentityServerBuilder AddRequiredPlatformServices(this IIdentityServerBuilder builder)
         {
-            services.AddSingleton(resolver =>
+            builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            builder.Services.AddAuthentication();
+            builder.Services.AddOptions();
+
+            builder.Services.AddSingleton(resolver =>
             {
                 return resolver.GetRequiredService<IOptions<IdentityServerOptions>>().Value;
             });
 
-            services.AddRequiredPlatformServices();
-
-            services.AddCoreServices();
-            services.AddEndpoints();
-            services.AddPluggableServices();
-            services.AddValidators();
-            services.AddResponseGenerators();
-
-            services.AddDefaultSecretParsers();
-            services.AddDefaultSecretValidators();
-
-            return new IdentityServerBuilder(services);
+            return builder;
         }
 
-        public static IIdentityServerBuilder AddIdentityServerCore(this IServiceCollection services, Action<IdentityServerOptions> setupAction)
+        public static IIdentityServerBuilder AddDefaultEndpoints(this IIdentityServerBuilder builder)
         {
-            services.Configure(setupAction);
-            return services.AddIdentityServerCore();
-        }
-
-        public static IIdentityServerBuilder AddIdentityServerCore(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.Configure<IdentityServerOptions>(configuration);
-            return services.AddIdentityServerCore();
-        }
-
-        public static IServiceCollection AddRequiredPlatformServices(this IServiceCollection services)
-        {
-            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddAuthentication();
-            services.AddOptions();
-
-            return services;
-        }
-
-        public static IServiceCollection AddEndpoint<T>(this IServiceCollection services, EndpointName endpoint)
-            where T : class, IEndpoint
-        {
-            services.AddTransient<T>();
-            services.AddSingleton(new EndpointMapping { Endpoint = endpoint, Handler = typeof(T) });
-
-            return services;
-        }
-
-        public static IServiceCollection AddEndpoints(this IServiceCollection services)
-        {
-            services.AddSingleton<IEndpointRouter>(resolver=>
+            builder.Services.AddSingleton<IEndpointRouter>(resolver=>
             {
                 return new EndpointRouter(Constants.EndpointPathToNameMap,
                     resolver.GetRequiredService<IdentityServerOptions>(), 
                     resolver.GetServices<EndpointMapping>(),
                     resolver.GetRequiredService<ILogger<EndpointRouter>>());
             });
-            services.AddEndpoint<AuthorizeEndpoint>(EndpointName.Authorize);
-            services.AddEndpoint<CheckSessionEndpoint>(EndpointName.CheckSession);
-            services.AddEndpoint<DiscoveryEndpoint>(EndpointName.Discovery);
-            services.AddEndpoint<EndSessionEndpoint>(EndpointName.EndSession);
-            services.AddEndpoint<IntrospectionEndpoint>(EndpointName.Introspection);
-            services.AddEndpoint<RevocationEndpoint>(EndpointName.Revocation);
-            services.AddEndpoint<TokenEndpoint>(EndpointName.Token);
-            services.AddEndpoint<UserInfoEndpoint>(EndpointName.UserInfo);
 
-            return services;
+            builder.AddEndpoint<AuthorizeEndpoint>(EndpointName.Authorize);
+            builder.AddEndpoint<CheckSessionEndpoint>(EndpointName.CheckSession);
+            builder.AddEndpoint<DiscoveryEndpoint>(EndpointName.Discovery);
+            builder.AddEndpoint<EndSessionEndpoint>(EndpointName.EndSession);
+            builder.AddEndpoint<IntrospectionEndpoint>(EndpointName.Introspection);
+            builder.AddEndpoint<RevocationEndpoint>(EndpointName.Revocation);
+            builder.AddEndpoint<TokenEndpoint>(EndpointName.Token);
+            builder.AddEndpoint<UserInfoEndpoint>(EndpointName.UserInfo);
+
+            return builder;
         }
 
-        public static IServiceCollection AddCoreServices(this IServiceCollection services)
+        public static IIdentityServerBuilder AddEndpoint<T>(this IIdentityServerBuilder builder, EndpointName endpoint)
+            where T : class, IEndpoint
         {
-            services.AddTransient<ScopeSecretValidator>();
-            services.AddTransient<SecretParser>();
-            services.AddTransient<ClientSecretValidator>();
-            services.AddTransient<SecretValidator>();
-            services.AddTransient<ScopeValidator>();
-            services.AddTransient<ExtensionGrantValidator>();
-            services.AddTransient<BearerTokenUsageValidator>();
-            services.AddTransient<PersistentGrantSerializer>();
-            services.AddTransient<EventServiceHelper>();
+            builder.Services.AddTransient<T>();
+            builder.Services.AddSingleton(new EndpointMapping { Endpoint = endpoint, Handler = typeof(T) });
 
-            services.AddTransient<ISessionIdService, DefaultSessionIdService>();
-            services.AddTransient<ClientListCookie>();
-            services.AddTransient(typeof(MessageCookie<>));
-            services.AddScoped<AuthenticationHandler>();
+            return builder;
+        }
 
-            services.AddCors();
-            services.AddTransient<ICorsPolicyProvider>(provider =>
+        public static IIdentityServerBuilder AddCoreServices(this IIdentityServerBuilder builder)
+        {
+            builder.Services.AddTransient<ScopeSecretValidator>();
+            builder.Services.AddTransient<SecretParser>();
+            builder.Services.AddTransient<ClientSecretValidator>();
+            builder.Services.AddTransient<SecretValidator>();
+            builder.Services.AddTransient<ScopeValidator>();
+            builder.Services.AddTransient<ExtensionGrantValidator>();
+            builder.Services.AddTransient<BearerTokenUsageValidator>();
+            builder.Services.AddTransient<PersistentGrantSerializer>();
+            builder.Services.AddTransient<EventServiceHelper>();
+            
+            builder.Services.AddTransient<ISessionIdService, DefaultSessionIdService>();
+            builder.Services.AddTransient<ClientListCookie>();
+            builder.Services.AddTransient(typeof(MessageCookie<>));
+            builder.Services.AddScoped<AuthenticationHandler>();
+            
+            builder.Services.AddCors();
+            builder.Services.AddTransient<ICorsPolicyProvider>(provider =>
             {
                 return new PolicyProvider(
                     provider.GetRequiredService<ILogger<PolicyProvider>>(),
@@ -150,83 +134,76 @@ namespace Microsoft.Extensions.DependencyInjection
                     provider.GetRequiredService<ICorsPolicyService>());
             });
 
-            return services;
+            return builder;
         }
 
-        public static IServiceCollection AddPluggableServices(this IServiceCollection services)
+        public static IIdentityServerBuilder AddPluggableServices(this IIdentityServerBuilder builder)
         {
-            services.TryAddTransient<IPersistedGrantService, DefaultPersistedGrantService>();
-            services.TryAddTransient<IKeyMaterialService, DefaultKeyMaterialService>();
-            services.TryAddTransient<IEventService, DefaultEventService>();
-            services.TryAddTransient<ITokenService, DefaultTokenService>();
-            services.TryAddTransient<ITokenCreationService, DefaultTokenCreationService>();
-            services.TryAddTransient<IClaimsService, DefaultClaimsService>();
-            services.TryAddTransient<IRefreshTokenService, DefaultRefreshTokenService>();
-            services.TryAddTransient<IConsentService, DefaultConsentService>();
-            services.TryAddTransient<ICorsPolicyService, DefaultCorsPolicyService>();
-            services.TryAddTransient<IProfileService, DefaultProfileService>();
-            services.TryAddTransient(typeof(IMessageStore<>), typeof(CookieMessageStore<>));
-            services.TryAddTransient<IUserInteractionService, DefaultUserInteractionService>();
+            builder.Services.TryAddTransient<IPersistedGrantService, DefaultPersistedGrantService>();
+            builder.Services.TryAddTransient<IKeyMaterialService, DefaultKeyMaterialService>();
+            builder.Services.TryAddTransient<IEventService, DefaultEventService>();
+            builder.Services.TryAddTransient<ITokenService, DefaultTokenService>();
+            builder.Services.TryAddTransient<ITokenCreationService, DefaultTokenCreationService>();
+            builder.Services.TryAddTransient<IClaimsService, DefaultClaimsService>();
+            builder.Services.TryAddTransient<IRefreshTokenService, DefaultRefreshTokenService>();
+            builder.Services.TryAddTransient<IConsentService, DefaultConsentService>();
+            builder.Services.TryAddTransient<ICorsPolicyService, DefaultCorsPolicyService>();
+            builder.Services.TryAddTransient<IProfileService, DefaultProfileService>();
+            builder.Services.TryAddTransient(typeof(IMessageStore<>), typeof(CookieMessageStore<>));
+            builder.Services.TryAddTransient<IUserInteractionService, DefaultUserInteractionService>();
 
-            return services;
+            return builder;
         }
 
-        public static IServiceCollection AddValidators(this IServiceCollection services)
+        public static IIdentityServerBuilder AddValidators(this IIdentityServerBuilder builder)
         {
-            services.TryAddTransient<IEndSessionRequestValidator, EndSessionRequestValidator>();
-            services.TryAddTransient<ITokenRevocationRequestValidator, TokenRevocationRequestValidator>();
-            services.TryAddTransient<IAuthorizeRequestValidator, AuthorizeRequestValidator>();
-            services.TryAddTransient<ITokenRequestValidator, TokenRequestValidator>();
-            services.TryAddTransient<IRedirectUriValidator, StrictRedirectUriValidator>();
-            services.TryAddTransient<ITokenValidator, TokenValidator>();
-            services.TryAddTransient<IIntrospectionRequestValidator, IntrospectionRequestValidator>();
-            services.TryAddTransient<IResourceOwnerPasswordValidator, NotSupportedResouceOwnerPasswordValidator>();
-            services.TryAddTransient<ICustomTokenValidator, DefaultCustomTokenValidator>();
-            services.TryAddTransient<ICustomAuthorizeRequestValidator, DefaultCustomAuthorizeRequestValidator>();
-            services.TryAddTransient<ICustomTokenRequestValidator, DefaultCustomTokenRequestValidator>();
+            builder.Services.TryAddTransient<IEndSessionRequestValidator, EndSessionRequestValidator>();
+            builder.Services.TryAddTransient<ITokenRevocationRequestValidator, TokenRevocationRequestValidator>();
+            builder.Services.TryAddTransient<IAuthorizeRequestValidator, AuthorizeRequestValidator>();
+            builder.Services.TryAddTransient<ITokenRequestValidator, TokenRequestValidator>();
+            builder.Services.TryAddTransient<IRedirectUriValidator, StrictRedirectUriValidator>();
+            builder.Services.TryAddTransient<ITokenValidator, TokenValidator>();
+            builder.Services.TryAddTransient<IIntrospectionRequestValidator, IntrospectionRequestValidator>();
+            builder.Services.TryAddTransient<IResourceOwnerPasswordValidator, NotSupportedResouceOwnerPasswordValidator>();
+            builder.Services.TryAddTransient<ICustomTokenValidator, DefaultCustomTokenValidator>();
+            builder.Services.TryAddTransient<ICustomAuthorizeRequestValidator, DefaultCustomAuthorizeRequestValidator>();
+            builder.Services.TryAddTransient<ICustomTokenRequestValidator, DefaultCustomTokenRequestValidator>();
 
-            return services;
+            return builder;
         }
 
-        public static IServiceCollection AddResponseGenerators(this IServiceCollection services)
+        public static IIdentityServerBuilder AddResponseGenerators(this IIdentityServerBuilder builder)
         {
-            services.TryAddTransient<ITokenResponseGenerator, TokenResponseGenerator>();
-            services.TryAddTransient<IUserInfoResponseGenerator, UserInfoResponseGenerator>();
-            services.TryAddTransient<IIntrospectionResponseGenerator, IntrospectionResponseGenerator>();
-            services.TryAddTransient<IAuthorizeInteractionResponseGenerator, AuthorizeInteractionResponseGenerator>();
-            services.TryAddTransient<IAuthorizeResponseGenerator, AuthorizeResponseGenerator>();
-            services.TryAddTransient<IAuthorizeEndpointResultFactory, AuthorizeEndpointResultFactory>();
+            builder.Services.TryAddTransient<ITokenResponseGenerator, TokenResponseGenerator>();
+            builder.Services.TryAddTransient<IUserInfoResponseGenerator, UserInfoResponseGenerator>();
+            builder.Services.TryAddTransient<IIntrospectionResponseGenerator, IntrospectionResponseGenerator>();
+            builder.Services.TryAddTransient<IAuthorizeInteractionResponseGenerator, AuthorizeInteractionResponseGenerator>();
+            builder.Services.TryAddTransient<IAuthorizeResponseGenerator, AuthorizeResponseGenerator>();
+            builder.Services.TryAddTransient<IAuthorizeEndpointResultFactory, AuthorizeEndpointResultFactory>();
 
-            return services;
+            return builder;
         }
 
-        public static IServiceCollection AddDefaultSecretParsers(this IServiceCollection services)
+        public static IIdentityServerBuilder AddDefaultSecretParsers(this IIdentityServerBuilder builder)
         {
-            services.AddTransient<ISecretParser, BasicAuthenticationSecretParser>();
-            services.AddTransient<ISecretParser, PostBodySecretParser>();
+            builder.Services.AddTransient<ISecretParser, BasicAuthenticationSecretParser>();
+            builder.Services.AddTransient<ISecretParser, PostBodySecretParser>();
             
-            return services;
+            return builder;
         }
 
-        public static IServiceCollection AddDefaultSecretValidators(this IServiceCollection services)
+        public static IIdentityServerBuilder AddDefaultSecretValidators(this IIdentityServerBuilder builder)
         {
-            services.AddTransient<ISecretValidator, HashedSharedSecretValidator>();
+            builder.Services.AddTransient<ISecretValidator, HashedSharedSecretValidator>();
 
-            return services;
+            return builder;
         }
 
-        public static IServiceCollection AddInMemoryStores(this IServiceCollection services)
+        public static IIdentityServerBuilder AddInMemoryCaching(this IIdentityServerBuilder builder)
         {
-            services.TryAddSingleton<IPersistedGrantStore, InMemoryPersistedGrantStore>();
+            builder.Services.TryAddTransient(typeof(ICache<>), typeof(DefaultCache<>));
 
-            return services;
-        }
-
-        public static IServiceCollection AddInMemoryCaching(this IServiceCollection services)
-        {
-            services.TryAddTransient(typeof(ICache<>), typeof(InMemoryCache<>));
-
-            return services;
+            return builder;
         }
     }
 }
