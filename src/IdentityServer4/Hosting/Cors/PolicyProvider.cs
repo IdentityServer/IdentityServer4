@@ -9,28 +9,48 @@ using IdentityServer4.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using IdentityServer4.Configuration;
 
 namespace IdentityServer4.Hosting.Cors
 {
-    public class PolicyProvider : ICorsPolicyProvider
+    public class PolicyProvider<T> : ICorsPolicyProvider
+        where T : ICorsPolicyProvider
     {
         private readonly ICorsPolicyService _corsPolicyService;
         private readonly string[] _allowedPaths;
-        private readonly ILogger<PolicyProvider> _logger;
+        private readonly ILogger<PolicyProvider<T>> _logger;
+        private readonly T _inner;
+        private readonly IdentityServerOptions _options;
 
         public PolicyProvider(
-            ILogger<PolicyProvider> logger,
+            ILogger<PolicyProvider<T>> logger,
+            T inner,
+            IdentityServerOptions options,
             IEnumerable<string> allowedPaths, 
             ICorsPolicyService corsPolicyService)
         {
             if (allowedPaths == null) throw new ArgumentNullException("allowedPaths");
 
             _logger = logger;
+            _inner = inner;
+            _options = options;
             _allowedPaths = allowedPaths.Select(Normalize).ToArray();
             _corsPolicyService = corsPolicyService;
         }
 
-        public async Task<CorsPolicy> GetPolicyAsync(HttpContext context, string policyName)
+        public Task<CorsPolicy> GetPolicyAsync(HttpContext context, string policyName)
+        {
+            if (_options.CorsOptions.CorsPolicyName == policyName)
+            {
+                return ProcessAsync(context);
+            }
+            else
+            {
+                return _inner.GetPolicyAsync(context, policyName);
+            }
+        }
+
+        async Task<CorsPolicy> ProcessAsync(HttpContext context)
         {
             var path = context.Request.Path.ToString();
             var origin = context.Request.Headers["Origin"].First();

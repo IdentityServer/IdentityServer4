@@ -24,6 +24,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Linq;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -142,13 +143,9 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<AuthenticationHandler>();
 
             services.AddCors();
-            services.AddTransient<ICorsPolicyProvider>(provider =>
-            {
-                return new PolicyProvider(
-                    provider.GetRequiredService<ILogger<PolicyProvider>>(),
-                    Constants.ProtocolRoutePaths.CorsPaths,
-                    provider.GetRequiredService<ICorsPolicyService>());
-            });
+
+            // TODO: put in decorator
+            //services.AddTransient<ICorsPolicyProvider>();
 
             return services;
         }
@@ -227,6 +224,37 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient(typeof(ICache<>), typeof(InMemoryCache<>));
 
             return services;
+        }
+
+        static void DecorateTransient<TService, TDecorator>(this IServiceCollection services)
+        {
+
+        }
+
+        static Type Decorate<TService>(this IServiceCollection services)
+        {
+            var registration = services.FirstOrDefault(x => x.ServiceType == typeof(TService));
+            if (registration == null)
+            {
+                throw new InvalidOperationException("No service type registered.");
+            }
+
+            services.Remove(registration);
+
+            if (registration.ImplementationInstance != null)
+            {
+                services.Add(new ServiceDescriptor(registration.ImplementationInstance.GetType(), registration.ImplementationInstance));
+            }
+            else if (registration.ImplementationFactory != null)
+            {
+                services.Add(new ServiceDescriptor(registration.ImplementationType, registration.ImplementationFactory, registration.Lifetime));
+            }
+            else
+            {
+                services.Add(new ServiceDescriptor(registration.ImplementationType, registration.ImplementationType, registration.Lifetime));
+            }
+
+            return registration.ImplementationType;
         }
     }
 }

@@ -107,5 +107,13 @@ namespace IdentityServer4.Configuration
         /// The caching options.
         /// </value>
         public CachingOptions CachingOptions { get; set; } = new CachingOptions();
+
+        /// <summary>
+        /// Gets or sets the cors options.
+        /// </summary>
+        /// <value>
+        /// The cors options.
+        /// </value>
+        public CorsOptions CorsOptions { get; set; } = new CorsOptions();
     }
 }
