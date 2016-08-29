@@ -96,9 +96,15 @@ namespace Host.UI.Login
         [HttpGet("/ui/external/{provider}", Name = "External")]
         public IActionResult External(string provider, string returnUrl)
         {
+            if (returnUrl != null)
+            {
+                returnUrl = UrlEncoder.Default.Encode(returnUrl);
+            }
+            returnUrl = "/ui/external-callback?returnUrl=" + returnUrl;
+
             return new ChallengeResult(provider, new AuthenticationProperties
             {
-                RedirectUri = "/ui/external-callback?returnUrl=" + UrlEncoder.Default.Encode(returnUrl)
+                RedirectUri = returnUrl
             });
         }
 

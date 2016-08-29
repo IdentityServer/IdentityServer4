@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Host.UI.Login;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using System.Linq;
 
 namespace Host
 {
@@ -26,6 +27,19 @@ namespace Host
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<IISOptions>(options=>
+            {
+                const string windowsAuthType = "Negotiate";
+                var windows = options.AuthenticationDescriptions.Where(x => 
+                        x.AuthenticationScheme == windowsAuthType)
+                    .FirstOrDefault();
+                if (windows != null)
+                {
+                    windows.DisplayName = "Windows";
+                }
+                
+            });
+
             var builder = services.AddIdentityServer(options =>
             {
                 //options.EventsOptions = new EventsOptions
