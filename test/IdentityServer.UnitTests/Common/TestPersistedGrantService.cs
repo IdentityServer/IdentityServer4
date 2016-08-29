@@ -6,7 +6,6 @@ using IdentityServer4.Services;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System;
 using IdentityServer4.Extensions;
 
 namespace IdentityServer4.UnitTests.Common

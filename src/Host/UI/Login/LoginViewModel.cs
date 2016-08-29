@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http.Authentication;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
 

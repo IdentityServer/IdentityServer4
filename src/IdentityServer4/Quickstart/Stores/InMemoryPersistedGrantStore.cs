@@ -5,7 +5,6 @@ using IdentityServer4.Models;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
-using System;
 using System.Collections.Generic;
 
 namespace IdentityServer4.Stores.InMemory

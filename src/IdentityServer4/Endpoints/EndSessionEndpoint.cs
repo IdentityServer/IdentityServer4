@@ -7,7 +7,6 @@ using IdentityServer4.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Threading.Tasks;
-using System;
 using System.Collections.Specialized;
 using IdentityServer4.Validation;
 using IdentityServer4.Models;
