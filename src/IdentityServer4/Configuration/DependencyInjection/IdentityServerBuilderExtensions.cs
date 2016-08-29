@@ -2,15 +2,11 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel;
-using IdentityServer4.Models;
-using IdentityServer4.Services;
-using IdentityServer4.Services.InMemory;
 using IdentityServer4.Stores;
 using IdentityServer4.Stores.InMemory;
 using IdentityServer4.Validation;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -20,22 +16,34 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class IdentityServerBuilderExtensions
     {
-        public static IIdentityServerBuilder AddInMemoryUsers(this IIdentityServerBuilder builder, IEnumerable<InMemoryUser> users)
+        public static IIdentityServerBuilder AddExtensionGrantValidator<T>(this IIdentityServerBuilder builder)
+            where T : class, IExtensionGrantValidator
         {
-            builder.Services.AddSingleton(users);
+            builder.Services.AddTransient<IExtensionGrantValidator, T>();
 
-            builder.Services.AddTransient<IProfileService, InMemoryUserProfileService>();
-            builder.Services.AddTransient<IResourceOwnerPasswordValidator, InMemoryUserResourceOwnerPasswordValidator>();
-            
             return builder;
         }
 
-        public static IIdentityServerBuilder AddInMemoryClients(this IIdentityServerBuilder builder, IEnumerable<Client> clients)
+        public static IIdentityServerBuilder AddResourceOwnerValidator<T>(this IIdentityServerBuilder builder)
+           where T : class, IResourceOwnerPasswordValidator
         {
-            builder.Services.AddSingleton(clients);
+            builder.Services.AddTransient<IResourceOwnerPasswordValidator, T>();
 
-            builder.Services.AddTransient<IClientStore, InMemoryClientStore>();
-            builder.Services.AddTransient<ICorsPolicyService, InMemoryCorsPolicyService>();
+            return builder;
+        }
+
+        public static IIdentityServerBuilder AddSecretParser<T>(this IIdentityServerBuilder builder)
+            where T : class, ISecretParser
+        {
+            builder.Services.AddTransient<ISecretParser, T>();
+
+            return builder;
+        }
+
+        public static IIdentityServerBuilder AddSecretValidator<T>(this IIdentityServerBuilder builder)
+            where T : class, ISecretValidator
+        {
+            builder.Services.AddTransient<ISecretValidator, T>();
 
             return builder;
         }
@@ -63,53 +71,6 @@ namespace Microsoft.Extensions.DependencyInjection
             where T : IScopeStore
         {
             builder.Services.AddTransient<IScopeStore, CachingScopeStore<T>>();
-            return builder;
-        }
-
-        public static IIdentityServerBuilder AddInMemoryScopes(this IIdentityServerBuilder builder, IEnumerable<Scope> scopes)
-        {
-            builder.Services.AddSingleton(scopes);
-            builder.Services.AddTransient<IScopeStore, InMemoryScopeStore>();
-
-            return builder;
-        }
-
-        public static IIdentityServerBuilder AddExtensionGrantValidator<T>(this IIdentityServerBuilder builder)
-            where T : class, IExtensionGrantValidator
-        {
-            builder.Services.AddTransient<IExtensionGrantValidator, T>();
-            
-            return builder;
-        }
-
-        public static IIdentityServerBuilder AddSecretParser<T>(this IIdentityServerBuilder builder)
-            where T : class, ISecretParser
-        {
-            builder.Services.AddTransient<ISecretParser, T>();
-
-            return builder;
-        }
-
-        public static IIdentityServerBuilder AddSecretValidator<T>(this IIdentityServerBuilder builder)
-            where T : class, ISecretValidator
-        {
-            builder.Services.AddTransient<ISecretValidator, T>();
-
-            return builder;
-        }
-
-        public static IIdentityServerBuilder AddResourceOwnerValidator<T>(this IIdentityServerBuilder builder)
-            where T : class, IResourceOwnerPasswordValidator
-        {
-            builder.Services.AddTransient<IResourceOwnerPasswordValidator, T>();
-
-            return builder;
-        }
-
-        public static IIdentityServerBuilder AddValidationKeys(this IIdentityServerBuilder builder, params AsymmetricSecurityKey[] keys)
-        {
-            builder.Services.AddSingleton<IValidationKeysStore>(new InMemoryValidationKeysStore(keys));
-
             return builder;
         }
 
@@ -180,6 +141,13 @@ namespace Microsoft.Extensions.DependencyInjection
 
             var credential = new SigningCredentials(key, "RS256");
             return builder.SetSigningCredential(credential);
+        }
+
+        public static IIdentityServerBuilder AddValidationKeys(this IIdentityServerBuilder builder, params AsymmetricSecurityKey[] keys)
+        {
+            builder.Services.AddSingleton<IValidationKeysStore>(new InMemoryValidationKeysStore(keys));
+
+            return builder;
         }
     }
 }

@@ -40,7 +40,7 @@ namespace Host
                 
             });
 
-            var builder = services.AddIdentityServer(options =>
+            var builder = services.AddIdentityServerQuickstart(options =>
             {
                 //options.EventsOptions = new EventsOptions
                 //{
