@@ -12,12 +12,10 @@ namespace IdentityServer4
     internal static class Constants
     {
         public const string IdentityServerName = "IdentityServer4";
-
-        public const string DefaultAuthenticationType = "password";
+        public const string IdentityServerAuthenticationType = IdentityServerName;
         
-
         public const string LocalIdentityProvider       = "local";
-        public const string ExternalIdentityProvider    = "external";
+        public const string ExternalAuthenticationMetod    = "external";
 
         public const string AccessTokenAudience             = "{0}resources";
 

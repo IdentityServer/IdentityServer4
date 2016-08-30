@@ -14,56 +14,89 @@ namespace IdentityServer4
     {
         public static ClaimsPrincipal Create(
             string subject,
-            string displayName,
-            string authenticationMethod = OidcConstants.AuthenticationMethods.Password,
-            string idp = Constants.LocalIdentityProvider,
-            string authenticationType = Constants.DefaultAuthenticationType,
-            long authenticationTime = 0)
+            string name,
+            params Claim[] claims)
         {
-            if (String.IsNullOrWhiteSpace(subject)) throw new ArgumentNullException("subject");
-            if (String.IsNullOrWhiteSpace(displayName)) throw new ArgumentNullException("displayName");
-            if (String.IsNullOrWhiteSpace(authenticationMethod)) throw new ArgumentNullException("authenticationMethod");
-            if (String.IsNullOrWhiteSpace(idp)) throw new ArgumentNullException("idp");
-            if (String.IsNullOrWhiteSpace(authenticationType)) throw new ArgumentNullException("authenticationType");
+            return Create(subject, name, Constants.LocalIdentityProvider, new[] { OidcConstants.AuthenticationMethods.Password }, claims);
+        }
 
-            if (authenticationTime <= 0) authenticationTime = DateTimeHelper.UtcNow.ToEpochTime();
+        public static ClaimsPrincipal Create(
+            string subject,
+            string name,
+            string idp,
+            params Claim[] claims)
+        {
+            return Create(subject, name, idp, new[] { Constants.ExternalAuthenticationMetod }, claims);
+        }
 
-            var claims = new List<Claim>
+        public static ClaimsPrincipal Create(
+            string subject,
+            string name,
+            string[] amr,
+            params Claim[] claims)
+        {
+            return Create(subject, name, Constants.LocalIdentityProvider, amr, claims);
+        }
+
+        public static ClaimsPrincipal Create(
+            string subject,
+            string name,
+            string idp,
+            IEnumerable<string> authenticationMethods,
+            params Claim[] claims)
+        {
+            if (String.IsNullOrWhiteSpace(subject)) throw new ArgumentNullException(nameof(subject));
+            if (String.IsNullOrWhiteSpace(name)) throw new ArgumentNullException(nameof(name));
+            if (authenticationMethods.IsNullOrEmpty()) throw new ArgumentNullException(nameof(authenticationMethods));
+            if (String.IsNullOrWhiteSpace(idp)) throw new ArgumentNullException(nameof(idp));
+            
+            var allClaims = new List<Claim>
             {
                 new Claim(JwtClaimTypes.Subject, subject),
-                new Claim(JwtClaimTypes.Name, displayName),
-                new Claim(JwtClaimTypes.AuthenticationMethod, authenticationMethod),
+                new Claim(JwtClaimTypes.Name, name),
                 new Claim(JwtClaimTypes.IdentityProvider, idp),
-                new Claim(JwtClaimTypes.AuthenticationTime, authenticationTime.ToString(), ClaimValueTypes.Integer)
+                new Claim(JwtClaimTypes.AuthenticationTime, DateTimeHelper.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer)
             };
 
-            var id = new ClaimsIdentity(claims, authenticationType, JwtClaimTypes.Name, JwtClaimTypes.Role);
+            foreach (var amr in authenticationMethods)
+            {
+                allClaims.Add(new Claim(JwtClaimTypes.AuthenticationMethod, amr));
+            }
+
+            // todo: filtering?
+            foreach (var claim in claims)
+            {
+                allClaims.Add(claim);
+            }
+
+            var id = new ClaimsIdentity(allClaims.Distinct(new ClaimComparer()), Constants.IdentityServerAuthenticationType, JwtClaimTypes.Name, JwtClaimTypes.Role);
             return new ClaimsPrincipal(id);
         }
 
-        public static ClaimsPrincipal CreateFromPrincipal(ClaimsPrincipal principal, string authenticationType)
-        {
-            // we require the following claims
-            var subject = principal.FindFirst(JwtClaimTypes.Subject);
-            if (subject == null) throw new InvalidOperationException("sub claim is missing");
 
-            var name = principal.FindFirst(JwtClaimTypes.Name);
-            if (name == null) throw new InvalidOperationException("name claim is missing");
+        //public static ClaimsPrincipal CreateFromPrincipal(ClaimsPrincipal principal, string authenticationType)
+        //{
+        //    // we require the following claims
+        //    var subject = principal.FindFirst(JwtClaimTypes.Subject);
+        //    if (subject == null) throw new InvalidOperationException("sub claim is missing");
 
-            var authenticationMethod = principal.FindFirst(JwtClaimTypes.AuthenticationMethod);
-            if (authenticationMethod == null) throw new InvalidOperationException("amr claim is missing");
+        //    var name = principal.FindFirst(JwtClaimTypes.Name);
+        //    if (name == null) throw new InvalidOperationException("name claim is missing");
 
-            var authenticationTime = principal.FindFirst(JwtClaimTypes.AuthenticationTime);
-            if (authenticationTime == null) throw new InvalidOperationException("auth_time claim is missing");
+        //    var authenticationMethod = principal.FindFirst(JwtClaimTypes.AuthenticationMethod);
+        //    if (authenticationMethod == null) throw new InvalidOperationException("amr claim is missing");
 
-            var idp = principal.FindFirst(JwtClaimTypes.IdentityProvider);
-            if (idp == null) throw new InvalidOperationException("idp claim is missing");
+        //    var authenticationTime = principal.FindFirst(JwtClaimTypes.AuthenticationTime);
+        //    if (authenticationTime == null) throw new InvalidOperationException("auth_time claim is missing");
 
-            var id = new ClaimsIdentity(principal.Claims, authenticationType, JwtClaimTypes.Name, JwtClaimTypes.Role);
-            return new ClaimsPrincipal(id);
-        }
+        //    var idp = principal.FindFirst(JwtClaimTypes.IdentityProvider);
+        //    if (idp == null) throw new InvalidOperationException("idp claim is missing");
 
-        public static ClaimsPrincipal FromSubjectId(string subjectId, IEnumerable<Claim> additionalClaims = null)
+        //    var id = new ClaimsIdentity(principal.Claims, authenticationType, JwtClaimTypes.Name, JwtClaimTypes.Role);
+        //    return new ClaimsPrincipal(id);
+        //}
+
+        internal static ClaimsPrincipal FromSubjectId(string subjectId, IEnumerable<Claim> additionalClaims = null)
         {
             var claims = new List<Claim>
             {
@@ -75,68 +108,68 @@ namespace IdentityServer4
                 claims.AddRange(additionalClaims);
             }
 
-            return Principal.Create(Constants.DefaultAuthenticationType,
+            return Principal.Create(Constants.IdentityServerAuthenticationType,
                 claims.Distinct(new ClaimComparer()).ToArray());
         }
 
-        public static ClaimsPrincipal FromClaims(IEnumerable<Claim> claims, bool allowMissing = false)
-        {
-            var amr = claims.FirstOrDefault(c => c.Type == JwtClaimTypes.AuthenticationMethod);
-            var sub = claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject);
-            var idp = claims.FirstOrDefault(c => c.Type == JwtClaimTypes.IdentityProvider);
-            var authTime = claims.FirstOrDefault(c => c.Type == JwtClaimTypes.AuthenticationTime);
+        //public static ClaimsPrincipal FromClaims(IEnumerable<Claim> claims, bool allowMissing = false)
+        //{
+        //    var amr = claims.FirstOrDefault(c => c.Type == JwtClaimTypes.AuthenticationMethod);
+        //    var sub = claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject);
+        //    var idp = claims.FirstOrDefault(c => c.Type == JwtClaimTypes.IdentityProvider);
+        //    var authTime = claims.FirstOrDefault(c => c.Type == JwtClaimTypes.AuthenticationTime);
 
-            var id = new ClaimsIdentity(Constants.DefaultAuthenticationType);
+        //    var id = new ClaimsIdentity(Constants.DefaultAuthenticationType);
 
-            if (sub != null)
-            {
-                id.AddClaim(sub);
-            }
-            else
-            {
-                if (allowMissing == false)
-                {
-                    throw new InvalidOperationException("sub claim is missing");
-                }
-            }
+        //    if (sub != null)
+        //    {
+        //        id.AddClaim(sub);
+        //    }
+        //    else
+        //    {
+        //        if (allowMissing == false)
+        //        {
+        //            throw new InvalidOperationException("sub claim is missing");
+        //        }
+        //    }
 
-            if (amr != null)
-            {
-                id.AddClaim(amr);
-            }
-            else
-            {
-                if (allowMissing == false)
-                {
-                    throw new InvalidOperationException("amr claim is missing");
-                }
-            }
+        //    if (amr != null)
+        //    {
+        //        id.AddClaim(amr);
+        //    }
+        //    else
+        //    {
+        //        if (allowMissing == false)
+        //        {
+        //            throw new InvalidOperationException("amr claim is missing");
+        //        }
+        //    }
 
-            if (idp != null)
-            {
-                id.AddClaim(idp);
-            }
-            else
-            {
-                if (allowMissing == false)
-                {
-                    throw new InvalidOperationException("idp claim is missing");
-                }
-            }
+        //    if (idp != null)
+        //    {
+        //        id.AddClaim(idp);
+        //    }
+        //    else
+        //    {
+        //        if (allowMissing == false)
+        //        {
+        //            throw new InvalidOperationException("idp claim is missing");
+        //        }
+        //    }
 
-            if (authTime != null)
-            {
-                id.AddClaim(authTime);
-            }
-            else
-            {
-                if (allowMissing == false)
-                {
-                    throw new InvalidOperationException("auth_time claim is missing");
-                }
-            }
+        //    if (authTime != null)
+        //    {
+        //        id.AddClaim(authTime);
+        //    }
+        //    else
+        //    {
+        //        if (allowMissing == false)
+        //        {
+        //            throw new InvalidOperationException("auth_time claim is missing");
+        //        }
+        //    }
 
-            return new ClaimsPrincipal(id);
-        }
+        //    return new ClaimsPrincipal(id);
+        //}
     }
 }
