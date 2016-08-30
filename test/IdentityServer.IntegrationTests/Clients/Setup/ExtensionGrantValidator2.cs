@@ -23,7 +23,7 @@ namespace IdentityServer4.IntegrationTests.Clients
                 context.Result = new GrantValidationResult(Models.TokenErrors.InvalidGrant, "invalid custom credential");
             }
 
-            return Task.CompletedTask;
+            return Task.FromResult(0);
         }
 
         public string GrantType

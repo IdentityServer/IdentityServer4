@@ -28,6 +28,7 @@
         "System.Diagnostics.Process": "4.1.0"
       }
     },
+
     "net452": { }
   }
 }

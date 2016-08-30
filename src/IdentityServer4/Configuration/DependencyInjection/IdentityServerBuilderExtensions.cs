@@ -133,11 +133,31 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IIdentityServerBuilder SetTemporarySigningCredential(this IIdentityServerBuilder builder)
         {
             var rsa = RSA.Create();
-            var key = new RsaSecurityKey(rsa)
-            {
-                KeyId = CryptoRandom.CreateUniqueId()
-            };
 
+#if NET452
+            if (rsa.KeySize < 2048)
+            {
+                rsa.Dispose();
+                rsa = new RSACryptoServiceProvider(2048);
+            }
+#endif
+            RsaSecurityKey key = null;
+#if NET452
+            if (rsa is RSACryptoServiceProvider) 
+            {
+                var parameters = rsa.ExportParameters(includePrivateParameters: true);
+                key = new RsaSecurityKey(parameters);
+                        
+                rsa.Dispose();
+            }   
+#endif
+            if (key == null)
+            {
+                key = new RsaSecurityKey(rsa);
+            }
+
+            key.KeyId = CryptoRandom.CreateUniqueId();
+            
             var credential = new SigningCredentials(key, "RS256");
             return builder.SetSigningCredential(credential);
         }

@@ -30,7 +30,7 @@ namespace IdentityServer4.IntegrationTests.Clients
                 context.Result = new GrantValidationResult(TokenErrors.InvalidGrant, "invalid_credential", response);
             }
 
-            return Task.CompletedTask;
+            return Task.FromResult(0);
         }
 
         public string GrantType
