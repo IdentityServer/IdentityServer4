@@ -12,20 +12,20 @@ namespace IdentityServer4.Quickstart
     public class InMemoryUser
     {
         /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="InMemoryUser"/> is enabled.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if enabled; otherwise, <c>false</c>.
+        /// </value>
+        public bool Enabled { get; set; } = true;
+
+        /// <summary>
         /// Gets or sets the subject.
         /// </summary>
         /// <value>
         /// The subject.
         /// </value>
         public string Subject { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="InMemoryUser"/> is enabled.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if enabled; otherwise, <c>false</c>.
-        /// </value>
-        public bool Enabled { get; set; }
 
         /// <summary>
         /// Gets or sets the username.
@@ -65,15 +65,6 @@ namespace IdentityServer4.Quickstart
         /// <value>
         /// The claims.
         /// </value>
-        public IEnumerable<Claim> Claims { get; set; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="InMemoryUser"/> class.
-        /// </summary>
-        public InMemoryUser()
-        {
-            Enabled = true;
-            Claims = new List<Claim>();
-        }
+        public IEnumerable<Claim> Claims { get; set; } = new List<Claim>();
     }
 }
