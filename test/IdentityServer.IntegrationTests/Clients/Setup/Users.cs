@@ -25,7 +25,7 @@ namespace IdentityServer4.IntegrationTests.Clients
                         new Claim(JwtClaimTypes.Role, "Admin"),
                         new Claim(JwtClaimTypes.Role, "Geek"),
                         new Claim(JwtClaimTypes.WebSite, "http://alice.com"),
-                        new Claim(JwtClaimTypes.Address, @"{ 'street_address': 'One Hacker Way', 'locality': 'Heidelberg', 'postal_code': 69118, 'country': 'Germany' }", Constants.ClaimValueTypes.Json)
+                        new Claim(JwtClaimTypes.Address, @"{ 'street_address': 'One Hacker Way', 'locality': 'Heidelberg', 'postal_code': 69118, 'country': 'Germany' }", IdentityServerConstants.ClaimValueTypes.Json)
                     }
                 },
                 new InMemoryUser{Subject = "88421113", Username = "bob", Password = "bob", 
@@ -39,7 +39,7 @@ namespace IdentityServer4.IntegrationTests.Clients
                         new Claim(JwtClaimTypes.Role, "Developer"),
                         new Claim(JwtClaimTypes.Role, "Geek"),
                         new Claim(JwtClaimTypes.WebSite, "http://bob.com"),
-                        new Claim(JwtClaimTypes.Address, @"{ 'street_address': 'One Hacker Way', 'locality': 'Heidelberg', 'postal_code': 69118, 'country': 'Germany' }", Constants.ClaimValueTypes.Json)
+                        new Claim(JwtClaimTypes.Address, @"{ 'street_address': 'One Hacker Way', 'locality': 'Heidelberg', 'postal_code': 69118, 'country': 'Germany' }", IdentityServerConstants.ClaimValueTypes.Json)
                     }
                 },
             };

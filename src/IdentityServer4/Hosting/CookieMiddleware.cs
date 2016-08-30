@@ -22,7 +22,7 @@ namespace IdentityServer4.Hosting
                     AutomaticAuthenticate = true,
                     SlidingExpiration = false,
                     ExpireTimeSpan = Constants.DefaultCookieTimeSpan,
-                    CookieName = Constants.DefaultCookieAuthenticationScheme,
+                    CookieName = IdentityServerConstants.DefaultCookieAuthenticationScheme,
                 });
             }
         }

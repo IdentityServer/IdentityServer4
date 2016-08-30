@@ -7,16 +7,14 @@ using IdentityServer4.Models;
 using System;
 using System.Collections.Generic;
 
-#pragma warning disable 1591
-
 namespace IdentityServer4
 {
-    public static class Constants
+    internal static class Constants
     {
         public const string IdentityServerName = "IdentityServer4";
 
         public const string DefaultAuthenticationType = "password";
-        public const string DefaultCookieAuthenticationScheme = "idsvr";
+        
 
         public const string LocalIdentityProvider       = "local";
         public const string ExternalIdentityProvider    = "external";
@@ -324,11 +322,6 @@ namespace IdentityServer4
             public const string UserInfoEndpoint = "UserInfoEndpoint";
             public const string ClaimsProviderIdentityToken = "ClaimsProviderIdentityToken";
             public const string ClaimsProviderAccessToken = "ClaimsProviderAccessToken";
-        }
-
-        public static class ClaimValueTypes
-        {
-            public const string Json = "json";
         }
 
         public class Filters

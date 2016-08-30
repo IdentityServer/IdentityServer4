@@ -79,7 +79,7 @@ namespace IdentityServer4.Extensions
                 }
             }
 
-            if (claim.ValueType == Constants.ClaimValueTypes.Json)
+            if (claim.ValueType == IdentityServerConstants.ClaimValueTypes.Json)
             {
                 try
                 {

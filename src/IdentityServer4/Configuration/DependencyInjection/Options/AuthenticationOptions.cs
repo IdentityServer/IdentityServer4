@@ -19,7 +19,7 @@ namespace IdentityServer4.Configuration
         {
             get
             {
-                return AuthenticationScheme ?? Constants.DefaultCookieAuthenticationScheme;
+                return AuthenticationScheme ?? IdentityServerConstants.DefaultCookieAuthenticationScheme;
             }
         }
 
