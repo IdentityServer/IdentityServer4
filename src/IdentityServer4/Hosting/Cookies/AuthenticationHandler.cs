@@ -49,6 +49,9 @@ namespace IdentityServer4.Hosting.Cookies
 
         private async Task AugmentContextAsync(SignInContext context)
         {
+            context.Principal.AssertRequiredClaims();
+            context.Principal.AugmentMissingClaims();
+
             await _sessionId.AddSessionIdAsync(context);
         }
  
