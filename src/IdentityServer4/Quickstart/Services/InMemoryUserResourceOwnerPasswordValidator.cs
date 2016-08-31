@@ -12,7 +12,7 @@ namespace IdentityServer4.Quickstart
     {
         private readonly IEnumerable<InMemoryUser> _users;
 
-        public InMemoryUserResourceOwnerPasswordValidator(IEnumerable<InMemoryUser> users)
+        public InMemoryUserResourceOwnerPasswordValidator(List<InMemoryUser> users)
         {
             _users = users;
         }

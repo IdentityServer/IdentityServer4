@@ -1,13 +1,16 @@
-﻿using IdentityServer4.Services;
+﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+using IdentityServer4.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
-using Host.Models;
+using IdentityServer4.Quickstart.UI.Models;
 
-namespace Host.Controllers
+namespace IdentityServer4.Quickstart.UI.Controllers
 {
     public class ConsentController : Controller
     {
