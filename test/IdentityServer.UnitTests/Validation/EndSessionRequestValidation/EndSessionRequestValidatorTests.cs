@@ -5,6 +5,7 @@ using FluentAssertions;
 using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
+using IdentityServer4.Quickstart;
 using IdentityServer4.UnitTests.Common;
 using IdentityServer4.Validation;
 using System.Collections.Generic;
@@ -21,19 +22,29 @@ namespace IdentityServer4.UnitTests.Validation.EndSessionRequestValidation
         IdentityServerOptions _options;
         StubTokenValidator _stubTokenValidator = new StubTokenValidator();
         StubRedirectUriValidator _stubRedirectUriValidator = new StubRedirectUriValidator();
+        MockHttpContextAccessor _context = new MockHttpContextAccessor();
+        StubSessionIdService _sessionId = new StubSessionIdService();
+        MockClientListCookie _clientList;
+        InMemoryClientStore _clientStore;
 
         ClaimsPrincipal _user;
 
         public EndSessionRequestValidatorTests()
         {
-            _user = IdentityServer4.IdentityServerPrincipal.Create("alice", "Alice");
+            _user = IdentityServerPrincipal.Create("alice", "Alice");
+            _clientList = new MockClientListCookie(_options, _context);
+            _clientStore = new InMemoryClientStore(new Client[0]);
 
             _options = TestIdentityServerOptions.Create();
             _subject = new EndSessionRequestValidator(
-                TestLogger.Create<EndSessionRequestValidator>(),
-                _options, 
+                _context,
+                _options,
                 _stubTokenValidator,
-                _stubRedirectUriValidator);
+                _stubRedirectUriValidator,
+                _sessionId,
+                _clientList,
+                _clientStore,
+                TestLogger.Create<EndSessionRequestValidator>());
         }
 
         [Fact]

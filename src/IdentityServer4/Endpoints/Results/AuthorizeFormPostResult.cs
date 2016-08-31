@@ -3,10 +3,14 @@
 
 using IdentityServer4.Models;
 using IdentityServer4.Extensions;
+using IdentityServer4.Hosting;
+using Microsoft.AspNetCore.Http;
+using System;
+using System.Threading.Tasks;
 
 namespace IdentityServer4.Endpoints.Results
 {
-    class AuthorizeFormPostResult : HtmlPageResult
+    class AuthorizeFormPostResult : IEndpointResult
     {
         public AuthorizeResponse Response { get; private set; }
 
@@ -17,7 +21,7 @@ namespace IdentityServer4.Endpoints.Results
 
         const string _html = "<!DOCTYPE html><html><head><title>Submit this form</title><meta name='viewport' content='width=device-width, initial-scale=1.0' /></head><body><form method='post' action='{uri}'>{body}</form><script>(function(){document.forms[0].submit();})();</script></body></html>";
 
-        protected override string GetHtml()
+        string GetHtml()
         {
             var html = _html;
 
@@ -27,9 +31,15 @@ namespace IdentityServer4.Endpoints.Results
             return html;
         }
 
-        internal static string BuildFormBody(AuthorizeResponse response)
+        string BuildFormBody(AuthorizeResponse response)
         {
             return response.ToNameValueCollection().ToFormPost();
+        }
+
+        public Task ExecuteAsync(HttpContext context)
+        {
+            context.Response.SetNoCache();
+            return context.Response.WriteHtmlAsync(GetHtml());
         }
     }
 }

@@ -11,6 +11,7 @@ namespace IdentityServer4.Services
         Task AddSessionIdAsync(SignInContext context);
         Task<string> GetCurrentSessionIdAsync();
 
+        Task EnsureSessionCookieAsync();
         string GetCookieName();
         string GetCookieValue();
         void RemoveCookie();

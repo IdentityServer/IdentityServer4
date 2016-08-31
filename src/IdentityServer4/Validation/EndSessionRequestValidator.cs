@@ -10,6 +10,12 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityServer4.Configuration;
+using System;
+using IdentityServer4.Services;
+using IdentityServer4.Hosting;
+using IdentityServer4.Stores;
+using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
 
 namespace IdentityServer4.Validation
 {
@@ -19,16 +25,28 @@ namespace IdentityServer4.Validation
         private readonly IdentityServerOptions _options;
         private readonly ITokenValidator _tokenValidator;
         private readonly IRedirectUriValidator _uriValidator;
+        private readonly ISessionIdService _sessionId;
+        private readonly ClientListCookie _clientListCookie;
+        private readonly IClientStore _clientStore;
+        private readonly IHttpContextAccessor _context;
 
         public EndSessionRequestValidator(
-            ILogger<EndSessionRequestValidator> logger,
+            IHttpContextAccessor context,
             IdentityServerOptions options, 
             ITokenValidator tokenValidator, 
-            IRedirectUriValidator uriValidator)
+            IRedirectUriValidator uriValidator,
+            ISessionIdService sessionId,
+            ClientListCookie clientListCookie,
+            IClientStore clientStore,
+            ILogger<EndSessionRequestValidator> logger)
         {
+            _context = context;
             _options = options;
             _tokenValidator = tokenValidator;
             _uriValidator = uriValidator;
+            _sessionId = sessionId;
+            _clientListCookie = clientListCookie;
+            _clientStore = clientStore;
             _logger = logger;
         }
 
@@ -131,6 +149,100 @@ namespace IdentityServer4.Validation
         {
             var log = new EndSessionRequestValidationLog(request);
             _logger.LogInformation("End session request validation success\n{details}", log);
+        }
+
+        public async Task<EndSessionCallbackValidationResult> ValidateCallbackAsync(NameValueCollection parameters)
+        {
+            var result = new EndSessionCallbackValidationResult()
+            {
+                IsError = true
+            };
+
+            result.LogoutId = parameters[_options.UserInteractionOptions.LogoutIdParameter];
+
+            var sid = ValidateSid(parameters);
+            if (sid == null)
+            {
+                result.Error = "Invalid session id";
+            }
+            else
+            {
+                result.IsError = false;
+                result.ClientLogoutUrls = await GetClientEndSessionUrlsAsync(sid);
+            }
+
+            return result;
+        }
+
+        private string ValidateSid(NameValueCollection parameters)
+        {
+            var sidCookie = _sessionId.GetCookieValue();
+            if (sidCookie != null)
+            {
+                var sid = parameters[OidcConstants.EndSessionRequest.Sid];
+                if (sid != null)
+                {
+                    if (TimeConstantComparer.IsEqual(sid, sidCookie))
+                    {
+                        _logger.LogDebug("sid validation successful");
+                        return sid;
+                    }
+                    else
+                    {
+                        _logger.LogError("sid in query string does not match sid from cookie");
+                    }
+
+                }
+                else
+                {
+                    _logger.LogError("No sid in query string");
+                }
+            }
+            else
+            {
+                _logger.LogError("No sid in cookie");
+            }
+
+            return null;
+        }
+
+        private async Task<IEnumerable<string>> GetClientEndSessionUrlsAsync(string sid)
+        {
+            // read client list to get URLs for client logout endpoints
+            var clientIds = _clientListCookie.GetClients();
+
+            var urls = new List<string>();
+            foreach (var clientId in clientIds)
+            {
+                var client = await _clientStore.FindClientByIdAsync(clientId);
+
+                if (client != null && client.LogoutUri.IsPresent())
+                {
+                    var url = client.LogoutUri;
+
+                    // add session id if required
+                    if (client.LogoutSessionRequired)
+                    {
+                        url = url.AddQueryString(OidcConstants.EndSessionRequest.Sid, sid);
+                        //TODO: update sid to OidcConstants when idmodel released
+                        url = url.AddQueryString("iss", _context.HttpContext.GetIssuerUri());
+                    }
+
+                    urls.Add(url);
+                }
+            }
+
+            if (urls.Any())
+            {
+                var msg = urls.Aggregate((x, y) => x + ", " + y);
+                _logger.LogDebug("Client end session iframe URLs: {0}", msg);
+            }
+            else
+            {
+                _logger.LogDebug("No client end session iframe URLs");
+            }
+
+            return urls;
         }
     }
 }

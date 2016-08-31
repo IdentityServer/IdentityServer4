@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.Features.Authentication;
 using IdentityServer4.Extensions;
+using System;
 
 namespace IdentityServer4.Services.Default
 {
@@ -53,19 +54,27 @@ namespace IdentityServer4.Services.Default
             if (info.Properties.Items.ContainsKey(OidcConstants.EndSessionRequest.Sid))
             {
                 var sid = info.Properties.Items[OidcConstants.EndSessionRequest.Sid];
-
-                if (sid != null)
-                {
-                    IssueSessionId(sid);
-                }
-                else
-                {
-                    RemoveCookie();
-                }
-
                 return sid;
             }
             return null;
+        }
+
+        public async Task EnsureSessionCookieAsync()
+        {
+            var sid = await GetCurrentSessionIdAsync();
+            EnsureSessionCookie(sid);
+        }
+
+        void EnsureSessionCookie(string sid)
+        {
+            if (sid != null)
+            {
+                IssueSessionId(sid);
+            }
+            else
+            {
+                RemoveCookie();
+            }
         }
 
         public string GetCookieName()

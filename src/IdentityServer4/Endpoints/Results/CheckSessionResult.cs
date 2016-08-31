@@ -1,18 +1,27 @@
-﻿namespace IdentityServer4.Endpoints.Results
-{
-    class CheckSessionResult : HtmlPageResult
-    {
-        private readonly string _cookieName;
+﻿using System;
+using System.Threading.Tasks;
+using IdentityServer4.Hosting;
+using Microsoft.AspNetCore.Http;
+using IdentityServer4.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using IdentityServer4.Services;
 
-        public CheckSessionResult(string cookieName)
+namespace IdentityServer4.Endpoints.Results
+{
+    class CheckSessionResult : IEndpointResult
+    {
+        string GetHtml(string cookieName)
         {
-            _cookieName = cookieName;
-            DisableCache = false;
+            return _html.Replace("{cookieName}", cookieName);
         }
 
-        protected override string GetHtml()
+        public async Task ExecuteAsync(HttpContext context)
         {
-            return _html.Replace("{cookieName}", _cookieName);
+            var sessionId = context.RequestServices.GetRequiredService<ISessionIdService>();
+            await sessionId.EnsureSessionCookieAsync();
+
+            var html = GetHtml(sessionId.GetCookieName());
+            await context.Response.WriteHtmlAsync(html);
         }
 
         const string _html = @"

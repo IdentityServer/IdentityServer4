@@ -1,6 +1,7 @@
 ﻿using IdentityServer4.Services;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.Features.Authentication;
+using System;
 
 namespace IdentityServer4.UnitTests.Common
 {
@@ -9,6 +10,11 @@ namespace IdentityServer4.UnitTests.Common
         public string SessionId { get; set; } = "session_id";
 
         public Task AddSessionIdAsync(SignInContext context)
+        {
+            return Task.FromResult(0);
+        }
+
+        public Task EnsureSessionCookieAsync()
         {
             return Task.FromResult(0);
         }

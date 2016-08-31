@@ -1,25 +1,64 @@
-﻿using IdentityServer4.Extensions;
+﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+using IdentityServer4.Extensions;
 using System.Collections.Generic;
 using System.Linq;
+using IdentityServer4.Validation;
+using System.Threading.Tasks;
+using IdentityServer4.Hosting;
+using Microsoft.AspNetCore.Http;
+using System;
+using IdentityServer4.Services;
+using Microsoft.Extensions.DependencyInjection;
+using IdentityServer4.Stores;
+using IdentityServer4.Models;
+using System.Net;
 
 namespace IdentityServer4.Endpoints.Results
 {
-    class EndSessionCallbackResult : HtmlPageResult
+    class EndSessionCallbackResult : IEndpointResult
     {
-        private IEnumerable<string> _urls;
+        private readonly EndSessionCallbackValidationResult _result;
 
-        public EndSessionCallbackResult(IEnumerable<string> urls)
+        public EndSessionCallbackResult(EndSessionCallbackValidationResult result)
         {
-            this._urls = urls;
+            _result = result;
         }
 
-        protected override string GetHtml()
+        public async Task ExecuteAsync(HttpContext context)
+        {
+            if (_result.LogoutId != null)
+            {
+                var logoutMessageStore = context.RequestServices.GetRequiredService<IMessageStore<LogoutMessage>>();
+                await logoutMessageStore.DeleteAsync(_result.LogoutId);
+            }
+
+            if (_result.IsError)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            }
+            else
+            {
+                var sessionId = context.RequestServices.GetRequiredService<ISessionIdService>();
+                sessionId.RemoveCookie();
+
+                var clientList = context.RequestServices.GetRequiredService<ClientListCookie>();
+                clientList.Clear();
+
+                var html = GetHtml();
+                context.Response.SetNoCache();
+                await context.Response.WriteHtmlAsync(html);
+            }
+        }
+
+        string GetHtml()
         {
             string framesHtml = null;
 
-            if (!_urls.IsNullOrEmpty())
+            if (_result.ClientLogoutUrls != null && _result.ClientLogoutUrls.Any())
             {
-                var frameUrls = _urls.Select(x => $"<iframe style='display:none' width='0' height='0' src='{x}'></iframe>");
+                var frameUrls = _result.ClientLogoutUrls.Select(url => $"<iframe style='display:none' width='0' height='0' src='{url}'></iframe>");
                 framesHtml = frameUrls.Aggregate((x, y) => x + y);
             }
 

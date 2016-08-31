@@ -10,5 +10,6 @@ namespace IdentityServer4.Validation
     internal interface IEndSessionRequestValidator
     {
         Task<EndSessionValidationResult> ValidateAsync(NameValueCollection parameters, ClaimsPrincipal subject);
+        Task<EndSessionCallbackValidationResult> ValidateCallbackAsync(NameValueCollection parameters);
     }
 }

@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityServer4;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Microsoft.AspNetCore.Http
@@ -24,6 +25,12 @@ namespace Microsoft.AspNetCore.Http
         {
             response.Headers.Add("Cache-Control", "no-store, no-cache, max-age=0");
             response.Headers.Add("Pragma", "no-cache");
+        }
+
+        public static async Task WriteHtmlAsync(this HttpResponse response, string html)
+        {
+            response.ContentType = "text/html; charset=UTF-8";
+            await response.WriteAsync(html, Encoding.UTF8);
         }
     }
 }

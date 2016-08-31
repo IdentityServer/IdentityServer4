@@ -3,7 +3,6 @@
 
 using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Hosting;
-using IdentityServer4.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Net;
@@ -14,29 +13,27 @@ namespace IdentityServer4.Endpoints
     class CheckSessionEndpoint : IEndpoint
     {
         private readonly ILogger<CheckSessionEndpoint> _logger;
-        private ISessionIdService _sessionId;
 
-        public CheckSessionEndpoint(
-            ILogger<CheckSessionEndpoint> logger,
-            ISessionIdService sessionId)
+        public CheckSessionEndpoint(ILogger<CheckSessionEndpoint> logger)
         {
             _logger = logger;
-            _sessionId = sessionId;
         }
 
-        public async Task<IEndpointResult> ProcessAsync(HttpContext context)
+        public Task<IEndpointResult> ProcessAsync(HttpContext context)
         {
+            IEndpointResult result = null;
+
             if (context.Request.Method != "GET")
             {
-                return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
+                result = new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
+            }
+            else
+            {
+                _logger.LogInformation("Check session iframe request");
+                result = new CheckSessionResult();
             }
 
-            _logger.LogInformation("Check session iframe request");
-
-            // ensure we have a session id cookie written
-            var sid = await _sessionId.GetCurrentSessionIdAsync();
-
-            return new CheckSessionResult(_sessionId.GetCookieName());
+            return Task.FromResult(result);
         }
    }
 }
