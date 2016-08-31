@@ -9,7 +9,7 @@ namespace IdentityServer4.Services
     public interface IClientSessionService
     {
         Task AddClientIdAsync(string clientId);
-        Task EnsureClientListCookie();
+        Task EnsureClientListCookieAsync();
 
         IEnumerable<string> GetClientListFromCookie();
         void RemoveCookie();

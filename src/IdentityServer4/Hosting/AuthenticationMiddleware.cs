@@ -3,7 +3,6 @@
 
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
-using IdentityServer4.Hosting.Cookies;
 
 namespace IdentityServer4.Hosting
 {

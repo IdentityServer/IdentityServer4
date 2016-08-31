@@ -2,16 +2,15 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using FluentAssertions;
-using IdentityServer4.Hosting.Cors;
 using IdentityServer4.UnitTests.Common;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
-using System;
 using IdentityServer4.Configuration;
 using IdentityServer4.Configuration.DependencyInjection;
+using IdentityServer4.Infrastructure;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 
 namespace IdentityServer4.UnitTests.Hosting.Cors
 {
@@ -19,7 +18,7 @@ namespace IdentityServer4.UnitTests.Hosting.Cors
     {
         const string Category = "PolicyProvider";
 
-        PolicyProvider _subject;
+        CorsPolicyProvider _subject;
         List<string> _allowedPaths = new List<string>();
 
         MockCorsPolicyProvider _mockInner = new MockCorsPolicyProvider();
@@ -40,8 +39,8 @@ namespace IdentityServer4.UnitTests.Hosting.Cors
                 _options.CorsOptions.CorsPaths.Add(new PathString(path));
             }
 
-            _subject = new PolicyProvider(
-                TestLogger.Create<PolicyProvider>(),
+            _subject = new CorsPolicyProvider(
+                TestLogger.Create<CorsPolicyProvider>(),
                 new Decorator<ICorsPolicyProvider>(_mockInner),
                 _options,
                 _mockPolicy);

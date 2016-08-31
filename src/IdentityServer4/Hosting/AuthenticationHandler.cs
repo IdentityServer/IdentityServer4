@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 using IdentityServer4.Configuration;
 using IdentityServer4.Services;
 
-namespace IdentityServer4.Hosting.Cookies
+namespace IdentityServer4.Hosting
 {
     public class AuthenticationHandler : IAuthenticationHandler
     {

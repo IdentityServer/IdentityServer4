@@ -42,8 +42,9 @@ namespace IdentityServer4.Services.Default
                 sid = CryptoRandom.CreateUniqueId();
             }
 
-            IssueSessionId(sid);
             context.Properties[OidcConstants.EndSessionRequest.Sid] = sid;
+
+            IssueSessionIdCookie(sid);
         }
 
         public async Task<string> GetCurrentSessionIdAsync()
@@ -67,7 +68,7 @@ namespace IdentityServer4.Services.Default
         {
             if (sid != null)
             {
-                IssueSessionId(sid);
+                IssueSessionIdCookie(sid);
             }
             else
             {
@@ -99,7 +100,7 @@ namespace IdentityServer4.Services.Default
             }
         }
 
-        void IssueSessionId(string sid)
+        void IssueSessionIdCookie(string sid)
         {
             if (GetCookieValue() != sid)
             {

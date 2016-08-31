@@ -12,7 +12,7 @@ using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Hosting
+namespace IdentityServer4.Extensions
 {
     public static class HttpContextExtensions
     {
@@ -101,6 +101,11 @@ namespace IdentityServer4.Hosting
             {
                 var signoutIframeUrl = context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.ProtocolRoutePaths.EndSessionCallback;
                 signoutIframeUrl = signoutIframeUrl.AddQueryString(OidcConstants.EndSessionRequest.Sid, sid);
+
+                // if they are rendering the callback frame, we need to ensure the client cookie is written
+                var clientSession = context.RequestServices.GetRequiredService<IClientSessionService>();
+                await clientSession.EnsureClientListCookieAsync();
+
                 return signoutIframeUrl;
             }
 

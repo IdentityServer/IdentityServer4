@@ -45,7 +45,6 @@ namespace IdentityServer4.Endpoints.Results
 
                 var clientList = context.RequestServices.GetRequiredService<IClientSessionService>();
                 clientList.RemoveCookie();
-                //clientList.Clear();
 
                 var html = GetHtml();
                 context.Response.SetNoCache();

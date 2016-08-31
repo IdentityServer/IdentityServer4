@@ -3,24 +3,24 @@
 
 using System.Linq;
 using System.Threading.Tasks;
-using IdentityServer4.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using IdentityServer4.Configuration;
 using IdentityServer4.Configuration.DependencyInjection;
+using IdentityServer4.Services;
 
-namespace IdentityServer4.Hosting.Cors
+namespace IdentityServer4.Infrastructure
 {
-    public class PolicyProvider : ICorsPolicyProvider
+    class CorsPolicyProvider : ICorsPolicyProvider
     {
         private readonly ICorsPolicyService _corsPolicyService;
-        private readonly ILogger<PolicyProvider> _logger;
+        private readonly ILogger<CorsPolicyProvider> _logger;
         private readonly ICorsPolicyProvider _inner;
         private readonly IdentityServerOptions _options;
 
-        public PolicyProvider(
-            ILogger<PolicyProvider> logger,
+        public CorsPolicyProvider(
+            ILogger<CorsPolicyProvider> logger,
             Decorator<ICorsPolicyProvider> inner,
             IdentityServerOptions options,
             ICorsPolicyService corsPolicyService)
