@@ -14,8 +14,8 @@ namespace IdentityServer4
         public const string IdentityServerName = "IdentityServer4";
         public const string IdentityServerAuthenticationType = IdentityServerName;
         
-        public const string LocalIdentityProvider       = "local";
-        public const string ExternalAuthenticationMetod    = "external";
+        public const string LocalIdentityProvider           = "local";
+        public const string ExternalAuthenticationMethod    = "external";
 
         public const string AccessTokenAudience             = "{0}resources";
 

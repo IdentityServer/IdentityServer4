@@ -26,7 +26,7 @@ namespace IdentityServer4
             string idp,
             params Claim[] claims)
         {
-            return Create(subject, name, idp, new[] { Constants.ExternalAuthenticationMetod }, claims);
+            return Create(subject, name, idp, new[] { Constants.ExternalAuthenticationMethod }, claims);
         }
 
         public static ClaimsPrincipal Create(
