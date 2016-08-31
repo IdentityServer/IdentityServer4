@@ -1,8 +1,8 @@
-﻿using Host.Models;
-using Host.Services;
+﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
 using IdentityModel;
-using IdentityServer4;
-using IdentityServer4.Quickstart;
+using IdentityServer4.Quickstart.UI.Models;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +13,7 @@ using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
-namespace Host.Controllers
+namespace IdentityServer4.Quickstart.UI.Controllers
 {
     public class AccountController : Controller
     {

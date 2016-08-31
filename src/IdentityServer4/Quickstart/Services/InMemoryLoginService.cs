@@ -4,9 +4,8 @@ using System;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using IdentityModel;
-using IdentityServer4.Quickstart;
 
-namespace Host.Services
+namespace IdentityServer4.Quickstart
 {
     public class InMemoryUserLoginService
     {

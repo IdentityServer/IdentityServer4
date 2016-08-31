@@ -1,4 +1,7 @@
-﻿using Host.Configuration;
+﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+using Host.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,8 +12,6 @@ using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using System.Linq;
-using IdentityServer4.Quickstart;
-using Host.Services;
 
 namespace Host
 {
@@ -50,15 +51,11 @@ namespace Host
                 options.AuthenticationOptions.FederatedSignOutPaths.Add("/signout-oidc");
             })
             .AddInMemoryClients(Clients.Get())
-            .AddInMemoryScopes(Scopes.Get());
-
-            // UI service for in-memory users
-            services.AddSingleton(new InMemoryUserLoginService(Users.Get()));
-            builder.AddResourceOwnerValidator<InMemoryUserResourceOwnerPasswordValidator>();
-
+            .AddInMemoryScopes(Scopes.Get())
+            .AddInMemoryUsers(Users.Get());
+            
             builder.AddExtensionGrantValidator<Extensions.ExtensionGrantValidator>();
 
-            // for the UI
             services.AddMvc();
         }
 
