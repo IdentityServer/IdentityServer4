@@ -1,8 +1,16 @@
 ﻿using Host.Models;
 using Host.Services;
+using IdentityModel;
+using IdentityServer4;
+using IdentityServer4.Quickstart;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
 namespace Host.Controllers
@@ -61,90 +69,90 @@ namespace Host.Controllers
             return View(vm);
         }
 
-        //private async Task IssueCookie(
-        //    InMemoryUser user, 
-        //    string idp,
-        //    string amr, 
-        //    string sid = null)
-        //{
-        //    var name = user.Claims.Where(x => x.Type == JwtClaimTypes.Name).Select(x => x.Value).FirstOrDefault() ?? user.Username;
+        [HttpGet("/account/external", Name = "External")]
+        public IActionResult External(string provider, string returnUrl)
+        {
+            if (returnUrl != null)
+            {
+                returnUrl = UrlEncoder.Default.Encode(returnUrl);
+            }
+            returnUrl = "/account/externalcallback?returnUrl=" + returnUrl;
 
-        //    var claims = new List<Claim> {
-        //        new Claim(JwtClaimTypes.Subject, user.Subject),
-        //        new Claim(JwtClaimTypes.Name, name),
-        //        new Claim(JwtClaimTypes.IdentityProvider, idp),
-        //        new Claim(JwtClaimTypes.AuthenticationTime, DateTime.UtcNow.ToEpochTime().ToString()),
-        //        new Claim("role", "some_role")
-        //    };
-        //    if (sid != null)
-        //    {
-        //        claims.Add(new Claim(OidcConstants.EndSessionRequest.Sid, sid));
-        //    }
+            return new ChallengeResult(provider, new AuthenticationProperties
+            {
+                RedirectUri = returnUrl
+            });
+        }
 
-        //    var ci = new ClaimsIdentity(claims, amr, JwtClaimTypes.Name, JwtClaimTypes.Role);
-        //    var cp = new ClaimsPrincipal(ci);
+        [HttpGet]
+        public async Task<IActionResult> ExternalCallback(string returnUrl)
+        {
+            var tempUser = await HttpContext.Authentication.AuthenticateAsync("Temp");
+            if (tempUser == null)
+            {
+                throw new Exception();
+            }
 
-        //    await HttpContext.Authentication.SignInAsync(IdentityServerConstants.DefaultCookieAuthenticationScheme, cp);
-        //}
+            var claims = tempUser.Claims.ToList();
 
-        //[HttpGet("/ui/external/{provider}", Name = "External")]
-        //public IActionResult External(string provider, string returnUrl)
-        //{
-        //    if (returnUrl != null)
-        //    {
-        //        returnUrl = UrlEncoder.Default.Encode(returnUrl);
-        //    }
-        //    returnUrl = "/ui/external-callback?returnUrl=" + returnUrl;
+            var userIdClaim = claims.FirstOrDefault(x => x.Type == JwtClaimTypes.Subject);
+            if (userIdClaim == null)
+            {
+                userIdClaim = claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
+            }
+            if (userIdClaim == null)
+            {
+                throw new Exception("Unknown userid");
+            }
 
-        //    return new ChallengeResult(provider, new AuthenticationProperties
-        //    {
-        //        RedirectUri = returnUrl
-        //    });
-        //}
+            claims.Remove(userIdClaim);
 
-        //[HttpGet("/ui/external-callback")]
-        //public async Task<IActionResult> ExternalCallback(string returnUrl)
-        //{
-        //    var tempUser = await HttpContext.Authentication.AuthenticateAsync("Temp");
-        //    if (tempUser == null)
-        //    {
-        //        throw new Exception();
-        //    }
+            var provider = userIdClaim.Issuer;
+            var userId = userIdClaim.Value;
 
-        //    var claims = tempUser.Claims.ToList();
+            var user = _loginService.FindByExternalProvider(provider, userId);
+            if (user == null)
+            {
+                user = _loginService.AutoProvisionUser(provider, userId, claims);
+            }
 
-        //    var userIdClaim = claims.FirstOrDefault(x=>x.Type==JwtClaimTypes.Subject);
-        //    if (userIdClaim == null)
-        //    {
-        //        userIdClaim = claims.FirstOrDefault(x=>x.Type==ClaimTypes.NameIdentifier);
-        //    }
-        //    if (userIdClaim == null)
-        //    {
-        //        throw new Exception("Unknown userid");
-        //    }
+            var sid = claims.FirstOrDefault(x => x.Type == OidcConstants.EndSessionRequest.Sid)?.Value;
+            await IssueCookie(user, provider, "external", sid);
+            await HttpContext.Authentication.SignOutAsync("Temp");
 
-        //    claims.Remove(userIdClaim);
+            if (_interaction.IsValidReturnUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
 
-        //    var provider = userIdClaim.Issuer;
-        //    var userId = userIdClaim.Value;
+            return Redirect("~/");
 
-        //    var user = _loginService.FindByExternalProvider(provider, userId);
-        //    if (user == null)
-        //    {
-        //        user = _loginService.AutoProvisionUser(provider, userId, claims);
-        //    }
+        }
 
-        //    var sid = claims.FirstOrDefault(x => x.Type == OidcConstants.EndSessionRequest.Sid)?.Value;
-        //    await IssueCookie(user, provider, "external", sid);
-        //    await HttpContext.Authentication.SignOutAsync("Temp");
+        private async Task IssueCookie(
+            InMemoryUser user,
+            string idp,
+            string amr,
+            string sid = null)
+        {
+            var name = user.Claims.Where(x => x.Type == JwtClaimTypes.Name).Select(x => x.Value).FirstOrDefault() ?? user.Username;
 
-        //    if (_interaction.IsValidReturnUrl(returnUrl))
-        //    {
-        //        return Redirect(returnUrl);
-        //    }
+            var claims = new List<Claim> {
+                new Claim(JwtClaimTypes.Subject, user.Subject),
+                new Claim(JwtClaimTypes.Name, name),
+                new Claim(JwtClaimTypes.IdentityProvider, idp),
+                new Claim(JwtClaimTypes.AuthenticationTime, DateTime.UtcNow.ToEpochTime().ToString()),
+                new Claim("role", "some_role")
+            };
+            if (sid != null)
+            {
+                claims.Add(new Claim(OidcConstants.EndSessionRequest.Sid, sid));
+            }
 
-        //    return Redirect("~/");
+            var ci = new ClaimsIdentity(claims, amr, JwtClaimTypes.Name, JwtClaimTypes.Role);
+            var cp = new ClaimsPrincipal(ci);
 
-        //}
+            await HttpContext.Authentication.SignInAsync(IdentityServerConstants.DefaultCookieAuthenticationScheme, cp);
+        }
     }
 }
