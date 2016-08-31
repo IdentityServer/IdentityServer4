@@ -1,9 +1,9 @@
-﻿using Host.Models;
+﻿using IdentityServer4.Quickstart.UI.Models;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
-namespace Host.Controllers
+namespace IdentityServer4.Quickstart.UI.Controllers
 {
     public class HomeController : Controller
     {

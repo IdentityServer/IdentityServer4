@@ -31,12 +31,13 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
-        public static IIdentityServerBuilder AddInMemoryUsers(this IIdentityServerBuilder builder, IEnumerable<InMemoryUser> users)
+        public static IIdentityServerBuilder AddInMemoryUsers(this IIdentityServerBuilder builder, List<InMemoryUser> users)
         {
             builder.Services.AddSingleton(users);
 
             builder.Services.AddTransient<IProfileService, InMemoryUserProfileService>();
             builder.Services.AddTransient<IResourceOwnerPasswordValidator, InMemoryUserResourceOwnerPasswordValidator>();
+            builder.Services.AddTransient<InMemoryUserLoginService>();
 
             return builder;
         }

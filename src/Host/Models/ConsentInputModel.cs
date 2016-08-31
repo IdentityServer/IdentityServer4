@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Host.Models
+namespace IdentityServer4.Quickstart.UI.Models
 {
     public class ConsentInputModel
     {

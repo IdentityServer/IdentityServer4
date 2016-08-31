@@ -9,8 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using System.Linq;
-using IdentityServer4.Quickstart;
-using Host.Services;
 
 namespace Host
 {
@@ -50,15 +48,11 @@ namespace Host
                 options.AuthenticationOptions.FederatedSignOutPaths.Add("/signout-oidc");
             })
             .AddInMemoryClients(Clients.Get())
-            .AddInMemoryScopes(Scopes.Get());
-
-            // UI service for in-memory users
-            services.AddSingleton(new InMemoryUserLoginService(Users.Get()));
-            builder.AddResourceOwnerValidator<InMemoryUserResourceOwnerPasswordValidator>();
-
+            .AddInMemoryScopes(Scopes.Get())
+            .AddInMemoryUsers(Users.Get());
+            
             builder.AddExtensionGrantValidator<Extensions.ExtensionGrantValidator>();
 
-            // for the UI
             services.AddMvc();
         }
 

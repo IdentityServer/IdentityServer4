@@ -2,7 +2,7 @@
 using System.Linq;
 using IdentityServer4.Models;
 
-namespace Host.Models
+namespace IdentityServer4.Quickstart.UI.Models
 {
     public class ConsentViewModel : ConsentInputModel
     {

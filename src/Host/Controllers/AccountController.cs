@@ -1,8 +1,5 @@
-﻿using Host.Models;
-using Host.Services;
-using IdentityModel;
-using IdentityServer4;
-using IdentityServer4.Quickstart;
+﻿using IdentityModel;
+using IdentityServer4.Quickstart.UI.Models;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +10,7 @@ using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
-namespace Host.Controllers
+namespace IdentityServer4.Quickstart.UI.Controllers
 {
     public class AccountController : Controller
     {

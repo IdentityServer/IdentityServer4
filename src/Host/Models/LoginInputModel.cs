@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Host.Models
+namespace IdentityServer4.Quickstart.UI.Models
 {
     public class LoginInputModel
     {

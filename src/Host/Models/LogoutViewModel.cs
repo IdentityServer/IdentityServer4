@@ -1,4 +1,4 @@
-﻿namespace Host.Models
+﻿namespace IdentityServer4.Quickstart.UI.Models
 {
     public class LogoutViewModel
     {
