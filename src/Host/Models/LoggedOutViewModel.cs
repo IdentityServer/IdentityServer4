@@ -1,4 +1,4 @@
-﻿namespace Host.UI.Logout
+﻿namespace Host.Models
 {
     public class LoggedOutViewModel
     {

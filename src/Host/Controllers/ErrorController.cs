@@ -1,8 +1,9 @@
-﻿using IdentityServer4.Services;
+﻿using Host.Models;
+using IdentityServer4.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
-namespace Host.UI.Error
+namespace Host.Controllers
 {
     public class ErrorController : Controller
     {
@@ -13,7 +14,6 @@ namespace Host.UI.Error
             _interaction = interaction;
         }
 
-        [Route("ui/error", Name ="Error")]
         public async Task<IActionResult> Index(string errorId)
         {
             var vm = new ErrorViewModel();

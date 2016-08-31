@@ -5,8 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
+using Host.Models;
 
-namespace Host.UI.Consent
+namespace Host.Controllers
 {
     public class ConsentController : Controller
     {
@@ -27,7 +28,6 @@ namespace Host.UI.Consent
             _scopeStore = scopeStore;
         }
 
-        [HttpGet("ui/consent", Name = "Consent")]
         public async Task<IActionResult> Index(string returnUrl)
         {
             var vm = await BuildViewModelAsync(returnUrl);
@@ -39,7 +39,7 @@ namespace Host.UI.Consent
             return View("Error");
         }
 
-        [HttpPost("ui/consent")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(string button, ConsentInputModel model)
         {

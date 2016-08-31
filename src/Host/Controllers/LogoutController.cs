@@ -1,10 +1,11 @@
-﻿using IdentityServer4;
+﻿using Host.Models;
+using IdentityServer4;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace Host.UI.Logout
+namespace Host.Controllers
 {
     public class LogoutController : Controller
     {
@@ -15,14 +16,13 @@ namespace Host.UI.Logout
             _interaction = interaction;
         }
 
-        [HttpGet("ui/logout", Name = "Logout")]
         public IActionResult Index(string logoutId)
         {
             ViewData["logoutId"] = logoutId;
             return View();
         }
 
-        [HttpPost("ui/logout")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Submit(string logoutId)
         {

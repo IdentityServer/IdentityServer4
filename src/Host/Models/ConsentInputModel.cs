@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Host.UI.Consent
+namespace Host.Models
 {
     public class ConsentInputModel
     {
