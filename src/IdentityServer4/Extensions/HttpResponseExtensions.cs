@@ -23,8 +23,14 @@ namespace Microsoft.AspNetCore.Http
 
         public static void SetNoCache(this HttpResponse response)
         {
-            response.Headers.Add("Cache-Control", "no-store, no-cache, max-age=0");
-            response.Headers.Add("Pragma", "no-cache");
+            if (!response.Headers.ContainsKey("Cache-Control"))
+            {
+                response.Headers.Add("Cache-Control", "no-store, no-cache, max-age=0");
+            }
+            if (!response.Headers.ContainsKey("Pragma"))
+            {
+                response.Headers.Add("Pragma", "no-cache");
+            }
         }
 
         public static async Task WriteHtmlAsync(this HttpResponse response, string html)

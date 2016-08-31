@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 
-namespace IdentityServer4.Hosting
+namespace IdentityServer4
 {
     class MessageCookie<TModel>
     {
@@ -134,7 +134,15 @@ namespace IdentityServer4.Hosting
             var data = _context.HttpContext.Request.Cookies[name];
             if (!String.IsNullOrWhiteSpace(data))
             {
-                return Unprotect(data);
+                try
+                {
+                    return Unprotect(data);
+                }
+                catch(Exception ex)
+                {
+                    _logger.LogError("Error unprotecting message cookie: {0}", ex.Message);
+                    ClearByCookieName(name);
+                }
             }
             return null;
         }

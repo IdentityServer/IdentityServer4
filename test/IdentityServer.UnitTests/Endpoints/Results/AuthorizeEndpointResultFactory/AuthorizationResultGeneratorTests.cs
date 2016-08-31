@@ -24,14 +24,14 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
         ILogger<AuthorizeEndpointResultFactory> _fakeLogger = TestLogger.Create<AuthorizeEndpointResultFactory>();
         IdentityServerOptions _options = TestIdentityServerOptions.Create();
         MockHttpContextAccessor _context;
-        MockClientListCookie _mockClientListCookie;
+        MockClientSessionService _mockClientListCookie;
         StubAuthorizeResponseGenerator _stubAuthorizeResponseGenerator = new StubAuthorizeResponseGenerator();
         MockMessageStore<IdentityServer4.Models.ErrorMessage> _mockErrorMessageStore = new MockMessageStore<IdentityServer4.Models.ErrorMessage>();
 
         public AuthorizationResultFactoryTests()
         {
             _context = new MockHttpContextAccessor(_options);
-            _mockClientListCookie = new MockClientListCookie(_options, _context);
+            _mockClientListCookie = new MockClientSessionService();
             _stubAuthorizeResponseGenerator.Response.Request = _validatedRequest;
 
             _subject = new AuthorizeEndpointResultFactory(

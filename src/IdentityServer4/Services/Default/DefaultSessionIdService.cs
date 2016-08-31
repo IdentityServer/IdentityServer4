@@ -15,12 +15,10 @@ namespace IdentityServer4.Services.Default
     public class DefaultSessionIdService : ISessionIdService
     {
         private readonly HttpContext _context;
-        private readonly IdentityServerOptions _options;
 
-        public DefaultSessionIdService(IHttpContextAccessor context, IdentityServerOptions options)
+        public DefaultSessionIdService(IHttpContextAccessor context)
         {
             _context = context.HttpContext;
-            _options = options;
         }
 
         public async Task AddSessionIdAsync(SignInContext context)
@@ -44,13 +42,14 @@ namespace IdentityServer4.Services.Default
                 sid = CryptoRandom.CreateUniqueId();
             }
 
-            IssueSessionId(sid);
             context.Properties[OidcConstants.EndSessionRequest.Sid] = sid;
+
+            IssueSessionIdCookie(sid);
         }
 
         public async Task<string> GetCurrentSessionIdAsync()
         {
-            var info = await _context.Authentication.GetAuthenticateInfoAsync(_options.AuthenticationOptions.EffectiveAuthenticationScheme);
+            var info = await _context.GetIdentityServerUserInfoAsync();
             if (info.Properties.Items.ContainsKey(OidcConstants.EndSessionRequest.Sid))
             {
                 var sid = info.Properties.Items[OidcConstants.EndSessionRequest.Sid];
@@ -69,7 +68,7 @@ namespace IdentityServer4.Services.Default
         {
             if (sid != null)
             {
-                IssueSessionId(sid);
+                IssueSessionIdCookie(sid);
             }
             else
             {
@@ -101,7 +100,7 @@ namespace IdentityServer4.Services.Default
             }
         }
 
-        void IssueSessionId(string sid)
+        void IssueSessionIdCookie(string sid)
         {
             if (GetCookieValue() != sid)
             {

@@ -26,7 +26,7 @@ namespace IdentityServer4.Validation
         private readonly ITokenValidator _tokenValidator;
         private readonly IRedirectUriValidator _uriValidator;
         private readonly ISessionIdService _sessionId;
-        private readonly ClientListCookie _clientListCookie;
+        private readonly IClientSessionService _clientSession;
         private readonly IClientStore _clientStore;
         private readonly IHttpContextAccessor _context;
 
@@ -36,7 +36,7 @@ namespace IdentityServer4.Validation
             ITokenValidator tokenValidator, 
             IRedirectUriValidator uriValidator,
             ISessionIdService sessionId,
-            ClientListCookie clientListCookie,
+            IClientSessionService clientSession,
             IClientStore clientStore,
             ILogger<EndSessionRequestValidator> logger)
         {
@@ -45,7 +45,7 @@ namespace IdentityServer4.Validation
             _tokenValidator = tokenValidator;
             _uriValidator = uriValidator;
             _sessionId = sessionId;
-            _clientListCookie = clientListCookie;
+            _clientSession = clientSession;
             _clientStore = clientStore;
             _logger = logger;
         }
@@ -209,7 +209,7 @@ namespace IdentityServer4.Validation
         private async Task<IEnumerable<string>> GetClientEndSessionUrlsAsync(string sid)
         {
             // read client list to get URLs for client logout endpoints
-            var clientIds = _clientListCookie.GetClients();
+            var clientIds = _clientSession.GetClientListFromCookie();
 
             var urls = new List<string>();
             foreach (var clientId in clientIds)

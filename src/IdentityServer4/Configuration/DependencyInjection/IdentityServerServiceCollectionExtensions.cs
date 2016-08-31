@@ -8,8 +8,7 @@ using IdentityServer4.Endpoints;
 using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Events;
 using IdentityServer4.Hosting;
-using IdentityServer4.Hosting.Cookies;
-using IdentityServer4.Hosting.Cors;
+using IdentityServer4.Infrastructure;
 using IdentityServer4.ResponseHandling;
 using IdentityServer4.Services;
 using IdentityServer4.Services.Default;
@@ -122,12 +121,12 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddTransient<EventServiceHelper>();
             
             builder.Services.AddTransient<ISessionIdService, DefaultSessionIdService>();
-            builder.Services.AddTransient<ClientListCookie>();
+            builder.Services.AddTransient<IClientSessionService, DefaultClientSessionService>();
             builder.Services.AddTransient(typeof(MessageCookie<>));
             builder.Services.AddScoped<AuthenticationHandler>();
             
             builder.Services.AddCors();
-            builder.Services.AddTransientDecorator<ICorsPolicyProvider, PolicyProvider>();
+            builder.Services.AddTransientDecorator<ICorsPolicyProvider, CorsPolicyProvider>();
 
             return builder;
         }

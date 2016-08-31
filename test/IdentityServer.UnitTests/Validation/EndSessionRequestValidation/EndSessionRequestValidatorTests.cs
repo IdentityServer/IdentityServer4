@@ -24,7 +24,7 @@ namespace IdentityServer4.UnitTests.Validation.EndSessionRequestValidation
         StubRedirectUriValidator _stubRedirectUriValidator = new StubRedirectUriValidator();
         MockHttpContextAccessor _context = new MockHttpContextAccessor();
         StubSessionIdService _sessionId = new StubSessionIdService();
-        MockClientListCookie _clientList;
+        MockClientSessionService _clientList;
         InMemoryClientStore _clientStore;
 
         ClaimsPrincipal _user;
@@ -32,7 +32,7 @@ namespace IdentityServer4.UnitTests.Validation.EndSessionRequestValidation
         public EndSessionRequestValidatorTests()
         {
             _user = IdentityServerPrincipal.Create("alice", "Alice");
-            _clientList = new MockClientListCookie(_options, _context);
+            _clientList = new MockClientSessionService();
             _clientStore = new InMemoryClientStore(new Client[0]);
 
             _options = TestIdentityServerOptions.Create();
