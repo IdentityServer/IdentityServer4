@@ -1,4 +1,4 @@
-﻿@model Host.UI.Error.ErrorViewModel
+﻿@model Host.Models.ErrorViewModel
 
 @{
     var error = Model?.Error?.Error;
@@ -15,14 +15,20 @@
             <div class="alert alert-danger">
                 Sorry, there was an error
 
-                <strong hide-if-null="error">
-                    <em>
-                        : @error
-                    </em>
-                </strong>
+                @if (error != null)
+                {
+                    <strong>
+                        <em>
+                            : @error
+                        </em>
+                    </strong>
+                }
             </div>
 
-            <div hide-if-null="request_id" class="request-id">Request Id: @request_id</div>
+            @if (request_id != null)
+            {
+                <div class="request-id">Request Id: @request_id</div>
+            }
         </div>
     </div>
 </div>

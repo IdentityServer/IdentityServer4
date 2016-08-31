@@ -228,10 +228,10 @@ namespace IdentityServer4
 
             public static class DefaultRoutePaths
             {
-                public const string Error = "home/error";
-                public const string Login = "account/login";
-                public const string Consent = "account/consent";
-                public const string Logout = "account/logout";
+                public const string Login = "/account/login";
+                public const string Logout = "/account/logout";
+                public const string Consent = "/consent";
+                public const string Error = "/home/error";
             }
         }
 

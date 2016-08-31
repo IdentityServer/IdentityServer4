@@ -35,7 +35,6 @@ namespace Host
                 {
                     windows.DisplayName = "Windows";
                 }
-                
             });
 
             var builder = services.AddIdentityServerQuickstart(options =>
@@ -47,11 +46,6 @@ namespace Host
                 //    RaiseInformationEvents = true,
                 //    RaiseSuccessEvents = true
                 //};
-                //options.UserInteractionOptions.LoginUrl = "/ui/login";
-
-                options.UserInteractionOptions.LogoutUrl = "/logout";
-                options.UserInteractionOptions.ConsentUrl = "/consent";
-                options.UserInteractionOptions.ErrorUrl = "/error";
 
                 options.AuthenticationOptions.FederatedSignOutPaths.Add("/signout-oidc");
             })
@@ -65,12 +59,7 @@ namespace Host
             builder.AddExtensionGrantValidator<Extensions.ExtensionGrantValidator>();
 
             // for the UI
-            services
-                .AddMvc();
-                //.AddRazorOptions(razor =>
-                //{
-                //    razor.ViewLocationExpanders.Add(new UI.CustomViewLocationExpander());
-                //});
+            services.AddMvc();
         }
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)

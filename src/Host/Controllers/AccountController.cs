@@ -28,6 +28,7 @@ namespace Host.Controllers
             _interaction = interaction;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Login(string returnUrl)
         {
             var vm = new LoginViewModel(HttpContext);
@@ -42,8 +43,8 @@ namespace Host.Controllers
             return View(vm);
         }
 
-        [ValidateAntiForgeryToken]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginInputModel model)
         {
             if (ModelState.IsValid)
@@ -69,7 +70,7 @@ namespace Host.Controllers
             return View(vm);
         }
 
-        [HttpGet("/account/external", Name = "External")]
+        [HttpGet]
         public IActionResult External(string provider, string returnUrl)
         {
             if (returnUrl != null)
@@ -127,6 +128,37 @@ namespace Host.Controllers
 
             return Redirect("~/");
 
+        }
+
+        [HttpGet]
+        public IActionResult Logout(string logoutId)
+        {
+            var vm = new LogoutViewModel
+            {
+                LogoutId = logoutId
+            };
+            return View(vm);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout(LogoutViewModel model)
+        {
+            await HttpContext.Authentication.SignOutAsync(IdentityServerConstants.DefaultCookieAuthenticationScheme);
+
+            // set this so UI rendering sees an anonymous user
+            HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity());
+
+            var logout = await _interaction.GetLogoutContextAsync(model.LogoutId);
+
+            var vm = new LoggedOutViewModel
+            {
+                PostLogoutRedirectUri = logout?.PostLogoutRedirectUri,
+                ClientName = logout?.ClientId,
+                SignOutIframeUrl = logout?.SignOutIFrameUrl
+            };
+
+            return View("LoggedOut", vm);
         }
 
         private async Task IssueCookie(

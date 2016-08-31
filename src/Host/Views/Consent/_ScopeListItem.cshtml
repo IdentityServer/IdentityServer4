@@ -2,22 +2,33 @@
 
 <li class="list-group-item">
     <label>
-        <input class="consent-scopecheck" 
-               type="checkbox" 
-               name="ScopesConsented" 
-               id="scopes_@Model.Name" 
-               value="@Model.Name"
-               checked="@Model.Checked" 
-               disabled="@Model.Required" />
-        <input show-if="@Model.Required"
-               type="hidden"
+        <input class="consent-scopecheck"
+               type="checkbox"
                name="ScopesConsented"
-               value="@Model.Name" />
+               id="scopes_@Model.Name"
+               value="@Model.Name"
+               checked="@Model.Checked"
+               disabled="@Model.Required" />
+        @if (Model.Required)
+        {
+            <input type="hidden"
+                   name="ScopesConsented"
+                   value="@Model.Name" />
+        }
         <strong>@Model.DisplayName</strong>
-        <span show-if="Model.Emphasize" class="glyphicon glyphicon-exclamation-sign"></span>
+        @if (Model.Emphasize)
+        {
+            <span class="glyphicon glyphicon-exclamation-sign"></span>
+        }
     </label>
-    <span show-if="Model.Required"><em>(required)</em></span>
-    <div class="consent-description" hide-if-null="@Model.Description">
-        <label for="scopes_@Model.Name">@Model.Description</label>
-    </div>
+    @if (Model.Required)
+    {
+        <span><em>(required)</em></span>
+    }
+    @if (Model.Description != null)
+    {
+        <div class="consent-description">
+            <label for="scopes_@Model.Name">@Model.Description</label>
+        </div>
+    }
 </li>
