@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using System.Linq;
 
-namespace Host.UI.Login
+namespace Host.Models
 {
     public class LoginViewModel : LoginInputModel
     {

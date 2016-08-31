@@ -6,7 +6,7 @@ using System.IdentityModel.Tokens.Jwt;
 using IdentityModel;
 using IdentityServer4.Quickstart;
 
-namespace Host.UI.Login
+namespace Host.Services
 {
     public class InMemoryUserLoginService
     {
