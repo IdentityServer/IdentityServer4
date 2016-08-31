@@ -24,7 +24,7 @@ namespace IdentityServer4.Quickstart
         /// Initializes a new instance of the <see cref="InMemoryUserService"/> class.
         /// </summary>
         /// <param name="users">The users.</param>
-        public InMemoryUserProfileService(IEnumerable<InMemoryUser> users)
+        public InMemoryUserProfileService(List<InMemoryUser> users)
         {
             _users = users;
         }
