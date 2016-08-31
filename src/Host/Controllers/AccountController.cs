@@ -1,4 +1,6 @@
-﻿using IdentityModel;
+﻿using Host.Models;
+using Host.Services;
+using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Quickstart;
 using IdentityServer4.Services;
@@ -11,14 +13,14 @@ using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
-namespace Host.UI.Login
+namespace Host.Controllers
 {
-    public class LoginController : Controller
+    public class AccountController : Controller
     {
         private readonly InMemoryUserLoginService _loginService;
         private readonly IUserInteractionService _interaction;
 
-        public LoginController(
+        public AccountController(
             InMemoryUserLoginService loginService,
             IUserInteractionService interaction)
         {
@@ -26,8 +28,8 @@ namespace Host.UI.Login
             _interaction = interaction;
         }
 
-        [HttpGet("ui/login", Name = "Login")]
-        public async Task<IActionResult> Index(string returnUrl)
+        [HttpGet]
+        public async Task<IActionResult> Login(string returnUrl)
         {
             var vm = new LoginViewModel(HttpContext);
 
@@ -41,17 +43,18 @@ namespace Host.UI.Login
             return View(vm);
         }
 
-        [HttpPost("ui/login")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(LoginInputModel model)
+        public async Task<IActionResult> Login(LoginInputModel model)
         {
             if (ModelState.IsValid)
             {
                 if (_loginService.ValidateCredentials(model.Username, model.Password))
                 {
                     var user = _loginService.FindByUsername(model.Username);
-                    await IssueCookie(user, "idsvr", "password");
-
+                    //await IssueCookie(user, "idsvr", "password");
+                    await HttpContext.Authentication.SignInAsync(user.Subject, user.Username);
+                    
                     if (_interaction.IsValidReturnUrl(model.ReturnUrl))
                     {
                         return Redirect(model.ReturnUrl);
@@ -67,40 +70,14 @@ namespace Host.UI.Login
             return View(vm);
         }
 
-        private async Task IssueCookie(
-            InMemoryUser user, 
-            string idp,
-            string amr, 
-            string sid = null)
-        {
-            var name = user.Claims.Where(x => x.Type == JwtClaimTypes.Name).Select(x => x.Value).FirstOrDefault() ?? user.Username;
-
-            var claims = new List<Claim> {
-                new Claim(JwtClaimTypes.Subject, user.Subject),
-                new Claim(JwtClaimTypes.Name, name),
-                new Claim(JwtClaimTypes.IdentityProvider, idp),
-                new Claim(JwtClaimTypes.AuthenticationTime, DateTime.UtcNow.ToEpochTime().ToString()),
-                new Claim("role", "some_role")
-            };
-            if (sid != null)
-            {
-                claims.Add(new Claim(OidcConstants.EndSessionRequest.Sid, sid));
-            }
-
-            var ci = new ClaimsIdentity(claims, amr, JwtClaimTypes.Name, JwtClaimTypes.Role);
-            var cp = new ClaimsPrincipal(ci);
-
-            await HttpContext.Authentication.SignInAsync(IdentityServerConstants.DefaultCookieAuthenticationScheme, cp);
-        }
-
-        [HttpGet("/ui/external/{provider}", Name = "External")]
+        [HttpGet]
         public IActionResult External(string provider, string returnUrl)
         {
             if (returnUrl != null)
             {
                 returnUrl = UrlEncoder.Default.Encode(returnUrl);
             }
-            returnUrl = "/ui/external-callback?returnUrl=" + returnUrl;
+            returnUrl = "/account/externalcallback?returnUrl=" + returnUrl;
 
             return new ChallengeResult(provider, new AuthenticationProperties
             {
@@ -108,7 +85,7 @@ namespace Host.UI.Login
             });
         }
 
-        [HttpGet("/ui/external-callback")]
+        [HttpGet]
         public async Task<IActionResult> ExternalCallback(string returnUrl)
         {
             var tempUser = await HttpContext.Authentication.AuthenticateAsync("Temp");
@@ -119,10 +96,10 @@ namespace Host.UI.Login
 
             var claims = tempUser.Claims.ToList();
 
-            var userIdClaim = claims.FirstOrDefault(x=>x.Type==JwtClaimTypes.Subject);
+            var userIdClaim = claims.FirstOrDefault(x => x.Type == JwtClaimTypes.Subject);
             if (userIdClaim == null)
             {
-                userIdClaim = claims.FirstOrDefault(x=>x.Type==ClaimTypes.NameIdentifier);
+                userIdClaim = claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
             }
             if (userIdClaim == null)
             {
@@ -151,6 +128,63 @@ namespace Host.UI.Login
 
             return Redirect("~/");
 
+        }
+
+        [HttpGet]
+        public IActionResult Logout(string logoutId)
+        {
+            var vm = new LogoutViewModel
+            {
+                LogoutId = logoutId
+            };
+            return View(vm);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout(LogoutViewModel model)
+        {
+            await HttpContext.Authentication.SignOutAsync(IdentityServerConstants.DefaultCookieAuthenticationScheme);
+
+            // set this so UI rendering sees an anonymous user
+            HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity());
+
+            var logout = await _interaction.GetLogoutContextAsync(model.LogoutId);
+
+            var vm = new LoggedOutViewModel
+            {
+                PostLogoutRedirectUri = logout?.PostLogoutRedirectUri,
+                ClientName = logout?.ClientId,
+                SignOutIframeUrl = logout?.SignOutIFrameUrl
+            };
+
+            return View("LoggedOut", vm);
+        }
+
+        private async Task IssueCookie(
+            InMemoryUser user,
+            string idp,
+            string amr,
+            string sid = null)
+        {
+            var name = user.Claims.Where(x => x.Type == JwtClaimTypes.Name).Select(x => x.Value).FirstOrDefault() ?? user.Username;
+
+            var claims = new List<Claim> {
+                new Claim(JwtClaimTypes.Subject, user.Subject),
+                new Claim(JwtClaimTypes.Name, name),
+                new Claim(JwtClaimTypes.IdentityProvider, idp),
+                new Claim(JwtClaimTypes.AuthenticationTime, DateTime.UtcNow.ToEpochTime().ToString()),
+                new Claim("role", "some_role")
+            };
+            if (sid != null)
+            {
+                claims.Add(new Claim(OidcConstants.EndSessionRequest.Sid, sid));
+            }
+
+            var ci = new ClaimsIdentity(claims, amr, JwtClaimTypes.Name, JwtClaimTypes.Role);
+            var cp = new ClaimsPrincipal(ci);
+
+            await HttpContext.Authentication.SignInAsync(IdentityServerConstants.DefaultCookieAuthenticationScheme, cp);
         }
     }
 }

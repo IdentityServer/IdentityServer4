@@ -1,4 +1,4 @@
-﻿@model Host.UI.Logout.LoggedOutViewModel
+﻿@model Host.Models.LoggedOutViewModel
 
 <div class="page-header">
     <h1>
@@ -6,13 +6,16 @@
         <small>You are now logged out</small>
     </h1>
 
-    @if (Model != null)
+    @if (Model.PostLogoutRedirectUri != null)
     {
-        <div hide-if-null="Model.PostLogoutRedirectUri">
+        <div>
             Click <a href="@Model.PostLogoutRedirectUri">here</a> to return to the
             <span>@Model.ClientName</span> application.
         </div>
+    }
 
-        <iframe style="display:none" width="0" height="0" hide-if-null="Model.SignOutIframeUrl" class="signout" src="@Model.SignOutIframeUrl"></iframe>
+    @if (Model.SignOutIframeUrl != null)
+    {
+        <iframe style="display:none" width="0" height="0" class="signout" src="@Model.SignOutIframeUrl"></iframe>
     }
 </div>

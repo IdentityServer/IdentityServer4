@@ -1,20 +1,25 @@
-﻿using IdentityServer4.Services;
+﻿using Host.Models;
+using IdentityServer4.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
-namespace Host.UI.Error
+namespace Host.Controllers
 {
-    public class ErrorController : Controller
+    public class HomeController : Controller
     {
         private readonly IUserInteractionService _interaction;
 
-        public ErrorController(IUserInteractionService interaction)
+        public HomeController(IUserInteractionService interaction)
         {
             _interaction = interaction;
         }
 
-        [Route("ui/error", Name ="Error")]
-        public async Task<IActionResult> Index(string errorId)
+        public IActionResult Index()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> Error(string errorId)
         {
             var vm = new ErrorViewModel();
 

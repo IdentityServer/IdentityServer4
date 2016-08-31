@@ -5,8 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
+using Host.Models;
 
-namespace Host.UI.Consent
+namespace Host.Controllers
 {
     public class ConsentController : Controller
     {
@@ -27,7 +28,7 @@ namespace Host.UI.Consent
             _scopeStore = scopeStore;
         }
 
-        [HttpGet("ui/consent", Name = "Consent")]
+        [HttpGet]
         public async Task<IActionResult> Index(string returnUrl)
         {
             var vm = await BuildViewModelAsync(returnUrl);
@@ -39,18 +40,18 @@ namespace Host.UI.Consent
             return View("Error");
         }
 
-        [HttpPost("ui/consent")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(string button, ConsentInputModel model)
+        public async Task<IActionResult> Index(ConsentInputModel model)
         {
             var request = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl);
             ConsentResponse response = null;
 
-            if (button == "no")
+            if (model.Button == "no")
             {
                 response = ConsentResponse.Denied;
             }
-            else if (button == "yes" && model != null)
+            else if (model.Button == "yes" && model != null)
             {
                 if (model.ScopesConsented != null && model.ScopesConsented.Any())
                 {
@@ -84,16 +85,6 @@ namespace Host.UI.Consent
 
             return View("Error");
         }
-
-        //async Task<IActionResult> BuildConsentResponse(string id, string[] scopesConsented, bool rememberConsent)
-        //{
-        //    if (id != null)
-        //    {
-        //        var request = await _interaction.GetRequestAsync(id);
-        //    }
-
-        //    return View("Error");
-        //}
 
         async Task<ConsentViewModel> BuildViewModelAsync(string returnUrl, ConsentInputModel model = null)
         {

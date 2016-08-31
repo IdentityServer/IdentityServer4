@@ -1,4 +1,4 @@
-﻿@model Host.UI.Login.LoginViewModel
+﻿@model Host.Models.LoginViewModel
 
 <div class="login-page">
     <div class="page-header">
@@ -45,6 +45,7 @@
                     </ul>*@
             </div>
         </div>
+
         @if (Model.ExternalProviders != null && Model.ExternalProviders.Any())
         {
             <div class="col-md-6 col-sm-6 external-providers">
@@ -58,7 +59,7 @@
                             {
                                 <li>
                                     <a class="btn btn-default"
-                                       asp-route="External"
+                                       asp-action="External"
                                        asp-route-provider="@provider.AuthenticationScheme"
                                        asp-route-returnUrl="@Model.ReturnUrl">
                                         @provider.DisplayName

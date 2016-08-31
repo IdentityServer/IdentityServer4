@@ -6,11 +6,11 @@ using Microsoft.Extensions.Logging;
 using System;
 using Serilog.Events;
 using System.Threading.Tasks;
-using Host.UI.Login;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using System.Linq;
 using IdentityServer4.Quickstart;
+using Host.Services;
 
 namespace Host
 {
@@ -35,7 +35,6 @@ namespace Host
                 {
                     windows.DisplayName = "Windows";
                 }
-                
             });
 
             var builder = services.AddIdentityServerQuickstart(options =>
@@ -47,10 +46,6 @@ namespace Host
                 //    RaiseInformationEvents = true,
                 //    RaiseSuccessEvents = true
                 //};
-                options.UserInteractionOptions.LoginUrl = "/ui/login";
-                options.UserInteractionOptions.LogoutUrl = "/ui/logout";
-                options.UserInteractionOptions.ConsentUrl = "/ui/consent";
-                options.UserInteractionOptions.ErrorUrl = "/ui/error";
 
                 options.AuthenticationOptions.FederatedSignOutPaths.Add("/signout-oidc");
             })
@@ -64,12 +59,7 @@ namespace Host
             builder.AddExtensionGrantValidator<Extensions.ExtensionGrantValidator>();
 
             // for the UI
-            services
-                .AddMvc()
-                .AddRazorOptions(razor =>
-                {
-                    razor.ViewLocationExpanders.Add(new UI.CustomViewLocationExpander());
-                });
+            services.AddMvc();
         }
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
