@@ -7,6 +7,7 @@ using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
 using IdentityServer4.Models;
 using IdentityServer4.ResponseHandling;
+using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http;
@@ -22,8 +23,8 @@ namespace IdentityServer4.Endpoints.Results
         private readonly IHttpContextAccessor _context;
         private readonly IAuthorizeResponseGenerator _responseGenerator;
         private readonly IMessageStore<ErrorMessage> _errorMessageStore;
-        private readonly ClientListCookie _clientListCookie;
         private readonly IdentityServerOptions _options;
+        private readonly IClientSessionService _clientSession;
 
         public AuthorizeEndpointResultFactory(
             ILogger<AuthorizeEndpointResultFactory> logger,
@@ -31,14 +32,14 @@ namespace IdentityServer4.Endpoints.Results
             IHttpContextAccessor context,
             IAuthorizeResponseGenerator responseGenerator,
             IMessageStore<ErrorMessage> errorMessageStore,
-            ClientListCookie clientListCookie)
+            IClientSessionService clientSession)
         {
             _logger = logger;
             _options = options;
             _context = context;
             _responseGenerator = responseGenerator;
             _errorMessageStore = errorMessageStore;
-            _clientListCookie = clientListCookie;
+            _clientSession = clientSession;
         }
 
         public Task<IEndpointResult> CreateLoginResultAsync(ValidatedAuthorizeRequest request)
@@ -111,7 +112,7 @@ namespace IdentityServer4.Endpoints.Results
             return await CreateAuthorizeResultAsync(response);
         }
 
-        Task<IEndpointResult> CreateAuthorizeResultAsync(AuthorizeResponse response)
+        async Task<IEndpointResult> CreateAuthorizeResultAsync(AuthorizeResponse response)
         {
             var request = response.Request;
 
@@ -132,10 +133,10 @@ namespace IdentityServer4.Endpoints.Results
                 if (response.IsError == false)
                 {
                     _logger.LogDebug("Adding client {0} to client list cookie for subject {1}", request.ClientId, request.Subject.GetSubjectId());
-                    _clientListCookie.AddClient(request.ClientId);
+                    await _clientSession.AddClientIdAsync(request.ClientId);
                 }
 
-                return Task.FromResult(result);
+                return result;
             }
 
             _logger.LogError("Unsupported response mode.");

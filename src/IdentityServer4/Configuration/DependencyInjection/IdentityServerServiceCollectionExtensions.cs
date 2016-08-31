@@ -123,6 +123,7 @@ namespace Microsoft.Extensions.DependencyInjection
             
             builder.Services.AddTransient<ISessionIdService, DefaultSessionIdService>();
             builder.Services.AddTransient<ClientListCookie>();
+            builder.Services.AddTransient<IClientSessionService, DefaultClientSessionService>();
             builder.Services.AddTransient(typeof(MessageCookie<>));
             builder.Services.AddScoped<AuthenticationHandler>();
             
