@@ -23,38 +23,38 @@ namespace IdentityServer4
         public static ClaimsPrincipal Create(
             string subject,
             string name,
-            string idp,
+            string identityProvider,
             params Claim[] claims)
         {
-            return Create(subject, name, idp, new[] { Constants.ExternalAuthenticationMethod }, claims);
+            return Create(subject, name, identityProvider, new[] { Constants.ExternalAuthenticationMethod }, claims);
         }
 
         public static ClaimsPrincipal Create(
             string subject,
             string name,
-            IEnumerable<string> amr,
+            IEnumerable<string> authenticationMethods,
             params Claim[] claims)
         {
-            return Create(subject, name, Constants.LocalIdentityProvider, amr, claims);
+            return Create(subject, name, Constants.LocalIdentityProvider, authenticationMethods, claims);
         }
 
         public static ClaimsPrincipal Create(
             string subject,
             string name,
-            string idp,
+            string identityProvider,
             IEnumerable<string> authenticationMethods,
             params Claim[] claims)
         {
             if (String.IsNullOrWhiteSpace(subject)) throw new ArgumentNullException(nameof(subject));
             if (String.IsNullOrWhiteSpace(name)) throw new ArgumentNullException(nameof(name));
             if (authenticationMethods.IsNullOrEmpty()) throw new ArgumentNullException(nameof(authenticationMethods));
-            if (String.IsNullOrWhiteSpace(idp)) throw new ArgumentNullException(nameof(idp));
+            if (String.IsNullOrWhiteSpace(identityProvider)) throw new ArgumentNullException(nameof(identityProvider));
             
             var allClaims = new List<Claim>
             {
                 new Claim(JwtClaimTypes.Subject, subject),
                 new Claim(JwtClaimTypes.Name, name),
-                new Claim(JwtClaimTypes.IdentityProvider, idp),
+                new Claim(JwtClaimTypes.IdentityProvider, identityProvider),
                 new Claim(JwtClaimTypes.AuthenticationTime, DateTimeHelper.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer)
             };
 
@@ -99,28 +99,6 @@ namespace IdentityServer4
             }
         }
 
-        //public static ClaimsPrincipal CreateFromPrincipal(ClaimsPrincipal principal, string authenticationType)
-        //{
-        //    // we require the following claims
-        //    var subject = principal.FindFirst(JwtClaimTypes.Subject);
-        //    if (subject == null) throw new InvalidOperationException("sub claim is missing");
-
-        //    var name = principal.FindFirst(JwtClaimTypes.Name);
-        //    if (name == null) throw new InvalidOperationException("name claim is missing");
-
-        //    var authenticationMethod = principal.FindFirst(JwtClaimTypes.AuthenticationMethod);
-        //    if (authenticationMethod == null) throw new InvalidOperationException("amr claim is missing");
-
-        //    var authenticationTime = principal.FindFirst(JwtClaimTypes.AuthenticationTime);
-        //    if (authenticationTime == null) throw new InvalidOperationException("auth_time claim is missing");
-
-        //    var idp = principal.FindFirst(JwtClaimTypes.IdentityProvider);
-        //    if (idp == null) throw new InvalidOperationException("idp claim is missing");
-
-        //    var id = new ClaimsIdentity(principal.Claims, authenticationType, JwtClaimTypes.Name, JwtClaimTypes.Role);
-        //    return new ClaimsPrincipal(id);
-        //}
-
         internal static ClaimsPrincipal FromSubjectId(string subjectId, IEnumerable<Claim> additionalClaims = null)
         {
             var claims = new List<Claim>
@@ -136,65 +114,5 @@ namespace IdentityServer4
             return Principal.Create(Constants.IdentityServerAuthenticationType,
                 claims.Distinct(new ClaimComparer()).ToArray());
         }
-
-        //public static ClaimsPrincipal FromClaims(IEnumerable<Claim> claims, bool allowMissing = false)
-        //{
-        //    var amr = claims.FirstOrDefault(c => c.Type == JwtClaimTypes.AuthenticationMethod);
-        //    var sub = claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject);
-        //    var idp = claims.FirstOrDefault(c => c.Type == JwtClaimTypes.IdentityProvider);
-        //    var authTime = claims.FirstOrDefault(c => c.Type == JwtClaimTypes.AuthenticationTime);
-
-        //    var id = new ClaimsIdentity(Constants.DefaultAuthenticationType);
-
-        //    if (sub != null)
-        //    {
-        //        id.AddClaim(sub);
-        //    }
-        //    else
-        //    {
-        //        if (allowMissing == false)
-        //        {
-        //            throw new InvalidOperationException("sub claim is missing");
-        //        }
-        //    }
-
-        //    if (amr != null)
-        //    {
-        //        id.AddClaim(amr);
-        //    }
-        //    else
-        //    {
-        //        if (allowMissing == false)
-        //        {
-        //            throw new InvalidOperationException("amr claim is missing");
-        //        }
-        //    }
-
-        //    if (idp != null)
-        //    {
-        //        id.AddClaim(idp);
-        //    }
-        //    else
-        //    {
-        //        if (allowMissing == false)
-        //        {
-        //            throw new InvalidOperationException("idp claim is missing");
-        //        }
-        //    }
-
-        //    if (authTime != null)
-        //    {
-        //        id.AddClaim(authTime);
-        //    }
-        //    else
-        //    {
-        //        if (allowMissing == false)
-        //        {
-        //            throw new InvalidOperationException("auth_time claim is missing");
-        //        }
-        //    }
-
-        //    return new ClaimsPrincipal(id);
-        //}
     }
 }
