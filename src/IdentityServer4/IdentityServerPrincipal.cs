@@ -32,7 +32,7 @@ namespace IdentityServer4
         public static ClaimsPrincipal Create(
             string subject,
             string name,
-            string[] amr,
+            IEnumerable<string> amr,
             params Claim[] claims)
         {
             return Create(subject, name, Constants.LocalIdentityProvider, amr, claims);
