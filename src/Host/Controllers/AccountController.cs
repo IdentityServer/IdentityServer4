@@ -52,7 +52,6 @@ namespace IdentityServer4.Quickstart.UI.Controllers
                 if (_loginService.ValidateCredentials(model.Username, model.Password))
                 {
                     var user = _loginService.FindByUsername(model.Username);
-                    //await IssueCookie(user, "idsvr", "password");
                     await HttpContext.Authentication.SignInAsync(user.Subject, user.Username);
                     
                     if (_interaction.IsValidReturnUrl(model.ReturnUrl))
@@ -117,8 +116,15 @@ namespace IdentityServer4.Quickstart.UI.Controllers
                 user = _loginService.AutoProvisionUser(provider, userId, claims);
             }
 
-            var sid = claims.FirstOrDefault(x => x.Type == OidcConstants.EndSessionRequest.Sid)?.Value;
-            await IssueCookie(user, provider, "external", sid);
+            var additionalClaims = new List<Claim>();
+
+            var sid = claims.FirstOrDefault(x => x.Type == OidcConstants.EndSessionRequest.Sid);
+            if (sid != null)
+            {
+                additionalClaims.Add(new Claim(JwtClaimTypes.SessionId, sid.Value));
+            }
+
+            await HttpContext.Authentication.SignInAsync(user.Subject, user.Username, provider, additionalClaims.ToArray());
             await HttpContext.Authentication.SignOutAsync("Temp");
 
             if (_interaction.IsValidReturnUrl(returnUrl))
@@ -159,32 +165,6 @@ namespace IdentityServer4.Quickstart.UI.Controllers
             };
 
             return View("LoggedOut", vm);
-        }
-
-        private async Task IssueCookie(
-            InMemoryUser user,
-            string idp,
-            string amr,
-            string sid = null)
-        {
-            var name = user.Claims.Where(x => x.Type == JwtClaimTypes.Name).Select(x => x.Value).FirstOrDefault() ?? user.Username;
-
-            var claims = new List<Claim> {
-                new Claim(JwtClaimTypes.Subject, user.Subject),
-                new Claim(JwtClaimTypes.Name, name),
-                new Claim(JwtClaimTypes.IdentityProvider, idp),
-                new Claim(JwtClaimTypes.AuthenticationTime, DateTime.UtcNow.ToEpochTime().ToString()),
-                new Claim("role", "some_role")
-            };
-            if (sid != null)
-            {
-                claims.Add(new Claim(OidcConstants.EndSessionRequest.Sid, sid));
-            }
-
-            var ci = new ClaimsIdentity(claims, amr, JwtClaimTypes.Name, JwtClaimTypes.Role);
-            var cp = new ClaimsPrincipal(ci);
-
-            await HttpContext.Authentication.SignInAsync(IdentityServerConstants.DefaultCookieAuthenticationScheme, cp);
         }
     }
 }

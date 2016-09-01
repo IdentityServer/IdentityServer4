@@ -63,7 +63,7 @@ namespace IdentityServer4.Quickstart
                 }
             }
 
-            var sub = Guid.NewGuid().ToString();
+            var sub = CryptoRandom.CreateUniqueId();
             var user = new InMemoryUser()
             {
                 Enabled = true,
