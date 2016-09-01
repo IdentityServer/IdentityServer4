@@ -14,7 +14,7 @@ using System.Collections.Generic;
 
 namespace IdentityServer4.Services.Default
 {
-    class DefaultUserInteractionService : IUserInteractionService
+    class DefaultIdentityServerInteractionService : IIdentityServerInteractionService
     {
         private readonly IdentityServerOptions _options;
         private readonly IHttpContextAccessor _context;
@@ -24,7 +24,7 @@ namespace IdentityServer4.Services.Default
         private readonly IMessageStore<ConsentResponse> _consentMessageStore;
         private readonly IPersistedGrantService _grants;
 
-        public DefaultUserInteractionService(
+        public DefaultIdentityServerInteractionService(
             IdentityServerOptions options,
             IHttpContextAccessor context,
             IAuthorizeRequestValidator validator,

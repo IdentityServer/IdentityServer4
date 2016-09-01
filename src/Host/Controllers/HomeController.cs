@@ -10,9 +10,9 @@ namespace IdentityServer4.Quickstart.UI.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IUserInteractionService _interaction;
+        private readonly IIdentityServerInteractionService _interaction;
 
-        public HomeController(IUserInteractionService interaction)
+        public HomeController(IIdentityServerInteractionService interaction)
         {
             _interaction = interaction;
         }

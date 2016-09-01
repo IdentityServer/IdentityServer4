@@ -23,6 +23,7 @@ namespace IdentityServer4.Quickstart
             {
                 return user.Password.Equals(password);
             }
+
             return false;
         }
 

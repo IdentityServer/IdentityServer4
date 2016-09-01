@@ -16,12 +16,12 @@ namespace IdentityServer4.Quickstart.UI.Controllers
     {
         private readonly ILogger<ConsentController> _logger;
         private readonly IClientStore _clientStore;
-        private readonly IUserInteractionService _interaction;
+        private readonly IIdentityServerInteractionService _interaction;
         private readonly IScopeStore _scopeStore;
 
         public ConsentController(
             ILogger<ConsentController> logger,
-            IUserInteractionService interaction,
+            IIdentityServerInteractionService interaction,
             IClientStore clientStore,
             IScopeStore scopeStore)
         {

@@ -92,7 +92,7 @@ namespace IdentityServer4.IntegrationTests.Common
 
         async Task ReadLoginRequest(HttpContext ctx)
         {
-            var interaction = ctx.RequestServices.GetRequiredService<IUserInteractionService>();
+            var interaction = ctx.RequestServices.GetRequiredService<IIdentityServerInteractionService>();
             LoginRequest = await interaction.GetAuthorizationContextAsync(ctx.Request.Query["returnUrl"].FirstOrDefault());
         }
 
@@ -121,7 +121,7 @@ namespace IdentityServer4.IntegrationTests.Common
 
         private async Task ReadLogoutRequest(HttpContext ctx)
         {
-            var interaction = ctx.RequestServices.GetRequiredService<IUserInteractionService>();
+            var interaction = ctx.RequestServices.GetRequiredService<IIdentityServerInteractionService>();
             LogoutRequest = await interaction.GetLogoutContextAsync(ctx.Request.Query["logoutId"].FirstOrDefault());
         }
 
@@ -138,7 +138,7 @@ namespace IdentityServer4.IntegrationTests.Common
 
         async Task ReadConsentMessage(HttpContext ctx)
         {
-            var interaction = ctx.RequestServices.GetRequiredService<IUserInteractionService>();
+            var interaction = ctx.RequestServices.GetRequiredService<IIdentityServerInteractionService>();
             ConsentRequest = await interaction.GetAuthorizationContextAsync(ctx.Request.Query["returnUrl"].FirstOrDefault());
         }
 
@@ -146,7 +146,7 @@ namespace IdentityServer4.IntegrationTests.Common
         {
             if (ConsentRequest != null && ConsentResponse != null)
             {
-                var interaction = ctx.RequestServices.GetRequiredService<IUserInteractionService>();
+                var interaction = ctx.RequestServices.GetRequiredService<IIdentityServerInteractionService>();
                 await interaction.GrantConsentAsync(ConsentRequest, ConsentResponse);
                 ConsentResponse = null;
 
@@ -169,7 +169,7 @@ namespace IdentityServer4.IntegrationTests.Common
 
         async Task ReadErrorMessage(HttpContext ctx)
         {
-            var interaction = ctx.RequestServices.GetRequiredService<IUserInteractionService>();
+            var interaction = ctx.RequestServices.GetRequiredService<IIdentityServerInteractionService>();
             ErrorMessage = await interaction.GetErrorContextAsync(ctx.Request.Query["errorId"].FirstOrDefault());
         }
 

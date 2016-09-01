@@ -10,7 +10,7 @@ using System.Security.Claims;
 
 namespace IdentityServer4
 {
-    internal static class IdentityServerPrincipal
+    public static class IdentityServerPrincipal
     {
         public static ClaimsPrincipal Create(
             string subject,

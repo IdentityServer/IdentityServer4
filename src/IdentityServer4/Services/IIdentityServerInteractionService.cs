@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Services
 {
-    public interface IUserInteractionService
+    public interface IIdentityServerInteractionService
     {
         Task<AuthorizationRequest> GetAuthorizationContextAsync(string returnUrl);
         Task<LogoutRequest> GetLogoutContextAsync(string logoutId);

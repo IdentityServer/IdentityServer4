@@ -144,7 +144,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<ICorsPolicyService, DefaultCorsPolicyService>();
             builder.Services.TryAddTransient<IProfileService, DefaultProfileService>();
             builder.Services.TryAddTransient(typeof(IMessageStore<>), typeof(CookieMessageStore<>));
-            builder.Services.TryAddTransient<IUserInteractionService, DefaultUserInteractionService>();
+            builder.Services.TryAddTransient<IIdentityServerInteractionService, DefaultIdentityServerInteractionService>();
 
             return builder;
         }
