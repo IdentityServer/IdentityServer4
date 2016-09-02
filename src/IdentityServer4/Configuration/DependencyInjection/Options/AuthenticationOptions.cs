@@ -11,6 +11,23 @@ namespace IdentityServer4.Configuration
     /// </summary>
     public class AuthenticationOptions
     {
+        bool _useAspNetIdentitySettings;
+        public bool UseAspNetIdentitySettings
+        {
+            get
+            {
+                return _useAspNetIdentitySettings;
+            }
+            set
+            {
+                _useAspNetIdentitySettings = value;
+                if (value)
+                {
+                    AuthenticationScheme = "Identity.Application";
+                }
+            }
+        }
+
         // TODO: new
         // TODO: does this class still make sense? maybe consolidate UI settings somewhere else?
         public string AuthenticationScheme { get; set; }

@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Configuration;
 using IdentityServer4.Services;
+using System.Linq;
+using IdentityModel;
+using System.Security.Claims;
+using System;
 
 namespace IdentityServer4.Hosting
 {
@@ -49,10 +53,32 @@ namespace IdentityServer4.Hosting
 
         private async Task AugmentContextAsync(SignInContext context)
         {
+            CheckAspNetIdClaimTypes(context);
+
             context.Principal.AssertRequiredClaims();
             context.Principal.AugmentMissingClaims();
 
             await _sessionId.AddSessionIdAsync(context);
+        }
+
+        void CheckAspNetIdClaimTypes(SignInContext context)
+        {
+            if (_options.AuthenticationOptions.UseAspNetIdentitySettings)
+            {
+                var sub = context.Principal.FindFirst(JwtClaimTypes.Subject);
+                if (sub == null)
+                {
+                    var nameId = context.Principal.FindFirst(ClaimTypes.NameIdentifier);
+                    if (nameId == null) nameId = context.Principal.FindFirst(ClaimTypes.Name);
+                    if (nameId == null)
+                    {
+                        throw new InvalidOperationException("A sub claim, name identifier claim, or name claim is required");
+                    }
+
+                    var id = context.Principal.Identities.First();
+                    id.AddClaim(new Claim(JwtClaimTypes.Subject, nameId.Value));
+                }
+            }
         }
  
         public Task SignOutAsync(SignOutContext context)
