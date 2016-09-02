@@ -37,8 +37,8 @@ In this scenario no interactive user is present - a service (aka client) wants t
                     {
                         "api1", "api2"
                     }
-                };
-            }
+                }
+            };
         }
     }
 
