@@ -68,15 +68,28 @@ namespace IdentityServer4.Hosting
                 var sub = context.Principal.FindFirst(JwtClaimTypes.Subject);
                 if (sub == null)
                 {
-                    var nameId = context.Principal.FindFirst(ClaimTypes.NameIdentifier);
-                    if (nameId == null) nameId = context.Principal.FindFirst(ClaimTypes.Name);
-                    if (nameId == null)
+                    sub = context.Principal.FindFirst(ClaimTypes.NameIdentifier);
+                    if (sub == null) sub = context.Principal.FindFirst(ClaimTypes.Name);
+                    if (sub == null)
                     {
                         throw new InvalidOperationException("A sub claim, name identifier claim, or name claim is required");
                     }
 
                     var id = context.Principal.Identities.First();
-                    id.AddClaim(new Claim(JwtClaimTypes.Subject, nameId.Value));
+                    id.AddClaim(new Claim(JwtClaimTypes.Subject, sub.Value));
+                }
+
+                var name = context.Principal.FindFirst(JwtClaimTypes.Name);
+                if (name == null)
+                {
+                    name = context.Principal.FindFirst(ClaimTypes.Name);
+                    if (name == null)
+                    {
+                        throw new InvalidOperationException("A name claim is required");
+                    }
+
+                    var id = context.Principal.Identities.First();
+                    id.AddClaim(new Claim(JwtClaimTypes.Name, name.Value));
                 }
             }
         }
