@@ -82,7 +82,6 @@ namespace IdentityServer4.Validation
 
             _validatedRequest.GrantType = grantType;
 
-            // standard grant types
             switch (grantType)
             {
                 case OidcConstants.GrantTypes.AuthorizationCode:
@@ -93,23 +92,9 @@ namespace IdentityServer4.Validation
                     return await RunValidationAsync(ValidateResourceOwnerCredentialRequestAsync, parameters);
                 case OidcConstants.GrantTypes.RefreshToken:
                     return await RunValidationAsync(ValidateRefreshTokenRequestAsync, parameters);
+                default:
+                    return await RunValidationAsync(ValidateExtensionGrantRequestAsync, parameters);
             }
-
-            // custom grant type
-            var result = await RunValidationAsync(ValidateExtensionGrantRequestAsync, parameters);
-
-            if (result.IsError)
-            {
-                if (result.Error.IsPresent())
-                {
-                    return result;
-                }
-
-                LogError("Unsupported grant_type: " + grantType);
-                return Invalid(OidcConstants.TokenErrors.UnsupportedGrantType);
-            }
-
-            return result;
         }
 
         async Task<TokenRequestValidationResult> RunValidationAsync(Func<NameValueCollection, Task<TokenRequestValidationResult>> validationFunc, NameValueCollection parameters)
