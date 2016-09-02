@@ -10,6 +10,7 @@ using System.Linq;
 using IdentityModel;
 using System.Security.Claims;
 using System;
+using System.Collections.Generic;
 
 namespace IdentityServer4.Hosting
 {
@@ -19,12 +20,14 @@ namespace IdentityServer4.Hosting
         private readonly HttpContext _context;
         private IAuthenticationHandler _handler;
         private readonly ISessionIdService _sessionId;
+        private readonly IEnumerable<ISignInValdationService> _signInValidators;
 
-        public AuthenticationHandler(IHttpContextAccessor context, IdentityServerOptions options, ISessionIdService sessionId)
+        public AuthenticationHandler(IHttpContextAccessor context, IdentityServerOptions options, ISessionIdService sessionId, IEnumerable<ISignInValdationService> signInValidators)
         {
             _context = context.HttpContext;
             _options = options;
             _sessionId = sessionId;
+            _signInValidators = signInValidators;
         }
 
         public Task AuthenticateAsync(AuthenticateContext context)
@@ -53,7 +56,7 @@ namespace IdentityServer4.Hosting
 
         private async Task AugmentContextAsync(SignInContext context)
         {
-            CheckAspNetIdClaimTypes(context);
+            await RunValidatorsAsync(context);
 
             context.Principal.AssertRequiredClaims();
             context.Principal.AugmentMissingClaims();
@@ -61,36 +64,11 @@ namespace IdentityServer4.Hosting
             await _sessionId.AddSessionIdAsync(context);
         }
 
-        void CheckAspNetIdClaimTypes(SignInContext context)
+        async Task RunValidatorsAsync(SignInContext context)
         {
-            if (_options.AuthenticationOptions.UseAspNetIdentitySettings)
+            foreach(var validator in _signInValidators)
             {
-                var sub = context.Principal.FindFirst(JwtClaimTypes.Subject);
-                if (sub == null)
-                {
-                    sub = context.Principal.FindFirst(ClaimTypes.NameIdentifier);
-                    if (sub == null) sub = context.Principal.FindFirst(ClaimTypes.Name);
-                    if (sub == null)
-                    {
-                        throw new InvalidOperationException("A sub claim, name identifier claim, or name claim is required");
-                    }
-
-                    var id = context.Principal.Identities.First();
-                    id.AddClaim(new Claim(JwtClaimTypes.Subject, sub.Value));
-                }
-
-                var name = context.Principal.FindFirst(JwtClaimTypes.Name);
-                if (name == null)
-                {
-                    name = context.Principal.FindFirst(ClaimTypes.Name);
-                    if (name == null)
-                    {
-                        throw new InvalidOperationException("A name claim is required");
-                    }
-
-                    var id = context.Principal.Identities.First();
-                    id.AddClaim(new Claim(JwtClaimTypes.Name, name.Value));
-                }
+                await validator.ValidateAsync(context);
             }
         }
  

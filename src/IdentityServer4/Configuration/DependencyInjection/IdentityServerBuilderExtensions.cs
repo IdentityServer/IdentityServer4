@@ -2,6 +2,9 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel;
+using IdentityServer4.Configuration;
+using IdentityServer4.Services;
+using IdentityServer4.Services.Default;
 using IdentityServer4.Stores;
 using IdentityServer4.Validation;
 using Microsoft.IdentityModel.Tokens;
@@ -165,6 +168,17 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IIdentityServerBuilder AddValidationKeys(this IIdentityServerBuilder builder, params AsymmetricSecurityKey[] keys)
         {
             builder.Services.AddSingleton<IValidationKeysStore>(new DefaultValidationKeysStore(keys));
+
+            return builder;
+        }
+
+        public static IIdentityServerBuilder AddAspNetIdentity(this IIdentityServerBuilder builder)
+        {
+            builder.Services.Configure<IdentityServerOptions>(options =>
+            {
+                options.AuthenticationOptions.AuthenticationScheme = "Identity.Application";
+            });
+            builder.Services.AddTransient<ISignInValdationService, AspNetIdentitySignInValidationService>();
 
             return builder;
         }
