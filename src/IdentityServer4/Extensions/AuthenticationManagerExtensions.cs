@@ -44,6 +44,12 @@ namespace Microsoft.AspNetCore.Http.Authentication
             await manager.SignInAsync(scheme, principal);
         }
 
+        public static async Task SignOutAsync(this AuthenticationManager manager)
+        {
+            var scheme = manager.GetIdentityServerAuthenticationScheme();
+            await manager.SignOutAsync(scheme);
+        }
+
         public static string GetIdentityServerAuthenticationScheme(this AuthenticationManager manager)
         {
             return manager.HttpContext.RequestServices.GetRequiredService<IdentityServerOptions>().AuthenticationOptions.EffectiveAuthenticationScheme;

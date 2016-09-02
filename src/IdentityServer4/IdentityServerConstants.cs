@@ -6,6 +6,8 @@ namespace IdentityServer4
     public static class IdentityServerConstants
     {
         public const string DefaultCookieAuthenticationScheme = "idsvr";
+        public const string SignoutScheme = "idsvr";
+        public const string ExternalCookieAuthenticationScheme = "external";
 
         public static class ClaimValueTypes
         {

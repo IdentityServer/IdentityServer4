@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using System.Linq;
+using IdentityServer4;
 
 namespace Host
 {
@@ -97,7 +98,7 @@ namespace Host
 
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
-                AuthenticationScheme = "Temp",
+                AuthenticationScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
                 AutomaticAuthenticate = false,
                 AutomaticChallenge = false
             });
@@ -105,15 +106,15 @@ namespace Host
             app.UseGoogleAuthentication(new GoogleOptions
             {
                 AuthenticationScheme = "Google",
-                SignInScheme = "Temp",
+                SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
                 ClientId = "998042782978-s07498t8i8jas7npj4crve1skpromf37.apps.googleusercontent.com",
                 ClientSecret = "HsnwJri_53zn7VcO1Fm7THBb",
             });
 
             app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
             {
-                SignInScheme = "Temp",
-                SignOutScheme = "idsvr",
+                SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
+                SignOutScheme = IdentityServerConstants.SignoutScheme,
                 DisplayName = "IdentityServer3",
                 Authority = "https://demo.identityserver.io/",
                 ClientId = "implicit",
