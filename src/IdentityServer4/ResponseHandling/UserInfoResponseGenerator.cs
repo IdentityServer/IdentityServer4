@@ -1,11 +1,13 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using IdentityModel;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -60,18 +62,32 @@ namespace IdentityServer4.ResponseHandling
                 await _profile.GetProfileDataAsync(context);
                 profileClaims = context.IssuedClaims;
             }
-            
-            if (profileClaims != null)
-            {
-                profileData = profileClaims.ToClaimsDictionary();
-                _logger.LogInformation("Profile service returned to the following claim types: {types}", profileClaims.Select(c => c.Type).ToSpaceSeparatedString());
-            }
-            else
+
+            List<Claim> results = new List<Claim>();
+
+            if (profileClaims == null)
             {
                 _logger.LogInformation("Profile service returned no claims (null)");
             }
+            else
+            {
+                results.AddRange(profileClaims);
+                _logger.LogInformation("Profile service returned to the following claim types: {types}", profileClaims.Select(c => c.Type).ToSpaceSeparatedString());
+            }
 
-            return profileData;
+            // TODO: unit tests
+            var subClaim = results.SingleOrDefault(x => x.Type == JwtClaimTypes.Subject);
+            if (subClaim == null)
+            {
+                results.Add(new Claim(JwtClaimTypes.Subject, subject.GetSubjectId()));
+            }
+            else if (subClaim.Value != subject.GetSubjectId())
+            {
+                _logger.LogError("Profile service returned incorrect subject value: {sub}", subClaim);
+                throw new InvalidOperationException("Profile service returned incorrect subject value");
+            }
+
+            return results.ToClaimsDictionary();
         }
 
         public async Task<RequestedClaimTypes> GetRequestedClaimTypesAsync(IEnumerable<string> scopes)
