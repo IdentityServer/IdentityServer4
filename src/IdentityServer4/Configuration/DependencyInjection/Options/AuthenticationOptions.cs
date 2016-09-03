@@ -11,8 +11,12 @@ namespace IdentityServer4.Configuration
     /// </summary>
     public class AuthenticationOptions
     {
-        // TODO: new
-        // TODO: does this class still make sense? maybe consolidate UI settings somewhere else?
+        /// <summary>
+        /// Gets or sets the authentication scheme if you have registered a custom cookie authentication middleware.
+        /// </summary>
+        /// <value>
+        /// The authentication scheme.
+        /// </value>
         public string AuthenticationScheme { get; set; }
 
         internal string EffectiveAuthenticationScheme

@@ -79,7 +79,7 @@ namespace IdentityServer4.Quickstart
                 }
             }
         
-            // if no display name was provided, try to construct by first and last name
+            // if no display name was provided, try to construct by first and/or last name
             if (!filtered.Any(x=>x.Type == JwtClaimTypes.Name))
             {
                 var first = filtered.FirstOrDefault(x => x.Type == JwtClaimTypes.GivenName)?.Value;
@@ -87,6 +87,14 @@ namespace IdentityServer4.Quickstart
                 if (first != null && last != null)
                 {
                     filtered.Add(new Claim(JwtClaimTypes.Name, first + " " + last));
+                }
+                else if (first != null)
+                {
+                    filtered.Add(new Claim(JwtClaimTypes.Name, first));
+                }
+                else if (last != null)
+                {
+                    filtered.Add(new Claim(JwtClaimTypes.Name, last));
                 }
             }
 
