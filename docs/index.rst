@@ -41,6 +41,13 @@ Since IdentityServer is a framework and not a boxed product or a SaaS, you can w
 .. toctree::
    :maxdepth: 2
    :hidden:
+   :caption: Quickstarts
+
+   quickstarts/aspnet_identity
+
+.. toctree::
+   :maxdepth: 2
+   :hidden:
    :caption: Getting started
 
    start/scopes
