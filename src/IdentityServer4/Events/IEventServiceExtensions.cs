@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel;
-using IdentityServer4.Events;
+using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using System;
@@ -10,7 +10,7 @@ using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Extensions
+namespace IdentityServer4.Events
 {
     internal static class IEventServiceExtensions
     {
@@ -34,23 +34,23 @@ namespace IdentityServer4.Extensions
         //    await events.RaiseEventAsync(evt);
         //}
 
-        public static async Task RaisePreLoginFailureEventAsync(this IEventService events, 
-            string signInMessageId, AuthorizationRequest authorizationRequest, string error)
-        {
-            var evt = new Event<LoginDetails>(
-                EventConstants.Categories.Authentication,
-                "Pre-Login Failure",
-                EventTypes.Failure,
-                EventConstants.Ids.PreLoginFailure,
-                new LoginDetails
-                {
-                    SignInId = signInMessageId,
-                    AuthorizationRequest = authorizationRequest,
-                }, 
-                error);
+        //public static async Task RaisePreLoginFailureEventAsync(this IEventService events, 
+        //    string signInMessageId, AuthorizationRequest authorizationRequest, string error)
+        //{
+        //    var evt = new Event<LoginDetails>(
+        //        EventConstants.Categories.Authentication,
+        //        "Pre-Login Failure",
+        //        EventTypes.Failure,
+        //        EventConstants.Ids.PreLoginFailure,
+        //        new LoginDetails
+        //        {
+        //            SignInId = signInMessageId,
+        //            AuthorizationRequest = authorizationRequest,
+        //        }, 
+        //        error);
 
-            await events.RaiseEventAsync(evt);
-        }
+        //    await events.RaiseEventAsync(evt);
+        //}
 
         //TODO
         //public static async Task RaiseLocalLoginSuccessEventAsync(this IEventService events, 
@@ -74,24 +74,24 @@ namespace IdentityServer4.Extensions
         //    await events.RaiseEventAsync(evt);
         //}
 
-        public static async Task RaiseLocalLoginFailureEventAsync(this IEventService events, 
-            string username, string signInMessageId, AuthorizationRequest authorizationRequest, string error)
-        {
-            var evt = new Event<LocalLoginDetails>(
-                EventConstants.Categories.Authentication,
-                "Local Login Failure",
-                EventTypes.Failure,
-                EventConstants.Ids.LocalLoginFailure,
-                new LocalLoginDetails
-                {
-                    SignInId = signInMessageId,
-                    AuthorizationRequest = authorizationRequest,
-                    LoginUserName = username
-                }, 
-                error);
+        //public static async Task RaiseLocalLoginFailureEventAsync(this IEventService events, 
+        //    string username, string signInMessageId, AuthorizationRequest authorizationRequest, string error)
+        //{
+        //    var evt = new Event<LocalLoginDetails>(
+        //        EventConstants.Categories.Authentication,
+        //        "Local Login Failure",
+        //        EventTypes.Failure,
+        //        EventConstants.Ids.LocalLoginFailure,
+        //        new LocalLoginDetails
+        //        {
+        //            SignInId = signInMessageId,
+        //            AuthorizationRequest = authorizationRequest,
+        //            LoginUserName = username
+        //        }, 
+        //        error);
 
-            await events.RaiseEventAsync(evt);
-        }
+        //    await events.RaiseEventAsync(evt);
+        //}
 
         // TODO
         //public static async Task RaiseExternalLoginSuccessEventAsync(this IEventService events, 
@@ -221,43 +221,43 @@ namespace IdentityServer4.Extensions
             await events.RaiseEventAsync(evt);
         }
 
-        public static async Task RaiseCspReportEventAsync(this IEventService events, string report, ClaimsPrincipal user)
-        {
-            var evt = new Event<CspReportDetails>(
-                EventConstants.Categories.Information,
-                "Content Security Policy (CSP) Report",
-                EventTypes.Information,
-                EventConstants.Ids.CspReport);
+        //public static async Task RaiseCspReportEventAsync(this IEventService events, string report, ClaimsPrincipal user)
+        //{
+        //    var evt = new Event<CspReportDetails>(
+        //        EventConstants.Categories.Information,
+        //        "Content Security Policy (CSP) Report",
+        //        EventTypes.Information,
+        //        EventConstants.Ids.CspReport);
 
-            evt.DetailsFunc = () => {
-                string subject = null;
-                string name = null;
-                if (user != null && user.Identity.IsAuthenticated)
-                {
-                    subject = user.GetSubjectId();
-                    name = user.Identity.Name;
-                }
+        //    evt.DetailsFunc = () => {
+        //        string subject = null;
+        //        string name = null;
+        //        if (user != null && user.Identity.IsAuthenticated)
+        //        {
+        //            subject = user.GetSubjectId();
+        //            name = user.Identity.Name;
+        //        }
 
-                object reportData = null;
-                try
-                {
-                    reportData = Newtonsoft.Json.JsonConvert.DeserializeObject(report);
-                }
-                catch(Newtonsoft.Json.JsonReaderException)
-                {
-                    reportData = "Error reading CSP report JSON";
-                    evt.Message = "Raw Report Data: " + report;
-                }
-                return new CspReportDetails
-                {
-                    Subject = subject,
-                    Name = name,
-                    Report = reportData
-                };
-            };
+        //        object reportData = null;
+        //        try
+        //        {
+        //            reportData = Newtonsoft.Json.JsonConvert.DeserializeObject(report);
+        //        }
+        //        catch(Newtonsoft.Json.JsonReaderException)
+        //        {
+        //            reportData = "Error reading CSP report JSON";
+        //            evt.Message = "Raw Report Data: " + report;
+        //        }
+        //        return new CspReportDetails
+        //        {
+        //            Subject = subject,
+        //            Name = name,
+        //            Report = reportData
+        //        };
+        //    };
 
-            await events.RaiseEventAsync(evt);
-        }
+        //    await events.RaiseEventAsync(evt);
+        //}
 
         public static async Task RaiseClientPermissionsRevokedEventAsync(this IEventService events, ClaimsPrincipal user, string clientId)
         {
@@ -299,7 +299,7 @@ namespace IdentityServer4.Extensions
             string referenceTokenHandle = null;
             if (token.AccessTokenType == AccessTokenType.Reference)
             {
-                referenceTokenHandle = rawToken;
+                referenceTokenHandle = ObfuscateToken(rawToken);
             }
 
             evt.DetailsFunc = () => new AccessTokenIssuedDetails
@@ -389,8 +389,8 @@ namespace IdentityServer4.Extensions
 
             evt.Details = new RefreshTokenRefreshDetails
             {
-                OldHandle = oldHandle,
-                NewHandle = newHandle,
+                OldHandle = ObfuscateToken(oldHandle),
+                NewHandle = ObfuscateToken(newHandle),
                 ClientId = token.ClientId,
                 Lifetime = token.Lifetime
             };
@@ -477,7 +477,7 @@ namespace IdentityServer4.Extensions
                 EventConstants.Ids.IntrospectionEndpointSuccess,
                 new IntrospectionEndpointDetail
                 {
-                    Token = token,
+                    Token = ObfuscateToken(token),
                     TokenStatus = tokenStatus,
                     ScopeName = scopeName
                 });
@@ -494,7 +494,7 @@ namespace IdentityServer4.Extensions
                  EventConstants.Ids.IntrospectionEndpointFailure,
                  new IntrospectionEndpointDetail
                  {
-                     Token = token,
+                     Token = ObfuscateToken(token),
                      ScopeName = scopeName
                  },
                  error);
@@ -544,7 +544,7 @@ namespace IdentityServer4.Extensions
                 EventConstants.Ids.RefreshTokenRefreshedFailure,
                 new RefreshTokenDetails
                 {
-                    HandleId = handle,
+                    HandleId = ObfuscateToken(handle),
                     ClientId = client.ClientId
                 },
                 error);
@@ -638,6 +638,17 @@ namespace IdentityServer4.Extensions
             if (events == null) throw new ArgumentNullException("events");
 
             await events.RaiseAsync(evt);
+        }
+
+        private static string ObfuscateToken(string token)
+        {
+            string last4chars = "****";
+            if (token.IsPresent() && token.Length > 4)
+            {
+                last4chars = token.Substring(token.Length - 4);
+            }
+
+            return "****" + last4chars;
         }
     }
 }

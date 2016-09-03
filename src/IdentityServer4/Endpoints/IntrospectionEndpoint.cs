@@ -7,10 +7,10 @@ using IdentityServer4.Validation;
 using IdentityServer4.ResponseHandling;
 using IdentityServer4.Services;
 using Microsoft.Extensions.Logging;
-using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
 using IdentityServer4.Endpoints.Results;
 using Microsoft.AspNetCore.Http;
+using IdentityServer4.Events;
 
 namespace IdentityServer4.Endpoints
 {

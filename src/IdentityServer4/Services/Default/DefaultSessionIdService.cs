@@ -2,13 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel;
-using IdentityServer4.Configuration;
-using IdentityServer4.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.Features.Authentication;
 using IdentityServer4.Extensions;
-using System;
 
 namespace IdentityServer4.Services.Default
 {

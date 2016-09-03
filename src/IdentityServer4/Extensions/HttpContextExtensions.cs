@@ -3,7 +3,6 @@
 
 using IdentityModel;
 using IdentityServer4.Configuration;
-using IdentityServer4.Extensions;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Authentication;
