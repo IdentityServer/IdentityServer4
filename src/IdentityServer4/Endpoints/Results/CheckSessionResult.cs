@@ -1,8 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using IdentityServer4.Hosting;
 using Microsoft.AspNetCore.Http;
-using IdentityServer4.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using IdentityServer4.Services;
 
