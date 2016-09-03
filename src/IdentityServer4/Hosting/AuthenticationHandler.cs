@@ -6,10 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Configuration;
 using IdentityServer4.Services;
-using System.Linq;
-using IdentityModel;
-using System.Security.Claims;
-using System;
 using System.Collections.Generic;
 
 namespace IdentityServer4.Hosting

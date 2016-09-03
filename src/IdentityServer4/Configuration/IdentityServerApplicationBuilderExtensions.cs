@@ -4,7 +4,6 @@
 using IdentityServer4.Configuration;
 using IdentityServer4.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 
 namespace Microsoft.AspNetCore.Builder
 {

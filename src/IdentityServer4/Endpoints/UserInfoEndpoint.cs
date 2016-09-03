@@ -8,7 +8,6 @@ using IdentityServer4.Validation;
 using IdentityServer4.Services;
 using IdentityServer4.ResponseHandling;
 using Microsoft.Extensions.Logging;
-using IdentityServer4.Extensions;
 using IdentityServer4.Events;
 using IdentityServer4.Hosting;
 using IdentityServer4.Endpoints.Results;

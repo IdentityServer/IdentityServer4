@@ -1,7 +1,6 @@
 ﻿using IdentityServer4.Services;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.Features.Authentication;
-using System;
 
 namespace IdentityServer4.UnitTests.Common
 {
