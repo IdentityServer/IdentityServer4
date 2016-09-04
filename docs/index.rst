@@ -43,12 +43,14 @@ Since IdentityServer is a framework and not a boxed product or a SaaS, you can w
    :hidden:
    :caption: Quickstarts
 
-   quickstarts/aspnet_identity
+   quickstarts/0_overview
+   quickstarts/1_client_credentials
+   quickstarts/6_aspnet_identity
 
 .. toctree::
    :maxdepth: 2
    :hidden:
-   :caption: Getting started
+   :caption: Configuration
 
    start/scopes
    start/clients
