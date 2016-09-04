@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Configuration;
 using IdentityServer4.Services;
-using System.Collections.Generic;
 
 namespace IdentityServer4.Hosting
 {
@@ -16,14 +15,12 @@ namespace IdentityServer4.Hosting
         private readonly HttpContext _context;
         private IAuthenticationHandler _handler;
         private readonly ISessionIdService _sessionId;
-        private readonly IEnumerable<ISignInValdationService> _signInValidators;
 
-        public AuthenticationHandler(IHttpContextAccessor context, IdentityServerOptions options, ISessionIdService sessionId, IEnumerable<ISignInValdationService> signInValidators)
+        public AuthenticationHandler(IHttpContextAccessor context, IdentityServerOptions options, ISessionIdService sessionId)
         {
             _context = context.HttpContext;
             _options = options;
             _sessionId = sessionId;
-            _signInValidators = signInValidators;
         }
 
         public Task AuthenticateAsync(AuthenticateContext context)
@@ -52,22 +49,12 @@ namespace IdentityServer4.Hosting
 
         private async Task AugmentContextAsync(SignInContext context)
         {
-            await RunValidatorsAsync(context);
-
             context.Principal.AssertRequiredClaims();
             context.Principal.AugmentMissingClaims();
 
             await _sessionId.AddSessionIdAsync(context);
         }
 
-        async Task RunValidatorsAsync(SignInContext context)
-        {
-            foreach(var validator in _signInValidators)
-            {
-                await validator.ValidateAsync(context);
-            }
-        }
- 
         public Task SignOutAsync(SignOutContext context)
         {
             return _handler.SignOutAsync(context);
