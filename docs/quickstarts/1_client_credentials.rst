@@ -183,6 +183,9 @@ Next you can use the ``RequestClientCredentialsAsync`` method to request a token
 
     Console.WriteLine(tokenResponse.Json);
 
+
+.. note:: Copy and paste the access token from the console to `jwt.io <https://jwt.io>`_ to inspect the raw token.
+
 The last step is now to call the API.
 
 To send the access token to the API you typically use the HTTP Authorization header.
