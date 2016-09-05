@@ -189,3 +189,51 @@ simply add the following code some controller to trigger the sign-out::
 
 This will clear the local cookie and then redirect to IdentityServer.
 IdentityServer will clear its cookies and then give the user a link to return back to the MVC application.
+
+Further experiments
+^^^^^^^^^^^^^^^^^^^
+As mentioned above, the OpenID Connect middleware asks for the *profile* scope by default.
+This scope also includes claims like *name* or *website*.
+
+Let's add these claims to the user, so IdentityServer can put them into the identity token::
+
+    public static List<InMemoryUser> GetUsers()
+    {
+        return new List<InMemoryUser>
+        {
+            new InMemoryUser
+            {
+                Subject = "1",
+                Username = "alice",
+                Password = "password",
+
+                Claims = new List<Claim>
+                {
+                    new Claim("name", "Alice"),
+                    new Claim("website", "https://alice.com")
+                }
+            },
+            new InMemoryUser
+            {
+                Subject = "2",
+                Username = "bob",
+                Password = "password",
+
+                Claims = new List<Claim>
+                {
+                    new Claim("name", "Bob"),
+                    new Claim("website", "https://bob.com")
+                }
+            }
+        };
+    }
+
+Next time you authenticate, your claims page will now show the additional claims.
+
+Feel free to add more claims - and also more scopes. The ``Scope`` property on the OpenID Connect 
+middleware is where you configure which scopes will be sent to IdentityServer during authentication.
+
+It is also noteworthy, that the retrieval of claims for tokens is an extensibility point - ``IProfileService``.
+Since we are using the in-memory user store, the ``InMemoryUserProfileService`` is used by default.
+You can inspect the source code `here <https://github.com/IdentityServer/IdentityServer4/blob/dev/src/IdentityServer4/Quickstart/Services/InMemoryUserProfileService.cs>`_
+to see how it works.

@@ -47,6 +47,8 @@ Since IdentityServer is a framework and not a boxed product or a SaaS, you can w
    quickstarts/1_client_credentials
    quickstarts/2_resource_owner_passwords
    quickstarts/3_interactive_login
+   quickstarts/4_external_authentication
+   quickstarts/5_hybrid_and_api_access
    quickstarts/6_aspnet_identity
 
 .. toctree::
