@@ -8,7 +8,7 @@ This quickstart shows how to use ASP.NET Identity with IdentityServer.
 This quickstart assumes you've been though all of the prior quickstarts. 
 The approach this quickstart takes to using ASP.NET Identity is to create a new project from the ASP.NET Identity template in Visual Studio.
 This new project will replace the prior IdentityServer project we built up from scratch in the previous quickstarts.
-All the other projects in thie solution (for the clients and the API) will remain the same.
+All the other projects in this solution (for the clients and the API) will remain the same.
 
 New Project for ASP.NET Identity
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
