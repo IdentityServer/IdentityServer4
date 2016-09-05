@@ -42,7 +42,7 @@ This is important so the existing clients and api projects will continue to work
 Add IdentityServer packages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Add both the ``IdentitySever4``, and the ``IdentitySever4.AspNetIdentity`` packages to `project.json`::
+Add both the ``IdentitySever4`` and the ``IdentitySever4.AspNetIdentity`` packages to `project.json`::
 
     "IdentityServer4": "1.0.0-rc1",
     "IdentityServer4.AspNetIdentity": "1.0.0-rc1"
@@ -202,3 +202,14 @@ You should also be able to click "Call API using application identity" to invoke
 .. image:: images/6_api_claims.png
 
 And now you've logged in with a user from ASP.NET Identity.
+
+What's Next?
+^^^^^^^^^^^^
+
+The prior quickstart project for IdentityServer provided a consent page, an error page, and a logout page. 
+The code for these missing pieces can simply be copied over from the prior quickstart project into this one.
+Once you've done that, then you can finally delete/remove the old IdentityServer project. 
+Also, once you've done this don't forget to re-enable the ``RequireConsent=true`` flag on the MVC client configuration.
+
+The `sample code for this quickstart <https://github.com/IdentityServer/IdentityServer4.Samples/tree/dev/Quickstarts/6_AspNetIdentity>`_ has already done these steps for you, so you can get started quickly with all of these features.
+Enjoy!
