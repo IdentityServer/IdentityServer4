@@ -50,6 +50,7 @@ Since IdentityServer is a framework and not a boxed product or a SaaS, you can w
    quickstarts/4_external_authentication
    quickstarts/5_hybrid_and_api_access
    quickstarts/6_aspnet_identity
+   quickstarts/7_javascript_client
 
 .. toctree::
    :maxdepth: 2
