@@ -29,7 +29,7 @@ Start by creating a new ASP.NET Core project.
 
 .. image:: images/0_new_web_project.png
 
-The select the "Empty Web" option.
+Then select the "Empty Web" option.
 
 .. image:: images/0_empty_web.png
 
