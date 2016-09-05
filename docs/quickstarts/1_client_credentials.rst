@@ -110,9 +110,6 @@ Add a new controller to your API project::
 This controller will be used later to test the authorization requirement, as well
 as visualize the claims identity through the eyes of the API.
 
-If you use the browser to navigate to the controller (``http://localhost:5001/identity``), 
-you should get a 401 status code in return. This means your API requires a credential.
-
 **Configuration**
 
 The last step is to add authentication middleware to your API host.
@@ -143,6 +140,9 @@ It must be added **before** MVC, e.g.::
 
         app.UseMvc();
     }
+
+If you use the browser to navigate to the controller (``http://localhost:5001/identity``), 
+you should get a 401 status code in return. This means your API requires a credential.
 
 That's it, the API is now protected by IdentityServer.
 
