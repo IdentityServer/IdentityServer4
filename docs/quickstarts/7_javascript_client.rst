@@ -169,7 +169,7 @@ Add this code to detect if the user is logged into the JavaScript application::
 Next, we want to implement the ``login``, ``api``, and ``logout`` functions. 
 The ``UserManager`` provides a ``signinRedirect`` to log the user in, and a ``signoutRedirect`` to log the user out.
 The ``User`` object that we obtained in the above code also has an ``access_token`` property which can be used to authenticate with a web API.
-The ``access_token`` wil be passed to the web API via the `Authorization` header with the `Bearer` scheme.
+The ``access_token`` will be passed to the web API via the `Authorization` header with the `Bearer` scheme.
 Add this code to implement those three functions in our application::
 
     function login() {
