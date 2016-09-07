@@ -28,6 +28,10 @@ Focus on Customization
 The most important part - many aspect of IdentityServer can be customized to fit **your** needs.
 Since IdentityServer is a framework and not a boxed product or a SaaS, you can write code to adapt the system the way it makes sense for your scenarios.
 
+Commercial Support Services
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+If you need commercial support building or running your identity platform, we can help you as well. Head over to `identityserver.com <https://identityserver.com>`_ for more information.
+
 .. toctree::
    :maxdepth: 2
    :hidden:
