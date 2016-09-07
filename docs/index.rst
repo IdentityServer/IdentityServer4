@@ -55,6 +55,7 @@ If you need help building or running your identity platform, let us know. Head o
    quickstarts/5_hybrid_and_api_access
    quickstarts/6_aspnet_identity
    quickstarts/7_javascript_client
+   quickstarts/8_entity_framework
 
 .. toctree::
    :maxdepth: 2
