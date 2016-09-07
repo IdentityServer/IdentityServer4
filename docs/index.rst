@@ -30,7 +30,7 @@ Since IdentityServer is a framework and not a boxed product or a SaaS, you can w
 
 Commercial Support Services
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-If you need commercial support building or running your identity platform, we can help you as well. Head over to `identityserver.com <https://identityserver.com>`_ for more information.
+If you need help building or running your identity platform, let us know. Head over to `identityserver.com <https://identityserver.com>`_ for more information.
 
 .. toctree::
    :maxdepth: 2
