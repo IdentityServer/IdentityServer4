@@ -26,14 +26,7 @@ To add SqlServer, we need several more dependencies.
 In the `"dependencies"` section in `project.json` add these packages::
 
   "Microsoft.EntityFrameworkCore.SqlServer": "1.0.0",
-  "Microsoft.EntityFrameworkCore.SqlServer.Design": {
-      "version": "1.0.0",
-      "type": "build"
-  },
-  "Microsoft.EntityFrameworkCore.Tools": {
-      "version": "1.0.0-preview2-final",
-      "type": "build"
-  }
+  "Microsoft.EntityFrameworkCore.Tools": "1.0.0-preview2-final"
 
 And then in the `"tools"` section add this configuration::
 
