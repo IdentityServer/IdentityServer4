@@ -84,7 +84,7 @@ namespace IdentityServer4.Validation
                         {
                             Id = id,
                             Credential = secret,
-                            Type = Constants.ParsedSecretTypes.SharedSecret
+                            Type = IdentityServerConstants.ParsedSecretTypes.SharedSecret
                         });
                     }
                     else
@@ -95,7 +95,7 @@ namespace IdentityServer4.Validation
                         return Task.FromResult(new ParsedSecret
                         {
                             Id = id,
-                            Type = Constants.ParsedSecretTypes.NoSecret
+                            Type = IdentityServerConstants.ParsedSecretTypes.NoSecret
                         });
                     }
                 }

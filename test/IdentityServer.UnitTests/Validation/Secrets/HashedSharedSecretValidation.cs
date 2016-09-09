@@ -32,7 +32,7 @@ namespace IdentityServer4.UnitTests.Validation.Secrets
             {
                 Id = clientId,
                 Credential = "secret",
-                Type = Constants.ParsedSecretTypes.SharedSecret
+                Type = IdentityServerConstants.ParsedSecretTypes.SharedSecret
             };
 
             var result = await _validator.ValidateAsync(client.ClientSecrets, secret);
@@ -70,7 +70,7 @@ namespace IdentityServer4.UnitTests.Validation.Secrets
             {
                 Id = clientId,
                 Credential = "secret",
-                Type = Constants.ParsedSecretTypes.SharedSecret
+                Type = IdentityServerConstants.ParsedSecretTypes.SharedSecret
             };
 
             var result = await _validator.ValidateAsync(client.ClientSecrets, secret);
@@ -100,7 +100,7 @@ namespace IdentityServer4.UnitTests.Validation.Secrets
             {
                 Id = clientId,
                 Credential = "invalid",
-                Type = Constants.ParsedSecretTypes.SharedSecret
+                Type = IdentityServerConstants.ParsedSecretTypes.SharedSecret
             };
 
             var result = await _validator.ValidateAsync(client.ClientSecrets, secret);
@@ -119,7 +119,7 @@ namespace IdentityServer4.UnitTests.Validation.Secrets
             {
                 Id = clientId,
                 Credential = "invalid",
-                Type = Constants.ParsedSecretTypes.SharedSecret
+                Type = IdentityServerConstants.ParsedSecretTypes.SharedSecret
             };
 
             var result = await _validator.ValidateAsync(client.ClientSecrets, secret);
@@ -136,7 +136,7 @@ namespace IdentityServer4.UnitTests.Validation.Secrets
             var secret = new ParsedSecret
             {
                 Id = clientId,
-                Type = Constants.ParsedSecretTypes.SharedSecret
+                Type = IdentityServerConstants.ParsedSecretTypes.SharedSecret
             };
 
             Func<Task> act = () => _validator.ValidateAsync(client.ClientSecrets, secret);

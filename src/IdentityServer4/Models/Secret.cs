@@ -48,7 +48,7 @@ namespace IdentityServer4.Models
         /// </summary>
         public Secret()
         {
-            Type = Constants.SecretTypes.SharedSecret;
+            Type = IdentityServerConstants.SecretTypes.SharedSecret;
         }
 
         /// <summary>

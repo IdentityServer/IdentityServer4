@@ -38,7 +38,7 @@ namespace IdentityServer4.Validation
             var fail = Task.FromResult(new SecretValidationResult { Success = false });
             var success = Task.FromResult(new SecretValidationResult { Success = true });
 
-            if (parsedSecret.Type != Constants.ParsedSecretTypes.SharedSecret)
+            if (parsedSecret.Type != IdentityServerConstants.ParsedSecretTypes.SharedSecret)
             {
                 _logger.LogError("Parsed secret should not be of type: {type}", parsedSecret.Type ?? "null");
                 return fail;
@@ -56,9 +56,9 @@ namespace IdentityServer4.Validation
                 var secretDescription = string.IsNullOrEmpty(secret.Description) ? "no description" : secret.Description;
 
                 // this validator is only applicable to shared secrets
-                if (secret.Type != Constants.SecretTypes.SharedSecret)
+                if (secret.Type != IdentityServerConstants.SecretTypes.SharedSecret)
                 {
-                    _logger.LogDebug("Skipping secret: {description}, secret is not of type {type}.", secretDescription, Constants.SecretTypes.SharedSecret);
+                    _logger.LogDebug("Skipping secret: {description}, secret is not of type {type}.", secretDescription, IdentityServerConstants.SecretTypes.SharedSecret);
                     continue;
                 }
 

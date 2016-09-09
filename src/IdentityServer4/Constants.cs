@@ -12,23 +12,16 @@ namespace IdentityServer4
 {
     internal static class Constants
     {
-        public const string IdentityServerName = "IdentityServer4";
+        public const string IdentityServerName               = "IdentityServer4";
         public const string IdentityServerAuthenticationType = IdentityServerName;
-        
-        public const string LocalIdentityProvider           = "local";
-        public const string ExternalAuthenticationMethod    = "external";
-
-        public const string AccessTokenAudience             = "{0}resources";
+        public const string LocalIdentityProvider            = "local";
+        public const string ExternalAuthenticationMethod     = "external";
+        public const string AccessTokenAudience              = "{0}resources";
+        public const string DefaultHashAlgorithm             = "SHA256";
 
         public static readonly TimeSpan DefaultCookieTimeSpan = TimeSpan.FromHours(10);
+        public static readonly TimeSpan DefaultCacheDuration  = TimeSpan.FromMinutes(5);
 
-        public static readonly TimeSpan DefaultCacheDuration = TimeSpan.FromMinutes(5);
-
-        public const string DefaultHashAlgorithm = "SHA256";
-
-        public const string ScopeDisplayNameSuffix = "_DisplayName";
-        public const string ScopeDescriptionSuffix = "_Description";
-        
         public static readonly List<string> SupportedResponseTypes = new List<string> 
         { 
             OidcConstants.ResponseTypes.Code,
@@ -63,8 +56,6 @@ namespace IdentityServer4
             OidcConstants.CodeChallengeMethods.Plain,
             OidcConstants.CodeChallengeMethods.Sha256
         };
-
-
 
         public enum ScopeRequirement
         {
@@ -200,20 +191,6 @@ namespace IdentityServer4
             public const string Roles         = "roles";
         }
 
-        public static class ParsedSecretTypes
-        {
-            public const string NoSecret = "NoSecret";
-            public const string SharedSecret = "SharedSecret";
-            public const string X509Certificate = "X509Certificate";
-        }
-
-        public static class SecretTypes
-        {
-            public const string SharedSecret              = "SharedSecret";
-            public const string X509CertificateThumbprint = "X509Thumbprint";
-            public const string X509CertificateName       = "X509Name";
-        }
-
         public static class UIConstants
         {
             // the limit after which old messages are purged
@@ -238,23 +215,18 @@ namespace IdentityServer4
 
         public static class ProtocolRoutePaths
         {
-            public const string Authorize = "connect/authorize";
-            public const string AuthorizeAfterConsent = Authorize + "/consent";
-            public const string AuthorizeAfterLogin = Authorize + "/login";
-
+            public const string Authorize              = "connect/authorize";
+            public const string AuthorizeAfterConsent  = Authorize + "/consent";
+            public const string AuthorizeAfterLogin    = Authorize + "/login";
             public const string DiscoveryConfiguration = ".well-known/openid-configuration";
-            public const string DiscoveryWebKeys = DiscoveryConfiguration + "/jwks";
-
-            public const string Token = "connect/token";
-            public const string Revocation = "connect/revocation";
-            public const string UserInfo = "connect/userinfo";
-            public const string Introspection = "connect/introspect";
-            //TODO
-            //public const string IdentityTokenValidation = "connect/identityTokenValidation";
-
-            public const string EndSession = "connect/endsession";
-            public const string EndSessionCallback = EndSession + "/callback";
-            public const string CheckSession = "connect/checksession";
+            public const string DiscoveryWebKeys       = DiscoveryConfiguration + "/jwks";
+            public const string Token                  = "connect/token";
+            public const string Revocation             = "connect/revocation";
+            public const string UserInfo               = "connect/userinfo";
+            public const string Introspection          = "connect/introspect";
+            public const string EndSession             = "connect/endsession";
+            public const string EndSessionCallback     = EndSession + "/callback";
+            public const string CheckSession           = "connect/checksession";
             
             public static readonly string[] CorsPaths =
             {
@@ -282,13 +254,6 @@ namespace IdentityServer4
         {
             public const string IdentityServerBasePath = "idsvr:IdentityServerBasePath";
             public const string IdentityServerHost     = "idsvr:IdentityServerHost";
-        }
-
-        public static class LocalizationCategories
-        {
-            public const string Messages = "Messages";
-            public const string Events   = "Events";
-            public const string Scopes   = "Scopes";
         }
 
         public static class TokenTypeHints
@@ -347,7 +312,6 @@ namespace IdentityServer4
             // filter list for claims returned from profile service prior to creating tokens
             public static readonly string[] ClaimsProviderFilterClaimTypes = new string[]
             {
-                // TODO: add cnf when IdModel has it
                 // TODO: consider JwtClaimTypes.AuthenticationContextClassReference,
                 JwtClaimTypes.AccessTokenHash,
                 JwtClaimTypes.Audience,
@@ -367,6 +331,7 @@ namespace IdentityServer4
                 JwtClaimTypes.SessionId,
                 JwtClaimTypes.Subject,
                 JwtClaimTypes.Scope,
+                JwtClaimTypes.Confirmation
             };
         }
     }

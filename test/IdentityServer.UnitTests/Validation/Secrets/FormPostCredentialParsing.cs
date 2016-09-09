@@ -52,7 +52,7 @@ namespace IdentityServer4.UnitTests.Validation.Secrets
 
             var secret = await _parser.ParseAsync(context);
 
-            secret.Type.Should().Be(Constants.ParsedSecretTypes.SharedSecret);
+            secret.Type.Should().Be(IdentityServerConstants.ParsedSecretTypes.SharedSecret);
             secret.Id.Should().Be("client");
             secret.Credential.Should().Be("secret");
         }
@@ -121,7 +121,7 @@ namespace IdentityServer4.UnitTests.Validation.Secrets
             var secret = await _parser.ParseAsync(context);
 
             secret.Should().NotBeNull();
-            secret.Type.Should().Be(Constants.ParsedSecretTypes.NoSecret);
+            secret.Type.Should().Be(IdentityServerConstants.ParsedSecretTypes.NoSecret);
         }
 
         [Fact]

@@ -107,7 +107,7 @@ namespace IdentityServer4.Validation
                 {
                     Id = clientId,
                     Credential = secret,
-                    Type = Constants.ParsedSecretTypes.SharedSecret
+                    Type = IdentityServerConstants.ParsedSecretTypes.SharedSecret
                 };
 
                 return Task.FromResult(parsedSecret);

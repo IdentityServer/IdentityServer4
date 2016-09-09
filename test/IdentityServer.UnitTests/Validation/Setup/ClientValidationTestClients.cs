@@ -56,7 +56,7 @@ namespace IdentityServer4.UnitTests.Validation
                     {
                         new Secret
                         {
-                            Type = Constants.SecretTypes.X509CertificateThumbprint,
+                            Type = IdentityServerConstants.SecretTypes.X509CertificateThumbprint,
                             Value = TestCert.Load().Thumbprint
                         }
                     }
@@ -72,7 +72,7 @@ namespace IdentityServer4.UnitTests.Validation
                     {
                         new Secret
                         {
-                            Type = Constants.SecretTypes.X509CertificateThumbprint,
+                            Type = IdentityServerConstants.SecretTypes.X509CertificateThumbprint,
                             Value = "invalid"
                         }
                     }

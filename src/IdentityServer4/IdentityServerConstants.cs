@@ -14,5 +14,19 @@ namespace IdentityServer4
         {
             public const string Json = "json";
         }
+
+        public static class ParsedSecretTypes
+        {
+            public const string NoSecret = "NoSecret";
+            public const string SharedSecret = "SharedSecret";
+            public const string X509Certificate = "X509Certificate";
+        }
+
+        public static class SecretTypes
+        {
+            public const string SharedSecret = "SharedSecret";
+            public const string X509CertificateThumbprint = "X509Thumbprint";
+            public const string X509CertificateName = "X509Name";
+        }
     }
 }
