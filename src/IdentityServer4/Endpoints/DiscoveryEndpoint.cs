@@ -263,8 +263,9 @@ namespace IdentityServer4.Endpoints
                 var rsaKey = key as RsaSecurityKey;
                 if (rsaKey != null)
                 {
-                    var parameters = rsaKey.Rsa.ExportParameters(false);
-
+                    var parameters = rsaKey.Rsa != null
+                        ? rsaKey.Rsa.ExportParameters(false)
+                        : rsaKey.Parameters;
                     var exponent = Base64Url.Encode(parameters.Exponent);
                     var modulus = Base64Url.Encode(parameters.Modulus);
 
