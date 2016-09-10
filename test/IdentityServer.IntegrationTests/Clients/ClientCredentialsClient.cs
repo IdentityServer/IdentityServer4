@@ -59,7 +59,9 @@ namespace IdentityServer4.IntegrationTests.Clients
             payload.Should().Contain("iss", "https://idsvr4");
             payload.Should().Contain("aud", "https://idsvr4/resources");
             payload.Should().Contain("client_id", "client");
-            payload.Should().Contain("scope", "api1");
+            
+            var scopes = payload["scope"] as JArray;
+            scopes.First().ToString().Should().Be("api1");
         }
 
         [Fact]
@@ -165,7 +167,9 @@ namespace IdentityServer4.IntegrationTests.Clients
             payload.Should().Contain("iss", "https://idsvr4");
             payload.Should().Contain("aud", "https://idsvr4/resources");
             payload.Should().Contain("client_id", "client");
-            payload.Should().Contain("scope", "api1");
+
+            var scopes = payload["scope"] as JArray;
+            scopes.First().ToString().Should().Be("api1");
         }
 
         [Fact]

@@ -84,15 +84,27 @@ namespace IdentityServer4.Services.Default
                 DateTimeHelper.UtcNow.AddSeconds(token.Lifetime));
 
             var amrClaims = token.Claims.Where(x => x.Type == JwtClaimTypes.AuthenticationMethod);
+            var scopeClaims = token.Claims.Where(x => x.Type == JwtClaimTypes.Scope);
             var jsonClaims = token.Claims.Where(x => x.ValueType == IdentityServerConstants.ClaimValueTypes.Json);
-            var normalClaims = token.Claims.Except(amrClaims).Except(jsonClaims);
+
+            var normalClaims = token.Claims
+                .Except(amrClaims)
+                .Except(jsonClaims)
+                .Except(scopeClaims);
 
             payload.AddClaims(normalClaims);
 
-            // deal with amr
-            var amrValues = amrClaims.Select(x => x.Value).Distinct().ToArray();
-            if (amrValues.Any())
+            // scope claims
+            if (!scopeClaims.IsNullOrEmpty())
             {
+                var scopeValues = scopeClaims.Select(x => x.Value).ToArray();
+                payload.Add(JwtClaimTypes.Scope, scopeValues);
+            }
+            
+            // amr claims
+            if (!amrClaims.IsNullOrEmpty())
+            {
+                var amrValues = amrClaims.Select(x => x.Value).Distinct().ToArray();
                 payload.Add(JwtClaimTypes.AuthenticationMethod, amrValues);
             }
 

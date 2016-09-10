@@ -59,9 +59,11 @@ namespace IdentityServer4.IntegrationTests.Clients
             payload.Should().Contain("iss", "https://idsvr4");
             payload.Should().Contain("aud", "https://idsvr4/resources");
             payload.Should().Contain("client_id", "roclient");
-            payload.Should().Contain("scope", "api1");
             payload.Should().Contain("sub", "88421113");
             payload.Should().Contain("idp", "local");
+
+            var scopes = payload["scope"] as JArray;
+            scopes.First().ToString().Should().Be("api1");
 
             var amr = payload["amr"] as JArray;
             amr.Count().Should().Be(1);
