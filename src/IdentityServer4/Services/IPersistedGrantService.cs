@@ -27,11 +27,11 @@ namespace IdentityServer4.Services
         Task RemoveReferenceTokenAsync(string handle);
         Task RemoveReferenceTokensAsync(string subjectId, string clientId);
 
-        Task StoreUserConsent(Consent consent);
-        Task<Consent> GetUserConsent(string subjectId, string clientId);
-        Task RemoveUserConsent(string subjectId, string clientId);
+        Task StoreUserConsentAsync(Consent consent);
+        Task<Consent> GetUserConsentAsync(string subjectId, string clientId);
+        Task RemoveUserConsentAsync(string subjectId, string clientId);
 
-        Task<IEnumerable<Consent>> GetAllGrants(string subjectId);
-        Task RemoveAllGrants(string subjectId, string clientId);
+        Task<IEnumerable<Consent>> GetAllGrantsAsync(string subjectId);
+        Task RemoveAllGrantsAsync(string subjectId, string clientId);
     }
 }

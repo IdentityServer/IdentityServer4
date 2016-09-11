@@ -216,7 +216,6 @@ namespace IdentityServer4.UnitTests.Validation
         public static IPersistedGrantService CreateGrantService()
         {
             return new DefaultPersistedGrantService(new InMemoryPersistedGrantStore(),
-                CreateClientStore(),
                 new PersistentGrantSerializer(),
                 TestLogger.Create<DefaultPersistedGrantService>());
         }

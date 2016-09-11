@@ -117,12 +117,12 @@ namespace IdentityServer4.Services.Default
 
         public Task<IEnumerable<Consent>> GetUserConsent(string subjectId)
         {
-            return _grants.GetAllGrants(subjectId);
+            return _grants.GetAllGrantsAsync(subjectId);
         }
 
         public Task RevokeUserConsent(string subjectId, string clientId)
         {
-            return _grants.RemoveAllGrants(subjectId, clientId);
+            return _grants.RemoveAllGrantsAsync(subjectId, clientId);
         }
     }
 }

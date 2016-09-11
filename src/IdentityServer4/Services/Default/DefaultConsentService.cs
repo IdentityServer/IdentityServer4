@@ -74,7 +74,7 @@ namespace IdentityServer4.Services.Default
                 return true;
             }
             
-            var consent = await _grants.GetUserConsent(subject.GetSubjectId(), client.ClientId);
+            var consent = await _grants.GetUserConsentAsync(subject.GetSubjectId(), client.ClientId);
             if (consent != null && consent.Scopes != null)
             {
                 var intersect = scopes.Intersect(consent.Scopes);
@@ -114,11 +114,11 @@ namespace IdentityServer4.Services.Default
                         ClientId = clientId,
                         Scopes = scopes
                     };
-                    await _grants.StoreUserConsent(consent);
+                    await _grants.StoreUserConsentAsync(consent);
                 }
                 else
                 {
-                    await _grants.RemoveUserConsent(subjectId, clientId);
+                    await _grants.RemoveUserConsentAsync(subjectId, clientId);
                 }
             }
         }

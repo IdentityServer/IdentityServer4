@@ -19,30 +19,29 @@ namespace IdentityServer4.Services.Default
     /// </summary>
     public class DefaultPersistedGrantService : IPersistedGrantService
     {
-        private readonly IClientStore _clientStore;
         private readonly ILogger<DefaultPersistedGrantService> _logger;
         private readonly IPersistedGrantStore _store;
         private readonly PersistentGrantSerializer _serializer;
 
         public DefaultPersistedGrantService(IPersistedGrantStore store, 
-            IClientStore clientStore,
             PersistentGrantSerializer serializer,
             ILogger<DefaultPersistedGrantService> logger)
         {
             _store = store;
-            _clientStore = clientStore;
             _serializer = serializer;
             _logger = logger;
         }
 
-        string HashKey(string value)
+        const string KeySeparator = ":";
+
+        string HashKey(string value, string type)
         {
-            return value.Sha256();
+            return (value + KeySeparator + type).Sha256();
         }
 
         async Task<T> GetItem<T>(string key, string type)
         {
-            key = HashKey(key);
+            key = HashKey(key, type);
 
             var grant = await _store.GetAsync(key);
             if (grant != null && grant.Type == type)
@@ -55,7 +54,7 @@ namespace IdentityServer4.Services.Default
 
         async Task StoreItem<T>(string key, T item, string type, string clientId, string subjectId, DateTime created, int lifetime)
         {
-            key = HashKey(key);
+            key = HashKey(key, type);
 
             var json = _serializer.Serialize(item);
 
@@ -73,9 +72,9 @@ namespace IdentityServer4.Services.Default
             await _store.StoreAsync(grant);
         }
 
-        async Task RemoveItem(string key)
+        async Task RemoveItem(string key, string type)
         {
-            key = HashKey(key);
+            key = HashKey(key, type);
             await _store.RemoveAsync(key);
         }
 
@@ -92,7 +91,7 @@ namespace IdentityServer4.Services.Default
 
         public Task RemoveAuthorizationCodeAsync(string code)
         {
-            return RemoveItem(code);
+            return RemoveItem(code, Constants.PersistedGrantTypes.AuthorizationCode);
         }
 
 
@@ -108,7 +107,7 @@ namespace IdentityServer4.Services.Default
 
         public Task RemoveReferenceTokenAsync(string handle)
         {
-            return RemoveItem(handle);
+            return RemoveItem(handle, Constants.PersistedGrantTypes.ReferenceToken);
         }
 
         public Task RemoveReferenceTokensAsync(string subjectId, string clientId)
@@ -129,7 +128,7 @@ namespace IdentityServer4.Services.Default
 
         public Task RemoveRefreshTokenAsync(string refreshTokenHandle)
         {
-            return RemoveItem(refreshTokenHandle);
+            return RemoveItem(refreshTokenHandle, Constants.PersistedGrantTypes.RefreshToken);
         }
         
         public Task RemoveRefreshTokensAsync(string subjectId, string clientId)
@@ -144,25 +143,25 @@ namespace IdentityServer4.Services.Default
             return key;
         }
 
-        public Task StoreUserConsent(Consent consent)
+        public Task StoreUserConsentAsync(Consent consent)
         {
             var key = GetConsentKey(consent.ClientId, consent.SubjectId);
             return StoreItem(key, consent, Constants.PersistedGrantTypes.UserConsent, consent.ClientId, consent.SubjectId, DateTimeHelper.UtcNow, Int32.MaxValue);
         }
 
-        public Task<Consent> GetUserConsent(string subjectId, string clientId)
+        public Task<Consent> GetUserConsentAsync(string subjectId, string clientId)
         {
             var key = GetConsentKey(clientId, subjectId);
             return GetItem<Consent>(key, Constants.PersistedGrantTypes.UserConsent);
         }
 
-        public Task RemoveUserConsent(string subjectId, string clientId)
+        public Task RemoveUserConsentAsync(string subjectId, string clientId)
         {
             var key = GetConsentKey(clientId, subjectId);
-            return RemoveItem(key);
+            return RemoveItem(key, Constants.PersistedGrantTypes.UserConsent);
         }
 
-        public async Task<IEnumerable<Consent>> GetAllGrants(string subjectId)
+        public async Task<IEnumerable<Consent>> GetAllGrantsAsync(string subjectId)
         {
             var grants = await _store.GetAllAsync(subjectId);
 
@@ -218,7 +217,7 @@ namespace IdentityServer4.Services.Default
             return query;
         }
 
-        public Task RemoveAllGrants(string subjectId, string clientId)
+        public Task RemoveAllGrantsAsync(string subjectId, string clientId)
         {
             return _store.RemoveAllAsync(subjectId, clientId);
         }
