@@ -12,6 +12,7 @@ namespace IdentityServer4.UnitTests.Common
     public class StubAuthenticationHandler : IAuthenticationHandler
     {
         public ClaimsPrincipal User { get; set; }
+        public Dictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
         public string Scheme { get; set; }
 
         public StubAuthenticationHandler(ClaimsPrincipal user, string scheme)
@@ -28,7 +29,7 @@ namespace IdentityServer4.UnitTests.Common
             }
             else if (Scheme == null || Scheme == context.AuthenticationScheme)
             {
-                context.Authenticated(User, new Dictionary<string, string>(), new Dictionary<string, object>());
+                context.Authenticated(User, Properties, new Dictionary<string, object>());
             }
 
             return Task.FromResult(0);
@@ -36,6 +37,11 @@ namespace IdentityServer4.UnitTests.Common
 
         public Task ChallengeAsync(ChallengeContext context)
         {
+            if (Scheme == null || context.AuthenticationScheme == Scheme)
+            {
+                context.Accept();
+            }
+
             return Task.FromResult(0);
         }
 
@@ -45,11 +51,21 @@ namespace IdentityServer4.UnitTests.Common
 
         public Task SignInAsync(SignInContext context)
         {
+            if (Scheme == null || context.AuthenticationScheme == Scheme)
+            {
+                context.Accept();
+            }
+
             return Task.FromResult(0);
         }
 
         public Task SignOutAsync(SignOutContext context)
         {
+            if (Scheme == null || context.AuthenticationScheme == Scheme)
+            {
+                context.Accept();
+            }
+
             return Task.FromResult(0);
         }
     }
