@@ -228,17 +228,5 @@ namespace IdentityServer4.Extensions
 
             return null;
         }
-
-        public static Stream ToStream(this string s)
-        {
-            if (s == null) throw new ArgumentNullException("s");
-
-            var ms = new MemoryStream();
-            var sw = new StreamWriter(ms);
-            sw.Write(s);
-            sw.Flush();
-            ms.Seek(0, SeekOrigin.Begin);
-            return ms;
-        }
     }
 }
