@@ -58,6 +58,11 @@ namespace IdentityServer4.IntegrationTests.Common
             return response;
         }
 
+        internal Cookie GetCookie(string uri, string name)
+        {
+            return _cookieContainer.GetCookies(new Uri(uri)).Cast<Cookie>().Where(x => x.Name == name).FirstOrDefault();
+        }
+
         internal void RemoveCookie(string uri, string name)
         {
             var cookie = _cookieContainer.GetCookies(new Uri(uri)).Cast<Cookie>().Where(x=>x.Name == name).FirstOrDefault();

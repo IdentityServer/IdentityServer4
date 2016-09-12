@@ -201,6 +201,10 @@ namespace IdentityServer4.IntegrationTests.Common
         {
             BrowserClient.RemoveCookie("https://server/", "idsvr.session");
         }
+        public Cookie GetSessionCookie()
+        {
+            return BrowserClient.GetCookie("https://server/", "idsvr.session");
+        }
 
         public string CreateAuthorizeUrl(
             string clientId,
