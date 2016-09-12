@@ -22,15 +22,7 @@ namespace IdentityServer4.Services.Default
         /// <returns></returns>
         public Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
-            var claims = context.Subject.Claims;
-
-            if (!context.AllClaimsRequested || !context.RequestedClaimTypes.IsNullOrEmpty())
-            {
-                claims = claims.Where(x => context.RequestedClaimTypes.Contains(x.Type));
-            }
-
-            context.IssuedClaims = claims;
-
+            context.AddFilteredClaims(context.Subject.Claims);
             return Task.FromResult(0);
         }
 

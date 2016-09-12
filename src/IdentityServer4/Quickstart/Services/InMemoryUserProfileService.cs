@@ -43,17 +43,8 @@ namespace IdentityServer4.Quickstart
                 select u;
             var user = query.Single();
 
-            var claims = new List<Claim>{
-                new Claim(JwtClaimTypes.Subject, user.Subject),
-            };
-
-            claims.AddRange(user.Claims);
-            if (!context.AllClaimsRequested)
-            {
-                claims = claims.Where(x => context.RequestedClaimTypes.Contains(x.Type)).ToList();
-            }
-
-            context.IssuedClaims = claims;
+            context.IssuedClaims.Add(new Claim(JwtClaimTypes.Subject, user.Subject));
+            context.AddFilteredClaims(user.Claims);
 
             return Task.FromResult(0);
         }
