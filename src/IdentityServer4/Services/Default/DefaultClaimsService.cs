@@ -255,7 +255,7 @@ namespace IdentityServer4.Services.Default
             var claims = new List<Claim>();
 
             var acr = subject.FindFirst(JwtClaimTypes.AuthenticationContextClassReference);
-            if (acr.HasValue()) claims.Add(acr);
+            if (acr != null) claims.Add(acr);
 
             return claims;
         }

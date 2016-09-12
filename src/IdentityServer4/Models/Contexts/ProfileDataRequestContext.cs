@@ -89,6 +89,6 @@ namespace IdentityServer4.Models
         /// <value>
         /// The issued claims.
         /// </value>
-        public IEnumerable<Claim> IssuedClaims { get; set; } = Enumerable.Empty<Claim>();
+        public List<Claim> IssuedClaims { get; set; } = new List<Claim>();
     }
 }

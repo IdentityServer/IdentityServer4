@@ -16,7 +16,7 @@ using System.Security.Cryptography;
 
 namespace IdentityServer4
 {
-    class MessageCookie<TModel>
+    internal class MessageCookie<TModel>
     {
         static readonly JsonSerializerSettings settings = new JsonSerializerSettings
         {

@@ -4,7 +4,7 @@
 
 using System;
 
-namespace IdentityServer4.Extensions
+namespace IdentityServer4
 {
     internal static class DateTimeHelper
     {

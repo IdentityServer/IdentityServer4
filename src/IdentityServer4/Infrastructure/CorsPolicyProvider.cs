@@ -11,9 +11,9 @@ using IdentityServer4.Configuration;
 using IdentityServer4.Configuration.DependencyInjection;
 using IdentityServer4.Services;
 
-namespace IdentityServer4.Infrastructure
+namespace IdentityServer4
 {
-    class CorsPolicyProvider : ICorsPolicyProvider
+    internal class CorsPolicyProvider : ICorsPolicyProvider
     {
         private readonly ICorsPolicyService _corsPolicyService;
         private readonly ILogger<CorsPolicyProvider> _logger;

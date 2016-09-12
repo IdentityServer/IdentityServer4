@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using Xunit;
 using IdentityServer4.Configuration;
 using IdentityServer4.Configuration.DependencyInjection;
-using IdentityServer4.Infrastructure;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 
 namespace IdentityServer4.UnitTests.Hosting.Cors

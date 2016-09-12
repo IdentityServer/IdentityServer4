@@ -11,7 +11,7 @@ using System.Security.Claims;
 
 namespace IdentityServer4.Extensions
 {
-    internal static class ClaimListExtensions
+    internal static class ClaimsExtensions
     {
         public static Dictionary<string, object> ToClaimsDictionary(this IEnumerable<Claim> claims)
         {
