@@ -3,10 +3,12 @@
 
 
 
+using FluentAssertions;
 using IdentityModel.Client;
 using IdentityServer4.IntegrationTests.Clients;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
@@ -35,6 +37,24 @@ namespace IdentityServer.IntegrationTests.Clients
         {
             var client = new DiscoveryClient(DiscoveryEndpoint, _handler);
             var doc = await client.GetAsync();
+        }
+
+        [Fact]
+        public async Task Discovery_document_should_have_expected_values()
+        {
+            var client = new DiscoveryClient(DiscoveryEndpoint, _handler);
+            var doc = await client.GetAsync();
+
+            // endpoints
+            doc.TokenEndpoint.Should().Be("https://server/connect/token");
+            doc.AuthorizationEndpoint.Should().Be("https://server/connect/authorize");
+            doc.IntrospectionEndpoint.Should().Be("https://server/connect/introspect");
+            doc.EndSessionEndpoint.Should().Be("https://server/connect/endsession");
+
+            // jwk
+            doc.Keys.Keys.Count.Should().Be(1);
+            doc.Keys.Keys.First().E.Should().NotBeNull();
+            doc.Keys.Keys.First().N.Should().NotBeNull();
         }
     }
 }
