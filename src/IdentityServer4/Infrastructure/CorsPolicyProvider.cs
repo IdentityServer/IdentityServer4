@@ -46,14 +46,8 @@ namespace IdentityServer4
 
         async Task<CorsPolicy> ProcessAsync(HttpContext context)
         {
-            var origin = context.Request.Headers["Origin"].First();
-            var thisOrigin = context.Request.Scheme + "://" + context.Request.Host;
-
-            // see if the Origin is different than this server's origin. if so
-            // that indicates a proper CORS request. some browsers send Origin
-            // on POST requests.
-            // todo: do we still need this check?
-            if (origin != null && origin != thisOrigin)
+            var origin = context.Request.GetCorsOrigin();
+            if (origin != null)
             {
                 var path = context.Request.Path;
                 if (IsPathAllowed(path))
