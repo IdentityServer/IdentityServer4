@@ -6,7 +6,7 @@
   "packOptions": {
     "tags": [ "OAuth2", "OAuth 2.0", "OpenID Connect", "Security", "Identity", "IdentityServer" ],
     "projectUrl": "https://github.com/IdentityServer/IdentityServer4",
-    "licenseUrl": "https://github.com/IdentityServer/IdentityServer4/LICENSE",
+    "licenseUrl": "https://github.com/IdentityServer/IdentityServer4/blob/master/LICENSE",
     "iconUrl": "https://identityserver.github.io/Documentation/assets/images/icons/IDserver_icon128.jpg"
   },
 
