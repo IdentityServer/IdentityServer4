@@ -61,11 +61,13 @@ namespace IdentityServer4.Hosting
             return _handler.SignOutAsync(context);
         }
 
-        internal void Init()
+        internal async Task InitAsync()
         {
             var auth = GetAuthentication();
             _handler = auth.Handler;
             auth.Handler = this;
+
+            await _sessionId.EnsureSessionCookieAsync();
         }
 
         internal void Cleanup()

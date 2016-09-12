@@ -18,7 +18,7 @@ namespace IdentityServer4.Hosting
 
         public async Task Invoke(HttpContext context, AuthenticationHandler handler)
         {
-            handler.Init();
+            await handler.InitAsync();
             try
             {
                 await _next(context);

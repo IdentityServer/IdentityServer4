@@ -20,7 +20,6 @@ namespace IdentityServer4.Endpoints.Results
         public async Task ExecuteAsync(HttpContext context)
         {
             var sessionId = context.RequestServices.GetRequiredService<ISessionIdService>();
-            await sessionId.EnsureSessionCookieAsync();
 
             var html = GetHtml(sessionId.GetCookieName());
             await context.Response.WriteHtmlAsync(html);
