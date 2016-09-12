@@ -14,17 +14,24 @@ namespace IdentityServer4.Hosting
         public static void ConfigureCookies(this IApplicationBuilder app)
         {
             var idSvrOptions = app.ApplicationServices.GetRequiredService<IdentityServerOptions>();
-            if (idSvrOptions.Endpoints.EnableAuthorizeEndpoint &&
-                idSvrOptions.AuthenticationOptions.AuthenticationScheme.IsMissing())
+
+            // only do stuff with cookies if we're showing UI
+            if (idSvrOptions.Endpoints.EnableAuthorizeEndpoint)
             {
-                app.UseCookieAuthentication(new CookieAuthenticationOptions
+                if (idSvrOptions.AuthenticationOptions.AuthenticationScheme.IsMissing())
                 {
-                    AuthenticationScheme = idSvrOptions.AuthenticationOptions.EffectiveAuthenticationScheme,
-                    AutomaticAuthenticate = true,
-                    SlidingExpiration = false,
-                    ExpireTimeSpan = Constants.DefaultCookieTimeSpan,
-                    CookieName = IdentityServerConstants.DefaultCookieAuthenticationScheme,
-                });
+                    app.UseCookieAuthentication(new CookieAuthenticationOptions
+                    {
+                        AuthenticationScheme = idSvrOptions.AuthenticationOptions.EffectiveAuthenticationScheme,
+                        AutomaticAuthenticate = true,
+                        SlidingExpiration = false,
+                        ExpireTimeSpan = Constants.DefaultCookieTimeSpan,
+                        CookieName = IdentityServerConstants.DefaultCookieAuthenticationScheme,
+                    });
+                }
+
+                app.UseMiddleware<AuthenticationMiddleware>();
+                app.UseMiddleware<FederatedSignOutMiddleware>();
             }
         }
     }

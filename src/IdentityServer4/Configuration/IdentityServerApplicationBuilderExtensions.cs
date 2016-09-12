@@ -10,12 +10,12 @@ namespace Microsoft.AspNetCore.Builder
     {
         public static IApplicationBuilder UseIdentityServer(this IApplicationBuilder app)
         {
+            app.UseMiddleware<BaseUrlMiddleware>();
+
             app.ConfigureCors();
             app.ConfigureCookies();
-            app.UseMiddleware<AuthenticationMiddleware>();
-            app.UseMiddleware<BaseUrlMiddleware>();
+
             app.UseMiddleware<IdentityServerMiddleware>();
-            app.UseMiddleware<FederatedSignOutMiddleware>();
 
             return app;
         }
