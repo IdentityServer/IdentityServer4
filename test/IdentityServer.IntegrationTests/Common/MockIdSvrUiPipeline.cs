@@ -20,10 +20,14 @@ namespace IdentityServer4.IntegrationTests.Common
 {
     public class MockIdSvrUiPipeline : IdentityServerPipeline
     {
+        public const string FederatedSignOutPath = "/signout-oidc";
+        public const string FederatedSignOutUrl = "https://server" + FederatedSignOutPath;
+
         public RequestDelegate Login { get; set; }
         public RequestDelegate Logout { get; set; }
         public RequestDelegate Consent { get; set; }
         public RequestDelegate Error { get; set; }
+        public RequestDelegate FederatedSignOut { get; set; }
 
         public MockIdSvrUiPipeline()
         {
@@ -31,6 +35,7 @@ namespace IdentityServer4.IntegrationTests.Common
             Logout = OnLogout;
             Consent = OnConsent;
             Error = OnError;
+            FederatedSignOut = OnFederatedSignOut;
 
             this.OnConfigureServices += MockAuthorizationPipeline_OnConfigureServices;
             this.OnPreConfigure += MockAuthorizationPipeline_OnPreConfigure;
@@ -74,6 +79,11 @@ namespace IdentityServer4.IntegrationTests.Common
             app.Map(Constants.UIConstants.DefaultRoutePaths.Error.EnsureLeadingSlash(), path =>
             {
                 path.Run(ctx => Error(ctx));
+            });
+
+            app.Map(FederatedSignOutPath, path =>
+            {
+                path.Run(ctx => FederatedSignOut(ctx));
             });
         }
 
@@ -172,6 +182,11 @@ namespace IdentityServer4.IntegrationTests.Common
         {
             var interaction = ctx.RequestServices.GetRequiredService<IIdentityServerInteractionService>();
             ErrorMessage = await interaction.GetErrorContextAsync(ctx.Request.Query["errorId"].FirstOrDefault());
+        }
+
+        Task OnFederatedSignOut(HttpContext ctx)
+        {
+            return Task.FromResult(0);
         }
 
         /* helpers */

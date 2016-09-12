@@ -13,7 +13,7 @@ using System.Net.Http;
 using IdentityServer4.IntegrationTests.Common;
 using IdentityServer4.Quickstart;
 
-namespace IdentityServer4.IntegrationTests.Cors
+namespace IdentityServer4.IntegrationTests.Pipeline
 {
     public class CorsTests
     {
