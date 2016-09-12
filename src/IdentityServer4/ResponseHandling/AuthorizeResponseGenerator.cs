@@ -11,8 +11,6 @@ using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.ResponseHandling
@@ -73,12 +71,12 @@ namespace IdentityServer4.ResponseHandling
                 Request = request,
                 RedirectUri = request.RedirectUri,
                 Code = code,
-                State = request.State
+                State = request.State,
             };
 
             if (request.IsOpenIdRequest)
             {
-                response.SessionState = GenerateSessionStateValue(request);
+                response.SessionState = request.GenerateSessionStateValue();
             }
 
             return response;
@@ -166,41 +164,15 @@ namespace IdentityServer4.ResponseHandling
                 AccessTokenLifetime = accessTokenLifetime,
                 IdentityToken = jwt,
                 State = request.State,
-                Scope = request.ValidatedScopes.GrantedScopes.ToSpaceSeparatedString(),
+                Scope = request.ValidatedScopes.GrantedScopes.ToSpaceSeparatedString()
             };
 
             if (request.IsOpenIdRequest)
             {
-                response.SessionState = GenerateSessionStateValue(request);
+                response.SessionState = request.GenerateSessionStateValue();
             }
 
             return response;
-        }
-
-        private string GenerateSessionStateValue(ValidatedAuthorizeRequest request)
-        {
-            var sessionId = request.SessionId;
-            if (sessionId.IsMissing()) return null;
-
-            var salt = CryptoRandom.CreateUniqueId();
-            var clientId = request.ClientId;
-
-            var uri = new Uri(request.RedirectUri);
-            var origin = uri.Scheme + "://" + uri.Host;
-            if (!uri.IsDefaultPort)
-            {
-                origin += ":" + uri.Port;
-            }
-
-            var bytes = Encoding.UTF8.GetBytes(clientId + origin + sessionId + salt);
-            byte[] hash;
-
-            using (var sha = SHA256.Create())
-            {
-                hash = sha.ComputeHash(bytes);
-            }
-
-            return Base64Url.Encode(hash) + "." + salt;
         }
 
         private async Task RaiseCodeIssuedEventAsync(string id, AuthorizationCode code)
