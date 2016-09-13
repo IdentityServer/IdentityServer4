@@ -31,9 +31,8 @@ namespace Host
             services.Configure<IISOptions>(options=>
             {
                 const string windowsAuthType = "Negotiate";
-                var windows = options.AuthenticationDescriptions.Where(x => 
-                        x.AuthenticationScheme == windowsAuthType)
-                    .FirstOrDefault();
+                var windows = options.AuthenticationDescriptions
+                    .FirstOrDefault(x => x.AuthenticationScheme == windowsAuthType);
                 if (windows != null)
                 {
                     windows.DisplayName = "Windows";

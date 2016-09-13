@@ -25,24 +25,18 @@ namespace IdentityServer4.Validation
         /// Creates the parser with options
         /// </summary>
         /// <param name="options">IdentityServer options</param>
+        /// <param name="logger">Logger</param>
         public PostBodySecretParser(IdentityServerOptions options, ILogger<PostBodySecretParser> logger)
         {
             _logger = logger;
             _options = options;
         }
 
-        public string AuthenticationMethod
-        {
-            get
-            {
-                return OidcConstants.EndpointAuthenticationMethods.PostBody;
-            }
-        }
+        public string AuthenticationMethod => OidcConstants.EndpointAuthenticationMethods.PostBody;
 
         /// <summary>
         /// Tries to find a secret on the environment that can be used for authentication
         /// </summary>
-        /// <param name="environment">The environment.</param>
         /// <returns>
         /// A parsed secret
         /// </returns>

@@ -50,21 +50,15 @@ namespace IdentityServer4.Validation
         {
             _logger.LogDebug("Start token request validation");
 
-            _validatedRequest = new ValidatedTokenRequest();
+            if (client == null) throw new ArgumentNullException(nameof(client));
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
-            if (client == null)
+            _validatedRequest = new ValidatedTokenRequest
             {
-                throw new ArgumentNullException("client");
-            }
-
-            if (parameters == null)
-            {
-                throw new ArgumentNullException("parameters");
-            }
-
-            _validatedRequest.Raw = parameters;
-            _validatedRequest.Client = client;
-            _validatedRequest.Options = _options;
+                Raw = parameters,
+                Client = client,
+                Options = _options
+            };
 
             /////////////////////////////////////////////
             // check grant type
