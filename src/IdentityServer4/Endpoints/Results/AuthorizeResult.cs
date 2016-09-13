@@ -8,8 +8,6 @@ using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
 using IdentityModel;
 using Microsoft.AspNetCore.Http;
-using IdentityServer4.Validation;
-using IdentityServer4.ResponseHandling;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using IdentityServer4.Services;
@@ -18,33 +16,34 @@ namespace IdentityServer4.Endpoints.Results
 {
     class AuthorizeResult : IEndpointResult
     {
-        private readonly ValidatedAuthorizeRequest _request;
-        private readonly AuthorizeResponse _response;
+        protected AuthorizeResponse _response;
 
-        public AuthorizeResult(ValidatedAuthorizeRequest request)
+        protected AuthorizeResult()
         {
-            _request = request;
         }
 
         public AuthorizeResult(AuthorizeResponse response)
         {
-            this._response = response;
+            _response = response;
         }
 
         public async Task ExecuteAsync(HttpContext context)
         {
-            var response = _response;
+            await RenderAuthorizeResponseAsync(context, _response);
+        }
+
+        protected async Task RenderAuthorizeResponseAsync(HttpContext context, AuthorizeResponse response)
+        {
             if (response == null)
             {
-                var responseGenerator = context.RequestServices.GetRequiredService<IAuthorizeResponseGenerator>();
-                response = await responseGenerator.CreateResponseAsync(_request);
+                throw new InvalidOperationException("No response");
             }
 
             if (response.IsError == false)
             {
                 var clientSession = context.RequestServices.GetRequiredService<IClientSessionService>();
                 //_logger.LogDebug("Adding client {0} to client list cookie for subject {1}", request.ClientId, request.Subject.GetSubjectId());
-                await clientSession.AddClientIdAsync(_request.ClientId);
+                await clientSession.AddClientIdAsync(response.Request.ClientId);
             }
 
             await WriteResponseAsync(context, response);

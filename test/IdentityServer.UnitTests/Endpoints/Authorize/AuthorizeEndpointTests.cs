@@ -36,6 +36,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
         StubAuthorizeRequestValidator _stubAuthorizeRequestValidator = new StubAuthorizeRequestValidator();
         StubAuthorizeInteractionResponseGenerator _stubInteractionGenerator = new StubAuthorizeInteractionResponseGenerator();
         MockMessageStore<ConsentResponse> _mockUserConsentResponseMessageStore = new MockMessageStore<ConsentResponse>();
+        StubAuthorizeResponseGenerator _stubAuthorizeResponseGenerator = new StubAuthorizeResponseGenerator();
 
         public AuthorizeEndpointTests()
         {
@@ -69,7 +70,8 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
                 _fakeLogger,
                 _stubAuthorizeRequestValidator,
                 _stubInteractionGenerator,
-                _mockUserConsentResponseMessageStore);
+                _mockUserConsentResponseMessageStore,
+                _stubAuthorizeResponseGenerator);
         }
 
         [Fact]
@@ -99,7 +101,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
             statusCode.StatusCode.Should().Be(404);
         }
 
-        [Fact(Skip = "refactor")]
+        [Fact]
         [Trait("Category", Category)]
         public async Task ProcessAsync_authorize_path_should_return_authorization_result()
         {
@@ -109,10 +111,10 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
             var result = await _subject.ProcessAsync(_context);
 
-            //(result is AuthorizeRedirectResult || result is AuthorizeFormPostResult).Should().BeTrue();
+            result.Should().BeOfType<AuthorizeResult>();
         }
 
-        [Fact(Skip = "refactor")]
+        [Fact]
         [Trait("Category", Category)]
         public async Task ProcessAsync_authorize_after_login_path_should_return_authorization_result()
         {
@@ -122,10 +124,10 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
             var result = await _subject.ProcessAsync(_context);
 
-            //(result is AuthorizeRedirectResult || result is AuthorizeFormPostResult).Should().BeTrue();
+            result.Should().BeOfType<AuthorizeResult>();
         }
 
-        [Fact(Skip = "refactor")]
+        [Fact]
         [Trait("Category", Category)]
         public async Task ProcessAsync_authorize_after_consent_path_should_return_authorization_result()
         {
@@ -146,11 +148,11 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
             var result = await _subject.ProcessAsync(_context);
 
-            //(result is AuthorizeRedirectResult || result is AuthorizeFormPostResult).Should().BeTrue();
+            result.Should().BeOfType<AuthorizeResult>();
         }
 
 
-        [Fact(Skip = "refactor")]
+        [Fact]
         [Trait("Category", Category)]
         public async Task authorize_request_validation_produces_error_should_display_error_page()
         {
@@ -158,7 +160,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
             var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
-            result.Should().BeOfType<ErrorPageResult>();
+            result.Should().BeOfType<AuthorizeErrorResult>();
         }
 
         [Fact]
@@ -177,7 +179,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
             evt.Details.EndpointName.Should().Be(EventConstants.EndpointNames.Authorize);
         }
 
-        [Fact(Skip = "refactor")]
+        [Fact]
         [Trait("Category", Category)]
         public async Task interaction_produces_error_should_show_error_page()
         {
@@ -185,7 +187,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
             var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
-            result.Should().BeOfType<ErrorPageResult>();
+            result.Should().BeOfType<AuthorizeErrorResult>();
         }
 
         [Fact]
@@ -227,17 +229,17 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
             result.Should().BeOfType<ConsentPageResult>();
         }
 
-        [Fact(Skip = "refactor")]
+        [Fact]
         [Trait("Category", Category)]
         public async Task successful_authorization_request_should_generate_authorize_result()
         {
             var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
-            //(result is AuthorizeRedirectResult || result is AuthorizeFormPostResult).Should().BeTrue();
+            result.Should().BeOfType<AuthorizeResult>();
         }
 
         // after login
-        [Fact(Skip = "refactor")]
+        [Fact]
         [Trait("Category", Category)]
         public async Task ProcessAuthorizeAfterLoginAsync_no_user_should_return_error_page()
         {
@@ -245,12 +247,12 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
             var result = await _subject.ProcessAuthorizeAfterLoginAsync(_context);
 
-            result.Should().BeAssignableTo<ErrorPageResult>();
+            result.Should().BeOfType<AuthorizeErrorResult>();
         }
 
 
         // after consent
-        [Fact(Skip = "refactor")]
+        [Fact]
         [Trait("Category", Category)]
         public async Task ProcessAuthorizeWithConsentAsync_no_user_should_return_error_page()
         {
@@ -258,10 +260,10 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
             var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
 
-            result.Should().BeAssignableTo<ErrorPageResult>();
+            result.Should().BeOfType<AuthorizeErrorResult>();
         }
 
-        [Fact(Skip = "refactor")]
+        [Fact]
         [Trait("Category", Category)]
         public async Task ProcessAuthorizeWithConsentAsync_no_consent_message_should_return_error_page()
         {
@@ -282,10 +284,10 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
             var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
 
-            result.Should().BeAssignableTo<ErrorPageResult>();
+            result.Should().BeOfType<AuthorizeErrorResult>();
         }
 
-        [Fact(Skip = "refactor")]
+        [Fact]
         [Trait("Category", Category)]
         public async Task ProcessAuthorizeWithConsentAsync_consent_missing_consent_data_should_return_error_page()
         {
@@ -306,10 +308,10 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
             var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
 
-            result.Should().BeAssignableTo<ErrorPageResult>();
+            result.Should().BeOfType<AuthorizeErrorResult>();
         }
 
-        [Fact(Skip = "refactor")]
+        [Fact]
         [Trait("Category", Category)]
         public async Task ProcessAuthorizeWithConsentAsync_valid_consent_message_should_return_authorize_result()
         {
@@ -330,7 +332,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
             var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
 
-            //(result is AuthorizeRedirectResult || result is AuthorizeFormPostResult).Should().BeTrue();
+            result.Should().BeOfType<AuthorizeResult>();
         }
 
         [Fact]

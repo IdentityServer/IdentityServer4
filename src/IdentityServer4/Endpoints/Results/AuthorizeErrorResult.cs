@@ -9,15 +9,13 @@ using IdentityServer4.Hosting;
 using IdentityModel;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Validation;
-using IdentityServer4.ResponseHandling;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using IdentityServer4.Services;
 using IdentityServer4.Stores;
+using IdentityServer4.Configuration;
 
 namespace IdentityServer4.Endpoints.Results
 {
-    class AuthorizeErrorResult : IEndpointResult
+    class AuthorizeErrorResult : AuthorizeResult, IEndpointResult
     {
         private readonly string _error;
         private readonly string _errorDescription;
@@ -30,10 +28,8 @@ namespace IdentityServer4.Endpoints.Results
             _errorDescription = errorDescription;
         }
 
-        public async Task ExecuteAsync(HttpContext context)
+        public new async Task ExecuteAsync(HttpContext context)
         {
-            AuthorizeResponse response = null;
-
             // these are the conditions where we can send a response 
             // back directly to the client, otherwise we're only showing the error UI
             var isPromptNoneError = _error == OidcConstants.AuthorizeErrors.AccountSelectionRequired ||
@@ -45,7 +41,7 @@ namespace IdentityServer4.Endpoints.Results
                 (_request.PromptMode == OidcConstants.PromptModes.None && isPromptNoneError)
             )
             {
-                response = new AuthorizeResponse
+                var response = new AuthorizeResponse
                 {
                     Request = _request,
                     IsError = true,
@@ -55,7 +51,7 @@ namespace IdentityServer4.Endpoints.Results
                     RedirectUri = _request.RedirectUri
                 };
 
-                await new AuthorizeResult(response).ExecuteAsync(context);
+                await RenderAuthorizeResponseAsync(context, response);
             }
             else
             {
@@ -66,8 +62,21 @@ namespace IdentityServer4.Endpoints.Results
                     Error = _error,
                 };
 
-                await new ErrorPageResult(errorModel).ExecuteAsync(context);
+                await RedirectToErrorPage(context, errorModel);
             }
+        }
+
+        async Task RedirectToErrorPage(HttpContext context, ErrorMessage error)
+        {
+            var errorMessageStore = context.RequestServices.GetRequiredService<IMessageStore<ErrorMessage>>();
+            var message = new MessageWithId<ErrorMessage>(error);
+            await errorMessageStore.WriteAsync(message.Id, message);
+
+            var options = context.RequestServices.GetRequiredService<IdentityServerOptions>();
+            var errorUrl = options.UserInteractionOptions.ErrorUrl;
+
+            var url = errorUrl.AddQueryString(options.UserInteractionOptions.ErrorIdParameter, message.Id);
+            context.Response.RedirectToAbsoluteUrl(url);
         }
     }
 }

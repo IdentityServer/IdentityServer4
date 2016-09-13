@@ -13,14 +13,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace IdentityServer4.Endpoints.Results
 {
-    public class ConsentPageResult : IEndpointResult //RedirectToPageWithReturnUrlResult
+    public class ConsentPageResult : IEndpointResult
     {
         private readonly ValidatedAuthorizeRequest _request;
-
-        //public ConsentPageResult(UserInteractionOptions options, string returnUrl)
-        //    : base(options.ConsentUrl, options.ConsentReturnUrlParameter, returnUrl)
-        //{
-        //}
 
         public ConsentPageResult(ValidatedAuthorizeRequest request)
         {

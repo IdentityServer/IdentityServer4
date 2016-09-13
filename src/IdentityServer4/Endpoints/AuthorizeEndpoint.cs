@@ -28,19 +28,22 @@ namespace IdentityServer4.Endpoints
         private readonly IAuthorizeRequestValidator _validator;
         private readonly IAuthorizeInteractionResponseGenerator _interactionGenerator;
         private readonly IMessageStore<ConsentResponse> _consentResponseStore;
+        private readonly IAuthorizeResponseGenerator _authorizeResponseGenerator;
 
         public AuthorizeEndpoint(
             IEventService events, 
             ILogger<AuthorizeEndpoint> logger,
             IAuthorizeRequestValidator validator,
             IAuthorizeInteractionResponseGenerator interactionGenerator,
-            IMessageStore<ConsentResponse> consentResponseStore)
+            IMessageStore<ConsentResponse> consentResponseStore,
+            IAuthorizeResponseGenerator authorizeResponseGenerator)
         {
             _events = events;
             _logger = logger;
             _validator = validator;
             _interactionGenerator = interactionGenerator;
             _consentResponseStore = consentResponseStore;
+            _authorizeResponseGenerator = authorizeResponseGenerator;
         }
 
         public async Task<IEndpointResult> ProcessAsync(HttpContext context)
@@ -178,10 +181,13 @@ namespace IdentityServer4.Endpoints
                 return new ConsentPageResult(request);
             }
 
+
+            var response = await _authorizeResponseGenerator.CreateResponseAsync(request);
+
             // issue response
             _logger.LogInformation("Issuing successful authorization response");
             await RaiseSuccessEventAsync();
-            return new AuthorizeResult(request);
+            return new AuthorizeResult(response);
         }
 
         async Task<IEndpointResult> ErrorPageAsync(ValidatedAuthorizeRequest request, string error, string description = null)
