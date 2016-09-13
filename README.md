@@ -14,3 +14,17 @@ This is the main repo for IdentityServer4 - but there's more:
 * [Quickstart UI](https://github.com/IdentityServer/IdentityServer4.Quickstart.UI)
 * [ASP.NET Identity integration](https://github.com/IdentityServer/IdentityServer4.AspNetIdentity)
 * [EntityFramework integration](https://github.com/IdentityServer/IdentityServer4.EntityFramework)
+
+### Acknowledgements
+
+IdentityServer4 is built using the following great open source projects
+
+* [ASP.NET Core](https://github.com/aspnet)
+* [Json.Net](http://www.newtonsoft.com/json)
+* [Cake](http://cakebuild.net/)
+* [XUnit](https://xunit.github.io/)
+* [Fluent Assertions](http://www.fluentassertions.com/)
+
+IdentityServer is a [.NET Foundation](http://www.dotnetfoundation.org/) project
+
+<img src="https://cloud.githubusercontent.com/assets/1454075/10598539/1c44ba0a-76fa-11e5-9d7e-af1b363c524a.png" width="144">
