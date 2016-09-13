@@ -200,3 +200,4 @@ docs/_build/
 # Cake Build Related
 tools/Cake/
 tools/packages.config.md5sum
+.idea
