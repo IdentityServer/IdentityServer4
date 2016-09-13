@@ -24,13 +24,29 @@ namespace IdentityServer4.Endpoints.Results
             _request = request;
         }
 
+        internal ConsentPageResult(
+            ValidatedAuthorizeRequest request,
+            IdentityServerOptions options) 
+            : this(request)
+        {
+            _options = options;
+        }
+
+        private IdentityServerOptions _options;
+
+        void Init(HttpContext context)
+        {
+            _options = _options ?? context.RequestServices.GetRequiredService<IdentityServerOptions>();
+        }
+
         public Task ExecuteAsync(HttpContext context)
         {
+            Init(context);
+
             var returnUrl = context.Request.PathBase.ToString().EnsureTrailingSlash() + Constants.ProtocolRoutePaths.AuthorizeAfterConsent;
             returnUrl = returnUrl.AddQueryString(_request.Raw.ToQueryString());
 
-            var options = context.RequestServices.GetRequiredService<IdentityServerOptions>();
-            var consentUrl = options.UserInteractionOptions.ConsentUrl;
+            var consentUrl = _options.UserInteractionOptions.ConsentUrl;
             if (!consentUrl.IsLocalUrl())
             {
                 // this converts the relative redirect path to an absolute one if we're 
@@ -38,7 +54,7 @@ namespace IdentityServer4.Endpoints.Results
                 returnUrl = context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + returnUrl.RemoveLeadingSlash();
             }
 
-            var url = consentUrl.AddQueryString(options.UserInteractionOptions.ConsentReturnUrlParameter, returnUrl);
+            var url = consentUrl.AddQueryString(_options.UserInteractionOptions.ConsentReturnUrlParameter, returnUrl);
             context.Response.RedirectToAbsoluteUrl(url);
 
             return Task.FromResult(0);

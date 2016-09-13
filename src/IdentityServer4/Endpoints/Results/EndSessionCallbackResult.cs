@@ -27,8 +27,33 @@ namespace IdentityServer4.Endpoints.Results
             _result = result;
         }
 
+        internal EndSessionCallbackResult(
+            EndSessionCallbackValidationResult result,
+            ISessionIdService sessionId,
+            IClientSessionService clientList,
+            IMessageStore<LogoutMessage> logoutMessageStore)
+            : this(result)
+        {
+            _sessionId = sessionId;
+            _clientList = clientList;
+            _logoutMessageStore = logoutMessageStore;
+        }
+
+        private ISessionIdService _sessionId;
+        private IClientSessionService _clientList;
+        private IMessageStore<LogoutMessage> _logoutMessageStore;
+
+        void Init(HttpContext context)
+        {
+            _sessionId = _sessionId ?? context.RequestServices.GetRequiredService<ISessionIdService>();
+            _clientList = _clientList ?? context.RequestServices.GetRequiredService<IClientSessionService>();
+            _logoutMessageStore = _logoutMessageStore ?? context.RequestServices.GetRequiredService<IMessageStore<LogoutMessage>>();
+        }
+
         public async Task ExecuteAsync(HttpContext context)
         {
+            Init(context);
+
             if (_result.LogoutId != null)
             {
                 var logoutMessageStore = context.RequestServices.GetRequiredService<IMessageStore<LogoutMessage>>();
@@ -41,13 +66,11 @@ namespace IdentityServer4.Endpoints.Results
             }
             else
             {
-                var sessionId = context.RequestServices.GetRequiredService<ISessionIdService>();
-                sessionId.RemoveCookie();
-
-                var clientList = context.RequestServices.GetRequiredService<IClientSessionService>();
-                clientList.RemoveCookie();
+                _sessionId.RemoveCookie();
+                _clientList.RemoveCookie();
 
                 var html = GetHtml();
+
                 context.Response.SetNoCache();
                 await context.Response.WriteHtmlAsync(html);
             }

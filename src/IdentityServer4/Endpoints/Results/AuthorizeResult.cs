@@ -27,8 +27,33 @@ namespace IdentityServer4.Endpoints.Results
             Response = response;
         }
 
+        internal AuthorizeResult(
+            AuthorizeResponse response,
+            IdentityServerOptions options,
+            IClientSessionService clientSession,
+            IMessageStore<ErrorMessage> errorMessageStore)
+            : this(response)
+        {
+            _options = options;
+            _clientSession = clientSession;
+            _errorMessageStore = errorMessageStore;
+        }
+
+        private IdentityServerOptions _options;
+        private IClientSessionService _clientSession;
+        private IMessageStore<ErrorMessage> _errorMessageStore;
+
+        void Init(HttpContext context)
+        {
+            _options = _options ?? context.RequestServices.GetRequiredService<IdentityServerOptions>();
+            _clientSession = _clientSession ?? context.RequestServices.GetRequiredService<IClientSessionService>();
+            _errorMessageStore = _errorMessageStore ?? context.RequestServices.GetRequiredService<IMessageStore<ErrorMessage>>();
+        }
+
         public async Task ExecuteAsync(HttpContext context)
         {
+            Init(context);
+
             if (Response.IsError)
             {
                 await ProcessErrorAsync(context);
@@ -67,9 +92,8 @@ namespace IdentityServer4.Endpoints.Results
             if (!Response.IsError)
             {
                 // success response -- track client authorization for sign-out
-                var clientSession = context.RequestServices.GetRequiredService<IClientSessionService>();
                 //_logger.LogDebug("Adding client {0} to client list cookie for subject {1}", request.ClientId, request.Subject.GetSubjectId());
-                await clientSession.AddClientIdAsync(Response.Request.ClientId);
+                await _clientSession.AddClientIdAsync(Response.Request.ClientId);
             }
 
             await RenderAuthorizeResponseAsync(context);
@@ -138,14 +162,12 @@ namespace IdentityServer4.Endpoints.Results
                 Error = Response.Error
             };
 
-            var errorMessageStore = context.RequestServices.GetRequiredService<IMessageStore<ErrorMessage>>();
             var message = new MessageWithId<ErrorMessage>(errorModel);
-            await errorMessageStore.WriteAsync(message.Id, message);
+            await _errorMessageStore.WriteAsync(message.Id, message);
 
-            var options = context.RequestServices.GetRequiredService<IdentityServerOptions>();
-            var errorUrl = options.UserInteractionOptions.ErrorUrl;
+            var errorUrl = _options.UserInteractionOptions.ErrorUrl;
 
-            var url = errorUrl.AddQueryString(options.UserInteractionOptions.ErrorIdParameter, message.Id);
+            var url = errorUrl.AddQueryString(_options.UserInteractionOptions.ErrorIdParameter, message.Id);
             context.Response.RedirectToAbsoluteUrl(url);
         }
     }

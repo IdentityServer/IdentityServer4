@@ -26,9 +26,29 @@ namespace IdentityServer4.Endpoints.Results
             _result = result;
         }
 
+        internal EndSessionResult(
+            EndSessionValidationResult result,
+            IdentityServerOptions options,
+            IMessageStore<LogoutMessage> logoutMessageStore)
+            : this(result)
+        {
+            _options = options;
+            _logoutMessageStore = logoutMessageStore;
+        }
+
+        private IdentityServerOptions _options;
+        private IMessageStore<LogoutMessage> _logoutMessageStore;
+
+        void Init(HttpContext context)
+        {
+            _options = _options ?? context.RequestServices.GetRequiredService<IdentityServerOptions>();
+            _logoutMessageStore = _logoutMessageStore ?? context.RequestServices.GetRequiredService<IMessageStore<LogoutMessage>>();
+        }
+
         public async Task ExecuteAsync(HttpContext context)
         {
-            var options = context.RequestServices.GetRequiredService<IdentityServerOptions>();
+            Init(context);
+
             var validatedRequest = _result.IsError ? null : _result.ValidatedRequest;
 
             string id = null;
@@ -39,11 +59,10 @@ namespace IdentityServer4.Endpoints.Results
                 var msg = new MessageWithId<LogoutMessage>(new LogoutMessage(validatedRequest));
                 id = msg.Id;
 
-                var logoutMessageStore = context.RequestServices.GetRequiredService<IMessageStore<LogoutMessage>>();
-                await logoutMessageStore.WriteAsync(id, msg);
+                await _logoutMessageStore.WriteAsync(id, msg);
             }
 
-            var redirect = options.UserInteractionOptions.LogoutUrl;
+            var redirect = _options.UserInteractionOptions.LogoutUrl;
 
             if (redirect.IsLocalUrl())
             {
@@ -53,7 +72,7 @@ namespace IdentityServer4.Endpoints.Results
 
             if (id != null)
             {
-                redirect = redirect.AddQueryString(options.UserInteractionOptions.LogoutIdParameter, id);
+                redirect = redirect.AddQueryString(_options.UserInteractionOptions.LogoutIdParameter, id);
             }
 
             context.Response.Redirect(redirect);
