@@ -69,10 +69,8 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddAuthentication();
             builder.Services.AddOptions();
 
-            builder.Services.AddSingleton(resolver =>
-            {
-                return resolver.GetRequiredService<IOptions<IdentityServerOptions>>().Value;
-            });
+            builder.Services.AddSingleton(
+                resolver => resolver.GetRequiredService<IOptions<IdentityServerOptions>>().Value);
 
             return builder;
         }

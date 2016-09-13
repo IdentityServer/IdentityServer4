@@ -32,5 +32,9 @@ Example
 
 IdentityModel
 ^^^^^^^^^^^^^
-Our `identitymodel <https://github.com/IdentityModel/IdentityModel>`_ library 
-has a helper class called ``UserInfoClient`` that encapsulates client authentication and userinfo requests.
+You can programmatically access the userinfo endpoint using the `IdentityModel <https://github.com/IdentityModel/IdentityModel2>`_ library::
+
+    var userInfoClient = new UserInfoClient(doc.UserInfoEndpoint, token);
+
+    var response = await userInfoClient.GetAsync();
+    var claims = response.Claims;

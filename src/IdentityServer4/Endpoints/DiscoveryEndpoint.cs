@@ -88,13 +88,14 @@ namespace IdentityServer4.Endpoints
             };
 
             // scopes
+            var theScopes = allScopes as Scope[] ?? allScopes.ToArray();
             if (_options.DiscoveryOptions.ShowIdentityScopes)
             {
-                showScopes.AddRange(allScopes.Where(s => s.Type == ScopeType.Identity));
+                showScopes.AddRange(theScopes.Where(s => s.Type == ScopeType.Identity));
             }
             if (_options.DiscoveryOptions.ShowResourceScopes)
             {
-                showScopes.AddRange(allScopes.Where(s => s.Type == ScopeType.Resource));
+                showScopes.AddRange(theScopes.Where(s => s.Type == ScopeType.Resource));
             }
 
             if (showScopes.Any())
@@ -106,7 +107,7 @@ namespace IdentityServer4.Endpoints
             if (_options.DiscoveryOptions.ShowClaims)
             {
                 var claims = new List<string>();
-                foreach (var s in allScopes)
+                foreach (var s in theScopes)
                 {
                     claims.AddRange(from c in s.Claims
                                     where s.Type == ScopeType.Identity
@@ -263,9 +264,7 @@ namespace IdentityServer4.Endpoints
                 var rsaKey = key as RsaSecurityKey;
                 if (rsaKey != null)
                 {
-                    var parameters = rsaKey.Rsa != null
-                        ? rsaKey.Rsa.ExportParameters(false)
-                        : rsaKey.Parameters;
+                    var parameters = rsaKey.Rsa?.ExportParameters(false) ?? rsaKey.Parameters;
                     var exponent = Base64Url.Encode(parameters.Exponent);
                     var modulus = Base64Url.Encode(parameters.Modulus);
 

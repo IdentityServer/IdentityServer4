@@ -10,11 +10,11 @@ Furthermore the token endpoint can be extended to support extension grant types.
 ``client_id``
     client identifier (required)
 ``client_secret``
-    client secret either in the post body, or as a basic authentication header. Required for confidential clients.
+    client secret either in the post body, or as a basic authentication header. Optional.
 ``grant_type``
     ``authorization_code``, ``client_credentials``, ``password``, ``refresh_token`` or custom
 ``scope``
-    one or more registered scopes (required for all grant types besides ``refresh_token`` and ``authorization_code``)
+    one or more registered scopes. If not specified, a token for all explicitly allowed scopes will be issued.
 ``redirect_uri`` 
     required for the ``authorization_code`` grant type
 ``code``
@@ -51,5 +51,12 @@ Example
 
 IdentityModel
 ^^^^^^^^^^^^^
-Our `identitymodel <https://github.com/IdentityModel/IdentityModel>`_ library 
-has a helper class called ``TokenClient`` that encapsulates client authentication and token requests.
+You can programmatically access the token endpoint using the `IdentityModel <https://github.com/IdentityModel/IdentityModel2>`_ library::
+
+    var client = new TokenClient(
+        doc.TokenEndpoint,
+        "client_id",
+        "secret");
+
+    var response = await client.RequestClientCredentialsAsync("scope");
+    var token = response.AccessToken;

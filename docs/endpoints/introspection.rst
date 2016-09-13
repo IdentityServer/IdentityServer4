@@ -39,5 +39,15 @@ An invalid request will return a 400, an unauthorized request 401.
 
 IdentityModel
 ^^^^^^^^^^^^^
-Our `identitymodel <https://github.com/IdentityModel/IdentityModel>`_ library 
-has a helper class called ``IntrospecionClient`` that encapsulates client authentication and introspection requests.
+You can programmatically access the introspection endpoint using the `IdentityModel <https://github.com/IdentityModel/IdentityModel2>`_ library::
+
+    var introspectionClient = new IntrospectionClient(
+        doc.IntrospectionEndpoint,
+        "scope_name",
+        "scope_secret");
+
+    var response = await introspectionClient.SendAsync(
+        new IntrospectionRequest { Token = token });
+
+    var isActice = response.IsActive;
+    var claims = response.Claims;
