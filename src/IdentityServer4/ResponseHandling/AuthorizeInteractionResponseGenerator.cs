@@ -82,13 +82,7 @@ namespace IdentityServer4.ResponseHandling
 
                     return new InteractionResponse
                     {
-                        Error = new AuthorizeError
-                        {
-                            Error = OidcConstants.AuthorizeErrors.LoginRequired,
-                            ResponseMode = request.ResponseMode,
-                            ErrorUri = request.RedirectUri,
-                            State = request.State
-                        }
+                        Error = OidcConstants.AuthorizeErrors.LoginRequired,
                     };
                 }
 
@@ -155,13 +149,7 @@ namespace IdentityServer4.ResponseHandling
 
                 return new InteractionResponse
                 {
-                    Error = new AuthorizeError
-                    {
-                        Error = OidcConstants.AuthorizeErrors.ConsentRequired,
-                        ResponseMode = request.ResponseMode,
-                        ErrorUri = request.RedirectUri,
-                        State = request.State
-                    }
+                    Error = OidcConstants.AuthorizeErrors.ConsentRequired,
                 };
             }
 
@@ -184,13 +172,7 @@ namespace IdentityServer4.ResponseHandling
                     {
                         // no need to show consent screen again
                         // build access denied error to return to client
-                        response.Error = new AuthorizeError
-                        {
-                            Error = OidcConstants.AuthorizeErrors.AccessDenied,
-                            ResponseMode = request.ResponseMode,
-                            ErrorUri = request.RedirectUri,
-                            State = request.State
-                        };
+                        response.Error = OidcConstants.AuthorizeErrors.AccessDenied;
                     }
                     else
                     {
@@ -198,13 +180,7 @@ namespace IdentityServer4.ResponseHandling
                         var valid = request.ValidatedScopes.ValidateRequiredScopes(consent.ScopesConsented);
                         if (valid == false)
                         {
-                            response.Error = new AuthorizeError
-                            {
-                                Error = OidcConstants.AuthorizeErrors.AccessDenied,
-                                ResponseMode = request.ResponseMode,
-                                ErrorUri = request.RedirectUri,
-                                State = request.State
-                            };
+                            response.Error = OidcConstants.AuthorizeErrors.AccessDenied;
                         }
                         else
                         {

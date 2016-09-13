@@ -157,10 +157,12 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
         public async Task authorize_request_validation_produces_error_should_display_error_page()
         {
             _stubAuthorizeRequestValidator.Result.IsError = true;
+            _stubAuthorizeRequestValidator.Result.Error = "some_error";
 
             var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
-            result.Should().BeOfType<AuthorizeErrorResult>();
+            result.Should().BeOfType<AuthorizeResult>();
+            ((AuthorizeResult)result).Response.IsError.Should().BeTrue();
         }
 
         [Fact]
@@ -183,20 +185,19 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task interaction_produces_error_should_show_error_page()
         {
-            _stubInteractionGenerator.Response.Error = new AuthorizeError { };
+            _stubInteractionGenerator.Response.Error = "error";
 
             var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
-            result.Should().BeOfType<AuthorizeErrorResult>();
+            result.Should().BeOfType<AuthorizeResult>();
+            ((AuthorizeResult)result).Response.IsError.Should().BeTrue();
         }
 
         [Fact]
         [Trait("Category", Category)]
         public async Task interaction_produces_error_should_raise_failed_endpoint_event()
         {
-            _stubInteractionGenerator.Response.Error = new AuthorizeError {
-                Error = "some_error",
-            };
+            _stubInteractionGenerator.Response.Error = "some_error";
 
             var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
@@ -247,7 +248,8 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
             var result = await _subject.ProcessAuthorizeAfterLoginAsync(_context);
 
-            result.Should().BeOfType<AuthorizeErrorResult>();
+            result.Should().BeOfType<AuthorizeResult>();
+            ((AuthorizeResult)result).Response.IsError.Should().BeTrue();
         }
 
 
@@ -260,7 +262,8 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
             var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
 
-            result.Should().BeOfType<AuthorizeErrorResult>();
+            result.Should().BeOfType<AuthorizeResult>();
+            ((AuthorizeResult)result).Response.IsError.Should().BeTrue();
         }
 
         [Fact]
@@ -284,7 +287,8 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
             var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
 
-            result.Should().BeOfType<AuthorizeErrorResult>();
+            result.Should().BeOfType<AuthorizeResult>();
+            ((AuthorizeResult)result).Response.IsError.Should().BeTrue();
         }
 
         [Fact]
@@ -308,7 +312,8 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
             var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
 
-            result.Should().BeOfType<AuthorizeErrorResult>();
+            result.Should().BeOfType<AuthorizeResult>();
+            ((AuthorizeResult)result).Response.IsError.Should().BeTrue();
         }
 
         [Fact]

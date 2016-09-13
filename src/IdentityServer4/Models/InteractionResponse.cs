@@ -8,7 +8,7 @@ namespace IdentityServer4.Models
     {
         public bool IsLogin { get; set; }
         public bool IsConsent { get; set; }
-        public bool IsError { get { return Error != null; } }
-        public AuthorizeError Error { get; set; }
+        public bool IsError => Error != null;
+        public string Error { get; set; }
     }
 }
