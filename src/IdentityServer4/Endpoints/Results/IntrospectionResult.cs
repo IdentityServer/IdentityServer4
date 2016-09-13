@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using IdentityServer4.Hosting;
 using Microsoft.AspNetCore.Http;
+using System;
 
 namespace IdentityServer4.Endpoints.Results
 {
@@ -15,6 +16,8 @@ namespace IdentityServer4.Endpoints.Results
 
         public IntrospectionResult(Dictionary<string, object> result)
         {
+            if (result == null) throw new ArgumentNullException(nameof(result));
+
             Result = result;
         }
         

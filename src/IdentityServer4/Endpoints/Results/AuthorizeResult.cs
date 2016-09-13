@@ -22,6 +22,8 @@ namespace IdentityServer4.Endpoints.Results
 
         public AuthorizeResult(AuthorizeResponse response)
         {
+            if (response == null) throw new ArgumentNullException(nameof(response));
+
             Response = response;
         }
 

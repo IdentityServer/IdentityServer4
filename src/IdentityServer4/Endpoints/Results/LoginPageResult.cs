@@ -19,6 +19,8 @@ namespace IdentityServer4.Endpoints.Results
 
         public LoginPageResult(ValidatedAuthorizeRequest request)
         {
+            if (request == null) throw new ArgumentNullException(nameof(request));
+
             _request = request;
         }
 

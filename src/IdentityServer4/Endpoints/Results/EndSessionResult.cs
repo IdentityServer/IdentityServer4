@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using IdentityServer4.Extensions;
+using System;
 
 namespace IdentityServer4.Endpoints.Results
 {
@@ -20,6 +21,8 @@ namespace IdentityServer4.Endpoints.Results
 
         public EndSessionResult(EndSessionValidationResult result)
         {
+            if (result == null) throw new ArgumentNullException(nameof(result));
+
             _result = result;
         }
 
