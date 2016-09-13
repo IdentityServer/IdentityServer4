@@ -115,4 +115,4 @@ but important difference compared to the client credentials grant. The access to
 now contain a ``sub`` claim which uniquely identifies the user.
 
 The presence (or absence) of the ``sub`` claim let's the API distinguish between calls on behalf
-or clients and call on behalf of users.
+of clients and calls on behalf of users.
