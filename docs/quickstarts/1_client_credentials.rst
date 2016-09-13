@@ -3,8 +3,8 @@ Protecting an API using Client Credentials
 
 This quickstart presents the most basic scenario for protecting APIs using IdentityServer.
 
-In this scenario we will define and API and a client that wants to access it.
-The client will request an access token at IdentityServer and use it gain access to the API.
+In this scenario we will define an API and a client that wants to access it.
+The client will request an access token at IdentityServer and use it to gain access to the API.
 
 Defining the scope
 ^^^^^^^^^^^^^^^^^^
@@ -66,7 +66,7 @@ Configure IdentityServer
 To configure IdentityServer to use your scopes and client definition, you need to add code
 to the ``ConfigureServices`` method. 
 You can use convenient extensions methods for that - 
-under the covers these add the relevant stores and dato into the DI system::
+under the covers these add the relevant stores and data into the DI system::
 
     public void ConfigureServices(IServiceCollection services)
     {
@@ -159,7 +159,7 @@ Add IdentityModel to your project.json::
 
     "IdentityModel": "2.0.0-rc3"
 
-IdentityModel includes a client library to use the discovery endpoint.
+IdentityModel includes a client library to use with the discovery endpoint.
 This way you only need to know the base-address of IdentityServer - the actual
 endpoint addresses can be read from the metadata::
 
