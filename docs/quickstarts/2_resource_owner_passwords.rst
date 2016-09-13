@@ -52,7 +52,7 @@ Then register the in-memory users with IdentityServer::
 
 The ``AddInMemoryUsers`` extension method does a couple of things under the hood
 
-* make the list of users available via DI
+* makes the list of users available via DI
 * adds support for the resource owner password grant
 * adds support to user related services typically used by a login UI (we'll use that in the next quickstart)
 
