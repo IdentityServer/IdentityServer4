@@ -5,14 +5,11 @@
 using System.Threading.Tasks;
 using Xunit;
 using FluentAssertions;
-using System.Net;
 using System.Collections.Generic;
 using IdentityServer4.Models;
 using System.Security.Claims;
 using IdentityServer4.IntegrationTests.Common;
 using IdentityServer4.Quickstart;
-using System.Linq;
-using System;
 
 namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 {

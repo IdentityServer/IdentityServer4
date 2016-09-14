@@ -3,7 +3,6 @@
 
 
 using IdentityModel;
-using IdentityServer4.Extensions;
 
 namespace IdentityServer4.Models
 {

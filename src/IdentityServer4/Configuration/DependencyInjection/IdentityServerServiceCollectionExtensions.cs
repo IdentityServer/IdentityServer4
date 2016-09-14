@@ -6,7 +6,6 @@ using IdentityServer4;
 using IdentityServer4.Configuration;
 using IdentityServer4.Configuration.DependencyInjection;
 using IdentityServer4.Endpoints;
-using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Events;
 using IdentityServer4.Hosting;
 using IdentityServer4.ResponseHandling;

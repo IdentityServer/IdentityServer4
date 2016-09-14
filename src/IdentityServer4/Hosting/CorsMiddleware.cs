@@ -3,7 +3,6 @@
 
 
 using IdentityServer4.Configuration;
-using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 

@@ -7,7 +7,6 @@ using System.Diagnostics;
 using IdentityModel;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Configuration;
-using IdentityServer4.Extensions;
 
 namespace IdentityServer4.Events
 {

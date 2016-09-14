@@ -7,7 +7,6 @@ using IdentityServer4.Services.Default;
 using IdentityServer4.UnitTests.Common;
 using Microsoft.AspNetCore.Http.Features.Authentication;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
