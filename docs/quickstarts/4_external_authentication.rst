@@ -22,7 +22,7 @@ Add the Google and cookie authentication package to your project.json::
     "Microsoft.AspNetCore.Authentication.Cookies": "1.0.0",
     "Microsoft.AspNetCore.Authentication.Google": "1.0.0"
 
-Next we need too add the middleware to the pipeline.
+Next we need to add the middleware to the pipeline.
 Order is important, the additional authentication middleware must run **after**
 IdentityServer and **before** MVC.
 
