@@ -39,7 +39,7 @@ namespace Host
                 }
             });
 
-            var builder = services.AddIdentityServerQuickstart(options =>
+            var builder = services.AddDeveloperIdentityServer(options =>
             {
                 //options.EventsOptions = new EventsOptions
                 //{

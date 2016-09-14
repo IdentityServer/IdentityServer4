@@ -5,14 +5,13 @@
 using IdentityModel;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
-using IdentityServer4.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Quickstart
+namespace IdentityServer4.Services.InMemory
 {
     /// <summary>
     /// In-memory user service

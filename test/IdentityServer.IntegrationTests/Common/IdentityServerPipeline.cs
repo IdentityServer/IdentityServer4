@@ -4,7 +4,7 @@
 
 using IdentityServer4.Configuration;
 using IdentityServer4.Models;
-using IdentityServer4.Quickstart;
+using IdentityServer4.Services.InMemory;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -79,7 +79,7 @@ namespace IdentityServer4.IntegrationTests.Common
 
             services.AddDataProtection();
 
-            services.AddIdentityServerQuickstart(options =>
+            services.AddDeveloperIdentityServer(options =>
             {
                 Options = options;
 

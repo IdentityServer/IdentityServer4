@@ -8,7 +8,7 @@ using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using IdentityModel;
 
-namespace IdentityServer4.Quickstart
+namespace IdentityServer4.Services.InMemory
 {
     /// <summary>
     /// Sample implementation of a user login/provisioning services.

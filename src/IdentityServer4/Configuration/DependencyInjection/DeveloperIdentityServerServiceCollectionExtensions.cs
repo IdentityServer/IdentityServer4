@@ -9,9 +9,9 @@ using System;
 
 namespace Microsoft.AspNetCore.Builder
 {
-    public static class QuickStartIdentityServerServiceCollectionExtensions
+    public static class DeveloperIdentityServerServiceCollectionExtensions
     {
-        public static IIdentityServerBuilder AddIdentityServerQuickstart(this IServiceCollection services)
+        public static IIdentityServerBuilder AddDeveloperIdentityServer(this IServiceCollection services)
         {
             var builder = services.AddIdentityServer();
             builder.AddInMemoryStores();
@@ -20,16 +20,16 @@ namespace Microsoft.AspNetCore.Builder
             return builder;
         }
 
-        public static IIdentityServerBuilder AddIdentityServerQuickstart(this IServiceCollection services, Action<IdentityServerOptions> setupAction)
+        public static IIdentityServerBuilder AddDeveloperIdentityServer(this IServiceCollection services, Action<IdentityServerOptions> setupAction)
         {
             services.Configure(setupAction);
-            return services.AddIdentityServerQuickstart();
+            return services.AddDeveloperIdentityServer();
         }
 
-        public static IIdentityServerBuilder AddIdentityServerQuickstart(this IServiceCollection services, IConfiguration configuration)
+        public static IIdentityServerBuilder AddDeveloperIdentityServer(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<IdentityServerOptions>(configuration);
-            return services.AddIdentityServerQuickstart();
+            return services.AddDeveloperIdentityServer();
         }
     }
 }

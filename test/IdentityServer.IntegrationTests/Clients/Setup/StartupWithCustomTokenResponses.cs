@@ -15,7 +15,7 @@ namespace IdentityServer4.IntegrationTests.Clients
         {
             services.AddAuthentication();
 
-            var builder = services.AddIdentityServerQuickstart(options =>
+            var builder = services.AddDeveloperIdentityServer(options =>
             {
                 options.IssuerUri = "https://idsvr4";
 

@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 using IdentityServer4.Stores;
-using IdentityServer4.Quickstart;
+using IdentityServer4.Stores.InMemory;
 
 namespace IdentityServer4.UnitTests.Validation
 {
