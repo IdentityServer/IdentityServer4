@@ -13,7 +13,7 @@ All the protocol support needed for OpenID Connect is already built into Identit
 You need to provide the necessary UI parts for login, logout, consent and error.
 
 While the look & feel as well as the exact workflows will probably always differ in every
-IdentityServer implementation, we provide a sample UI that you can use as a startin point.
+IdentityServer implementation, we provide a sample UI that you can use as a starting point.
 
 This UI can be found in the `Quickstart UI repo <https://github.com/IdentityServer/IdentityServer4.Quickstart.UI>`_.
 You can either clone or download this repo and drop the controllers, views, models and CSS into your web application.
@@ -82,7 +82,7 @@ Adding support for OpenID Connect Scopes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Similar to OAuth 2.0, OpenID Connect also uses the scopes concept.
 Again, scopes represent something you want to protect and that clients want to access.
-In contracts to OAuth, scopes in OIDC don't represent APIs, but identity data like user id, 
+In contrast to OAuth, scopes in OIDC don't represent APIs, but identity data like user id, 
 name or email address.
 
 Add support for the standard ``openid`` (subject id) and ``profile`` (first name, last name etc..) scopes
@@ -158,7 +158,7 @@ You should see a redirect to the login page at IdentityServer.
 .. image:: images/3_login.png
 
 After successful login, the user is presented with the consent screen.
-Here the use can decide if he wants to release his identity information to the client application.
+Here the user can decide if he wants to release his identity information to the client application.
 
 .. note:: Consent can be turned off on a per client basis using the ``RequireConsent`` property on the client object.
 
@@ -176,10 +176,10 @@ Adding sign-out
 The very last step is to add sign-out to the MVC client.
 
 With an authentication service like IdentityServer, it is not enough to clear the local application cookies.
-In additiona you also need to make a roundtrip to IdentityServer to clear the central single sign-on session.
+In addition you also need to make a roundtrip to IdentityServer to clear the central single sign-on session.
 
 The exact protocol steps are implemented inside the OpenID Connect middleware, 
-simply add the following code some controller to trigger the sign-out::
+simply add the following code to some controller to trigger the sign-out::
 
     public async Task Logout()
     {

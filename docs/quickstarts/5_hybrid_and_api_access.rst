@@ -19,7 +19,7 @@ And if validation is successful, the client opens a back-channel to the token se
 Modifying the client configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 There are not many modifications necessary. First we want to allow the client to use the hybrid flow,
-in addition we also want the client to allow doing server to server API call which are not in the context of a user (this is very similar to our client credentials quickstart).
+in addition we also want the client to allow doing server to server API calls which are not in the context of a user (this is very similar to our client credentials quickstart).
 This is expressed using the ``AllowedGrantTypes`` property.
 
 Next we need to add a client secret. This will be used to retrieve the access token on the back channel.
