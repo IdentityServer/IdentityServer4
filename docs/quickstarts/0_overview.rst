@@ -35,7 +35,7 @@ Then select the "Empty Web" option.
 
 Next, add the IdentityServer4 nuget package by adding the following line to your project.json::
 
-    "IdentityServer4": "1.0.0-rc1"
+    "IdentityServer4": "1.0.0-rc1-update2"
     
 IdentityServer uses the usual pattern to configure and add services to an ASP.NET Core host.
 In ``ConfigureServices`` the required services are configured and added to the DI system. 
@@ -47,7 +47,7 @@ Modify your ``Startup.cs`` file to look like this::
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddIdentityServerQuickstart();
+            services.AddDeveloperIdentityServer();
         }
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
@@ -59,7 +59,7 @@ Modify your ``Startup.cs`` file to look like this::
         }
     }
 
-``AddIdentityServerQuickstart`` is a convenient way to quickly setup IdentityServer with
+``AddDeveloperIdentityServer`` is a convenient way to quickly setup IdentityServer with
 in-memory keys and data stores. This is only useful for development and test scenarios. 
 
 For real deployments you would rather use keys loaded from a secured location,

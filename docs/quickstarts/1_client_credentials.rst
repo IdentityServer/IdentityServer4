@@ -71,7 +71,7 @@ under the covers these add the relevant stores and data into the DI system::
     public void ConfigureServices(IServiceCollection services)
     {
         // configure identity server with in-memory stores, keys, clients and scopes
-        services.AddIdentityServerQuickstart()
+        services.AddDeveloperIdentityServer()
             .AddInMemoryScopes(Config.GetScopes())
             .AddInMemoryClients(Config.GetClients());
     }

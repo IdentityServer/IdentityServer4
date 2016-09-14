@@ -116,7 +116,7 @@ The ``AddAspNetIdentity`` extension method requires a generic parameter which is
         services.AddTransient<ISmsSender, AuthMessageSender>();
 
         // Adds IdentityServer
-        services.AddIdentityServerQuickstart()
+        services.AddDeveloperIdentityServer()
             .AddInMemoryScopes(Config.GetScopes())
             .AddInMemoryClients(Config.GetClients())
             .AddAspNetIdentity<ApplicationUser>();
