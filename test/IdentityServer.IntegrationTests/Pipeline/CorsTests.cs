@@ -11,7 +11,7 @@ using IdentityServer4.Models;
 using System.Security.Claims;
 using System.Net.Http;
 using IdentityServer4.IntegrationTests.Common;
-using IdentityServer4.Quickstart;
+using IdentityServer4.Services.InMemory;
 
 namespace IdentityServer4.IntegrationTests.Pipeline
 {

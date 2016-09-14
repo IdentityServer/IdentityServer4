@@ -6,7 +6,7 @@ using FluentAssertions;
 using IdentityModel.Client;
 using IdentityServer4.IntegrationTests.Common;
 using IdentityServer4.Models;
-using IdentityServer4.Quickstart;
+using IdentityServer4.Services.InMemory;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
