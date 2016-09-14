@@ -69,15 +69,9 @@ namespace IdentityServer4.ResponseHandling
             var response = new AuthorizeResponse
             {
                 Request = request,
-                RedirectUri = request.RedirectUri,
                 Code = code,
-                State = request.State,
+                SessionState = request.GenerateSessionStateValue()
             };
-
-            if (request.IsOpenIdRequest)
-            {
-                response.SessionState = request.GenerateSessionStateValue();
-            }
 
             return response;
         }
@@ -159,18 +153,11 @@ namespace IdentityServer4.ResponseHandling
             var response = new AuthorizeResponse
             {
                 Request = request,
-                RedirectUri = request.RedirectUri,
                 AccessToken = accessTokenValue,
                 AccessTokenLifetime = accessTokenLifetime,
                 IdentityToken = jwt,
-                State = request.State,
-                Scope = request.ValidatedScopes.GrantedScopes.ToSpaceSeparatedString()
+                SessionState = request.GenerateSessionStateValue()
             };
-
-            if (request.IsOpenIdRequest)
-            {
-                response.SessionState = request.GenerateSessionStateValue();
-            }
 
             return response;
         }

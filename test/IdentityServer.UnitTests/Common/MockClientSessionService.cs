@@ -12,6 +12,8 @@ namespace IdentityServer4.UnitTests.Common
     {
         public List<string> Clients = new List<string>();
 
+        public bool RemoveCookieWasCalled { get; private set; }
+
         public Task AddClientIdAsync(string clientId)
         {
             Clients.Add(clientId);
@@ -30,6 +32,7 @@ namespace IdentityServer4.UnitTests.Common
 
         public void RemoveCookie()
         {
+            RemoveCookieWasCalled = true;
             Clients.Clear();
         }
     }

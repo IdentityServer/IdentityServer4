@@ -48,6 +48,7 @@ namespace IdentityServer4.Validation
         public static string GenerateSessionStateValue(this ValidatedAuthorizeRequest request)
         {
             if (!request.IsOpenIdRequest) return null;
+
             if (request.SessionId.IsMissing()) return null;
             if (request.ClientId.IsMissing()) return null;
             if (request.RedirectUri.IsMissing()) return null;

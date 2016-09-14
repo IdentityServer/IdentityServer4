@@ -3,6 +3,7 @@
 
 
 using IdentityServer4;
+using IdentityServer4.Extensions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -38,6 +39,16 @@ namespace Microsoft.AspNetCore.Http
         {
             response.ContentType = "text/html; charset=UTF-8";
             await response.WriteAsync(html, Encoding.UTF8);
+        }
+
+        public static void RedirectToAbsoluteUrl(this HttpResponse response, string url)
+        {
+            if (url.IsLocalUrl())
+            {
+                if (url.StartsWith("~/")) url = url.Substring(1);
+                url = response.HttpContext.GetIdentityServerBaseUrl().EnsureTrailingSlash() + url.RemoveLeadingSlash();
+            }
+            response.Redirect(url);
         }
     }
 }

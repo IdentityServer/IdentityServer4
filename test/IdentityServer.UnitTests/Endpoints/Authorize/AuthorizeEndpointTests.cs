@@ -35,8 +35,8 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
         ILogger<AuthorizeEndpoint> _fakeLogger = TestLogger.Create<AuthorizeEndpoint>();
         StubAuthorizeRequestValidator _stubAuthorizeRequestValidator = new StubAuthorizeRequestValidator();
         StubAuthorizeInteractionResponseGenerator _stubInteractionGenerator = new StubAuthorizeInteractionResponseGenerator();
-        StubResultFactory _stubResultFactory = new StubResultFactory();
         MockMessageStore<ConsentResponse> _mockUserConsentResponseMessageStore = new MockMessageStore<ConsentResponse>();
+        StubAuthorizeResponseGenerator _stubAuthorizeResponseGenerator = new StubAuthorizeResponseGenerator();
 
         public AuthorizeEndpointTests()
         {
@@ -70,8 +70,8 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
                 _fakeLogger,
                 _stubAuthorizeRequestValidator,
                 _stubInteractionGenerator,
-                _stubResultFactory,
-                _mockUserConsentResponseMessageStore);
+                _mockUserConsentResponseMessageStore,
+                _stubAuthorizeResponseGenerator);
         }
 
         [Fact]
@@ -111,7 +111,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
             var result = await _subject.ProcessAsync(_context);
 
-            (result is AuthorizeRedirectResult || result is AuthorizeFormPostResult).Should().BeTrue();
+            result.Should().BeOfType<AuthorizeResult>();
         }
 
         [Fact]
@@ -124,7 +124,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
             var result = await _subject.ProcessAsync(_context);
 
-            (result is AuthorizeRedirectResult || result is AuthorizeFormPostResult).Should().BeTrue();
+            result.Should().BeOfType<AuthorizeResult>();
         }
 
         [Fact]
@@ -148,7 +148,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
             var result = await _subject.ProcessAsync(_context);
 
-            (result is AuthorizeRedirectResult || result is AuthorizeFormPostResult).Should().BeTrue();
+            result.Should().BeOfType<AuthorizeResult>();
         }
 
 
@@ -157,10 +157,12 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
         public async Task authorize_request_validation_produces_error_should_display_error_page()
         {
             _stubAuthorizeRequestValidator.Result.IsError = true;
+            _stubAuthorizeRequestValidator.Result.Error = "some_error";
 
             var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
-            result.Should().BeOfType<ErrorPageResult>();
+            result.Should().BeOfType<AuthorizeResult>();
+            ((AuthorizeResult)result).Response.IsError.Should().BeTrue();
         }
 
         [Fact]
@@ -183,20 +185,19 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task interaction_produces_error_should_show_error_page()
         {
-            _stubInteractionGenerator.Response.Error = new AuthorizeError { };
+            _stubInteractionGenerator.Response.Error = "error";
 
             var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
-            result.Should().BeOfType<ErrorPageResult>();
+            result.Should().BeOfType<AuthorizeResult>();
+            ((AuthorizeResult)result).Response.IsError.Should().BeTrue();
         }
 
         [Fact]
         [Trait("Category", Category)]
         public async Task interaction_produces_error_should_raise_failed_endpoint_event()
         {
-            _stubInteractionGenerator.Response.Error = new AuthorizeError {
-                Error = "some_error",
-            };
+            _stubInteractionGenerator.Response.Error = "some_error";
 
             var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
@@ -235,7 +236,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
         {
             var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
-            (result is AuthorizeRedirectResult || result is AuthorizeFormPostResult).Should().BeTrue();
+            result.Should().BeOfType<AuthorizeResult>();
         }
 
         // after login
@@ -247,7 +248,8 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
             var result = await _subject.ProcessAuthorizeAfterLoginAsync(_context);
 
-            result.Should().BeAssignableTo<ErrorPageResult>();
+            result.Should().BeOfType<AuthorizeResult>();
+            ((AuthorizeResult)result).Response.IsError.Should().BeTrue();
         }
 
 
@@ -260,7 +262,8 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
             var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
 
-            result.Should().BeAssignableTo<ErrorPageResult>();
+            result.Should().BeOfType<AuthorizeResult>();
+            ((AuthorizeResult)result).Response.IsError.Should().BeTrue();
         }
 
         [Fact]
@@ -284,7 +287,8 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
             var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
 
-            result.Should().BeAssignableTo<ErrorPageResult>();
+            result.Should().BeOfType<AuthorizeResult>();
+            ((AuthorizeResult)result).Response.IsError.Should().BeTrue();
         }
 
         [Fact]
@@ -308,7 +312,8 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
             var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
 
-            result.Should().BeAssignableTo<ErrorPageResult>();
+            result.Should().BeOfType<AuthorizeResult>();
+            ((AuthorizeResult)result).Response.IsError.Should().BeTrue();
         }
 
         [Fact]
@@ -332,7 +337,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
             var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
 
-            (result is AuthorizeRedirectResult || result is AuthorizeFormPostResult).Should().BeTrue();
+            result.Should().BeOfType<AuthorizeResult>();
         }
 
         [Fact]

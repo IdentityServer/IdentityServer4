@@ -46,13 +46,6 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             _mockConsent.ConsentScopes.Should().BeEquivalentTo(scopes);
         }
 
-        private void AssertErrorReturnsRequestValues(AuthorizeError error, ValidatedAuthorizeRequest request)
-        {
-            error.ResponseMode.Should().Be(request.ResponseMode);
-            error.ErrorUri.Should().Be(request.RedirectUri);
-            error.State.Should().Be(request.State);
-        }
-
         private static IEnumerable<Scope> GetScopes()
         {
             return new Scope[]
@@ -168,8 +161,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
 
             request.WasConsentShown.Should().BeFalse();
             result.IsError.Should().BeTrue();
-            result.Error.Error.Should().Be(OidcConstants.AuthorizeErrors.ConsentRequired);
-            AssertErrorReturnsRequestValues(result.Error, request);
+            result.Error.Should().Be(OidcConstants.AuthorizeErrors.ConsentRequired);
             AssertUpdateConsentNotCalled();
         }
         
@@ -225,8 +217,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             var result = _subject.ProcessConsentAsync(request, consent).Result;
             request.WasConsentShown.Should().BeTrue();
             result.IsError.Should().BeTrue();
-            result.Error.Error.Should().Be(OidcConstants.AuthorizeErrors.AccessDenied);
-            AssertErrorReturnsRequestValues(result.Error, request);
+            result.Error.Should().Be(OidcConstants.AuthorizeErrors.AccessDenied);
             AssertUpdateConsentNotCalled();
         }
 
@@ -248,8 +239,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             var result = _subject.ProcessConsentAsync(request, consent).Result;
             request.WasConsentShown.Should().BeTrue();
             result.IsError.Should().BeTrue();
-            result.Error.Error.Should().Be(OidcConstants.AuthorizeErrors.AccessDenied);
-            AssertErrorReturnsRequestValues(result.Error, request);
+            result.Error.Should().Be(OidcConstants.AuthorizeErrors.AccessDenied);
             AssertUpdateConsentNotCalled();
         }
 
@@ -278,8 +268,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
 
             var result = _subject.ProcessConsentAsync(request, consent).Result;
             result.IsError.Should().BeTrue();
-            result.Error.Error.Should().Be(OidcConstants.AuthorizeErrors.AccessDenied);
-            AssertErrorReturnsRequestValues(result.Error, request);
+            result.Error.Should().Be(OidcConstants.AuthorizeErrors.AccessDenied);
             AssertUpdateConsentNotCalled();
         }
 

@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using IdentityServer4.Stores;
 using IdentityServer4.Models;
 using System.Net;
+using System;
 
 namespace IdentityServer4.Endpoints.Results
 {
@@ -21,15 +22,41 @@ namespace IdentityServer4.Endpoints.Results
 
         public EndSessionCallbackResult(EndSessionCallbackValidationResult result)
         {
+            if (result == null) throw new ArgumentNullException(nameof(result));
+
             _result = result;
+        }
+
+        internal EndSessionCallbackResult(
+            EndSessionCallbackValidationResult result,
+            ISessionIdService sessionId,
+            IClientSessionService clientList,
+            IMessageStore<LogoutMessage> logoutMessageStore)
+            : this(result)
+        {
+            _sessionId = sessionId;
+            _clientList = clientList;
+            _logoutMessageStore = logoutMessageStore;
+        }
+
+        private ISessionIdService _sessionId;
+        private IClientSessionService _clientList;
+        private IMessageStore<LogoutMessage> _logoutMessageStore;
+
+        void Init(HttpContext context)
+        {
+            _sessionId = _sessionId ?? context.RequestServices.GetRequiredService<ISessionIdService>();
+            _clientList = _clientList ?? context.RequestServices.GetRequiredService<IClientSessionService>();
+            _logoutMessageStore = _logoutMessageStore ?? context.RequestServices.GetRequiredService<IMessageStore<LogoutMessage>>();
         }
 
         public async Task ExecuteAsync(HttpContext context)
         {
+            Init(context);
+
             if (_result.LogoutId != null)
             {
-                var logoutMessageStore = context.RequestServices.GetRequiredService<IMessageStore<LogoutMessage>>();
-                await logoutMessageStore.DeleteAsync(_result.LogoutId);
+                await _logoutMessageStore.DeleteAsync(_result.LogoutId);
             }
 
             if (_result.IsError)
@@ -38,14 +65,12 @@ namespace IdentityServer4.Endpoints.Results
             }
             else
             {
-                var sessionId = context.RequestServices.GetRequiredService<ISessionIdService>();
-                sessionId.RemoveCookie();
+                _sessionId.RemoveCookie();
+                _clientList.RemoveCookie();
 
-                var clientList = context.RequestServices.GetRequiredService<IClientSessionService>();
-                clientList.RemoveCookie();
+                context.Response.SetNoCache();
 
                 var html = GetHtml();
-                context.Response.SetNoCache();
                 await context.Response.WriteHtmlAsync(html);
             }
         }

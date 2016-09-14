@@ -12,17 +12,33 @@ namespace IdentityServer4.Endpoints.Results
 {
     class CheckSessionResult : IEndpointResult
     {
-        string GetHtml(string cookieName)
+        public CheckSessionResult()
         {
-            return _html.Replace("{cookieName}", cookieName);
+        }
+
+        internal CheckSessionResult(ISessionIdService sessionId)
+        {
+            _sessionId = sessionId;
+        }
+
+        private ISessionIdService _sessionId;
+
+        void Init(HttpContext context)
+        {
+            _sessionId = _sessionId ?? context.RequestServices.GetRequiredService<ISessionIdService>();
         }
 
         public async Task ExecuteAsync(HttpContext context)
         {
-            var sessionId = context.RequestServices.GetRequiredService<ISessionIdService>();
+            Init(context);
 
-            var html = GetHtml(sessionId.GetCookieName());
+            var html = GetHtml(_sessionId.GetCookieName());
             await context.Response.WriteHtmlAsync(html);
+        }
+
+        string GetHtml(string cookieName)
+        {
+            return _html.Replace("{cookieName}", cookieName);
         }
 
         const string _html = @"

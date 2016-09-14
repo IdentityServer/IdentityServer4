@@ -7,6 +7,7 @@ using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Http;
+using System;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Endpoints.Results
@@ -17,6 +18,8 @@ namespace IdentityServer4.Endpoints.Results
 
         public TokenResult(TokenResponse response)
         {
+            if (response == null) throw new ArgumentNullException(nameof(response));
+
             Response = response;
         }
 
