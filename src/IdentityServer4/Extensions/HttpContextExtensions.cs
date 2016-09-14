@@ -16,11 +16,11 @@ namespace IdentityServer4.Extensions
 {
     public static class HttpContextExtensions
     {
-        public static void SetHost(this HttpContext context, string value)
+        public static void SetOrigin(this HttpContext context, string value)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            context.Items[Constants.EnvironmentKeys.IdentityServerHost] = value;
+            context.Items[Constants.EnvironmentKeys.IdentityServerOrigin] = value;
         }
 
         public static void SetBasePath(this HttpContext context, string value)
@@ -30,9 +30,9 @@ namespace IdentityServer4.Extensions
             context.Items[Constants.EnvironmentKeys.IdentityServerBasePath] = value;
         }
 
-        public static string GetHost(this HttpContext context)
+        public static string GetOrigin(this HttpContext context)
         {
-            return context.Items[Constants.EnvironmentKeys.IdentityServerHost] as string;
+            return context.Items[Constants.EnvironmentKeys.IdentityServerOrigin] as string;
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace IdentityServer4.Extensions
         /// <returns></returns>
         public static string GetIdentityServerBaseUrl(this HttpContext context)
         {
-            return context.GetHost() + context.GetBasePath();
+            return context.GetOrigin() + context.GetBasePath();
         }
 
         public static string GetIssuerUri(this HttpContext context)

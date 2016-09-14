@@ -8,8 +8,9 @@ using Microsoft.AspNetCore.Http.Features.Authentication;
 
 namespace IdentityServer4.UnitTests.Common
 {
-    public class StubSessionIdService : ISessionIdService
+    public class MockSessionIdService : ISessionIdService
     {
+        public bool RemoveCookieWasCalled { get; private set; }
         public string SessionId { get; set; } = "session_id";
 
         public Task AddSessionIdAsync(SignInContext context)
@@ -39,6 +40,7 @@ namespace IdentityServer4.UnitTests.Common
 
         public void RemoveCookie()
         {
+            RemoveCookieWasCalled = true;
             SessionId = null;
         }
     }

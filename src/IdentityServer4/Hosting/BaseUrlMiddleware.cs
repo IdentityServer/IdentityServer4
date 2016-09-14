@@ -21,8 +21,8 @@ namespace IdentityServer4.Hosting
         {
             var request = context.Request;
 
-            var host = request.Scheme + "://" + request.Host.Value;
-            context.SetHost(host);
+            var origin = request.Scheme + "://" + request.Host.Value;
+            context.SetOrigin(origin);
             context.SetBasePath(request.PathBase.Value.RemoveTrailingSlash());
 
             await _next(context);

@@ -24,7 +24,7 @@ namespace IdentityServer4.UnitTests.Validation.EndSessionRequestValidation
         StubTokenValidator _stubTokenValidator = new StubTokenValidator();
         StubRedirectUriValidator _stubRedirectUriValidator = new StubRedirectUriValidator();
         MockHttpContextAccessor _context = new MockHttpContextAccessor();
-        StubSessionIdService _sessionId = new StubSessionIdService();
+        MockSessionIdService _sessionId = new MockSessionIdService();
         MockClientSessionService _clientList;
         InMemoryClientStore _clientStore;
 

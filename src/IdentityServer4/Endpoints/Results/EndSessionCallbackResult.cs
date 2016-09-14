@@ -56,8 +56,7 @@ namespace IdentityServer4.Endpoints.Results
 
             if (_result.LogoutId != null)
             {
-                var logoutMessageStore = context.RequestServices.GetRequiredService<IMessageStore<LogoutMessage>>();
-                await logoutMessageStore.DeleteAsync(_result.LogoutId);
+                await _logoutMessageStore.DeleteAsync(_result.LogoutId);
             }
 
             if (_result.IsError)
@@ -69,9 +68,9 @@ namespace IdentityServer4.Endpoints.Results
                 _sessionId.RemoveCookie();
                 _clientList.RemoveCookie();
 
-                var html = GetHtml();
-
                 context.Response.SetNoCache();
+
+                var html = GetHtml();
                 await context.Response.WriteHtmlAsync(html);
             }
         }

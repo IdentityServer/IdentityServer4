@@ -19,7 +19,7 @@ namespace IdentityServer4.UnitTests.Services.Default
     {
         DefaultClientSessionService _subject;
         MockHttpContextAccessor _mockHttpContext = new MockHttpContextAccessor();
-        StubSessionIdService _stubSessionId = new StubSessionIdService();
+        MockSessionIdService _stubSessionId = new MockSessionIdService();
         StubAuthenticationHandler _stubAuthHandler;
         ClaimsPrincipal _user;
 
