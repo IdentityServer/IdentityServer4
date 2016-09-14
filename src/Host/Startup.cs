@@ -9,9 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using Serilog.Events;
-using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using System.Linq;
 using IdentityServer4;
 
@@ -124,13 +122,6 @@ namespace Host
                 {
                     NameClaimType = "name",
                     RoleClaimType = "role"
-                },
-                Events = new OpenIdConnectEvents
-                {
-                    OnRemoteSignOut = ctx =>
-                    {
-                        return Task.FromResult(0);
-                    }
                 }
             });
 
