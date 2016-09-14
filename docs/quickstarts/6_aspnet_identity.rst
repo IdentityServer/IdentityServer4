@@ -107,8 +107,8 @@ The ``AddAspNetIdentity`` extension method requires a generic parameter which is
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
         services.AddIdentity<ApplicationUser, IdentityRole>()
-        .AddEntityFrameworkStores<ApplicationDbContext>()
-        .AddDefaultTokenProviders();
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
 
         services.AddMvc();
 
