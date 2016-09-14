@@ -13,12 +13,15 @@
   "dependencies": {
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
+    "Microsoft.Extensions.Caching.Abstractions": "1.0.0",
+
     "Microsoft.AspNetCore.Http.Abstractions": "1.0.0",
     "Microsoft.AspNetCore.Cors": "1.0.0",
     "Microsoft.AspNetCore.Authentication.Cookies": "1.0.0",
-    "Microsoft.IdentityModel.Protocols.OpenIdConnect": "2.0.0",
-    "IdentityModel": "2.0.0-rc3",
-    "Microsoft.Extensions.Caching.Abstractions": "1.0.0"
+    
+    "System.IdentityModel.Tokens.Jwt": "5.0.0",
+    
+    "IdentityModel": "2.0.0-rc3"
   },
 
   "frameworks": {
@@ -28,7 +31,6 @@
         "System.Diagnostics.Process": "4.1.0"
       }
     },
-
     "net452": { }
   }
 }
