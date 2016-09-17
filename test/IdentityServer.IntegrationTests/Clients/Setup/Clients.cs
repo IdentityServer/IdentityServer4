@@ -62,8 +62,9 @@ namespace IdentityServer4.IntegrationTests.Clients
                         StandardScopes.Email.Name,
                         StandardScopes.OfflineAccess.Name,
                         StandardScopes.Address.Name,
+                        StandardScopes.Roles.Name,
 
-                        "api1", "api2"
+                        "api1", "api2", "api4.with.roles"
                     }
                 },
 

@@ -17,6 +17,7 @@ namespace IdentityServer4.IntegrationTests.Clients
                 StandardScopes.Email,
                 StandardScopes.OfflineAccess,
                 StandardScopes.Address,
+                StandardScopes.Roles,
 
                 new Scope
                 {
@@ -37,6 +38,15 @@ namespace IdentityServer4.IntegrationTests.Clients
                 {
                     Name = "api3",
                     Type = ScopeType.Resource
+                },
+                new Scope
+                {
+                    Name = "api4.with.roles",
+                    Type = ScopeType.Resource,
+                    Claims = new List<ScopeClaim>
+                    {
+                        new ScopeClaim("role")
+                    }
                 }
             };
         }
