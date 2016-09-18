@@ -3,6 +3,7 @@
 
 
 using IdentityServer4.Hosting;
+using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.Extensions.Logging;
 using System;
@@ -32,9 +33,11 @@ namespace Microsoft.AspNetCore.Builder
 
             // todo: which other services to test for?
             app.TestService(typeof(IPersistedGrantStore), logger, "No storage mechanism for grants specified. Use the 'AddInMemoryStores' extension method to register a development version.");
+            app.TestService(typeof(IClientStore), logger, "No storage mechanism for clients specified. Use the 'AddInMemoryClients' extension method to register a development version.");
+            app.TestService(typeof(IScopeStore), logger, "No storage mechanism for scopes specified. Use the 'AddInMemoryScopes' extension method to register a development version.");
         }
 
-        internal static void TestService(this IApplicationBuilder app, Type service, ILogger logger, string message = null)
+        internal static object TestService(this IApplicationBuilder app, Type service, ILogger logger, string message = null)
         {
             var appService = app.ApplicationServices.GetService(service);
 
@@ -45,6 +48,8 @@ namespace Microsoft.AspNetCore.Builder
                 logger.LogCritical(error);
                 throw new InvalidOperationException(error);
             }
+
+            return appService;
         }
     }
 }
