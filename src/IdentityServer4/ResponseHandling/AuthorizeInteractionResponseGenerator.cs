@@ -117,7 +117,14 @@ namespace IdentityServer4.ResponseHandling
                 }
             }
 
-            // check idp restrictions
+            // check local idp restrictions
+            if (currentIdp == Constants.LocalIdentityProvider && !request.Client.EnableLocalLogin)
+            {
+                _logger.LogInformation("User logged in locally, but client does not allow local logins");
+                return new InteractionResponse() { IsLogin = true };
+            }
+
+            // check external idp restrictions
             if (request.Client.IdentityProviderRestrictions != null && request.Client.IdentityProviderRestrictions.Any())
             {
                 if (!request.Client.IdentityProviderRestrictions.Contains(currentIdp))
