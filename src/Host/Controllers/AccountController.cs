@@ -177,8 +177,15 @@ namespace IdentityServer4.Quickstart.UI.Controllers
         /// Show logout page
         /// </summary>
         [HttpGet]
-        public IActionResult Logout(string logoutId)
+        public async Task<IActionResult> Logout(string logoutId)
         {
+            var context = await _interaction.GetLogoutContextAsync(logoutId);
+            if (context != null && context.IsAuthenticatedLogout)
+            {
+                // if the logout request is authenticated, it's safe to automatically sign-out
+                return await Logout(new LogoutViewModel { LogoutId = logoutId });
+            }
+
             var vm = new LogoutViewModel
             {
                 LogoutId = logoutId

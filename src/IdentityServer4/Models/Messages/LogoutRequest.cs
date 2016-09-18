@@ -32,6 +32,7 @@ namespace IdentityServer4.Models
                 }
             }
         }
+
         public LogoutMessage(LogoutMessage message)
         {
             ClientId = message?.ClientId;
@@ -73,5 +74,13 @@ namespace IdentityServer4.Models
         /// The sign out i frame URL.
         /// </value>
         public string SignOutIFrameUrl { get; set; }
+
+        public bool IsAuthenticatedLogout
+        {
+            get
+            {
+                return ClientId.IsPresent();
+            }
+        }
     }
 }
