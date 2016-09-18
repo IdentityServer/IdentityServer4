@@ -40,6 +40,16 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                     AllowedScopes = new List<string> { "openid", "profile", "api1", "api2" },
                     RedirectUris = new List<string> { "https://client2/callback" },
                     AllowAccessTokensViaBrowser = true
+                },
+                new Client
+                {
+                    ClientId = "client3",
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    RequireConsent = false,
+                    AllowedScopes = new List<string> { "openid", "profile", "api1", "api2" },
+                    RedirectUris = new List<string> { "https://client3/callback" },
+                    AllowAccessTokensViaBrowser = true,
+                    IdentityProviderRestrictions = new List<string> { "google" }
                 }
             });
 
@@ -331,6 +341,61 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             authorization.State.Should().Be("123_state");
             var scopes = authorization.Scope.Split(' ');
             scopes.ShouldAllBeEquivalentTo(new string[] { "profile", "api1", "openid" });
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task idp_should_be_passed_to_login_page()
+        {
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: "client3",
+                responseType: "id_token",
+                scope: "openid profile",
+                redirectUri: "https://client3/callback",
+                state: "123_state",
+                nonce: "123_nonce", 
+                acrValues: "idp:google");
+            var response = await _mockPipeline.BrowserClient.GetAsync(url);
+
+            _mockPipeline.LoginWasCalled.Should().BeTrue();
+            _mockPipeline.LoginRequest.IdP.Should().Be("google");
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task idp_not_allowed_by_client_should_not_be_passed_to_login_page()
+        {
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: "client3",
+                responseType: "id_token",
+                scope: "openid profile",
+                redirectUri: "https://client3/callback",
+                state: "123_state",
+                nonce: "123_nonce",
+                acrValues: "idp:facebook");
+            var response = await _mockPipeline.BrowserClient.GetAsync(url);
+
+            _mockPipeline.LoginWasCalled.Should().BeTrue();
+            _mockPipeline.LoginRequest.IdP.Should().BeNull();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task user_idp_not_allowed_by_client_should_cause_login_page()
+        {
+            await _mockPipeline.LoginAsync("bob");
+
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: "client3",
+                responseType: "id_token",
+                scope: "openid profile",
+                redirectUri: "https://client3/callback",
+                state: "123_state",
+                nonce: "123_nonce");
+            var response = await _mockPipeline.BrowserClient.GetAsync(url);
+
+            _mockPipeline.LoginWasCalled.Should().BeTrue();
+            _mockPipeline.LoginRequest.IdP.Should().BeNull();
         }
     }
 }

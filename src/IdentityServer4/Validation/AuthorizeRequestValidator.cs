@@ -554,6 +554,23 @@ namespace IdentityServer4.Validation
             }
 
             //////////////////////////////////////////////////////////
+            // check custom acr_values: idp
+            //////////////////////////////////////////////////////////
+            var idp = request.GetIdP();
+            if (idp.IsPresent())
+            {
+                // if idp is present but client does not allow it, strip it from the request message
+                if (request.Client.IdentityProviderRestrictions != null && request.Client.IdentityProviderRestrictions.Any())
+                {
+                    if (!request.Client.IdentityProviderRestrictions.Contains(idp))
+                    {
+                        _logger.LogWarning("idp requested: {0}, is not in client restriction list.", idp);
+                        request.RemoveIdP();
+                    }
+                }
+            }
+
+            //////////////////////////////////////////////////////////
             // check session cookie
             //////////////////////////////////////////////////////////
             if (_options.Endpoints.EnableCheckSessionEndpoint && 
