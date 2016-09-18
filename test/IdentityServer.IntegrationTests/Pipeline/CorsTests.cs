@@ -71,9 +71,9 @@ namespace IdentityServer4.IntegrationTests.Pipeline
         [InlineData(MockIdSvrUiPipeline.DiscoveryKeysEndpoint)]
         [InlineData(MockIdSvrUiPipeline.TokenEndpoint)]
         [InlineData(MockIdSvrUiPipeline.UserInfoEndpoint)]
-        //TODO
+        // TODO: once we enable id_token validation
         //[InlineData(MockIdSvrUiPipeline.IdentityTokenValidationEndpoint)]
-        //[InlineData(MockIdSvrUiPipeline.RevocationEndpoint)]
+        [InlineData(MockIdSvrUiPipeline.RevocationEndpoint)]
         [Trait("Category", Category)]
         public async Task cors_request_to_allowed_endpoints_should_succeed(string url)
         {

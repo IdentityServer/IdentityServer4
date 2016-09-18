@@ -223,8 +223,7 @@ namespace IdentityServer4.Validation
                     if (client.LogoutSessionRequired)
                     {
                         url = url.AddQueryString(OidcConstants.EndSessionRequest.Sid, sid);
-                        //TODO: update sid to OidcConstants when idmodel released
-                        url = url.AddQueryString("iss", _context.HttpContext.GetIssuerUri());
+                        url = url.AddQueryString(OidcConstants.EndSessionRequest.Issuer, _context.HttpContext.GetIssuerUri());
                     }
 
                     urls.Add(url);
