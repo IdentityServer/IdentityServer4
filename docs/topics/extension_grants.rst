@@ -44,11 +44,12 @@ In other words - API 1 needs an access token containing the user's identity, but
 .. note:: You might have heard of the term *poor man's delegation* where the access token from the front end is simply forwarded to the back end. This has some short comings, e.g. *API 2* must now accept the *API 1* scope which would allow the user to call *API 2* directly. Also - you might want to add some delegation specific claims into the token, e.g. the fact that the call path is via *API 1*.
 
 **Implementing the extension grant**
+
 The front end would send the token to API 1, and now this token needs to be exchanged at IdentityServer with a new token for API 2.
 
 On the wire the call to token service for the exchange could look like this::
 
-    POST /connec/token
+    POST /connect/token
 
     grant_type=delegation&
     scope=api2&
@@ -56,7 +57,7 @@ On the wire the call to token service for the exchange could look like this::
     client_id=api1.client
     client_secret=secret
 
-It would be now the job of the extension grant validator to handle that request by validating the incoming token, and return a result that represents the new token::
+It's the job of the extension grant validator to handle that request by validating the incoming token, and returning a result that represents the new token::
 
     public class DelegationGrantValidator : IExtensionGrantValidator
     {
@@ -97,6 +98,7 @@ It would be now the job of the extension grant validator to handle that request 
 Don't forget to register the validator with DI.
 
 **Registering the delegation client**
+
 You need a client registration in IdentityServer that allows a client to use this new extension grant, e.g.::
 
     var client = new client
@@ -116,6 +118,7 @@ You need a client registration in IdentityServer that allows a client to use thi
     }
 
 **Calling the token endpoint**
+
 In API 1 you can now construct the HTTP payload yourself, or use our IdentityModel helper library::
 
 
