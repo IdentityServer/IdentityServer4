@@ -1,18 +1,15 @@
 Extension Grants
 ================
 
-OAuth 2.0 defines a couple of standard grant types like ``password``, ``authorization_code`` and ``refresh_token`` for the token endpoint.
+OAuth 2.0 defines a couple of standard grant types for the token endpoint like ``password``, ``authorization_code`` and ``refresh_token``.
 Extension grants are a way to add support for non-standard token issuance scenarios like token translation, delegation, custom credentials etc.
 
 You can add support for additional grant types by implementing the ``IExtensionGrantValidator`` interface::
 
-    /// <summary>
-    /// Handles validation of token requests using custom grant types
-    /// </summary>
     public interface IExtensionGrantValidator
     {
         /// <summary>
-        /// Validates the custom grant request.
+        /// Handles the custom grant request.
         /// </summary>
         /// <param name="request">The validation context.</param>
         Task ValidateAsync(ExtensionGrantValidationContext context);
@@ -44,5 +41,96 @@ This middle tier API now wants to call a back end API on behalf of the interacti
 
 In other words - API 1 needs an access token containing the user's identity, but having the scope of the back end API.
 
-.. note:: You might have heard of the term "poor man's delegation" where the access token from the front end is simply forwarded to the back end. This has some short comings, e.g. API 2 must now accept the the API 1 scope which would allow the user to call API 2 directly. Also - you might want to add some delegation specific claims into the token, e.g. the fact that the call path is via API 1.
+.. note:: You might have heard of the term *poor man's delegation* where the access token from the front end is simply forwarded to the back end. This has some short comings, e.g. *API 2* must now accept the *API 1* scope which would allow the user to call *API 2* directly. Also - you might want to add some delegation specific claims into the token, e.g. the fact that the call path is via *API 1*.
 
+**Implementing the extension grant**
+The front end would send the token to API 1, and now this token needs to be exchanged at IdentityServer with a new token for API 2.
+
+On the wire the call to token service for the exchange could look like this::
+
+    POST /connec/token
+
+    grant_type=delegation&
+    scope=api2&
+    token=...&
+    client_id=api1.client
+    client_secret=secret
+
+It would be now the job of the extension grant validator to handle that request by validating the incoming token, and return a result that represents the new token::
+
+    public class DelegationGrantValidator : IExtensionGrantValidator
+    {
+        private readonly ITokenValidator _validator;
+
+        public DelegationGrantValidator(ITokenValidator validator)
+        {
+            _validator = validator;
+        }
+
+        public string GrantType => "delegation";
+
+        public async Task ValidateAsync(ExtensionGrantValidationContext context)
+        {
+            var userToken = context.Request.Raw.Get("token");
+
+            if (string.IsNullOrEmpty(userToken))
+            {
+                context.Result = new GrantValidationResult(TokenErrors.InvalidGrant);
+                return;
+            }
+
+            var result = await _validator.ValidateAccessTokenAsync(userToken);
+            if (result.IsError)
+            {
+                context.Result = new GrantValidationResult(TokenErrors.InvalidGrant);
+                return;
+            }
+
+            // get user's identity
+            var sub = result.Claims.FirstOrDefault(c => c.Type == "sub").Value;
+
+            context.Result = new GrantValidationResult(sub, "delegation");
+            return;
+        }
+    }
+
+Don't forget to register the validator with DI.
+
+**Registering the delegation client**
+You need a client registration in IdentityServer that allows a client to use this new extension grant, e.g.::
+
+    var client = new client
+    {
+        ClientId = "api1.client",
+        ClientSecrets = new List<Secret>
+        {
+            new Secret("secret".Sha256())
+        },
+        
+        AllowedGrantTypes = GrantTypes.List("delegation"),
+
+        AllowedScopes = new List<string>
+        {
+            "api2"
+        }
+    }
+
+**Calling the token endpoint**
+In API 1 you can now construct the HTTP payload yourself, or use our IdentityModel helper library::
+
+
+    public async Task<TokenResponse> DelegateAsync(string userToken)
+    {
+        var payload = new
+        {
+            token = userToken
+        };
+
+        // create token client
+        var client = new TokenClient(disco.TokenEndpoint, "api1.client", "secret");
+
+        // send custom grant to token endpoint, return response
+        return await client.RequestCustomGrantAsync("delegation", "api2", payload);
+    }
+
+The ``TokenResponse.AccessToken`` will now contain the delegation access token.
