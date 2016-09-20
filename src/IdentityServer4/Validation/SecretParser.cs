@@ -25,16 +25,28 @@ namespace IdentityServer4.Validation
         public async Task<ParsedSecret> ParseAsync(HttpContext context)
         {
             // see if a registered parser finds a secret on the request
+            ParsedSecret bestSecret = null;
             foreach (var parser in _parsers)
             {
-                var parsedSecret = await parser.ParseAsync(context);
+                ParsedSecret parsedSecret = null;
+                parsedSecret = await parser.ParseAsync(context);
                 if (parsedSecret != null)
                 {
                     _logger.LogDebug("Parser found secret: {type}", parser.GetType().Name);
-                    _logger.LogInformation("Secret id found: {id}", parsedSecret.Id);
 
-                    return parsedSecret;
+                    bestSecret = parsedSecret;
+
+                    if (parsedSecret.Type != IdentityServerConstants.ParsedSecretTypes.NoSecret)
+                    {
+                        break;
+                    }
                 }
+            }
+
+            if (bestSecret != null)
+            {
+                _logger.LogInformation("Secret id found: {id}", bestSecret.Id);
+                return bestSecret;
             }
 
             _logger.LogInformation("Parser found no secret");

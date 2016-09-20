@@ -4,6 +4,9 @@
 
 using IdentityServer4.Models;
 using System.Collections.Generic;
+using System;
+using System.Security.Cryptography.X509Certificates;
+using IdentityServer4.IntegrationTests.Common;
 
 namespace IdentityServer4.IntegrationTests.Clients
 {
@@ -106,6 +109,29 @@ namespace IdentityServer4.IntegrationTests.Clients
                     },
 
                     AccessTokenType = AccessTokenType.Reference
+                },
+
+                new Client
+                {
+                    ClientName = "Client with Base64 encoded X509 Certificate",
+                    ClientId = "certificate_base64_valid",
+                    Enabled = true,
+
+                    ClientSecrets = new List<Secret>
+                    {
+                        new Secret
+                        {
+                            Type = IdentityServerConstants.SecretTypes.X509CertificateBase64,
+                            Value = Convert.ToBase64String(TestCert.Load().Export(X509ContentType.Cert))
+                        }
+                    },
+
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+
+                    AllowedScopes = new List<string>
+                    {
+                        "api1", "api2"
+                    },
                 },
             };
         }
