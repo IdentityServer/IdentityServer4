@@ -23,11 +23,13 @@ You can add support for additional grant types by implementing the ``IExtensionG
         string GrantType { get; }
     }
 
-...and registering the validator in DI - either directly::
+The ``ExtensionGrantValidationContext`` object gives you access to:
 
-    services.AddTransient<IExtensionGrantValidator, MyExtensionsGrantValidator>()
+* the incoming token request - both the raw and the already validated values
+* the result - either error or success
+* custom response parameters
 
-...or using our builder::
+To register the extension grant, add it to DI::
 
     builder.AddExtensionGrantValidator<MyExtensionsGrantValidator>();
 
