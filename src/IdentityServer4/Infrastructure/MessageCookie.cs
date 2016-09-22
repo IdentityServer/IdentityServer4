@@ -133,7 +133,7 @@ namespace IdentityServer4
         Message<TModel> ReadByCookieName(string name)
         {
             var data = _context.HttpContext.Request.Cookies[name];
-            if (!String.IsNullOrWhiteSpace(data))
+            if (data.IsPresent())
             {
                 try
                 {

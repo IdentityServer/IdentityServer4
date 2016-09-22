@@ -46,10 +46,10 @@ namespace IdentityServer4
             IEnumerable<string> authenticationMethods,
             params Claim[] claims)
         {
-            if (String.IsNullOrWhiteSpace(subject)) throw new ArgumentNullException(nameof(subject));
-            if (String.IsNullOrWhiteSpace(name)) throw new ArgumentNullException(nameof(name));
+            if (subject.IsMissing()) throw new ArgumentNullException(nameof(subject));
+            if (name.IsMissing()) throw new ArgumentNullException(nameof(name));
             if (authenticationMethods.IsNullOrEmpty()) throw new ArgumentNullException(nameof(authenticationMethods));
-            if (String.IsNullOrWhiteSpace(identityProvider)) throw new ArgumentNullException(nameof(identityProvider));
+            if (identityProvider.IsMissing()) throw new ArgumentNullException(nameof(identityProvider));
             
             var allClaims = new List<Claim>
             {

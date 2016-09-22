@@ -72,7 +72,7 @@ namespace IdentityServer4.Services.Default
 
         public IEnumerable<string> DecodeList(string value)
         {
-            if (!String.IsNullOrWhiteSpace(value))
+            if (value.IsPresent())
             {
                 var bytes = Base64Url.Decode(value);
                 value = Encoding.UTF8.GetString(bytes);
@@ -188,7 +188,7 @@ namespace IdentityServer4.Services.Default
         void SetCookie(string value)
         {
             DateTime? expires = null;
-            if (String.IsNullOrWhiteSpace(value))
+            if (value.IsMissing())
             {
                 var existingValue = GetCookie();
                 if (existingValue == null)

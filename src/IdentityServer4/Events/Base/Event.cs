@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using IdentityServer4.Extensions;
 using System;
 
 namespace IdentityServer4.Events
@@ -22,7 +23,7 @@ namespace IdentityServer4.Events
         /// <exception cref="System.ArgumentNullException">category</exception>
         public Event(string category, string name, EventTypes type, int id, string message = null)
         {
-            if (string.IsNullOrWhiteSpace(category)) throw new ArgumentNullException("category");
+            if (category.IsMissing()) throw new ArgumentNullException("category");
 
             Category = category;
             Name = name;
