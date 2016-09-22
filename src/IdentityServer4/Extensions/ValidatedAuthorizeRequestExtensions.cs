@@ -14,6 +14,11 @@ namespace IdentityServer4.Validation
 {
     public static class ValidatedAuthorizeRequestExtensions
     {
+        public static void RemovePrompt(this ValidatedAuthorizeRequest request)
+        {
+            request.Raw.Remove(OidcConstants.AuthorizeRequest.Prompt);
+        }
+
         public static string GetPrefixedAcrValue(this ValidatedAuthorizeRequest request, string prefix)
         {
             var value = request.AuthenticationContextReferenceClasses
@@ -30,6 +35,20 @@ namespace IdentityServer4.Validation
         public static string GetIdP(this ValidatedAuthorizeRequest request)
         {
             return request.GetPrefixedAcrValue(Constants.KnownAcrValues.HomeRealm);
+        }
+
+        public static void RemoveIdP(this ValidatedAuthorizeRequest request)
+        {
+            request.AuthenticationContextReferenceClasses.RemoveAll(acr => acr.StartsWith(Constants.KnownAcrValues.HomeRealm));
+            var acr_values = request.AuthenticationContextReferenceClasses.ToSpaceSeparatedString();
+            if (acr_values.IsPresent())
+            {
+                request.Raw[OidcConstants.AuthorizeRequest.AcrValues] = acr_values;
+            }
+            else
+            {
+                request.Raw.Remove(OidcConstants.AuthorizeRequest.AcrValues);
+            }
         }
 
         public static string GetTenant(this ValidatedAuthorizeRequest request)

@@ -49,7 +49,7 @@ namespace IdentityServer4.ResponseHandling
             {
                 // remove prompt so when we redirect back in from login page
                 // we won't think we need to force a prompt again
-                request.Raw.Remove(OidcConstants.AuthorizeRequest.Prompt);
+                request.RemovePrompt();
 
                 _logger.LogInformation("Redirecting to login page because of prompt=login");
 
