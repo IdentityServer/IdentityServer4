@@ -50,10 +50,9 @@ namespace IdentityServer4.IntegrationTests.Clients
 
             var userInfoclient = new UserInfoClient(
                 UserInfoEndpoint,
-                response.AccessToken,
                 _handler);
 
-            var userInfo = await userInfoclient.GetAsync();
+            var userInfo = await userInfoclient.GetAsync(response.AccessToken);
 
             userInfo.IsError.Should().BeFalse();
             userInfo.Claims.Count().Should().Be(3);
@@ -77,10 +76,9 @@ namespace IdentityServer4.IntegrationTests.Clients
 
             var userInfoclient = new UserInfoClient(
                 UserInfoEndpoint,
-                response.AccessToken,
                 _handler);
 
-            var userInfo = await userInfoclient.GetAsync();
+            var userInfo = await userInfoclient.GetAsync(response.AccessToken);
 
             userInfo.IsError.Should().BeFalse();
             userInfo.Raw.Should().Be("{\"sub\":\"88421113\",\"address\":{\"street_address\":\"One Hacker Way\",\"locality\":\"Heidelberg\",\"postal_code\":69118,\"country\":\"Germany\"}}");
@@ -100,10 +98,9 @@ namespace IdentityServer4.IntegrationTests.Clients
 
             var userInfoclient = new UserInfoClient(
                 UserInfoEndpoint,
-                response.AccessToken,
                 _handler);
 
-            var userInfo = await userInfoclient.GetAsync();
+            var userInfo = await userInfoclient.GetAsync(response.AccessToken);
 
             userInfo.IsError.Should().BeTrue();
             userInfo.HttpStatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -123,10 +120,9 @@ namespace IdentityServer4.IntegrationTests.Clients
 
             var userInfoclient = new UserInfoClient(
                 UserInfoEndpoint,
-                response.AccessToken,
                 _handler);
 
-            var userInfo = await userInfoclient.GetAsync();
+            var userInfo = await userInfoclient.GetAsync(response.AccessToken);
 
             userInfo.IsError.Should().BeTrue();
             userInfo.HttpStatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -161,10 +157,9 @@ namespace IdentityServer4.IntegrationTests.Clients
 
             var userInfoclient = new UserInfoClient(
                 UserInfoEndpoint,
-                response.AccessToken,
                 _handler);
 
-            var userInfo = await userInfoclient.GetAsync();
+            var userInfo = await userInfoclient.GetAsync(response.AccessToken);
 
             roles = ((JArray)userInfo.Json["role"]).Select(x => x.ToString()).ToArray();
             roles.Length.Should().Be(2);

@@ -51,9 +51,9 @@ namespace IdentityServer.IntegrationTests.Clients
             doc.EndSessionEndpoint.Should().Be("https://server/connect/endsession");
 
             // jwk
-            doc.Keys.Keys.Count.Should().Be(1);
-            doc.Keys.Keys.First().E.Should().NotBeNull();
-            doc.Keys.Keys.First().N.Should().NotBeNull();
+            doc.KeySet.Keys.Count.Should().Be(1);
+            doc.KeySet.Keys.First().E.Should().NotBeNull();
+            doc.KeySet.Keys.First().N.Should().NotBeNull();
         }
     }
 }
