@@ -100,3 +100,10 @@ If you need help building or running your identity platform, let us know. Head o
 
    reference/scope
    reference/client
+
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: Misc
+
+   misc/blogs
