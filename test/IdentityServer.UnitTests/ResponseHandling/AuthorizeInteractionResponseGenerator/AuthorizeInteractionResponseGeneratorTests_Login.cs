@@ -136,5 +136,23 @@ namespace IdentityServer4.UnitTests.ResponseHandling
 
             result.IsLogin.Should().BeTrue();
         }
+
+        [Fact]
+        public async Task locally_authenticated_user_but_client_does_not_allow_local_should_sign_in()
+        {
+            var request = new ValidatedAuthorizeRequest
+            {
+                ClientId = "foo",
+                Client = new Client()
+                {
+                    EnableLocalLogin = false,
+                },
+                Subject = IdentityServerPrincipal.Create("123", "dom")
+            };
+
+            var result = await _subject.ProcessLoginAsync(request);
+
+            result.IsLogin.Should().BeTrue();
+        }
     }
 }

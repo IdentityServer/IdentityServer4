@@ -73,6 +73,7 @@ If you need help building or running your identity platform, let us know. Head o
    :caption: Topics
 
    topics/secrets
+   topics/extension_grants
    topics/crypto
    topics/deployment
    topics/idps
@@ -80,7 +81,6 @@ If you need help building or running your identity platform, let us know. Head o
    topics/logging
    topics/refresh_tokens
    topics/reference_tokens
-   topics/extension_grants
 
 .. toctree::
    :maxdepth: 2
@@ -100,3 +100,10 @@ If you need help building or running your identity platform, let us know. Head o
 
    reference/scope
    reference/client
+
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: Misc
+
+   misc/blogs
