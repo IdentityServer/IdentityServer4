@@ -6,7 +6,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Services.Default
+namespace IdentityServer4.Stores
 {
     internal class CookieMessageStore<TModel> : IMessageStore<TModel>
     {
