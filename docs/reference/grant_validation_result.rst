@@ -1,3 +1,4 @@
+.. _refGrantValidationResult:
 GrantValidationResult
 =====================
 
