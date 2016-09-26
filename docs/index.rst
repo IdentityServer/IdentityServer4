@@ -109,3 +109,4 @@ If you need help building or running your identity platform, let us know. Head o
    :caption: Misc
 
    misc/blogs
+   misc/videos
