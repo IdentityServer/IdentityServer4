@@ -14,4 +14,4 @@ If you want to use the OAuth 2.0 resource owner password credential grant (aka `
 
 On the context you will find already parsed protocol parameters like ``UserName`` and ``Password``, but also the raw requests if you want to look at other input data.
 
-Your job is then to implement the password validation and set the result on the context accordingly. See the :ref:`GrantValidationResult <startClientsMVC>` documentation.
+Your job is then to implement the password validation and set the result on the context accordingly. See the :ref:`GrantValidationResult <refGrantValidationResult>` documentation.
