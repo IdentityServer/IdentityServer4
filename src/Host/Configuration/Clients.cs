@@ -177,6 +177,32 @@ namespace Host.Configuration
                 },
 
                 ///////////////////////////////////////////
+                // MVC Manual Implicit Flow Sample
+                //////////////////////////////////////////
+                new Client
+                {
+                    ClientId = "mvc.manual",
+                    ClientName = "MVC Manual",
+                    ClientUri = "http://identityserver.io",
+
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    RedirectUris = new List<string>
+                    {
+                        "http://localhost:44077/home/callback"
+                    },
+                    PostLogoutRedirectUris = new List<string>
+                    {
+                        "http://localhost:44077/"
+                    },
+                    LogoutUri = "http://localhost:44077/signout-oidc",
+
+                    AllowedScopes = new List<string>
+                    {
+                        StandardScopes.OpenId.Name
+                    },
+                },
+
+                ///////////////////////////////////////////
                 // MVC Hybrid Flow Samples
                 //////////////////////////////////////////
                 new Client
