@@ -22,28 +22,29 @@ namespace IdentityServer4.Validation
         /// <summary>
         /// The logger
         /// </summary>
-        private readonly ILogger _logger;
+        protected readonly ILogger Logger;
 
         /// <summary>
         /// The user service
         /// </summary>
-        protected readonly IProfileService _profile;
+        protected readonly IProfileService Profile;
 
         /// <summary>
         /// The client store
         /// </summary>
-        protected readonly IClientStore _clients;
+        protected readonly IClientStore Clients;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultCustomTokenValidator"/> class.
         /// </summary>
-        /// <param name="users">The users store.</param>
+        /// <param name="profile">The profile service</param>
         /// <param name="clients">The client store.</param>
+        /// <param name="logger">The logger</param>
         public DefaultCustomTokenValidator(IProfileService profile, IClientStore clients, ILogger<DefaultCustomTokenValidator> logger)
         {
-            _logger = logger;
-            _profile = profile;
-            _clients = clients;
+            Logger = logger;
+            Profile = profile;
+            Clients = clients;
         }
 
         /// <summary>
@@ -72,11 +73,11 @@ namespace IdentityServer4.Validation
                 }
 
                 var isActiveCtx = new IsActiveContext(principal, result.Client);
-                await _profile.IsActiveAsync(isActiveCtx);
+                await Profile.IsActiveAsync(isActiveCtx);
                 
                 if (isActiveCtx.IsActive == false)
                 {
-                    _logger.LogError("User marked as not active: {subject}", subClaim.Value);
+                    Logger.LogError("User marked as not active: {subject}", subClaim.Value);
 
                     result.IsError = true;
                     result.Error = OidcConstants.ProtectedResourceErrors.InvalidToken;
@@ -90,10 +91,10 @@ namespace IdentityServer4.Validation
             var clientClaim = result.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.ClientId);
             if (clientClaim != null)
             {
-                var client = await _clients.FindClientByIdAsync(clientClaim.Value);
+                var client = await Clients.FindClientByIdAsync(clientClaim.Value);
                 if (client == null || client.Enabled == false)
                 {
-                    _logger.LogError("Client deleted or disabled: {clientId}", clientClaim.Value);
+                    Logger.LogError("Client deleted or disabled: {clientId}", clientClaim.Value);
 
                     result.IsError = true;
                     result.Error = OidcConstants.ProtectedResourceErrors.InvalidToken;
@@ -122,11 +123,11 @@ namespace IdentityServer4.Validation
                 var principal = Principal.Create("tokenvalidator", result.Claims.ToArray());
 
                 var isActiveCtx = new IsActiveContext(principal, result.Client);
-                await _profile.IsActiveAsync(isActiveCtx);
+                await Profile.IsActiveAsync(isActiveCtx);
                 
                 if (isActiveCtx.IsActive == false)
                 {
-                    _logger.LogError("User marked as not active: {subject}", subClaim.Value);
+                    Logger.LogError("User marked as not active: {subject}", subClaim.Value);
 
                     result.IsError = true;
                     result.Error = OidcConstants.ProtectedResourceErrors.InvalidToken;

@@ -21,14 +21,14 @@ namespace IdentityServer4.Validation
     public class PrivateKeyJwtSecretValidator : ISecretValidator
     {
         private readonly ILogger _logger;
-        private readonly string audienceUri;
+        private readonly string _audienceUri;
 
         /// <summary>
         /// Instantiates an instance of private_key_jwt secret validator
         /// </summary>
         public PrivateKeyJwtSecretValidator(IHttpContextAccessor contextAccessor, ILogger<PrivateKeyJwtSecretValidator> logger)
         {
-            audienceUri = string.Concat(contextAccessor.HttpContext.GetIssuerUri().EnsureTrailingSlash(), Constants.ProtocolRoutePaths.Token);
+            _audienceUri = string.Concat(contextAccessor.HttpContext.GetIssuerUri().EnsureTrailingSlash(), Constants.ProtocolRoutePaths.Token);
             _logger = logger;
         }
 
@@ -86,7 +86,7 @@ namespace IdentityServer4.Validation
                 ValidIssuer = parsedSecret.Id,
                 ValidateIssuer = true,
 
-                ValidAudience = audienceUri,
+                ValidAudience = _audienceUri,
                 ValidateAudience = true,
 
                 RequireSignedTokens = true,

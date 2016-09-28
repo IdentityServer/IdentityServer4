@@ -41,7 +41,7 @@ namespace IdentityServer4.Validation
                 if (header.StartsWith(OidcConstants.AuthenticationSchemes.AuthorizationHeaderBearer))
                 {
                     var value = header.Substring(OidcConstants.AuthenticationSchemes.AuthorizationHeaderBearer.Length).Trim();
-                    if (value != null && value.Length > 0)
+                    if (value.IsPresent())
                     {
                         return new BearerTokenUsageValidationResult
                         {

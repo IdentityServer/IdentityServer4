@@ -19,7 +19,7 @@ namespace IdentityServer4.Validation
     /// </summary>
     public class ClientAssertionSecretParser : ISecretParser
     {
-        private IdentityServerOptions _options;
+        private readonly IdentityServerOptions _options;
         private readonly ILogger _logger;
 
         public ClientAssertionSecretParser(IdentityServerOptions options, ILogger<ClientAssertionSecretParser> logger)
@@ -28,19 +28,13 @@ namespace IdentityServer4.Validation
             _logger = logger;
         }
 
-        public string AuthenticationMethod
-        {
-            get
-            {
-                return OidcConstants.EndpointAuthenticationMethods.PrivateKeyJwt;
-            }
-        }
+        public string AuthenticationMethod => OidcConstants.EndpointAuthenticationMethods.PrivateKeyJwt;
 
         /// <summary>
         /// Tries to find a JWT client assertion token in the request body that can be used for authentication
         /// Used for "private_key_jwt" client authentication method as defined in http://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication
         /// </summary>
-        /// <param name="environment">The environment.</param>
+        /// <param name="context">The HTTP context</param>
         /// <returns>
         /// A parsed secret
         /// </returns>
