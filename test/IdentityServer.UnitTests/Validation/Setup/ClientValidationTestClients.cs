@@ -6,6 +6,7 @@ using IdentityServer4.Models;
 using IdentityServer4.UnitTests.Common;
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 
 namespace IdentityServer4.UnitTests.Validation
 {
@@ -73,6 +74,38 @@ namespace IdentityServer4.UnitTests.Validation
                         new Secret
                         {
                             Type = IdentityServerConstants.SecretTypes.X509CertificateThumbprint,
+                            Value = "invalid"
+                        }
+                    }
+                },
+
+                new Client
+                {
+                    ClientName = "Client with Base64 encoded X509 Certificate",
+                    ClientId = "certificate_base64_valid",
+                    Enabled = true,
+
+                    ClientSecrets = new List<Secret>
+                    {
+                        new Secret
+                        {
+                            Type = IdentityServerConstants.SecretTypes.X509CertificateBase64,
+                            Value = Convert.ToBase64String(TestCert.Load().Export(X509ContentType.Cert))
+                        }
+                    }
+                },
+
+                new Client
+                {
+                    ClientName = "Client with Base64 encoded X509 Certificate",
+                    ClientId = "certificate_base64_invalid",
+                    Enabled = true,
+
+                    ClientSecrets = new List<Secret>
+                    {
+                        new Secret
+                        {
+                            Type = IdentityServerConstants.SecretTypes.X509CertificateBase64,
                             Value = "invalid"
                         }
                     }

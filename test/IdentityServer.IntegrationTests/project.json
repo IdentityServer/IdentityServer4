@@ -28,5 +28,11 @@
       ]
     },
     "net452": {}
+  },
+
+  "buildOptions": {
+    "copyToOutput": {
+      "include": "idsvrtest.pfx"
+    }
   }
 }

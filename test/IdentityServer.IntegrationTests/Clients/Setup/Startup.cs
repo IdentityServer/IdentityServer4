@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-
 using IdentityServer4.Configuration;
+using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -33,6 +33,9 @@ namespace IdentityServer4.IntegrationTests.Clients
 
             builder.AddExtensionGrantValidator<ExtensionGrantValidator>();
             builder.AddExtensionGrantValidator<ExtensionGrantValidator2>();
+
+            builder.AddSecretParser<ClientAssertionSecretParser>();
+            builder.AddSecretValidator<PrivateKeyJwtSecretValidator>();
         }
 
         public void Configure(IApplicationBuilder app)
