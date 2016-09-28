@@ -43,7 +43,7 @@ namespace Microsoft.AspNetCore.Builder
 
             if (appService == null)
             {
-                var error = message ?? $"Required service {service.GetType().FullName} is not registered in the DI container. Aborting startup";
+                var error = message ?? $"Required service {service.FullName} is not registered in the DI container. Aborting startup";
 
                 logger.LogCritical(error);
                 throw new InvalidOperationException(error);
