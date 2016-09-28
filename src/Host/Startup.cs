@@ -12,6 +12,7 @@ using Serilog.Events;
 using Microsoft.IdentityModel.Tokens;
 using System.Linq;
 using IdentityServer4;
+using IdentityServer4.Validation;
 
 namespace Host
 {
@@ -54,6 +55,9 @@ namespace Host
             .AddInMemoryUsers(Users.Get());
             
             builder.AddExtensionGrantValidator<Extensions.ExtensionGrantValidator>();
+
+            builder.AddSecretParser<ClientAssertionSecretParser>();
+            builder.AddSecretValidator<PrivateKeyJwtSecretValidator>();
 
             services.AddMvc();
         }

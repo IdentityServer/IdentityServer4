@@ -40,7 +40,7 @@ namespace IdentityServer4.Validation
 
             if (parsedSecret.Type != IdentityServerConstants.ParsedSecretTypes.SharedSecret)
             {
-                _logger.LogError("Parsed secret should not be of type {type}", parsedSecret.Type ?? "null");
+                _logger.LogDebug("Hashed shared secret validator cannot process {type}", parsedSecret.Type ?? "null");
                 return fail;
             }
 
