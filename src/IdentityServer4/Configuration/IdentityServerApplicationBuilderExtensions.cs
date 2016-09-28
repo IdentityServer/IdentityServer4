@@ -3,7 +3,6 @@
 
 
 using IdentityServer4.Hosting;
-using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.Extensions.Logging;
 using System;
@@ -29,6 +28,8 @@ namespace Microsoft.AspNetCore.Builder
         internal static void Validate(this IApplicationBuilder app)
         {
             var loggerFactory = app.ApplicationServices.GetService(typeof(ILoggerFactory)) as ILoggerFactory;
+            if (loggerFactory == null) throw new ArgumentNullException(nameof(loggerFactory));
+
             var logger = loggerFactory.CreateLogger("IdentityServer4.Startup");
 
             // todo: which other services to test for?
