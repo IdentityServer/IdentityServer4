@@ -14,7 +14,7 @@ CAKE_VERSION=0.16.1
 CAKE_EXE=$TOOLS_DIR/Cake.$CAKE_VERSION/Cake.exe
 
 # Define default arguments.
-TARGET="Travis"
+TARGET="Default"
 CONFIGURATION="Release"
 VERBOSITY="verbose"
 DRYRUN=
