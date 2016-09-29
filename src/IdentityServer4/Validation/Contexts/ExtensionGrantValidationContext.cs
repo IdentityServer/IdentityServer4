@@ -12,6 +12,6 @@ namespace IdentityServer4.Validation
     public class ExtensionGrantValidationContext
     {
         public ValidatedTokenRequest Request { get; set; }
-        public GrantValidationResult Result { get; set; } = new GrantValidationResult(TokenErrors.InvalidGrant);
+        public GrantValidationResult Result { get; set; } = new GrantValidationResult(TokenRequestErrors.InvalidGrant);
     }
 }

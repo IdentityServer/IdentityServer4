@@ -28,7 +28,7 @@ namespace IdentityServer4.IntegrationTests.Clients
             }
             else
             {
-                context.Result = new GrantValidationResult(TokenErrors.InvalidGrant, "invalid_credential", response);
+                context.Result = new GrantValidationResult(TokenRequestErrors.InvalidGrant, "invalid_credential", response);
             }
 
             return Task.FromResult(0);

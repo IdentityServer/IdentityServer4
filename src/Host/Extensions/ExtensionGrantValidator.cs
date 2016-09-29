@@ -16,12 +16,12 @@ namespace Host.Extensions
 
             if (credential != null)
             {
-                context.Result = new GrantValidationResult("818727", "custom");
+                context.Result = new GrantValidationResult(subject: "818727", authenticationMethod: "custom");
             }
             else
             {
                 // custom error message
-                context.Result = new GrantValidationResult(TokenErrors.InvalidGrant, "invalid custom credential");
+                context.Result = new GrantValidationResult(TokenRequestErrors.InvalidGrant, "invalid custom credential");
             }
 
             return Task.CompletedTask;

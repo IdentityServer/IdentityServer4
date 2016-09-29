@@ -248,7 +248,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         public async Task Password_GrantType_With_Custom_ErrorDescription()
         {
             var client = await _clients.FindClientByIdAsync("roclient");
-            var validator = Factory.CreateTokenRequestValidator(resourceOwnerValidator: new TestResourceOwnerPasswordValidator(TokenErrors.InvalidGrant, "custom error description"));
+            var validator = Factory.CreateTokenRequestValidator(resourceOwnerValidator: new TestResourceOwnerPasswordValidator(TokenRequestErrors.InvalidGrant, "custom error description"));
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.Password);

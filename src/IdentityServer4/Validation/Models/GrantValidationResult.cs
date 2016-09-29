@@ -48,7 +48,7 @@ namespace IdentityServer4.Validation
         /// </summary>
         /// <param name="error">The error.</param>
         /// /// <param name="errorDescription">The error description.</param>
-        public GrantValidationResult(TokenErrors error, string errorDescription = null, Dictionary<string, object> customResponse = null)
+        public GrantValidationResult(TokenRequestErrors error, string errorDescription = null, Dictionary<string, object> customResponse = null)
         {
             Error = ConvertTokenErrorEnumToString(error);
             ErrorDescription = errorDescription;
@@ -91,14 +91,14 @@ namespace IdentityServer4.Validation
             CustomResponse = customResponse;
         }
 
-        private string ConvertTokenErrorEnumToString(TokenErrors error)
+        private string ConvertTokenErrorEnumToString(TokenRequestErrors error)
         {
-            if (error == TokenErrors.InvalidClient) return OidcConstants.TokenErrors.InvalidClient;
-            if (error == TokenErrors.InvalidGrant) return OidcConstants.TokenErrors.InvalidGrant;
-            if (error == TokenErrors.InvalidRequest) return OidcConstants.TokenErrors.InvalidRequest;
-            if (error == TokenErrors.InvalidScope) return OidcConstants.TokenErrors.InvalidScope;
-            if (error == TokenErrors.UnauthorizedClient) return OidcConstants.TokenErrors.UnauthorizedClient;
-            if (error == TokenErrors.UnsupportedGrantType) return OidcConstants.TokenErrors.UnsupportedGrantType;
+            if (error == TokenRequestErrors.InvalidClient) return OidcConstants.TokenErrors.InvalidClient;
+            if (error == TokenRequestErrors.InvalidGrant) return OidcConstants.TokenErrors.InvalidGrant;
+            if (error == TokenRequestErrors.InvalidRequest) return OidcConstants.TokenErrors.InvalidRequest;
+            if (error == TokenRequestErrors.InvalidScope) return OidcConstants.TokenErrors.InvalidScope;
+            if (error == TokenRequestErrors.UnauthorizedClient) return OidcConstants.TokenErrors.UnauthorizedClient;
+            if (error == TokenRequestErrors.UnsupportedGrantType) return OidcConstants.TokenErrors.UnsupportedGrantType;
 
             throw new InvalidOperationException("invalid token error");
         }

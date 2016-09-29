@@ -11,13 +11,13 @@ namespace IdentityServer4.UnitTests.Validation
     public class TestResourceOwnerPasswordValidator : IResourceOwnerPasswordValidator
     {
         private string _erroDescription;
-        private TokenErrors _error;
+        private TokenRequestErrors _error;
         private readonly bool _sendError;
 
         public TestResourceOwnerPasswordValidator()
         { }
 
-        public TestResourceOwnerPasswordValidator(TokenErrors error, string errorDescription = null)
+        public TestResourceOwnerPasswordValidator(TokenRequestErrors error, string errorDescription = null)
         {
             _sendError = true;
             _error = error;

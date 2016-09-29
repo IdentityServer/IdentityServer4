@@ -4,7 +4,7 @@
 
 namespace IdentityServer4.Models
 {
-    public enum TokenErrors
+    public enum TokenRequestErrors
     {
         InvalidRequest,
         InvalidClient,

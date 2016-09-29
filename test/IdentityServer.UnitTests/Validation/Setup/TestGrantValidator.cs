@@ -23,7 +23,7 @@ namespace IdentityServer4.UnitTests.Validation
         {
             if (_isInvalid)
             {
-                return Task.FromResult(new GrantValidationResult(TokenErrors.InvalidGrant, _errorDescription));
+                return Task.FromResult(new GrantValidationResult(TokenRequestErrors.InvalidGrant, _errorDescription));
             }
 
             return Task.FromResult(new GrantValidationResult("bob", "CustomGrant"));
@@ -33,7 +33,7 @@ namespace IdentityServer4.UnitTests.Validation
         {
             if (_isInvalid)
             {
-                context.Result = new GrantValidationResult(TokenErrors.InvalidGrant, _errorDescription);
+                context.Result = new GrantValidationResult(TokenRequestErrors.InvalidGrant, _errorDescription);
             }
             else
             {

@@ -42,7 +42,7 @@ namespace IdentityServer4.Validation
             if (validator == null)
             {
                 _logger.LogError("No validator found for grant type");
-                return new GrantValidationResult(TokenErrors.UnsupportedGrantType);
+                return new GrantValidationResult(TokenRequestErrors.UnsupportedGrantType);
             }
 
             try
@@ -60,7 +60,7 @@ namespace IdentityServer4.Validation
             catch (Exception e)
             {
                 _logger.LogError("Grant validation error", e);
-                return new GrantValidationResult(TokenErrors.InvalidGrant);
+                return new GrantValidationResult(TokenRequestErrors.InvalidGrant);
             }
         }
     }
