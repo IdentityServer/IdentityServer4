@@ -22,8 +22,13 @@ Task("Build")
         var settings = new DotNetCoreBuildSettings 
         {
             Configuration = configuration
-            // Runtime = IsRunningOnWindows() ? null : "unix-x64"
         };
+
+        if (!IsRunningOnWindows())
+        {
+            Information("Not running on Windows - skipping build for full .NET Framework");
+            settings.Framework = "netcoreapp1.0";
+        }
 
 	    DotNetCoreBuild(project.GetDirectory().FullPath, settings); 
     }
