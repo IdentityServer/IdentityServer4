@@ -1,6 +1,6 @@
 language: csharp
 script:
-  - ./build.sh
+  - ./build_travis.sh
 os:
   - linux
   - osx
