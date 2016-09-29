@@ -26,11 +26,7 @@ namespace Host.Configuration
                     },
 
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
-
-                    AllowedScopes = new List<string>
-                    {
-                        "api1", "api2"
-                    }
+                    AllowedScopes = { "api1", "api2" }
                 },
 
                 ///////////////////////////////////////////
@@ -39,8 +35,6 @@ namespace Host.Configuration
                 new Client
                 {
                     ClientId = "client.jwt",
-                    Enabled = true,
-
                     ClientSecrets = new List<Secret>
                     {
                         new Secret
@@ -51,11 +45,7 @@ namespace Host.Configuration
                     },
 
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
-
-                    AllowedScopes = new List<string>
-                    {
-                        "api1", "api2"
-                    }
+                    AllowedScopes = { "api1", "api2" }
                 },
 
                 ///////////////////////////////////////////
@@ -70,11 +60,7 @@ namespace Host.Configuration
                     },
 
                     AllowedGrantTypes = GrantTypes.List("custom"),
-
-                    AllowedScopes = new List<string>
-                    {
-                        "api1", "api2"
-                    }
+                    AllowedScopes = { "api1", "api2" }
                 },
 
                 ///////////////////////////////////////////
@@ -90,7 +76,7 @@ namespace Host.Configuration
 
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
-                    AllowedScopes = new List<string>
+                    AllowedScopes = 
                     {
                         StandardScopes.OpenId.Name,
                         StandardScopes.Email.Name,
@@ -110,7 +96,7 @@ namespace Host.Configuration
 
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
-                    AllowedScopes = new List<string>
+                    AllowedScopes = 
                     {
                         StandardScopes.OpenId.Name,
                         StandardScopes.Email.Name,
@@ -132,12 +118,9 @@ namespace Host.Configuration
                     AllowedGrantTypes = GrantTypes.Hybrid,
                     RequirePkce = true,
 
-                    RedirectUris = new List<string>
-                    {
-                        "http://127.0.0.1:7890/"
-                    },
+                    RedirectUris = { "http://127.0.0.1:7890/" },
 
-                    AllowedScopes = new List<string>
+                    AllowedScopes =
                     {
                         StandardScopes.OpenId.Name,
                         StandardScopes.Profile.Name,
@@ -161,11 +144,7 @@ namespace Host.Configuration
                     },
 
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
-
-                    AllowedScopes = new List<string>
-                    {
-                        "api1", "api2"
-                    },
+                    AllowedScopes = { "api1", "api2" },
 
                     AccessTokenType = AccessTokenType.Reference
                 },
@@ -181,17 +160,12 @@ namespace Host.Configuration
 
                     AllowedGrantTypes = GrantTypes.Implicit,
                     AllowAccessTokensViaBrowser = true,
-                    RedirectUris = new List<string>
-                    {
-                        "http://localhost:44077/signin-oidc"
-                    },
-                    PostLogoutRedirectUris = new List<string>
-                    {
-                        "http://localhost:44077/"
-                    },
-                    LogoutUri = "http://localhost:44077/signout-oidc",
 
-                    AllowedScopes = new List<string>
+                    RedirectUris =  { "http://localhost:44077/signin-oidc" },
+                    LogoutUri = "http://localhost:44077/signout-oidc",
+                    PostLogoutRedirectUris = { "http://localhost:44077/" },
+
+                    AllowedScopes =
                     {
                         StandardScopes.OpenId.Name,
                         StandardScopes.Profile.Name,
@@ -212,20 +186,12 @@ namespace Host.Configuration
                     ClientUri = "http://identityserver.io",
 
                     AllowedGrantTypes = GrantTypes.Implicit,
-                    RedirectUris = new List<string>
-                    {
-                        "http://localhost:44077/home/callback"
-                    },
-                    PostLogoutRedirectUris = new List<string>
-                    {
-                        "http://localhost:44077/"
-                    },
-                    LogoutUri = "http://localhost:44077/signout-oidc",
 
-                    AllowedScopes = new List<string>
-                    {
-                        StandardScopes.OpenId.Name
-                    },
+                    RedirectUris = { "http://localhost:44077/home/callback" },
+                    LogoutUri = "http://localhost:44077/signout-oidc",
+                    PostLogoutRedirectUris = { "http://localhost:44077/" },
+
+                    AllowedScopes = { StandardScopes.OpenId.Name },
                 },
 
                 ///////////////////////////////////////////
@@ -235,25 +201,22 @@ namespace Host.Configuration
                 {
                     ClientId = "mvc.hybrid",
                     ClientName = "MVC Hybrid",
+                    ClientUri = "http://identityserver.io",
+
                     ClientSecrets = new List<Secret>
                     {
                         new Secret("secret".Sha256())
                     },
-                    ClientUri = "http://identityserver.io",
+                    
 
                     AllowedGrantTypes = GrantTypes.Hybrid,
                     AllowAccessTokensViaBrowser = false,
-                    RedirectUris = new List<string>
-                    {
-                        "http://localhost:21402/signin-oidc"
-                    },
-                    PostLogoutRedirectUris = new List<string>
-                    {
-                        "http://localhost:21402/"
-                    },
-                    LogoutUri = "http://localhost:21402/signout-oidc",
 
-                    AllowedScopes = new List<string>
+                    RedirectUris = { "http://localhost:21402/signin-oidc" },
+                    LogoutUri = "http://localhost:21402/signout-oidc",
+                    PostLogoutRedirectUris = { "http://localhost:21402/" },
+
+                    AllowedScopes = 
                     {
                         StandardScopes.OpenId.Name,
                         StandardScopes.Profile.Name,
@@ -276,15 +239,9 @@ namespace Host.Configuration
 
                     AllowedGrantTypes = GrantTypes.Implicit,
                     AllowAccessTokensViaBrowser = true,
-                    RedirectUris = new List<string>
-                    {
-                        "http://localhost:28895/index.html"
-                    },
 
-                    AllowedScopes = new List<string>
-                    {
-                        "api1", "api2"
-                    },
+                    RedirectUris = { "http://localhost:28895/index.html" },
+                    AllowedScopes = { "api1", "api2" },
                 },
                 
                 ///////////////////////////////////////////
@@ -298,22 +255,17 @@ namespace Host.Configuration
 
                     AllowedGrantTypes = GrantTypes.Implicit,
                     AllowAccessTokensViaBrowser = true,
-                    RedirectUris = new List<string>
+
+                    RedirectUris = 
                     {
                         "http://localhost:7017/index.html",
                         "http://localhost:7017/silent_renew.html",
                     },
-                    PostLogoutRedirectUris = new List<string>
-                    {
-                        "http://localhost:7017/index.html",
-                    },
 
-                    AllowedCorsOrigins = new List<string>
-                    {
-                        "http://localhost:7017"
-                    },
+                    PostLogoutRedirectUris = { "http://localhost:7017/index.html" },
+                    AllowedCorsOrigins = { "http://localhost:7017" },
 
-                    AllowedScopes = new List<string>
+                    AllowedScopes =
                     {
                         StandardScopes.OpenId.Name,
                         StandardScopes.Profile.Name,
