@@ -10,6 +10,7 @@ What's new posts
 * `New in IdentityServer4: Clients without Secrets <https://leastprivilege.com/2016/09/13/new-in-identityserver4-clients-without-secrets/>`_
 * `New in IdentityServer4: Default Scopes <https://leastprivilege.com/2016/09/14/new-in-identityserver4-default-scopes/>`_
 * `New in IdentityServer4: Support for Extension Grants <https://leastprivilege.com/2016/09/20/new-in-identityserver4-support-for-extension-grants/>`_
+* `New in IdentityServer4: Resource Owner Password Validation <https://leastprivilege.com/2016/09/29/new-in-identityserver4-resource-owner-password-validation/>`_
 
 Community posts
 ^^^^^^^^^^^^^^^
