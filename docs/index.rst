@@ -62,10 +62,12 @@ If you need help building or running your identity platform, let us know. Head o
    :hidden:
    :caption: Configuration
 
-   start/scopes
-   start/clients
-   start/mvc
-   start/apis
+   configuration/services
+   configuration/pipelines
+   configuration/scopes
+   configuration/clients
+   configuration/mvc
+   configuration/apis
 
 .. toctree::
    :maxdepth: 2
