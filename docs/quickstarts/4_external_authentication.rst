@@ -1,7 +1,7 @@
 Adding Support for External Authentication
 ==========================================
 
-Next we gonna add support for external authentication.
+Next we will add support for external authentication.
 This is really easy, because all you really need is an ASP.NET Core compatible authentication middleware.
 
 ASP.NET Core itself ships with support for Google, Facebook, Twitter, Microsoft Account and OpenID Connect.
@@ -12,7 +12,7 @@ Adding Google support
 To be able to use Google for authentication, you first need to register with them.
 This is done at their developer `console <https://console.developers.google.com/>`_.
 Create a new project, enable the Google+ API and configure the callback address of your
-local IdentityServer by adding the */signin-google* path to your base-address (e.g. http://localhost:5000/signing-google).
+local IdentityServer by adding the */signin-google* path to your base-address (e.g. http://localhost:5000/signin-google).
 
 If you are running on port 5000 - you can simply use the client id/secret from the code snippet
 below, since this is pre-registered by us.
