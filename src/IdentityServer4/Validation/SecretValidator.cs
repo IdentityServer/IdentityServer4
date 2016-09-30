@@ -24,14 +24,16 @@ namespace IdentityServer4.Validation
 
         public async Task<SecretValidationResult> ValidateAsync(ParsedSecret parsedSecret, IEnumerable<Secret> secrets)
         {
-            var expiredSecrets = secrets.Where(s => s.Expiration.HasExpired());
+            var secretsArray = secrets as Secret[] ?? secrets.ToArray();
+
+            var expiredSecrets = secretsArray.Where(s => s.Expiration.HasExpired()).ToList();
             if (expiredSecrets.Any())
             {
-                expiredSecrets.ToList().ForEach(
+                expiredSecrets.ForEach(
                     ex => _logger.LogWarning("Secret [{description}] is expired", ex.Description ?? "no description"));
             }
 
-            var currentSecrets = secrets.Where(s => !s.Expiration.HasExpired());
+            var currentSecrets = secretsArray.Where(s => !s.Expiration.HasExpired()).ToArray();
 
             // see if a registered validator can validate the secret
             foreach (var validator in _validators)

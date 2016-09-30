@@ -47,11 +47,12 @@ namespace IdentityServer4.Validation
 
         public async Task<bool> AreScopesValidAsync(IEnumerable<string> requestedScopes)
         {
-            var availableScopes = await _store.FindScopesAsync(requestedScopes);
+            var requestedScopesArray = requestedScopes as string[] ?? requestedScopes.ToArray();
+            var availableScopesArray = (await _store.FindScopesAsync(requestedScopesArray)).ToArray();
 
-            foreach (var requestedScope in requestedScopes)
+            foreach (var requestedScope in requestedScopesArray)
             {
-                var scopeDetail = availableScopes.FirstOrDefault(s => s.Name == requestedScope);
+                var scopeDetail = availableScopesArray.FirstOrDefault(s => s.Name == requestedScope);
 
                 if (scopeDetail == null)
                 {
@@ -77,7 +78,7 @@ namespace IdentityServer4.Validation
                 GrantedScopes.Add(scopeDetail);
             }
 
-            if (requestedScopes.Contains(Constants.StandardScopes.OfflineAccess))
+            if (requestedScopesArray.Contains(Constants.StandardScopes.OfflineAccess))
             {
                 ContainsOfflineAccessScope = true;
             }
@@ -110,34 +111,29 @@ namespace IdentityServer4.Validation
         {
             var requirement = Constants.ResponseTypeToScopeRequirement[responseType];
 
-            // must include identity scopes
-            if (requirement == Constants.ScopeRequirement.Identity)
+            switch (requirement)
             {
-                if (!ContainsOpenIdScopes)
-                {
-                    _logger.LogError("Requests for id_token response type must include identity scopes");
-                    return false;
-                }
-            }
-
-            // must include identity scopes only
-            else if (requirement == Constants.ScopeRequirement.IdentityOnly)
-            {
-                if (!ContainsOpenIdScopes || ContainsResourceScopes)
-                {
-                    _logger.LogError("Requests for id_token response type only must not include resource scopes");
-                    return false;
-                }
-            }
-
-            // must include resource scopes only
-            else if (requirement == Constants.ScopeRequirement.ResourceOnly)
-            {
-                if (ContainsOpenIdScopes || !ContainsResourceScopes)
-                {
-                    _logger.LogError("Requests for token response type only must include resource scopes, but no identity scopes.");
-                    return false;
-                }
+                case Constants.ScopeRequirement.Identity:
+                    if (!ContainsOpenIdScopes)
+                    {
+                        _logger.LogError("Requests for id_token response type must include identity scopes");
+                        return false;
+                    }
+                    break;
+                case Constants.ScopeRequirement.IdentityOnly:
+                    if (!ContainsOpenIdScopes || ContainsResourceScopes)
+                    {
+                        _logger.LogError("Requests for id_token response type only must not include resource scopes");
+                        return false;
+                    }
+                    break;
+                case Constants.ScopeRequirement.ResourceOnly:
+                    if (ContainsOpenIdScopes || !ContainsResourceScopes)
+                    {
+                        _logger.LogError("Requests for token response type only must include resource scopes, but no identity scopes.");
+                        return false;
+                    }
+                    break;
             }
 
             return true;
