@@ -101,7 +101,7 @@ namespace IdentityServer4.ResponseHandling
             var scopeString = string.Join(" ", scopes);
             _logger.LogInformation("Scopes in access token: {scopes}", scopeString);
 
-            var scopeDetails = await _scopes.FindScopesAsync(scopes);
+            var scopeDetails = await _scopes.FindEnabledScopesAsync(scopes);
             var scopeClaims = new List<string>();
 
             foreach (var scope in scopes)

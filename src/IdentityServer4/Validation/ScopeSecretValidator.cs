@@ -48,7 +48,7 @@ namespace IdentityServer4.Validation
             }
 
             // load scope
-            var scope = (await _scopes.FindScopesAsync(new[] { parsedSecret.Id })).FirstOrDefault();
+            var scope = (await _scopes.FindEnabledScopesAsync(new[] { parsedSecret.Id })).FirstOrDefault();
             if (scope == null)
             {
                 await RaiseFailureEvent(parsedSecret.Id, "Unknown scope");
