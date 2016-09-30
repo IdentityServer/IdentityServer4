@@ -113,7 +113,7 @@ namespace IdentityServer4.Quickstart.UI.Controllers
             var request = await _interaction.GetAuthorizationContextAsync(returnUrl);
             if (request != null)
             {
-                var client = await _clientStore.FindClientByIdAsync(request.ClientId);
+                var client = await _clientStore.FindEnabledClientByIdAsync(request.ClientId);
                 if (client != null)
                 {
                     var scopes = await _scopeStore.FindScopesAsync(request.ScopesRequested);

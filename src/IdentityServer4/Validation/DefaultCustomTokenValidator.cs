@@ -91,8 +91,8 @@ namespace IdentityServer4.Validation
             var clientClaim = result.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.ClientId);
             if (clientClaim != null)
             {
-                var client = await Clients.FindClientByIdAsync(clientClaim.Value);
-                if (client == null || client.Enabled == false)
+                var client = await Clients.FindEnabledClientByIdAsync(clientClaim.Value);
+                if (client == null)
                 {
                     Logger.LogError("Client deleted or disabled: {clientId}", clientClaim.Value);
 

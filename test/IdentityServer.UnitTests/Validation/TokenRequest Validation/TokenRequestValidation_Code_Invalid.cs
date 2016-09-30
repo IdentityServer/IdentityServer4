@@ -28,7 +28,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task Missing_AuthorizationCode()
         {
-            var client = await _clients.FindClientByIdAsync("codeclient");
+            var client = await _clients.FindEnabledClientByIdAsync("codeclient");
             var grants = Factory.CreateGrantService();
 
             var code = new AuthorizationCode
@@ -59,7 +59,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task Invalid_AuthorizationCode()
         {
-            var client = await _clients.FindClientByIdAsync("codeclient");
+            var client = await _clients.FindEnabledClientByIdAsync("codeclient");
             var grants = Factory.CreateGrantService();
 
             var code = new AuthorizationCode
@@ -91,7 +91,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task AuthorizationCodeTooLong()
         {
-            var client = await _clients.FindClientByIdAsync("codeclient");
+            var client = await _clients.FindEnabledClientByIdAsync("codeclient");
             var grants = Factory.CreateGrantService();
             var options = new IdentityServerOptions();
 
@@ -125,7 +125,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task No_Scopes_for_AuthorizationCode()
         {
-            var client = await _clients.FindClientByIdAsync("codeclient");
+            var client = await _clients.FindEnabledClientByIdAsync("codeclient");
             var grants = Factory.CreateGrantService();
 
             var code = new AuthorizationCode
@@ -157,7 +157,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task Client_Not_Authorized_For_AuthorizationCode_Flow()
         {
-            var client = await _clients.FindClientByIdAsync("implicitclient");
+            var client = await _clients.FindEnabledClientByIdAsync("implicitclient");
             var grants = Factory.CreateGrantService();
 
             var code = new AuthorizationCode
@@ -189,8 +189,8 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task Client_Trying_To_Request_Token_Using_Another_Clients_Code()
         {
-            var client1 = await _clients.FindClientByIdAsync("codeclient");
-            var client2 = await _clients.FindClientByIdAsync("codeclient_restricted");
+            var client1 = await _clients.FindEnabledClientByIdAsync("codeclient");
+            var client2 = await _clients.FindEnabledClientByIdAsync("codeclient_restricted");
             var grants = Factory.CreateGrantService();
 
             var code = new AuthorizationCode
@@ -222,7 +222,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task Missing_RedirectUri()
         {
-            var client = await _clients.FindClientByIdAsync("codeclient");
+            var client = await _clients.FindEnabledClientByIdAsync("codeclient");
             var grants = Factory.CreateGrantService();
 
             var code = new AuthorizationCode
@@ -253,7 +253,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task Different_RedirectUri_Between_Authorize_And_Token_Request()
         {
-            var client = await _clients.FindClientByIdAsync("codeclient");
+            var client = await _clients.FindEnabledClientByIdAsync("codeclient");
             var grants = Factory.CreateGrantService();
 
             var code = new AuthorizationCode
@@ -285,7 +285,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task Expired_AuthorizationCode()
         {
-            var client = await _clients.FindClientByIdAsync("codeclient");
+            var client = await _clients.FindEnabledClientByIdAsync("codeclient");
             var grants = Factory.CreateGrantService();
 
             var code = new AuthorizationCode
@@ -318,7 +318,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task Reused_AuthorizationCode()
         {
-            var client = await _clients.FindClientByIdAsync("codeclient");
+            var client = await _clients.FindEnabledClientByIdAsync("codeclient");
             var grants = Factory.CreateGrantService();
 
             var code = new AuthorizationCode
@@ -363,7 +363,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task Code_Request_with_disabled_User()
         {
-            var client = await _clients.FindClientByIdAsync("codeclient");
+            var client = await _clients.FindEnabledClientByIdAsync("codeclient");
             var grants = Factory.CreateGrantService();
 
             var code = new AuthorizationCode

@@ -80,7 +80,7 @@ namespace IdentityServer4.ResponseHandling
                 Client client = null;
                 if (request.AuthorizationCode.ClientId != null)
                 {
-                    client = await _clients.FindClientByIdAsync(request.AuthorizationCode.ClientId);
+                    client = await _clients.FindEnabledClientByIdAsync(request.AuthorizationCode.ClientId);
                 }
                 if (client == null)
                 {
@@ -181,7 +181,7 @@ namespace IdentityServer4.ResponseHandling
                 Client client = null;
                 if (request.AuthorizationCode.ClientId != null)
                 {
-                    client = await _clients.FindClientByIdAsync(request.AuthorizationCode.ClientId);
+                    client = await _clients.FindEnabledClientByIdAsync(request.AuthorizationCode.ClientId);
                 }
                 if (client == null)
                 {

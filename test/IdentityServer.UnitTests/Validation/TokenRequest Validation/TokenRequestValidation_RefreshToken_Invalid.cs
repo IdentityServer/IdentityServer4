@@ -27,7 +27,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task Non_existing_RefreshToken()
         {
-            var client = await _clients.FindClientByIdAsync("roclient");
+            var client = await _clients.FindEnabledClientByIdAsync("roclient");
 
             var validator = Factory.CreateTokenRequestValidator();
 
@@ -46,7 +46,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         public async Task RefreshTokenTooLong()
         {
             var grants = Factory.CreateGrantService();
-            var client = await _clients.FindClientByIdAsync("roclient");
+            var client = await _clients.FindEnabledClientByIdAsync("roclient");
             var options = new IdentityServerOptions();
 
             var validator = Factory.CreateTokenRequestValidator(
@@ -78,7 +78,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             var grants = Factory.CreateGrantService();
             await grants.StoreRefreshTokenAsync(handle, refreshToken);
 
-            var client = await _clients.FindClientByIdAsync("roclient");
+            var client = await _clients.FindEnabledClientByIdAsync("roclient");
 
             var validator = Factory.CreateTokenRequestValidator(
                 grants: grants);
@@ -111,7 +111,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             var grants = Factory.CreateGrantService();
             await grants.StoreRefreshTokenAsync(handle, refreshToken);
 
-            var client = await _clients.FindClientByIdAsync("roclient");
+            var client = await _clients.FindEnabledClientByIdAsync("roclient");
 
             var validator = Factory.CreateTokenRequestValidator(
                 grants: grants);
@@ -144,7 +144,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             var grants = Factory.CreateGrantService();
             await grants.StoreRefreshTokenAsync(handle, refreshToken);
 
-            var client = await _clients.FindClientByIdAsync("roclient_restricted");
+            var client = await _clients.FindEnabledClientByIdAsync("roclient_restricted");
 
             var validator = Factory.CreateTokenRequestValidator(
                 grants: grants);
@@ -180,7 +180,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             var grants = Factory.CreateGrantService();
             await grants.StoreRefreshTokenAsync(handle, refreshToken);
 
-            var client = await _clients.FindClientByIdAsync("roclient");
+            var client = await _clients.FindEnabledClientByIdAsync("roclient");
 
             var validator = Factory.CreateTokenRequestValidator(
                 grants: grants,

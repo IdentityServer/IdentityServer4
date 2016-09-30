@@ -28,7 +28,7 @@ namespace IdentityServer4.Stores
         {
             var client = await _cache.GetAsync(clientId, 
                 _options.CachingOptions.ClientStoreExpiration, 
-                ()=>_inner.FindClientByIdAsync(clientId));
+                ()=>_inner.FindEnabledClientByIdAsync(clientId));
 
             return client;
         }

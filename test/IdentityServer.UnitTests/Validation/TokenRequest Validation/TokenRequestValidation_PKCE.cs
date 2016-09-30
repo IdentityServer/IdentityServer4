@@ -27,7 +27,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task valid_pkce_token_request_with_plain_method_should_succeed()
         {
-            var client = await _clients.FindClientByIdAsync("codeclient.pkce");
+            var client = await _clients.FindEnabledClientByIdAsync("codeclient.pkce");
             var grants = Factory.CreateGrantService();
             var verifier = "x".Repeat(lengths.CodeVerifierMinLength);
 
@@ -66,7 +66,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task valid_pkce_token_request_with_plain_method_should_succeed_hybrid()
         {
-            var client = await _clients.FindClientByIdAsync("hybridclient.pkce");
+            var client = await _clients.FindEnabledClientByIdAsync("hybridclient.pkce");
             var grants = Factory.CreateGrantService();
             var verifier = "x".Repeat(lengths.CodeVerifierMinLength);
 
@@ -105,7 +105,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task valid_pkce_token_request_with_sha256_method_should_succeed()
         {
-            var client = await _clients.FindClientByIdAsync("codeclient.pkce");
+            var client = await _clients.FindEnabledClientByIdAsync("codeclient.pkce");
             var grants = Factory.CreateGrantService();
 
             var verifier = "x".Repeat(lengths.CodeVerifierMinLength);
@@ -146,7 +146,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task token_request_with_missing_code_challenge_and_verifier_should_fail()
         {
-            var client = await _clients.FindClientByIdAsync("codeclient.pkce");
+            var client = await _clients.FindEnabledClientByIdAsync("codeclient.pkce");
             var grants = Factory.CreateGrantService();
 
             var code = new AuthorizationCode
@@ -181,7 +181,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task token_request_with_missing_code_challenge_should_fail()
         {
-            var client = await _clients.FindClientByIdAsync("codeclient.pkce");
+            var client = await _clients.FindEnabledClientByIdAsync("codeclient.pkce");
             var grants = Factory.CreateGrantService();
 
             var code = new AuthorizationCode
@@ -218,7 +218,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task token_request_with_invalid_verifier_plain_method_should_fail()
         {
-            var client = await _clients.FindClientByIdAsync("codeclient.pkce");
+            var client = await _clients.FindEnabledClientByIdAsync("codeclient.pkce");
             var grants = Factory.CreateGrantService();
             var verifier = "x".Repeat(lengths.CodeVerifierMinLength);
 
@@ -258,7 +258,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task token_request_with_invalid_verifier_sha256_method_should_fail()
         {
-            var client = await _clients.FindClientByIdAsync("codeclient.pkce");
+            var client = await _clients.FindEnabledClientByIdAsync("codeclient.pkce");
             var grants = Factory.CreateGrantService();
 
             var verifier = "x".Repeat(lengths.CodeVerifierMinLength);
@@ -300,7 +300,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task pkce_token_request_for_non_pkce_client_should_fail()
         {
-            var client = await _clients.FindClientByIdAsync("codeclient");
+            var client = await _clients.FindEnabledClientByIdAsync("codeclient");
             var grants = Factory.CreateGrantService();
             var verifier = "x".Repeat(lengths.CodeVerifierMinLength);
 

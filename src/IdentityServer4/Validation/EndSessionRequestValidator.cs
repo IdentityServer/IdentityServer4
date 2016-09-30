@@ -213,7 +213,7 @@ namespace IdentityServer4.Validation
             var urls = new List<string>();
             foreach (var clientId in clientIds)
             {
-                var client = await _clientStore.FindClientByIdAsync(clientId);
+                var client = await _clientStore.FindEnabledClientByIdAsync(clientId);
 
                 if (client != null && client.LogoutUri.IsPresent())
                 {

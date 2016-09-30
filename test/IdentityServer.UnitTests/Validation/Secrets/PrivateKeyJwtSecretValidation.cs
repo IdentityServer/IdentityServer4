@@ -68,7 +68,7 @@ namespace IdentityServer4.Tests.Validation.Secrets
         public async Task Invalid_Certificate_X5t_Only_Requires_Full_Certificate()
         {
             var clientId = "certificate_valid";
-            var client = await _clients.FindClientByIdAsync(clientId);
+            var client = await _clients.FindEnabledClientByIdAsync(clientId);
 
             var token = CreateToken(clientId);
             var secret = new ParsedSecret
@@ -87,7 +87,7 @@ namespace IdentityServer4.Tests.Validation.Secrets
         public async Task Invalid_Certificate_Thumbprint()
         {
             var clientId = "certificate_invalid";
-            var client = await _clients.FindClientByIdAsync(clientId);
+            var client = await _clients.FindEnabledClientByIdAsync(clientId);
 
             var secret = new ParsedSecret
             {
@@ -105,7 +105,7 @@ namespace IdentityServer4.Tests.Validation.Secrets
         public async Task Valid_Certificate_Base64()
         {
             var clientId = "certificate_base64_valid";
-            var client = await _clients.FindClientByIdAsync(clientId);
+            var client = await _clients.FindEnabledClientByIdAsync(clientId);
 
             var secret = new ParsedSecret
             {
@@ -123,7 +123,7 @@ namespace IdentityServer4.Tests.Validation.Secrets
         public async Task Invalid_Certificate_Base64()
         {
             var clientId = "certificate_base64_invalid";
-            var client = await _clients.FindClientByIdAsync(clientId);
+            var client = await _clients.FindEnabledClientByIdAsync(clientId);
 
             var secret = new ParsedSecret
             {
@@ -141,7 +141,7 @@ namespace IdentityServer4.Tests.Validation.Secrets
         public async Task Invalid_Issuer()
         {
             var clientId = "certificate_valid";
-            var client = await _clients.FindClientByIdAsync(clientId);
+            var client = await _clients.FindEnabledClientByIdAsync(clientId);
 
             var token = CreateToken(clientId);
             token.Payload.Remove(JwtClaimTypes.Issuer);
@@ -162,7 +162,7 @@ namespace IdentityServer4.Tests.Validation.Secrets
         public async Task Invalid_Subject()
         {
             var clientId = "certificate_valid";
-            var client = await _clients.FindClientByIdAsync(clientId);
+            var client = await _clients.FindEnabledClientByIdAsync(clientId);
 
             var token = CreateToken(clientId);
             token.Payload.Remove(JwtClaimTypes.Subject);
@@ -183,7 +183,7 @@ namespace IdentityServer4.Tests.Validation.Secrets
         public async Task Invalid_Expired_Token()
         {
             var clientId = "certificate_valid";
-            var client = await _clients.FindClientByIdAsync(clientId);
+            var client = await _clients.FindEnabledClientByIdAsync(clientId);
 
             var token = CreateToken(clientId, DateTime.Now.AddHours(-1));
             var secret = new ParsedSecret
@@ -202,7 +202,7 @@ namespace IdentityServer4.Tests.Validation.Secrets
         public async Task Invalid_Unsigned_Token()
         {
             var clientId = "certificate_valid";
-            var client = await _clients.FindClientByIdAsync(clientId);
+            var client = await _clients.FindEnabledClientByIdAsync(clientId);
 
             var token = CreateToken(clientId);
             token.Header.Remove("alg");

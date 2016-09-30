@@ -51,7 +51,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", "TokenRequest Validation - General - Invalid")]
         public async Task Unknown_Grant_Type()
         {
-            var client = await _clients.FindClientByIdAsync("codeclient");
+            var client = await _clients.FindEnabledClientByIdAsync("codeclient");
             var grants = Factory.CreateGrantService();
 
             var code = new AuthorizationCode
@@ -83,7 +83,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", "TokenRequest Validation - General - Invalid")]
         public async Task Missing_Grant_Type()
         {
-            var client = await _clients.FindClientByIdAsync("codeclient");
+            var client = await _clients.FindEnabledClientByIdAsync("codeclient");
             var grants = Factory.CreateGrantService();
 
             var code = new AuthorizationCode

@@ -47,7 +47,7 @@ namespace IdentityServer4.Validation
             }
 
             // load client
-            var client = await _clients.FindClientByIdAsync(parsedSecret.Id);
+            var client = await _clients.FindEnabledClientByIdAsync(parsedSecret.Id);
             if (client == null)
             {
                 await RaiseFailureEvent(parsedSecret.Id, "Unknown client");
