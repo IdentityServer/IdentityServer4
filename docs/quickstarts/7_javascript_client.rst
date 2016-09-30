@@ -62,7 +62,7 @@ It is available via `NPM <https://github.com/IdentityModel/oidc-client-js>`_, `B
 
 If you want to use NPM to download `oidc-client`, then follow these steps:
 
-Add a new NPM package file to your project and name it `pakage.json`:
+Add a new NPM package file to your project and name it `package.json`:
 
 .. image:: images/7_add_package_json.png
 
