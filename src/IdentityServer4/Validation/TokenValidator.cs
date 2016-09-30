@@ -298,8 +298,8 @@ namespace IdentityServer4.Validation
             {
                 new Claim(JwtClaimTypes.Audience, token.Audience),
                 new Claim(JwtClaimTypes.Issuer, token.Issuer),
-                new Claim(JwtClaimTypes.NotBefore, token.CreationTime.ToEpochTime().ToString()),
-                new Claim(JwtClaimTypes.Expiration, token.CreationTime.AddSeconds(token.Lifetime).ToEpochTime().ToString())
+                new Claim(JwtClaimTypes.NotBefore, token.CreationTime.ToEpochTime().ToString(), ClaimValueTypes.Integer),
+                new Claim(JwtClaimTypes.Expiration, token.CreationTime.AddSeconds(token.Lifetime).ToEpochTime().ToString(), ClaimValueTypes.Integer)
             };
 
             claims.AddRange(token.Claims);

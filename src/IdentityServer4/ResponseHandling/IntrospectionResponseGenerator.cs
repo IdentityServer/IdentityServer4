@@ -49,7 +49,7 @@ namespace IdentityServer4.ResponseHandling
 
                 response = validationResult.Claims.Where(c => c.Type != JwtClaimTypes.Scope).ToClaimsDictionary();
                 response.Add("active", true);
-                response.Add("scope", scope.Name);
+                response.Add("scope", new[] { scope.Name });
             }
 
             return Task.FromResult(response);

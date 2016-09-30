@@ -12,6 +12,8 @@ using System.Net;
 using IdentityModel.Client;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
 {
@@ -132,6 +134,79 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
 
             scopes.Count().Should().Be(1);
             scopes.First().Value.Should().Be("api1");
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task Response_data_should_be_valid_using_single_scope()
+        {
+            var tokenClient = new TokenClient(
+                TokenEndpoint,
+                "client1",
+                "secret",
+                _handler);
+
+            var tokenResponse = await tokenClient.RequestClientCredentialsAsync("api1");
+
+            var introspectionClient = new IntrospectionClient(
+                IntrospectionEndpoint,
+                "api1",
+                "secret",
+                _handler);
+
+            var response = await introspectionClient.SendAsync(new IntrospectionRequest
+            {
+                Token = tokenResponse.AccessToken
+            });
+
+            var values = response.Json.ToObject<Dictionary<string, object>>();
+
+            values["aud"].GetType().Name.Should().Be("String");
+            var iss = values["iss"].GetType().Name.Should().Be("String"); ;
+            var nbf = values["nbf"].GetType().Name.Should().Be("Int64"); ;
+            var exp = values["exp"].GetType().Name.Should().Be("Int64"); ;
+            var clientId = values["client_id"].GetType().Name.Should().Be("String"); ;
+            var active = values["active"].GetType().Name.Should().Be("Boolean"); ;
+            var scopes = values["scope"] as JArray;
+
+            scopes.Count.Should().Be(1);
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task Response_data_should_be_valid_using_multiple_scopes()
+        {
+            var tokenClient = new TokenClient(
+                TokenEndpoint,
+                "client1",
+                "secret",
+                _handler);
+
+            var tokenResponse = await tokenClient.RequestClientCredentialsAsync("api1 api2 unrestricted.api");
+
+            var introspectionClient = new IntrospectionClient(
+                IntrospectionEndpoint,
+                "unrestricted.api",
+                "secret",
+                _handler);
+
+
+            var response = await introspectionClient.SendAsync(new IntrospectionRequest
+            {
+                Token = tokenResponse.AccessToken
+            });
+
+            var values = response.Json.ToObject<Dictionary<string, object>>();
+
+            values["aud"].GetType().Name.Should().Be("String");
+            var iss = values["iss"].GetType().Name.Should().Be("String"); ;
+            var nbf = values["nbf"].GetType().Name.Should().Be("Int64"); ;
+            var exp = values["exp"].GetType().Name.Should().Be("Int64"); ;
+            var clientId = values["client_id"].GetType().Name.Should().Be("String"); ;
+            var active = values["active"].GetType().Name.Should().Be("Boolean"); ;
+            var scopes = values["scope"] as JArray;
+
+            scopes.Count.Should().Be(3);
         }
 
         [Fact]
