@@ -70,7 +70,7 @@ namespace IdentityServer4.Validation
             _log.ClientId = clientId;
             _log.ValidateLifetime = validateLifetime;
 
-            var client = await _clients.FindClientByIdAsync(clientId);
+            var client = await _clients.FindEnabledClientByIdAsync(clientId);
             if (client == null)
             {
                 _logger.LogError("Unknown or diabled client: {clientId}.", clientId);
@@ -217,7 +217,7 @@ namespace IdentityServer4.Validation
                 var clientId = id.FindFirst(JwtClaimTypes.ClientId);
                 if (clientId != null)
                 {
-                    client = await _clients.FindClientByIdAsync(clientId.Value);
+                    client = await _clients.FindEnabledClientByIdAsync(clientId.Value);
                     if (client == null)
                     {
                         throw new InvalidOperationException("Client does not exist anymore.");
@@ -272,7 +272,7 @@ namespace IdentityServer4.Validation
             Client client = null;
             if (token.ClientId != null)
             {
-                client = await _clients.FindClientByIdAsync(token.ClientId);
+                client = await _clients.FindEnabledClientByIdAsync(token.ClientId);
             }
 
             if (client == null)

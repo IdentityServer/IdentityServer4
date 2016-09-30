@@ -80,14 +80,14 @@ namespace IdentityServer4.ResponseHandling
                 Client client = null;
                 if (request.AuthorizationCode.ClientId != null)
                 {
-                    client = await _clients.FindClientByIdAsync(request.AuthorizationCode.ClientId);
+                    client = await _clients.FindEnabledClientByIdAsync(request.AuthorizationCode.ClientId);
                 }
                 if (client == null)
                 {
                     throw new InvalidOperationException("Client does not exist anymore.");
                 }
 
-                var scopes = await _scopes.FindScopesAsync(request.AuthorizationCode.RequestedScopes);
+                var scopes = await _scopes.FindEnabledScopesAsync(request.AuthorizationCode.RequestedScopes);
 
 
                 var tokenRequest = new TokenCreationRequest
@@ -144,7 +144,7 @@ namespace IdentityServer4.ResponseHandling
                     Client = request.Client,
                     Subject = subject,
                     ValidatedRequest = request,
-                    Scopes = await _scopes.FindScopesAsync(oldAccessToken.Scopes)
+                    Scopes = await _scopes.FindEnabledScopesAsync(oldAccessToken.Scopes)
                 };
 
                 var newAccessToken = await _tokenService.CreateAccessTokenAsync(creationRequest);
@@ -181,14 +181,14 @@ namespace IdentityServer4.ResponseHandling
                 Client client = null;
                 if (request.AuthorizationCode.ClientId != null)
                 {
-                    client = await _clients.FindClientByIdAsync(request.AuthorizationCode.ClientId);
+                    client = await _clients.FindEnabledClientByIdAsync(request.AuthorizationCode.ClientId);
                 }
                 if (client == null)
                 {
                     throw new InvalidOperationException("Client does not exist anymore.");
                 }
 
-                var scopes = await _scopes.FindScopesAsync(request.AuthorizationCode.RequestedScopes);
+                var scopes = await _scopes.FindEnabledScopesAsync(request.AuthorizationCode.RequestedScopes);
 
                 tokenRequest = new TokenCreationRequest
                 {

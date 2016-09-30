@@ -21,7 +21,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task Invalid_Extension_Grant_Type_For_Client_Credentials_Client()
         {
-            var client = await _clients.FindClientByIdAsync("client");
+            var client = await _clients.FindEnabledClientByIdAsync("client");
             var validator = Factory.CreateTokenRequestValidator();
 
             var parameters = new NameValueCollection();
@@ -38,7 +38,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task Restricted_Extension_Grant_Type()
         {
-            var client = await _clients.FindClientByIdAsync("customgrantclient");
+            var client = await _clients.FindEnabledClientByIdAsync("customgrantclient");
 
             var validator = Factory.CreateTokenRequestValidator();
 
@@ -56,7 +56,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task Customer_Error_and_Description_Extension_Grant_Type()
         {
-            var client = await _clients.FindClientByIdAsync("customgrantclient");
+            var client = await _clients.FindEnabledClientByIdAsync("customgrantclient");
 
             var validator = Factory.CreateTokenRequestValidator(extensionGrantValidators: new[] { new TestGrantValidator(isInvalid: true, errorDescription: "custom error description") });
 

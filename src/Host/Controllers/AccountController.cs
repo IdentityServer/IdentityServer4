@@ -110,7 +110,7 @@ namespace IdentityServer4.Quickstart.UI.Controllers
             var allowLocal = true;
             if (context?.ClientId != null)
             {
-                var client = await _clientStore.FindClientByIdAsync(context.ClientId);
+                var client = await _clientStore.FindEnabledClientByIdAsync(context.ClientId);
                 if (client != null)
                 {
                     allowLocal = client.EnableLocalLogin;

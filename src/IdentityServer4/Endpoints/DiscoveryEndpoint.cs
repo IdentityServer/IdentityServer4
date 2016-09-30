@@ -76,7 +76,7 @@ namespace IdentityServer4.Endpoints
             }
 
             var baseUrl = context.GetIdentityServerBaseUrl().EnsureTrailingSlash();
-            var allScopes = await _scopes.GetScopesAsync(publicOnly: true);
+            var allScopes = await _scopes.GetEnabledScopesAsync(publicOnly: true);
             var showScopes = new List<Scope>();
 
             var document = new DiscoveryDocument

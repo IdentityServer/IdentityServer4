@@ -25,7 +25,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task Valid_Code_Request()
         {
-            var client = await _clients.FindClientByIdAsync("codeclient");
+            var client = await _clients.FindEnabledClientByIdAsync("codeclient");
             var grants = Factory.CreateGrantService();
 
             var code = new AuthorizationCode
@@ -59,7 +59,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task Valid_Code_Request_with_Refresh_Token()
         {
-            var client = await _clients.FindClientByIdAsync("codeclient");
+            var client = await _clients.FindEnabledClientByIdAsync("codeclient");
             var grants = Factory.CreateGrantService();
 
             var code = new AuthorizationCode
@@ -94,7 +94,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task Valid_ClientCredentials_Request()
         {
-            var client = await _clients.FindClientByIdAsync("client");
+            var client = await _clients.FindEnabledClientByIdAsync("client");
 
             var validator = Factory.CreateTokenRequestValidator();
 
@@ -111,7 +111,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task Valid_ClientCredentials_Request_with_default_Scopes()
         {
-            var client = await _clients.FindClientByIdAsync("client_restricted");
+            var client = await _clients.FindEnabledClientByIdAsync("client_restricted");
 
             var validator = Factory.CreateTokenRequestValidator();
 
@@ -128,7 +128,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task Valid_ClientCredentials_Request_for_Implicit_and_ClientCredentials_Client()
         {
-            var client = await _clients.FindClientByIdAsync("implicit_and_client_creds_client");
+            var client = await _clients.FindEnabledClientByIdAsync("implicit_and_client_creds_client");
 
             var validator = Factory.CreateTokenRequestValidator();
 
@@ -145,7 +145,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task Valid_ClientCredentials_Request_Restricted_Client()
         {
-            var client = await _clients.FindClientByIdAsync("client_restricted");
+            var client = await _clients.FindEnabledClientByIdAsync("client_restricted");
 
             var validator = Factory.CreateTokenRequestValidator();
 
@@ -162,7 +162,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task Valid_ResourceOwner_Request()
         {
-            var client = await _clients.FindClientByIdAsync("roclient");
+            var client = await _clients.FindEnabledClientByIdAsync("roclient");
 
             var validator = Factory.CreateTokenRequestValidator();
 
@@ -181,7 +181,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task Valid_ResourceOwner_Request_with_Refresh_Token()
         {
-            var client = await _clients.FindClientByIdAsync("roclient");
+            var client = await _clients.FindEnabledClientByIdAsync("roclient");
 
             var validator = Factory.CreateTokenRequestValidator();
 
@@ -200,7 +200,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task Valid_ResourceOwner_Request_Restricted_Client()
         {
-            var client = await _clients.FindClientByIdAsync("roclient_restricted");
+            var client = await _clients.FindEnabledClientByIdAsync("roclient_restricted");
 
             var validator = Factory.CreateTokenRequestValidator();
 
@@ -219,7 +219,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task Valid_ExtensionGrant_Request()
         {
-            var client = await _clients.FindClientByIdAsync("customgrantclient");
+            var client = await _clients.FindEnabledClientByIdAsync("customgrantclient");
 
             var validator = Factory.CreateTokenRequestValidator();
 
@@ -253,7 +253,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             var grants = Factory.CreateGrantService();
             await grants.StoreRefreshTokenAsync(handle, refreshToken);
 
-            var client = await _clients.FindClientByIdAsync("roclient");
+            var client = await _clients.FindEnabledClientByIdAsync("roclient");
 
             var validator = Factory.CreateTokenRequestValidator(
                 grants: grants);
@@ -289,7 +289,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             var grants = Factory.CreateGrantService();
             await grants.StoreRefreshTokenAsync(handle, refreshToken);
 
-            var client = await _clients.FindClientByIdAsync("roclient_restricted_refresh");
+            var client = await _clients.FindEnabledClientByIdAsync("roclient_restricted_refresh");
 
             var validator = Factory.CreateTokenRequestValidator(
                 grants: grants);

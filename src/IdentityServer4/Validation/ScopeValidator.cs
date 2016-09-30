@@ -48,7 +48,7 @@ namespace IdentityServer4.Validation
         public async Task<bool> AreScopesValidAsync(IEnumerable<string> requestedScopes)
         {
             var requestedScopesArray = requestedScopes as string[] ?? requestedScopes.ToArray();
-            var availableScopesArray = (await _store.FindScopesAsync(requestedScopesArray)).ToArray();
+            var availableScopesArray = (await _store.FindEnabledScopesAsync(requestedScopesArray)).ToArray();
 
             foreach (var requestedScope in requestedScopesArray)
             {
