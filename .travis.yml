@@ -1,7 +1,10 @@
 notifications:
   email:
-    - identity@leastprivilege.com
-    
+    recipients:
+      - identity@leastprivilege.com
+    on_success: always
+    on_failure: always
+
 language: csharp
 os:
   - osx
