@@ -1,3 +1,7 @@
+notifications:
+  email:
+    - identity@leastprivilege.com
+    
 language: csharp
 os:
   - osx
