@@ -42,7 +42,7 @@ This is important so the existing clients and api projects will continue to work
 Add IdentityServer packages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Add both the ``IdentitySever4`` and the ``IdentitySever4.AspNetIdentity`` packages to `project.json`::
+Add both the ``IdentityServer4`` and the ``IdentityServer4.AspNetIdentity`` packages to `project.json`::
 
     "IdentityServer4": "1.0.0-rc1-update2",
     "IdentityServer4.AspNetIdentity": "1.0.0-rc1-update2"
