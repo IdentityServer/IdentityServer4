@@ -130,6 +130,7 @@ It must be added **before** MVC, e.g.::
         loggerFactory.AddConsole(Configuration.GetSection("Logging"));
         loggerFactory.AddDebug();
 
+        app.UseIdentityServer();
         app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
         {
             Authority = "http://localhost:5000",
