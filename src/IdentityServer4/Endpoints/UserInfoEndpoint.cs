@@ -77,6 +77,15 @@ namespace IdentityServer4.Endpoints
             // pass scopes/claims to profile service
             var claims = tokenResult.Claims.Where(x => !Constants.Filters.ProtocolClaimsFilter.Contains(x.Type));
             var subject = Principal.Create("UserInfo", claims.ToArray());
+
+            if (subject.FindFirst(JwtClaimTypes.Subject) == null)
+            {
+                var error = "Token contains no sub claim";
+                _logger.LogError(error);
+                await RaiseFailureEventAsync(error);
+                return Error(OidcConstants.ProtectedResourceErrors.InvalidToken);
+            }
+
             var scopes = tokenResult.Claims.Where(c => c.Type == JwtClaimTypes.Scope).Select(c => c.Value);
 
             var payload = await _generator.ProcessAsync(subject, scopes, tokenResult.Client);
