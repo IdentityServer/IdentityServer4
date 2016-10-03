@@ -254,6 +254,8 @@ namespace Host.Configuration
 
                     AllowedGrantTypes = GrantTypes.Implicit,
                     AllowAccessTokensViaBrowser = true,
+                    RequireClientSecret = false,
+                    AccessTokenType = AccessTokenType.Reference,
 
                     RedirectUris = 
                     {
