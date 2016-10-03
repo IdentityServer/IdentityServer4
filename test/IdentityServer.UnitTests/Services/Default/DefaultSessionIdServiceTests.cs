@@ -33,41 +33,42 @@ namespace IdentityServer4.UnitTests.Services.Default
         }
 
         [Fact]
-        public async Task AddSessionIdAsync_when_user_is_anonymous_should_generate_new_sid()
+        public void CreateSessionId_when_user_is_anonymous_should_generate_new_sid()
         {
             var ctx = new SignInContext(_scheme, IdentityServerPrincipal.Create("123", "bob"), null);
-            await _subject.AddSessionIdAsync(ctx);
+            _subject.CreateSessionId(ctx);
             ctx.Properties["sid"].Should().NotBeNull();
         }
 
         [Fact]
-        public async Task AddSessionIdAsync_when_user_is_authenticated_should_use_current_sid()
+        public void CreateSessionId_when_user_is_authenticated_should_generate_new_sid()
         {
             _stubAuthHandler.User = _user;
             _stubAuthHandler.Properties.Add("sid", "999");
 
             var ctx = new SignInContext(_scheme, IdentityServerPrincipal.Create("123", "bob"), null);
-            await _subject.AddSessionIdAsync(ctx);
-            ctx.Properties["sid"].Should().Be("999");
-        }
-
-        [Fact]
-        public async Task AddSessionIdAsync_when_user_is_authenticated_but_different_sub_should_create_new_sid()
-        {
-            _stubAuthHandler.User = _user;
-            _stubAuthHandler.Properties.Add("sid", "999");
-
-            var ctx = new SignInContext(_scheme, IdentityServerPrincipal.Create("456", "alice"), null);
-            await _subject.AddSessionIdAsync(ctx);
+            _subject.CreateSessionId(ctx);
             ctx.Properties["sid"].Should().NotBeNull();
             ctx.Properties["sid"].Should().NotBe("999");
         }
 
         [Fact]
-        public async Task AddSessionIdAsync_should_issue_session_id_cookie()
+        public void CreateSessionId_when_user_is_authenticated_but_different_sub_should_create_new_sid()
+        {
+            _stubAuthHandler.User = _user;
+            _stubAuthHandler.Properties.Add("sid", "999");
+
+            var ctx = new SignInContext(_scheme, IdentityServerPrincipal.Create("456", "alice"), null);
+            _subject.CreateSessionId(ctx);
+            ctx.Properties["sid"].Should().NotBeNull();
+            ctx.Properties["sid"].Should().NotBe("999");
+        }
+
+        [Fact]
+        public void CreateSessionId_should_issue_session_id_cookie()
         {
             var ctx = new SignInContext(_scheme, IdentityServerPrincipal.Create("456", "alice"), null);
-            await _subject.AddSessionIdAsync(ctx);
+            _subject.CreateSessionId(ctx);
 
             var cookieContainer = new CookieContainer();
             var cookies = _mockHttpContext.HttpContext.Response.Headers.Where(x => x.Key.Equals("Set-Cookie", StringComparison.OrdinalIgnoreCase)).Select(x => x.Value);

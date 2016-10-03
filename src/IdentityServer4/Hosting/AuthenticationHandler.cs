@@ -43,17 +43,17 @@ namespace IdentityServer4.Hosting
         {
             if (context.AuthenticationScheme == _options.AuthenticationOptions.EffectiveAuthenticationScheme)
             {
-                await AugmentContextAsync(context);
+                AugmentContext(context);
             }
             await _handler.SignInAsync(context);
         }
 
-        private async Task AugmentContextAsync(SignInContext context)
+        private void AugmentContext(SignInContext context)
         {
             context.Principal.AssertRequiredClaims();
             context.Principal.AugmentMissingClaims();
 
-            await _sessionId.AddSessionIdAsync(context);
+            _sessionId.CreateSessionId(context);
         }
 
         public Task SignOutAsync(SignOutContext context)

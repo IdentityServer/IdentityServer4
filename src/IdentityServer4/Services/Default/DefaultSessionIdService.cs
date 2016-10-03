@@ -19,29 +19,10 @@ namespace IdentityServer4.Services.Default
             _context = context.HttpContext;
         }
 
-        public async Task AddSessionIdAsync(SignInContext context)
+        public void CreateSessionId(SignInContext context)
         {
-            string sid = null;
-
-            var user = await _context.GetIdentityServerUserAsync();
-            if (user != null)
-            {
-                var currentSubject = user.GetSubjectId();
-                var newSubject = context.Principal.FindFirst(JwtClaimTypes.Subject)?.Value;
-
-                if (currentSubject == newSubject)
-                {
-                    sid = await GetCurrentSessionIdAsync();
-                }
-            }
-
-            if (sid == null)
-            {
-                sid = CryptoRandom.CreateUniqueId();
-            }
-
+            var sid = CryptoRandom.CreateUniqueId();
             context.Properties[OidcConstants.EndSessionRequest.Sid] = sid;
-
             IssueSessionIdCookie(sid);
         }
 

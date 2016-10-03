@@ -13,9 +13,8 @@ namespace IdentityServer4.UnitTests.Common
         public bool RemoveCookieWasCalled { get; private set; }
         public string SessionId { get; set; } = "session_id";
 
-        public Task AddSessionIdAsync(SignInContext context)
+        public void CreateSessionId(SignInContext context)
         {
-            return Task.FromResult(0);
         }
 
         public Task EnsureSessionCookieAsync()

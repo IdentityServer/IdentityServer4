@@ -9,7 +9,7 @@ namespace IdentityServer4.Services
 {
     public interface ISessionIdService
     {
-        Task AddSessionIdAsync(SignInContext context);
+        void CreateSessionId(SignInContext context);
         Task<string> GetCurrentSessionIdAsync();
 
         Task EnsureSessionCookieAsync();
