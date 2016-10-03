@@ -20,7 +20,7 @@ namespace Host.Configuration
                 new Client
                 {
                     ClientId = "client",
-                    ClientSecrets = new List<Secret>
+                    ClientSecrets =
                     {
                         new Secret("secret".Sha256())
                     },
@@ -35,7 +35,7 @@ namespace Host.Configuration
                 new Client
                 {
                     ClientId = "client.jwt",
-                    ClientSecrets = new List<Secret>
+                    ClientSecrets =
                     {
                         new Secret
                         {
@@ -54,7 +54,7 @@ namespace Host.Configuration
                 new Client
                 {
                     ClientId = "client.custom",
-                    ClientSecrets = new List<Secret>
+                    ClientSecrets = 
                     {
                         new Secret("secret".Sha256())
                     },
@@ -69,7 +69,7 @@ namespace Host.Configuration
                 new Client
                 {
                     ClientId = "roclient",
-                    ClientSecrets = new List<Secret>
+                    ClientSecrets = 
                     {
                         new Secret("secret".Sha256())
                     },
@@ -138,7 +138,7 @@ namespace Host.Configuration
                 new Client
                 {
                     ClientId = "roclient.reference",
-                    ClientSecrets = new List<Secret>
+                    ClientSecrets = 
                     {
                         new Secret("secret".Sha256())
                     },
@@ -203,12 +203,11 @@ namespace Host.Configuration
                     ClientName = "MVC Hybrid",
                     ClientUri = "http://identityserver.io",
 
-                    ClientSecrets = new List<Secret>
+                    ClientSecrets = 
                     {
                         new Secret("secret".Sha256())
                     },
                     
-
                     AllowedGrantTypes = GrantTypes.Hybrid,
                     AllowAccessTokensViaBrowser = false,
 

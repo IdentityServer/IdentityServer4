@@ -31,7 +31,7 @@ namespace IdentityServer4.Models
         /// <summary>
         /// Client secrets - only relevant for flows that require a secret
         /// </summary>
-        public List<Secret> ClientSecrets { get; set; } = new List<Secret>();
+        public ICollection<Secret> ClientSecrets { get; set; } = new HashSet<Secret>();
 
         /// <summary>
         /// If set to false, no client secret is needed to request tokens at the token endpoint (defaults to true)
@@ -93,12 +93,12 @@ namespace IdentityServer4.Models
         /// <summary>
         /// Specifies allowed URIs to return tokens or authorization codes to
         /// </summary>
-        public List<string> RedirectUris { get; set; } = new List<string>();
+        public ICollection<string> RedirectUris { get; set; } = new HashSet<string>();
 
         /// <summary>
         /// Specifies allowed URIs to redirect to after logout
         /// </summary>
-        public List<string> PostLogoutRedirectUris { get; set; } = new List<string>();
+        public ICollection<string> PostLogoutRedirectUris { get; set; } = new HashSet<string>();
         
         /// <summary>
         /// Specifies logout URI at client for HTTP based logout.
@@ -122,7 +122,7 @@ namespace IdentityServer4.Models
         /// <summary>
         /// Specifies the scopes that the client is allowed to request. If empty, the client can't access any scope
         /// </summary>
-        public List<string> AllowedScopes { get; set; } = new List<string>();
+        public ICollection<string> AllowedScopes { get; set; } = new HashSet<string>();
 
         /// <summary>
         /// Lifetime of identity token in seconds (defaults to 300 seconds / 5 minutes)
@@ -185,7 +185,7 @@ namespace IdentityServer4.Models
         /// <summary>
         /// Specifies which external IdPs can be used with this client (if list is empty all IdPs are allowed). Defaults to empty.
         /// </summary>
-        public List<string> IdentityProviderRestrictions { get; set; } = new List<string>();
+        public ICollection<string> IdentityProviderRestrictions { get; set; } = new HashSet<string>();
 
         /// <summary>
         /// Gets or sets a value indicating whether JWT access tokens should include an identifier
@@ -225,7 +225,7 @@ namespace IdentityServer4.Models
         /// <value>
         /// The allowed CORS origins.
         /// </value>
-        public List<string> AllowedCorsOrigins { get; set; } = new List<string>();
+        public ICollection<string> AllowedCorsOrigins { get; set; } = new HashSet<string>();
 
         public void ValidateGrantTypes(IEnumerable<string> grantTypes)
         {

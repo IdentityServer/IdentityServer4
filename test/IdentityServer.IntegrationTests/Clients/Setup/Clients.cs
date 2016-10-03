@@ -22,14 +22,14 @@ namespace IdentityServer4.IntegrationTests.Clients
                 new Client
                 {
                     ClientId = "client",
-                    ClientSecrets = new List<Secret>
+                    ClientSecrets = 
                     {
                         new Secret("secret".Sha256())
                     },
 
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
 
-                    AllowedScopes = new List<string>
+                    AllowedScopes = 
                     {
                         "api1", "api2"
                     }
@@ -37,7 +37,7 @@ namespace IdentityServer4.IntegrationTests.Clients
                 new Client
                 {
                     ClientId = "client.no_default_scopes",
-                    ClientSecrets = new List<Secret>
+                    ClientSecrets = 
                     {
                         new Secret("secret".Sha256())
                     },
@@ -52,14 +52,14 @@ namespace IdentityServer4.IntegrationTests.Clients
                 new Client
                 {
                     ClientId = "roclient",
-                    ClientSecrets = new List<Secret>
+                    ClientSecrets = 
                     {
                         new Secret("secret".Sha256())
                     },
 
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
-                    AllowedScopes = new List<string>
+                    AllowedScopes = 
                     {
                         StandardScopes.OpenId.Name,
                         StandardScopes.Email.Name,
@@ -77,14 +77,14 @@ namespace IdentityServer4.IntegrationTests.Clients
                 new Client
                 {
                     ClientId = "client.custom",
-                    ClientSecrets = new List<Secret>
+                    ClientSecrets = 
                     {
                         new Secret("secret".Sha256())
                     },
 
                     AllowedGrantTypes = GrantTypes.List("custom"),
 
-                    AllowedScopes = new List<string>
+                    AllowedScopes = 
                     {
                         "api1", "api2"
                     }
@@ -96,14 +96,14 @@ namespace IdentityServer4.IntegrationTests.Clients
                 new Client
                 {
                     ClientId = "roclient.reference",
-                    ClientSecrets = new List<Secret>
+                    ClientSecrets = 
                     {
                         new Secret("secret".Sha256())
                     },
 
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
-                    AllowedScopes = new List<string>
+                    AllowedScopes = 
                     {
                         "api1", "api2"
                     },
@@ -117,7 +117,7 @@ namespace IdentityServer4.IntegrationTests.Clients
                     ClientId = "certificate_base64_valid",
                     Enabled = true,
 
-                    ClientSecrets = new List<Secret>
+                    ClientSecrets = 
                     {
                         new Secret
                         {
