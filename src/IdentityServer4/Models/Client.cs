@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Linq;
 using System;
 using IdentityServer4.Extensions;
+using IdentityModel;
 
 namespace IdentityServer4.Models
 {
@@ -201,7 +202,7 @@ namespace IdentityServer4.Models
         /// <value>
         /// The claims.
         /// </value>
-        public List<Claim> Claims { get; set; } = new List<Claim>();
+        public ICollection<Claim> Claims { get; set; } = new HashSet<Claim>(new ClaimComparer());
 
         /// <summary>
         /// Gets or sets a value indicating whether client claims should be always included in the access tokens - or only for client credentials flow.

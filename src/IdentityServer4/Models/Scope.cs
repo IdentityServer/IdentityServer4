@@ -49,7 +49,7 @@ namespace IdentityServer4.Models
         /// <summary>
         /// List of user claims that should be included in the identity (identity scope) or access token (resource scope). 
         /// </summary>
-        public List<ScopeClaim> Claims { get; set; } = new List<ScopeClaim>();
+        public ICollection<ScopeClaim> Claims { get; set; } = new HashSet<ScopeClaim>();
 
         /// <summary>
         /// If enabled, all claims for the user will be included in the token. Defaults to false.
@@ -72,7 +72,7 @@ namespace IdentityServer4.Models
         /// <value>
         /// The scope secrets.
         /// </value>
-        public List<Secret> ScopeSecrets { get; set; } = new List<Secret>();
+        public ICollection<Secret> ScopeSecrets { get; set; } = new HashSet<Secret>();
 
         /// <summary>
         /// Specifies whether this scope is allowed to see other scopes when using the introspection endpoint

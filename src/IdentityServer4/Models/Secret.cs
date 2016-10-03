@@ -88,5 +88,15 @@ namespace IdentityServer4.Models
                 return hash;
             }
         }
+
+        public override bool Equals(object obj)
+        {
+            var other = obj as Secret;
+            if (obj == null) return false;
+            if (Object.ReferenceEquals(other, this)) return true;
+
+            return String.Equals(other.Type, Type, StringComparison.Ordinal) && 
+                String.Equals(other.Value, Value, StringComparison.Ordinal);
+        }
     }
 }
