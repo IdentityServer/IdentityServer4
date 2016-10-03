@@ -36,6 +36,22 @@ namespace IdentityServer4.IntegrationTests.Clients
                 },
                 new Client
                 {
+                    ClientId = "client.identityscopes",
+                    ClientSecrets =
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+
+                    AllowedScopes =
+                    {
+                        "openid", "profile",
+                        "api1", "api2"
+                    }
+                },
+                new Client
+                {
                     ClientId = "client.no_default_scopes",
                     ClientSecrets = 
                     {

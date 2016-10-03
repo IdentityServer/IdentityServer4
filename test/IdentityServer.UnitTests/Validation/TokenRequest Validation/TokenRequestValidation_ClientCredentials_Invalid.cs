@@ -11,7 +11,6 @@ using Xunit;
 
 namespace IdentityServer4.UnitTests.Validation.TokenRequest
 {
-
     public class TokenRequestValidation_ClientCredentials_Invalid
     {
         const string Category = "TokenRequest Validation - ClientCredentials - Invalid";

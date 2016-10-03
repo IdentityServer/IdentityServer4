@@ -222,6 +222,23 @@ namespace IdentityServer4.IntegrationTests.Clients
         }
 
         [Fact]
+        public async Task Client_requesting_identity_scope_should_fail()
+        {
+            var client = new TokenClient(
+                TokenEndpoint,
+                "client.identityscopes",
+                "secret",
+                innerHttpMessageHandler: _handler);
+
+            var response = await client.RequestClientCredentialsAsync("openid api1");
+
+            response.IsError.Should().Be(true);
+            response.ErrorType.Should().Be(TokenResponse.ResponseErrorType.Protocol);
+            response.HttpStatusCode.Should().Be(HttpStatusCode.BadRequest);
+            response.Error.Should().Be("invalid_scope");
+        }
+
+        [Fact]
         public async Task UnauthorizedScope()
         {
             var client = new TokenClient(
