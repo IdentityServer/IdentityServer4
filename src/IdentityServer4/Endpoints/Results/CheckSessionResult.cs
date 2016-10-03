@@ -328,7 +328,7 @@ if (typeof define == 'function' && define.amd) define([], function() { return Sh
         }
 
         if (cookieName && window.parent !== window) {
-                window.addEventListener('message', function(e) {
+            window.addEventListener('message', function(e) {
                 var result = calculateSessionStateResult(e.origin, e.data);
                 e.source.postMessage(result, e.origin);
             }, false);
