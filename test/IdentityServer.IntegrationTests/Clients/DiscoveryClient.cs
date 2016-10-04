@@ -46,7 +46,7 @@ namespace IdentityServer.IntegrationTests.Clients
 
             // endpoints
             doc.TokenEndpoint.Should().Be("https://server/connect/token");
-            doc.AuthorizationEndpoint.Should().Be("https://server/connect/authorize");
+            doc.AuthorizeEndpoint.Should().Be("https://server/connect/authorize");
             doc.IntrospectionEndpoint.Should().Be("https://server/connect/introspect");
             doc.EndSessionEndpoint.Should().Be("https://server/connect/endsession");
 
