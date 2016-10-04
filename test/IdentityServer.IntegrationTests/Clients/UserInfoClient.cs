@@ -37,6 +37,7 @@ namespace IdentityServer4.IntegrationTests.Clients
             _client = server.CreateClient();
         }
 
+        [Fact]
         public async Task Valid_Client()
         {
             var tokenClient = new TokenClient(
