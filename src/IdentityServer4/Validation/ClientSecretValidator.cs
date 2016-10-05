@@ -40,9 +40,9 @@ namespace IdentityServer4.Validation
             var parsedSecret = await _parser.ParseAsync(context);
             if (parsedSecret == null)
             {
-                await RaiseFailureEvent("unknown", "No client id or secret found");
+                await RaiseFailureEvent("unknown", "No client id found");
 
-                _logger.LogError("No client secret found");
+                _logger.LogError("No client identifier found");
                 return fail;
             }
 
