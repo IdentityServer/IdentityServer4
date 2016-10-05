@@ -12,6 +12,14 @@ namespace IdentityServer4.Validation
     public class ValidatedEndSessionRequest : ValidatedRequest
     {
         /// <summary>
+        /// Gets a value indicating whether this instance is authenticated.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this instance is authenticated; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsAuthenticated => Client != null;
+
+        /// <summary>
         /// Gets or sets the client.
         /// </summary>
         /// <value>
