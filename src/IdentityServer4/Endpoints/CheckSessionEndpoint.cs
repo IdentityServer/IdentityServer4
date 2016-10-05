@@ -26,6 +26,7 @@ namespace IdentityServer4.Endpoints
 
             if (context.Request.Method != "GET")
             {
+                _logger.LogWarning("Invalid HTTP method for check session endpoint");
                 result = new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
             }
             else

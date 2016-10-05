@@ -47,7 +47,7 @@ namespace IdentityServer4.Validation
                 }
             }
 
-            _logger.LogError("Secret validators could not validate secret");
+            _logger.LogDebug("Secret validators could not validate secret");
             return new SecretValidationResult { Success = false };
         }
     }

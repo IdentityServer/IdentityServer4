@@ -61,7 +61,7 @@ namespace IdentityServer4.Endpoints
                 return Error(OidcConstants.ProtectedResourceErrors.InvalidToken);
             }
 
-            _logger.LogInformation("Token found: {token}", tokenUsageResult.UsageType.ToString());
+            _logger.LogDebug("Token found: {bearerTokenUsageType}", tokenUsageResult.UsageType.ToString());
 
             var tokenResult = await _tokenValidator.ValidateAccessTokenAsync(
                 tokenUsageResult.Token,
@@ -90,7 +90,7 @@ namespace IdentityServer4.Endpoints
 
             var payload = await _generator.ProcessAsync(subject, scopes, tokenResult.Client);
 
-            _logger.LogInformation("End userinfo request");
+            _logger.LogDebug("End userinfo request");
             await RaiseSuccessEventAsync();
 
             return new UserInfoResult(payload);

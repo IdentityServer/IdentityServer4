@@ -15,7 +15,7 @@
     "Microsoft.AspNetCore.Authentication.OpenIdConnect": "1.0.*",
     
     "Serilog.Sinks.Literate": "2.0.0",
-    "Serilog.Extensions.Logging": "1.0.0",
+    "Serilog.Extensions.Logging": "1.2.0",
     
     "IdentityServer4": {
       "target": "project"

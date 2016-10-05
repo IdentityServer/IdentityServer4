@@ -46,7 +46,7 @@ namespace IdentityServer4.Endpoints
 
         private async Task<IEndpointResult> ProcessTokenRequestAsync(HttpContext context)
         {
-            _logger.LogInformation("Start token request.");
+            _logger.LogDebug("Start token request.");
 
             // validate client
             var clientResult = await _clientValidator.ValidateAsync(context);
@@ -70,7 +70,7 @@ namespace IdentityServer4.Endpoints
             var response = await _responseGenerator.ProcessAsync(requestResult);
 
             // return result
-            _logger.LogInformation("Token request success.");
+            _logger.LogDebug("Token request success.");
             return new TokenResult(response);
         }
 

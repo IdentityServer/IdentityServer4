@@ -80,8 +80,13 @@ namespace IdentityServer4.Extensions
 
         public static Dictionary<string, string> ToDictionary(this NameValueCollection collection)
         {
+            return collection.ToScrubbedDictionary();
+        }
+
+        public static Dictionary<string, string> ToScrubbedDictionary(this NameValueCollection collection, params string[] nameFilter)
+        {
             var dict = new Dictionary<string, string>();
-            
+
             if (collection == null || collection.Count == 0)
             {
                 return dict;
@@ -92,6 +97,10 @@ namespace IdentityServer4.Extensions
                 var value = collection.Get(name);
                 if (value != null)
                 {
+                    if (nameFilter.Contains(name))
+                    {
+                        value = "***REDACTED***";
+                    }
                     dict.Add(name, value);
                 }
             }

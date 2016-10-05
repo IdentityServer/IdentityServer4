@@ -68,65 +68,68 @@ namespace IdentityServer4.Validation
                 Raw = parameters,
             };
 
-            var idTokenHint = parameters.Get(OidcConstants.EndSessionRequest.IdTokenHint);
-            if (idTokenHint.IsPresent())
+            using (_logger.BeginScope(validatedRequest))
             {
-                // validate id_token - no need to validate token life time
-                var tokenValidationResult = await _tokenValidator.ValidateIdentityTokenAsync(idTokenHint, null, false);
-                if (tokenValidationResult.IsError)
+                var idTokenHint = parameters.Get(OidcConstants.EndSessionRequest.IdTokenHint);
+                if (idTokenHint.IsPresent())
                 {
-                    LogWarning(validatedRequest, "Error validating id token hint.");
-                    return Invalid();
-                }
-
-                validatedRequest.Client = tokenValidationResult.Client;
-
-                // validate sub claim against currently logged on user
-                var subClaim = tokenValidationResult.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject);
-                if (subClaim != null && isAuthenticated)
-                {
-                    if (subject.GetSubjectId() != subClaim.Value)
+                    // validate id_token - no need to validate token life time
+                    var tokenValidationResult = await _tokenValidator.ValidateIdentityTokenAsync(idTokenHint, null, false);
+                    if (tokenValidationResult.IsError)
                     {
-                        LogWarning(validatedRequest, "Current user does not match identity token");
+                        LogWarning(validatedRequest, "Error validating id token hint.");
                         return Invalid();
                     }
 
-                    validatedRequest.Subject = subject;
-                }
+                    validatedRequest.Client = tokenValidationResult.Client;
 
-                var redirectUri = parameters.Get(OidcConstants.EndSessionRequest.PostLogoutRedirectUri);
-                if (redirectUri.IsPresent())
-                {
-                    if (await _uriValidator.IsPostLogoutRedirectUriValidAsync(redirectUri, validatedRequest.Client) == false)
+                    // validate sub claim against currently logged on user
+                    var subClaim = tokenValidationResult.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject);
+                    if (subClaim != null && isAuthenticated)
                     {
-                        LogWarning(validatedRequest, "Invalid post logout URI");
-                        return Invalid();
+                        if (subject.GetSubjectId() != subClaim.Value)
+                        {
+                            LogWarning(validatedRequest, "Current user does not match identity token");
+                            return Invalid();
+                        }
+
+                        validatedRequest.Subject = subject;
                     }
 
-                    validatedRequest.PostLogOutUri = redirectUri;
-                }
-                else if (validatedRequest.Client.PostLogoutRedirectUris.Count == 1)
-                {
-                    validatedRequest.PostLogOutUri = validatedRequest.Client.PostLogoutRedirectUris.First();
-                }
-
-                if (validatedRequest.PostLogOutUri != null)
-                {
-                    var state = parameters.Get(OidcConstants.EndSessionRequest.State);
-                    if (state.IsPresent())
+                    var redirectUri = parameters.Get(OidcConstants.EndSessionRequest.PostLogoutRedirectUri);
+                    if (redirectUri.IsPresent())
                     {
-                        validatedRequest.State = state;
+                        if (await _uriValidator.IsPostLogoutRedirectUriValidAsync(redirectUri, validatedRequest.Client) == false)
+                        {
+                            LogWarning(validatedRequest, "Invalid post logout URI");
+                            return Invalid();
+                        }
+
+                        validatedRequest.PostLogOutUri = redirectUri;
+                    }
+                    else if (validatedRequest.Client.PostLogoutRedirectUris.Count == 1)
+                    {
+                        validatedRequest.PostLogOutUri = validatedRequest.Client.PostLogoutRedirectUris.First();
+                    }
+
+                    if (validatedRequest.PostLogOutUri != null)
+                    {
+                        var state = parameters.Get(OidcConstants.EndSessionRequest.State);
+                        if (state.IsPresent())
+                        {
+                            validatedRequest.State = state;
+                        }
                     }
                 }
+
+                LogSuccess(validatedRequest);
+
+                return new EndSessionValidationResult()
+                {
+                    ValidatedRequest = validatedRequest,
+                    IsError = false
+                };
             }
-
-            LogSuccess(validatedRequest);
-
-            return new EndSessionValidationResult()
-            {
-                ValidatedRequest = validatedRequest,
-                IsError = false
-            };
         }
 
         private EndSessionValidationResult Invalid()
@@ -141,13 +144,13 @@ namespace IdentityServer4.Validation
         private void LogWarning(ValidatedEndSessionRequest request,  string message)
         {
             var log = new EndSessionRequestValidationLog(request);
-            _logger.LogWarning(message + "\n{details}", log);
+            _logger.LogWarning(message + "\n{log}", log);
         }
 
         private void LogSuccess(ValidatedEndSessionRequest request)
         {
             var log = new EndSessionRequestValidationLog(request);
-            _logger.LogInformation("End session request validation success\n{details}", log);
+            _logger.LogInformation("End session request validation success {details}", log);
         }
 
         public async Task<EndSessionCallbackValidationResult> ValidateCallbackAsync(NameValueCollection parameters)

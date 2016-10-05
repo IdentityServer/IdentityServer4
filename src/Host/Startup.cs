@@ -13,6 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Linq;
 using IdentityServer4;
 using IdentityServer4.Validation;
+using Serilog;
 
 namespace Host
 {
@@ -82,17 +83,17 @@ namespace Host
                 level == LogLevel.Error ||
                 level == LogLevel.Critical;
 
-            loggerFactory.AddConsole(filter);
-            loggerFactory.AddDebug(filter);
+            //loggerFactory.AddConsole(filter);
+            //loggerFactory.AddDebug(filter);
 
-            //var serilog = new LoggerConfiguration()
-            //    .MinimumLevel.Verbose()
-            //    .Enrich.FromLogContext()
-            //    .Filter.ByIncludingOnly(serilogFilter)
-            //    .WriteTo.LiterateConsole()
-            //    .CreateLogger();
+            var serilog = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .Enrich.FromLogContext()
+                .Filter.ByIncludingOnly(serilogFilter)
+                .WriteTo.LiterateConsole(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message}{NewLine}{Exception}{NewLine}")
+                .CreateLogger();
 
-            //loggerFactory.AddSerilog(serilog);
+            loggerFactory.AddSerilog(serilog);
 
             app.UseDeveloperExceptionPage();
 

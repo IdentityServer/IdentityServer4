@@ -40,7 +40,7 @@ namespace IdentityServer4.ResponseHandling
             IEnumerable<Claim> profileClaims;
             if (requestedClaimTypes.IncludeAllClaims)
             {
-                _logger.LogInformation("Requested claim types: all");
+                _logger.LogDebug("Requested claim types: all");
 
                 var context = new ProfileDataRequestContext(
                     subject, 
@@ -52,7 +52,7 @@ namespace IdentityServer4.ResponseHandling
             }
             else
             {
-                _logger.LogInformation("Requested claim types: {types}", requestedClaimTypes.ClaimTypes.ToSpaceSeparatedString());
+                _logger.LogDebug("Requested claim types: {claimTypes}", requestedClaimTypes.ClaimTypes.ToSpaceSeparatedString());
 
                 var context = new ProfileDataRequestContext(
                     subject,
@@ -99,7 +99,7 @@ namespace IdentityServer4.ResponseHandling
             }
 
             var scopeString = string.Join(" ", scopes);
-            _logger.LogInformation("Scopes in access token: {scopes}", scopeString);
+            _logger.LogDebug("Scopes in access token: {scopes}", scopeString);
 
             var scopeDetails = await _scopes.FindEnabledScopesAsync(scopes);
             var scopeClaims = new List<string>();

@@ -37,13 +37,12 @@ namespace IdentityServer4.Endpoints
                 return await ProcessSignoutCallbackAsync(context);
             }
 
+            _logger.LogWarning("Invalid request path to end session endpoint");
             return new StatusCodeResult(HttpStatusCode.NotFound);
         }
 
         private async Task<IEndpointResult> ProcessSignoutAsync(HttpContext context)
         {
-            _logger.LogInformation("Processing signout request");
-
             NameValueCollection parameters = null;
             if (context.Request.Method == "GET")
             {
@@ -60,7 +59,19 @@ namespace IdentityServer4.Endpoints
             }
 
             var user = await context.GetIdentityServerUserAsync();
+
+            _logger.LogDebug("Processing signout request for {subjectId}", user?.GetSubjectId() ?? "anonymous");
+
             var result = await _endSessionRequestValidator.ValidateAsync(parameters, user);
+            
+            if (result.IsError)
+            {
+                _logger.LogError("Error processing end session request {error}", result.Error);
+            }
+            else
+            {
+                _logger.LogInformation("Success validating end session request from {clientId}", result.ValidatedRequest?.Client?.ClientId);
+            }
 
             return new EndSessionResult(result);
         }
@@ -69,11 +80,11 @@ namespace IdentityServer4.Endpoints
         {
             if (context.Request.Method != "GET")
             {
-                _logger.LogWarning("Invalid HTTP method for end session endpoint.");
+                _logger.LogWarning("Invalid HTTP method for end session callback endpoint.");
                 return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
             }
 
-            _logger.LogInformation("Processing singout callback request");
+            _logger.LogDebug("Processing singout callback request");
 
             var parameters = context.Request.Query.AsNameValueCollection();
             var result = await _endSessionRequestValidator.ValidateCallbackAsync(parameters);

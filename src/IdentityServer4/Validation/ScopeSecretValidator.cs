@@ -60,7 +60,7 @@ namespace IdentityServer4.Validation
             var result = await _validator.ValidateAsync(parsedSecret, scope.ScopeSecrets);
             if (result.Success)
             {
-                _logger.LogInformation("Scope validation success");
+                _logger.LogDebug("Scope validation success");
 
                 var success = new ScopeSecretValidationResult
                 {

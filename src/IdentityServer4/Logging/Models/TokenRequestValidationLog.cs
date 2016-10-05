@@ -26,15 +26,14 @@ namespace IdentityServer4.Logging
 
         public Dictionary<string, string> Raw { get; set; }
 
+        static readonly string[] SensitiveValuesFilter = {
+            OidcConstants.TokenRequest.Password,
+            OidcConstants.TokenRequest.ClientAssertion
+        };
+
         public TokenRequestValidationLog(ValidatedTokenRequest request)
         {
-            const string scrubValue = "******";
-            Raw = request.Raw.ToDictionary();
-
-            if (Raw.ContainsKey(OidcConstants.TokenRequest.Password))
-            {
-                Raw[OidcConstants.TokenRequest.Password] = scrubValue;
-            }
+            Raw = request.Raw.ToScrubbedDictionary(SensitiveValuesFilter);
 
             if (request.Client != null)
             {

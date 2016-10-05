@@ -45,7 +45,7 @@ namespace IdentityServer4.Validation
             // invalid or unknown token
             if (tokenValidationResult.IsError)
             {
-                _logger.LogError("Token is invalid.");
+                _logger.LogDebug("Token is invalid.");
 
                 fail.IsActive = false;
                 fail.FailureReason = IntrospectionRequestValidationFailureReason.InvalidToken;
@@ -78,7 +78,7 @@ namespace IdentityServer4.Validation
                 Claims = tokenValidationResult.Claims
             };
 
-            _logger.LogInformation("Introspection request validation successful.");
+            _logger.LogDebug("Introspection request validation successful.");
             return success;
         }
     }

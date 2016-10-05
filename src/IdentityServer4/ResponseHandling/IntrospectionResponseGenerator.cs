@@ -30,7 +30,7 @@ namespace IdentityServer4.ResponseHandling
             
             if (validationResult.IsActive == false)
             {
-                _logger.LogInformation("Creating introspection response for inactive token.");
+                _logger.LogDebug("Creating introspection response for inactive token.");
 
                 response.Add("active", false);
                 return Task.FromResult(response);
@@ -38,14 +38,14 @@ namespace IdentityServer4.ResponseHandling
 
             if (scope.AllowUnrestrictedIntrospection)
             {
-                _logger.LogInformation("Creating unrestricted introspection response for active token.");
+                _logger.LogDebug("Creating unrestricted introspection response for active token.");
 
                 response = validationResult.Claims.ToClaimsDictionary();
                 response.Add("active", true);
             }
             else
             {
-                _logger.LogInformation("Creating restricted introspection response for active token.");
+                _logger.LogDebug("Creating restricted introspection response for active token.");
 
                 response = validationResult.Claims.Where(c => c.Type != JwtClaimTypes.Scope).ToClaimsDictionary();
                 response.Add("active", true);

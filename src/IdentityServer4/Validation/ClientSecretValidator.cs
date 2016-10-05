@@ -66,13 +66,13 @@ namespace IdentityServer4.Validation
                 if (result.Success == false)
                 {
                     await RaiseFailureEvent(client.ClientId, "Invalid client secret");
-                    _logger.LogError("Client validation failed for client: {clientId}.", client.ClientId);
+                    _logger.LogError("Client secret validation failed for client: {clientId}.", client.ClientId);
 
                     return fail;
                 }
             }
 
-            _logger.LogInformation("Client validation success");
+            _logger.LogDebug("Client validation success");
 
             var success = new ClientSecretValidationResult
             {

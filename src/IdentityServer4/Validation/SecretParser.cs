@@ -45,11 +45,11 @@ namespace IdentityServer4.Validation
 
             if (bestSecret != null)
             {
-                _logger.LogInformation("Secret id found: {id}", bestSecret.Id);
+                _logger.LogDebug("Secret id found: {id}", bestSecret.Id);
                 return bestSecret;
             }
 
-            _logger.LogInformation("Parser found no secret");
+            _logger.LogDebug("Parser found no secret");
             return null;
         }
 
