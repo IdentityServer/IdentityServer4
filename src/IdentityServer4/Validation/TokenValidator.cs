@@ -339,7 +339,7 @@ namespace IdentityServer4.Validation
 
         private void LogSuccess()
         {
-            _logger.LogInformation("Token validation success\n{logMessage}", _log);
+            _logger.LogDebug("Token validation success\n{logMessage}", _log);
         }
     }
 }

@@ -52,21 +52,21 @@ namespace IdentityServer4
                 var path = context.Request.Path;
                 if (IsPathAllowed(path))
                 {
-                    _logger.LogInformation("CORS request made for path: {0} from origin: {1}", path, origin);
+                    _logger.LogDebug("CORS request made for path: {path} from origin: {origin}", path, origin);
 
                     if (await _corsPolicyService.IsOriginAllowedAsync(origin))
                     {
-                        _logger.LogInformation("CorsPolicyService allowed origin");
+                        _logger.LogDebug("CorsPolicyService allowed origin: {origin}", origin);
                         return Allow(origin);
                     }
                     else
                     {
-                        _logger.LogInformation("CorsPolicyService did not allow origin");
+                        _logger.LogWarning("CorsPolicyService did not allow origin: {origin}", origin);
                     }
                 }
                 else
                 {
-                    _logger.LogWarning("CORS request made for path: {0} from origin: {1} but rejected because invalid CORS path", path, origin);
+                    _logger.LogDebug("CORS request made for path: {path} from origin: {origin} but rejected because invalid CORS path", path, origin);
                 }
             }
 

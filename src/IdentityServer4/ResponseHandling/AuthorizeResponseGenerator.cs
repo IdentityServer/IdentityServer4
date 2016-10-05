@@ -51,7 +51,7 @@ namespace IdentityServer4.ResponseHandling
 
         private async Task<AuthorizeResponse> CreateHybridFlowResponseAsync(ValidatedAuthorizeRequest request)
         {
-            _logger.LogInformation("Creating Hybrid Flow response.");
+            _logger.LogDebug("Creating Hybrid Flow response.");
 
             var code = await CreateCodeAsync(request);
             var response = await CreateImplicitFlowResponseAsync(request, code);
@@ -62,7 +62,7 @@ namespace IdentityServer4.ResponseHandling
 
         public async Task<AuthorizeResponse> CreateCodeFlowResponseAsync(ValidatedAuthorizeRequest request)
         {
-            _logger.LogInformation("Creating Authorization Code Flow response.");
+            _logger.LogDebug("Creating Authorization Code Flow response.");
 
             var code = await CreateCodeAsync(request);
 
@@ -106,7 +106,7 @@ namespace IdentityServer4.ResponseHandling
 
         public async Task<AuthorizeResponse> CreateImplicitFlowResponseAsync(ValidatedAuthorizeRequest request, string authorizationCode = null)
         {
-            _logger.LogInformation("Creating Implicit Flow response.");
+            _logger.LogDebug("Creating Implicit Flow response.");
 
             string accessTokenValue = null;
             int accessTokenLifetime = 0;

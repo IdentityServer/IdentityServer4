@@ -56,7 +56,7 @@ namespace IdentityServer4.Logging
                 }
                 else
                 {
-                    SubjectId = "unknown";
+                    SubjectId = "anonymous";
                 }
             }
 

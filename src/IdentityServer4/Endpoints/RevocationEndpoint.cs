@@ -70,7 +70,7 @@ namespace IdentityServer4.Endpoints
 
         private async Task<IEndpointResult> ProcessRevocationRequestAsync(HttpContext context)
         {
-            _logger.LogInformation("Start revocation request.");
+            _logger.LogDebug("Start revocation request.");
 
             // validate client
             var clientResult = await _clientValidator.ValidateAsync(context);
@@ -81,6 +81,8 @@ namespace IdentityServer4.Endpoints
                 return new RevocationErrorResult(OidcConstants.TokenErrors.InvalidClient);
             }
 
+            _logger.LogTrace("Client validation successful");
+
             // validate the token request
             var form = context.Request.Form.AsNameValueCollection();
             var requestResult = await _requestValidator.ValidateRequestAsync(form, client);
@@ -90,23 +92,37 @@ namespace IdentityServer4.Endpoints
                 return new RevocationErrorResult(requestResult.Error);
             }
 
+            var success = false;
             // revoke tokens
             if (requestResult.TokenTypeHint == Constants.TokenTypeHints.AccessToken)
             {
-                await RevokeAccessTokenAsync(requestResult.Token, client);
+                _logger.LogTrace("Hint was for access token");
+                success = await RevokeAccessTokenAsync(requestResult.Token, client);
             }
             else if (requestResult.TokenTypeHint == Constants.TokenTypeHints.RefreshToken)
             {
-                await RevokeRefreshTokenAsync(requestResult.Token, client);
+                _logger.LogTrace("Hint was for refresh token");
+                success = await RevokeRefreshTokenAsync(requestResult.Token, client);
             }
             else
             {
-                var found = await RevokeAccessTokenAsync(requestResult.Token, client);
+                _logger.LogTrace("No hint for token type");
 
-                if (!found)
+                success = await RevokeAccessTokenAsync(requestResult.Token, client);
+
+                if (!success)
                 {
-                    await RevokeRefreshTokenAsync(requestResult.Token, client);
+                    success = await RevokeRefreshTokenAsync(requestResult.Token, client);
                 }
+            }
+
+            if (success)
+            {
+                _logger.LogInformation("Token successfully revoked");
+            }
+            else
+            {
+                _logger.LogInformation("No matching token found");
             }
 
             return new StatusCodeResult(HttpStatusCode.OK);
@@ -121,11 +137,12 @@ namespace IdentityServer4.Endpoints
             {
                 if (token.ClientId == client.ClientId)
                 {
+                    _logger.LogDebug("Access token revoked");
                     await _grants.RemoveReferenceTokenAsync(handle);
                 }
                 else
                 {
-                    var message = string.Format("Client {0} tried to revoke an access token belonging to a different client: {1}", client.ClientId, token.ClientId);
+                    var message = string.Format("Client {clientId} tried to revoke an access token belonging to a different client: {clientId}", client.ClientId, token.ClientId);
 
                     _logger.LogWarning(message);
                     await RaiseFailureEventAsync(message);
@@ -146,12 +163,13 @@ namespace IdentityServer4.Endpoints
             {
                 if (token.ClientId == client.ClientId)
                 {
+                    _logger.LogDebug("Refresh token revoked");
                     await _grants.RemoveRefreshTokensAsync(token.SubjectId, token.ClientId);
                     await _grants.RemoveReferenceTokensAsync(token.SubjectId, token.ClientId);
                 }
                 else
                 {
-                    var message = string.Format("Client {0} tried to revoke a refresh token belonging to a different client: {1}", client.ClientId, token.ClientId);
+                    var message = string.Format("Client {clientId} tried to revoke a refresh token belonging to a different client: {clientId}", client.ClientId, token.ClientId);
 
                     _logger.LogWarning(message);
                     await RaiseFailureEventAsync(message);

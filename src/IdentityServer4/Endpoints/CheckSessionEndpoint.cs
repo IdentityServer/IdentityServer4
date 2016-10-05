@@ -31,7 +31,7 @@ namespace IdentityServer4.Endpoints
             }
             else
             {
-                _logger.LogInformation("Check session iframe request");
+                _logger.LogDebug("Rendering check session result");
                 result = new CheckSessionResult();
             }
 

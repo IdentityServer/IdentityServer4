@@ -105,7 +105,8 @@ namespace IdentityServer4.Validation
                 return Invalid(request, customResult.Error);
             }
 
-            LogSuccess(request);
+            _logger.LogTrace("Authorize request protocol validation successful");
+
             return Valid(request);
         }
 
@@ -617,12 +618,6 @@ namespace IdentityServer4.Validation
         {
             var details = new AuthorizeRequestValidationLog(request);
             _logger.LogError(message + "\n{validationDetails}", details);
-        }
-
-        private void LogSuccess(ValidatedAuthorizeRequest request)
-        {
-            var details = new AuthorizeRequestValidationLog(request);
-            _logger.LogInformation("Authorize request validation success\n{validationDetails}", details);
         }
     }
 }

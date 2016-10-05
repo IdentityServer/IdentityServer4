@@ -51,7 +51,7 @@ namespace IdentityServer4.ResponseHandling
                 // we won't think we need to force a prompt again
                 request.RemovePrompt();
 
-                _logger.LogInformation("Redirecting to login page because of prompt=login");
+                _logger.LogInformation("Showing login: request contains prompt=login");
 
                 return new InteractionResponse() { IsLogin = true };
             }
@@ -72,18 +72,31 @@ namespace IdentityServer4.ResponseHandling
 
             if (!isAuthenticated || !isActive)
             {
-                if (!isAuthenticated) _logger.LogInformation("User is not authenticated.");
-                else if (!isActive) _logger.LogInformation("User is not active.");
-
                 // prompt=none means user must be signed in already
                 if (request.PromptMode == OidcConstants.PromptModes.None)
                 {
-                    _logger.LogInformation("prompt=none was requested but user is not authenticated/active.");
+                    if (!isAuthenticated)
+                    {
+                        _logger.LogInformation("Showing error: prompt=none was requested but user is not authenticated");
+                    }
+                    else if (!isActive)
+                    {
+                        _logger.LogInformation("Showing error: prompt=none was requested but user is not active");
+                    }
 
                     return new InteractionResponse
                     {
                         Error = OidcConstants.AuthorizeErrors.LoginRequired,
                     };
+                }
+
+                if (!isAuthenticated)
+                {
+                    _logger.LogInformation("Showing login: User is not authenticated");
+                }
+                else if (!isActive)
+                {
+                    _logger.LogInformation("Showing login: User is not active");
                 }
 
                 return new InteractionResponse() { IsLogin = true };
@@ -98,9 +111,7 @@ namespace IdentityServer4.ResponseHandling
             {
                 if (idp != currentIdp)
                 {
-                    _logger.LogInformation("Current IdP is not the requested IdP. Redirecting to login");
-                    _logger.LogInformation("Current: {0} -- Requested: {1}", currentIdp, idp);
-
+                    _logger.LogInformation("Showing login: Current IdP ({idp}) is not the requested IdP ({idp})", currentIdp, idp);
                     return new InteractionResponse() { IsLogin = true };
                 }
             }
@@ -111,7 +122,7 @@ namespace IdentityServer4.ResponseHandling
                 var authTime = request.Subject.GetAuthenticationTime();
                 if (DateTimeHelper.UtcNow > authTime.AddSeconds(request.MaxAge.Value))
                 {
-                    _logger.LogInformation("Requested MaxAge exceeded.");
+                    _logger.LogInformation("Showing login: Requested MaxAge exceeded.");
 
                     return new InteractionResponse() { IsLogin = true };
                 }
@@ -120,7 +131,7 @@ namespace IdentityServer4.ResponseHandling
             // check local idp restrictions
             if (currentIdp == Constants.LocalIdentityProvider && !request.Client.EnableLocalLogin)
             {
-                _logger.LogInformation("User logged in locally, but client does not allow local logins");
+                _logger.LogInformation("Showing login: User logged in locally, but client does not allow local logins");
                 return new InteractionResponse() { IsLogin = true };
             }
 
@@ -129,7 +140,7 @@ namespace IdentityServer4.ResponseHandling
             {
                 if (!request.Client.IdentityProviderRestrictions.Contains(currentIdp))
                 {
-                    _logger.LogWarning("User is logged in with idp: {0}, but idp not in client restriction list.", currentIdp);
+                    _logger.LogInformation("Showing login: User is logged in with idp: {idp}, but idp not in client restriction list.", currentIdp);
                     return new InteractionResponse() { IsLogin = true };
                 }
             }
@@ -145,6 +156,7 @@ namespace IdentityServer4.ResponseHandling
                 request.PromptMode != OidcConstants.PromptModes.None &&
                 request.PromptMode != OidcConstants.PromptModes.Consent)
             {
+                _logger.LogError("Invalid prompt mode: {promptMode}", request.PromptMode);
                 throw new ArgumentException("Invalid PromptMode");
             }
 
@@ -152,7 +164,7 @@ namespace IdentityServer4.ResponseHandling
 
             if (consentRequired && request.PromptMode == OidcConstants.PromptModes.None)
             {
-                _logger.LogInformation("Prompt=none requested, but consent is required.");
+                _logger.LogInformation("Error: prompt=none requested, but consent is required.");
 
                 return new InteractionResponse
                 {
@@ -169,10 +181,12 @@ namespace IdentityServer4.ResponseHandling
                 {
                     // user was not yet shown conset screen
                     response.IsConsent = true;
+                    _logger.LogInformation("Showing consent: User has not yet consented");
                 }
                 else
                 {
                     request.WasConsentShown = true;
+                    _logger.LogTrace("Consent was shown to user");
 
                     // user was shown consent -- did they say yes or no
                     if (consent.Granted == false)
@@ -180,6 +194,7 @@ namespace IdentityServer4.ResponseHandling
                         // no need to show consent screen again
                         // build access denied error to return to client
                         response.Error = OidcConstants.AuthorizeErrors.AccessDenied;
+                        _logger.LogInformation("Error: User denied consent");
                     }
                     else
                     {
@@ -188,11 +203,13 @@ namespace IdentityServer4.ResponseHandling
                         if (valid == false)
                         {
                             response.Error = OidcConstants.AuthorizeErrors.AccessDenied;
+                            _logger.LogInformation("Error: User denied consent to required scopes");
                         }
                         else
                         {
                             // they said yes, set scopes they chose
                             request.ValidatedScopes.SetConsentedScopes(consent.ScopesConsented);
+                            _logger.LogInformation("User consented to scopes: {scopes}", consent.ScopesConsented);
 
                             if (request.Client.AllowRememberConsent)
                             {
@@ -202,6 +219,7 @@ namespace IdentityServer4.ResponseHandling
                                 {
                                     // remember what user actually selected
                                     scopes = request.ValidatedScopes.GrantedScopes.Select(x => x.Name);
+                                    _logger.LogDebug("User indicated to remember consent for scopes: {scopes}", scopes);
                                 }
 
                                 await _consent.UpdateConsentAsync(request.Subject, request.Client, scopes);

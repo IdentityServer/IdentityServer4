@@ -72,8 +72,6 @@ namespace IdentityServer4.Endpoints
             {
                 if (validationResult.FailureReason == IntrospectionRequestValidationFailureReason.MissingToken)
                 {
-                    _logger.LogError("Missing token");
-
                     await RaiseFailureEventAsync(validationResult.ErrorDescription, validationResult.Token, scopeResult.Scope.Name);
                     //todo return BadRequest("missing_token");
                     return new StatusCodeResult(400);
@@ -92,11 +90,14 @@ namespace IdentityServer4.Endpoints
                 }
             }
 
+            _logger.LogError("Invalid token introspection outcome");
             throw new InvalidOperationException("Invalid token introspection outcome");
         }
 
         private async Task RaiseSuccessEventAsync(string token, string tokenStatus, string scopeName)
         {
+            _logger.LogInformation("Success token introspection. Token status: {tokenStatus}, for scope name: {scopeName}", tokenStatus, scopeName);
+
             await _events.RaiseSuccessfulIntrospectionEndpointEventAsync(
                 token,
                 tokenStatus,
@@ -105,6 +106,8 @@ namespace IdentityServer4.Endpoints
 
         private async Task RaiseFailureEventAsync(string error, string token, string scopeName)
         {
+            _logger.LogError("Failed token introspection: {error}, for scope name: {scopeName}", error, scopeName);
+
             await _events.RaiseFailureIntrospectionEndpointEventAsync(
                 error, token, scopeName);
         }

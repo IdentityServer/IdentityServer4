@@ -70,7 +70,7 @@ namespace IdentityServer4.Endpoints
             }
             else
             {
-                _logger.LogInformation("Success validating end session request from {clientId}", result.ValidatedRequest?.Client?.ClientId);
+                _logger.LogDebug("Success validating end session request from {clientId}", result.ValidatedRequest?.Client?.ClientId);
             }
 
             return new EndSessionResult(result);
@@ -88,6 +88,11 @@ namespace IdentityServer4.Endpoints
 
             var parameters = context.Request.Query.AsNameValueCollection();
             var result = await _endSessionRequestValidator.ValidateCallbackAsync(parameters);
+
+            if (result.IsError == false)
+            {
+                _logger.LogInformation("Successful signout callback. Client logout iframe urls: {urls}", result.ClientLogoutUrls);
+            }
 
             return new EndSessionCallbackResult(result);
         }

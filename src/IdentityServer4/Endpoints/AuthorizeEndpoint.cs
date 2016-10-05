@@ -18,6 +18,8 @@ using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Stores;
 using IdentityModel;
 using Microsoft.AspNetCore.Http;
+using IdentityServer4.Logging;
+using System;
 
 namespace IdentityServer4.Endpoints
 {
@@ -81,7 +83,7 @@ namespace IdentityServer4.Endpoints
 
             var result = await ProcessAuthorizeRequestAsync(values, user, null);
 
-            _logger.LogInformation("End authorize request. result type: {0}", result?.GetType().ToString() ?? "-none-");
+            _logger.LogTrace("End authorize request. result type: {0}", result?.GetType().ToString() ?? "-none-");
 
             return result;
         }
@@ -93,27 +95,25 @@ namespace IdentityServer4.Endpoints
             var user = await context.GetIdentityServerUserAsync();
             if (user == null)
             {
-                _logger.LogError("User is not authenticated.");
-                return await CreateErrorResultAsync();
+                return await CreateErrorResultAsync("User is not authenticated");
             }
 
             var parameters = context.Request.Query.AsNameValueCollection();
             var result = await ProcessAuthorizeRequestAsync(parameters, user, null);
 
-            _logger.LogInformation("End Authorize Request. Result type: {0}", result?.GetType().ToString() ?? "-none-");
+            _logger.LogTrace("End Authorize Request. Result type: {0}", result?.GetType().ToString() ?? "-none-");
 
             return result;
         }
 
         internal async Task<IEndpointResult> ProcessAuthorizeAfterConsentAsync(HttpContext context)
         {
-            _logger.LogInformation("Start authorize request (after consent)");
+            _logger.LogDebug("Start authorize request (after consent)");
 
             var user = await context.GetIdentityServerUserAsync();
             if (user == null)
             {
-                _logger.LogError("User is not authenticated.");
-                return await CreateErrorResultAsync();
+                return await CreateErrorResultAsync("User is not authenticated");
             }
 
             var parameters = context.Request.Query.AsNameValueCollection();
@@ -122,21 +122,19 @@ namespace IdentityServer4.Endpoints
             var consent = await _consentResponseStore.ReadAsync(consentRequest.Id);
             if (consent == null)
             {
-                _logger.LogError("consent message is missing.");
-                return await CreateErrorResultAsync();
+                return await CreateErrorResultAsync("consent message is missing");
             }
 
             try
             { 
                 if (consent.Data == null)
                 {
-                    _logger.LogError("consent message is missing Consent data.");
-                    return await CreateErrorResultAsync();
+                    return await CreateErrorResultAsync("consent message is missing data");
                 }
 
                 var result = await ProcessAuthorizeRequestAsync(parameters, user, consent.Data);
 
-                _logger.LogInformation("End Authorize Request. Result type: {0}", result?.GetType().ToString() ?? "-none-");
+                _logger.LogTrace("End Authorize Request. Result type: {0}", result?.GetType().ToString() ?? "-none-");
 
                 return result;
             }
@@ -150,11 +148,11 @@ namespace IdentityServer4.Endpoints
         {
             if (user != null)
             {
-                _logger.LogTrace("User in authorize request: name:{name}, sub:{sub}", user.GetName(), user.GetSubjectId());
+                _logger.LogDebug("User in authorize request: {subjectId}", user.GetSubjectId());
             }
             else
             {
-                _logger.LogTrace("No user present in authorize request");
+                _logger.LogDebug("No user present in authorize request");
             }
 
             // validate request
@@ -162,44 +160,62 @@ namespace IdentityServer4.Endpoints
             if (result.IsError)
             {
                 return await CreateErrorResultAsync(
+                    "Request validation failed",
                     result.ValidatedRequest,
                     result.Error,
                     result.ErrorDescription);
             }
 
             var request = result.ValidatedRequest;
+            LogRequest(request);
 
             // determine user interaction
             var interactionResult = await _interactionGenerator.ProcessInteractionAsync(request, consent);
             if (interactionResult.IsError)
             {
-                return await CreateErrorResultAsync(request, interactionResult.Error);
+                return await CreateErrorResultAsync("Interaction generator error", request, interactionResult.Error);
             }
             if (interactionResult.IsLogin)
             {
-                _logger.LogDebug("Showing login page");
                 return new LoginPageResult(request);
             }
             if (interactionResult.IsConsent)
             {
-                _logger.LogDebug("Showing consent page");
                 return new ConsentPageResult(request);
             }
 
             var response = await _authorizeResponseGenerator.CreateResponseAsync(request);
 
-            _logger.LogInformation("Issuing successful authorization response");
             await RaiseSuccessEventAsync();
 
+            LogResponse(response);
             return new AuthorizeResult(response);
         }
 
+        private void LogRequest(ValidatedAuthorizeRequest request)
+        {
+            var details = new AuthorizeRequestValidationLog(request);
+            _logger.LogInformation("ValidatedAuthorizeRequest" + Environment.NewLine + "{validationDetails}", details);
+        }
+
+        private void LogResponse(AuthorizeResponse response)
+        {
+            var details = new AuthorizeResponseLog(response);
+            _logger.LogInformation("Authorize endpoint response" + Environment.NewLine + "{response}", details);
+        }
+
         async Task<IEndpointResult> CreateErrorResultAsync(
+            string logMessage,
             ValidatedAuthorizeRequest request = null, 
             string error = OidcConstants.AuthorizeErrors.ServerError, 
             string errorDescription = null)
         {
-            _logger.LogDebug("Returning error");
+            _logger.LogError(logMessage);
+            if (request != null)
+            {
+                var details = new AuthorizeRequestValidationLog(request);
+                _logger.LogInformation("{validationDetails}", details);
+            }
 
             await RaiseFailureEventAsync(error);
 
