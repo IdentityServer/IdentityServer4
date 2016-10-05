@@ -121,7 +121,7 @@ namespace IdentityServer4.IntegrationTests.Clients
 
                     AllowedScopes = 
                     {
-                        "api1", "api2"
+                        "api1", "api2", "offline_access"
                     },
 
                     AccessTokenType = AccessTokenType.Reference
