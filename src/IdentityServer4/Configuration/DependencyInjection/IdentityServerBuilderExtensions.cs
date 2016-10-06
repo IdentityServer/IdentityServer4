@@ -66,6 +66,9 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.AddEndpoint<TokenEndpoint>(EndpointName.Token);
             builder.AddEndpoint<UserInfoEndpoint>(EndpointName.UserInfo);
 
+            builder.Services.AddScoped<IMatchAuthorizeProtocolRoutePaths, DefaultAuthorizeProtocolRouteMatcher>();
+            builder.Services.AddScoped<IMatchEndSessionProtocolRoutePaths, DefaultEndSessionProtocolRouteMatcher>();
+            
             return builder;
         }
 

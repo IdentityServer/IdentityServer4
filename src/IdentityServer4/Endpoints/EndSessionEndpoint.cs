@@ -18,21 +18,26 @@ namespace IdentityServer4.Endpoints
     {
         private readonly IEndSessionRequestValidator _endSessionRequestValidator;
         private readonly ILogger<EndSessionEndpoint> _logger;
+        private readonly IMatchEndSessionProtocolRoutePaths _pathMatcher;
 
-        public EndSessionEndpoint(IEndSessionRequestValidator endSessionRequestValidator, ILogger<EndSessionEndpoint> logger)
+        public EndSessionEndpoint(
+            IEndSessionRequestValidator endSessionRequestValidator,
+            IMatchEndSessionProtocolRoutePaths pathMatcher,
+            ILogger<EndSessionEndpoint> logger)
         {
             _endSessionRequestValidator = endSessionRequestValidator;
+            _pathMatcher = pathMatcher;
             _logger = logger;
         }
 
         public async Task<IEndpointResult> ProcessAsync(HttpContext context)
         {
-            if (context.Request.Path == Constants.ProtocolRoutePaths.EndSession.EnsureLeadingSlash())
+            if (_pathMatcher.IsEndSessionPath(context.Request.Path))
             {
                 return await ProcessSignoutAsync(context);
             }
 
-            if (context.Request.Path == Constants.ProtocolRoutePaths.EndSessionCallback.EnsureLeadingSlash())
+            if (_pathMatcher.IsEndSessionCallbackPath(context.Request.Path))
             {
                 return await ProcessSignoutCallbackAsync(context);
             }
