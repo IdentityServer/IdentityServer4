@@ -86,18 +86,23 @@ namespace IdentityServer4
         {
             var identity = principal.Identities.First();
 
+            var amr = identity.FindFirst(ClaimTypes.AuthenticationMethod);
+            if (amr != null &&
+                identity.FindFirst(JwtClaimTypes.IdentityProvider) == null && 
+                identity.FindFirst(JwtClaimTypes.AuthenticationMethod) == null)
+            {
+                // this is correcting the use of AuthenticationMethod for use of external middleware like "Google", "Facebook", etc.
+                identity.RemoveClaim(amr);
+                identity.AddClaim(new Claim(JwtClaimTypes.IdentityProvider, amr.Value));
+                identity.AddClaim(new Claim(JwtClaimTypes.AuthenticationMethod, Constants.ExternalAuthenticationMethod));
+            }
+
             if (identity.FindFirst(JwtClaimTypes.IdentityProvider) == null)
             {
                 identity.AddClaim(new Claim(JwtClaimTypes.IdentityProvider, Constants.LocalIdentityProvider));
             }
 
-            var amr = identity.FindFirst(ClaimTypes.AuthenticationMethod);
-            if (amr != null)
-            {
-                identity.RemoveClaim(amr);
-                identity.AddClaim(new Claim(JwtClaimTypes.AuthenticationMethod, amr.Value));
-            }
-            else if (identity.FindFirst(JwtClaimTypes.AuthenticationMethod) == null)
+            if (identity.FindFirst(JwtClaimTypes.AuthenticationMethod) == null)
             {
                 identity.AddClaim(new Claim(JwtClaimTypes.AuthenticationMethod, OidcConstants.AuthenticationMethods.Password));
             }
