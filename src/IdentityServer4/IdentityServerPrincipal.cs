@@ -84,19 +84,27 @@ namespace IdentityServer4
 
         internal static void AugmentMissingClaims(this ClaimsPrincipal principal)
         {
-            if (principal.FindFirst(JwtClaimTypes.IdentityProvider) == null)
+            var identity = principal.Identities.First();
+
+            if (identity.FindFirst(JwtClaimTypes.IdentityProvider) == null)
             {
-                principal.Identities.First().AddClaim(new Claim(JwtClaimTypes.IdentityProvider, Constants.LocalIdentityProvider));
+                identity.AddClaim(new Claim(JwtClaimTypes.IdentityProvider, Constants.LocalIdentityProvider));
             }
 
-            if (principal.FindFirst(JwtClaimTypes.AuthenticationMethod) == null)
+            var amr = identity.FindFirst(ClaimTypes.AuthenticationMethod);
+            if (amr != null)
             {
-                principal.Identities.First().AddClaim(new Claim(JwtClaimTypes.AuthenticationMethod, OidcConstants.AuthenticationMethods.Password));
+                identity.RemoveClaim(amr);
+                identity.AddClaim(new Claim(JwtClaimTypes.AuthenticationMethod, amr.Value));
+            }
+            else if (identity.FindFirst(JwtClaimTypes.AuthenticationMethod) == null)
+            {
+                identity.AddClaim(new Claim(JwtClaimTypes.AuthenticationMethod, OidcConstants.AuthenticationMethods.Password));
             }
 
-            if (principal.FindFirst(JwtClaimTypes.AuthenticationTime) == null)
+            if (identity.FindFirst(JwtClaimTypes.AuthenticationTime) == null)
             {
-                principal.Identities.First().AddClaim(new Claim(JwtClaimTypes.AuthenticationTime, DateTimeHelper.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer));
+                identity.AddClaim(new Claim(JwtClaimTypes.AuthenticationTime, DateTimeHelper.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer));
             }
         }
 
