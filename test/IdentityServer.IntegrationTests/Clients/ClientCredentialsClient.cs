@@ -37,6 +37,23 @@ namespace IdentityServer4.IntegrationTests.Clients
         }
 
         [Fact]
+        public async Task Invalid_Endpoint()
+        {
+            var client = new TokenClient(
+                TokenEndpoint + "invalid",
+                "client",
+                "secret",
+                innerHttpMessageHandler: _handler);
+
+            var response = await client.RequestClientCredentialsAsync("api1");
+
+            response.IsError.Should().Be(true);
+            response.ErrorType.Should().Be(ResponseErrorType.Http);
+            response.Error.Should().Be("Not Found");
+            response.HttpStatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+
+        [Fact]
         public async Task Valid_Client()
         {
             var client = new TokenClient(
@@ -199,7 +216,7 @@ namespace IdentityServer4.IntegrationTests.Clients
             var response = await client.RequestClientCredentialsAsync("api1");
 
             response.IsError.Should().Be(true);
-            response.ErrorType.Should().Be(TokenResponse.ResponseErrorType.Protocol);
+            response.ErrorType.Should().Be(ResponseErrorType.Protocol);
             response.HttpStatusCode.Should().Be(HttpStatusCode.BadRequest);
             response.Error.Should().Be("invalid_client");
         }
@@ -216,7 +233,7 @@ namespace IdentityServer4.IntegrationTests.Clients
             var response = await client.RequestClientCredentialsAsync("unknown");
 
             response.IsError.Should().Be(true);
-            response.ErrorType.Should().Be(TokenResponse.ResponseErrorType.Protocol);
+            response.ErrorType.Should().Be(ResponseErrorType.Protocol);
             response.HttpStatusCode.Should().Be(HttpStatusCode.BadRequest);
             response.Error.Should().Be("invalid_scope");
         }
@@ -233,7 +250,7 @@ namespace IdentityServer4.IntegrationTests.Clients
             var response = await client.RequestClientCredentialsAsync("openid api1");
 
             response.IsError.Should().Be(true);
-            response.ErrorType.Should().Be(TokenResponse.ResponseErrorType.Protocol);
+            response.ErrorType.Should().Be(ResponseErrorType.Protocol);
             response.HttpStatusCode.Should().Be(HttpStatusCode.BadRequest);
             response.Error.Should().Be("invalid_scope");
         }
@@ -250,7 +267,7 @@ namespace IdentityServer4.IntegrationTests.Clients
             var response = await client.RequestClientCredentialsAsync("api3");
 
             response.IsError.Should().Be(true);
-            response.ErrorType.Should().Be(TokenResponse.ResponseErrorType.Protocol);
+            response.ErrorType.Should().Be(ResponseErrorType.Protocol);
             response.HttpStatusCode.Should().Be(HttpStatusCode.BadRequest);
             response.Error.Should().Be("invalid_scope");
         }
@@ -267,7 +284,7 @@ namespace IdentityServer4.IntegrationTests.Clients
             var response = await client.RequestClientCredentialsAsync("api1 api3");
 
             response.IsError.Should().Be(true);
-            response.ErrorType.Should().Be(TokenResponse.ResponseErrorType.Protocol);
+            response.ErrorType.Should().Be(ResponseErrorType.Protocol);
             response.HttpStatusCode.Should().Be(HttpStatusCode.BadRequest);
             response.Error.Should().Be("invalid_scope");
         }

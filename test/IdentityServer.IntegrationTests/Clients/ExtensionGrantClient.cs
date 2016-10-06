@@ -130,7 +130,7 @@ namespace IdentityServer4.IntegrationTests.Clients
             var response = await client.RequestCustomGrantAsync("custom", "api1");
 
             response.IsError.Should().Be(true);
-            response.ErrorType.Should().Be(TokenResponse.ResponseErrorType.Protocol);
+            response.ErrorType.Should().Be(ResponseErrorType.Protocol);
             response.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
             response.ErrorDescription.Should().Be("invalid_custom_credential");
         }
@@ -152,7 +152,7 @@ namespace IdentityServer4.IntegrationTests.Clients
             var response = await client.RequestCustomGrantAsync("invalid", "api1", customParameters);
 
             response.IsError.Should().Be(true);
-            response.ErrorType.Should().Be(TokenResponse.ResponseErrorType.Protocol);
+            response.ErrorType.Should().Be(ResponseErrorType.Protocol);
             response.HttpStatusCode.Should().Be(HttpStatusCode.BadRequest);
             response.Error.Should().Be("unsupported_grant_type");
         }
@@ -174,7 +174,7 @@ namespace IdentityServer4.IntegrationTests.Clients
             var response = await client.RequestCustomGrantAsync("custom2", "api1", customParameters);
 
             response.IsError.Should().Be(true);
-            response.ErrorType.Should().Be(TokenResponse.ResponseErrorType.Protocol);
+            response.ErrorType.Should().Be(ResponseErrorType.Protocol);
             response.HttpStatusCode.Should().Be(HttpStatusCode.BadRequest);
             response.Error.Should().Be("unsupported_grant_type");
         }

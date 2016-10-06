@@ -202,7 +202,7 @@ namespace IdentityServer4.IntegrationTests.Clients
             var response = await client.RequestResourceOwnerPasswordAsync("unknown", "bob", "api1");
 
             response.IsError.Should().Be(true);
-            response.ErrorType.Should().Be(TokenResponse.ResponseErrorType.Protocol);
+            response.ErrorType.Should().Be(ResponseErrorType.Protocol);
             response.HttpStatusCode.Should().Be(HttpStatusCode.BadRequest);
             response.Error.Should().Be("invalid_grant");
         }
@@ -219,7 +219,7 @@ namespace IdentityServer4.IntegrationTests.Clients
             var response = await client.RequestResourceOwnerPasswordAsync("bob", "invalid", "api1");
 
             response.IsError.Should().Be(true);
-            response.ErrorType.Should().Be(TokenResponse.ResponseErrorType.Protocol);
+            response.ErrorType.Should().Be(ResponseErrorType.Protocol);
             response.HttpStatusCode.Should().Be(HttpStatusCode.BadRequest);
             response.Error.Should().Be("invalid_grant");
         }
