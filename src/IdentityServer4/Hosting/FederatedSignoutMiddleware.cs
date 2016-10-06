@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System;
 using IdentityServer4.Extensions;
+using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.Hosting
 {
@@ -19,11 +20,13 @@ namespace IdentityServer4.Hosting
 
         private readonly RequestDelegate _next;
         private readonly IdentityServerOptions _options;
+        private readonly ILogger<FederatedSignOutMiddleware> _logger;
 
-        public FederatedSignOutMiddleware(RequestDelegate next, IdentityServerOptions options)
+        public FederatedSignOutMiddleware(RequestDelegate next, IdentityServerOptions options, ILogger<FederatedSignOutMiddleware> logger)
         {
             _next = next;
             _options = options;
+            _logger = logger;
         }
 
         public async Task Invoke(HttpContext context)
@@ -39,6 +42,8 @@ namespace IdentityServer4.Hosting
 
         private async Task ProcessResponseAsync(HttpContext context)
         {
+            _logger.LogDebug("Federated signout path requested");
+
             var user = await context.GetIdentityServerUserAsync();
             if (user != null)
             {
@@ -48,13 +53,28 @@ namespace IdentityServer4.Hosting
                     var sidParam = await GetSidRequestParamAsync(context.Request);
                     if (TimeConstantComparer.IsEqual(sid, sidParam))
                     {
+                        _logger.LogDebug("sid parameter matches current sid");
+
                         var iframeUrl = await context.GetIdentityServerSignoutFrameCallbackUrlAsync();
                         if (iframeUrl != null)
                         {
+                            _logger.LogDebug("Rendering signout callback iframe");
                             await RenderResponseAsync(context, iframeUrl, sid);
+                        }
+                        else
+                        {
+                            _logger.LogDebug("No signout callback iframe to render");
                         }
                     }
                 }
+                else
+                {
+                    _logger.LogDebug("no sid param passed");
+                }
+            }
+            else
+            {
+                _logger.LogDebug("no authenticated user");
             }
         }
 

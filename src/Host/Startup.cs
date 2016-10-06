@@ -87,7 +87,7 @@ namespace Host
             //loggerFactory.AddDebug(filter);
 
             var serilog = new LoggerConfiguration()
-                .MinimumLevel.Information()
+                .MinimumLevel.Debug()
                 .Enrich.FromLogContext()
                 .Filter.ByIncludingOnly(serilogFilter)
                 .WriteTo.LiterateConsole(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message}{NewLine}{Exception}{NewLine}")

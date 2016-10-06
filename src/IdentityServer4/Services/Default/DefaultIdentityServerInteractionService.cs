@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.Services.Default
 {
@@ -23,6 +24,7 @@ namespace IdentityServer4.Services.Default
         private readonly IMessageStore<ErrorMessage> _errorMessageStore;
         private readonly IMessageStore<ConsentResponse> _consentMessageStore;
         private readonly IPersistedGrantService _grants;
+        private readonly ILogger<DefaultIdentityServerInteractionService> _logger;
 
         public DefaultIdentityServerInteractionService(
             IdentityServerOptions options,
@@ -31,7 +33,8 @@ namespace IdentityServer4.Services.Default
             IMessageStore<LogoutMessage> logoutMessageStore,
             IMessageStore<ErrorMessage> errorMessageStore,
             IMessageStore<ConsentResponse> consentMessageStore,
-            IPersistedGrantService grants)
+            IPersistedGrantService grants, 
+            ILogger<DefaultIdentityServerInteractionService> logger)
         {
             _options = options;
             _context = context;
@@ -40,6 +43,7 @@ namespace IdentityServer4.Services.Default
             _errorMessageStore = errorMessageStore;
             _consentMessageStore = consentMessageStore;
             _grants = grants;
+            _logger = logger;
         }
 
         public async Task<AuthorizationRequest> GetAuthorizationContextAsync(string returnUrl)
@@ -51,10 +55,12 @@ namespace IdentityServer4.Services.Default
                 var result = await _validator.ValidateAsync(parameters, user);
                 if (!result.IsError)
                 {
+                    _logger.LogTrace("AuthorizationRequest being returned");
                     return new AuthorizationRequest(result.ValidatedRequest);
                 }
             }
 
+            _logger.LogTrace("No AuthorizationRequest being returned");
             return null;
         }
 
@@ -76,8 +82,19 @@ namespace IdentityServer4.Services.Default
             if (errorId != null)
             { 
                 var result = await _errorMessageStore.ReadAsync(errorId);
-                return result?.Data;
+                var data = result?.Data;
+                if (data != null)
+                {
+                    _logger.LogTrace("Error context loaded");
+                }
+                else
+                {
+                    _logger.LogTrace("No error context found");
+                }
+                return data;
             }
+
+            _logger.LogTrace("No error context found");
 
             return null;
         }
@@ -108,10 +125,12 @@ namespace IdentityServer4.Services.Default
                 if (returnUrl.EndsWith(Constants.ProtocolRoutePaths.AuthorizeAfterLogin, StringComparison.Ordinal) || 
                     returnUrl.EndsWith(Constants.ProtocolRoutePaths.AuthorizeAfterConsent, StringComparison.Ordinal))
                 {
+                    _logger.LogTrace("returnUrl is valid");
                     return true;
                 }
             }
 
+            _logger.LogTrace("returnUrl is not valid");
             return false;
         }
 

@@ -34,6 +34,8 @@ namespace IdentityServer4.ResponseHandling
 
         public async Task<InteractionResponse> ProcessInteractionAsync(ValidatedAuthorizeRequest request, ConsentResponse consent = null)
         {
+            _logger.LogTrace("ProcessInteractionAsync");
+
             var result = await ProcessLoginAsync(request);
             if (result.IsLogin || result.IsError)
             {

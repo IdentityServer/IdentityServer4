@@ -5,6 +5,7 @@
 using FluentAssertions;
 using IdentityModel;
 using IdentityServer4.Models;
+using IdentityServer4.UnitTests.Common;
 using IdentityServer4.Validation;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -22,7 +23,7 @@ namespace IdentityServer4.UnitTests.Validation
 
         public RevocationRequestValidation()
         {
-            _validator = new TokenRevocationRequestValidator();
+            _validator = new TokenRevocationRequestValidator(TestLogger.Create<TokenRevocationRequestValidator>());
             _client = new Client
             {
                 ClientName = "Code Client",

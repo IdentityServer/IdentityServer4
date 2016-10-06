@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Configuration;
 using IdentityServer4.Services;
+using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.Hosting
 {
@@ -16,12 +17,18 @@ namespace IdentityServer4.Hosting
         private readonly HttpContext _context;
         private IAuthenticationHandler _handler;
         private readonly ISessionIdService _sessionId;
+        private readonly ILogger<AuthenticationHandler> _logger;
 
-        public AuthenticationHandler(IHttpContextAccessor context, IdentityServerOptions options, ISessionIdService sessionId)
+        public AuthenticationHandler(
+            IHttpContextAccessor context, 
+            IdentityServerOptions options, 
+            ISessionIdService sessionId,
+            ILogger<AuthenticationHandler> logger)
         {
             _context = context.HttpContext;
             _options = options;
             _sessionId = sessionId;
+            _logger = logger;
         }
 
         public Task AuthenticateAsync(AuthenticateContext context)
@@ -50,6 +57,8 @@ namespace IdentityServer4.Hosting
 
         private void AugmentContext(SignInContext context)
         {
+            _logger.LogDebug("Augmenting SignInContext");
+
             context.Principal.AssertRequiredClaims();
             context.Principal.AugmentMissingClaims();
 

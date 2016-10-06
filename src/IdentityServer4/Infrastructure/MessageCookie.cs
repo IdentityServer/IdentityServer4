@@ -49,7 +49,7 @@ namespace IdentityServer4
         string Protect(Message<TModel> message)
         {
             var json = JsonConvert.SerializeObject(message, settings);
-            _logger.LogDebug("Protecting message: {0}", json);
+            _logger.LogTrace("Protecting message: {0}", json);
 
             return _protector.Protect(json);
         }
@@ -141,7 +141,7 @@ namespace IdentityServer4
                 }
                 catch(Exception ex)
                 {
-                    _logger.LogError("Error unprotecting message cookie: {0}", ex.Message);
+                    _logger.LogError("Error unprotecting message cookie: {exception}", ex.Message);
                     ClearByCookieName(name);
                 }
             }
@@ -207,6 +207,7 @@ namespace IdentityServer4
                 var purge = rankedCookieNames.Skip(Math.Max(0, toKeep - 1));
                 foreach (var name in purge)
                 {
+                    _logger.LogTrace("Purging stale cookie: {cookieName}", name);
                     ClearByCookieName(name);
                 }
             }

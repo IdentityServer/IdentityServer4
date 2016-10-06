@@ -37,13 +37,13 @@ namespace IdentityServer4.Hosting
                 if (context.Request.Path.StartsWithSegments(path))
                 {
                     var endpointName = _pathToNameMap[key];
-                    _logger.LogDebug("Request path {0} matched to endpoint type {1}", context.Request.Path, endpointName);
+                    _logger.LogDebug("Request path {path} matched to endpoint type {endpoint}", context.Request.Path, endpointName);
 
                     return GetEndpoint(endpointName, context);
                 }
             }
 
-            _logger.LogTrace("No endpoint entry found for request path: {0}", context.Request.Path);
+            _logger.LogTrace("No endpoint entry found for request path: {path}", context.Request.Path);
 
             return null;
         }
@@ -55,17 +55,17 @@ namespace IdentityServer4.Hosting
                 var mapping = _mappings.Where(x => x.Endpoint == endpointName).LastOrDefault();
                 if (mapping != null)
                 {
-                    _logger.LogDebug("Mapping found for endpoint: {0}, creating handler: {1}", endpointName, mapping.Handler.FullName);
+                    _logger.LogDebug("Mapping found for endpoint: {endpoint}, creating handler: {endpointHandler}", endpointName, mapping.Handler.FullName);
                     return context.RequestServices.GetService(mapping.Handler) as IEndpoint;
                 }
                 else
                 {
-                    _logger.LogError("No mapping found for endpoint: {0}", endpointName);
+                    _logger.LogError("No mapping found for endpoint: {endpoint}", endpointName);
                 }
             }
             else
             {
-                _logger.LogWarning("{0} endpoint requested, but is diabled in endpoint options.", endpointName);
+                _logger.LogWarning("{endpoint} endpoint requested, but is diabled in endpoint options.", endpointName);
             }
 
             return null;
