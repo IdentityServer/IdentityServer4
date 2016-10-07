@@ -117,7 +117,7 @@ The job of that middleware is:
 
 Add the following package to your project.json::
 
-    "IdentityServer4.AccessTokenValidation": "1.0.1-rc1"
+    "IdentityServer4.AccessTokenValidation": "1.0.1-rc2"
 
 You also need to add the middleware to your pipeline. 
 It must be added **before** MVC, e.g.::
