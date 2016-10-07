@@ -1,7 +1,7 @@
 ﻿{
   "dependencies": {
     "Microsoft.NETCore.App": {
-      "version": "1.0.0",
+      "version": "1.0.*",
       "type": "platform"
     },
     "Microsoft.AspNetCore.Server.IISIntegration": "1.0.*",
