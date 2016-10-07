@@ -12,6 +12,7 @@ using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 
 namespace IdentityServer4.Services.Default
 {
@@ -24,6 +25,7 @@ namespace IdentityServer4.Services.Default
         private readonly IMessageStore<ErrorMessage> _errorMessageStore;
         private readonly IMessageStore<ConsentResponse> _consentMessageStore;
         private readonly IPersistedGrantService _grants;
+        private readonly IClientSessionService _clientSessionService;
         private readonly ILogger<DefaultIdentityServerInteractionService> _logger;
 
         public DefaultIdentityServerInteractionService(
@@ -34,6 +36,7 @@ namespace IdentityServer4.Services.Default
             IMessageStore<ErrorMessage> errorMessageStore,
             IMessageStore<ConsentResponse> consentMessageStore,
             IPersistedGrantService grants, 
+            IClientSessionService clientSessionService,
             ILogger<DefaultIdentityServerInteractionService> logger)
         {
             _options = options;
@@ -43,6 +46,7 @@ namespace IdentityServer4.Services.Default
             _errorMessageStore = errorMessageStore;
             _consentMessageStore = consentMessageStore;
             _grants = grants;
+            _clientSessionService = clientSessionService;
             _logger = logger;
         }
 
@@ -134,14 +138,40 @@ namespace IdentityServer4.Services.Default
             return false;
         }
 
-        public Task<IEnumerable<Consent>> GetUserConsent(string subjectId)
+        public async Task<IEnumerable<Consent>> GetAllUserConsentsAsync()
         {
-            return _grants.GetAllGrantsAsync(subjectId);
+            var user = await _context.HttpContext.GetIdentityServerUserAsync();
+            if (user != null)
+            {
+                var subject = user.GetSubjectId();
+                return await _grants.GetAllGrantsAsync(subject);
+            }
+
+            return Enumerable.Empty<Consent>();
         }
 
-        public Task RevokeUserConsent(string subjectId, string clientId)
+        public async Task RevokeUserConsentAsync(string clientId)
         {
-            return _grants.RemoveAllGrantsAsync(subjectId, clientId);
+            var user = await _context.HttpContext.GetIdentityServerUserAsync();
+            if (user != null)
+            {
+                var subject = user.GetSubjectId();
+                await _grants.RemoveAllGrantsAsync(subject, clientId);
+            }
+        }
+
+        public async Task RevokeTokensForCurrentSessionAsync()
+        {
+            var user = await _context.HttpContext.GetIdentityServerUserAsync();
+            if (user != null)
+            {
+                var subject = user.GetSubjectId();
+                var clients = await _clientSessionService.GetClientListAsync();
+                foreach (var client in clients)
+                {
+                    await _grants.RemoveAllGrantsAsync(subject, client);
+                }
+            }
         }
     }
 }

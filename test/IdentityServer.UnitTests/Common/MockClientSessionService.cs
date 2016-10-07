@@ -5,6 +5,7 @@
 using IdentityServer4.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System;
 
 namespace IdentityServer4.UnitTests.Common
 {
@@ -23,6 +24,11 @@ namespace IdentityServer4.UnitTests.Common
         public Task EnsureClientListCookieAsync()
         {
             return Task.FromResult(0);
+        }
+
+        public Task<IEnumerable<string>> GetClientListAsync()
+        {
+            return Task.FromResult<IEnumerable<string>>(Clients);
         }
 
         public IEnumerable<string> GetClientListFromCookie()

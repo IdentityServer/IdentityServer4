@@ -43,7 +43,7 @@ namespace IdentityServer4.Services.Default
 
         public async Task AddClientIdAsync(string clientId)
         {
-            var clients = await GetClientsAsync();
+            var clients = await GetClientListAsync();
             if (!clients.Contains(clientId))
             {
                 var update = clients.ToList();
@@ -53,7 +53,7 @@ namespace IdentityServer4.Services.Default
             }
         }
 
-        public async Task<IEnumerable<string>> GetClientsAsync()
+        public async Task<IEnumerable<string>> GetClientListAsync()
         {
             var value = await GetPropertyValueAsync();
             try

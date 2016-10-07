@@ -17,7 +17,8 @@ namespace IdentityServer4.Services
         bool IsValidReturnUrl(string returnUrl);
         Task GrantConsentAsync(AuthorizationRequest request, ConsentResponse consent, string subject = null);
 
-        Task<IEnumerable<Consent>> GetUserConsent(string subjectId);
-        Task RevokeUserConsent(string subjectId, string clientId);
+        Task<IEnumerable<Consent>> GetAllUserConsentsAsync();
+        Task RevokeUserConsentAsync(string clientId);
+        Task RevokeTokensForCurrentSessionAsync();
     }
 }
