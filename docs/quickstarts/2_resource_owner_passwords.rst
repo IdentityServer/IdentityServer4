@@ -77,14 +77,11 @@ add the following to your clients configuration::
                 ClientId = "ro.client",
                 AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
-                ClientSecrets = new List<Secret>
+                ClientSecrets = 
                 {
                     new Secret("secret".Sha256())
                 },
-                AllowedScopes = new List<string>
-                {
-                    "api1"
-                }
+                AllowedScopes = { "api1" }
             }
         };
     }

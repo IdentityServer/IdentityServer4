@@ -128,16 +128,10 @@ Add the following to your clients configuration::
                 AllowedGrantTypes = GrantTypes.Implicit,
                 
                 // where to redirect to after login
-                RedirectUris = new List<string>
-                {
-                    "http://localhost:5002/signin-oidc"
-                },
+                RedirectUris = { "http://localhost:5002/signin-oidc" },
 
                 // where to redirect to after logout
-                PostLogoutRedirectUris = new List<string>
-                {
-                    "http://localhost:5002"
-                },
+                PostLogoutRedirectUris = { "http://localhost:5002" },
 
                 AllowedScopes = new List<string>
                 {
@@ -207,7 +201,7 @@ Let's add these claims to the user, so IdentityServer can put them into the iden
                 Username = "alice",
                 Password = "password",
 
-                Claims = new List<Claim>
+                Claims = 
                 {
                     new Claim("name", "Alice"),
                     new Claim("website", "https://alice.com")
@@ -219,7 +213,7 @@ Let's add these claims to the user, so IdentityServer can put them into the iden
                 Username = "bob",
                 Password = "password",
 
-                Claims = new List<Claim>
+                Claims = 
                 {
                     new Claim("name", "Bob"),
                     new Claim("website", "https://bob.com")

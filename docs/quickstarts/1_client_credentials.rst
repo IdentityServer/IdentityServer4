@@ -47,16 +47,13 @@ Add the following code to your configuration::
                 AllowedGrantTypes = GrantTypes.ClientCredentials,
 
                 // secret for authentication
-                ClientSecrets = new List<Secret>
+                ClientSecrets =
                 {
                     new Secret("secret".Sha256())
                 },
 
                 // scopes that client has access to
-                AllowedScopes = new List<string>
-                {
-                    "api1"
-                }
+                AllowedScopes = { "api1" }
             }
         };
     }
