@@ -157,7 +157,7 @@ encapsulates the protocol interaction in an easy to use API.
 
 Add IdentityModel to your project.json::
 
-    "IdentityModel": "2.0.0-rc3"
+    "IdentityModel": "2.0.0"
 
 IdentityModel includes a client library to use with the discovery endpoint.
 This way you only need to know the base-address of IdentityServer - the actual
