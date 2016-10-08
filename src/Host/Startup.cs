@@ -87,10 +87,11 @@ namespace Host
             //loggerFactory.AddDebug(filter);
 
             var serilog = new LoggerConfiguration()
-                .MinimumLevel.Debug()
+                .MinimumLevel.Verbose()
                 .Enrich.FromLogContext()
                 .Filter.ByIncludingOnly(serilogFilter)
                 .WriteTo.LiterateConsole(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message}{NewLine}{Exception}{NewLine}")
+                .WriteTo.File(@"c:\logs\IdentityServer4.txt")
                 .CreateLogger();
 
             loggerFactory.AddSerilog(serilog);
