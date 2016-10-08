@@ -193,7 +193,6 @@ namespace IdentityServer4.Validation
                     {
                         _logger.LogError("sid in query string does not match sid from cookie");
                     }
-
                 }
                 else
                 {
