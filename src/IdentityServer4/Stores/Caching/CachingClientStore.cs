@@ -7,6 +7,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Services;
 using System.Threading.Tasks;
 using IdentityServer4.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.Stores
 {
@@ -16,19 +17,22 @@ namespace IdentityServer4.Stores
         private readonly IdentityServerOptions _options;
         private readonly ICache<Client> _cache;
         private readonly IClientStore _inner;
+        private readonly ILogger<CachingClientStore<T>> _logger;
 
-        public CachingClientStore(IdentityServerOptions options, T inner, ICache<Client> cache)
+        public CachingClientStore(IdentityServerOptions options, T inner, ICache<Client> cache, ILogger<CachingClientStore<T>> logger)
         {
             _options = options;
             _inner = inner;
             _cache = cache;
+            _logger = logger;
         }
 
         public async Task<Client> FindClientByIdAsync(string clientId)
         {
             var client = await _cache.GetAsync(clientId, 
                 _options.CachingOptions.ClientStoreExpiration, 
-                ()=>_inner.FindClientByIdAsync(clientId));
+                ()=>_inner.FindClientByIdAsync(clientId),
+                _logger);
 
             return client;
         }

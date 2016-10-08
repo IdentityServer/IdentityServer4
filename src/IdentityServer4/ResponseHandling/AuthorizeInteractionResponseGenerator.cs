@@ -47,6 +47,10 @@ namespace IdentityServer4.ResponseHandling
 
         internal async Task<InteractionResponse> ProcessLoginAsync(ValidatedAuthorizeRequest request)
         {
+            _logger.LogTrace("ProcessLoginAsync");
+
+            if (request == null) throw new ArgumentNullException(nameof(request));
+
             if (request.PromptMode == OidcConstants.PromptModes.Login)
             {
                 // remove prompt so when we redirect back in from login page
@@ -152,7 +156,9 @@ namespace IdentityServer4.ResponseHandling
 
         internal async Task<InteractionResponse> ProcessConsentAsync(ValidatedAuthorizeRequest request, ConsentResponse consent = null)
         {
-            if (request == null) throw new ArgumentNullException("request");
+            _logger.LogTrace("ProcessConsentAsync");
+
+            if (request == null) throw new ArgumentNullException(nameof(request));
 
             if (request.PromptMode != null &&
                 request.PromptMode != OidcConstants.PromptModes.None &&

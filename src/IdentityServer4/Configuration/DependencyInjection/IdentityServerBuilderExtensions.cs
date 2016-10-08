@@ -18,6 +18,7 @@ using IdentityServer4.Stores;
 using IdentityServer4.Stores.InMemory;
 using IdentityServer4.Stores.Serialization;
 using IdentityServer4.Validation;
+using IdentityServer4.Validation.Caching;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -313,6 +314,19 @@ namespace Microsoft.Extensions.DependencyInjection
             where T : IScopeStore
         {
             builder.Services.AddTransient<IScopeStore, CachingScopeStore<T>>();
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds the token validation cache.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddTokenValidationCache(this IIdentityServerBuilder builder)
+        {
+            builder.Services.AddTransient<TokenValidator>();
+            builder.Services.AddTransient<ITokenValidator, CachingTokenValidator<TokenValidator>>();
             return builder;
         }
 

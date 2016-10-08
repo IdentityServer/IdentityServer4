@@ -3,6 +3,7 @@
 
 
 using IdentityServer4.Services;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 
@@ -28,7 +29,7 @@ namespace IdentityServer4.Extensions
         /// <exception cref="System.ArgumentNullException">cache
         /// or
         /// get</exception>
-        public static async Task<T> GetAsync<T>(this ICache<T> cache, string key, TimeSpan duration, Func<Task<T>> get)
+        public static async Task<T> GetAsync<T>(this ICache<T> cache, string key, TimeSpan duration, Func<Task<T>> get, ILogger logger)
             where T : class
         {
             if (cache == null) throw new ArgumentNullException("cache");
@@ -39,12 +40,19 @@ namespace IdentityServer4.Extensions
 
             if (item == null)
             {
+                logger.LogTrace("Cache miss for {cacheKey}", key);
+
                 item = await get();
 
                 if (item != null)
                 {
+                    logger.LogTrace("Setting item in cache for {cacheKey}", key);
                     await cache.SetAsync(key, item, duration);
                 }
+            }
+            else
+            {
+                logger.LogTrace("Cache hit for {cacheKey}", key);
             }
 
             return item;
