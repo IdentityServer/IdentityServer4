@@ -28,5 +28,13 @@ namespace IdentityServer4.Configuration
         /// The scope store expiration.
         /// </value>
         public TimeSpan ScopeStoreExpiration { get; set; } = _Default;
+
+        /// <summary>
+        /// Gets or sets the token validation expiration.
+        /// </summary>
+        /// <value>
+        /// The token validation expiration.
+        /// </value>
+        public TimeSpan TokenValidationExpiration { get; set; } = TimeSpan.FromMinutes(1);
     }
 }
