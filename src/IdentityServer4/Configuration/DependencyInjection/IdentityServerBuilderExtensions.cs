@@ -20,6 +20,7 @@ using IdentityServer4.Stores.Serialization;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -164,6 +165,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IIdentityServerBuilder AddInMemoryCaching(this IIdentityServerBuilder builder)
         {
+            builder.Services.TryAddSingleton<IMemoryCache, MemoryCache>();
             builder.Services.TryAddTransient(typeof(ICache<>), typeof(DefaultCache<>));
 
             return builder;

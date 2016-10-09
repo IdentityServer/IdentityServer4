@@ -14,13 +14,14 @@
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
     "Microsoft.Extensions.Caching.Abstractions": "1.0.0",
+    "Microsoft.Extensions.Caching.Memory": "1.0.0",
 
     "Microsoft.AspNetCore.Http.Abstractions": "1.0.0",
     "Microsoft.AspNetCore.Cors": "1.0.0",
     "Microsoft.AspNetCore.Authentication.Cookies": "1.0.0",
-    
+
     "System.IdentityModel.Tokens.Jwt": "5.0.0",
-    
+
     "IdentityModel": "2.0.0"
   },
 
