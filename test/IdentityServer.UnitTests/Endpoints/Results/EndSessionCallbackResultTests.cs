@@ -86,8 +86,8 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
             using (var rdr = new StreamReader(_context.Response.Body))
             {
                 var html = rdr.ReadToEnd();
-                html.Should().Contain("<iframe style='display:none' width='0' height='0' src='http://foo.com'></iframe>");
-                html.Should().Contain("<iframe style='display:none' width='0' height='0' src='http://bar.com'></iframe>");
+                html.Should().Contain("<iframe src='http://foo.com'></iframe>");
+                html.Should().Contain("<iframe src='http://bar.com'></iframe>");
             }
         }
     }

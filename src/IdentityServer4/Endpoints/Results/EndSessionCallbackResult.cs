@@ -85,12 +85,14 @@ namespace IdentityServer4.Endpoints.Results
 
         private void AddCspHeaders(HttpContext context)
         {
-            var value = "default-src 'none'";
-            var origins = _result.ClientLogoutUrls?.Select(x => x.GetOrigin()).Aggregate((x, y) => $"{x} {y}");
-            if (origins != null)
+            var value = "default-src 'none';style-src 'sha256-u+OupXgfekP+x/f6rMdoEAspPCYUtca912isERnoEjY='";
+
+            var origins = _result.ClientLogoutUrls?.Select(x => x.GetOrigin());
+            if (origins != null && origins.Any())
             {
+                var list = origins.Aggregate((x, y) => $"{x} {y}");
                 // this hash matches the style being used below for the iframe
-                value += $";style-src 'sha256-u+OupXgfekP+x/f6rMdoEAspPCYUtca912isERnoEjY=';frame-src {origins}";
+                value += $";frame-src {list}";
             }
 
             if (!context.Response.Headers.ContainsKey("Content-Security-Policy"))
