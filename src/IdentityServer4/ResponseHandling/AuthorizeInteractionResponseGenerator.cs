@@ -15,7 +15,11 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.ResponseHandling
 {
-    class AuthorizeInteractionResponseGenerator : IAuthorizeInteractionResponseGenerator
+    /// <summary>
+    /// Default logic for determining if user must login or consent when making requests to the authorization endpoint.
+    /// </summary>
+    /// <seealso cref="IdentityServer4.ResponseHandling.IAuthorizeInteractionResponseGenerator" />
+    public class AuthorizeInteractionResponseGenerator : IAuthorizeInteractionResponseGenerator
     {
         private readonly ILogger<AuthorizeInteractionResponseGenerator> _logger;
         private readonly IConsentService _consent;
@@ -32,7 +36,13 @@ namespace IdentityServer4.ResponseHandling
             _profile = profile;
         }
 
-        public async Task<InteractionResponse> ProcessInteractionAsync(ValidatedAuthorizeRequest request, ConsentResponse consent = null)
+        /// <summary>
+        /// Processes the interaction logic.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <param name="consent">The consent.</param>
+        /// <returns></returns>
+        public virtual async Task<InteractionResponse> ProcessInteractionAsync(ValidatedAuthorizeRequest request, ConsentResponse consent = null)
         {
             _logger.LogTrace("ProcessInteractionAsync");
 
@@ -45,7 +55,12 @@ namespace IdentityServer4.ResponseHandling
             return await ProcessConsentAsync(request, consent);
         }
 
-        internal async Task<InteractionResponse> ProcessLoginAsync(ValidatedAuthorizeRequest request)
+        /// <summary>
+        /// Processes the login logic.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        protected internal virtual async Task<InteractionResponse> ProcessLoginAsync(ValidatedAuthorizeRequest request)
         {
             if (request.PromptMode == OidcConstants.PromptModes.Login)
             {
@@ -150,7 +165,15 @@ namespace IdentityServer4.ResponseHandling
             return new InteractionResponse();
         }
 
-        internal async Task<InteractionResponse> ProcessConsentAsync(ValidatedAuthorizeRequest request, ConsentResponse consent = null)
+        /// <summary>
+        /// Processes the consent logic.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <param name="consent">The consent.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException">Invalid PromptMode</exception>
+        protected internal virtual async Task<InteractionResponse> ProcessConsentAsync(ValidatedAuthorizeRequest request, ConsentResponse consent = null)
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
 

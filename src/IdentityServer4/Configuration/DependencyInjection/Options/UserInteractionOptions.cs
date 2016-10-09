@@ -76,6 +76,14 @@ namespace IdentityServer4.Configuration
         public string ErrorIdParameter { get; set; } = Constants.UIConstants.DefaultRoutePathParams.Error;
 
         /// <summary>
+        /// Gets or sets the custom redirect return URL parameter.
+        /// </summary>
+        /// <value>
+        /// The custom redirect return URL parameter.
+        /// </value>
+        public string CustomRedirectReturnUrlParameter { get; set; } = Constants.UIConstants.DefaultRoutePathParams.Custom;
+
+        /// <summary>
         /// Gets or sets the cookie message threshold. This limits how many cookies are created, and older ones will be purged.
         /// </summary>
         /// <value>

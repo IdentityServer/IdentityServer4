@@ -202,6 +202,7 @@ namespace IdentityServer4
                 public const string Login = "returnUrl";
                 public const string Consent = "returnUrl";
                 public const string Logout = "logoutId";
+                public const string Custom = "returnUrl";
             }
 
             public static class DefaultRoutePaths
