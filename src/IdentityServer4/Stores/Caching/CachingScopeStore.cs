@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using IdentityServer4.Configuration;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.Stores
 {
@@ -21,12 +22,14 @@ namespace IdentityServer4.Stores
         private readonly IdentityServerOptions _options;
         private readonly ICache<IEnumerable<Scope>> _cache;
         private readonly IScopeStore _inner;
+        private readonly ILogger<CachingScopeStore<T>> _logger;
 
-        public CachingScopeStore(IdentityServerOptions options, T inner, ICache<IEnumerable<Scope>> cache)
+        public CachingScopeStore(IdentityServerOptions options, T inner, ICache<IEnumerable<Scope>> cache, ILogger<CachingScopeStore<T>> logger)
         {
             _options = options;
             _inner = inner;
             _cache = cache;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<Scope>> FindScopesAsync(IEnumerable<string> scopeNames)
@@ -35,7 +38,8 @@ namespace IdentityServer4.Stores
 
             var scopes = await _cache.GetAsync(key,
                 _options.CachingOptions.ScopeStoreExpiration,
-                () => _inner.FindScopesAsync(scopeNames));
+                () => _inner.FindScopesAsync(scopeNames),
+                _logger);
 
             return scopes;
         }
@@ -46,7 +50,8 @@ namespace IdentityServer4.Stores
 
             var scopes = await _cache.GetAsync(key,
                 _options.CachingOptions.ScopeStoreExpiration,
-                () => _inner.GetScopesAsync(publicOnly));
+                () => _inner.GetScopesAsync(publicOnly),
+                _logger);
 
             return scopes;
         }
