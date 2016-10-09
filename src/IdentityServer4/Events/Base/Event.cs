@@ -23,7 +23,7 @@ namespace IdentityServer4.Events
         /// <exception cref="System.ArgumentNullException">category</exception>
         public Event(string category, string name, EventTypes type, int id, string message = null)
         {
-            if (category.IsMissing()) throw new ArgumentNullException("category");
+            if (category.IsMissing()) throw new ArgumentNullException(nameof(category));
 
             Category = category;
             Name = name;

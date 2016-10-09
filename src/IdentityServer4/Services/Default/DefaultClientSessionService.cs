@@ -161,29 +161,11 @@ namespace IdentityServer4.Services.Default
             SetCookie(null);
         }
 
-        string CookieName
-        {
-            get
-            {
-                return ClientListKey + "." + _sessionId.GetCookieValue();
-            }
-        }
+        string CookieName => ClientListKey + "." + _sessionId.GetCookieValue();
 
-        string CookiePath
-        {
-            get
-            {
-                return _context.HttpContext.GetBasePath().CleanUrlPath();
-            }
-        }
+        string CookiePath => _context.HttpContext.GetBasePath().CleanUrlPath();
 
-        private bool Secure
-        {
-            get
-            {
-                return _context.HttpContext.Request.IsHttps;
-            }
-        }
+        private bool Secure => _context.HttpContext.Request.IsHttps;
 
         void SetCookie(string value)
         {

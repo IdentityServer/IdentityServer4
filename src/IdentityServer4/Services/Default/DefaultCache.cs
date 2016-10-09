@@ -13,7 +13,7 @@ namespace IdentityServer4.Services.Default
     {
         const string KeySeparator = ":";
 
-        IMemoryCache _cache;
+        readonly IMemoryCache _cache;
 
         public DefaultCache(IMemoryCache cache)
         {
@@ -22,7 +22,7 @@ namespace IdentityServer4.Services.Default
 
         string GetKey(string key)
         {
-            return typeof(T).GetType().FullName + KeySeparator + key;
+            return typeof(T).FullName + KeySeparator + key;
         }
 
         public Task<T> GetAsync(string key)

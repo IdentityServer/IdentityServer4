@@ -11,7 +11,7 @@ namespace IdentityServer4.Configuration
     /// </summary>
     public class CachingOptions
     {
-        static TimeSpan _Default = TimeSpan.FromMinutes(15);
+        static readonly TimeSpan Default = TimeSpan.FromMinutes(15);
 
         /// <summary>
         /// Gets or sets the client store expiration.
@@ -19,7 +19,7 @@ namespace IdentityServer4.Configuration
         /// <value>
         /// The client store expiration.
         /// </value>
-        public TimeSpan ClientStoreExpiration { get; set; } = _Default;
+        public TimeSpan ClientStoreExpiration { get; set; } = Default;
 
         /// <summary>
         /// Gets or sets the scope store expiration.
@@ -27,6 +27,6 @@ namespace IdentityServer4.Configuration
         /// <value>
         /// The scope store expiration.
         /// </value>
-        public TimeSpan ScopeStoreExpiration { get; set; } = _Default;
+        public TimeSpan ScopeStoreExpiration { get; set; } = Default;
     }
 }

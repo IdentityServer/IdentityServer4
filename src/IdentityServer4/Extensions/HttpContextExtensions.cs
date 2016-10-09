@@ -57,7 +57,7 @@ namespace IdentityServer4.Extensions
 
         public static string GetIssuerUri(this HttpContext context)
         {
-            if (context == null) throw new ArgumentNullException("context");
+            if (context == null) throw new ArgumentNullException(nameof(context));
 
             // if they've explicitly configured a URI then use it,
             // otherwise dynamically calculate it

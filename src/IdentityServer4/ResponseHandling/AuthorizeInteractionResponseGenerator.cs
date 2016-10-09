@@ -152,7 +152,7 @@ namespace IdentityServer4.ResponseHandling
 
         internal async Task<InteractionResponse> ProcessConsentAsync(ValidatedAuthorizeRequest request, ConsentResponse consent = null)
         {
-            if (request == null) throw new ArgumentNullException("request");
+            if (request == null) throw new ArgumentNullException(nameof(request));
 
             if (request.PromptMode != null &&
                 request.PromptMode != OidcConstants.PromptModes.None &&

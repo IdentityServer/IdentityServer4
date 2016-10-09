@@ -421,7 +421,6 @@ namespace IdentityServer4.Validation
             if (isActiveCtx.IsActive == false)
             {
                 LogError("User has been disabled: {subjectId}", resourceOwnerContext.Result.Subject.GetSubjectId());
-                var error = "User has been disabled: " + resourceOwnerContext.Result.Subject.GetSubjectId();
                 await RaiseFailedResourceOwnerAuthenticationEventAsync(userName, "user is inactive");
 
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);

@@ -18,7 +18,7 @@ namespace IdentityServer4.Endpoints.Results
 {
     class AuthorizeResult : IEndpointResult
     {
-        public AuthorizeResponse Response { get; private set; }
+        public AuthorizeResponse Response { get; }
 
         public AuthorizeResult(AuthorizeResponse response)
         {

@@ -12,7 +12,7 @@ namespace IdentityServer4.Endpoints.Results
 {
     public class IntrospectionResult : IEndpointResult
     {
-        public Dictionary<string, object> Result { get; private set; }
+        public Dictionary<string, object> Result { get; }
 
         public IntrospectionResult(Dictionary<string, object> result)
         {
