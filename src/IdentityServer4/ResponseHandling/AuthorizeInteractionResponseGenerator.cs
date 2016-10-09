@@ -81,7 +81,7 @@ namespace IdentityServer4.ResponseHandling
 
             if (isAuthenticated)
             {
-                var isActiveCtx = new IsActiveContext(request.Subject, request.Client);
+                var isActiveCtx = new IsActiveContext(request.Subject, request.Client, Constants.ProfileIsActiveCallers.AuthorizeEndpoint);
                 await _profile.IsActiveAsync(isActiveCtx);
                 
                 isActive = isActiveCtx.IsActive;

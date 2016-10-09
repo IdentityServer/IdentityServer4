@@ -289,6 +289,16 @@ namespace IdentityServer4
             public const string ClaimsProviderAccessToken = "ClaimsProviderAccessToken";
         }
 
+        public static class ProfileIsActiveCallers
+        {
+            public const string AuthorizeEndpoint = "AuthorizeEndpoint";
+            public const string IdTokenValidation = "IdTokenValidation";
+            public const string AccessTokenValidation = "AccessTokenValidation";
+            public const string ResourceOwnerValidation = "ResourceOwnerValidation";
+            public const string RefreshTokenValidation = "RefreshTokenValidation";
+            public const string AuthorizationCodeValidation = "AuthorizationCodeValidation";
+        }
+
         public class Filters
         {
             // filter for claims from an incoming access token (e.g. used at the user profile endpoint)
