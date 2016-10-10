@@ -42,7 +42,7 @@ is to use an interactive flow like implicit or hybrid for user authentication in
 
 See the :ref:`Client Credentials Quick Start <_refResosurceOwnerQuickstart>` for a sample how to use it.
 You also need to provide code for the username/password validation which can be supplied by implementing the ``IResourceOwnerPasswordValidator`` interface.
-You can find more information about this interface :ref:`here <refResourceOwnerPasswordValidator:>`. 
+You can find more information about this interface :ref:`here <refResourceOwnerPasswordValidator>`. 
 
 Implicit
 ========
