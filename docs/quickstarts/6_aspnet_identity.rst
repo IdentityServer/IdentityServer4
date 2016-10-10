@@ -1,3 +1,4 @@
+.. _refAspNetIdentityQuickstart:
 Using ASP.NET Core Identity
 ===========================
 

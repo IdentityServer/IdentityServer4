@@ -1,3 +1,4 @@
+.. _refImplicitQuickstart:
 Adding User Authentication with OpenID Connect
 ==============================================
 

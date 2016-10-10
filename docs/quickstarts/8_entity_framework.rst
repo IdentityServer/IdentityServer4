@@ -1,3 +1,4 @@
+.. _refEntityFrameworkQuickstart:
 Using EntityFramework Core for configuration data
 =================================================
 

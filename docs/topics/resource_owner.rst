@@ -1,3 +1,4 @@
+.. _ResourceOwnerPasswordValidator:
 Resource Owner Password Validation
 ===================================
 
