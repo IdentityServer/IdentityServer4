@@ -16,6 +16,7 @@ namespace IdentityServer4.Validation
     {
         public static void RemovePrompt(this ValidatedAuthorizeRequest request)
         {
+            request.PromptMode = null;
             request.Raw.Remove(OidcConstants.AuthorizeRequest.Prompt);
         }
 
@@ -32,14 +33,9 @@ namespace IdentityServer4.Validation
             return value;
         }
 
-        public static string GetIdP(this ValidatedAuthorizeRequest request)
+        public static void RemovePrefixedAcrValue(this ValidatedAuthorizeRequest request, string prefix)
         {
-            return request.GetPrefixedAcrValue(Constants.KnownAcrValues.HomeRealm);
-        }
-
-        public static void RemoveIdP(this ValidatedAuthorizeRequest request)
-        {
-            request.AuthenticationContextReferenceClasses.RemoveAll(acr => acr.StartsWith(Constants.KnownAcrValues.HomeRealm));
+            request.AuthenticationContextReferenceClasses.RemoveAll(acr => acr.StartsWith(prefix, StringComparison.Ordinal));
             var acr_values = request.AuthenticationContextReferenceClasses.ToSpaceSeparatedString();
             if (acr_values.IsPresent())
             {
@@ -49,6 +45,16 @@ namespace IdentityServer4.Validation
             {
                 request.Raw.Remove(OidcConstants.AuthorizeRequest.AcrValues);
             }
+        }
+
+        public static string GetIdP(this ValidatedAuthorizeRequest request)
+        {
+            return request.GetPrefixedAcrValue(Constants.KnownAcrValues.HomeRealm);
+        }
+
+        public static void RemoveIdP(this ValidatedAuthorizeRequest request)
+        {
+            request.RemovePrefixedAcrValue(Constants.KnownAcrValues.HomeRealm);
         }
 
         public static string GetTenant(this ValidatedAuthorizeRequest request)
@@ -62,6 +68,20 @@ namespace IdentityServer4.Validation
                 .AuthenticationContextReferenceClasses
                 .Where(acr => !Constants.KnownAcrValues.All.Any(well_known => acr.StartsWith(well_known)))
                 .Distinct();
+        }
+
+        public static void RemoveAcrValue(this ValidatedAuthorizeRequest request, string value)
+        {
+            request.AuthenticationContextReferenceClasses.RemoveAll(x => x.Equals(value, StringComparison.Ordinal));
+            var acr_values = request.AuthenticationContextReferenceClasses.ToSpaceSeparatedString();
+            if (acr_values.IsPresent())
+            {
+                request.Raw[OidcConstants.AuthorizeRequest.AcrValues] = acr_values;
+            }
+            else
+            {
+                request.Raw.Remove(OidcConstants.AuthorizeRequest.AcrValues);
+            }
         }
 
         public static string GenerateSessionStateValue(this ValidatedAuthorizeRequest request)

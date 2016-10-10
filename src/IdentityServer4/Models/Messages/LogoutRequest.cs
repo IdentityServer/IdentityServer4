@@ -75,12 +75,6 @@ namespace IdentityServer4.Models
         /// </value>
         public string SignOutIFrameUrl { get; set; }
 
-        public bool IsAuthenticatedLogout
-        {
-            get
-            {
-                return ClientId.IsPresent();
-            }
-        }
+        public bool IsAuthenticatedLogout => ClientId.IsPresent();
     }
 }

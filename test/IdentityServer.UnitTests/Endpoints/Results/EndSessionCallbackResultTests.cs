@@ -3,6 +3,7 @@
 
 
 using FluentAssertions;
+using IdentityServer4.Configuration;
 using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
@@ -24,6 +25,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
         MockSessionIdService _mockSessionId = new MockSessionIdService();
         MockClientSessionService _mockClientSession = new MockClientSessionService();
         MockMessageStore<LogoutMessage> _mockLogoutMessageStore = new MockMessageStore<LogoutMessage>();
+        IdentityServerOptions _options = TestIdentityServerOptions.Create();
 
         DefaultHttpContext _context = new DefaultHttpContext();
 
@@ -33,7 +35,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
             _context.SetBasePath("/");
             _context.Response.Body = new MemoryStream();
 
-            _subject = new EndSessionCallbackResult(_result, _mockSessionId, _mockClientSession, _mockLogoutMessageStore);
+            _subject = new EndSessionCallbackResult(_result, _mockSessionId, _mockClientSession, _mockLogoutMessageStore, _options);
         }
 
         [Fact]
@@ -84,8 +86,8 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
             using (var rdr = new StreamReader(_context.Response.Body))
             {
                 var html = rdr.ReadToEnd();
-                html.Should().Contain("<iframe style='display:none' width='0' height='0' src='http://foo.com'></iframe>");
-                html.Should().Contain("<iframe style='display:none' width='0' height='0' src='http://bar.com'></iframe>");
+                html.Should().Contain("<iframe src='http://foo.com'></iframe>");
+                html.Should().Contain("<iframe src='http://bar.com'></iframe>");
             }
         }
     }

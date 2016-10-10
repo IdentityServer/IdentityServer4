@@ -11,7 +11,7 @@ namespace IdentityServer4.Endpoints.Results
 {
     public class StatusCodeResult : IEndpointResult
     {
-        public int StatusCode { get; private set; }
+        public int StatusCode { get; }
 
         public StatusCodeResult(HttpStatusCode statusCode)
         {

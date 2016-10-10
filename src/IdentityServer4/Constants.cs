@@ -202,6 +202,7 @@ namespace IdentityServer4
                 public const string Login = "returnUrl";
                 public const string Consent = "returnUrl";
                 public const string Logout = "logoutId";
+                public const string Custom = "returnUrl";
             }
 
             public static class DefaultRoutePaths
@@ -286,6 +287,16 @@ namespace IdentityServer4
             public const string UserInfoEndpoint = "UserInfoEndpoint";
             public const string ClaimsProviderIdentityToken = "ClaimsProviderIdentityToken";
             public const string ClaimsProviderAccessToken = "ClaimsProviderAccessToken";
+        }
+
+        public static class ProfileIsActiveCallers
+        {
+            public const string AuthorizeEndpoint = "AuthorizeEndpoint";
+            public const string IdTokenValidation = "IdTokenValidation";
+            public const string AccessTokenValidation = "AccessTokenValidation";
+            public const string ResourceOwnerValidation = "ResourceOwnerValidation";
+            public const string RefreshTokenValidation = "RefreshTokenValidation";
+            public const string AuthorizationCodeValidation = "AuthorizationCodeValidation";
         }
 
         public class Filters

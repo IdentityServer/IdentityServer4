@@ -74,21 +74,6 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
         }
 
         [Fact]
-        public async Task session_id_should_be_removed_if_user_is_not_longer_authenticated()
-        {
-            await _mockPipeline.LoginAsync("bob");
-            var sid = _mockPipeline.GetSessionCookie().Value;
-            sid.Should().NotBeNull();
-
-            _mockPipeline.RemoveLoginCookie();
-
-            await _mockPipeline.BrowserClient.GetAsync(MockIdSvrUiPipeline.DiscoveryEndpoint);
-
-            var sessionCookie = _mockPipeline.GetSessionCookie();
-            sessionCookie.Should().BeNull();
-        }
-
-        [Fact]
         public async Task session_id_should_be_reissued_if_session_cookie_absent()
         {
             await _mockPipeline.LoginAsync("bob");

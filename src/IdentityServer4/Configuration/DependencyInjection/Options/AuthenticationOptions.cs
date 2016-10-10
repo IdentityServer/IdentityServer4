@@ -20,13 +20,7 @@ namespace IdentityServer4.Configuration
         /// </value>
         public string AuthenticationScheme { get; set; }
 
-        internal string EffectiveAuthenticationScheme
-        {
-            get
-            {
-                return AuthenticationScheme ?? IdentityServerConstants.DefaultCookieAuthenticationScheme;
-            }
-        }
+        internal string EffectiveAuthenticationScheme => AuthenticationScheme ?? IdentityServerConstants.DefaultCookieAuthenticationScheme;
 
         /// <summary>
         /// Indicates if user must be authenticated to accept parameters to end session endpoint. Defaults to false.

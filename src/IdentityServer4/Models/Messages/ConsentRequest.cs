@@ -44,11 +44,7 @@ namespace IdentityServer4.Models
             get
             {
                 var normalizedScopes = ScopesRequested?.OrderBy(x => x).Distinct().Aggregate((x, y) => x + "," + y);
-                var value = String.Format("{0}:{1}:{2}:{3}",
-                    ClientId,
-                    Subject,
-                    Nonce,
-                    normalizedScopes);
+                var value = $"{ClientId}:{Subject}:{Nonce}:{normalizedScopes}";
 
                 using (var sha = SHA256.Create())
                 {

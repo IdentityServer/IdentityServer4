@@ -52,7 +52,7 @@ namespace IdentityServer4.Hosting
         {
             if (_options.Endpoints.IsEndpointEnabled(endpointName))
             {
-                var mapping = _mappings.Where(x => x.Endpoint == endpointName).LastOrDefault();
+                var mapping = _mappings.LastOrDefault(x => x.Endpoint == endpointName);
                 if (mapping != null)
                 {
                     _logger.LogDebug("Mapping found for endpoint: {endpoint}, creating handler: {endpointHandler}", endpointName, mapping.Handler.FullName);

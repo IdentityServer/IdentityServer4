@@ -565,7 +565,7 @@ namespace IdentityServer4.Validation
                 {
                     if (!request.Client.IdentityProviderRestrictions.Contains(idp))
                     {
-                        _logger.LogWarning("idp requested: {0}, is not in client restriction list.", idp);
+                        _logger.LogWarning("idp requested ({idp}) is not in client restriction list.", idp);
                         request.RemoveIdP();
                     }
                 }

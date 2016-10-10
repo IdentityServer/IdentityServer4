@@ -363,5 +363,17 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
             _mockUserConsentResponseMessageStore.Messages.Count.Should().Be(0);
         }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task ProcessAuthorizeRequestAsync_custom_interaction_redirect_result_should_issue_redirect()
+        {
+            _context.SetUser(_user);
+            _stubInteractionGenerator.Response.RedirectUrl = "http://foo.com";
+
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
+
+            result.Should().BeOfType<CustomRedirectResult>();
+        }
     }
 }

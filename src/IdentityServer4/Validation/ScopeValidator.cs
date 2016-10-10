@@ -20,8 +20,8 @@ namespace IdentityServer4.Validation
         public bool ContainsResourceScopes { get; private set; }
         public bool ContainsOfflineAccessScope { get; set; }
 
-        public List<Scope> RequestedScopes { get; private set; }
-        public List<Scope> GrantedScopes { get; private set; }
+        public List<Scope> RequestedScopes { get; }
+        public List<Scope> GrantedScopes { get; }
 
         public ScopeValidator(IScopeStore store, ILogger<ScopeValidator> logger)
         {

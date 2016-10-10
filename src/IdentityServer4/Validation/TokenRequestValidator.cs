@@ -271,7 +271,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // make sure user is enabled
             /////////////////////////////////////////////
-            var isActiveCtx = new IsActiveContext(_validatedRequest.AuthorizationCode.Subject, _validatedRequest.Client);
+            var isActiveCtx = new IsActiveContext(_validatedRequest.AuthorizationCode.Subject, _validatedRequest.Client, Constants.ProfileIsActiveCallers.AuthorizationCodeValidation);
             await _profile.IsActiveAsync(isActiveCtx);
 
             if (isActiveCtx.IsActive == false)
@@ -415,13 +415,12 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // make sure user is enabled
             /////////////////////////////////////////////
-            var isActiveCtx = new IsActiveContext(resourceOwnerContext.Result.Subject, _validatedRequest.Client);
+            var isActiveCtx = new IsActiveContext(resourceOwnerContext.Result.Subject, _validatedRequest.Client, Constants.ProfileIsActiveCallers.ResourceOwnerValidation);
             await _profile.IsActiveAsync(isActiveCtx);
 
             if (isActiveCtx.IsActive == false)
             {
                 LogError("User has been disabled: {subjectId}", resourceOwnerContext.Result.Subject.GetSubjectId());
-                var error = "User has been disabled: " + resourceOwnerContext.Result.Subject.GetSubjectId();
                 await RaiseFailedResourceOwnerAuthenticationEventAsync(userName, "user is inactive");
 
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
@@ -518,7 +517,7 @@ namespace IdentityServer4.Validation
             // make sure user is enabled
             /////////////////////////////////////////////
             var subject = _validatedRequest.RefreshToken.Subject;
-            var isActiveCtx = new IsActiveContext(subject, _validatedRequest.Client);
+            var isActiveCtx = new IsActiveContext(subject, _validatedRequest.Client, Constants.ProfileIsActiveCallers.RefreshTokenValidation);
             await _profile.IsActiveAsync(isActiveCtx);
 
             if (isActiveCtx.IsActive == false)
