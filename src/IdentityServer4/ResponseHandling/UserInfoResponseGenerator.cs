@@ -44,8 +44,8 @@ namespace IdentityServer4.ResponseHandling
 
                 var context = new ProfileDataRequestContext(
                     subject, 
-                    client, 
-                    Constants.ProfileDataCallers.UserInfoEndpoint);
+                    client,
+                    IdentityServerConstants.ProfileDataCallers.UserInfoEndpoint);
 
                 await _profile.GetProfileDataAsync(context);
                 profileClaims = context.IssuedClaims;
@@ -57,7 +57,7 @@ namespace IdentityServer4.ResponseHandling
                 var context = new ProfileDataRequestContext(
                     subject,
                     client,
-                    Constants.ProfileDataCallers.UserInfoEndpoint,
+                    IdentityServerConstants.ProfileDataCallers.UserInfoEndpoint,
                     requestedClaimTypes.ClaimTypes);
 
                 await _profile.GetProfileDataAsync(context);

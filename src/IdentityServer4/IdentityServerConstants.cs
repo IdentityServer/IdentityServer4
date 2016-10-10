@@ -30,5 +30,22 @@ namespace IdentityServer4
             public const string X509CertificateName = "X509Name";
             public const string X509CertificateBase64 = "X509CertificateBase64";
         }
+
+        public static class ProfileDataCallers
+        {
+            public const string UserInfoEndpoint = "UserInfoEndpoint";
+            public const string ClaimsProviderIdentityToken = "ClaimsProviderIdentityToken";
+            public const string ClaimsProviderAccessToken = "ClaimsProviderAccessToken";
+        }
+
+        public static class ProfileIsActiveCallers
+        {
+            public const string AuthorizeEndpoint = "AuthorizeEndpoint";
+            public const string IdentityTokenValidation = "IdentityTokenValidation";
+            public const string AccessTokenValidation = "AccessTokenValidation";
+            public const string ResourceOwnerValidation = "ResourceOwnerValidation";
+            public const string RefreshTokenValidation = "RefreshTokenValidation";
+            public const string AuthorizationCodeValidation = "AuthorizationCodeValidation";
+        }
     }
 }
