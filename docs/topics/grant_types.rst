@@ -32,7 +32,7 @@ If you want to transmit access tokens via the browser channel, you also need to 
 
 .. Note:: For security reasons, not all grant type combinations are allowed. See below for more details.
 
-For the remainder, the grant types are briefly described, and when you would used them.
+For the remainder, the grant types are briefly described, and when you would use them.
 It is also recommended, that in addition you read the corresponding specs to get a better understanding of the differences.
 
 Client credentials
@@ -53,7 +53,7 @@ This is so called "non-interactive" authentication and is generally not recommen
 There might be reasons for certain legacy or first-party integration scenarios, where this grant type is useful, but the general recommendation
 is to use an interactive flow like implicit or hybrid for user authentication instead.
 
-See the :ref:`Client Credentials Quick Start <_refResosurceOwnerQuickstart>` for a sample how to use it.
+See the :ref:`Resource Owner Password Quick Start <_refResourceOwnerQuickstart>` for a sample how to use it.
 You also need to provide code for the username/password validation which can be supplied by implementing the ``IResourceOwnerPasswordValidator`` interface.
 You can find more information about this interface :ref:`here <refResourceOwnerPasswordValidator>`. 
 
@@ -94,10 +94,10 @@ Refresh tokens
 Refresh tokens allow gaining long lived access to APIs.
 
 You typically want to keep the lifetime of access tokens as short as possible, but at the same time don't want to bother the user
-over and over again with doing a front-channel roundtrip to IdentityServer for requesting new ones.
+over and over again with doing a front-channel roundtrips to IdentityServer for requesting new ones.
 
 Refresh tokens allow requesting new access tokens without user interaction. Every time the client refreshes a token it needs to make an 
-(authenticated) round-trip to IdentityServer. This allows checking if the refresh token is still valid, or has been revoked in the meantime.
+(authenticated) back-channel call to IdentityServer. This allows checking if the refresh token is still valid, or has been revoked in the meantime.
 
 Refresh tokens are supported in hybrid, authorization code and resource owner password flows. 
 To request a refresh token, the client needs to include the ``offline_access`` scope in the token request (and must be authorized to for that scope). 
