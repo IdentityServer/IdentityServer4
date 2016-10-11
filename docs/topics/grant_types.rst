@@ -15,7 +15,20 @@ The OpenID Connect and OAuth 2 specs define the following grant types:
 You can specify which grant type a client can use via the ``AllowedGrantTypes`` property on the ``Client`` configuration.
 
 A client can be configured to use more than a single grant type (e.g. Hybrid for user centric operations and client credentials for server to server communication).
-The ``GrantTypes`` class can be used to pick from typical grant type combinations, or you can specify the list grant types manually.
+The ``GrantTypes`` class can be used to pick from typical grant type combinations::
+
+    Client.AllowedGrantTypes = GrantTypes.HybridAndClientCredentials;
+
+You can also specify the list grant types manually::
+
+    Client.AllowedGrantTypes = GrantTypes.List(
+        GrantTypes.Hybrid, 
+        GrantType.ClientCredentials,
+        "my_custom_grant_type");
+
+If you want to transmit access tokens via the browser channel, you also need to allow that explicitly on the client configuration::
+
+    Client.AllowAccessTokensViaBrowser = true;
 
 .. Note:: For security reasons, not all grant type combinations are allowed. See below for more details.
 
