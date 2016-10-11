@@ -19,7 +19,7 @@ The ``GrantTypes`` class can be used to pick from typical grant type combination
 
     Client.AllowedGrantTypes = GrantTypes.HybridAndClientCredentials;
 
-You can also specify the list grant types manually::
+You can also specify the grant types list manually::
 
     Client.AllowedGrantTypes = GrantTypes.List(
         GrantTypes.Hybrid, 
