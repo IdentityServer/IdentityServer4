@@ -56,12 +56,46 @@ In the implicit flow, all tokens are transmitted via the browser, and advanced f
 
 Authorization code
 ==================
+Authorization code flow was originally specified by OAuth 2, and provides a way to retrieve tokens on a back-channel as opposed to the browser front-channel.
+It also support client authentication.
+
+While this grant type is supported on its own, it is generally recommended you combine that with identity tokens
+which turns it into the so called hybrid flow.
+Hybrid flow gives you important extra features like signed protocol responses.
 
 Hybrid
 ======
+Hybrid flow is a combination of the implicit and authorization code flow - it uses combinations of multiple grant types, most typically ``code id_token``.
+
+In hybrid flow the identity token is transmitted via the browser channel and contains the signed protocol response along with signatures for other artifacts
+like the authorization code. This mitigates a number of attacks that apply to the browser channel.
+After successful validation of the response, the back-channel is used to retrieve the access and refresh token.
+
+This is the recommended flow for native applications that want to retrieve access tokens (and possibly refresh tokens as well) and is used
+for server-side web applications and native desktop/mobile applications.
+
+See :ref:`this <refHybridQuickstart>` quickstart for more information about using hybrid flow with MVC. 
 
 Refresh tokens
 ==============
+Refresh tokens allow gaining long lived access to APIs.
+
+You typically want to keep the lifetime of access tokens as short as possible, but at the same time don't want to bother the user
+over and over again with doing a front-channel roundtrip to IdentityServer for requesting new ones.
+
+Refresh tokens allow requesting new access tokens without user interaction. Every time the client refreshes a token it needs to make an 
+(authenticated) round-trip to IdentityServer. This allows checking if the refresh token is still valid, or has been revoked in the meantime.
+
+Refresh tokens are supported in hybrid, authorization code and resource owner password flows. 
+To request a refresh token, the client needs to include the ``offline_access`` scope in the token request (and must be authorized to for that scope). 
 
 Extension grants
 ================
+Extension grants allow extending the token endpoint with new grant types. See :ref:`this <refExtensionGrants>` for more details. 
+
+Incompatible grant types
+========================
+Some grant type combinations are forbidden:
+
+* Mixing implicit and authorization code or hybrid would allow a downgrade attack from the more secure code based flow to implicit.
+* Same concern exists for allowing both authorization code and hybrid
