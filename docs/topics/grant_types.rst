@@ -4,13 +4,13 @@ Grant Types
 Grant types are a way to specify how a client wants to interact with IdentityServer.
 The OpenID Connect and OAuth 2 specs define the following grant types:
 
-* Implicit (OAuth 2 & extended via OpenID Connect)
-* Authorization code (OAuth 2 & extended via OpenID Connect)
-* Hybrid (OpenID Connect only)
-* Client credentials (OAuth 2 only)
-* Resource owner password (OAuth 2 only)
-* Refresh tokens (OAuth 2 only)
-* Extension grants (OAuth 2 only)
+* Implicit
+* Authorization code
+* Hybrid
+* Client credentials
+* Resource owner password
+* Refresh tokens
+* Extension grants
 
 You can specify which grant type a client can use via the ``AllowedGrantTypes`` property on the ``Client`` configuration.
 
