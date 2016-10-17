@@ -338,6 +338,17 @@ namespace IdentityServer4.Validation
                 return fail;
             }
 
+            // check if plain method is allowed
+            if (codeChallengeMethod == OidcConstants.CodeChallengeMethods.Plain)
+            {
+                if (!request.Client.AllowPlainTextPkce)
+                {
+                    LogError("code_challenge_method of plain is not allowed", request);
+                    fail.ErrorDescription = "transform algorithm not supported";
+                    return fail;
+                }
+            }
+
             request.CodeChallengeMethod = codeChallengeMethod;
 
             return Valid(request);

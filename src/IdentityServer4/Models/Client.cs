@@ -83,6 +83,11 @@ namespace IdentityServer4.Models
         public bool RequirePkce { get; set; } = false;
 
         /// <summary>
+        /// Specifies whether a proof key can be sent using plain method (not recommended and default to false)
+        /// </summary>
+        public bool AllowPlainTextPkce { get; set; } = false;
+
+        /// <summary>
         /// Controls whether access tokens are transmitted via the browser for this client (defaults to true).
         /// This can prevent accidental leakage of access tokens when multiple response types are allowed.
         /// </summary>

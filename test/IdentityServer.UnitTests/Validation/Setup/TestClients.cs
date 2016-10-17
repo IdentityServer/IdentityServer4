@@ -60,6 +60,30 @@ namespace IdentityServer4.UnitTests.Validation
                 },
                 new Client
                 {
+                    ClientName = "Code Client with PKCE and plain allowed",
+                    Enabled = true,
+                    ClientId = "codeclient.pkce.plain",
+                    ClientSecrets = new List<Secret>
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RequirePkce = true,
+                    AllowPlainTextPkce = true,
+                    AllowAccessToAllScopes = true,
+
+                    RequireConsent = false,
+
+                    RedirectUris = new List<string>
+                    {
+                        "https://server/cb",
+                    },
+
+                    AuthorizationCodeLifetime = 60
+                },
+                new Client
+                {
                         ClientName = "Hybrid Client",
                         Enabled = true,
                         ClientId = "hybridclient",

@@ -20,7 +20,25 @@ namespace IdentityServer4.UnitTests.Validation.AuthorizeRequest
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task valid_openid_code_request_with_challenge_and_plain_method_should_be_allowed()
+        public async Task valid_openid_code_request_with_challenge_and_plain_method_should_be_allowed_if_plain_is_allowed()
+        {
+            var parameters = new NameValueCollection();
+            parameters.Add(OidcConstants.AuthorizeRequest.ClientId, "codeclient.pkce.plain");
+            parameters.Add(OidcConstants.AuthorizeRequest.Scope, "openid");
+            parameters.Add(OidcConstants.AuthorizeRequest.CodeChallenge, "x".Repeat(lengths.CodeChallengeMinLength));
+            parameters.Add(OidcConstants.AuthorizeRequest.CodeChallengeMethod, OidcConstants.CodeChallengeMethods.Plain);
+            parameters.Add(OidcConstants.AuthorizeRequest.RedirectUri, "https://server/cb");
+            parameters.Add(OidcConstants.AuthorizeRequest.ResponseType, OidcConstants.ResponseTypes.Code);
+
+            var validator = Factory.CreateAuthorizeRequestValidator();
+            var result = await validator.ValidateAsync(parameters);
+
+            result.IsError.Should().Be(false);
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task valid_openid_code_request_with_challenge_and_plain_method_should_be_forbidden_if_plain_is_forbidden()
         {
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.AuthorizeRequest.ClientId, "codeclient.pkce");
@@ -33,7 +51,8 @@ namespace IdentityServer4.UnitTests.Validation.AuthorizeRequest
             var validator = Factory.CreateAuthorizeRequestValidator();
             var result = await validator.ValidateAsync(parameters);
 
-            result.IsError.Should().Be(false);
+            result.IsError.Should().Be(true);
+            result.ErrorDescription.Should().Be("transform algorithm not supported");
         }
 
         [Fact]
@@ -56,7 +75,24 @@ namespace IdentityServer4.UnitTests.Validation.AuthorizeRequest
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task valid_openid_code_request_with_challenge_and_missing_method_should_be_allowed()
+        public async Task valid_openid_code_request_with_challenge_and_missing_method_should_be_allowed_if_plain_is_allowed()
+        {
+            var parameters = new NameValueCollection();
+            parameters.Add(OidcConstants.AuthorizeRequest.ClientId, "codeclient.pkce.plain");
+            parameters.Add(OidcConstants.AuthorizeRequest.Scope, "openid");
+            parameters.Add(OidcConstants.AuthorizeRequest.CodeChallenge, "x".Repeat(lengths.CodeChallengeMinLength));
+            parameters.Add(OidcConstants.AuthorizeRequest.RedirectUri, "https://server/cb");
+            parameters.Add(OidcConstants.AuthorizeRequest.ResponseType, OidcConstants.ResponseTypes.Code);
+
+            var validator = Factory.CreateAuthorizeRequestValidator();
+            var result = await validator.ValidateAsync(parameters);
+
+            result.IsError.Should().Be(false);
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task valid_openid_code_request_with_challenge_and_missing_method_should_be_forbidden_if_plain_is_forbidden()
         {
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.AuthorizeRequest.ClientId, "codeclient.pkce");
@@ -68,7 +104,8 @@ namespace IdentityServer4.UnitTests.Validation.AuthorizeRequest
             var validator = Factory.CreateAuthorizeRequestValidator();
             var result = await validator.ValidateAsync(parameters);
 
-            result.IsError.Should().Be(false);
+            result.IsError.Should().Be(true);
+            result.ErrorDescription.Should().Be("transform algorithm not supported");
         }
 
 
