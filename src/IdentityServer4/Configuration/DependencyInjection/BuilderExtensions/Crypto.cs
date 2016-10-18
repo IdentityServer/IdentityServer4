@@ -3,11 +3,7 @@
 
 
 using IdentityModel;
-using IdentityServer4.Configuration;
-using IdentityServer4.ResponseHandling;
-using IdentityServer4.Services;
 using IdentityServer4.Stores;
-using IdentityServer4.Validation;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Linq;

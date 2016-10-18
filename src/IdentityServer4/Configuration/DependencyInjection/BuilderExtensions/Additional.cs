@@ -2,17 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityModel;
 using IdentityServer4.ResponseHandling;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using IdentityServer4.Validation;
-using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-using CryptoRandom = IdentityModel.CryptoRandom;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

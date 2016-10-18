@@ -12,7 +12,6 @@ using System.Net;
 using IdentityModel.Client;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
