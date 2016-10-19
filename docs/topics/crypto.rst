@@ -14,13 +14,26 @@ If you want to customize the loading of the keys, you can implement those interf
 
 The DI builder extensions has a couple of convenience methods to set signing and validation keys.  
 
-``SetSigningCredential`` allows setting either an RSA key or a certificate from the store or an instance of ``X509Certificate2``.
+``SetSigningCredential`` allows setting either an RSA key or a certificate from the store or a file.
 
-``SetTemporarySigningCredential`` creates a fresh RSA key pair on every startup. This is useful for development situation where
-you don't have access to key material but want to get started.
+``SetTemporarySigningCredential`` creates a fresh RSA key pair on every startup. This is useful for development situations where
+you don't have access to key material.
 
 Signing key rollover
 ^^^^^^^^^^^^^^^^^^^^
+While you can only use on signing key at a time, you can publish more than one validation key to the discovery document.
+This is useful for key rollover.
+
+A rollover typically works like this:
+
+1. you request/create new key material
+2. you publish the new validation key in addition to the current one. You can use the ``AddValidationKeys`` builder extension method for that.
+3. all clients and APIs now have a chance to learn about the new key the next time they update their local copy of the discovery document
+4. after a certain amount of time (e.g. 24h) all clients and APIs should now accept both the old and the new key material
+5. you can then retire the old key material and switch to the new one
+6. all clients and APIs will "forget" the old key next time they update their local copy of the discovery document
+
+This requires that clients and APIs use the discovery document, and also have a feature to periodically refresh their configuration.
 
 Data protection
 ^^^^^^^^^^^^^^^
