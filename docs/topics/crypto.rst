@@ -21,7 +21,7 @@ you don't have access to key material.
 
 Signing key rollover
 ^^^^^^^^^^^^^^^^^^^^
-While you can only use on signing key at a time, you can publish more than one validation key to the discovery document.
+While you can only use one signing key at a time, you can publish more than one validation key to the discovery document.
 This is useful for key rollover.
 
 A rollover typically works like this:
