@@ -14,6 +14,7 @@ using System.Linq;
 using IdentityServer4;
 using IdentityServer4.Validation;
 using Serilog;
+using Microsoft.AspNetCore.Http;
 
 namespace Host
 {
@@ -123,6 +124,23 @@ namespace Host
                 ClientId = "implicit",
                 ResponseType = "id_token",
                 Scope = { "openid profile" },
+                TokenValidationParameters = new TokenValidationParameters
+                {
+                    NameClaimType = "name",
+                    RoleClaimType = "role"
+                }
+            });
+
+            app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
+            {
+                SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
+                SignOutScheme = IdentityServerConstants.SignoutScheme,
+                DisplayName = "AAD",
+                Authority = "https://login.windows.net/4ca9cb4c-5e5f-4be9-b700-c532992a3705",
+                ClientId = "96e3c53e-01cb-4244-b658-a42164cb67a9",
+                ResponseType = "id_token",
+                Scope = { "openid profile" },
+                CallbackPath = new PathString("/signin-aad"),
                 TokenValidationParameters = new TokenValidationParameters
                 {
                     NameClaimType = "name",
