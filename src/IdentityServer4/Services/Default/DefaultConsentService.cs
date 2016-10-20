@@ -4,6 +4,7 @@
 
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
+using IdentityServer4.Stores;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,14 +21,14 @@ namespace IdentityServer4.Services.Default
         /// <summary>
         /// The grants
         /// </summary>
-        protected readonly IPersistedGrantService _grants;
+        protected readonly IPersistedGrantStore _grants;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultConsentService" /> class.
         /// </summary>
         /// <param name="grants">The grants.</param>
         /// <exception cref="System.ArgumentNullException">store</exception>
-        public DefaultConsentService(IPersistedGrantService grants)
+        public DefaultConsentService(IPersistedGrantStore grants)
         {
             _grants = grants;
         }

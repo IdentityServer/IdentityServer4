@@ -6,6 +6,7 @@ using IdentityModel;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
+using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
@@ -41,7 +42,7 @@ namespace IdentityServer4.Services.Default
         /// <summary>
         /// The persisted grants
         /// </summary>
-        protected readonly IPersistedGrantService _grants;
+        protected readonly IPersistedGrantStore _grants;
 
         /// <summary>
         /// The signing service
@@ -62,7 +63,7 @@ namespace IdentityServer4.Services.Default
         /// <param name="creationService">The signing service.</param>
         /// <param name="events">The events service.</param>
         /// <param name="logger">The logger.</param>
-        public DefaultTokenService(IHttpContextAccessor context, IClaimsService claimsProvider, IPersistedGrantService grants, ITokenCreationService creationService, IEventService events, ILogger<DefaultTokenService> logger)
+        public DefaultTokenService(IHttpContextAccessor context, IClaimsService claimsProvider, IPersistedGrantStore grants, ITokenCreationService creationService, IEventService events, ILogger<DefaultTokenService> logger)
         {
             _logger = logger;
             _context = context;

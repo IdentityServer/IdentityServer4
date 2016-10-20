@@ -5,6 +5,7 @@
 using FluentAssertions;
 using IdentityModel;
 using IdentityServer4.Configuration;
+using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using IdentityServer4.UnitTests.Common;
@@ -45,7 +46,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task RefreshTokenTooLong()
         {
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateGrantStore();
             var client = await _clients.FindEnabledClientByIdAsync("roclient");
             var options = new IdentityServerOptions();
 
@@ -75,7 +76,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             };
             var handle = Guid.NewGuid().ToString();
 
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateGrantStore();
             await grants.StoreRefreshTokenAsync(handle, refreshToken);
 
             var client = await _clients.FindEnabledClientByIdAsync("roclient");
@@ -108,7 +109,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             };
             var handle = Guid.NewGuid().ToString();
 
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateGrantStore();
             await grants.StoreRefreshTokenAsync(handle, refreshToken);
 
             var client = await _clients.FindEnabledClientByIdAsync("roclient");
@@ -141,7 +142,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             };
             var handle = Guid.NewGuid().ToString();
 
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateGrantStore();
             await grants.StoreRefreshTokenAsync(handle, refreshToken);
 
             var client = await _clients.FindEnabledClientByIdAsync("roclient_restricted");
@@ -177,7 +178,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             };
             var handle = Guid.NewGuid().ToString();
 
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateGrantStore();
             await grants.StoreRefreshTokenAsync(handle, refreshToken);
 
             var client = await _clients.FindEnabledClientByIdAsync("roclient");

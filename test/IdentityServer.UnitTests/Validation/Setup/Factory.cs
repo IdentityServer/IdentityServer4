@@ -30,7 +30,7 @@ namespace IdentityServer4.UnitTests.Validation
         public static TokenRequestValidator CreateTokenRequestValidator(
             IdentityServerOptions options = null,
             IScopeStore scopes = null,
-            IPersistedGrantService grants = null,
+            IPersistedGrantStore grants = null,
             IResourceOwnerPasswordValidator resourceOwnerValidator = null,
             IProfileService profile = null,
             IEnumerable<IExtensionGrantValidator> extensionGrantValidators = null,
@@ -74,7 +74,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             if (grants == null)
             {
-                grants = CreateGrantService();
+                grants = CreateGrantStore();
             }
 
             if (scopeValidator == null)
@@ -151,7 +151,7 @@ namespace IdentityServer4.UnitTests.Validation
                 TestLogger.Create<AuthorizeRequestValidator>());
         }
 
-        public static TokenValidator CreateTokenValidator(IPersistedGrantService grants = null, IProfileService profile = null)
+        public static TokenValidator CreateTokenValidator(IPersistedGrantStore grants = null, IProfileService profile = null)
         {
             if (profile == null)
             {
@@ -160,7 +160,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             if (grants == null)
             {
-                grants = CreateGrantService();
+                grants = CreateGrantStore();
             }
 
             var clients = CreateClientStore();
@@ -213,11 +213,9 @@ namespace IdentityServer4.UnitTests.Validation
             return new ClientSecretValidator(clients, parser, validator, new TestEventService(), TestLogger.Create<ClientSecretValidator>());
         }
 
-        public static IPersistedGrantService CreateGrantService()
+        public static IPersistedGrantStore CreateGrantStore()
         {
-            return new DefaultPersistedGrantService(new InMemoryPersistedGrantStore(),
-                new PersistentGrantSerializer(),
-                TestLogger.Create<DefaultPersistedGrantService>());
+            return new InMemoryPersistedGrantStore();
         }
     }
 }

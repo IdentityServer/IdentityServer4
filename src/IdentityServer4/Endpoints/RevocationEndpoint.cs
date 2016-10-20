@@ -13,6 +13,8 @@ using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Events;
 using Microsoft.AspNetCore.Http;
+using IdentityServer4.Stores;
+using IdentityServer4.Extensions;
 
 namespace IdentityServer4.Endpoints
 {
@@ -21,13 +23,13 @@ namespace IdentityServer4.Endpoints
         private readonly ILogger _logger;
         private readonly ClientSecretValidator _clientValidator;
         private readonly ITokenRevocationRequestValidator _requestValidator;
-        private readonly IPersistedGrantService _grants;
+        private readonly IPersistedGrantStore _grants;
         private readonly IEventService _events;
 
         public RevocationEndpoint(ILogger<RevocationEndpoint> logger,
             ClientSecretValidator clientValidator,
             ITokenRevocationRequestValidator requestValidator,
-            IPersistedGrantService grants,
+            IPersistedGrantStore grants,
             IEventService events)
         {
             _logger = logger;
