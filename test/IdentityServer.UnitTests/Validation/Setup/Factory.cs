@@ -158,16 +158,16 @@ namespace IdentityServer4.UnitTests.Validation
                 TestLogger.Create<AuthorizeRequestValidator>());
         }
 
-        public static TokenValidator CreateTokenValidator(IPersistedGrantService grants = null, IProfileService profile = null)
+        public static TokenValidator CreateTokenValidator(IReferenceTokenStore store = null, IProfileService profile = null)
         {
             if (profile == null)
             {
                 profile = new TestProfileService();
             }
 
-            if (grants == null)
+            if (store == null)
             {
-                grants = CreateGrantService();
+                store = CreateReferenceTokenStore();
             }
 
             var clients = CreateClientStore();
@@ -177,7 +177,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             var validator = new TokenValidator(
                 clients: clients,
-                grants: grants,
+                referenceTokenStore: store,
                 customValidator: new DefaultCustomTokenValidator(
                     profile: profile,
                     clients: clients,

@@ -133,6 +133,10 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IProfileService, DefaultProfileService>();
             builder.Services.TryAddTransient(typeof(IMessageStore<>), typeof(CookieMessageStore<>));
             builder.Services.TryAddTransient<IIdentityServerInteractionService, DefaultIdentityServerInteractionService>();
+            builder.Services.TryAddTransient<IAuthorizationCodeStore, DefaultAuthorizationCodeStore>();
+            builder.Services.TryAddTransient<IRefreshTokenStore, DefaultRefreshTokenStore>();
+            builder.Services.TryAddTransient<IReferenceTokenStore, DefaultReferenceTokenStore>();
+            builder.Services.TryAddTransient<IUserConsentStore, DefaultUserConsentStore>();
 
             return builder;
         }
