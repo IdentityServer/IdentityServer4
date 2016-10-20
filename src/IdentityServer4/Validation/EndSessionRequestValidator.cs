@@ -54,9 +54,7 @@ namespace IdentityServer4.Validation
         {
             _logger.LogDebug("Start end session request validation");
 
-            var isAuthenticated = subject != null &&
-                subject.Identity != null &&
-                subject.Identity.IsAuthenticated;
+            var isAuthenticated = subject.IsAuthenticated();
 
             if (!isAuthenticated && _options.AuthenticationOptions.RequireAuthenticatedUserForSignOutMessage)
             {

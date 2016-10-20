@@ -586,7 +586,7 @@ namespace IdentityServer4.Validation
             // check session cookie
             //////////////////////////////////////////////////////////
             if (_options.Endpoints.EnableCheckSessionEndpoint && 
-                request.Subject.Identity.IsAuthenticated)
+                request.Subject.IsAuthenticated())
             {
                 var sessionId = await _sessionId.GetCurrentSessionIdAsync();
                 if (sessionId.IsPresent())

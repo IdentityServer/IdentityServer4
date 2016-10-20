@@ -74,7 +74,7 @@ namespace IdentityServer4.ResponseHandling
             }
 
             // unauthenticated user
-            var isAuthenticated = request.Subject.Identity.IsAuthenticated;
+            var isAuthenticated = request.Subject.IsAuthenticated();
             
             // user de-activated
             bool isActive = false;
