@@ -49,14 +49,14 @@ namespace IdentityServer4.Events
             await events.RaiseEventAsync(evt);
         }
 
-        public static async Task RaiseSuccessfulResourceOwnerFlowAuthenticationEventAsync(this IEventService events, 
+        public static async Task RaiseSuccessfulResourceOwnerPasswordAuthenticationEventAsync(this IEventService events, 
             string userName, string subjectId)
         {
             var evt = new Event<LoginDetails>(
                 EventConstants.Categories.Authentication,
-                "Resource Owner Flow Login Success",
+                "Resource Owner Password Login Success",
                 EventTypes.Success,
-                EventConstants.Ids.ResourceOwnerFlowLoginSuccess,
+                EventConstants.Ids.ResourceOwnerPasswordLoginSuccess,
                 new LoginDetails
                 {
                     SubjectId = subjectId,
@@ -66,14 +66,14 @@ namespace IdentityServer4.Events
             await events.RaiseEventAsync(evt);
         }
 
-        public static async Task RaiseFailedResourceOwnerFlowAuthenticationEventAsync(this IEventService events, 
+        public static async Task RaiseFailedResourceOwnerPasswordAuthenticationEventAsync(this IEventService events, 
             string userName, string error)
         {
             var evt = new Event<LoginDetails>(
                 EventConstants.Categories.Authentication,
-                "Resource Owner Flow Login Failure",
+                "Resource Owner Password Login Failure",
                 EventTypes.Failure,
-                EventConstants.Ids.ResourceOwnerFlowLoginFailure,
+                EventConstants.Ids.ResourceOwnerPasswordLoginFailure,
                 new LoginDetails
                 {
                     Name = userName

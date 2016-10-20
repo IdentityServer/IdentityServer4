@@ -48,8 +48,8 @@ namespace IdentityServer4.Events
 
             public const int UserLogout = AuthenticationEventsStart + 10;
 
-            public const int ResourceOwnerFlowLoginSuccess = AuthenticationEventsStart + 20;
-            public const int ResourceOwnerFlowLoginFailure = AuthenticationEventsStart + 21;
+            public const int ResourceOwnerPasswordLoginSuccess = AuthenticationEventsStart + 20;
+            public const int ResourceOwnerPasswordLoginFailure = AuthenticationEventsStart + 21;
 
             public const int ClientAuthenticationSuccess = AuthenticationEventsStart + 30;
             public const int ClientAuthenticationFailure = AuthenticationEventsStart + 31;

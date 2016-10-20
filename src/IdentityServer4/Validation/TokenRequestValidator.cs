@@ -736,12 +736,12 @@ namespace IdentityServer4.Validation
 
         private async Task RaiseSuccessfulResourceOwnerAuthenticationEventAsync(string userName, string subjectId)
         {
-            await _events.RaiseSuccessfulResourceOwnerFlowAuthenticationEventAsync(userName, subjectId);
+            await _events.RaiseSuccessfulResourceOwnerPasswordAuthenticationEventAsync(userName, subjectId);
         }
 
         private async Task RaiseFailedResourceOwnerAuthenticationEventAsync(string userName, string error)
         {
-            await _events.RaiseFailedResourceOwnerFlowAuthenticationEventAsync(userName, error);
+            await _events.RaiseFailedResourceOwnerPasswordAuthenticationEventAsync(userName, error);
         }
 
         private async Task RaiseFailedAuthorizationCodeRedeemedEventAsync(string handle, string error)
