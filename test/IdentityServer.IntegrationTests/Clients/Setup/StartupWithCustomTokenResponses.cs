@@ -15,7 +15,7 @@ namespace IdentityServer4.IntegrationTests.Clients
         {
             services.AddAuthentication();
 
-            var builder = services.AddDeveloperIdentityServer(options =>
+            var builder = services.AddIdentityServer(options =>
             {
                 options.IssuerUri = "https://idsvr4";
 
@@ -30,6 +30,8 @@ namespace IdentityServer4.IntegrationTests.Clients
 
             builder.AddInMemoryClients(Clients.Get());
             builder.AddInMemoryScopes(Scopes.Get());
+
+            builder.AddTemporarySigningCredential();
 
             services.AddTransient<IResourceOwnerPasswordValidator, CustomResponseResourceOwnerValidator>();
             builder.AddExtensionGrantValidator<CustomResponseExtensionGrantValidator>();

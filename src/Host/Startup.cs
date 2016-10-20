@@ -39,7 +39,7 @@ namespace Host
                 }
             });
 
-            var builder = services.AddDeveloperIdentityServer(options =>
+            var builder = services.AddIdentityServer(options =>
             {
                 //options.EventsOptions = new EventsOptions
                 //{
@@ -51,14 +51,13 @@ namespace Host
 
                 options.AuthenticationOptions.FederatedSignOutPaths.Add("/signout-oidc");
             })
-            .AddInMemoryClients(Clients.Get())
-            .AddInMemoryScopes(Scopes.Get())
-            .AddInMemoryUsers(Users.Get());
-            
-            builder.AddExtensionGrantValidator<Extensions.ExtensionGrantValidator>();
-
-            builder.AddSecretParser<ClientAssertionSecretParser>();
-            builder.AddSecretValidator<PrivateKeyJwtSecretValidator>();
+                .AddInMemoryClients(Clients.Get())
+                .AddInMemoryScopes(Scopes.Get())
+                .AddInMemoryUsers(Users.Get())
+                .AddTemporarySigningCredential()
+                .AddExtensionGrantValidator<Extensions.ExtensionGrantValidator>()
+                .AddSecretParser<ClientAssertionSecretParser>()
+                .AddSecretValidator<PrivateKeyJwtSecretValidator>();
 
             services.AddMvc();
         }

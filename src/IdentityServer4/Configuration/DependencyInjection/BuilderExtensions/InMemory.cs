@@ -82,7 +82,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns></returns>
-        public static IIdentityServerBuilder AddInMemoryStores(this IIdentityServerBuilder builder)
+        public static IIdentityServerBuilder AddInMemoryPersistedGrants(this IIdentityServerBuilder builder)
         {
             builder.Services.TryAddSingleton<IPersistedGrantStore, InMemoryPersistedGrantStore>();
 

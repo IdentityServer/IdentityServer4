@@ -21,7 +21,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="builder">The builder.</param>
         /// <param name="credential">The credential.</param>
         /// <returns></returns>
-        public static IIdentityServerBuilder SetSigningCredential(this IIdentityServerBuilder builder, SigningCredentials credential)
+        public static IIdentityServerBuilder AddSigningCredential(this IIdentityServerBuilder builder, SigningCredentials credential)
         {
             // todo
             //if (!(credential.Key is AsymmetricSecurityKey) &&
@@ -44,7 +44,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidOperationException">X509 certificate does not have a private key.</exception>
-        public static IIdentityServerBuilder SetSigningCredential(this IIdentityServerBuilder builder, X509Certificate2 certificate)
+        public static IIdentityServerBuilder AddSigningCredential(this IIdentityServerBuilder builder, X509Certificate2 certificate)
         {
             if (certificate == null) throw new ArgumentNullException(nameof(certificate));
 
@@ -54,7 +54,7 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             var credential = new SigningCredentials(new X509SecurityKey(certificate), "RS256");
-            return builder.SetSigningCredential(credential);
+            return builder.AddSigningCredential(credential);
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="location">The location.</param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException">certificate: '{name}'</exception>
-        public static IIdentityServerBuilder SetSigningCredential(this IIdentityServerBuilder builder, string name, StoreLocation location = StoreLocation.LocalMachine)
+        public static IIdentityServerBuilder AddSigningCredential(this IIdentityServerBuilder builder, string name, StoreLocation location = StoreLocation.LocalMachine)
         {
             X509Certificate2 certificate;
 
@@ -80,7 +80,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             if (certificate == null) throw new InvalidOperationException($"certificate: '{name}' not found in certificate store");
 
-            return builder.SetSigningCredential(certificate);
+            return builder.AddSigningCredential(certificate);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="rsaKey">The RSA key.</param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException">RSA key does not have a private key.</exception>
-        public static IIdentityServerBuilder SetSigningCredential(this IIdentityServerBuilder builder, RsaSecurityKey rsaKey)
+        public static IIdentityServerBuilder AddSigningCredential(this IIdentityServerBuilder builder, RsaSecurityKey rsaKey)
         {
             if (!rsaKey.HasPrivateKey)
             {
@@ -98,7 +98,7 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             var credential = new SigningCredentials(rsaKey, "RS256");
-            return builder.SetSigningCredential(credential);
+            return builder.AddSigningCredential(credential);
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns></returns>
-        public static IIdentityServerBuilder SetTemporarySigningCredential(this IIdentityServerBuilder builder)
+        public static IIdentityServerBuilder AddTemporarySigningCredential(this IIdentityServerBuilder builder)
         {
             var rsa = RSA.Create();
 
@@ -135,7 +135,7 @@ namespace Microsoft.Extensions.DependencyInjection
             key.KeyId = CryptoRandom.CreateUniqueId();
             
             var credential = new SigningCredentials(key, "RS256");
-            return builder.SetSigningCredential(credential);
+            return builder.AddSigningCredential(credential);
         }
 
         /// <summary>
