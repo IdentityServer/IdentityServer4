@@ -202,7 +202,7 @@ Let's add these claims to the user, so IdentityServer can put them into the iden
                 Username = "alice",
                 Password = "password",
 
-                Claims = 
+                Claims = new []
                 {
                     new Claim("name", "Alice"),
                     new Claim("website", "https://alice.com")
@@ -214,7 +214,7 @@ Let's add these claims to the user, so IdentityServer can put them into the iden
                 Username = "bob",
                 Password = "password",
 
-                Claims = 
+                Claims = new []
                 {
                     new Claim("name", "Bob"),
                     new Claim("website", "https://bob.com")
