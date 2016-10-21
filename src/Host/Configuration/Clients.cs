@@ -261,6 +261,7 @@ namespace Host.Configuration
                     {
                         "http://localhost:7017/index.html",
                         "http://localhost:7017/silent_renew.html",
+                        "http://localhost:7017/popup.html",
                     },
 
                     PostLogoutRedirectUris = { "http://localhost:7017/index.html" },
