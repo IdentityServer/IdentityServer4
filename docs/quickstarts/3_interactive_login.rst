@@ -48,7 +48,9 @@ Next add both middlewares to your pipeline - the cookies one is simple::
 
 The OpenID Connect middleware needs slightly more configuration.
 You point it to your IdentityServer, specify a client ID and tell it which middleware will do
-the local signin (namely the cookies middleware)::
+the local signin (namely the cookies middleware).  As well, we've turned off the JWT claim type mapping to allow well-known claims (e.g. 'sub' and 'idp') to flow through unmolested.  This "clearing" of the claim type mappings must be done before the call to `UseOpenIdConnectAuthentication()`::
+
+    JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
     app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
     {
