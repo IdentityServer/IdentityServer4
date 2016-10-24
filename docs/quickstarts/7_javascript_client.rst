@@ -236,20 +236,11 @@ It should have the configuration listed below::
         AllowedGrantTypes = GrantTypes.Implicit,
         AllowAccessTokensViaBrowser = true,
 
-        RedirectUris = new List<string>
-        {
-            "http://localhost:5003/callback.html"
-        },
-        PostLogoutRedirectUris = new List<string>
-        {
-            "http://localhost:5003/index.html"
-        },
-        AllowedCorsOrigins = new List<string>
-        {
-            "http://localhost:5003"
-        },
+        RedirectUris =           { "http://localhost:5003/callback.html" },
+        PostLogoutRedirectUris = { "http://localhost:5003/index.html" },
+        AllowedCorsOrigins =     { "http://localhost:5003" },
 
-        AllowedScopes = new List<string>
+        AllowedScopes = 
         {
             StandardScopes.OpenId.Name,
             StandardScopes.Profile.Name,

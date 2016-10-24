@@ -46,7 +46,7 @@ namespace IdentityServer4.UnitTests.Services.Default
             var item = _stubAuthHandler.Properties.First();
             _stubAuthHandler.Properties[item.Key] = "junk";
 
-            var clients = await _subject.GetClientsAsync();
+            var clients = await _subject.GetClientListAsync();
             clients.Should().BeEmpty();
             _stubAuthHandler.Properties.Count.Should().Be(0);
         }
@@ -55,7 +55,7 @@ namespace IdentityServer4.UnitTests.Services.Default
         public async Task adding_client_should_be_able_to_read_client()
         {
             await _subject.AddClientIdAsync("client");
-            var clients = await _subject.GetClientsAsync();
+            var clients = await _subject.GetClientListAsync();
             clients.Should().Contain(new string[] { "client" });
         }
 
@@ -64,7 +64,7 @@ namespace IdentityServer4.UnitTests.Services.Default
         {
             await _subject.AddClientIdAsync("client1");
             await _subject.AddClientIdAsync("client2");
-            var clients = await _subject.GetClientsAsync();
+            var clients = await _subject.GetClientListAsync();
             clients.Should().Contain(new string[] { "client2", "client1" });
         }
 

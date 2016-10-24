@@ -47,16 +47,13 @@ Add the following code to your configuration::
                 AllowedGrantTypes = GrantTypes.ClientCredentials,
 
                 // secret for authentication
-                ClientSecrets = new List<Secret>
+                ClientSecrets =
                 {
                     new Secret("secret".Sha256())
                 },
 
                 // scopes that client has access to
-                AllowedScopes = new List<string>
-                {
-                    "api1"
-                }
+                AllowedScopes = { "api1" }
             }
         };
     }
@@ -120,7 +117,7 @@ The job of that middleware is:
 
 Add the following package to your project.json::
 
-    "IdentityServer4.AccessTokenValidation": "1.0.1-rc1"
+    "IdentityServer4.AccessTokenValidation": "1.0.1-rc2"
 
 You also need to add the middleware to your pipeline. 
 It must be added **before** MVC, e.g.::
@@ -157,7 +154,7 @@ encapsulates the protocol interaction in an easy to use API.
 
 Add IdentityModel to your project.json::
 
-    "IdentityModel": "2.0.0-rc3"
+    "IdentityModel": "2.0.0"
 
 IdentityModel includes a client library to use with the discovery endpoint.
 This way you only need to know the base-address of IdentityServer - the actual

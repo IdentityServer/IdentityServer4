@@ -44,8 +44,8 @@ Add IdentityServer packages
 
 Add both the ``IdentityServer4`` and the ``IdentityServer4.AspNetIdentity`` packages to `project.json`::
 
-    "IdentityServer4": "1.0.0-rc1-update2",
-    "IdentityServer4.AspNetIdentity": "1.0.0-rc1-update2"
+    "IdentityServer4": "1.0.0-rc2",
+    "IdentityServer4.AspNetIdentity": "1.0.0-rc2"
 
 
 Scopes and Clients Configuration
@@ -65,21 +65,15 @@ We've not yet copied over the consent code from the prior IdentityServer project
 
         RequireConsent = false,
 
-        ClientSecrets = new List<Secret>
+        ClientSecrets = 
         {
             new Secret("secret".Sha256())
         },
 
-        RedirectUris = new List<string>
-        {
-            "http://localhost:5002/signin-oidc"
-        },
-        PostLogoutRedirectUris = new List<string>
-        {
-            "http://localhost:5002"
-        },
+        RedirectUris           = { "http://localhost:5002/signin-oidc" },
+        PostLogoutRedirectUris = { "http://localhost:5002" },
 
-        AllowedScopes = new List<string>
+        AllowedScopes = 
         {
             StandardScopes.OpenId.Name,
             StandardScopes.Profile.Name,

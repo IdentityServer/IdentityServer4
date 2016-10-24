@@ -84,19 +84,35 @@ namespace IdentityServer4
 
         internal static void AugmentMissingClaims(this ClaimsPrincipal principal)
         {
-            if (principal.FindFirst(JwtClaimTypes.IdentityProvider) == null)
+            var identity = principal.Identities.First();
+
+            // ASP.NET Identity issues this claim type and uses the authentication middleware name
+            // such as "Google" for the value. this code is trying to correct/convert that for
+            // our scenario. IOW, we take their old AuthenticationMethod value of "Google"
+            // and issue it as the idp claim. we then also issue a amr with "external"
+            var amr = identity.FindFirst(ClaimTypes.AuthenticationMethod);
+            if (amr != null &&
+                identity.FindFirst(JwtClaimTypes.IdentityProvider) == null && 
+                identity.FindFirst(JwtClaimTypes.AuthenticationMethod) == null)
             {
-                principal.Identities.First().AddClaim(new Claim(JwtClaimTypes.IdentityProvider, Constants.LocalIdentityProvider));
+                identity.RemoveClaim(amr);
+                identity.AddClaim(new Claim(JwtClaimTypes.IdentityProvider, amr.Value));
+                identity.AddClaim(new Claim(JwtClaimTypes.AuthenticationMethod, Constants.ExternalAuthenticationMethod));
             }
 
-            if (principal.FindFirst(JwtClaimTypes.AuthenticationMethod) == null)
+            if (identity.FindFirst(JwtClaimTypes.IdentityProvider) == null)
             {
-                principal.Identities.First().AddClaim(new Claim(JwtClaimTypes.AuthenticationMethod, OidcConstants.AuthenticationMethods.Password));
+                identity.AddClaim(new Claim(JwtClaimTypes.IdentityProvider, Constants.LocalIdentityProvider));
             }
 
-            if (principal.FindFirst(JwtClaimTypes.AuthenticationTime) == null)
+            if (identity.FindFirst(JwtClaimTypes.AuthenticationMethod) == null)
             {
-                principal.Identities.First().AddClaim(new Claim(JwtClaimTypes.AuthenticationTime, DateTimeHelper.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer));
+                identity.AddClaim(new Claim(JwtClaimTypes.AuthenticationMethod, OidcConstants.AuthenticationMethods.Password));
+            }
+
+            if (identity.FindFirst(JwtClaimTypes.AuthenticationTime) == null)
+            {
+                identity.AddClaim(new Claim(JwtClaimTypes.AuthenticationTime, DateTimeHelper.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer));
             }
         }
 
