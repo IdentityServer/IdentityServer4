@@ -47,4 +47,4 @@ We don't enforce the use of HTTPS, but for production it is mandatory for every 
 
 HTTPS is typically provided by the reverse proxy that sits in front of ASP.NET Core's built-in webser,
 `here <https://docs.asp.net/en/latest/publishing/iis.html>`_ are some instructions for using IIS, 
-`here <http://tattoocoder.com/using-apache-web-server-as-reverse-proxy-for-aspnetcore/>`_. for Apache.
+`here <http://tattoocoder.com/using-apache-web-server-as-reverse-proxy-for-aspnetcore/>`_ for Apache.
