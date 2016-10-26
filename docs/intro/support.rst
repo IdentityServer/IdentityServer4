@@ -1,4 +1,4 @@
-Support and consulting options
+Support and Consulting Options
 ==============================
 
 We have several free and commercial support and consulting options for IdentityServer.
