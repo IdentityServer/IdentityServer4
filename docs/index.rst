@@ -41,6 +41,7 @@ If you need help building or running your identity platform, let us know. Head o
    intro/terminology
    intro/specs
    intro/packaging
+   intro/support
 
 .. toctree::
    :maxdepth: 2
