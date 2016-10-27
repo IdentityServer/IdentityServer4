@@ -49,7 +49,6 @@ namespace IdentityServer4.Stores.InMemory
         /// </summary>
         /// <param name="publicOnly">if set to <c>true</c> only public scopes are returned.</param>
         /// <returns></returns>
-        /// <exception cref="System.NotImplementedException"></exception>
         public Task<IEnumerable<Scope>> GetScopesAsync(bool publicOnly = true)
         {
             if (publicOnly)
