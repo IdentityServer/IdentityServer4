@@ -14,7 +14,7 @@ All the protocol support needed for OpenID Connect is already built into Identit
 You need to provide the necessary UI parts for login, logout, consent and error.
 
 While the look & feel as well as the exact workflows will probably always differ in every
-IdentityServer implementation, we provide a sample UI that you can use as a starting point.
+IdentityServer implementation, we provide an MVC-based sample UI that you can use as a starting point.
 
 This UI can be found in the `Quickstart UI repo <https://github.com/IdentityServer/IdentityServer4.Quickstart.UI>`_.
 You can either clone or download this repo and drop the controllers, views, models and CSS into your web application.
@@ -23,6 +23,13 @@ Alternatively you can run this command from the command line in your web applica
 automate the download::
 
     iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/dev/get.ps1'))
+
+In addition you need to add references to MVC and the static file middleware to your project.json::
+
+    "Microsoft.AspNetCore.Mvc": "1.0.0",
+    "Microsoft.AspNetCore.StaticFiles": "1.0.0"
+
+...and also call ``AddMvc()`` in ``ConfigureServices`` and ``UseStaticFiles()`` and ``UseMvcWithDefaultRoute()`` in ``Configure`` in your ``Startup``.
 
 Spend some time inspecting the controllers and models, the better you understand them, 
 the easier it will be to make future modifications.
