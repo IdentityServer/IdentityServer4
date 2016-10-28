@@ -22,7 +22,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
 
             builder.AddInMemoryClients(Clients.Get());
             builder.AddInMemoryScopes(Scopes.Get());
-            builder.AddInMemoryUsers(new List<InMemoryUser>());
+            builder.AddInMemoryUsers(Users.Get());
             builder.AddTemporarySigningCredential();
         }
 

@@ -18,7 +18,7 @@ namespace IdentityServer4.Stores.Serialization
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             var source = serializer.Deserialize<ClaimLite>(reader);
-            var target = new Claim(source.Type, source.Value);
+            var target = new Claim(source.Type, source.Value, source.ValueType);
             return target;
         }
 
@@ -29,8 +29,10 @@ namespace IdentityServer4.Stores.Serialization
             var target = new ClaimLite
             {
                 Type = source.Type,
-                Value = source.Value
+                Value = source.Value,
+                ValueType = source.ValueType
             };
+
             serializer.Serialize(writer, target);
         }
     }
