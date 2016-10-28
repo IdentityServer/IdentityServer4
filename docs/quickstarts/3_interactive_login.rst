@@ -24,12 +24,7 @@ automate the download::
 
     iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/dev/get.ps1'))
 
-In addition you need to add references to MVC and the static file middleware to your project.json::
-
-    "Microsoft.AspNetCore.Mvc": "1.0.0",
-    "Microsoft.AspNetCore.StaticFiles": "1.0.0"
-
-...and also call ``AddMvc()`` in ``ConfigureServices`` and ``UseStaticFiles()`` and ``UseMvcWithDefaultRoute()`` in ``Configure`` in your ``Startup``.
+See the `readme <https://github.com/IdentityServer/IdentityServer4.Quickstart.UI/blob/dev/README.md>`_ for the quickstart UI for more information. 
 
 Spend some time inspecting the controllers and models, the better you understand them, 
 the easier it will be to make future modifications.
