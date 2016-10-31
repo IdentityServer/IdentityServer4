@@ -102,11 +102,11 @@ In `Startup.cs` add this method to help initialize the database::
 
     private void InitializeDatabase(IApplicationBuilder app)
     {
-        using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+        using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
         {
-            scope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
+            serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
 
-            var context = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+            var context = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
             context.Database.Migrate();
             if (!context.Clients.Any())
             {
@@ -119,9 +119,9 @@ In `Startup.cs` add this method to help initialize the database::
 
             if (!context.Scopes.Any())
             {
-                foreach (var client in Config.GetScopes())
+                foreach (var scope in Config.GetScopes())
                 {
-                    context.Scopes.Add(client.ToEntity());
+                    context.Scopes.Add(scope.ToEntity());
                 }
                 context.SaveChanges();
             }
