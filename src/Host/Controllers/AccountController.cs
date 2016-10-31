@@ -92,7 +92,7 @@ namespace IdentityServer4.Quickstart.UI.Controllers
                     };
 
                     await HttpContext.Authentication.SignInAsync(user.Subject, user.Username, props);
-                    
+
                     // make sure the returnUrl is still valid, and if yes - redirect back to authorize endpoint
                     if (_interaction.IsValidReturnUrl(model.ReturnUrl))
                     {
@@ -159,6 +159,12 @@ namespace IdentityServer4.Quickstart.UI.Controllers
         [HttpGet]
         public async Task<IActionResult> Logout(string logoutId)
         {
+            if (User.Identity.IsAuthenticated == false)
+            {
+                // if the user is not authenticated, then just show logged out page
+                return await Logout(new LogoutViewModel { LogoutId = logoutId });
+            }
+
             var context = await _interaction.GetLogoutContextAsync(logoutId);
             if (context?.IsAuthenticatedLogout == true)
             {
