@@ -68,6 +68,8 @@ The ``AddTemporarySigningCredential`` extension creates temporary key material f
 Again this might be useful to get started, but needs to be replaced by some persistent key material for production scenarios.
 See the :ref:`cryptography docs <refCrypto>` for more information.
 
+.. Note:: IdentityServer is not yet ready to be launched. In fact, when you try it, you should see an exception at startup time stating that services are missing. We will add those services in the following quickstarts.
+
 Modify hosting
 ^^^^^^^^^^^^^^^
 
