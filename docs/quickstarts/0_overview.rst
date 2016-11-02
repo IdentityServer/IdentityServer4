@@ -35,7 +35,7 @@ Then select the "Empty Web" option.
 
 Next, add the IdentityServer4 nuget package by adding the following line to your project.json::
 
-    "IdentityServer4": "1.0.0-rc2"
+    "IdentityServer4": "1.0.0-rc3"
     
 IdentityServer uses the usual pattern to configure and add services to an ASP.NET Core host.
 In ``ConfigureServices`` the required services are configured and added to the DI system. 
@@ -47,7 +47,8 @@ Modify your ``Startup.cs`` file to look like this::
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDeveloperIdentityServer();
+            services.AddIdentityServer()
+                .AddTemporarySigningCredential();
         }
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
@@ -59,12 +60,13 @@ Modify your ``Startup.cs`` file to look like this::
         }
     }
 
-``AddDeveloperIdentityServer`` is a convenient way to quickly setup IdentityServer with
-in-memory keys and data stores. This is only useful for development and test scenarios. 
+``AddIdentityServer`` registers the IdentityServer services in DI. It also registers an in-memory store for runtime state.
+This is useful for development scenarios. For production scenarios you need a persistent or shared store like a database or cache for that.
+See the :ref:`EntityFramework <refEntityFrameworkQuickstart>` quickstart for more information.
 
-For real deployments you would rather use keys loaded from a secured location,
-as well as persistent backing stores.
-But as the name says, this allows you to get quickly started.
+The ``AddTemporarySigningCredential`` extension creates temporary key material for signing tokens on every start.
+Again this might be useful to get started, but needs to be replaced by some persistent key material for production scenarios.
+See the :ref:`cryptography docs <refCrypto>` for more information.
 
 Modify hosting
 ^^^^^^^^^^^^^^^
