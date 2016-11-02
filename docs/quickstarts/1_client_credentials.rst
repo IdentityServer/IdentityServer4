@@ -69,7 +69,8 @@ under the covers these add the relevant stores and data into the DI system::
     public void ConfigureServices(IServiceCollection services)
     {
         // configure identity server with in-memory stores, keys, clients and scopes
-        services.AddDeveloperIdentityServer()
+        services.AddIdentityServer()
+            .AddTemporarySigningCredential()
             .AddInMemoryScopes(Config.GetScopes())
             .AddInMemoryClients(Config.GetClients());
     }
@@ -118,7 +119,7 @@ The job of that middleware is:
 
 Add the following package to your project.json::
 
-    "IdentityServer4.AccessTokenValidation": "1.0.1-rc2"
+    "IdentityServer4.AccessTokenValidation": "1.0.1-rc3"
 
 You also need to add the middleware to your pipeline. 
 It must be added **before** MVC, e.g.::
