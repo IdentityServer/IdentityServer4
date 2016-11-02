@@ -71,7 +71,7 @@ namespace IdentityServer4.Models
         /// Gets or sets the sign out iframe URL.
         /// </summary>
         /// <value>
-        /// The sign out i frame URL.
+        /// The sign out iframe URL.
         /// </value>
         public string SignOutIFrameUrl { get; set; }
 
