@@ -11,6 +11,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using IdentityServer4.Configuration;
 using Xunit;
 
 namespace IdentityServer4.UnitTests.Services.Default
@@ -29,7 +30,7 @@ namespace IdentityServer4.UnitTests.Services.Default
             _stubAuthHandler = new StubAuthenticationHandler(null, _scheme);
             _mockHttpContext.HttpContext.GetAuthentication().Handler = _stubAuthHandler;
 
-            _subject = new DefaultSessionIdService(_mockHttpContext);
+            _subject = new DefaultSessionIdService(_mockHttpContext, new IdentityServerOptions());
         }
 
         [Fact]

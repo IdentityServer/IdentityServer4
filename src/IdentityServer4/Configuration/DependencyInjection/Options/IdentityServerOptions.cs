@@ -27,6 +27,11 @@ namespace IdentityServer4.Configuration
         /// </value>
         public string IssuerUri { get; set; }
 
+        /// <summary>
+        /// The name of the session cookie used by this server instance
+        /// </summary>
+        public string SessionCookieName { get; set; } = Constants.DefaultSessionCookieName;
+
         // todo
         /// <summary>
         /// Gets or sets a value indicating whether SSL is required for IdentityServer. Defaults to `true`.
