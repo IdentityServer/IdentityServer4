@@ -263,7 +263,7 @@ Add the ``Microsoft.AspNetCore.Cors`` NuGet package to `project.json` in the web
 
 **Configure CORS**
 
-Next, add the CORS services to the dependnecy injection system in ``ConfigureServices`` in `Startup.cs`::
+Next, add the CORS services to the dependency injection system in ``ConfigureServices`` in `Startup.cs`::
 
     public void ConfigureServices(IServiceCollection services)
     {
