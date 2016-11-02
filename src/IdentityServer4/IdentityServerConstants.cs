@@ -11,6 +11,13 @@ namespace IdentityServer4
         public const string SignoutScheme = "idsrv";
         public const string ExternalCookieAuthenticationScheme = "external";
 
+        public static class ProtocolTypes
+        {
+            public const string OpenIdConnect = "oidc";
+            public const string WsFederation = "wsfed";
+            public const string Saml2p = "saml2p";
+        }
+
         public static class ClaimValueTypes
         {
             public const string Json = "json";

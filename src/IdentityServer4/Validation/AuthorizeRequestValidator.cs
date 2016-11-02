@@ -159,6 +159,15 @@ namespace IdentityServer4.Validation
             request.Client = client;
 
             //////////////////////////////////////////////////////////
+            // check if client protocol type is oidc
+            //////////////////////////////////////////////////////////
+            if (request.Client.ProtocolType != IdentityServerConstants.ProtocolTypes.OpenIdConnect)
+            {
+                LogError($"Invalid protocol type for OIDC authorize endpoint: {request.Client.ProtocolType}", request);
+                return Invalid(request, OidcConstants.AuthorizeErrors.UnauthorizedClient);
+            }
+
+            //////////////////////////////////////////////////////////
             // check if redirect_uri is valid
             //////////////////////////////////////////////////////////
             if (await _uriValidator.IsRedirectUriValidAsync(request.RedirectUri, request.Client) == false)
