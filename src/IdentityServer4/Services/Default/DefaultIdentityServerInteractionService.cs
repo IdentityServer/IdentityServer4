@@ -70,6 +70,7 @@ namespace IdentityServer4.Services.Default
 
         public async Task<LogoutRequest> GetLogoutContextAsync(string logoutId)
         {
+            // todo: change this to pass sid in the logout context. if not present, then use the GetIdentityServerSignoutFrameCallbackUrlAsync API
             var iframeUrl = await _context.HttpContext.GetIdentityServerSignoutFrameCallbackUrlAsync();
             var msg = await _logoutMessageStore.ReadAsync(logoutId);
 
