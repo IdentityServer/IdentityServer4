@@ -15,7 +15,7 @@ These stores are modeled with interfaces, and we provide an EF implementation of
 
 Get started by adding a reference to the `IdentityServer4.EntityFramework` Nuget package in `project.json` in the IdentityServer project:: 
 
-    "IdentityServer4.EntityFramework": "1.0.0-rc2"
+    "IdentityServer4.EntityFramework": "1.0.0-rc3"
 
 Adding SqlServer
 ^^^^^^^^^^^^^^^^
@@ -50,7 +50,8 @@ We will replace them with this code::
       var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
             
       // configure identity server with in-memory users, but EF stores for clients and scopes
-      services.AddDeveloperIdentityServer()
+      services.AddIdentityServer()
+          .AddTemporarySigningCredential()
           .AddInMemoryUsers(Config.GetUsers())
           .AddConfigurationStore(builder =>
               builder.UseSqlServer(connectionString, options =>
@@ -149,5 +150,3 @@ Run the client applications
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You should now be able to run any of the existing client applications and sign-in, get tokens, and call the API -- all based upon the database configuration.
-
-
