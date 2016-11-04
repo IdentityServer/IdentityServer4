@@ -25,6 +25,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
         EndSessionValidationResult _result = new EndSessionValidationResult();
         IdentityServerOptions _options = new IdentityServerOptions();
         MockMessageStore<LogoutMessage> _mockLogoutMessageStore = new MockMessageStore<LogoutMessage>();
+        MockClientSessionService _mockClientSessionService = new MockClientSessionService();
 
         DefaultHttpContext _context = new DefaultHttpContext();
 
@@ -36,7 +37,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
             _options.UserInteractionOptions.LogoutUrl = "~/logout";
             _options.UserInteractionOptions.LogoutIdParameter = "logoutId";
 
-            _subject = new EndSessionResult(_result, _options, _mockLogoutMessageStore);
+            _subject = new EndSessionResult(_result, _options, _mockClientSessionService, _mockLogoutMessageStore);
         }
 
         [Fact]

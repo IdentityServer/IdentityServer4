@@ -16,5 +16,7 @@ namespace IdentityServer4.Validation
 
         // var logoutId = context.Request.Query[_options.UserInteractionOptions.LogoutIdParameter].FirstOrDefault();
         public string LogoutId { get; internal set; }
+
+        public string SessionId { get; set; }
     }
 }

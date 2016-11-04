@@ -37,20 +37,17 @@ namespace IdentityServer4.Endpoints.Results
             IdentityServerOptions options)
             : this(result)
         {
-            _sessionId = sessionId;
             _clientList = clientList;
             _logoutMessageStore = logoutMessageStore;
             _options = options;
         }
 
-        private ISessionIdService _sessionId;
         private IClientSessionService _clientList;
         private IMessageStore<LogoutMessage> _logoutMessageStore;
         private IdentityServerOptions _options;
 
         void Init(HttpContext context)
         {
-            _sessionId = _sessionId ?? context.RequestServices.GetRequiredService<ISessionIdService>();
             _clientList = _clientList ?? context.RequestServices.GetRequiredService<IClientSessionService>();
             _logoutMessageStore = _logoutMessageStore ?? context.RequestServices.GetRequiredService<IMessageStore<LogoutMessage>>();
             _options = _options ?? context.RequestServices.GetRequiredService<IdentityServerOptions>();
@@ -59,6 +56,11 @@ namespace IdentityServer4.Endpoints.Results
         public async Task ExecuteAsync(HttpContext context)
         {
             Init(context);
+
+            if (_result.SessionId != null)
+            {
+                _clientList.RemoveCookie(_result.SessionId);
+            }
 
             if (_result.LogoutId != null)
             {
@@ -71,9 +73,6 @@ namespace IdentityServer4.Endpoints.Results
             }
             else
             {
-                _sessionId.RemoveCookie();
-                _clientList.RemoveCookie();
-
                 context.Response.SetNoCache();
                 AddXfoHeaders(context);
                 AddCspHeaders(context);

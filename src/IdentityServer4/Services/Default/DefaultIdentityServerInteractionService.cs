@@ -25,6 +25,7 @@ namespace IdentityServer4.Services.Default
         private readonly IMessageStore<ConsentResponse> _consentMessageStore;
         private readonly IPersistedGrantService _grants;
         private readonly IClientSessionService _clientSessionService;
+        private readonly ISessionIdService _sessionIdService;
         private readonly ILogger<DefaultIdentityServerInteractionService> _logger;
         private readonly ReturnUrlParser _returnUrlParser;
 
@@ -36,6 +37,7 @@ namespace IdentityServer4.Services.Default
             IMessageStore<ConsentResponse> consentMessageStore,
             IPersistedGrantService grants, 
             IClientSessionService clientSessionService,
+            ISessionIdService sessionIdService,
             ReturnUrlParser returnUrlParser,
             ILogger<DefaultIdentityServerInteractionService> logger)
         {
@@ -46,6 +48,7 @@ namespace IdentityServer4.Services.Default
             _consentMessageStore = consentMessageStore;
             _grants = grants;
             _clientSessionService = clientSessionService;
+            _sessionIdService = sessionIdService;
             _returnUrlParser = returnUrlParser;
             _logger = logger;
         }
@@ -68,16 +71,33 @@ namespace IdentityServer4.Services.Default
 
         public async Task<LogoutRequest> GetLogoutContextAsync(string logoutId)
         {
-            // todo: change this to pass sid in the logout context. if not present, then use the GetIdentityServerSignoutFrameCallbackUrlAsync API
-            var iframeUrl = await _context.HttpContext.GetIdentityServerSignoutFrameCallbackUrlAsync();
             var msg = await _logoutMessageStore.ReadAsync(logoutId);
+            var iframeUrl = await _context.HttpContext.GetIdentityServerSignoutFrameCallbackUrlAsync(msg?.Data?.SessionId);
 
-            if (iframeUrl != null && logoutId != null && msg != null)
+            if (iframeUrl != null && logoutId != null)
             {
                 iframeUrl = iframeUrl.AddQueryString(_options.UserInteractionOptions.LogoutIdParameter, logoutId);
             }
 
             return new LogoutRequest(iframeUrl, msg?.Data);
+        }
+
+        public async Task<string> CreateLogoutContextAsync()
+        {
+            var sid = await _sessionIdService.GetCurrentSessionIdAsync();
+            if (sid != null)
+            {
+                await _clientSessionService.EnsureClientListCookieAsync(sid);
+
+                var msg = new MessageWithId<LogoutMessage>(new LogoutMessage() { SessionId = sid });
+
+                var id = msg.Id;
+                await _logoutMessageStore.WriteAsync(id, msg);
+
+                return id;
+            }
+
+            return null;
         }
 
         public async Task<ErrorMessage> GetErrorContextAsync(string errorId)

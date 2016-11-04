@@ -12,8 +12,9 @@ namespace IdentityServer4.Services
         Task AddClientIdAsync(string clientId);
         Task<IEnumerable<string>> GetClientListAsync();
 
-        Task EnsureClientListCookieAsync();
-        IEnumerable<string> GetClientListFromCookie();
-        void RemoveCookie();
+        Task EnsureClientListCookieAsync(string sid);
+
+        IEnumerable<string> GetClientListFromCookie(string sid);
+        void RemoveCookie(string sid);
     }
 }

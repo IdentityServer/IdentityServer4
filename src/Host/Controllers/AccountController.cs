@@ -166,12 +166,14 @@ namespace IdentityServer4.Quickstart.UI.Controllers
             }
 
             var context = await _interaction.GetLogoutContextAsync(logoutId);
-            if (context?.IsAuthenticatedLogout == true)
+            if (context?.ShowSignoutPrompt == false)
             {
-                // if the logout request is authenticated, it's safe to automatically sign-out
+                // it's safe to automatically sign-out
                 return await Logout(new LogoutViewModel { LogoutId = logoutId });
             }
 
+            // show the logout prompt. this prevents attacks where the user
+            // is automatically signed out by another malicious web page.
             var vm = new LogoutViewModel
             {
                 LogoutId = logoutId
@@ -190,6 +192,14 @@ namespace IdentityServer4.Quickstart.UI.Controllers
             var idp = User?.FindFirst(JwtClaimTypes.IdentityProvider)?.Value;
             if (idp != null && idp != IdentityServerConstants.LocalIdentityProvider)
             {
+                if (model.LogoutId == null)
+                {
+                    // if there's no current logout context, we need to create one
+                    // this captures necessary info from the current logged in user
+                    // before we signout and redirect away to the external IdP for signout
+                    model.LogoutId = await _interaction.CreateLogoutContextAsync();
+                }
+
                 string url = "/Account/Logout?logoutId=" + model.LogoutId;
                 await HttpContext.Authentication.SignOutAsync(idp, new AuthenticationProperties { RedirectUri = url });
             }

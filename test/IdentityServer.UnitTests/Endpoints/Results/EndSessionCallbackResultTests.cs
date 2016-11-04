@@ -63,11 +63,11 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
         public async Task success_should_clear_cookies()
         {
             _result.IsError = false;
+            _result.SessionId = "5";
 
             await _subject.ExecuteAsync(_context);
 
             _mockClientSession.RemoveCookieWasCalled.Should().BeTrue();
-            _mockSessionId.RemoveCookieWasCalled.Should().BeTrue();
         }
 
         [Fact]
