@@ -188,7 +188,7 @@ namespace IdentityServer4.Quickstart.UI.Controllers
         public async Task<IActionResult> Logout(LogoutViewModel model)
         {
             var idp = User?.FindFirst(JwtClaimTypes.IdentityProvider)?.Value;
-            if (idp != null && idp != "local")
+            if (idp != null && idp != IdentityServerConstants.LocalIdentityProvider)
             {
                 string url = "/Account/Logout?logoutId=" + model.LogoutId;
                 await HttpContext.Authentication.SignOutAsync(idp, new AuthenticationProperties { RedirectUri = url });

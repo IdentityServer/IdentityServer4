@@ -6,6 +6,7 @@ namespace IdentityServer4
 {
     public static class IdentityServerConstants
     {
+        public const string LocalIdentityProvider = "local";
         public const string DefaultCookieAuthenticationScheme = "idsrv";
         public const string SignoutScheme = "idsrv";
         public const string ExternalCookieAuthenticationScheme = "external";

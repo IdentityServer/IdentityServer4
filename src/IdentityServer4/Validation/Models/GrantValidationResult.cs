@@ -66,7 +66,7 @@ namespace IdentityServer4.Validation
             string subject, 
             string authenticationMethod,
             IEnumerable<Claim> claims = null,
-            string identityProvider = Constants.LocalIdentityProvider,
+            string identityProvider = IdentityServerConstants.LocalIdentityProvider,
             Dictionary<string, object> customResponse = null)
         {
             IsError = false;

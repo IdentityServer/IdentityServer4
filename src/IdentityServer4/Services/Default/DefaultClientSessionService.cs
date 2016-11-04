@@ -19,7 +19,7 @@ namespace IdentityServer4.Services.Default
     {
         const string ClientListKey = "ClientSessions";
 
-        static readonly JsonSerializerSettings settings = new JsonSerializerSettings
+        static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
         {
             NullValueHandling = NullValueHandling.Ignore,
             DefaultValueHandling = DefaultValueHandling.Ignore,
@@ -76,7 +76,7 @@ namespace IdentityServer4.Services.Default
             {
                 var bytes = Base64Url.Decode(value);
                 value = Encoding.UTF8.GetString(bytes);
-                return JsonConvert.DeserializeObject<string[]>(value, settings);
+                return JsonConvert.DeserializeObject<string[]>(value, SerializerSettings);
             }
 
             return Enumerable.Empty<string>();
