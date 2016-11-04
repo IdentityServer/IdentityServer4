@@ -20,65 +20,84 @@ namespace IdentityServer4.Services.Default
     {
         private readonly IdentityServerOptions _options;
         private readonly IHttpContextAccessor _context;
-        private readonly IAuthorizeRequestValidator _validator;
         private readonly IMessageStore<LogoutMessage> _logoutMessageStore;
         private readonly IMessageStore<ErrorMessage> _errorMessageStore;
         private readonly IMessageStore<ConsentResponse> _consentMessageStore;
         private readonly IPersistedGrantService _grants;
         private readonly IClientSessionService _clientSessionService;
+        private readonly ISessionIdService _sessionIdService;
         private readonly ILogger<DefaultIdentityServerInteractionService> _logger;
+        private readonly ReturnUrlParser _returnUrlParser;
 
         public DefaultIdentityServerInteractionService(
             IdentityServerOptions options,
             IHttpContextAccessor context,
-            IAuthorizeRequestValidator validator,
             IMessageStore<LogoutMessage> logoutMessageStore,
             IMessageStore<ErrorMessage> errorMessageStore,
             IMessageStore<ConsentResponse> consentMessageStore,
             IPersistedGrantService grants, 
             IClientSessionService clientSessionService,
+            ISessionIdService sessionIdService,
+            ReturnUrlParser returnUrlParser,
             ILogger<DefaultIdentityServerInteractionService> logger)
         {
             _options = options;
             _context = context;
-            _validator = validator;
             _logoutMessageStore = logoutMessageStore;
             _errorMessageStore = errorMessageStore;
             _consentMessageStore = consentMessageStore;
             _grants = grants;
             _clientSessionService = clientSessionService;
+            _sessionIdService = sessionIdService;
+            _returnUrlParser = returnUrlParser;
             _logger = logger;
         }
 
         public async Task<AuthorizationRequest> GetAuthorizationContextAsync(string returnUrl)
         {
-            if (returnUrl != null && IsValidReturnUrl(returnUrl))
+            var result = await _returnUrlParser.ParseAsync(returnUrl);
+
+            if (result != null)
             {
-                var parameters = returnUrl.ReadQueryStringAsNameValueCollection();
-                var user = await _context.HttpContext.GetIdentityServerUserAsync();
-                var result = await _validator.ValidateAsync(parameters, user);
-                if (!result.IsError)
-                {
-                    _logger.LogTrace("AuthorizationRequest being returned");
-                    return new AuthorizationRequest(result.ValidatedRequest);
-                }
+                _logger.LogTrace("AuthorizationRequest being returned");
+            }
+            else
+            {
+                _logger.LogTrace("No AuthorizationRequest being returned");
             }
 
-            _logger.LogTrace("No AuthorizationRequest being returned");
-            return null;
+            return result;
         }
 
         public async Task<LogoutRequest> GetLogoutContextAsync(string logoutId)
         {
-            var iframeUrl = await _context.HttpContext.GetIdentityServerSignoutFrameCallbackUrlAsync();
             var msg = await _logoutMessageStore.ReadAsync(logoutId);
+            var iframeUrl = await _context.HttpContext.GetIdentityServerSignoutFrameCallbackUrlAsync(msg?.Data?.SessionId);
 
-            if (iframeUrl != null && logoutId != null && msg != null)
+            if (iframeUrl != null && logoutId != null)
             {
                 iframeUrl = iframeUrl.AddQueryString(_options.UserInteractionOptions.LogoutIdParameter, logoutId);
             }
 
             return new LogoutRequest(iframeUrl, msg?.Data);
+        }
+
+        public async Task<string> CreateLogoutContextAsync()
+        {
+            var sid = await _sessionIdService.GetCurrentSessionIdAsync();
+            if (sid != null)
+            {
+                await _clientSessionService.EnsureClientListCookieAsync(sid);
+
+                var msg = new MessageWithId<LogoutMessage>(new LogoutMessage() { SessionId = sid });
+
+                var id = msg.Id;
+                await _logoutMessageStore.WriteAsync(id, msg);
+
+                return id;
+            }
+
+            return null;
         }
 
         public async Task<ErrorMessage> GetErrorContextAsync(string errorId)
@@ -117,26 +136,18 @@ namespace IdentityServer4.Services.Default
 
         public bool IsValidReturnUrl(string returnUrl)
         {
-            // TODO: allow remote urls, once supported
-            if (returnUrl.IsLocalUrl())
-            {
-                var index = returnUrl.IndexOf('?');
-                if (index >= 0)
-                {
-                    returnUrl = returnUrl.Substring(0, index);
-                }
+            var result = _returnUrlParser.IsValidReturnUrl(returnUrl);
 
-                if (returnUrl.EndsWith(Constants.ProtocolRoutePaths.Authorize, StringComparison.Ordinal) ||
-                    returnUrl.EndsWith(Constants.ProtocolRoutePaths.AuthorizeAfterLogin, StringComparison.Ordinal) || 
-                    returnUrl.EndsWith(Constants.ProtocolRoutePaths.AuthorizeAfterConsent, StringComparison.Ordinal))
-                {
-                    _logger.LogTrace("returnUrl is valid");
-                    return true;
-                }
+            if (result)
+            {
+                _logger.LogTrace("IsValidReturnUrl true");
+            }
+            else
+            {
+                _logger.LogTrace("IsValidReturnUrl false");
             }
 
-            _logger.LogTrace("returnUrl is not valid");
-            return false;
+            return result;
         }
 
         public async Task<IEnumerable<Consent>> GetAllUserConsentsAsync()

@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using IdentityModel;
 using System.Collections.Generic;
 using System.Security.Claims;
 
@@ -66,6 +67,6 @@ namespace IdentityServer4.Services.InMemory
         /// <value>
         /// The claims.
         /// </value>
-        public IEnumerable<Claim> Claims { get; set; } = new List<Claim>();
+        public ICollection<Claim> Claims { get; set; } = new HashSet<Claim>(new ClaimComparer());
     }
 }

@@ -102,7 +102,9 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddTransient<BearerTokenUsageValidator>();
             builder.Services.AddTransient<PersistentGrantSerializer>();
             builder.Services.AddTransient<EventServiceHelper>();
+            builder.Services.AddTransient<ReturnUrlParser>();
 
+            builder.Services.AddTransient<IReturnUrlParser, OidcReturnUrlParser>();
             builder.Services.AddTransient<ISessionIdService, DefaultSessionIdService>();
             builder.Services.AddTransient<IClientSessionService, DefaultClientSessionService>();
             builder.Services.AddTransient(typeof(MessageCookie<>));

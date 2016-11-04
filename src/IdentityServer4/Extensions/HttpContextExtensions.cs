@@ -105,10 +105,15 @@ namespace IdentityServer4.Extensions
             await context.Authentication.SignInAsync(options.AuthenticationOptions.EffectiveAuthenticationScheme, info.Principal, info.Properties);
         }
 
-        internal static async Task<string> GetIdentityServerSignoutFrameCallbackUrlAsync(this HttpContext context)
+        internal static async Task<string> GetIdentityServerSignoutFrameCallbackUrlAsync(this HttpContext context, string sid = null)
         {
-            var sessionId = context.RequestServices.GetRequiredService<ISessionIdService>();
-            var sid = await sessionId.GetCurrentSessionIdAsync();
+            if (sid == null)
+            {
+                // no explicit sid, so see if we have a logged in user
+                var sessionId = context.RequestServices.GetRequiredService<ISessionIdService>();
+                sid = await sessionId.GetCurrentSessionIdAsync();
+            }
+
             if (sid != null)
             {
                 var signoutIframeUrl = context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.ProtocolRoutePaths.EndSessionCallback;
@@ -116,11 +121,12 @@ namespace IdentityServer4.Extensions
 
                 // if they are rendering the callback frame, we need to ensure the client cookie is written
                 var clientSession = context.RequestServices.GetRequiredService<IClientSessionService>();
-                await clientSession.EnsureClientListCookieAsync();
+                await clientSession.EnsureClientListCookieAsync(sid);
 
                 return signoutIframeUrl;
             }
 
+            // no sid, so nothing to cleanup
             return null;
         }
     }

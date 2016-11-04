@@ -42,8 +42,6 @@ Authentication/Logout
     Specifies logout URI at client for HTTP based logout
 ``LogoutSessionRequired``
     Specifies if the user's session id should be sent to the LogoutUri. Defaults to true.
-``RequireSignOutPrompt``
-    Specifies if the client will always show a confirmation page for sign-out. Defaults to false.
 ``EnableLocalLogin``
     Specifies if this client can use local accounts, or external IdPs only. Defaults to `true`.
 ``IdentityProviderRestrictions``

@@ -45,7 +45,8 @@ Then register the in-memory users with IdentityServer::
     public void ConfigureServices(IServiceCollection services)
     {
         // configure identity server with in-memory stores, keys, clients and scopes
-        services.AddDeveloperIdentityServer()
+        services.AddIdentityServer()
+            .AddTemporarySigningCredential()
             .AddInMemoryScopes(Config.GetScopes())
             .AddInMemoryClients(Config.GetClients())
             .AddInMemoryUsers(Config.GetUsers());

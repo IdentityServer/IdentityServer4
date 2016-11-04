@@ -1,3 +1,4 @@
+.. _refCrypto:
 Cryptography, Keys and HTTPS
 ============================
 
@@ -30,8 +31,9 @@ A rollover typically works like this:
 2. you publish the new validation key in addition to the current one. You can use the ``AddValidationKeys`` builder extension method for that.
 3. all clients and APIs now have a chance to learn about the new key the next time they update their local copy of the discovery document
 4. after a certain amount of time (e.g. 24h) all clients and APIs should now accept both the old and the new key material
-5. you can then retire the old key material and switch to the new one
-6. all clients and APIs will "forget" the old key next time they update their local copy of the discovery document
+5. keep the old key material around for as long as you like, maybe you have long-lived tokens that need validation
+6. retire the old key material when it is not used anymore
+7. all clients and APIs will "forget" the old key next time they update their local copy of the discovery document
 
 This requires that clients and APIs use the discovery document, and also have a feature to periodically refresh their configuration.
 
@@ -46,4 +48,5 @@ HTTPS
 We don't enforce the use of HTTPS, but for production it is mandatory for every interaction with IdentityServer.
 
 HTTPS is typically provided by the reverse proxy that sits in front of ASP.NET Core's built-in webser,
-`here <https://docs.asp.net/en/latest/publishing/iis.html>`_ are some instructions for using IIS.
+`here <https://docs.asp.net/en/latest/publishing/iis.html>`_ are some instructions for using IIS, 
+`here <http://tattoocoder.com/using-apache-web-server-as-reverse-proxy-for-aspnetcore/>`_ for Apache.

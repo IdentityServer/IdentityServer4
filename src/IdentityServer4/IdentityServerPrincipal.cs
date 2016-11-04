@@ -18,7 +18,7 @@ namespace IdentityServer4
             string name,
             params Claim[] claims)
         {
-            return Create(subject, name, Constants.LocalIdentityProvider, new[] { OidcConstants.AuthenticationMethods.Password }, claims);
+            return Create(subject, name, IdentityServerConstants.LocalIdentityProvider, new[] { OidcConstants.AuthenticationMethods.Password }, claims);
         }
 
         public static ClaimsPrincipal Create(
@@ -36,7 +36,7 @@ namespace IdentityServer4
             IEnumerable<string> authenticationMethods,
             params Claim[] claims)
         {
-            return Create(subject, name, Constants.LocalIdentityProvider, authenticationMethods, claims);
+            return Create(subject, name, IdentityServerConstants.LocalIdentityProvider, authenticationMethods, claims);
         }
 
         public static ClaimsPrincipal Create(
@@ -102,7 +102,7 @@ namespace IdentityServer4
 
             if (identity.FindFirst(JwtClaimTypes.IdentityProvider) == null)
             {
-                identity.AddClaim(new Claim(JwtClaimTypes.IdentityProvider, Constants.LocalIdentityProvider));
+                identity.AddClaim(new Claim(JwtClaimTypes.IdentityProvider, IdentityServerConstants.LocalIdentityProvider));
             }
 
             if (identity.FindFirst(JwtClaimTypes.AuthenticationMethod) == null)

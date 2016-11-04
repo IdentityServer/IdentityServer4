@@ -429,6 +429,16 @@ namespace IdentityServer4.UnitTests.Validation
                         AllowAccessToAllScopes = true,
 
                         AccessTokenType = AccessTokenType.Reference
+                    },
+                    new Client
+                    {
+                        ClientId = "wsfed",
+                        ClientName = "WS-Fed Client",
+                        ProtocolType = IdentityServerConstants.ProtocolTypes.WsFederation,
+                        AllowedGrantTypes = GrantTypes.Implicit,
+                        Enabled = true,
+                        AllowAccessToAllScopes = true,
+                        RedirectUris = { "http://wsfed/callback"  }
                     }
             };
         }

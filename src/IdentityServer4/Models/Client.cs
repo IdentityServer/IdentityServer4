@@ -30,6 +30,14 @@ namespace IdentityServer4.Models
         public string ClientId { get; set; }
 
         /// <summary>
+        /// Gets or sets the protocol type.
+        /// </summary>
+        /// <value>
+        /// The protocol type.
+        /// </value>
+        public string ProtocolType { get; set; } = IdentityServerConstants.ProtocolTypes.OpenIdConnect;
+
+        /// <summary>
         /// Client secrets - only relevant for flows that require a secret
         /// </summary>
         public ICollection<Secret> ClientSecrets { get; set; } = new HashSet<Secret>();

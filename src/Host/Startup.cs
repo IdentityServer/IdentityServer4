@@ -117,6 +117,7 @@ namespace Host
 
             app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
             {
+                AuthenticationScheme = "oidc",
                 SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
                 SignOutScheme = IdentityServerConstants.SignoutScheme,
                 DisplayName = "IdentityServer3",
@@ -133,6 +134,7 @@ namespace Host
 
             app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
             {
+                AuthenticationScheme = "aad",
                 SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
                 SignOutScheme = IdentityServerConstants.SignoutScheme,
                 DisplayName = "AAD",

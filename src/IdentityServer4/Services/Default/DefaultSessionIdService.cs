@@ -21,9 +21,12 @@ namespace IdentityServer4.Services.Default
 
         public void CreateSessionId(SignInContext context)
         {
-            var sid = CryptoRandom.CreateUniqueId();
-            context.Properties[OidcConstants.EndSessionRequest.Sid] = sid;
-            IssueSessionIdCookie(sid);
+            if (!context.Properties.ContainsKey(OidcConstants.EndSessionRequest.Sid))
+            {
+                context.Properties[OidcConstants.EndSessionRequest.Sid] = CryptoRandom.CreateUniqueId();
+            }
+
+            IssueSessionIdCookie(context.Properties[OidcConstants.EndSessionRequest.Sid]);
         }
 
         public async Task<string> GetCurrentSessionIdAsync()

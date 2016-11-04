@@ -45,8 +45,8 @@ Add IdentityServer packages
 
 Add both the ``IdentityServer4`` and the ``IdentityServer4.AspNetIdentity`` packages to `project.json`::
 
-    "IdentityServer4": "1.0.0-rc2",
-    "IdentityServer4.AspNetIdentity": "1.0.0-rc2"
+    "IdentityServer4": "1.0.0-rc3",
+    "IdentityServer4.AspNetIdentity": "1.0.0-rc3"
 
 
 Scopes and Clients Configuration
@@ -111,7 +111,8 @@ The ``AddAspNetIdentity`` extension method requires a generic parameter which is
         services.AddTransient<ISmsSender, AuthMessageSender>();
 
         // Adds IdentityServer
-        services.AddDeveloperIdentityServer()
+        services.AddIdentityServer()
+            .AddTemporarySigningCredential()
             .AddInMemoryScopes(Config.GetScopes())
             .AddInMemoryClients(Config.GetClients())
             .AddAspNetIdentity<ApplicationUser>();

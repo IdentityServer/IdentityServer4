@@ -352,6 +352,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
 
             var signoutFrameUrl = _mockPipeline.LogoutRequest.SignOutIFrameUrl;
             var sid = signoutFrameUrl.Substring(signoutFrameUrl.LastIndexOf("sid=") + 4);
+            if (sid.Contains("&")) sid = sid.Substring(0, sid.IndexOf("&"));
 
             response = await _mockPipeline.BrowserClient.GetAsync(signoutFrameUrl);
             var html = await response.Content.ReadAsStringAsync();
