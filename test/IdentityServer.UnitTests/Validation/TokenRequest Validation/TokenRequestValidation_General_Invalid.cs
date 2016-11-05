@@ -17,11 +17,13 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
 {
     public class TokenRequestValidation_General_Invalid
     {
+        private const string Category = "TokenRequest Validation - General - Invalid";
+
         IClientStore _clients = new InMemoryClientStore(TestClients.Get());
         ClaimsPrincipal _subject = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
 
         [Fact]
-        [Trait("Category", "TokenRequest Validation - General - Invalid")]
+        [Trait("Category", Category)]
         public void Parameters_Null()
         {
             var validator = Factory.CreateTokenRequestValidator();
@@ -32,7 +34,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         }
 
         [Fact]
-        [Trait("Category", "TokenRequest Validation - General - Invalid")]
+        [Trait("Category", Category)]
         public void Client_Null()
         {
             var validator = Factory.CreateTokenRequestValidator();
@@ -48,7 +50,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         }
 
         [Fact]
-        [Trait("Category", "TokenRequest Validation - General - Invalid")]
+        [Trait("Category", Category)]
         public async Task Unknown_Grant_Type()
         {
             var client = await _clients.FindEnabledClientByIdAsync("codeclient");
@@ -80,7 +82,26 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         }
 
         [Fact]
-        [Trait("Category", "TokenRequest Validation - General - Invalid")]
+        [Trait("Category", Category)]
+        public async Task Invalid_Protocol_Type()
+        {
+            var client = await _clients.FindEnabledClientByIdAsync("client.cred.wsfed");
+            var grants = Factory.CreateGrantService();
+
+            var validator = Factory.CreateTokenRequestValidator(
+                grants: grants);
+
+            var parameters = new NameValueCollection();
+            parameters.Add(OidcConstants.TokenRequest.GrantType, "client_credentials");
+
+            var result = await validator.ValidateRequestAsync(parameters, client);
+
+            result.IsError.Should().BeTrue();
+            result.Error.Should().Be(OidcConstants.TokenErrors.InvalidClient);
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
         public async Task Missing_Grant_Type()
         {
             var client = await _clients.FindEnabledClientByIdAsync("codeclient");
