@@ -99,7 +99,7 @@ namespace Host
 
             app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
             {
-                AuthenticationScheme = "oidc",
+                AuthenticationScheme = "idsrv3",
                 SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
                 SignOutScheme = IdentityServerConstants.SignoutScheme,
                 DisplayName = "IdentityServer3",
