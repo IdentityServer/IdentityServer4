@@ -4,7 +4,6 @@
 
 using Host.Configuration;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -20,13 +19,6 @@ namespace Host
 {
     public class Startup
     {
-        private readonly IHostingEnvironment _environment;
-
-        public Startup(IHostingEnvironment env)
-        {
-            _environment = env;
-        }
-
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<IISOptions>(options=>
@@ -40,18 +32,18 @@ namespace Host
                 }
             });
 
-            var builder = services.AddIdentityServer(options =>
-            {
-                //options.EventsOptions = new EventsOptions
-                //{
-                //    RaiseErrorEvents = true,
-                //    RaiseFailureEvents = true,
-                //    RaiseInformationEvents = true,
-                //    RaiseSuccessEvents = true
-                //};
+            services.AddIdentityServer(options =>
+                {
+                    //options.EventsOptions = new EventsOptions
+                    //{
+                    //    RaiseErrorEvents = true,
+                    //    RaiseFailureEvents = true,
+                    //    RaiseInformationEvents = true,
+                    //    RaiseSuccessEvents = true
+                    //};
 
-                options.AuthenticationOptions.FederatedSignOutPaths.Add("/signout-oidc");
-            })
+                    options.AuthenticationOptions.FederatedSignOutPaths.Add("/signout-oidc");
+                })
                 .AddInMemoryClients(Clients.Get())
                 .AddInMemoryScopes(Scopes.Get())
                 .AddInMemoryUsers(Users.Get())
@@ -76,22 +68,12 @@ namespace Host
                         e.Level == LogEventLevel.Fatal);
             };
         
-            // built-in logging filter
-            Func<string, LogLevel, bool> filter = (scope, level) =>
-                scope.StartsWith("IdentityServer") ||
-                scope.StartsWith("IdentityModel") ||
-                level == LogLevel.Error ||
-                level == LogLevel.Critical;
-
-            //loggerFactory.AddConsole(filter);
-            //loggerFactory.AddDebug(filter);
-
             var serilog = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
                 .Enrich.FromLogContext()
                 .Filter.ByIncludingOnly(serilogFilter)
                 .WriteTo.LiterateConsole(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message}{NewLine}{Exception}{NewLine}")
-                .WriteTo.File(@"c:\logs\IdentityServer4.txt")
+                .WriteTo.File(@"identityserver4_log.txt")
                 .CreateLogger();
 
             loggerFactory.AddSerilog(serilog);
