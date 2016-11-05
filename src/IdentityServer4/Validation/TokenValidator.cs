@@ -26,14 +26,14 @@ namespace IdentityServer4.Validation
         private readonly ILogger _logger;
         private readonly IdentityServerOptions _options;
         private readonly IHttpContextAccessor _context;
-        private readonly IPersistedGrantService _grants;
+        private readonly IPersistedGrantStore _grants;
         private readonly ICustomTokenValidator _customValidator;
         private readonly IClientStore _clients;
         private readonly IKeyMaterialService _keys;
 
         private readonly TokenValidationLog _log;
         
-        public TokenValidator(IdentityServerOptions options, IHttpContextAccessor context, IClientStore clients, IPersistedGrantService grants, ICustomTokenValidator customValidator, IKeyMaterialService keys, ILogger<TokenValidator> logger)
+        public TokenValidator(IdentityServerOptions options, IHttpContextAccessor context, IClientStore clients, IPersistedGrantStore grants, ICustomTokenValidator customValidator, IKeyMaterialService keys, ILogger<TokenValidator> logger)
         {
             _options = options;
             _context = context;

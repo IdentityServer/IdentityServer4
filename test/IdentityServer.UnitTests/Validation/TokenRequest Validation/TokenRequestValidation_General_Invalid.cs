@@ -4,6 +4,7 @@
 
 using FluentAssertions;
 using IdentityModel;
+using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using IdentityServer4.Stores.InMemory;
@@ -54,7 +55,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         public async Task Unknown_Grant_Type()
         {
             var client = await _clients.FindEnabledClientByIdAsync("codeclient");
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateGrantStore();
 
             var code = new AuthorizationCode
             {
@@ -105,7 +106,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         public async Task Missing_Grant_Type()
         {
             var client = await _clients.FindEnabledClientByIdAsync("codeclient");
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateGrantStore();
 
             var code = new AuthorizationCode
             {

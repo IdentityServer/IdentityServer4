@@ -6,6 +6,7 @@ using IdentityModel;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
+using IdentityServer4.Stores;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -25,7 +26,7 @@ namespace IdentityServer4.Services.Default
         /// <summary>
         /// The refresh token store
         /// </summary>
-        protected readonly IPersistedGrantService _grants;
+        protected readonly IPersistedGrantStore _grants;
 
         /// <summary>
         /// The _events
@@ -37,7 +38,7 @@ namespace IdentityServer4.Services.Default
         /// </summary>
         /// <param name="grants">The grants store.</param>
         /// <param name="events">The events.</param>
-        public DefaultRefreshTokenService(IPersistedGrantService grants, IEventService events, ILogger<DefaultRefreshTokenService> logger)
+        public DefaultRefreshTokenService(IPersistedGrantStore grants, IEventService events, ILogger<DefaultRefreshTokenService> logger)
         {
             _logger = logger;
             _grants = grants;

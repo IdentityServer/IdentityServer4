@@ -5,6 +5,7 @@
 using FluentAssertions;
 using IdentityModel;
 using IdentityServer4.Configuration;
+using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using IdentityServer4.UnitTests.Common;
@@ -29,7 +30,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         public async Task Missing_AuthorizationCode()
         {
             var client = await _clients.FindEnabledClientByIdAsync("codeclient");
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateGrantStore();
 
             var code = new AuthorizationCode
             {
@@ -60,7 +61,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         public async Task Invalid_AuthorizationCode()
         {
             var client = await _clients.FindEnabledClientByIdAsync("codeclient");
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateGrantStore();
 
             var code = new AuthorizationCode
             {
@@ -92,7 +93,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         public async Task AuthorizationCodeTooLong()
         {
             var client = await _clients.FindEnabledClientByIdAsync("codeclient");
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateGrantStore();
             var options = new IdentityServerOptions();
 
             var code = new AuthorizationCode
@@ -126,7 +127,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         public async Task No_Scopes_for_AuthorizationCode()
         {
             var client = await _clients.FindEnabledClientByIdAsync("codeclient");
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateGrantStore();
 
             var code = new AuthorizationCode
             {
@@ -158,7 +159,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         public async Task Client_Not_Authorized_For_AuthorizationCode_Flow()
         {
             var client = await _clients.FindEnabledClientByIdAsync("implicitclient");
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateGrantStore();
 
             var code = new AuthorizationCode
             {
@@ -191,7 +192,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         {
             var client1 = await _clients.FindEnabledClientByIdAsync("codeclient");
             var client2 = await _clients.FindEnabledClientByIdAsync("codeclient_restricted");
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateGrantStore();
 
             var code = new AuthorizationCode
             {
@@ -223,7 +224,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         public async Task Missing_RedirectUri()
         {
             var client = await _clients.FindEnabledClientByIdAsync("codeclient");
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateGrantStore();
 
             var code = new AuthorizationCode
             {
@@ -254,7 +255,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         public async Task Different_RedirectUri_Between_Authorize_And_Token_Request()
         {
             var client = await _clients.FindEnabledClientByIdAsync("codeclient");
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateGrantStore();
 
             var code = new AuthorizationCode
             {
@@ -286,7 +287,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         public async Task Expired_AuthorizationCode()
         {
             var client = await _clients.FindEnabledClientByIdAsync("codeclient");
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateGrantStore();
 
             var code = new AuthorizationCode
             {
@@ -319,7 +320,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         public async Task Reused_AuthorizationCode()
         {
             var client = await _clients.FindEnabledClientByIdAsync("codeclient");
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateGrantStore();
 
             var code = new AuthorizationCode
             {
@@ -364,7 +365,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         public async Task Code_Request_with_disabled_User()
         {
             var client = await _clients.FindEnabledClientByIdAsync("codeclient");
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateGrantStore();
 
             var code = new AuthorizationCode
             {

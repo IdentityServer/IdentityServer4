@@ -5,6 +5,7 @@
 using FluentAssertions;
 using IdentityModel;
 using IdentityServer4.Configuration;
+using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using IdentityServer4.UnitTests.Common;
@@ -58,7 +59,7 @@ namespace IdentityServer4.UnitTests.Validation
         [Trait("Category", Category)]
         public async Task Valid_Reference_Token()
         {
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateGrantStore();
             var validator = Factory.CreateTokenValidator(grants);
 
             var token = TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "valid", 600, "read", "write");
@@ -77,7 +78,7 @@ namespace IdentityServer4.UnitTests.Validation
         [Trait("Category", Category)]
         public async Task Valid_Reference_Token_with_required_Scope()
         {
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateGrantStore();
             var validator = Factory.CreateTokenValidator(grants);
 
             var token = TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "valid", 600, "read", "write");
@@ -94,7 +95,7 @@ namespace IdentityServer4.UnitTests.Validation
         [Trait("Category", Category)]
         public async Task Valid_Reference_Token_with_missing_Scope()
         {
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateGrantStore();
             var validator = Factory.CreateTokenValidator(grants);
 
             var token = TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "valid", 600, "read", "write");
@@ -140,7 +141,7 @@ namespace IdentityServer4.UnitTests.Validation
         {
             now = DateTime.UtcNow;
 
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateGrantStore();
             var validator = Factory.CreateTokenValidator(grants);
 
             var token = TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "valid", 2, "read", "write");
@@ -231,7 +232,7 @@ namespace IdentityServer4.UnitTests.Validation
         [Trait("Category", Category)]
         public async Task Valid_AccessToken_but_Client_not_active()
         {
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateGrantStore();
             var validator = Factory.CreateTokenValidator(grants);
 
             var token = TokenFactory.CreateAccessToken(new Client { ClientId = "unknown" }, "valid", 600, "read", "write");

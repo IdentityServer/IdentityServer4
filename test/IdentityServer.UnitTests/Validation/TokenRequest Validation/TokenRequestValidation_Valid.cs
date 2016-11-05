@@ -4,6 +4,7 @@
 
 using FluentAssertions;
 using IdentityModel;
+using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using System;
@@ -26,7 +27,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         public async Task Valid_Code_Request()
         {
             var client = await _clients.FindEnabledClientByIdAsync("codeclient");
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateGrantStore();
 
             var code = new AuthorizationCode
             {
@@ -60,7 +61,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         public async Task Valid_Code_Request_with_Refresh_Token()
         {
             var client = await _clients.FindEnabledClientByIdAsync("codeclient");
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateGrantStore();
 
             var code = new AuthorizationCode
             {
@@ -250,7 +251,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             };
             var handle = Guid.NewGuid().ToString();
 
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateGrantStore();
             await grants.StoreRefreshTokenAsync(handle, refreshToken);
 
             var client = await _clients.FindEnabledClientByIdAsync("roclient");
@@ -286,7 +287,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             };
             var handle = Guid.NewGuid().ToString();
 
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateGrantStore();
             await grants.StoreRefreshTokenAsync(handle, refreshToken);
 
             var client = await _clients.FindEnabledClientByIdAsync("roclient_restricted_refresh");
