@@ -64,6 +64,15 @@ namespace IdentityServer4.Validation
             };
 
             /////////////////////////////////////////////
+            // check client protocol type
+            /////////////////////////////////////////////
+            if (client.ProtocolType != IdentityServerConstants.ProtocolTypes.OpenIdConnect)
+            {
+                LogError("Client {clientId} has invalid protocol type for token endpoint: {protocolType}", client.ClientId, client.ProtocolType);
+                return Invalid(OidcConstants.TokenErrors.InvalidClient);
+            }
+
+            /////////////////////////////////////////////
             // check grant type
             /////////////////////////////////////////////
             var grantType = parameters.Get(OidcConstants.TokenRequest.GrantType);
