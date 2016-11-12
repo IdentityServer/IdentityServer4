@@ -15,10 +15,14 @@ If you want to customize the loading of the keys, you can implement those interf
 
 The DI builder extensions has a couple of convenience methods to set signing and validation keys.  
 
-``SetSigningCredential`` allows setting either an RSA key or a certificate from the store or a file.
+``AddSigningCredential`` allows setting either an RSA key or a certificate from the store or a file.
 
-``SetTemporarySigningCredential`` creates a fresh RSA key pair on every startup. This is useful for development situations where
+``AddTemporarySigningCredential`` creates a fresh RSA key pair on every startup. This is useful for development situations where
 you don't have access to key material.
+
+Example::
+  services.AddIdentityServer()
+    .AddSigningCredential("CN=sts");
 
 Signing key rollover
 ^^^^^^^^^^^^^^^^^^^^
