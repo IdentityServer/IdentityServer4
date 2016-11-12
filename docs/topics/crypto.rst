@@ -21,6 +21,7 @@ The DI builder extensions has a couple of convenience methods to set signing and
 you don't have access to key material.
 
 Example::
+
   services.AddIdentityServer()
     .AddSigningCredential("CN=sts");
 
