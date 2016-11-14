@@ -86,10 +86,10 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         public async Task Invalid_Protocol_Type()
         {
             var client = await _clients.FindEnabledClientByIdAsync("client.cred.wsfed");
-            var grants = Factory.CreateGrantService();
+            var codeStore = Factory.CreateAuthorizationCodeStore();
 
             var validator = Factory.CreateTokenRequestValidator(
-                grants: grants);
+                authorizationCodeStore:codeStore);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, "client_credentials");
