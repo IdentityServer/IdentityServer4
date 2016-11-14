@@ -123,7 +123,8 @@ namespace IdentityServer4.Endpoints.Results
         private void AddCspHeaders(HttpContext context)
         {
             var formOrigin = Response.Request.RedirectUri.GetOrigin();
-            var value = $"default-src 'none'; script-src 'sha256-VuNUSJ59bpCpw62HM2JG/hCyGiqoPN3NqGvNXQPU+rY='; form-action {formOrigin}";
+            // 'unsafe-inline' for edge
+            var value = $"default-src 'none'; script-src 'unsafe-inline' 'sha256-VuNUSJ59bpCpw62HM2JG/hCyGiqoPN3NqGvNXQPU+rY='; form-action {formOrigin}";
 
             if (!context.Response.Headers.ContainsKey("Content-Security-Policy"))
             {
