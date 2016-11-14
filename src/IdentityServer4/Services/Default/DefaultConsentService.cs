@@ -4,6 +4,7 @@
 
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
+using IdentityServer4.Stores;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,18 +19,18 @@ namespace IdentityServer4.Services.Default
     public class DefaultConsentService : IConsentService
     {
         /// <summary>
-        /// The grants
+        /// The user consent store
         /// </summary>
-        protected readonly IPersistedGrantService _grants;
+        protected readonly IUserConsentStore _userConsentStore;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultConsentService" /> class.
         /// </summary>
         /// <param name="grants">The grants.</param>
         /// <exception cref="System.ArgumentNullException">store</exception>
-        public DefaultConsentService(IPersistedGrantService grants)
+        public DefaultConsentService(IUserConsentStore userConsentStore)
         {
-            _grants = grants;
+            _userConsentStore = userConsentStore;
         }
 
         /// <summary>
@@ -74,7 +75,7 @@ namespace IdentityServer4.Services.Default
                 return true;
             }
             
-            var consent = await _grants.GetUserConsentAsync(subject.GetSubjectId(), client.ClientId);
+            var consent = await _userConsentStore.GetUserConsentAsync(subject.GetSubjectId(), client.ClientId);
             if (consent != null && consent.Scopes != null)
             {
                 var intersect = scopes.Intersect(consent.Scopes);
@@ -114,11 +115,11 @@ namespace IdentityServer4.Services.Default
                         ClientId = clientId,
                         Scopes = scopes
                     };
-                    await _grants.StoreUserConsentAsync(consent);
+                    await _userConsentStore.StoreUserConsentAsync(consent);
                 }
                 else
                 {
-                    await _grants.RemoveUserConsentAsync(subjectId, clientId);
+                    await _userConsentStore.RemoveUserConsentAsync(subjectId, clientId);
                 }
             }
         }

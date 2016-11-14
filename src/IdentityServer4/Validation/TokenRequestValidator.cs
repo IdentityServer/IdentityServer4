@@ -9,6 +9,7 @@ using IdentityServer4.Extensions;
 using IdentityServer4.Logging;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
+using IdentityServer4.Stores;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,8 @@ namespace IdentityServer4.Validation
     {
         private readonly ILogger _logger;
         private readonly IdentityServerOptions _options;
-        private readonly IPersistedGrantService _grants;
+        private readonly IAuthorizationCodeStore _authorizationCodeStore;
+        private readonly IRefreshTokenStore _refreshTokenStore;
         private readonly ExtensionGrantValidator _extensionGrantValidator;
         private readonly ICustomTokenRequestValidator _customRequestValidator;
         private readonly ScopeValidator _scopeValidator;
@@ -33,11 +35,12 @@ namespace IdentityServer4.Validation
 
         private ValidatedTokenRequest _validatedRequest;
 
-        public TokenRequestValidator(IdentityServerOptions options, IPersistedGrantService grants, IResourceOwnerPasswordValidator resourceOwnerValidator, IProfileService profile, ExtensionGrantValidator extensionGrantValidator, ICustomTokenRequestValidator customRequestValidator, ScopeValidator scopeValidator, IEventService events, ILogger<TokenRequestValidator> logger)
+        public TokenRequestValidator(IdentityServerOptions options, IAuthorizationCodeStore authorizationCodeStore, IRefreshTokenStore refreshTokenStore, IResourceOwnerPasswordValidator resourceOwnerValidator, IProfileService profile, ExtensionGrantValidator extensionGrantValidator, ICustomTokenRequestValidator customRequestValidator, ScopeValidator scopeValidator, IEventService events, ILogger<TokenRequestValidator> logger)
         {
             _logger = logger;
             _options = options;
-            _grants = grants;
+            _authorizationCodeStore = authorizationCodeStore;
+            _refreshTokenStore = refreshTokenStore;
             _resourceOwnerValidator = resourceOwnerValidator;
             _profile = profile;
             _extensionGrantValidator = extensionGrantValidator;
@@ -173,7 +176,7 @@ namespace IdentityServer4.Validation
 
             _validatedRequest.AuthorizationCodeHandle = code;
 
-            var authZcode = await _grants.GetAuthorizationCodeAsync(code);
+            var authZcode = await _authorizationCodeStore.GetAuthorizationCodeAsync(code);
             if (authZcode == null)
             {
                 LogError("Authorization code cannot be found in the store: {code}", code);
@@ -182,7 +185,7 @@ namespace IdentityServer4.Validation
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
-            await _grants.RemoveAuthorizationCodeAsync(code);
+            await _authorizationCodeStore.RemoveAuthorizationCodeAsync(code);
 
             /////////////////////////////////////////////
             // populate session id
@@ -471,7 +474,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // check if refresh token is valid
             /////////////////////////////////////////////
-            var refreshToken = await _grants.GetRefreshTokenAsync(refreshTokenHandle);
+            var refreshToken = await _refreshTokenStore.GetRefreshTokenAsync(refreshTokenHandle);
             if (refreshToken == null)
             {
                 LogError("Refresh token cannot be found in store: {refreshToken}", refreshTokenHandle);
@@ -490,7 +493,7 @@ namespace IdentityServer4.Validation
                 LogError(error);
                 await RaiseRefreshTokenRefreshFailureEventAsync(refreshTokenHandle, error);
 
-                await _grants.RemoveRefreshTokenAsync(refreshTokenHandle);
+                await _refreshTokenStore.RemoveRefreshTokenAsync(refreshTokenHandle);
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 

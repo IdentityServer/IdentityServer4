@@ -30,7 +30,8 @@ namespace IdentityServer4.UnitTests.Validation
         public static TokenRequestValidator CreateTokenRequestValidator(
             IdentityServerOptions options = null,
             IScopeStore scopes = null,
-            IPersistedGrantService grants = null,
+            IAuthorizationCodeStore authorizationCodeStore = null,
+            IRefreshTokenStore refreshTokenStore = null,
             IResourceOwnerPasswordValidator resourceOwnerValidator = null,
             IProfileService profile = null,
             IEnumerable<IExtensionGrantValidator> extensionGrantValidators = null,
@@ -72,9 +73,14 @@ namespace IdentityServer4.UnitTests.Validation
                 aggregateExtensionGrantValidator = new ExtensionGrantValidator(extensionGrantValidators, TestLogger.Create<ExtensionGrantValidator>());
             }
 
-            if (grants == null)
+            if (authorizationCodeStore == null)
             {
-                grants = CreateGrantService();
+                authorizationCodeStore = CreateAuthorizationCodeStore();
+            }
+
+            if (refreshTokenStore == null)
+            {
+                refreshTokenStore = CreateRefreshTokenStore();
             }
 
             if (scopeValidator == null)
@@ -84,7 +90,8 @@ namespace IdentityServer4.UnitTests.Validation
 
             return new TokenRequestValidator(
                 options,
-                grants,
+                authorizationCodeStore,
+                refreshTokenStore,
                 resourceOwnerValidator,
                 profile,
                 aggregateExtensionGrantValidator,
@@ -151,16 +158,16 @@ namespace IdentityServer4.UnitTests.Validation
                 TestLogger.Create<AuthorizeRequestValidator>());
         }
 
-        public static TokenValidator CreateTokenValidator(IPersistedGrantService grants = null, IProfileService profile = null)
+        public static TokenValidator CreateTokenValidator(IReferenceTokenStore store = null, IProfileService profile = null)
         {
             if (profile == null)
             {
                 profile = new TestProfileService();
             }
 
-            if (grants == null)
+            if (store == null)
             {
-                grants = CreateGrantService();
+                store = CreateReferenceTokenStore();
             }
 
             var clients = CreateClientStore();
@@ -170,7 +177,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             var validator = new TokenValidator(
                 clients: clients,
-                grants: grants,
+                referenceTokenStore: store,
                 customValidator: new DefaultCustomTokenValidator(
                     profile: profile,
                     clients: clients,
@@ -213,11 +220,29 @@ namespace IdentityServer4.UnitTests.Validation
             return new ClientSecretValidator(clients, parser, validator, new TestEventService(), TestLogger.Create<ClientSecretValidator>());
         }
 
-        public static IPersistedGrantService CreateGrantService()
+        public static IAuthorizationCodeStore CreateAuthorizationCodeStore()
         {
-            return new DefaultPersistedGrantService(new InMemoryPersistedGrantStore(),
+            return new DefaultAuthorizationCodeStore(new InMemoryPersistedGrantStore(),
                 new PersistentGrantSerializer(),
-                TestLogger.Create<DefaultPersistedGrantService>());
+                TestLogger.Create<DefaultAuthorizationCodeStore>());
+        }
+        public static IRefreshTokenStore CreateRefreshTokenStore()
+        {
+            return new DefaultRefreshTokenStore(new InMemoryPersistedGrantStore(),
+                new PersistentGrantSerializer(),
+                TestLogger.Create<DefaultRefreshTokenStore>());
+        }
+        public static IReferenceTokenStore CreateReferenceTokenStore()
+        {
+            return new DefaultReferenceTokenStore(new InMemoryPersistedGrantStore(),
+                new PersistentGrantSerializer(),
+                TestLogger.Create<DefaultReferenceTokenStore>());
+        }
+        public static IUserConsentStore CreateUserConsentStore()
+        {
+            return new DefaultUserConsentStore(new InMemoryPersistedGrantStore(),
+                new PersistentGrantSerializer(),
+                TestLogger.Create<DefaultUserConsentStore>());
         }
     }
 }

@@ -45,12 +45,10 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         [Trait("Category", Category)]
         public async Task RefreshTokenTooLong()
         {
-            var grants = Factory.CreateGrantService();
             var client = await _clients.FindEnabledClientByIdAsync("roclient");
             var options = new IdentityServerOptions();
 
-            var validator = Factory.CreateTokenRequestValidator(
-                grants: grants);
+            var validator = Factory.CreateTokenRequestValidator();
             var longRefreshToken = "x".Repeat(options.InputLengthRestrictions.RefreshToken + 1);
 
             var parameters = new NameValueCollection();
@@ -75,13 +73,13 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             };
             var handle = Guid.NewGuid().ToString();
 
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateRefreshTokenStore();
             await grants.StoreRefreshTokenAsync(handle, refreshToken);
 
             var client = await _clients.FindEnabledClientByIdAsync("roclient");
 
             var validator = Factory.CreateTokenRequestValidator(
-                grants: grants);
+                refreshTokenStore: grants);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, "refresh_token");
@@ -108,13 +106,13 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             };
             var handle = Guid.NewGuid().ToString();
 
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateRefreshTokenStore();
             await grants.StoreRefreshTokenAsync(handle, refreshToken);
 
             var client = await _clients.FindEnabledClientByIdAsync("roclient");
 
             var validator = Factory.CreateTokenRequestValidator(
-                grants: grants);
+                refreshTokenStore: grants);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, "refresh_token");
@@ -141,13 +139,13 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             };
             var handle = Guid.NewGuid().ToString();
 
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateRefreshTokenStore();
             await grants.StoreRefreshTokenAsync(handle, refreshToken);
 
             var client = await _clients.FindEnabledClientByIdAsync("roclient_restricted");
 
             var validator = Factory.CreateTokenRequestValidator(
-                grants: grants);
+                refreshTokenStore: grants);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, "refresh_token");
@@ -177,13 +175,13 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             };
             var handle = Guid.NewGuid().ToString();
 
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateRefreshTokenStore();
             await grants.StoreRefreshTokenAsync(handle, refreshToken);
 
             var client = await _clients.FindEnabledClientByIdAsync("roclient");
 
             var validator = Factory.CreateTokenRequestValidator(
-                grants: grants,
+                refreshTokenStore: grants,
                 profile: new TestProfileService(shouldBeActive: false));
 
             var parameters = new NameValueCollection();

@@ -26,19 +26,19 @@ namespace IdentityServer4.Validation
         private readonly ILogger _logger;
         private readonly IdentityServerOptions _options;
         private readonly IHttpContextAccessor _context;
-        private readonly IPersistedGrantService _grants;
+        private readonly IReferenceTokenStore _referenceTokenStore;
         private readonly ICustomTokenValidator _customValidator;
         private readonly IClientStore _clients;
         private readonly IKeyMaterialService _keys;
 
         private readonly TokenValidationLog _log;
         
-        public TokenValidator(IdentityServerOptions options, IHttpContextAccessor context, IClientStore clients, IPersistedGrantService grants, ICustomTokenValidator customValidator, IKeyMaterialService keys, ILogger<TokenValidator> logger)
+        public TokenValidator(IdentityServerOptions options, IHttpContextAccessor context, IClientStore clients, IReferenceTokenStore referenceTokenStore, ICustomTokenValidator customValidator, IKeyMaterialService keys, ILogger<TokenValidator> logger)
         {
             _options = options;
             _context = context;
             _clients = clients;
-            _grants = grants;
+            _referenceTokenStore = referenceTokenStore;
             _customValidator = customValidator;
             _keys = keys;
             _logger = logger;
@@ -243,7 +243,7 @@ namespace IdentityServer4.Validation
         private async Task<TokenValidationResult> ValidateReferenceAccessTokenAsync(string tokenHandle)
         {
             _log.TokenHandle = tokenHandle;
-            var token = await _grants.GetReferenceTokenAsync(tokenHandle);
+            var token = await _referenceTokenStore.GetReferenceTokenAsync(tokenHandle);
 
             if (token == null)
             {
@@ -264,7 +264,7 @@ namespace IdentityServer4.Validation
             {
                 LogError("Token expired.");
 
-                await _grants.RemoveReferenceTokenAsync(tokenHandle);
+                await _referenceTokenStore.RemoveReferenceTokenAsync(tokenHandle);
                 return Invalid(OidcConstants.ProtectedResourceErrors.ExpiredToken);
             }
 
