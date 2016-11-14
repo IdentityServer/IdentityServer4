@@ -84,7 +84,8 @@ namespace IdentityServer4.Endpoints.Results
 
         private void AddCspHeaders(HttpContext context)
         {
-            var value = "default-src 'none';style-src 'sha256-u+OupXgfekP+x/f6rMdoEAspPCYUtca912isERnoEjY='";
+            // 'unsafe-inline' for edge
+            var value = "default-src 'none'; style-src 'unsafe-inline' 'sha256-u+OupXgfekP+x/f6rMdoEAspPCYUtca912isERnoEjY='";
 
             var origins = _result.ClientLogoutUrls?.Select(x => x.GetOrigin());
             if (origins != null && origins.Any())
