@@ -109,20 +109,20 @@ In `Startup.cs` add this method to help initialize the database::
 
             var context = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
             context.Database.Migrate();
-            if (!context.Clients.Any())
-            {
-                foreach (var client in Config.GetClients())
-                {
-                    context.Clients.Add(client.ToEntity());
-                }
-                context.SaveChanges();
-            }
-
             if (!context.Scopes.Any())
             {
                 foreach (var scope in Config.GetScopes())
                 {
                     context.Scopes.Add(scope.ToEntity());
+                }
+                context.SaveChanges();
+            }
+            
+            if (!context.Clients.Any())
+            {
+                foreach (var client in Config.GetClients())
+                {
+                    context.Clients.Add(client.ToEntity());
                 }
                 context.SaveChanges();
             }
