@@ -33,9 +33,14 @@ Then select the "Empty Web" option.
 
 .. image:: images/0_empty_web.png
 
-Next, add the IdentityServer4 nuget package by adding the following line to your project.json::
+Next, add the IdentityServer4 nuget package by adding the following line to your project.json under the ´dependencies´ property::
 
     "IdentityServer4": "1.0.0-rc3"
+    
+Alternatively you can use Package Manager Console to add the dependency by running the following command:
+
+    "Install-Package IdentityServer4 -Pre"
+ 
     
 IdentityServer uses the usual pattern to configure and add services to an ASP.NET Core host.
 In ``ConfigureServices`` the required services are configured and added to the DI system. 
