@@ -416,15 +416,15 @@ namespace IdentityServer4.Validation
                 return Invalid(request, OidcConstants.AuthorizeErrors.InvalidScope);
             }
 
-            if (_scopeValidator.ContainsResourceScopes)
+            if (_scopeValidator.ContainsApiResourceScopes)
             {
-                request.IsResourceRequest = true;
+                request.IsApiResourceRequest = true;
             }
 
             //////////////////////////////////////////////////////////
             // check scopes and scope restrictions
             //////////////////////////////////////////////////////////
-            if (!_scopeValidator.AreScopesAllowed(request.Client, request.RequestedScopes))
+            if (await _scopeValidator.AreScopesAllowedAsync(request.Client, request.RequestedScopes) == false)
             {
                 return Invalid(request, OidcConstants.AuthorizeErrors.UnauthorizedClient);
             }

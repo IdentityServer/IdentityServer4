@@ -8,7 +8,7 @@ namespace IdentityServer4.Events
     {
         public string EndpointName { get; set; } = EventConstants.EndpointNames.Introspection;
         public string Token { get; set; }
-        public string ScopeName { get; set; }
+        public string ApiName { get; set; }
         public string TokenStatus { get; set; }
     }
 }

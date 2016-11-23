@@ -45,7 +45,7 @@ namespace Host
                     options.AuthenticationOptions.FederatedSignOutPaths.Add("/signout-oidc");
                 })
                 .AddInMemoryClients(Clients.Get())
-                .AddInMemoryScopes(Scopes.Get())
+                .AddInMemoryResources(Scopes.GetResources())
                 .AddInMemoryUsers(Users.Get())
                 .AddTemporarySigningCredential()
                 .AddExtensionGrantValidator<Extensions.ExtensionGrantValidator>()

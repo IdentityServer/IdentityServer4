@@ -44,7 +44,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
                         new Claim("role", "Attorney"),
                 }
             });
-            _pipeline.Scopes.Add(StandardScopes.OpenId);
+            _pipeline.IdentityScopes.Add(StandardScopes.OpenId);
             _pipeline.Clients.Add(client = new Client
             {
                 Enabled = true,

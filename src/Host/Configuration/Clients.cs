@@ -76,11 +76,12 @@ namespace Host.Configuration
 
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
+                    AllowOfflineAccess = true,
                     AllowedScopes = 
                     {
                         StandardScopes.OpenId.Name,
                         StandardScopes.Email.Name,
-                        StandardScopes.OfflineAccess.Name,
+                        //StandardScopes.OfflineAccess.Name,
 
                         "api1", "api2"
                     }
@@ -96,11 +97,12 @@ namespace Host.Configuration
 
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
+                    AllowOfflineAccess = true,
                     AllowedScopes = 
                     {
                         StandardScopes.OpenId.Name,
                         StandardScopes.Email.Name,
-                        StandardScopes.OfflineAccess.Name,
+                        //StandardScopes.OfflineAccess.Name,
 
                         "api1", "api2"
                     }
@@ -120,13 +122,15 @@ namespace Host.Configuration
 
                     RedirectUris = { "http://127.0.0.1:7890/" },
 
+                    AllowOfflineAccess = true,
+
                     AllowedScopes =
                     {
                         StandardScopes.OpenId.Name,
                         StandardScopes.Profile.Name,
                         StandardScopes.Email.Name,
                         StandardScopes.Roles.Name,
-                        StandardScopes.OfflineAccess.Name,
+                        //StandardScopes.OfflineAccess.Name,
 
                         "api1", "api2",
                     },
@@ -215,13 +219,15 @@ namespace Host.Configuration
                     LogoutUri = "http://localhost:21402/signout-oidc",
                     PostLogoutRedirectUris = { "http://localhost:21402/" },
 
+                    AllowOfflineAccess = true,
+
                     AllowedScopes = 
                     {
                         StandardScopes.OpenId.Name,
                         StandardScopes.Profile.Name,
                         StandardScopes.Email.Name,
                         StandardScopes.Roles.Name,
-                        StandardScopes.OfflineAccess.Name,
+                        //StandardScopes.OfflineAccess.Name,
 
                         "api1", "api2",
                     },

@@ -14,27 +14,30 @@ namespace IdentityServer4.Validation
     public class ScopeValidator
     {
         private readonly ILogger _logger;
-        private readonly IScopeStore _store;
+        private readonly IResourceStore _store;
 
-        public bool ContainsOpenIdScopes { get; private set; }
-        public bool ContainsResourceScopes { get; private set; }
-        public bool ContainsOfflineAccessScope { get; set; }
+        public bool ContainsOpenIdScopes => GrantedResources.IdentityResources.Any();
+        public bool ContainsApiResourceScopes => GrantedResources.ApiResources.Any();
+        public bool ContainsOfflineAccessScope => GrantedResources.OfflineAccess;
 
-        public List<Scope> RequestedScopes { get; }
-        public List<Scope> GrantedScopes { get; }
+        public Resources RequestedResources { get; internal set; } = new Resources();
+        public Resources GrantedResources { get; internal set; } = new Resources();
 
-        public ScopeValidator(IScopeStore store, ILogger<ScopeValidator> logger)
+        public ScopeValidator(IResourceStore store, ILogger<ScopeValidator> logger)
         {
-            RequestedScopes = new List<Scope>();
-            GrantedScopes = new List<Scope>();
-
             _logger = logger;
             _store = store;
         }
 
         public bool ValidateRequiredScopes(IEnumerable<string> consentedScopes)
         {
-            var requiredScopes = RequestedScopes.Where(x => x.Required).Select(x=>x.Name);
+            var identity = RequestedResources.IdentityResources.Where(x => x.Required).Select(x=>x.Name);
+            var apiQuery = from api in RequestedResources.ApiResources
+                           from scope in api.Scopes
+                           where scope.Required
+                           select scope.Name;
+
+            var requiredScopes = identity.Union(apiQuery);
             return requiredScopes.All(x => consentedScopes.Contains(x));
         }
 
@@ -42,65 +45,131 @@ namespace IdentityServer4.Validation
         {
             consentedScopes = consentedScopes ?? Enumerable.Empty<string>();
 
-            GrantedScopes.RemoveAll(scope => !scope.Required && !consentedScopes.Contains(scope.Name));
+            var offline = consentedScopes.Contains(Constants.StandardScopes.OfflineAccess);
+            if (offline)
+            {
+                consentedScopes.Where(x => x != Constants.StandardScopes.OfflineAccess);
+            }
+
+            var identityToKeep = GrantedResources.IdentityResources.Where(x => x.Required || consentedScopes.Contains(x.Name));
+            var apisToKeep = from api in GrantedResources.ApiResources
+                             let scopesToKeep = (from scope in api.Scopes
+                                                 where scope.Required == true || consentedScopes.Contains(scope.Name)
+                                                 select scope)
+                             where scopesToKeep.Any()
+                             select api.CloneWithScopes(scopesToKeep);
+
+            GrantedResources = new Resources(identityToKeep, apisToKeep)
+            {
+                OfflineAccess = offline
+            };
         }
 
         public async Task<bool> AreScopesValidAsync(IEnumerable<string> requestedScopes)
         {
-            var requestedScopesArray = requestedScopes as string[] ?? requestedScopes.ToArray();
-            var availableScopesArray = (await _store.FindEnabledScopesAsync(requestedScopesArray)).ToArray();
-
-            foreach (var requestedScope in requestedScopesArray)
+            if (requestedScopes.Contains(Constants.StandardScopes.OfflineAccess))
             {
-                var scopeDetail = availableScopesArray.FirstOrDefault(s => s.Name == requestedScope);
+                GrantedResources.OfflineAccess = true;
+                requestedScopes = requestedScopes.Where(x => x != Constants.StandardScopes.OfflineAccess).ToArray();
+            }
 
-                if (scopeDetail == null)
-                {
-                    _logger.LogError("Invalid scope: {requestedScope}", requestedScope);
-                    return false;
-                }
+            var resources = await _store.FindResourcesAsync(requestedScopes);
 
-                if (scopeDetail.Enabled == false)
+            foreach (var requestedScope in requestedScopes)
+            {
+                var identity = resources.IdentityResources.FirstOrDefault(x => x.Name == requestedScope);
+                if (identity != null)
                 {
-                    _logger.LogError("Scope disabled: {requestedScope}", requestedScope);
-                    return false;
-                }
+                    if (identity.Enabled == false)
+                    {
+                        _logger.LogError("Scope disabled: {requestedScope}", requestedScope);
+                        return false;
+                    }
 
-                if (scopeDetail.Type == ScopeType.Identity)
-                {
-                    ContainsOpenIdScopes = true;
+                    GrantedResources.IdentityResources.Add(identity);
                 }
                 else
                 {
-                    ContainsResourceScopes = true;
+                    var api = resources.FindApiResourceByScope(requestedScope);
+                    if (api == null)
+                    {
+                        _logger.LogError("Invalid scope: {requestedScope}", requestedScope);
+                        return false;
+                    }
+
+                    if (api.Enabled == false)
+                    {
+                        _logger.LogError("API {api} that conatins scope is disabled: {requestedScope}", api.Name, requestedScope);
+                        return false;
+                    }
+
+                    var scope = api.FindApiScope(requestedScope);
+
+                    if (scope.Enabled == false)
+                    {
+                        _logger.LogError("Scope disabled: {requestedScope}", requestedScope);
+                        return false;
+                    }
+
+                    // see if we already have this API in our list
+                    var existingApi = GrantedResources.ApiResources.FirstOrDefault(x => x.Name == api.Name);
+                    if (existingApi != null)
+                    {
+                        existingApi.Scopes.Add(scope);
+                    }
+                    else
+                    {
+                        GrantedResources.ApiResources.Add(api.CloneWithScopes(new Scope[] { scope }));
+                    }
                 }
-
-                GrantedScopes.Add(scopeDetail);
             }
 
-            if (requestedScopesArray.Contains(Constants.StandardScopes.OfflineAccess))
+            RequestedResources = new Resources(GrantedResources.IdentityResources, GrantedResources.ApiResources)
             {
-                ContainsOfflineAccessScope = true;
-            }
-
-            RequestedScopes.AddRange(GrantedScopes);
+                OfflineAccess = GrantedResources.OfflineAccess
+            };
 
             return true;
         }
 
-        public bool AreScopesAllowed(Client client, IEnumerable<string> requestedScopes)
+        public async Task<bool> AreScopesAllowedAsync(Client client, IEnumerable<string> requestedScopes)
         {
             if (client.AllowAccessToAllScopes)
             {
                 return true;
             }
 
+            if (requestedScopes.Contains(Constants.StandardScopes.OfflineAccess))
+            {
+                if (client.AllowOfflineAccess == false)
+                {
+                    _logger.LogError("offline_access is not allowed for this client: {client}", client.ClientId);
+                    return false;
+                }
+                requestedScopes = requestedScopes.Where(x => x != Constants.StandardScopes.OfflineAccess).ToArray();
+            }
+
+            var resources = await _store.FindEnabledResourcesAsync(requestedScopes);
+
             foreach (var scope in requestedScopes)
             {
-                if (!client.AllowedScopes.Contains(scope))
+                var identity = resources.IdentityResources.FirstOrDefault(x => x.Name == scope);
+                if (identity != null)
                 {
-                    _logger.LogError("Requested scope not allowed: {scope}", scope);
-                    return false;
+                    if (!client.AllowedScopes.Contains(scope))
+                    {
+                        _logger.LogError("Requested scope not allowed: {scope}", scope);
+                        return false;
+                    }
+                }
+                else
+                {
+                    var api = resources.FindApiScope(scope);
+                    if (api == null || !client.AllowedScopes.Contains(scope))
+                    {
+                        _logger.LogError("Requested scope not allowed: {scope}", scope);
+                        return false;
+                    }
                 }
             }
 
@@ -121,14 +190,14 @@ namespace IdentityServer4.Validation
                     }
                     break;
                 case Constants.ScopeRequirement.IdentityOnly:
-                    if (!ContainsOpenIdScopes || ContainsResourceScopes)
+                    if (!ContainsOpenIdScopes || ContainsApiResourceScopes)
                     {
                         _logger.LogError("Requests for id_token response type only must not include resource scopes");
                         return false;
                     }
                     break;
                 case Constants.ScopeRequirement.ResourceOnly:
-                    if (ContainsOpenIdScopes || !ContainsResourceScopes)
+                    if (ContainsOpenIdScopes || !ContainsApiResourceScopes)
                     {
                         _logger.LogError("Requests for token response type only must include resource scopes, but no identity scopes.");
                         return false;

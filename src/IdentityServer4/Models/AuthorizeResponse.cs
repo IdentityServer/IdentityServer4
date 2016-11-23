@@ -3,7 +3,9 @@
 
 
 using IdentityServer4.Extensions;
+using IdentityServer4.Stores;
 using IdentityServer4.Validation;
+using System.Linq;
 
 namespace IdentityServer4.Models
 {
@@ -12,7 +14,7 @@ namespace IdentityServer4.Models
         public ValidatedAuthorizeRequest Request { get; set; }
         public string RedirectUri => Request?.RedirectUri;
         public string State => Request?.State;
-        public string Scope => Request?.ValidatedScopes?.GrantedScopes?.ToSpaceSeparatedString();
+        public string Scope => Request?.ValidatedScopes?.GrantedResources?.ToScopeNames()?.ToSpaceSeparatedString();
 
         public string IdentityToken { get; set; }
         public string AccessToken { get; set; }

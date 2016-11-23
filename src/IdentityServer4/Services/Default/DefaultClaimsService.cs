@@ -44,13 +44,13 @@ namespace IdentityServer4.Services.Default
         /// </summary>
         /// <param name="subject">The subject</param>
         /// <param name="client">The client</param>
-        /// <param name="scopes">The requested scopes</param>
+        /// <param name="identityResources">The requested scopes</param>
         /// <param name="includeAllIdentityClaims">Specifies if all claims should be included in the token, or if the userinfo endpoint can be used to retrieve them</param>
         /// <param name="request">The raw request</param>
         /// <returns>
         /// Claims for the identity token
         /// </returns>
-        public virtual async Task<IEnumerable<Claim>> GetIdentityTokenClaimsAsync(ClaimsPrincipal subject, Client client, IEnumerable<Scope> scopes, bool includeAllIdentityClaims, ValidatedRequest request)
+        public virtual async Task<IEnumerable<Claim>> GetIdentityTokenClaimsAsync(ClaimsPrincipal subject, Client client, Resources resources, bool includeAllIdentityClaims, ValidatedRequest request)
         {
             _logger.LogDebug("Getting claims for identity token for subject: {subject} and client: {clientId}", subject.GetSubjectId(), client.ClientId);
 
@@ -60,7 +60,7 @@ namespace IdentityServer4.Services.Default
             var additionalClaims = new List<string>();
 
             // if a include all claims rule exists, call the user service without a claims filter
-            if (scopes.IncludesAllClaimsForUserRule(ScopeType.Identity))
+            if (resources.IdentityResources.IncludesAllClaimsForUserRule())
             {
                 _logger.LogDebug("All claims rule found - emitting all claims for user.");
 
@@ -81,16 +81,13 @@ namespace IdentityServer4.Services.Default
             }
 
             // fetch all identity claims that need to go into the id token
-            foreach (var scope in scopes)
+            foreach (var scope in resources.IdentityResources)
             {
-                if (scope.Type == ScopeType.Identity)
+                foreach (var scopeClaim in scope.UserClaims)
                 {
-                    foreach (var scopeClaim in scope.Claims)
+                    if (includeAllIdentityClaims || scopeClaim.AlwaysIncludeInIdToken)
                     {
-                        if (includeAllIdentityClaims || scopeClaim.AlwaysIncludeInIdToken)
-                        {
-                            additionalClaims.Add(scopeClaim.Name);
-                        }
+                        additionalClaims.Add(scopeClaim.Name);
                     }
                 }
             }
@@ -125,7 +122,7 @@ namespace IdentityServer4.Services.Default
         /// <returns>
         /// Claims for the access token
         /// </returns>
-        public virtual async Task<IEnumerable<Claim>> GetAccessTokenClaimsAsync(ClaimsPrincipal subject, Client client, IEnumerable<Scope> scopes, ValidatedRequest request)
+        public virtual async Task<IEnumerable<Claim>> GetAccessTokenClaimsAsync(ClaimsPrincipal subject, Client client, Resources resources, ValidatedRequest request)
         {
             _logger.LogDebug("Getting claims for access token for client: {clientId}", client.ClientId);
             
@@ -155,7 +152,11 @@ namespace IdentityServer4.Services.Default
             }
 
             // add scopes
-            foreach (var scope in scopes)
+            foreach (var scope in resources.IdentityResources)
+            {
+                outputClaims.Add(new Claim(JwtClaimTypes.Scope, scope.Name));
+            }
+            foreach (var scope in resources.ApiResources.SelectMany(x => x.Scopes))
             {
                 outputClaims.Add(new Claim(JwtClaimTypes.Scope, scope.Name));
             }
@@ -163,13 +164,18 @@ namespace IdentityServer4.Services.Default
             // a user is involved
             if (subject != null)
             {
+                if (resources.OfflineAccess)
+                {
+                    outputClaims.Add(new Claim(JwtClaimTypes.Scope, Constants.StandardScopes.OfflineAccess));
+                }
+
                 _logger.LogDebug("Getting claims for access token for subject: {subject}", subject.GetSubjectId());
 
                 outputClaims.AddRange(GetStandardSubjectClaims(subject));
                 outputClaims.AddRange(GetOptionalClaims(subject));
 
                 // if a include all claims rule exists, call the user service without a claims filter
-                if (scopes.IncludesAllClaimsForUserRule(ScopeType.Resource))
+                if (resources.ApiResources.IncludesAllClaimsForUserRule())
                 {
                     _logger.LogDebug("All claims rule found - emitting all claims for user.");
 
@@ -191,15 +197,26 @@ namespace IdentityServer4.Services.Default
 
                 // fetch all resource claims that need to go into the access token
                 var additionalClaims = new List<string>();
-                foreach (var scope in scopes)
+                foreach (var api in resources.ApiResources)
                 {
-                    if (scope.Type == ScopeType.Resource)
+                    // add claims configured on api resource
+                    if (api.UserClaims != null)
                     {
-                        if (scope.Claims != null)
+                        foreach (var claim in api.UserClaims)
                         {
-                            foreach (var scopeClaim in scope.Claims)
+                            additionalClaims.Add(claim.Name);
+                        }
+                    }
+
+                    // add claims configured on scope
+                    // TODO: need unit test
+                    foreach (var scope in api.Scopes)
+                    {
+                        if (scope.UserClaims != null)
+                        {
+                            foreach (var claim in scope.UserClaims)
                             {
-                                additionalClaims.Add(scopeClaim.Name);
+                                additionalClaims.Add(claim.Name);
                             }
                         }
                     }

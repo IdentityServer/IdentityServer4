@@ -54,19 +54,26 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                 }
             });
 
-            _mockPipeline.Scopes.AddRange(new Scope[] {
+            _mockPipeline.IdentityScopes.AddRange(new IdentityResource[] {
                 StandardScopes.OpenId,
                 StandardScopes.Profile,
                 StandardScopes.Email,
-                new Scope
+            });
+            _mockPipeline.ApiScopes.AddRange(new ApiResource[] {
+                new ApiResource
                 {
-                    Name = "api1",
-                    Type = ScopeType.Resource
-                },
-                new Scope
-                {
-                    Name = "api2",
-                    Type = ScopeType.Resource
+                    Name = "api",
+                    Scopes =
+                    {
+                        new Scope
+                        {
+                            Name = "api1",
+                        },
+                        new Scope
+                        {
+                            Name = "api2",
+                        }
+                    }
                 }
             });
 

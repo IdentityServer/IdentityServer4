@@ -100,10 +100,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="T">The type of the concrete scope store class that is registered in DI.</typeparam>
         /// <param name="builder">The builder.</param>
         /// <returns></returns>
-        public static IIdentityServerBuilder AddScopeStoreCache<T>(this IIdentityServerBuilder builder)
-            where T : IScopeStore
+        public static IIdentityServerBuilder AddResourceStoreCache<T>(this IIdentityServerBuilder builder)
+            where T : IResourceStore
         {
-            builder.Services.AddTransient<IScopeStore, CachingScopeStore<T>>();
+            builder.Services.AddTransient<IResourceStore, CachingResourceStore<T>>();
             return builder;
         }
 

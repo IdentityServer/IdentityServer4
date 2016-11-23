@@ -3,46 +3,60 @@
 
 
 using IdentityServer4.Models;
-using System.Collections.Generic;
 
 namespace Host.Configuration
 {
     public class Scopes
     {
-        public static IEnumerable<Scope> Get()
+        public static Resources GetResources()
         {
-            return new List<Scope>
+            var identity = new IdentityResource[]
             {
                 StandardScopes.OpenId,
                 StandardScopes.ProfileAlwaysInclude,
                 StandardScopes.EmailAlwaysInclude,
-                StandardScopes.OfflineAccess,
                 StandardScopes.RolesAlwaysInclude,
+            };
 
-                new Scope
+            var api = new ApiResource[]
+            {
+                new ApiResource
                 {
                     Name = "api1",
-                    DisplayName = "API 1",
-                    Description = "API 1 features and data",
-                    Type = ScopeType.Resource,
-
-                    ScopeSecrets =
+                    Scopes =
+                    {
+                        new Scope
+                        {
+                            Name = "api1",
+                            DisplayName = "API 1",
+                            Description = "Some API 1 Description"
+                        }
+                    },
+                    ApiSecrets =
                     {
                         new Secret("secret".Sha256())
                     },
-                    Claims =
+                    UserClaims =
                     {
                         new ScopeClaim("role")
                     }
                 },
-                new Scope
+                new ApiResource
                 {
                     Name = "api2",
-                    DisplayName = "API 2",
-                    Description = "API 2 features and data, which are better than API 1",
-                    Type = ScopeType.Resource
+                    Scopes =
+                    {
+                        new Scope
+                        {
+                            Name = "api2",
+                            DisplayName = "API 2",
+                            Description = "Some API 2 Description"
+                        }
+                    }
                 }
             };
+
+            return new Resources(identity, api);
         }
     }
 }

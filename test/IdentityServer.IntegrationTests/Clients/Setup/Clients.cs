@@ -75,11 +75,11 @@ namespace IdentityServer4.IntegrationTests.Clients
 
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
+                    AllowOfflineAccess = true,
                     AllowedScopes = 
                     {
                         StandardScopes.OpenId.Name,
                         StandardScopes.Email.Name,
-                        StandardScopes.OfflineAccess.Name,
                         StandardScopes.Address.Name,
                         StandardScopes.Roles.Name,
 
@@ -119,9 +119,10 @@ namespace IdentityServer4.IntegrationTests.Clients
 
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
+                    AllowOfflineAccess = true,
                     AllowedScopes = 
                     {
-                        "api1", "api2", "offline_access"
+                        "api1", "api2"
                     },
 
                     AccessTokenType = AccessTokenType.Reference

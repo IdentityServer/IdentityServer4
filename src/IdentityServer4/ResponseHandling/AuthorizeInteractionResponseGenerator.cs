@@ -7,6 +7,7 @@ using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
+using IdentityServer4.Stores;
 using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
 using System;
@@ -243,7 +244,7 @@ namespace IdentityServer4.ResponseHandling
                                 if (consent.RememberConsent)
                                 {
                                     // remember what user actually selected
-                                    scopes = request.ValidatedScopes.GrantedScopes.Select(x => x.Name);
+                                    scopes = request.ValidatedScopes.GrantedResources.ToScopeNames();
                                     _logger.LogDebug("User indicated to remember consent for scopes: {scopes}", scopes);
                                 }
 

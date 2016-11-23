@@ -292,7 +292,7 @@ namespace IdentityServer4.Events
             await events.RaiseAsync(evt);
         }
 
-        public static async Task RaiseSuccessfulIntrospectionEndpointEventAsync(this IEventService events, string token, string tokenStatus, string scopeName)
+        public static async Task RaiseSuccessfulIntrospectionEndpointEventAsync(this IEventService events, string token, string tokenStatus, string apiName)
         {
             var evt = new Event<IntrospectionEndpointDetail>(
                 EventConstants.Categories.Endpoints,
@@ -303,13 +303,13 @@ namespace IdentityServer4.Events
                 {
                     Token = ObfuscateToken(token),
                     TokenStatus = tokenStatus,
-                    ScopeName = scopeName
+                    ApiName = apiName
                 });
 
             await events.RaiseAsync(evt);
         }
 
-        public static async Task RaiseFailureIntrospectionEndpointEventAsync(this IEventService events, string error, string token, string scopeName)
+        public static async Task RaiseFailureIntrospectionEndpointEventAsync(this IEventService events, string error, string token, string apiName)
         {
             var evt = new Event<IntrospectionEndpointDetail>(
                  EventConstants.Categories.Endpoints,
@@ -319,7 +319,7 @@ namespace IdentityServer4.Events
                  new IntrospectionEndpointDetail
                  {
                      Token = ObfuscateToken(token),
-                     ScopeName = scopeName
+                     ApiName = apiName
                  },
                  error);
 

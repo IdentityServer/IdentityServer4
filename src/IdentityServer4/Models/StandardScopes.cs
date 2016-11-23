@@ -19,7 +19,7 @@ namespace IdentityServer4.Models
         /// <value>
         /// All.
         /// </value>
-        public static IEnumerable<Scope> All => new[]
+        public static IEnumerable<IdentityResource> All => new[]
         {
             OpenId,
             Profile,
@@ -29,12 +29,12 @@ namespace IdentityServer4.Models
         };
 
         /// <summary>
-        /// All identity scopes (always include claims in token).
+        /// All identity resources (always include claims in token).
         /// </summary>
         /// <value>
         /// All always include.
         /// </value>
-        public static IEnumerable<Scope> AllAlwaysInclude => new[]
+        public static IEnumerable<IdentityResource> AllAlwaysInclude => new[]
         {
             OpenId,
             ProfileAlwaysInclude,
@@ -50,13 +50,12 @@ namespace IdentityServer4.Models
         /// <value>
         /// The open identifier.
         /// </value>
-        public static Scope OpenId => new Scope
+        public static IdentityResource OpenId => new IdentityResource
         {
             Name = Constants.StandardScopes.OpenId,
             DisplayName = "Your user identifier",
             Required = true,
-            Type = ScopeType.Identity,
-            Claims = new List<ScopeClaim>
+            UserClaims = new List<ScopeClaim>
             {
                 new ScopeClaim(JwtClaimTypes.Subject, alwaysInclude: true)
             }
@@ -68,18 +67,17 @@ namespace IdentityServer4.Models
         /// <value>
         /// The profile.
         /// </value>
-        public static Scope Profile
+        public static IdentityResource Profile
         {
             get
             {
-                return new Scope
+                return new IdentityResource
                 {
                     Name = Constants.StandardScopes.Profile,
                     DisplayName = "User profile",
                     Description = "Your user profile information (first name, last name, etc.)",
-                    Type = ScopeType.Identity,
                     Emphasize = true,
-                    Claims = (Constants.ScopeToClaimsMapping[Constants.StandardScopes.Profile].Select(claim => new ScopeClaim(claim)).ToList())
+                    UserClaims = (Constants.ScopeToClaimsMapping[Constants.StandardScopes.Profile].Select(claim => new ScopeClaim(claim)).ToList())
                 };
             }
         }
@@ -90,18 +88,17 @@ namespace IdentityServer4.Models
         /// <value>
         /// The profile always include.
         /// </value>
-        public static Scope ProfileAlwaysInclude
+        public static IdentityResource ProfileAlwaysInclude
         {
             get
             {
-                return new Scope
+                return new IdentityResource
                 {
                     Name = Constants.StandardScopes.Profile,
                     DisplayName = "User profile",
                     Description = "Your user profile information (first name, last name, etc.)",
-                    Type = ScopeType.Identity,
                     Emphasize = true,
-                    Claims = (Constants.ScopeToClaimsMapping[Constants.StandardScopes.Profile].Select(claim => new ScopeClaim(claim, alwaysInclude: true)).ToList())
+                    UserClaims = (Constants.ScopeToClaimsMapping[Constants.StandardScopes.Profile].Select(claim => new ScopeClaim(claim, alwaysInclude: true)).ToList())
                 };
             }
         }
@@ -112,17 +109,16 @@ namespace IdentityServer4.Models
         /// <value>
         /// The email.
         /// </value>
-        public static Scope Email
+        public static IdentityResource Email
         {
             get
             {
-                return new Scope
+                return new IdentityResource
                 {
                     Name = Constants.StandardScopes.Email,
                     DisplayName = "Your email address",
-                    Type = ScopeType.Identity,
                     Emphasize = true,
-                    Claims = (Constants.ScopeToClaimsMapping[Constants.StandardScopes.Email].Select(claim => new ScopeClaim(claim)).ToList())
+                    UserClaims = (Constants.ScopeToClaimsMapping[Constants.StandardScopes.Email].Select(claim => new ScopeClaim(claim)).ToList())
                 };
             }
         }
@@ -133,17 +129,16 @@ namespace IdentityServer4.Models
         /// <value>
         /// The email always include.
         /// </value>
-        public static Scope EmailAlwaysInclude
+        public static IdentityResource EmailAlwaysInclude
         {
             get
             {
-                return new Scope
+                return new IdentityResource
                 {
                     Name = Constants.StandardScopes.Email,
                     DisplayName = "Your email address",
-                    Type = ScopeType.Identity,
                     Emphasize = true,
-                    Claims = (Constants.ScopeToClaimsMapping[Constants.StandardScopes.Email].Select(claim => new ScopeClaim(claim, alwaysInclude: true)).ToList())
+                    UserClaims = (Constants.ScopeToClaimsMapping[Constants.StandardScopes.Email].Select(claim => new ScopeClaim(claim, alwaysInclude: true)).ToList())
                 };
             }
         }
@@ -154,17 +149,16 @@ namespace IdentityServer4.Models
         /// <value>
         /// The phone.
         /// </value>
-        public static Scope Phone
+        public static IdentityResource Phone
         {
             get
             {
-                return new Scope
+                return new IdentityResource
                 {
                     Name = Constants.StandardScopes.Phone,
                     DisplayName = "Your phone number",
-                    Type = ScopeType.Identity,
                     Emphasize = true,
-                    Claims = (Constants.ScopeToClaimsMapping[Constants.StandardScopes.Phone].Select(claim => new ScopeClaim(claim)).ToList())
+                    UserClaims = (Constants.ScopeToClaimsMapping[Constants.StandardScopes.Phone].Select(claim => new ScopeClaim(claim)).ToList())
                 };
             }
         }
@@ -175,17 +169,16 @@ namespace IdentityServer4.Models
         /// <value>
         /// The phone always include.
         /// </value>
-        public static Scope PhoneAlwaysInclude
+        public static IdentityResource PhoneAlwaysInclude
         {
             get
             {
-                return new Scope
+                return new IdentityResource
                 {
                     Name = Constants.StandardScopes.Phone,
                     DisplayName = "Your phone number",
-                    Type = ScopeType.Identity,
                     Emphasize = true,
-                    Claims = (Constants.ScopeToClaimsMapping[Constants.StandardScopes.Phone].Select(claim => new ScopeClaim(claim, alwaysInclude: true)).ToList())
+                    UserClaims = (Constants.ScopeToClaimsMapping[Constants.StandardScopes.Phone].Select(claim => new ScopeClaim(claim, alwaysInclude: true)).ToList())
                 };
             }
         }
@@ -196,17 +189,16 @@ namespace IdentityServer4.Models
         /// <value>
         /// The address.
         /// </value>
-        public static Scope Address
+        public static IdentityResource Address
         {
             get
             {
-                return new Scope
+                return new IdentityResource
                 {
                     Name = Constants.StandardScopes.Address,
                     DisplayName = "Your postal address",
-                    Type = ScopeType.Identity,
                     Emphasize = true,
-                    Claims = (Constants.ScopeToClaimsMapping[Constants.StandardScopes.Address].Select(claim => new ScopeClaim(claim)).ToList())
+                    UserClaims = (Constants.ScopeToClaimsMapping[Constants.StandardScopes.Address].Select(claim => new ScopeClaim(claim)).ToList())
                 };
             }
         }
@@ -217,17 +209,16 @@ namespace IdentityServer4.Models
         /// <value>
         /// The address always include.
         /// </value>
-        public static Scope AddressAlwaysInclude
+        public static IdentityResource AddressAlwaysInclude
         {
             get
             {
-                return new Scope
+                return new IdentityResource
                 {
                     Name = Constants.StandardScopes.Address,
                     DisplayName = "Your postal address",
-                    Type = ScopeType.Identity,
                     Emphasize = true,
-                    Claims = (Constants.ScopeToClaimsMapping[Constants.StandardScopes.Address].Select(claim => new ScopeClaim(claim, alwaysInclude: true)).ToList())
+                    UserClaims = (Constants.ScopeToClaimsMapping[Constants.StandardScopes.Address].Select(claim => new ScopeClaim(claim, alwaysInclude: true)).ToList())
                 };
             }
         }
@@ -238,11 +229,10 @@ namespace IdentityServer4.Models
         /// <value>
         /// All claims.
         /// </value>
-        public static Scope AllClaims => new Scope
+        public static IdentityResource AllClaims => new IdentityResource
         {
             Name = Constants.StandardScopes.AllClaims,
             DisplayName = "All user information",
-            Type = ScopeType.Identity,
             Emphasize = true,
             IncludeAllClaimsForUser = true
         };
@@ -253,13 +243,12 @@ namespace IdentityServer4.Models
         /// <value>
         /// The roles.
         /// </value>
-        public static Scope Roles => new Scope
+        public static IdentityResource Roles => new IdentityResource
         {
             Name = Constants.StandardScopes.Roles,
             DisplayName = "User roles",
-            Type = ScopeType.Identity,
             Emphasize = true,
-            Claims = new List<ScopeClaim> 
+            UserClaims = new List<ScopeClaim> 
             {
                 new ScopeClaim(JwtClaimTypes.Role)
             }
@@ -271,30 +260,29 @@ namespace IdentityServer4.Models
         /// <value>
         /// The roles always include.
         /// </value>
-        public static Scope RolesAlwaysInclude => new Scope
+        public static IdentityResource RolesAlwaysInclude => new IdentityResource
         {
             Name = Constants.StandardScopes.Roles,
             DisplayName = "User roles",
-            Type = ScopeType.Identity,
             Emphasize = true,
-            Claims = new List<ScopeClaim>
+            UserClaims = new List<ScopeClaim>
             {
                 new ScopeClaim(JwtClaimTypes.Role, alwaysInclude: true)
             }
         };
 
+        // TODO: maybe make this a client flag
         /// <summary>
         /// Gets the "offline_access" scope.
         /// </summary>
         /// <value>
         /// The offline access.
         /// </value>
-        public static Scope OfflineAccess => new Scope
-        {
-            Name = Constants.StandardScopes.OfflineAccess,
-            DisplayName = "Offline access",
-            Type = ScopeType.Resource,
-            Emphasize = true
-        };
+        //public static Scope OfflineAccess => new Scope
+        //{
+        //    Name = Constants.StandardScopes.OfflineAccess,
+        //    DisplayName = "Offline access",
+        //    Emphasize = true
+        //};
     }
 }

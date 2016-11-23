@@ -89,7 +89,7 @@ namespace IdentityServer4.ResponseHandling
                 CodeChallengeMethod = request.CodeChallengeMethod,
 
                 IsOpenId = request.IsOpenIdRequest,
-                RequestedScopes = request.ValidatedScopes.GrantedScopes.Select(a => a.Name),
+                RequestedScopes = request.ValidatedScopes.GrantedResources.ToScopeNames(),
                 RedirectUri = request.RedirectUri,
                 Nonce = request.Nonce,
 
@@ -120,7 +120,7 @@ namespace IdentityServer4.ResponseHandling
                 {
                     Subject = request.Subject,
                     Client = request.Client,
-                    Scopes = request.ValidatedScopes.GrantedScopes,
+                    Resources = request.ValidatedScopes.GrantedResources,
 
                     ValidatedRequest = request
                 };
@@ -139,7 +139,7 @@ namespace IdentityServer4.ResponseHandling
                     ValidatedRequest = request,
                     Subject = request.Subject,
                     Client = request.Client,
-                    Scopes = request.ValidatedScopes.GrantedScopes,
+                    Resources = request.ValidatedScopes.GrantedResources,
 
                     Nonce = request.Raw.Get(OidcConstants.AuthorizeRequest.Nonce),
                     IncludeAllIdentityClaims = !request.AccessTokenRequested,
