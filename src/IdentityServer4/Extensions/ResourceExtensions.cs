@@ -60,8 +60,8 @@ namespace IdentityServer4.Models
             var identity = resources.IdentityResources.Where(x => x.Enabled);
 
             var api = from a in resources.ApiResources
-                      where a.Enabled && a.Scopes != null && a.Scopes.Any(x => x.Enabled)
-                      select a.CloneWithEnabledScopes();
+                      where a.Enabled
+                      select a;
 
             return new Resources(identity, api)
             {

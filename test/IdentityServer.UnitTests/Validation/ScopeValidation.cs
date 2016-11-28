@@ -46,10 +46,17 @@ namespace IdentityServer4.UnitTests.Validation
                     {
                         Name = "resource2",
                     },
+                }
+            },
+            new ApiResource
+            {
+                Name = "disabled_api",
+                Enabled = false,
+                Scopes =
+                {
                     new Scope
                     {
                         Name = "disabled",
-                        Enabled = false,
                     },
                 }
             }

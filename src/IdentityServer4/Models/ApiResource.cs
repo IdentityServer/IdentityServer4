@@ -59,10 +59,5 @@ namespace IdentityServer4.Models
                 UserClaims = UserClaims,
             };
         }
-
-        internal ApiResource CloneWithEnabledScopes()
-        {
-            return CloneWithScopes(Scopes.Where(x => x.Enabled));
-        }
     }
 }

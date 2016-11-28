@@ -55,7 +55,7 @@ namespace IdentityServer4.Validation
             }
 
             // check expected scopes
-            var supportedScopes = apiResource.Scopes.Where(x => x.Enabled).Select(x => x.Name);
+            var supportedScopes = apiResource.Scopes.Select(x => x.Name);
             var expectedScopes = tokenValidationResult.Claims.Where(
                 c => c.Type == JwtClaimTypes.Scope && supportedScopes.Contains(c.Value));
 

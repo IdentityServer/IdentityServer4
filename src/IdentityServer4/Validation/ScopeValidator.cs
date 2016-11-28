@@ -113,12 +113,6 @@ namespace IdentityServer4.Validation
                         return false;
                     }
 
-                    if (scope.Enabled == false)
-                    {
-                        _logger.LogError("Scope disabled: {requestedScope}", requestedScope);
-                        return false;
-                    }
-
                     // see if we already have this API in our list
                     var existingApi = GrantedResources.ApiResources.FirstOrDefault(x => x.Name == api.Name);
                     if (existingApi != null)

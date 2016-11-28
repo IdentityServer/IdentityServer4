@@ -2,12 +2,14 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using IdentityServer4.Extensions;
+using System;
 using System.Collections.Generic;
 
 namespace IdentityServer4.Models
 {
     /// <summary>
-    /// Models are resource (either identity resource or web api resource)
+    /// Models access to an API resource
     /// </summary>
     public class Scope
     {
@@ -15,16 +17,18 @@ namespace IdentityServer4.Models
         {
         }
 
-        public Scope(string name)
+        public Scope(string name, params string[] claimTypes)
         {
+            if (name.IsMissing()) throw new ArgumentNullException(nameof(name));
+
             Name = name;
             DisplayName = name;
-        }
 
-        /// <summary>
-        /// Indicates if scope is enabled and can be requested. Defaults to true.
-        /// </summary>
-        public bool Enabled { get; set; } = true;
+            foreach (var type in claimTypes)
+            {
+                UserClaims.Add(new UserClaim(type));
+            }
+        }
 
         /// <summary>
         /// Name of the scope. This is the value a client will use to request the scope.
