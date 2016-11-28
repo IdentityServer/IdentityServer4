@@ -68,10 +68,5 @@ namespace IdentityServer4.Models
         /// List of user claims that should be included in the identity token.
         /// </summary>
         public ICollection<UserClaim> UserClaims { get; set; } = new HashSet<UserClaim>();
-
-        /// <summary>
-        /// If enabled, all claims for the user will be included in the token. Defaults to false.
-        /// </summary>
-        public bool IncludeAllClaimsForUser { get; set; } = false;
     }
 }

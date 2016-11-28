@@ -59,27 +59,6 @@ namespace IdentityServer4.Services.Default
             
             var additionalClaims = new List<string>();
 
-            // if a include all claims rule exists, call the user service without a claims filter
-            if (resources.IdentityResources.IncludesAllClaimsForUserRule())
-            {
-                _logger.LogDebug("All claims rule found - emitting all claims for user.");
-
-                var context = new ProfileDataRequestContext(
-                    subject,
-                    client,
-                    IdentityServerConstants.ProfileDataCallers.ClaimsProviderIdentityToken);
-
-                await _profile.GetProfileDataAsync(context);
-                
-                var claims = FilterProtocolClaims(context.IssuedClaims);
-                if (claims != null)
-                {
-                    outputClaims.AddRange(claims);
-                }
-
-                return outputClaims;
-            }
-
             // fetch all identity claims that need to go into the id token
             foreach (var scope in resources.IdentityResources)
             {
@@ -173,27 +152,6 @@ namespace IdentityServer4.Services.Default
 
                 outputClaims.AddRange(GetStandardSubjectClaims(subject));
                 outputClaims.AddRange(GetOptionalClaims(subject));
-
-                // if a include all claims rule exists, call the user service without a claims filter
-                if (resources.ApiResources.IncludesAllClaimsForUserRule())
-                {
-                    _logger.LogDebug("All claims rule found - emitting all claims for user.");
-
-                    var context = new ProfileDataRequestContext(
-                        subject,
-                        client,
-                        IdentityServerConstants.ProfileDataCallers.ClaimsProviderAccessToken);
-
-                    await _profile.GetProfileDataAsync(context);
-
-                    var claims = FilterProtocolClaims(context.IssuedClaims);
-                    if (claims != null)
-                    {
-                        outputClaims.AddRange(claims);
-                    }
-
-                    return outputClaims;
-                }
 
                 // fetch all resource claims that need to go into the access token
                 var additionalClaims = new List<string>();

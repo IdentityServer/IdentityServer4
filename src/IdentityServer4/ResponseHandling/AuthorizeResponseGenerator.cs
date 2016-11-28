@@ -142,6 +142,7 @@ namespace IdentityServer4.ResponseHandling
                     Resources = request.ValidatedScopes.GrantedResources,
 
                     Nonce = request.Raw.Get(OidcConstants.AuthorizeRequest.Nonce),
+                    // if no access token is requested, then we need to include all the claims in the id token
                     IncludeAllIdentityClaims = !request.AccessTokenRequested,
                     AccessTokenToHash = accessTokenValue,
                     AuthorizationCodeToHash = authorizationCode

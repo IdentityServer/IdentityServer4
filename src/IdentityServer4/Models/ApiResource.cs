@@ -44,11 +44,6 @@ namespace IdentityServer4.Models
         public ICollection<Scope> Scopes { get; set; } = new HashSet<Scope>();
 
         /// <summary>
-        /// If enabled, all claims for the user will be included in the token. Defaults to false.
-        /// </summary>
-        public bool IncludeAllClaimsForUser { get; set; } = false;
-        
-        /// <summary>
         /// List of user claims that should be included in the access token.
         /// </summary>
         public ICollection<UserClaim> UserClaims { get; set; } = new HashSet<UserClaim>();
@@ -62,7 +57,6 @@ namespace IdentityServer4.Models
                 ApiSecrets = ApiSecrets,
                 Scopes = new HashSet<Scope>(scopes.ToArray()),
                 UserClaims = UserClaims,
-                IncludeAllClaimsForUser = IncludeAllClaimsForUser,
             };
         }
 

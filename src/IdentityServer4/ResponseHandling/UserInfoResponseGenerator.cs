@@ -37,32 +37,16 @@ namespace IdentityServer4.ResponseHandling
             
             var requestedClaimTypes = await GetRequestedClaimTypesAsync(scopes);
 
-            IEnumerable<Claim> profileClaims;
-            if (requestedClaimTypes.IncludeAllClaims)
-            {
-                _logger.LogDebug("Requested claim types: all");
+            _logger.LogDebug("Requested claim types: {claimTypes}", requestedClaimTypes.ClaimTypes.ToSpaceSeparatedString());
 
-                var context = new ProfileDataRequestContext(
-                    subject, 
-                    client,
-                    IdentityServerConstants.ProfileDataCallers.UserInfoEndpoint);
+            var context = new ProfileDataRequestContext(
+                subject,
+                client,
+                IdentityServerConstants.ProfileDataCallers.UserInfoEndpoint,
+                requestedClaimTypes.ClaimTypes);
 
-                await _profile.GetProfileDataAsync(context);
-                profileClaims = context.IssuedClaims;
-            }
-            else
-            {
-                _logger.LogDebug("Requested claim types: {claimTypes}", requestedClaimTypes.ClaimTypes.ToSpaceSeparatedString());
-
-                var context = new ProfileDataRequestContext(
-                    subject,
-                    client,
-                    IdentityServerConstants.ProfileDataCallers.UserInfoEndpoint,
-                    requestedClaimTypes.ClaimTypes);
-
-                await _profile.GetProfileDataAsync(context);
-                profileClaims = context.IssuedClaims;
-            }
+            await _profile.GetProfileDataAsync(context);
+            var profileClaims = context.IssuedClaims;
 
             List<Claim> results = new List<Claim>();
 
@@ -110,14 +94,6 @@ namespace IdentityServer4.ResponseHandling
                 
                 if (scopeDetail != null)
                 {
-                    if (scopeDetail.IncludeAllClaimsForUser)
-                    {
-                        return new RequestedClaimTypes
-                        {
-                            IncludeAllClaims = true
-                        };
-                    }
-
                     scopeClaims.AddRange(scopeDetail.UserClaims.Select(c => c.Type));
                 }
             }

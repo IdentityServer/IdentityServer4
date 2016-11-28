@@ -19,7 +19,6 @@ namespace IdentityServer4.Models
             ClaimTypes = claimTypes;
         }
 
-        public bool IncludeAllClaims { get; set; }
         public IEnumerable<string> ClaimTypes { get; set; }
     }
 }

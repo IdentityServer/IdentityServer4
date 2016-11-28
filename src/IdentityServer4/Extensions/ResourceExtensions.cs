@@ -10,18 +10,6 @@ namespace IdentityServer4.Models
 {
     internal static class ResourceExtensions
     {
-        [DebuggerStepThrough]
-        public static bool IncludesAllClaimsForUserRule(this IEnumerable<IdentityResource> identityResources)
-        {
-            return identityResources.Any(x => x.IncludeAllClaimsForUser);
-        }
-
-        [DebuggerStepThrough]
-        public static bool IncludesAllClaimsForUserRule(this IEnumerable<ApiResource> apiResources)
-        {
-            return apiResources.Any(x => x.IncludeAllClaimsForUser);
-        }
-
         public static IEnumerable<string> ToScopeNames(this Resources resources)
         {
             var scopes = from api in resources.ApiResources
