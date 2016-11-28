@@ -13,11 +13,11 @@ namespace IdentityServer4.Stores
     {
         public static async Task<Resources> FindResourcesAsync(this IResourceStore store, IEnumerable<string> names)
         {
-            var identity = await store.FindIdentityResourcesAsync(names);
+            var identity = await store.FindIdentityResourcesByScopeAsync(names);
             var api = await store.FindApiResourcesByScopeAsync(names);
             var resources = new Resources(identity, api)
             {
-                OfflineAccess = names.Contains(Constants.StandardScopes.OfflineAccess)
+                OfflineAccess = names.Contains(IdentityServerConstants.StandardScopes.OfflineAccess)
             };
             return resources;
         }
@@ -35,7 +35,7 @@ namespace IdentityServer4.Stores
 
         public async static Task<IEnumerable<IdentityResource>> FindEnabledIdentityResourcesAsync(this IResourceStore store, IEnumerable<string> names)
         {
-            return (await store.FindIdentityResourcesAsync(names)).Where(x => x.Enabled).ToArray();
+            return (await store.FindIdentityResourcesByScopeAsync(names)).Where(x => x.Enabled).ToArray();
         }
     }
 }

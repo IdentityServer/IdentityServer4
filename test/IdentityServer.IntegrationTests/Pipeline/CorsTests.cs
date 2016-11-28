@@ -48,9 +48,9 @@ namespace IdentityServer4.IntegrationTests.Pipeline
             });
 
             _pipeline.IdentityScopes.AddRange(new IdentityResource[] {
-                StandardScopes.OpenId,
-                StandardScopes.Profile,
-                StandardScopes.Email,
+                new IdentityResources.OpenId(),
+                new IdentityResources.Profile(),
+                new IdentityResources.Email(),
             });
             _pipeline.ApiScopes.AddRange(new ApiResource[] {
                 new ApiResource

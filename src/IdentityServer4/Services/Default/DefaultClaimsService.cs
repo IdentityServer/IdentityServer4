@@ -87,7 +87,7 @@ namespace IdentityServer4.Services.Default
                 {
                     if (includeAllIdentityClaims || scopeClaim.AlwaysIncludeInIdToken)
                     {
-                        additionalClaims.Add(scopeClaim.Name);
+                        additionalClaims.Add(scopeClaim.Type);
                     }
                 }
             }
@@ -166,7 +166,7 @@ namespace IdentityServer4.Services.Default
             {
                 if (resources.OfflineAccess)
                 {
-                    outputClaims.Add(new Claim(JwtClaimTypes.Scope, Constants.StandardScopes.OfflineAccess));
+                    outputClaims.Add(new Claim(JwtClaimTypes.Scope, IdentityServerConstants.StandardScopes.OfflineAccess));
                 }
 
                 _logger.LogDebug("Getting claims for access token for subject: {subject}", subject.GetSubjectId());
@@ -204,7 +204,7 @@ namespace IdentityServer4.Services.Default
                     {
                         foreach (var claim in api.UserClaims)
                         {
-                            additionalClaims.Add(claim.Name);
+                            additionalClaims.Add(claim.Type);
                         }
                     }
 
@@ -216,7 +216,7 @@ namespace IdentityServer4.Services.Default
                         {
                             foreach (var claim in scope.UserClaims)
                             {
-                                additionalClaims.Add(claim.Name);
+                                additionalClaims.Add(claim.Type);
                             }
                         }
                     }

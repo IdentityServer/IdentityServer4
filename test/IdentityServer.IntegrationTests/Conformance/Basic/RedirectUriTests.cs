@@ -46,7 +46,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Basic
                 }
             });
 
-            _mockPipeline.IdentityScopes.Add(StandardScopes.OpenId);
+            _mockPipeline.IdentityScopes.Add(new IdentityResources.OpenId());
 
             _mockPipeline.Users.Add(new InMemoryUser
             {

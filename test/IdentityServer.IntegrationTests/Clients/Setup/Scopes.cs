@@ -13,10 +13,10 @@ namespace IdentityServer4.IntegrationTests.Clients
         {
             return new IdentityResource[]
             {
-                StandardScopes.OpenId,
-                StandardScopes.Email,
-                StandardScopes.Address,
-                StandardScopes.Roles,
+                new IdentityResources.OpenId(),
+                new IdentityResources.Email(),
+                new IdentityResources.Address(),
+                new IdentityResource("roles", "role")
             };
         }
 
@@ -48,9 +48,9 @@ namespace IdentityServer4.IntegrationTests.Clients
                         new Scope
                         {
                             Name = "api4.with.roles",
-                            UserClaims = new List<ScopeClaim>
+                            UserClaims = new List<UserClaim>
                             {
-                                new ScopeClaim("role")
+                                new UserClaim("role")
                             }
                         }
                     }

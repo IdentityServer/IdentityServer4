@@ -11,6 +11,16 @@ namespace IdentityServer4.Models
     /// </summary>
     public class Scope
     {
+        public Scope()
+        {
+        }
+
+        public Scope(string name)
+        {
+            Name = name;
+            DisplayName = name;
+        }
+
         /// <summary>
         /// Indicates if scope is enabled and can be requested. Defaults to true.
         /// </summary>
@@ -49,6 +59,6 @@ namespace IdentityServer4.Models
         /// <summary>
         /// List of user claims that should be included in the access token.
         /// </summary>
-        public ICollection<ScopeClaim> UserClaims { get; set; } = new HashSet<ScopeClaim>();
+        public ICollection<UserClaim> UserClaims { get; set; } = new HashSet<UserClaim>();
     }
 }

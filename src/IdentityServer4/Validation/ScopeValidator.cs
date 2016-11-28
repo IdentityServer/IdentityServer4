@@ -46,10 +46,10 @@ namespace IdentityServer4.Validation
         {
             consentedScopes = consentedScopes ?? Enumerable.Empty<string>();
 
-            var offline = consentedScopes.Contains(Constants.StandardScopes.OfflineAccess);
+            var offline = consentedScopes.Contains(IdentityServerConstants.StandardScopes.OfflineAccess);
             if (offline)
             {
-                consentedScopes.Where(x => x != Constants.StandardScopes.OfflineAccess);
+                consentedScopes.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess);
             }
 
             var identityToKeep = GrantedResources.IdentityResources.Where(x => x.Required || consentedScopes.Contains(x.Name));
@@ -69,10 +69,10 @@ namespace IdentityServer4.Validation
 
         public async Task<bool> AreScopesValidAsync(IEnumerable<string> requestedScopes)
         {
-            if (requestedScopes.Contains(Constants.StandardScopes.OfflineAccess))
+            if (requestedScopes.Contains(IdentityServerConstants.StandardScopes.OfflineAccess))
             {
                 GrantedResources.OfflineAccess = true;
-                requestedScopes = requestedScopes.Where(x => x != Constants.StandardScopes.OfflineAccess).ToArray();
+                requestedScopes = requestedScopes.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess).ToArray();
             }
 
             var resources = await _store.FindResourcesAsync(requestedScopes);
@@ -147,14 +147,14 @@ namespace IdentityServer4.Validation
                 return true;
             }
 
-            if (requestedScopes.Contains(Constants.StandardScopes.OfflineAccess))
+            if (requestedScopes.Contains(IdentityServerConstants.StandardScopes.OfflineAccess))
             {
                 if (client.AllowOfflineAccess == false)
                 {
                     _logger.LogError("offline_access is not allowed for this client: {client}", client.ClientId);
                     return false;
                 }
-                requestedScopes = requestedScopes.Where(x => x != Constants.StandardScopes.OfflineAccess).ToArray();
+                requestedScopes = requestedScopes.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess).ToArray();
             }
 
             var resources = await _store.FindEnabledResourcesAsync(requestedScopes);

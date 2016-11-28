@@ -383,7 +383,7 @@ namespace IdentityServer4.Validation
 
             request.RequestedScopes = scope.FromSpaceSeparatedString().Distinct().ToList();
 
-            if (request.RequestedScopes.Contains(Constants.StandardScopes.OpenId))
+            if (request.RequestedScopes.Contains(IdentityServerConstants.StandardScopes.OpenId))
             {
                 request.IsOpenIdRequest = true;
             }

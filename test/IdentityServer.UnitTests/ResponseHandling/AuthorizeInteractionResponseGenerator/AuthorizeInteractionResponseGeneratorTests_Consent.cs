@@ -50,9 +50,9 @@ namespace IdentityServer4.UnitTests.ResponseHandling
         {
             return new IdentityResource[]
             {
-                StandardScopes.OpenId,
-                StandardScopes.Profile,
-                StandardScopes.Email,
+                new IdentityResources.OpenId(),
+                new IdentityResources.Profile(),
+                new IdentityResources.Email(),
             };
         }
 

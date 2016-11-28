@@ -26,7 +26,7 @@ namespace Host.Configuration
                     },
 
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    AllowedScopes = { "api1", "api2" },
+                    AllowedScopes = { "api1", "api2.read_only" },
                 },
 
                 ///////////////////////////////////////////
@@ -45,7 +45,7 @@ namespace Host.Configuration
                     },
 
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    AllowedScopes = { "api1", "api2" }
+                    AllowedScopes = { "api1", "api2.read_only" }
                 },
 
                 ///////////////////////////////////////////
@@ -60,7 +60,7 @@ namespace Host.Configuration
                     },
 
                     AllowedGrantTypes = GrantTypes.List("custom"),
-                    AllowedScopes = { "api1", "api2" }
+                    AllowedScopes = { "api1", "api2.read_only" }
                 },
 
                 ///////////////////////////////////////////
@@ -79,11 +79,9 @@ namespace Host.Configuration
                     AllowOfflineAccess = true,
                     AllowedScopes = 
                     {
-                        StandardScopes.OpenId.Name,
-                        StandardScopes.Email.Name,
-                        //StandardScopes.OfflineAccess.Name,
-
-                        "api1", "api2"
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        "custom.profile",
+                        "api1", "api2.read_only"
                     }
                 },
 
@@ -100,11 +98,9 @@ namespace Host.Configuration
                     AllowOfflineAccess = true,
                     AllowedScopes = 
                     {
-                        StandardScopes.OpenId.Name,
-                        StandardScopes.Email.Name,
-                        //StandardScopes.OfflineAccess.Name,
-
-                        "api1", "api2"
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Email,
+                        "api1", "api2.read_only"
                     }
                 },
 
@@ -126,13 +122,10 @@ namespace Host.Configuration
 
                     AllowedScopes =
                     {
-                        StandardScopes.OpenId.Name,
-                        StandardScopes.Profile.Name,
-                        StandardScopes.Email.Name,
-                        StandardScopes.Roles.Name,
-                        //StandardScopes.OfflineAccess.Name,
-
-                        "api1", "api2",
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
+                        "api1", "api2.read_only",
                     },
                 },
 
@@ -148,7 +141,7 @@ namespace Host.Configuration
                     },
 
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
-                    AllowedScopes = { "api1", "api2" },
+                    AllowedScopes = { "api1", "api2.read_only" },
 
                     AccessTokenType = AccessTokenType.Reference
                 },
@@ -171,12 +164,10 @@ namespace Host.Configuration
 
                     AllowedScopes =
                     {
-                        StandardScopes.OpenId.Name,
-                        StandardScopes.Profile.Name,
-                        StandardScopes.Email.Name,
-                        StandardScopes.Roles.Name,
-
-                        "api1", "api2"
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
+                        "api1", "api2.read_only"
                     },
                 },
 
@@ -195,7 +186,7 @@ namespace Host.Configuration
                     LogoutUri = "http://localhost:44077/signout-oidc",
                     PostLogoutRedirectUris = { "http://localhost:44077/" },
 
-                    AllowedScopes = { StandardScopes.OpenId.Name },
+                    AllowedScopes = { IdentityServerConstants.StandardScopes.OpenId },
                 },
 
                 ///////////////////////////////////////////
@@ -223,13 +214,10 @@ namespace Host.Configuration
 
                     AllowedScopes = 
                     {
-                        StandardScopes.OpenId.Name,
-                        StandardScopes.Profile.Name,
-                        StandardScopes.Email.Name,
-                        StandardScopes.Roles.Name,
-                        //StandardScopes.OfflineAccess.Name,
-
-                        "api1", "api2",
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
+                        "api1", "api2.read_only",
                     },
                 },
 
@@ -246,7 +234,7 @@ namespace Host.Configuration
                     AllowAccessTokensViaBrowser = true,
 
                     RedirectUris = { "http://localhost:28895/index.html" },
-                    AllowedScopes = { "api1", "api2" },
+                    AllowedScopes = { "api1", "api2.read_only" },
                 },
                 
                 ///////////////////////////////////////////
@@ -276,11 +264,10 @@ namespace Host.Configuration
 
                     AllowedScopes =
                     {
-                        StandardScopes.OpenId.Name,
-                        StandardScopes.Profile.Name,
-                        StandardScopes.Email.Name,
-                        StandardScopes.Roles.Name,
-                        "api1", "api2"
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
+                        "api1", "api2.read_only"
                     },
                 },
             };

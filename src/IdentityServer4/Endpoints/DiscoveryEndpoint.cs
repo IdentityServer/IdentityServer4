@@ -99,7 +99,7 @@ namespace IdentityServer4.Endpoints
                                 where scope.ShowInDiscoveryDocument
                                 select scope.Name;
                 scopes.AddRange(apiScopes);
-                scopes.Add(Constants.StandardScopes.OfflineAccess);
+                scopes.Add(IdentityServerConstants.StandardScopes.OfflineAccess);
             }
 
             if (scopes.Any())
@@ -112,8 +112,8 @@ namespace IdentityServer4.Endpoints
             {
                 var claims = new List<string>();
 
-                claims.AddRange(resources.IdentityResources.SelectMany(x => x.UserClaims).Select(x => x.Name));
-                claims.AddRange(resources.ApiResources.SelectMany(x => x.UserClaims).Select(x => x.Name));
+                claims.AddRange(resources.IdentityResources.SelectMany(x => x.UserClaims).Select(x => x.Type));
+                claims.AddRange(resources.ApiResources.SelectMany(x => x.UserClaims).Select(x => x.Type));
 
                 document.claims_supported = claims.Distinct().ToArray();
             }

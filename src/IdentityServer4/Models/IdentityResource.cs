@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IdentityServer4.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,6 +11,24 @@ namespace IdentityServer4.Models
     /// </summary>
     public class IdentityResource
     {
+        public IdentityResource()
+        {
+        }
+
+        public IdentityResource(string name, params string[] claimTypes)
+        {
+            if (name.IsMissing()) throw new ArgumentNullException(nameof(name));
+            if (claimTypes.IsNullOrEmpty()) throw new ArgumentException("Must provide at least one claim type", nameof(claimTypes));
+
+            Name = name;
+            DisplayName = name;
+
+            foreach(var type in claimTypes)
+            {
+                UserClaims.Add(new UserClaim(type));
+            }
+        }
+
         /// <summary>
         /// Indicates if scope is enabled and can be requested. Defaults to true.
         /// </summary>
@@ -48,16 +67,11 @@ namespace IdentityServer4.Models
         /// <summary>
         /// List of user claims that should be included in the identity token.
         /// </summary>
-        public ICollection<ScopeClaim> UserClaims { get; set; } = new HashSet<ScopeClaim>();
+        public ICollection<UserClaim> UserClaims { get; set; } = new HashSet<UserClaim>();
 
         /// <summary>
         /// If enabled, all claims for the user will be included in the token. Defaults to false.
         /// </summary>
         public bool IncludeAllClaimsForUser { get; set; } = false;
-
-        /// <summary>
-        /// Rule for determining which claims should be included in the token (this is implementation specific)
-        /// </summary>
-        public string ClaimsRule { get; set; }
     }
 }

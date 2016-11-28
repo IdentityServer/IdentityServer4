@@ -624,7 +624,7 @@ namespace IdentityServer4.Validation
                 {
                     if (_validatedRequest.Client.AllowOfflineAccess)
                     {
-                        clientAllowedScopes.Add(Constants.StandardScopes.OfflineAccess);
+                        clientAllowedScopes.Add(IdentityServerConstants.StandardScopes.OfflineAccess);
                     }
                     scopes = clientAllowedScopes.ToSpaceSeparatedString();
                     _logger.LogTrace("Defaulting to: {scopes}", scopes);

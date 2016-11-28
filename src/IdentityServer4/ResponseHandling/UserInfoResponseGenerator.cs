@@ -118,7 +118,7 @@ namespace IdentityServer4.ResponseHandling
                         };
                     }
 
-                    scopeClaims.AddRange(scopeDetail.UserClaims.Select(c => c.Name));
+                    scopeClaims.AddRange(scopeDetail.UserClaims.Select(c => c.Type));
                 }
             }
 

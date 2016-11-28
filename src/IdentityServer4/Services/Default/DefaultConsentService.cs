@@ -70,7 +70,7 @@ namespace IdentityServer4.Services.Default
 
             // we always require consent for offline access if
             // the client has not disabled RequireConsent 
-            if (scopes.Contains(Constants.StandardScopes.OfflineAccess))
+            if (scopes.Contains(IdentityServerConstants.StandardScopes.OfflineAccess))
             {
                 return true;
             }

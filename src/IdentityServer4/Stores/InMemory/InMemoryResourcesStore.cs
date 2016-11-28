@@ -42,7 +42,7 @@ namespace IdentityServer4.Stores.InMemory
             return Task.FromResult(api.FirstOrDefault());
         }
 
-        public Task<IEnumerable<IdentityResource>> FindIdentityResourcesAsync(IEnumerable<string> names)
+        public Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeAsync(IEnumerable<string> names)
         {
             if (names == null) throw new ArgumentNullException(nameof(names));
 

@@ -71,13 +71,13 @@ namespace IdentityServer4.Stores
             return api;
         }
 
-        public async Task<IEnumerable<IdentityResource>> FindIdentityResourcesAsync(IEnumerable<string> names)
+        public async Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeAsync(IEnumerable<string> names)
         {
             var key = GetKey(names);
 
             var identities = await _identityCache.GetAsync(key,
                 _options.CachingOptions.ScopeStoreExpiration,
-                () => _inner.FindIdentityResourcesAsync(names),
+                () => _inner.FindIdentityResourcesByScopeAsync(names),
                 _logger);
 
             return identities;

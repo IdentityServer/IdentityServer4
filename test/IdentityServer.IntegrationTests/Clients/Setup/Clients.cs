@@ -78,11 +78,10 @@ namespace IdentityServer4.IntegrationTests.Clients
                     AllowOfflineAccess = true,
                     AllowedScopes = 
                     {
-                        StandardScopes.OpenId.Name,
-                        StandardScopes.Email.Name,
-                        StandardScopes.Address.Name,
-                        StandardScopes.Roles.Name,
-
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Email,
+                        IdentityServerConstants.StandardScopes.Address,
+                        "roles",
                         "api1", "api2", "api4.with.roles"
                     }
                 },

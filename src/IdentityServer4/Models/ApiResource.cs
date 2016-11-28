@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IdentityServer4.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,6 +11,18 @@ namespace IdentityServer4.Models
     /// </summary>
     public class ApiResource
     {
+        public ApiResource()
+        {
+        }
+
+        public ApiResource(string scopeName)
+        {
+            if (scopeName.IsMissing()) throw new ArgumentNullException(nameof(scopeName));
+
+            Name = scopeName;
+            Scopes.Add(new Scope(scopeName));
+        }
+
         /// <summary>
         /// Specifies if API is enabled (defaults to true)
         /// </summary>
@@ -38,12 +51,7 @@ namespace IdentityServer4.Models
         /// <summary>
         /// List of user claims that should be included in the access token.
         /// </summary>
-        public ICollection<ScopeClaim> UserClaims { get; set; } = new HashSet<ScopeClaim>();
-
-        /// <summary>
-        /// Rule for determining which claims should be included in the token (this is implementation specific)
-        /// </summary>
-        public string ClaimsRule { get; set; }
+        public ICollection<UserClaim> UserClaims { get; set; } = new HashSet<UserClaim>();
 
         internal ApiResource CloneWithScopes(IEnumerable<Scope> scopes)
         {
@@ -55,7 +63,6 @@ namespace IdentityServer4.Models
                 Scopes = new HashSet<Scope>(scopes.ToArray()),
                 UserClaims = UserClaims,
                 IncludeAllClaimsForUser = IncludeAllClaimsForUser,
-                ClaimsRule = ClaimsRule
             };
         }
 

@@ -27,7 +27,7 @@ namespace IdentityServer4.Quickstart.UI.Models
             if (resources.OfflineAccess)
             {
                 ResourceScopes = ResourceScopes.Union(new ScopeViewModel[] {
-                    ScopeViewModel.GetOfflineAccess(ScopesConsented.Contains("offline_access") || model == null)
+                    ScopeViewModel.GetOfflineAccess(ScopesConsented.Contains(IdentityServerConstants.StandardScopes.OfflineAccess) || model == null)
                 });
             }
         }
@@ -47,7 +47,7 @@ namespace IdentityServer4.Quickstart.UI.Models
         {
             return new ScopeViewModel
             {
-                Name = "offline_access",
+                Name = IdentityServerConstants.StandardScopes.OfflineAccess,
                 DisplayName = "Offline Access",
                 Description = "Access to your applications and resources, even when you are offline",
                 Emphasize = true,

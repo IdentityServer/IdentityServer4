@@ -66,7 +66,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
             });
 
             _mockPipeline.IdentityScopes.AddRange(new IdentityResource[] {
-                StandardScopes.OpenId
+                new IdentityResources.OpenId()
             });
 
             _mockPipeline.Initialize();

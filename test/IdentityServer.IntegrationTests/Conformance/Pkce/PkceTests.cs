@@ -44,7 +44,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
                         new Claim("role", "Attorney"),
                 }
             });
-            _pipeline.IdentityScopes.Add(StandardScopes.OpenId);
+            _pipeline.IdentityScopes.Add(new IdentityResources.OpenId());
             _pipeline.Clients.Add(client = new Client
             {
                 Enabled = true,
@@ -102,7 +102,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
             var code_challenge = code_verifier;
             var authorizeResponse = await _pipeline.RequestAuthorizationEndpointAsync(client_id,
                 response_type,
-                Constants.StandardScopes.OpenId,
+                IdentityServerConstants.StandardScopes.OpenId,
                 redirect_uri,
                 nonce: nonce,
                 codeChallenge: code_challenge,
@@ -122,7 +122,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
             var code_challenge = code_verifier;
             var authorizeResponse = await _pipeline.RequestAuthorizationEndpointAsync(client_id_plain,
                 response_type,
-                Constants.StandardScopes.OpenId,
+                IdentityServerConstants.StandardScopes.OpenId,
                 redirect_uri,
                 nonce: nonce,
                 codeChallenge: code_challenge,
@@ -152,7 +152,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
             var code_challenge = Sha256OfCodeVerifier(code_verifier);
             var authorizeResponse = await _pipeline.RequestAuthorizationEndpointAsync(client_id,
                 response_type,
-                Constants.StandardScopes.OpenId,
+                IdentityServerConstants.StandardScopes.OpenId,
                 redirect_uri,
                 nonce: nonce,
                 codeChallenge: code_challenge,
@@ -181,7 +181,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
             var code_challenge = code_verifier;
             var authorizeResponse = await _pipeline.RequestAuthorizationEndpointAsync(client_id,
                 response_type,
-                Constants.StandardScopes.OpenId,
+                IdentityServerConstants.StandardScopes.OpenId,
                 redirect_uri,
                 nonce: nonce);
 
@@ -200,7 +200,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
             var code_challenge = code_verifier;
             var authorizeResponse = await _pipeline.RequestAuthorizationEndpointAsync(client_id,
                 response_type,
-                Constants.StandardScopes.OpenId,
+                IdentityServerConstants.StandardScopes.OpenId,
                 redirect_uri,
                 nonce: nonce,
                 codeChallenge:"a");
@@ -219,7 +219,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
             var code_challenge = code_verifier;
             var authorizeResponse = await _pipeline.RequestAuthorizationEndpointAsync(client_id,
                 response_type,
-                Constants.StandardScopes.OpenId,
+                IdentityServerConstants.StandardScopes.OpenId,
                 redirect_uri,
                 nonce: nonce,
                 codeChallenge: new string('a', _pipeline.Options.InputLengthRestrictions.CodeChallengeMaxLength + 1)
@@ -238,7 +238,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
             var code_challenge = code_verifier;
             var authorizeResponse = await _pipeline.RequestAuthorizationEndpointAsync(client_id,
                 response_type,
-                Constants.StandardScopes.OpenId,
+                IdentityServerConstants.StandardScopes.OpenId,
                 redirect_uri,
                 nonce: nonce,
                 codeChallenge: code_challenge,
@@ -260,7 +260,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
             var code_challenge = code_verifier;
             var authorizeResponse = await _pipeline.RequestAuthorizationEndpointAsync(client_id_plain,
                 response_type,
-                Constants.StandardScopes.OpenId,
+                IdentityServerConstants.StandardScopes.OpenId,
                 redirect_uri,
                 nonce: nonce,
                 codeChallenge: code_challenge,
@@ -287,7 +287,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
             var code_challenge = code_verifier;
             var authorizeResponse = await _pipeline.RequestAuthorizationEndpointAsync(client_id_plain,
                 response_type,
-                Constants.StandardScopes.OpenId,
+                IdentityServerConstants.StandardScopes.OpenId,
                 redirect_uri,
                 nonce: nonce,
                 codeChallenge: code_challenge,
@@ -315,7 +315,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
             var code_challenge = code_verifier;
             var authorizeResponse = await _pipeline.RequestAuthorizationEndpointAsync(client_id_plain,
                 response_type,
-                Constants.StandardScopes.OpenId,
+                IdentityServerConstants.StandardScopes.OpenId,
                 redirect_uri,
                 nonce: nonce,
                 codeChallenge: code_challenge,
@@ -343,7 +343,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
             var code_challenge = code_verifier;
             var authorizeResponse = await _pipeline.RequestAuthorizationEndpointAsync(client_id_plain,
                 response_type,
-                Constants.StandardScopes.OpenId,
+                IdentityServerConstants.StandardScopes.OpenId,
                 redirect_uri,
                 nonce: nonce,
                 codeChallenge: code_challenge,
