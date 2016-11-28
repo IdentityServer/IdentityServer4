@@ -15,13 +15,18 @@ namespace IdentityServer4.Models
         {
         }
 
-        public IdentityResource(string name, params string[] claimTypes)
+        public IdentityResource(string name, IEnumerable<string> claimTypes)
+            : this(name, name, claimTypes)
+        {
+        }
+
+        public IdentityResource(string name, string displayName, IEnumerable<string> claimTypes)
         {
             if (name.IsMissing()) throw new ArgumentNullException(nameof(name));
             if (claimTypes.IsNullOrEmpty()) throw new ArgumentException("Must provide at least one claim type", nameof(claimTypes));
 
             Name = name;
-            DisplayName = name;
+            DisplayName = displayName;
 
             foreach(var type in claimTypes)
             {

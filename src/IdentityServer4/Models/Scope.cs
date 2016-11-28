@@ -17,16 +17,34 @@ namespace IdentityServer4.Models
         {
         }
 
-        public Scope(string name, params string[] claimTypes)
+        public Scope(string name)
+            : this(name, name, null)
+        {
+        }
+
+        public Scope(string name, string description)
+            : this(name, description, null)
+        {
+        }
+
+        public Scope(string name, IEnumerable<string> claimTypes)
+            : this(name, name, claimTypes)
+        {
+        }
+
+        public Scope(string name, string description, IEnumerable<string> claimTypes)
         {
             if (name.IsMissing()) throw new ArgumentNullException(nameof(name));
 
             Name = name;
             DisplayName = name;
 
-            foreach (var type in claimTypes)
+            if (claimTypes != null)
             {
-                UserClaims.Add(new UserClaim(type));
+                foreach (var type in claimTypes)
+                {
+                    UserClaims.Add(new UserClaim(type));
+                }
             }
         }
 

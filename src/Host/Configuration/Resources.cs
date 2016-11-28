@@ -20,7 +20,7 @@ namespace Host.Configuration
                 new IdentityResources.Email(),
 
                 // custom identity resource with some consolidated claims
-                new IdentityResource("custom.profile", JwtClaimTypes.Name, JwtClaimTypes.Email, "location")
+                new IdentityResource("custom.profile", new[] {JwtClaimTypes.Name, JwtClaimTypes.Email, "location" })
             };
         }
 
@@ -56,7 +56,7 @@ namespace Host.Configuration
                         new Scope()
                         {
                             Name = "api2.full_access",
-                            DisplayName = "Full access to API 2"
+                            DisplayName = "Full access to API 2",
                         },
                         new Scope
                         {

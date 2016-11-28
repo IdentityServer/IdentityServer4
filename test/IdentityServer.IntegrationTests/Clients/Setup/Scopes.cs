@@ -16,7 +16,7 @@ namespace IdentityServer4.IntegrationTests.Clients
                 new IdentityResources.OpenId(),
                 new IdentityResources.Email(),
                 new IdentityResources.Address(),
-                new IdentityResource("roles", "role")
+                new IdentityResource("roles", new[] { "role" })
             };
         }
 
