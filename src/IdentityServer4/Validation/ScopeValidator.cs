@@ -33,6 +33,7 @@ namespace IdentityServer4.Validation
         {
             var identity = RequestedResources.IdentityResources.Where(x => x.Required).Select(x=>x.Name);
             var apiQuery = from api in RequestedResources.ApiResources
+                           where api.Scopes != null
                            from scope in api.Scopes
                            where scope.Required
                            select scope.Name;
@@ -53,6 +54,7 @@ namespace IdentityServer4.Validation
 
             var identityToKeep = GrantedResources.IdentityResources.Where(x => x.Required || consentedScopes.Contains(x.Name));
             var apisToKeep = from api in GrantedResources.ApiResources
+                             where api.Scopes != null
                              let scopesToKeep = (from scope in api.Scopes
                                                  where scope.Required == true || consentedScopes.Contains(scope.Name)
                                                  select scope)
@@ -104,6 +106,12 @@ namespace IdentityServer4.Validation
                     }
 
                     var scope = api.FindApiScope(requestedScope);
+
+                    if (scope == null)
+                    {
+                        _logger.LogError("Invalid scope: {requestedScope}", requestedScope);
+                        return false;
+                    }
 
                     if (scope.Enabled == false)
                     {

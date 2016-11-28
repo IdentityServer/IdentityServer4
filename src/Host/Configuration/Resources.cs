@@ -3,22 +3,26 @@
 
 
 using IdentityServer4.Models;
+using System.Collections.Generic;
 
 namespace Host.Configuration
 {
-    public class Scopes
+    public class Resources
     {
-        public static Resources GetResources()
+        public static IEnumerable<IdentityResource> GetIdentityResources()
         {
-            var identity = new IdentityResource[]
+            return new IdentityResource[]
             {
                 StandardScopes.OpenId,
                 StandardScopes.ProfileAlwaysInclude,
                 StandardScopes.EmailAlwaysInclude,
                 StandardScopes.RolesAlwaysInclude,
             };
+        }
 
-            var api = new ApiResource[]
+        public static IEnumerable<ApiResource> GetApiResources()
+        {
+            return new ApiResource[]
             {
                 new ApiResource
                 {
@@ -55,8 +59,6 @@ namespace Host.Configuration
                     }
                 }
             };
-
-            return new Resources(identity, api);
         }
     }
 }

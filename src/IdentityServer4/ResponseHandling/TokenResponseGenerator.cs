@@ -136,6 +136,10 @@ namespace IdentityServer4.ResponseHandling
             
             if (request.Client.UpdateAccessTokenClaimsOnRefresh)
             {
+                // TODO: we don't seem to update the request.RefreshToken.AccessToken with the newly created one. do we need to?
+                // what change in behavior would we introduce by doing that? the claims in the user would change over time for the 
+                // call into IsActive.
+
                 var subject = request.RefreshToken.Subject;
 
                 var creationRequest = new TokenCreationRequest
@@ -160,11 +164,11 @@ namespace IdentityServer4.ResponseHandling
             var handle = await _refreshTokenService.UpdateRefreshTokenAsync(request.RefreshTokenHandle, request.RefreshToken, request.Client);
 
             return new TokenResponse
-                {
-                    AccessToken = accessTokenString,
-                    AccessTokenLifetime = request.Client.AccessTokenLifetime,
-                    RefreshToken = handle
-                };
+            {
+                AccessToken = accessTokenString,
+                AccessTokenLifetime = request.Client.AccessTokenLifetime,
+                RefreshToken = handle
+            };
         }
 
         private async Task<Tuple<string, string>> CreateAccessTokenAsync(ValidatedTokenRequest request)

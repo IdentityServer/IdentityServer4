@@ -116,6 +116,6 @@ namespace IdentityServer4.Models
         /// <value>
         /// The scopes.
         /// </value>
-        public IEnumerable<string> Scopes => RequestedScopes;
+        public IEnumerable<string> Scopes => RequestedScopes; // TODO: do we need this? redundant w/ RequestedScopes
     }
 }

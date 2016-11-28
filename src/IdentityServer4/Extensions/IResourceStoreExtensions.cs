@@ -32,5 +32,10 @@ namespace IdentityServer4.Stores
             var resources = await store.GetAllResources();
             return resources.FilterEnabled();
         }
+
+        public async static Task<IEnumerable<IdentityResource>> FindEnabledIdentityResourcesAsync(this IResourceStore store, IEnumerable<string> names)
+        {
+            return (await store.FindIdentityResourcesAsync(names)).Where(x => x.Enabled).ToArray();
+        }
     }
 }
