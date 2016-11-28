@@ -15,12 +15,17 @@ namespace IdentityServer4.Models
         {
         }
 
-        public ApiResource(string scopeName)
+        public ApiResource(string scopeName, params string[] claimTypes)
         {
             if (scopeName.IsMissing()) throw new ArgumentNullException(nameof(scopeName));
 
             Name = scopeName;
             Scopes.Add(new Scope(scopeName));
+
+            foreach (var type in claimTypes)
+            {
+                UserClaims.Add(new UserClaim(type));
+            }
         }
 
         /// <summary>
