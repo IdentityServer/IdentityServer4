@@ -45,7 +45,7 @@ Add IdentityServer packages
 
 Add the ``IdentityServer4.AspNetIdentity`` package to `project.json`::
 
-    "IdentityServer4.AspNetIdentity": "1.0.0-rc3"
+    "IdentityServer4.AspNetIdentity": "1.0.0-rc4"
 
 
 Scopes and Clients Configuration
@@ -73,13 +73,13 @@ We've not yet copied over the consent code from the prior IdentityServer project
         RedirectUris           = { "http://localhost:5002/signin-oidc" },
         PostLogoutRedirectUris = { "http://localhost:5002" },
 
-        AllowedScopes = 
+        AllowedScopes =
         {
-            StandardScopes.OpenId.Name,
-            StandardScopes.Profile.Name,
-            StandardScopes.OfflineAccess.Name,
+            IdentityServerConstants.StandardScopes.OpenId,
+            IdentityServerConstants.StandardScopes.Profile,
             "api1"
-        }
+        },
+        AllowOfflineAccess = true
     }
 
 Configure IdentityServer
@@ -112,7 +112,8 @@ The ``AddAspNetIdentity`` extension method requires a generic parameter which is
         // Adds IdentityServer
         services.AddIdentityServer()
             .AddTemporarySigningCredential()
-            .AddInMemoryScopes(Config.GetScopes())
+            .AddInMemoryIdentityResources(Config.GetIdentityResources())
+            .AddInMemoryApiResources(Config.GetApiResources())
             .AddInMemoryClients(Config.GetClients())
             .AddAspNetIdentity<ApplicationUser>();
     }

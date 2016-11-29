@@ -15,7 +15,7 @@ These stores are modeled with interfaces, and we provide an EF implementation of
 
 Get started by adding a reference to the `IdentityServer4.EntityFramework` Nuget package in `project.json` in the IdentityServer project:: 
 
-    "IdentityServer4.EntityFramework": "1.0.0-rc3"
+    "IdentityServer4.EntityFramework": "1.0.0-rc4"
 
 Adding SqlServer
 ^^^^^^^^^^^^^^^^
@@ -118,11 +118,20 @@ In `Startup.cs` add this method to help initialize the database::
                 context.SaveChanges();
             }
 
-            if (!context.Scopes.Any())
+            if (!context.IdentityResources.Any())
             {
-                foreach (var scope in Config.GetScopes())
+                foreach (var resource in Config.GetIdentityResources())
                 {
-                    context.Scopes.Add(scope.ToEntity());
+                    context.IdentityResources.Add(resource.ToEntity());
+                }
+                context.SaveChanges();
+            }
+
+            if (!context.ApiResources.Any())
+            {
+                foreach (var resource in Config.GetApiResources())
+                {
+                    context.ApiResources.Add(resource.ToEntity());
                 }
                 context.SaveChanges();
             }
