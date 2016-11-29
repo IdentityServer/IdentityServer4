@@ -20,26 +20,26 @@ namespace IdentityServer4.Models
         {
         }
 
-        public ApiResource(string scopeName, string scopeDescription)
-            : this(scopeName, scopeDescription, null)
+        public ApiResource(string scopeName, string displayName)
+            : this(scopeName, displayName, null)
         {
         }
 
-        public ApiResource(string scopeName, IEnumerable<string> claimTypes)
-            : this(scopeName, scopeName, claimTypes)
+        public ApiResource(string scopeName, IEnumerable<string> userClaimTypes)
+            : this(scopeName, scopeName, userClaimTypes)
         {
         }
 
-        public ApiResource(string scopeName, string scopeDescription, IEnumerable<string> claimTypes)
+        public ApiResource(string scopeName, string displayName, IEnumerable<string> userClaimTypes)
         {
             if (scopeName.IsMissing()) throw new ArgumentNullException(nameof(scopeName));
 
             Name = scopeName;
-            Scopes.Add(new Scope(scopeName, scopeDescription));
+            Scopes.Add(new Scope(scopeName, displayName));
 
-            if (claimTypes != null)
+            if (!userClaimTypes.IsNullOrEmpty())
             {
-                foreach (var type in claimTypes)
+                foreach (var type in userClaimTypes)
                 {
                     UserClaims.Add(new UserClaim(type));
                 }

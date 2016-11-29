@@ -20,7 +20,7 @@ namespace Host.Configuration
                 new IdentityResources.Email(),
 
                 // custom identity resource with some consolidated claims
-                new IdentityResource("custom.profile", new[] {JwtClaimTypes.Name, JwtClaimTypes.Email, "location" })
+                new IdentityResource("custom.profile", new[] { JwtClaimTypes.Name, JwtClaimTypes.Email, "location" })
             };
         }
 
