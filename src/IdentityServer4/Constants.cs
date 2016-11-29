@@ -17,6 +17,7 @@ namespace IdentityServer4
         public const string ExternalAuthenticationMethod     = "external";
         public const string AccessTokenAudience              = "{0}resources";
         public const string DefaultHashAlgorithm             = "SHA256";
+        public const string DefaultSessionCookieName         = "idsvr.session";
 
         public static readonly TimeSpan DefaultCookieTimeSpan = TimeSpan.FromHours(10);
         public static readonly TimeSpan DefaultCacheDuration  = TimeSpan.FromMinutes(5);
