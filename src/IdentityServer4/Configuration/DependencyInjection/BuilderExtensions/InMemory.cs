@@ -31,21 +31,6 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Adds the in memory resources.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <param name="resources">The resources.</param>
-        /// <returns></returns>
-        public static IIdentityServerBuilder AddInMemoryResources(this IIdentityServerBuilder builder, Resources resources)
-        {
-            builder.Services.AddSingleton<IEnumerable<IdentityResource>>(resources.IdentityResources);
-            builder.Services.AddSingleton<IEnumerable<ApiResource>>(resources.ApiResources);
-            builder.Services.TryAddTransient<IResourceStore, InMemoryResourcesStore>();
-
-            return builder;
-        }
-
-        /// <summary>
         /// Adds the in memory identity resources.
         /// </summary>
         /// <param name="builder">The builder.</param>
@@ -54,7 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IIdentityServerBuilder AddInMemoryIdentityResources(this IIdentityServerBuilder builder, IEnumerable<IdentityResource> identityResources)
         {
             builder.Services.AddSingleton(identityResources);
-            builder.Services.AddTransient<IResourceStore, InMemoryResourcesStore>();
+            builder.Services.TryAddTransient<IResourceStore, InMemoryResourcesStore>();
 
             return builder;
         }
@@ -68,7 +53,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IIdentityServerBuilder AddInMemoryApiResources(this IIdentityServerBuilder builder, IEnumerable<ApiResource> apiResources)
         {
             builder.Services.AddSingleton(apiResources);
-            builder.Services.AddTransient<IResourceStore, InMemoryResourcesStore>();
+            builder.Services.TryAddTransient<IResourceStore, InMemoryResourcesStore>();
 
             return builder;
         }
