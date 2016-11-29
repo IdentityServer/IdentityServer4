@@ -5,7 +5,9 @@
 using IdentityModel;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
+using IdentityServer4.Configuration;
 using Microsoft.AspNetCore.Http.Features.Authentication;
+using Microsoft.Extensions.DependencyInjection;
 using IdentityServer4.Extensions;
 
 namespace IdentityServer4.Services.Default
@@ -60,7 +62,8 @@ namespace IdentityServer4.Services.Default
         public string GetCookieName()
         {
             // TODO: fix from config?
-            return "idsvr.session";
+            var options = _context.RequestServices.GetRequiredService<IdentityServerOptions>();
+            return $"{options.AuthenticationOptions.EffectiveAuthenticationScheme}.session";
         }
 
         public string GetCookieValue()
