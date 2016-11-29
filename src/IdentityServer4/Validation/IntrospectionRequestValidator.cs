@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
 
 namespace IdentityServer4.Validation
 {
@@ -22,7 +23,7 @@ namespace IdentityServer4.Validation
             _logger = logger;
         }
 
-        public async Task<IntrospectionRequestValidationResult> ValidateAsync(NameValueCollection parameters, Scope scope)
+        public async Task<IntrospectionRequestValidationResult> ValidateAsync(NameValueCollection parameters, ApiResource apiResource)
         {
             _logger.LogDebug("Introspection request validation started.");
 
@@ -53,14 +54,15 @@ namespace IdentityServer4.Validation
                 return fail;
             }
 
-            // check expected scope
-            var expectedScope = tokenValidationResult.Claims.FirstOrDefault(
-                c => c.Type == JwtClaimTypes.Scope && c.Value == scope.Name);
+            // check expected scopes
+            var supportedScopes = apiResource.Scopes.Select(x => x.Name);
+            var expectedScopes = tokenValidationResult.Claims.Where(
+                c => c.Type == JwtClaimTypes.Scope && supportedScopes.Contains(c.Value));
 
             // expected scope not present
-            if (expectedScope == null)
+            if (!expectedScopes.Any())
             {
-                _logger.LogError("Expected scope of {scope} is missing", scope.Name);
+                _logger.LogError("Expected scope {scopes} is missing in token", supportedScopes);
 
                 fail.IsActive = false;
                 fail.IsError = true;
@@ -68,6 +70,8 @@ namespace IdentityServer4.Validation
                 fail.Token = token;
                 return fail;
             }
+
+            // TODO: filter out the scope claims this API is not allowed to see?
 
             // all is good
             var success = new IntrospectionRequestValidationResult

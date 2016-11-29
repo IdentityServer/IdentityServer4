@@ -36,7 +36,7 @@ namespace Microsoft.AspNetCore.Builder
             // todo: which other services to test for?
             app.TestService(typeof(IPersistedGrantStore), logger, "No storage mechanism for grants specified. Use the 'AddInMemoryPersistedGrants' extension method to register a development version.");
             app.TestService(typeof(IClientStore), logger, "No storage mechanism for clients specified. Use the 'AddInMemoryClients' extension method to register a development version.");
-            app.TestService(typeof(IScopeStore), logger, "No storage mechanism for scopes specified. Use the 'AddInMemoryScopes' extension method to register a development version.");
+            app.TestService(typeof(IResourceStore), logger, "No storage mechanism for resources specified. Use the 'AddInMemoryResources' extension method to register a development version.");
 
             var persistedGrants = app.ApplicationServices.GetService(typeof(IPersistedGrantStore));
             if (persistedGrants.GetType().FullName == typeof(InMemoryPersistedGrantStore).FullName)

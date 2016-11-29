@@ -14,7 +14,7 @@ quickstart IdentityServer, and that's why we show it.
 
 Adding users
 ^^^^^^^^^^^^
-Just like there are in-memory stores for scopes and clients, there is also one for users.
+Just like there are in-memory stores for resources (aka scopes) and clients, there is also one for users.
 
 .. note:: Check the ASP.NET Identity based quickstarts for more information on how to properly store and manage user accounts.
 
@@ -47,7 +47,7 @@ Then register the in-memory users with IdentityServer::
         // configure identity server with in-memory stores, keys, clients and scopes
         services.AddIdentityServer()
             .AddTemporarySigningCredential()
-            .AddInMemoryScopes(Config.GetScopes())
+            .AddInMemoryApiResources(Config.GetApiResources())
             .AddInMemoryClients(Config.GetClients())
             .AddInMemoryUsers(Config.GetUsers());
     }

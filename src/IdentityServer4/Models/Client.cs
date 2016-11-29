@@ -134,7 +134,15 @@ namespace IdentityServer4.Models
         public bool AllowAccessToAllScopes { get; set; } = false;
 
         /// <summary>
-        /// Specifies the scopes that the client is allowed to request. If empty, the client can't access any scope
+        /// Gets or sets a value indicating whether [allow offline access].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [allow offline access]; otherwise, <c>false</c>.
+        /// </value>
+        public bool AllowOfflineAccess { get; set; } = false;
+
+        /// <summary>
+        /// Specifies the api scopes that the client is allowed to request. If empty, the client can't access any scope
         /// </summary>
         public ICollection<string> AllowedScopes { get; set; } = new HashSet<string>();
 

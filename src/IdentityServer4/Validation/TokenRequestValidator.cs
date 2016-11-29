@@ -513,7 +513,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             if (!_validatedRequest.Client.AllowAccessToAllScopes)
             {
-                if (!_validatedRequest.Client.AllowedScopes.Contains(Constants.StandardScopes.OfflineAccess))
+                if (!_validatedRequest.Client.AllowOfflineAccess)
                 {
                     LogError("{clientId} does not have access to offline_access scope anymore", _validatedRequest.Client.ClientId);
                     var error = "Client does not have access to offline_access scope anymore";
@@ -619,9 +619,14 @@ namespace IdentityServer4.Validation
             {
                 _logger.LogTrace("Client provided no scopes - checking allowed scopes list");
 
-                if (!_validatedRequest.Client.AllowedScopes.IsNullOrEmpty())
+                var clientAllowedScopes = _validatedRequest.Client.AllowedScopes;
+                if (!clientAllowedScopes.IsNullOrEmpty())
                 {
-                    scopes = _validatedRequest.Client.AllowedScopes.ToSpaceSeparatedString();
+                    if (_validatedRequest.Client.AllowOfflineAccess)
+                    {
+                        clientAllowedScopes.Add(IdentityServerConstants.StandardScopes.OfflineAccess);
+                    }
+                    scopes = clientAllowedScopes.ToSpaceSeparatedString();
                     _logger.LogTrace("Defaulting to: {scopes}", scopes);
                 }
                 else
@@ -645,13 +650,13 @@ namespace IdentityServer4.Validation
                 return false;
             }
 
-            if (!_scopeValidator.AreScopesAllowed(_validatedRequest.Client, requestedScopes))
+            if (!(await _scopeValidator.AreScopesAllowedAsync(_validatedRequest.Client, requestedScopes)))
             {
                 LogError();
                 return false;
             }
 
-            if (!await _scopeValidator.AreScopesValidAsync(requestedScopes))
+            if (!(await _scopeValidator.AreScopesValidAsync(requestedScopes)))
             {
                 LogError();
                 return false;

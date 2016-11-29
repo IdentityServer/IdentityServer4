@@ -39,6 +39,18 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
                 },
                 new Client
                 {
+                    ClientId = "client3",
+                    ClientSecrets = new List<Secret>
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+                    AllowedScopes = { "api1", "api2", "api3-a", "api3-b" },
+                    AccessTokenType = AccessTokenType.Reference
+                },
+                new Client
+                {
                     ClientId = "ro.client",
                     ClientSecrets = new List<Secret>
                     {

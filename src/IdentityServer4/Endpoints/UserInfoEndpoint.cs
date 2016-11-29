@@ -65,7 +65,7 @@ namespace IdentityServer4.Endpoints
 
             var tokenResult = await _tokenValidator.ValidateAccessTokenAsync(
                 tokenUsageResult.Token,
-                Constants.StandardScopes.OpenId);
+                IdentityServerConstants.StandardScopes.OpenId);
 
             if (tokenResult.IsError)
             {

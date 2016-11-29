@@ -37,7 +37,8 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
                 ClientSecrets = new List<Secret> { new Secret(client_secret.Sha256()) },
                 AllowedGrantTypes = GrantTypes.Code,
                 RequireConsent = false,
-                AllowedScopes = new List<string> { "api", "offline_access" },
+                AllowOfflineAccess = true,
+                AllowedScopes = new List<string> { "api" },
                 RedirectUris = new List<string> { redirect_uri },
                 AllowAccessTokensViaBrowser = true,
                 AccessTokenType = AccessTokenType.Reference,
@@ -56,14 +57,22 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
                 }
             });
 
-            _mockPipeline.Scopes.AddRange(new Scope[] {
-                StandardScopes.OpenId,
-                StandardScopes.OfflineAccess,
-                new Scope
+            _mockPipeline.IdentityScopes.AddRange(new IdentityResource[] {
+                new IdentityResources.OpenId(),
+            });
+
+            _mockPipeline.ApiScopes.AddRange(new ApiResource[] {
+                new ApiResource
                 {
-                    Name = scope_name,
-                    ScopeSecrets = new List<Secret> { new Secret(scope_secret.Sha256()) },
-                    Type = ScopeType.Resource
+                    Name = "api",
+                    ApiSecrets = new List<Secret> { new Secret(scope_secret.Sha256()) },
+                    Scopes =
+                    {
+                        new Scope
+                        {
+                            Name = scope_name,
+                        }
+                    }
                 }
             });
 

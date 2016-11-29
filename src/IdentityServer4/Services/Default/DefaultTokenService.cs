@@ -118,7 +118,7 @@ namespace IdentityServer4.Services.Default
             claims.AddRange(await _claimsProvider.GetIdentityTokenClaimsAsync(
                 request.Subject,
                 request.Client,
-                request.Scopes,
+                request.Resources,
                 request.IncludeAllIdentityClaims,
                 request.ValidatedRequest));
 
@@ -153,7 +153,7 @@ namespace IdentityServer4.Services.Default
             claims.AddRange(await _claimsProvider.GetAccessTokenClaimsAsync(
                 request.Subject,
                 request.Client,
-                request.Scopes,
+                request.Resources,
                 request.ValidatedRequest));
 
             if (request.Client.IncludeJwtId)

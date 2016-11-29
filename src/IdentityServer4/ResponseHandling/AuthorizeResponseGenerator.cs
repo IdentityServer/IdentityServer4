@@ -89,7 +89,7 @@ namespace IdentityServer4.ResponseHandling
                 CodeChallengeMethod = request.CodeChallengeMethod,
 
                 IsOpenId = request.IsOpenIdRequest,
-                RequestedScopes = request.ValidatedScopes.GrantedScopes.Select(a => a.Name),
+                RequestedScopes = request.ValidatedScopes.GrantedResources.ToScopeNames(),
                 RedirectUri = request.RedirectUri,
                 Nonce = request.Nonce,
 
@@ -120,7 +120,7 @@ namespace IdentityServer4.ResponseHandling
                 {
                     Subject = request.Subject,
                     Client = request.Client,
-                    Scopes = request.ValidatedScopes.GrantedScopes,
+                    Resources = request.ValidatedScopes.GrantedResources,
 
                     ValidatedRequest = request
                 };
@@ -139,9 +139,10 @@ namespace IdentityServer4.ResponseHandling
                     ValidatedRequest = request,
                     Subject = request.Subject,
                     Client = request.Client,
-                    Scopes = request.ValidatedScopes.GrantedScopes,
+                    Resources = request.ValidatedScopes.GrantedResources,
 
                     Nonce = request.Raw.Get(OidcConstants.AuthorizeRequest.Nonce),
+                    // if no access token is requested, then we need to include all the claims in the id token
                     IncludeAllIdentityClaims = !request.AccessTokenRequested,
                     AccessTokenToHash = accessTokenValue,
                     AuthorizationCodeToHash = authorizationCode

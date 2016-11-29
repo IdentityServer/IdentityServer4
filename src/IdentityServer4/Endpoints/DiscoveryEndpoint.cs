@@ -31,12 +31,12 @@ namespace IdentityServer4.Endpoints
         private readonly ILogger _logger;
         private readonly SecretParser _parsers;
         private readonly IResourceOwnerPasswordValidator _resourceOwnerValidator;
-        private readonly IScopeStore _scopes;
+        private readonly IResourceStore _resourceStore;
 
-        public DiscoveryEndpoint(IdentityServerOptions options, IScopeStore scopes, ILogger<DiscoveryEndpoint> logger, IKeyMaterialService keys, ExtensionGrantValidator extensionGrants, SecretParser parsers, IResourceOwnerPasswordValidator resourceOwnerValidator)
+        public DiscoveryEndpoint(IdentityServerOptions options, IResourceStore resourceStore, ILogger<DiscoveryEndpoint> logger, IKeyMaterialService keys, ExtensionGrantValidator extensionGrants, SecretParser parsers, IResourceOwnerPasswordValidator resourceOwnerValidator)
         {
             _options = options;
-            _scopes = scopes;
+            _resourceStore = resourceStore;
             _logger = logger;
             _extensionGrants = extensionGrants;
             _parsers = parsers;
@@ -76,8 +76,8 @@ namespace IdentityServer4.Endpoints
             }
 
             var baseUrl = context.GetIdentityServerBaseUrl().EnsureTrailingSlash();
-            var allScopes = await _scopes.GetEnabledScopesAsync(publicOnly: true);
-            var showScopes = new List<Scope>();
+            var resources = await _resourceStore.GetAllEnabledResourcesAsync();
+            var scopes = new List<string>();
 
             var document = new DiscoveryDocument
             {
@@ -88,31 +88,32 @@ namespace IdentityServer4.Endpoints
             };
 
             // scopes
-            var theScopes = allScopes as Scope[] ?? allScopes.ToArray();
             if (_options.DiscoveryOptions.ShowIdentityScopes)
             {
-                showScopes.AddRange(theScopes.Where(s => s.Type == ScopeType.Identity));
+                scopes.AddRange(resources.IdentityResources.Where(x=>x.ShowInDiscoveryDocument).Select(x=>x.Name));
             }
-            if (_options.DiscoveryOptions.ShowResourceScopes)
+            if (_options.DiscoveryOptions.ShowApiScopes)
             {
-                showScopes.AddRange(theScopes.Where(s => s.Type == ScopeType.Resource));
+                var apiScopes = from api in resources.ApiResources
+                                from scope in api.Scopes
+                                where scope.ShowInDiscoveryDocument
+                                select scope.Name;
+                scopes.AddRange(apiScopes);
+                scopes.Add(IdentityServerConstants.StandardScopes.OfflineAccess);
             }
 
-            if (showScopes.Any())
+            if (scopes.Any())
             {
-                document.scopes_supported = showScopes.Where(s => s.ShowInDiscoveryDocument).Select(s => s.Name).ToArray();
+                document.scopes_supported = scopes.ToArray();
             }
 
             // claims
             if (_options.DiscoveryOptions.ShowClaims)
             {
                 var claims = new List<string>();
-                foreach (var s in theScopes)
-                {
-                    claims.AddRange(from c in s.Claims
-                                    where s.Type == ScopeType.Identity
-                                    select c.Name);
-                }
+
+                claims.AddRange(resources.IdentityResources.SelectMany(x => x.UserClaims).Select(x => x.Type));
+                claims.AddRange(resources.ApiResources.SelectMany(x => x.UserClaims).Select(x => x.Type));
 
                 document.claims_supported = claims.Distinct().ToArray();
             }

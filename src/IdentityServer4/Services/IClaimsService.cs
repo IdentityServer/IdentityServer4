@@ -24,7 +24,7 @@ namespace IdentityServer4.Services
         /// <param name="includeAllIdentityClaims">Specifies if all claims should be included in the token, or if the userinfo endpoint can be used to retrieve them</param>
         /// <param name="request">The raw request</param>
         /// <returns>Claims for the identity token</returns>
-        Task<IEnumerable<Claim>> GetIdentityTokenClaimsAsync(ClaimsPrincipal subject, Client client, IEnumerable<Scope> scopes, bool includeAllIdentityClaims, ValidatedRequest request);
+        Task<IEnumerable<Claim>> GetIdentityTokenClaimsAsync(ClaimsPrincipal subject, Client client, Resources resources, bool includeAllIdentityClaims, ValidatedRequest request);
 
         /// <summary>
         /// Returns claims for an access token.
@@ -34,6 +34,6 @@ namespace IdentityServer4.Services
         /// <param name="scopes">The requested scopes.</param>
         /// <param name="request">The raw request.</param>
         /// <returns>Claims for the access token</returns>
-        Task<IEnumerable<Claim>> GetAccessTokenClaimsAsync(ClaimsPrincipal subject, Client client, IEnumerable<Scope> scopes, ValidatedRequest request);
+        Task<IEnumerable<Claim>> GetAccessTokenClaimsAsync(ClaimsPrincipal subject, Client client, Resources resources, ValidatedRequest request);
     }
 }

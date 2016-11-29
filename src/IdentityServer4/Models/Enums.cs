@@ -5,22 +5,6 @@
 namespace IdentityServer4.Models
 {
     /// <summary>
-    /// OpenID Connect scope types.
-    /// </summary>
-    public enum ScopeType
-    {
-        /// <summary>
-        /// Scope representing identity data (e.g. profile or email)
-        /// </summary>
-        Identity = 0,
-
-        /// <summary>
-        /// Scope representing a resource (e.g. a web api)
-        /// </summary>
-        Resource = 1
-    }
-
-    /// <summary>
     /// OpenID Connect subject types.
     /// </summary>
     public enum SubjectTypes

@@ -31,15 +31,29 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Adds the in memory scopes.
+        /// Adds the in memory identity resources.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        /// <param name="scopes">The scopes.</param>
+        /// <param name="identityResources">The identity resources.</param>
         /// <returns></returns>
-        public static IIdentityServerBuilder AddInMemoryScopes(this IIdentityServerBuilder builder, IEnumerable<Scope> scopes)
+        public static IIdentityServerBuilder AddInMemoryIdentityResources(this IIdentityServerBuilder builder, IEnumerable<IdentityResource> identityResources)
         {
-            builder.Services.AddSingleton(scopes);
-            builder.Services.AddTransient<IScopeStore, InMemoryScopeStore>();
+            builder.Services.AddSingleton(identityResources);
+            builder.Services.TryAddTransient<IResourceStore, InMemoryResourcesStore>();
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds the in memory API resources.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="apiResources">The API resources.</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddInMemoryApiResources(this IIdentityServerBuilder builder, IEnumerable<ApiResource> apiResources)
+        {
+            builder.Services.AddSingleton(apiResources);
+            builder.Services.TryAddTransient<IResourceStore, InMemoryResourcesStore>();
 
             return builder;
         }

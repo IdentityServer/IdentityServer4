@@ -380,10 +380,10 @@ namespace IdentityServer4.UnitTests.Validation
 
                         AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
+                        AllowOfflineAccess = true,
                         AllowedScopes = new List<string>
                         {
                             "resource",
-                            "offline_access"
                         },
                     },
 

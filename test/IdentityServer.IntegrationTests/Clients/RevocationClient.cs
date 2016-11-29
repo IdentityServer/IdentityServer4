@@ -36,7 +36,7 @@ namespace IdentityServer4.IntegrationTests.Clients
         {
             var introspectionClient = new IntrospectionClient(
                 IntrospectionEndpoint,
-                "api1",
+                "api",
                 "secret",
                 innerHttpMessageHandler: _handler);
 

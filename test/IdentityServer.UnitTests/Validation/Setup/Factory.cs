@@ -22,14 +22,14 @@ namespace IdentityServer4.UnitTests.Validation
             return new InMemoryClientStore(TestClients.Get());
         }
 
-        public static ScopeValidator CreateScopeValidator(IScopeStore store)
+        public static ScopeValidator CreateScopeValidator(IResourceStore store)
         {
             return new ScopeValidator(store, TestLogger.Create<ScopeValidator>());
         }
 
         public static TokenRequestValidator CreateTokenRequestValidator(
             IdentityServerOptions options = null,
-            IScopeStore scopes = null,
+            IResourceStore resourceStore = null,
             IAuthorizationCodeStore authorizationCodeStore = null,
             IRefreshTokenStore refreshTokenStore = null,
             IResourceOwnerPasswordValidator resourceOwnerValidator = null,
@@ -43,9 +43,9 @@ namespace IdentityServer4.UnitTests.Validation
                 options = TestIdentityServerOptions.Create();
             }
 
-            if (scopes == null)
+            if (resourceStore == null)
             {
-                scopes = new InMemoryScopeStore(TestScopes.Get());
+                resourceStore = new InMemoryResourcesStore(TestScopes.GetIdentity(), TestScopes.GetApis());
             }
 
             if (resourceOwnerValidator == null)
@@ -85,7 +85,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             if (scopeValidator == null)
             {
-                scopeValidator = new ScopeValidator(scopes, new LoggerFactory().CreateLogger<ScopeValidator>());
+                scopeValidator = new ScopeValidator(resourceStore, new LoggerFactory().CreateLogger<ScopeValidator>());
             }
 
             return new TokenRequestValidator(
@@ -109,7 +109,7 @@ namespace IdentityServer4.UnitTests.Validation
 
         public static AuthorizeRequestValidator CreateAuthorizeRequestValidator(
             IdentityServerOptions options = null,
-            IScopeStore scopes = null,
+            IResourceStore resourceStore = null,
             IClientStore clients = null,
             IProfileService profile = null,
             ICustomAuthorizeRequestValidator customValidator = null,
@@ -121,9 +121,9 @@ namespace IdentityServer4.UnitTests.Validation
                 options = TestIdentityServerOptions.Create();
             }
 
-            if (scopes == null)
+            if (resourceStore == null)
             {
-                scopes = new InMemoryScopeStore(TestScopes.Get());
+                resourceStore = new InMemoryResourcesStore(TestScopes.GetIdentity(), TestScopes.GetApis());
             }
 
             if (clients == null)
@@ -143,7 +143,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             if (scopeValidator == null)
             {
-                scopeValidator = new ScopeValidator(scopes, new LoggerFactory().CreateLogger<ScopeValidator>());
+                scopeValidator = new ScopeValidator(resourceStore, new LoggerFactory().CreateLogger<ScopeValidator>());
             }
 
             var sessionId = new MockSessionIdService();

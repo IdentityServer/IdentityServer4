@@ -118,7 +118,7 @@ namespace IdentityServer4.UnitTests.Validation.AuthorizeRequest
         {
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.AuthorizeRequest.ClientId, "implicitclient");
-            parameters.Add(OidcConstants.AuthorizeRequest.Scope, Constants.StandardScopes.OpenId);
+            parameters.Add(OidcConstants.AuthorizeRequest.Scope, IdentityServerConstants.StandardScopes.OpenId);
             parameters.Add(OidcConstants.AuthorizeRequest.RedirectUri, "oob://implicit/cb");
             parameters.Add(OidcConstants.AuthorizeRequest.ResponseType, OidcConstants.ResponseTypes.IdToken);
             parameters.Add(OidcConstants.AuthorizeRequest.ResponseMode, OidcConstants.ResponseModes.FormPost);

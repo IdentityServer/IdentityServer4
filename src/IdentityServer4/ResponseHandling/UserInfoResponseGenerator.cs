@@ -20,12 +20,12 @@ namespace IdentityServer4.ResponseHandling
     {
         private readonly ILogger _logger;
         private readonly IProfileService _profile;
-        private readonly IScopeStore _scopes;
+        private readonly IResourceStore _resourceStore;
 
-        public UserInfoResponseGenerator(IProfileService profile, IScopeStore scopes, ILogger<UserInfoResponseGenerator> logger)
+        public UserInfoResponseGenerator(IProfileService profile, IResourceStore resourceStore, ILogger<UserInfoResponseGenerator> logger)
         {
             _profile = profile;
-            _scopes = scopes;
+            _resourceStore = resourceStore;
             _logger = logger;
         }
 
@@ -37,32 +37,16 @@ namespace IdentityServer4.ResponseHandling
             
             var requestedClaimTypes = await GetRequestedClaimTypesAsync(scopes);
 
-            IEnumerable<Claim> profileClaims;
-            if (requestedClaimTypes.IncludeAllClaims)
-            {
-                _logger.LogDebug("Requested claim types: all");
+            _logger.LogDebug("Requested claim types: {claimTypes}", requestedClaimTypes.ClaimTypes.ToSpaceSeparatedString());
 
-                var context = new ProfileDataRequestContext(
-                    subject, 
-                    client,
-                    IdentityServerConstants.ProfileDataCallers.UserInfoEndpoint);
+            var context = new ProfileDataRequestContext(
+                subject,
+                client,
+                IdentityServerConstants.ProfileDataCallers.UserInfoEndpoint,
+                requestedClaimTypes.ClaimTypes);
 
-                await _profile.GetProfileDataAsync(context);
-                profileClaims = context.IssuedClaims;
-            }
-            else
-            {
-                _logger.LogDebug("Requested claim types: {claimTypes}", requestedClaimTypes.ClaimTypes.ToSpaceSeparatedString());
-
-                var context = new ProfileDataRequestContext(
-                    subject,
-                    client,
-                    IdentityServerConstants.ProfileDataCallers.UserInfoEndpoint,
-                    requestedClaimTypes.ClaimTypes);
-
-                await _profile.GetProfileDataAsync(context);
-                profileClaims = context.IssuedClaims;
-            }
+            await _profile.GetProfileDataAsync(context);
+            var profileClaims = context.IssuedClaims;
 
             List<Claim> results = new List<Claim>();
 
@@ -101,27 +85,16 @@ namespace IdentityServer4.ResponseHandling
             var scopeString = string.Join(" ", scopes);
             _logger.LogDebug("Scopes in access token: {scopes}", scopeString);
 
-            var scopeDetails = await _scopes.FindEnabledScopesAsync(scopes);
+            var identityResources = await _resourceStore.FindEnabledIdentityResourcesAsync(scopes);
             var scopeClaims = new List<string>();
 
             foreach (var scope in scopes)
             {
-                var scopeDetail = scopeDetails.FirstOrDefault(s => s.Name == scope);
+                var scopeDetail = identityResources.FirstOrDefault(s => s.Name == scope);
                 
                 if (scopeDetail != null)
                 {
-                    if (scopeDetail.Type == ScopeType.Identity)
-                    {
-                        if (scopeDetail.IncludeAllClaimsForUser)
-                        {
-                            return new RequestedClaimTypes
-                            {
-                                IncludeAllClaims = true
-                            };
-                        }
-
-                        scopeClaims.AddRange(scopeDetail.Claims.Select(c => c.Name));
-                    }
+                    scopeClaims.AddRange(scopeDetail.UserClaims.Select(c => c.Type));
                 }
             }
 
