@@ -222,6 +222,39 @@ namespace IdentityServer4.IntegrationTests.Clients
         }
 
         [Fact]
+        public async Task implicit_client_should_not_use_client_credential_grant()
+        {
+            var client = new TokenClient(
+                TokenEndpoint,
+                "implicit",
+                innerHttpMessageHandler: _handler);
+
+            var response = await client.RequestClientCredentialsAsync("api1");
+
+            response.IsError.Should().Be(true);
+            response.ErrorType.Should().Be(ResponseErrorType.Protocol);
+            response.HttpStatusCode.Should().Be(HttpStatusCode.BadRequest);
+            response.Error.Should().Be("unauthorized_client");
+        }
+
+        [Fact]
+        public async Task implicit_and_client_creds_client_should_not_use_client_credential_grant_without_secret()
+        {
+            var client = new TokenClient(
+                TokenEndpoint,
+                "implicit_and_client_creds",
+                innerHttpMessageHandler: _handler);
+
+            var response = await client.RequestClientCredentialsAsync("api1");
+
+            response.IsError.Should().Be(true);
+            response.ErrorType.Should().Be(ResponseErrorType.Protocol);
+            response.HttpStatusCode.Should().Be(HttpStatusCode.BadRequest);
+            response.Error.Should().Be("invalid_client");
+        }
+
+
+        [Fact]
         public async Task Unknown_Scope()
         {
             var client = new TokenClient(

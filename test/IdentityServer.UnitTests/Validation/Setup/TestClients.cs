@@ -450,7 +450,20 @@ namespace IdentityServer4.UnitTests.Validation
 
                         Enabled = true,
                         AllowAccessToAllScopes = true
-                    }
+                    },
+                    new Client
+                    {
+                        ClientId = "client.implicit",
+                        ClientName = "Implicit Client",
+                        AllowedGrantTypes = GrantTypes.Implicit,
+                        AllowAccessToAllScopes = true
+                    },
+                    new Client
+                    {
+                        ClientId = "implicit_and_client_creds",
+                        AllowedGrantTypes = GrantTypes.ImplicitAndClientCredentials,
+                        AllowedScopes = {"api1"}
+                    },
             };
         }
     }

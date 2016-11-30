@@ -69,5 +69,39 @@ namespace IdentityServer4.UnitTests.Validation.Secrets
             result.Client.RequireClientSecret.Should().BeFalse();
         }
 
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task implicit_client_without_secret_should_be_able_to_authenticate()
+        {
+            var validator = Factory.CreateClientSecretValidator();
+
+            var context = new DefaultHttpContext();
+            var body = "client_id=client.implicit";
+
+            context.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(body));
+            context.Request.ContentType = "application/x-www-form-urlencoded";
+
+            var result = await validator.ValidateAsync(context);
+
+            result.IsError.Should().BeFalse();
+            result.Client.ClientId.Should().Be("client.implicit");
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task implicit_client_and_client_creds_without_secret_should_not_be_able_to_authenticate()
+        {
+            var validator = Factory.CreateClientSecretValidator();
+
+            var context = new DefaultHttpContext();
+            var body = "client_id=implicit_and_client_creds";
+
+            context.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(body));
+            context.Request.ContentType = "application/x-www-form-urlencoded";
+
+            var result = await validator.ValidateAsync(context);
+
+            result.IsError.Should().BeTrue();
+        }
     }
 }

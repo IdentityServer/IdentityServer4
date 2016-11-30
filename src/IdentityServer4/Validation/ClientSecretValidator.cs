@@ -8,6 +8,7 @@ using IdentityServer4.Events;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Stores;
+using IdentityServer4.Models;
 
 namespace IdentityServer4.Validation
 {
@@ -56,7 +57,7 @@ namespace IdentityServer4.Validation
                 return fail;
             }
 
-            if (!client.RequireClientSecret)
+            if (!client.RequireClientSecret || client.IsImplicitOnly())
             {
                 _logger.LogDebug("Public Client - skipping secret validation success");
             }
