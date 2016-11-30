@@ -3,6 +3,7 @@
 
 
 using FluentAssertions;
+using IdentityServer4.Configuration;
 using IdentityServer4.Services.Default;
 using IdentityServer4.UnitTests.Common;
 using System;
@@ -20,6 +21,7 @@ namespace IdentityServer4.UnitTests.Services.Default
         MockHttpContextAccessor _mockHttpContext = new MockHttpContextAccessor();
         MockSessionIdService _stubSessionId = new MockSessionIdService();
         StubAuthenticationHandler _stubAuthHandler;
+        IdentityServerOptions _options = new IdentityServerOptions();
         ClaimsPrincipal _user;
 
         public DefaultClientSessionServiceTests()
@@ -28,7 +30,7 @@ namespace IdentityServer4.UnitTests.Services.Default
             _stubAuthHandler = new StubAuthenticationHandler(_user, IdentityServerConstants.DefaultCookieAuthenticationScheme);
             _mockHttpContext.HttpContext.GetAuthentication().Handler = _stubAuthHandler;
 
-            _subject = new DefaultClientSessionService(_mockHttpContext, _stubSessionId, TestLogger.Create<DefaultClientSessionService>());
+            _subject = new DefaultClientSessionService(_mockHttpContext, _stubSessionId, _options, TestLogger.Create<DefaultClientSessionService>());
         }
 
         [Fact]

@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using IdentityServer4.Extensions;
+using IdentityServer4.Configuration;
 
 namespace IdentityServer4.Services.Default
 {
@@ -27,12 +28,18 @@ namespace IdentityServer4.Services.Default
 
         private readonly IHttpContextAccessor _context;
         private readonly ISessionIdService _sessionId;
+        private readonly IdentityServerOptions _options;
         private readonly ILogger<DefaultClientSessionService> _logger;
 
-        public DefaultClientSessionService(IHttpContextAccessor context, ISessionIdService sessionId, ILogger<DefaultClientSessionService> logger)
+        public DefaultClientSessionService(
+            IHttpContextAccessor context, 
+            ISessionIdService sessionId, 
+            IdentityServerOptions options,
+            ILogger<DefaultClientSessionService> logger)
         {
             _context = context;
             _sessionId = sessionId;
+            _options = options;
             _logger = logger;
         }
 
@@ -166,7 +173,7 @@ namespace IdentityServer4.Services.Default
 
         string GetCookieName(string sid)
         {
-            return ClientListKey + "." + sid;
+            return $"{_options.AuthenticationOptions.EffectiveAuthenticationScheme}.{ClientListKey}.{sid}";
         }
 
         string CookiePath => _context.HttpContext.GetBasePath().CleanUrlPath();
