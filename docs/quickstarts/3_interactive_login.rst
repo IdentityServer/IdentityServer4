@@ -22,9 +22,11 @@ You can either clone or download this repo and drop the controllers, views, mode
 Alternatively you can run this command from the command line in your web application to
 automate the download::
 
-    iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/dev/get.ps1'))
+    iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/release/get.ps1'))
 
 See the `readme <https://github.com/IdentityServer/IdentityServer4.Quickstart.UI/blob/dev/README.md>`_ for the quickstart UI for more information. 
+
+.. note: The ``release`` branch of the UI repo has the UI that matches the latest stable release. The ``dev`` branch goes along with the current dev build of IdentityServer4. If you are looking for a specific version of the UI - check the tags.
 
 Spend some time inspecting the controllers and models, the better you understand them, 
 the easier it will be to make future modifications.
