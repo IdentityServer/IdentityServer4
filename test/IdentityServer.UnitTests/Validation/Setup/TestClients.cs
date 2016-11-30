@@ -24,7 +24,7 @@ namespace IdentityServer4.UnitTests.Validation
                     },
 
                     AllowedGrantTypes = GrantTypes.Code,
-                    AllowAccessToAllScopes = true,
+                    AllowedScopes = { "openid", "profile", "resource", "resource2" },
 
                     RequireConsent = false,
 
@@ -47,7 +47,7 @@ namespace IdentityServer4.UnitTests.Validation
 
                     AllowedGrantTypes = GrantTypes.Code,
                     RequirePkce = true,
-                    AllowAccessToAllScopes = true,
+                    AllowedScopes = { "openid", "profile", "resource", "resource2" },
 
                     RequireConsent = false,
 
@@ -71,7 +71,7 @@ namespace IdentityServer4.UnitTests.Validation
                     AllowedGrantTypes = GrantTypes.Code,
                     RequirePkce = true,
                     AllowPlainTextPkce = true,
-                    AllowAccessToAllScopes = true,
+                    AllowedScopes = { "openid", "profile", "resource", "resource2" },
 
                     RequireConsent = false,
 
@@ -93,7 +93,7 @@ namespace IdentityServer4.UnitTests.Validation
                         },
 
                         AllowedGrantTypes = GrantTypes.Hybrid,
-                        AllowAccessToAllScopes = true,
+                        AllowedScopes = { "openid", "profile", "resource", "resource2" },
                         AllowAccessTokensViaBrowser = true,
 
                         RequireConsent = false,
@@ -117,7 +117,7 @@ namespace IdentityServer4.UnitTests.Validation
 
                         AllowedGrantTypes = GrantTypes.Hybrid,
                         RequirePkce = true,
-                        AllowAccessToAllScopes = true,
+                        AllowedScopes = { "openid", "profile", "resource", "resource2" },
                         AllowAccessTokensViaBrowser = true,
 
                         RequireConsent = false,
@@ -140,7 +140,7 @@ namespace IdentityServer4.UnitTests.Validation
                         },
 
                         AllowedGrantTypes = GrantTypes.Hybrid,
-                        AllowAccessToAllScopes = true,
+                        AllowedScopes = { "openid", "profile", "resource", "resource2" },
                         AllowAccessTokensViaBrowser = false,
 
                         RequireConsent = false,
@@ -158,7 +158,7 @@ namespace IdentityServer4.UnitTests.Validation
                         ClientId = "implicitclient",
 
                         AllowedGrantTypes = GrantTypes.Implicit,
-                        AllowAccessToAllScopes = true,
+                        AllowedScopes = { "openid", "profile", "resource", "resource2" },
                         AllowAccessTokensViaBrowser = true,
 
                         RequireConsent = false,
@@ -174,7 +174,7 @@ namespace IdentityServer4.UnitTests.Validation
                         ClientId = "implicitclient_no_aavb",
 
                         AllowedGrantTypes = GrantTypes.Implicit,
-                        AllowAccessToAllScopes = true,
+                        AllowedScopes = { "openid", "profile", "resource", "resource2" },
                         AllowAccessTokensViaBrowser = false,
 
                         RequireConsent = false,
@@ -195,7 +195,7 @@ namespace IdentityServer4.UnitTests.Validation
                         },
 
                         AllowedGrantTypes = GrantTypes.ImplicitAndClientCredentials,
-                        AllowAccessToAllScopes = true,
+                        AllowedScopes = { "openid", "profile", "resource", "resource2" },
                         RequireConsent = false,
 
                         RedirectUris = new List<string>
@@ -237,7 +237,7 @@ namespace IdentityServer4.UnitTests.Validation
                         },
 
                         AllowedGrantTypes = GrantTypes.ClientCredentials,
-                        AllowAccessToAllScopes = true,
+                        AllowedScopes = { "openid", "profile", "resource", "resource2" },
 
                         AccessTokenType = AccessTokenType.Jwt
                     },
@@ -269,7 +269,8 @@ namespace IdentityServer4.UnitTests.Validation
                         },
 
                         AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
-                        AllowAccessToAllScopes = true,
+                        AllowedScopes = { "openid", "profile", "resource", "resource2" },
+                        AllowOfflineAccess = true
                     },
                     new Client
                     {
@@ -279,7 +280,7 @@ namespace IdentityServer4.UnitTests.Validation
                         RequireClientSecret = false,
 
                         AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
-                        AllowAccessToAllScopes = true,
+                        AllowedScopes = { "openid", "profile", "resource", "resource2" },
                     },
                     new Client
                     {
@@ -292,7 +293,7 @@ namespace IdentityServer4.UnitTests.Validation
                         },
 
                         AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
-                        AllowAccessToAllScopes = true,
+                        AllowedScopes = { "openid", "profile", "resource", "resource2" },
 
                         RefreshTokenExpiration = TokenExpiration.Absolute,
                         RefreshTokenUsage = TokenUsage.OneTimeOnly,
@@ -309,7 +310,7 @@ namespace IdentityServer4.UnitTests.Validation
                         },
 
                         AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
-                        AllowAccessToAllScopes = true,
+                        AllowedScopes = { "openid", "profile", "resource", "resource2" },
 
                         RefreshTokenExpiration = TokenExpiration.Absolute,
                         RefreshTokenUsage = TokenUsage.ReUse,
@@ -326,7 +327,7 @@ namespace IdentityServer4.UnitTests.Validation
                         },
 
                         AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
-                        AllowAccessToAllScopes = true,
+                        AllowedScopes = { "openid", "profile", "resource", "resource2" },
 
                         RefreshTokenExpiration = TokenExpiration.Sliding,
                         RefreshTokenUsage = TokenUsage.OneTimeOnly,
@@ -344,7 +345,7 @@ namespace IdentityServer4.UnitTests.Validation
                         },
 
                         AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
-                        AllowAccessToAllScopes = true,
+                        AllowedScopes = { "openid", "profile", "resource", "resource2" },
 
                         RefreshTokenExpiration = TokenExpiration.Sliding,
                         RefreshTokenUsage = TokenUsage.ReUse,
@@ -398,7 +399,7 @@ namespace IdentityServer4.UnitTests.Validation
                         },
 
                         AllowedGrantTypes = GrantTypes.List("custom_grant"),
-                        AllowAccessToAllScopes = true,
+                        AllowedScopes = { "openid", "profile", "resource", "resource2" },
                     },
 
                     new Client
@@ -412,7 +413,7 @@ namespace IdentityServer4.UnitTests.Validation
                         },
 
                         AllowedGrantTypes = GrantTypes.ClientCredentials,
-                        AllowAccessToAllScopes = true,
+                        AllowedScopes = { "openid", "profile", "resource", "resource2" },
                     },
                     new Client
                     {
@@ -426,7 +427,7 @@ namespace IdentityServer4.UnitTests.Validation
                         },
 
                         AllowedGrantTypes = GrantTypes.Implicit,
-                        AllowAccessToAllScopes = true,
+                        AllowedScopes = { "openid", "profile", "resource", "resource2" },
 
                         AccessTokenType = AccessTokenType.Reference
                     },
@@ -437,7 +438,7 @@ namespace IdentityServer4.UnitTests.Validation
                         ProtocolType = IdentityServerConstants.ProtocolTypes.WsFederation,
                         AllowedGrantTypes = GrantTypes.Implicit,
                         Enabled = true,
-                        AllowAccessToAllScopes = true,
+                        AllowedScopes = { "openid", "profile", "resource", "resource2" },
                         RedirectUris = { "http://wsfed/callback"  }
                     },
                     new Client
@@ -449,14 +450,14 @@ namespace IdentityServer4.UnitTests.Validation
                         ClientSecrets = { new Secret("secret".Sha256()) },
 
                         Enabled = true,
-                        AllowAccessToAllScopes = true
+                        AllowedScopes = { "openid", "profile", "resource", "resource2" },
                     },
                     new Client
                     {
                         ClientId = "client.implicit",
                         ClientName = "Implicit Client",
                         AllowedGrantTypes = GrantTypes.Implicit,
-                        AllowAccessToAllScopes = true
+                        AllowedScopes = { "openid", "profile", "resource", "resource2" },
                     },
                     new Client
                     {

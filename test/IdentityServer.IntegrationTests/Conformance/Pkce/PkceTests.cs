@@ -57,7 +57,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
                 AllowedGrantTypes = GrantTypes.Code,
                 RequirePkce = true,
 
-                AllowAccessToAllScopes = true,
+                AllowedScopes = { "openid" },
 
                 RequireConsent = false,
                 RedirectUris = new List<string>
@@ -80,7 +80,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
                 RequirePkce = true,
                 AllowPlainTextPkce = true,
 
-                AllowAccessToAllScopes = true,
+                AllowedScopes = { "openid" },
 
                 RequireConsent = false,
                 RedirectUris = new List<string>

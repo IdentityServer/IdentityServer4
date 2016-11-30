@@ -59,7 +59,6 @@ namespace IdentityServer4.IntegrationTests.Clients
                     },
 
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    AllowAccessToAllScopes = true
                 },
 
                 ///////////////////////////////////////////

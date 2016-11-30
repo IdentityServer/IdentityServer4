@@ -35,7 +35,6 @@ namespace IdentityServer4.UnitTests.Validation
                 },
 
                 AllowedGrantTypes = GrantTypes.Code,
-                AllowAccessToAllScopes = true,
 
                 RequireConsent = false,
 
