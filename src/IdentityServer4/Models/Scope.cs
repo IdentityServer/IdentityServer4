@@ -37,7 +37,7 @@ namespace IdentityServer4.Models
             if (name.IsMissing()) throw new ArgumentNullException(nameof(name));
 
             Name = name;
-            DisplayName = name;
+            DisplayName = displayName;
 
             if (!userClaimTypes.IsNullOrEmpty())
             {
