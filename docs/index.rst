@@ -103,7 +103,8 @@ There are several way we can help you out.
    :hidden:
    :caption: Reference
 
-   reference/scope
+   reference/identity_resource
+   reference/api_resource
    reference/client
    reference/grant_validation_result
 

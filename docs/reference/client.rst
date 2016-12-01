@@ -25,8 +25,9 @@ Basics
 ``RedirectUris``
     Specifies the allowed URIs to return tokens or authorization codes to
 ``AllowedScopes``
-    By default a client has no access to any scopes - either specify the scopes explicitly here (recommended) - 
-    or set ``AllowAccessToAllScopes`` to true.
+    By default a client has no access to any resources - specify the allowed resources by adding the corresponding scopes names
+``AllowOfflineAccess``
+    Specifies whether this client can request refresh tokens (be requesting the ``offline_access`` scope)
 ``AllowAccessTokenViaBrowser``
     Specifies whether this client is allowed to receive access tokens via the browser. 
     This is useful to harden flows that allow multiple response types 
