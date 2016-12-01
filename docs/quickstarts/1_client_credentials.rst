@@ -162,7 +162,7 @@ endpoint addresses can be read from the metadata::
     var disco = await DiscoveryClient.GetAsync("http://localhost:5000");
 
 Next you can use the ``TokenClient`` class to request the token.
-You create an instance you need to pass in the token endpoint address, client id and secret.
+To create an instance you need to pass in the token endpoint address, client id and secret.
 
 Next you can use the ``RequestClientCredentialsAsync`` method to request a token for your API::
 
