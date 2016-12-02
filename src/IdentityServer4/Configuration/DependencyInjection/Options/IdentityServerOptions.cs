@@ -69,15 +69,6 @@ namespace IdentityServer4.Configuration
         public List<string> ProtocolLogoutUrls { get; set; } = new List<string>();
 
         /// <summary>
-        /// Gets or sets the CSP options.
-        /// </summary>
-        /// <value>
-        /// The CSP options.
-        /// </value>
-        // todo
-        //public CspOptions CspOptions { get; set; } = new CspOptions();
-
-        /// <summary>
         /// Gets or sets the events options.
         /// </summary>
         /// <value>
