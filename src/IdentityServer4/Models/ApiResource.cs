@@ -49,34 +49,34 @@ namespace IdentityServer4.Models
         }
 
         /// <summary>
-        /// Specifies if API is enabled (defaults to true)
+        /// Indicates if this API is enabled. Defaults to true.
         /// </summary>
         public bool Enabled { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets the name.
+        /// The unique name of the API. This value is used for authentication with introspection and will be added to the audience of the outgoing access token.
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// Display name.
+        /// Display name. Can be used e.g. on the consent screeen
         /// </summary>
         public string DisplayName { get; set; }
 
         /// <summary>
-        /// Gets or sets the api secrets.
+        /// The API secret is used for the introspection endpoint. The API can authenticate with introspection using the API name and secret.
         /// </summary>
         public ICollection<Secret> ApiSecrets { get; set; } = new HashSet<Secret>();
 
         /// <summary>
-        /// Gets or sets the scopes.
-        /// </summary>
-        public ICollection<Scope> Scopes { get; set; } = new HashSet<Scope>();
-
-        /// <summary>
-        /// List of user claims that should be included in the access token.
+        /// List of accociated user claims that should be included in the access token.
         /// </summary>
         public ICollection<UserClaim> UserClaims { get; set; } = new HashSet<UserClaim>();
+
+        /// <summary>
+        /// An API must have at least one scope. Each scope can have different settings.
+        /// </summary>
+        public ICollection<Scope> Scopes { get; set; } = new HashSet<Scope>();
 
         internal ApiResource CloneWithScopes(IEnumerable<Scope> scopes)
         {
