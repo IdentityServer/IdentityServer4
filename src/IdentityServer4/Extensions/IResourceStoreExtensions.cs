@@ -14,8 +14,15 @@ namespace IdentityServer4.Stores
         public static async Task<Resources> FindResourcesByScopeAsync(this IResourceStore store, IEnumerable<string> scopeNames)
         {
             var identity = await store.FindIdentityResourcesByScopeAsync(scopeNames);
-            var api = await store.FindApiResourcesByScopeAsync(scopeNames);
-            var resources = new Resources(identity, api)
+            var apiResources = await store.FindApiResourcesByScopeAsync(scopeNames);
+
+            var apis = new List<ApiResource>();
+            foreach (var apiResource in apiResources)
+            {
+                apis.Add(apiResource.CloneWithScopes(apiResource.Scopes.Where(x => scopeNames.Contains(x.Name))));
+            }
+
+            var resources = new Resources(identity, apis)
             {
                 OfflineAccess = scopeNames.Contains(IdentityServerConstants.StandardScopes.OfflineAccess)
             };
