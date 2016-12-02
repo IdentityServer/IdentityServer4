@@ -25,7 +25,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
         AuthorizeInteractionResponseGenerator _subject;
         IdentityServerOptions _options = new IdentityServerOptions();
         MockConsentService _mockConsent = new MockConsentService();
-        TestProfileService _fakeUserService = new TestProfileService();
+        MockProfileService _fakeUserService = new MockProfileService();
 
         void RequiresConsent(bool value)
         {
