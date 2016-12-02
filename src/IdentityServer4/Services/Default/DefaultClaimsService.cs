@@ -56,35 +56,35 @@ namespace IdentityServer4.Services.Default
 
             var outputClaims = new List<Claim>(GetStandardSubjectClaims(subject));
             outputClaims.AddRange(GetOptionalClaims(subject));
-            
-            var additionalClaims = new List<string>();
 
             // fetch all identity claims that need to go into the id token
-            foreach (var scope in resources.IdentityResources)
+            if (includeAllIdentityClaims)
             {
-                foreach (var scopeClaim in scope.UserClaims)
+                var additionalClaims = new List<string>();
+
+                foreach (var identityResource in resources.IdentityResources)
                 {
-                    if (includeAllIdentityClaims)
+                    foreach (var userClaim in identityResource.UserClaims)
                     {
-                        additionalClaims.Add(scopeClaim);
+                        additionalClaims.Add(userClaim);
                     }
                 }
-            }
 
-            if (additionalClaims.Count > 0)
-            {
-                var context = new ProfileDataRequestContext(
-                    subject,
-                    client,
-                    IdentityServerConstants.ProfileDataCallers.ClaimsProviderIdentityToken,
-                    additionalClaims);
-                
-                await _profile.GetProfileDataAsync(context);
-
-                var claims = FilterProtocolClaims(context.IssuedClaims);
-                if (claims != null)
+                if (additionalClaims.Count > 0)
                 {
-                    outputClaims.AddRange(claims);
+                    var context = new ProfileDataRequestContext(
+                        subject,
+                        client,
+                        IdentityServerConstants.ProfileDataCallers.ClaimsProviderIdentityToken,
+                        additionalClaims);
+
+                    await _profile.GetProfileDataAsync(context);
+
+                    var claims = FilterProtocolClaims(context.IssuedClaims);
+                    if (claims != null)
+                    {
+                        outputClaims.AddRange(claims);
+                    }
                 }
             }
 
@@ -104,7 +104,7 @@ namespace IdentityServer4.Services.Default
         public virtual async Task<IEnumerable<Claim>> GetAccessTokenClaimsAsync(ClaimsPrincipal subject, Client client, Resources resources, ValidatedRequest request)
         {
             _logger.LogDebug("Getting claims for access token for client: {clientId}", client.ClientId);
-            
+
             // add client_id
             var outputClaims = new List<Claim>
             {
@@ -167,7 +167,6 @@ namespace IdentityServer4.Services.Default
                     }
 
                     // add claims configured on scope
-                    // TODO: need unit test
                     foreach (var scope in api.Scopes)
                     {
                         if (scope.UserClaims != null)
@@ -244,5 +243,5 @@ namespace IdentityServer4.Services.Default
         {
             return claims.Where(x => !Constants.Filters.ClaimsProviderFilterClaimTypes.Contains(x.Type));
         }
-     }
+    }
 }
