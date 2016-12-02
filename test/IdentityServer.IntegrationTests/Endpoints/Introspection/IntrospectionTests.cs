@@ -160,7 +160,14 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
 
             var values = response.Json.ToObject<Dictionary<string, object>>();
 
-            values["aud"].GetType().Name.Should().Be("String");
+            values["aud"].GetType().Name.Should().Be("JArray");
+
+            var audiences = ((JArray)values["aud"]);
+            foreach (var aud in audiences)
+            {
+                aud.Type.Should().Be(JTokenType.String);
+            }
+
             var iss = values["iss"].GetType().Name.Should().Be("String"); ;
             var nbf = values["nbf"].GetType().Name.Should().Be("Int64"); ;
             var exp = values["exp"].GetType().Name.Should().Be("Int64"); ;
@@ -197,7 +204,14 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
 
             var values = response.Json.ToObject<Dictionary<string, object>>();
 
-            values["aud"].GetType().Name.Should().Be("String");
+            values["aud"].GetType().Name.Should().Be("JArray");
+
+            var audiences = ((JArray)values["aud"]);
+            foreach (var aud in audiences)
+            {
+                aud.Type.Should().Be(JTokenType.String);
+            }
+
             values["iss"].GetType().Name.Should().Be("String");
             values["nbf"].GetType().Name.Should().Be("Int64");
             values["exp"].GetType().Name.Should().Be("Int64");
@@ -235,7 +249,14 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
 
             var values = response.Json.ToObject<Dictionary<string, object>>();
 
-            values["aud"].GetType().Name.Should().Be("String");
+            values["aud"].GetType().Name.Should().Be("JArray");
+
+            var audiences = ((JArray)values["aud"]);
+            foreach(var aud in audiences)
+            {
+                aud.Type.Should().Be(JTokenType.String);
+            }
+
             var iss = values["iss"].GetType().Name.Should().Be("String"); ;
             var nbf = values["nbf"].GetType().Name.Should().Be("Int64"); ;
             var exp = values["exp"].GetType().Name.Should().Be("Int64"); ;

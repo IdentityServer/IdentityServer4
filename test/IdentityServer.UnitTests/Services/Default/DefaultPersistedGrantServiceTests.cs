@@ -74,7 +74,7 @@ namespace IdentityServer4.UnitTests.Services.Default
             await _referenceTokens.StoreReferenceTokenAsync("key1", new Token()
             {
                 ClientId = "client1",
-                Audience = "aud",
+                Audiences = { "aud" },
                 CreationTime = DateTime.Now,
                 Type = "type",
                 Claims = new List<Claim>
@@ -87,7 +87,7 @@ namespace IdentityServer4.UnitTests.Services.Default
             await _referenceTokens.StoreReferenceTokenAsync("key2", new Token()
             {
                 ClientId = "client2",
-                Audience = "aud",
+                Audiences = { "aud" },
                 CreationTime = DateTime.Now,
                 Type = "type",
                 Claims = new List<Claim>
@@ -99,7 +99,7 @@ namespace IdentityServer4.UnitTests.Services.Default
             await _referenceTokens.StoreReferenceTokenAsync("key3", new Token()
             {
                 ClientId = "client1",
-                Audience = "aud",
+                Audiences = { "aud" },
                 CreationTime = DateTime.Now,
                 Type = "type",
                 Claims = new List<Claim>
@@ -116,7 +116,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                 AccessToken = new Token
                 {
                     ClientId = "client1",
-                    Audience = "aud",
+                    Audiences = { "aud" },
                     CreationTime = DateTime.Now,
                     Type = "type",
                     Claims = new List<Claim>
@@ -135,7 +135,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                 AccessToken = new Token
                 {
                     ClientId = "client1",
-                    Audience = "aud",
+                    Audiences = { "aud" },
                     CreationTime = DateTime.Now,
                     Type = "type",
                     Claims = new List<Claim>
@@ -153,7 +153,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                 AccessToken = new Token
                 {
                     ClientId = "client2",
-                    Audience = "aud",
+                    Audiences = { "aud" },
                     CreationTime = DateTime.Now,
                     Type = "type",
                     Claims = new List<Claim>
@@ -239,7 +239,7 @@ namespace IdentityServer4.UnitTests.Services.Default
             await _referenceTokens.StoreReferenceTokenAsync("key1", new Token()
             {
                 ClientId = "client1",
-                Audience = "aud",
+                Audiences = { "aud" },
                 CreationTime = DateTime.Now,
                 Type = "type",
                 Claims = new List<Claim>
@@ -252,7 +252,7 @@ namespace IdentityServer4.UnitTests.Services.Default
             await _referenceTokens.StoreReferenceTokenAsync("key2", new Token()
             {
                 ClientId = "client2",
-                Audience = "aud",
+                Audiences = { "aud" },
                 CreationTime = DateTime.Now,
                 Type = "type",
                 Claims = new List<Claim>
@@ -264,7 +264,7 @@ namespace IdentityServer4.UnitTests.Services.Default
             await _referenceTokens.StoreReferenceTokenAsync("key3", new Token()
             {
                 ClientId = "client1",
-                Audience = "aud",
+                Audiences = { "aud" },
                 CreationTime = DateTime.Now,
                 Type = "type",
                 Claims = new List<Claim>
@@ -281,7 +281,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                 AccessToken = new Token
                 {
                     ClientId = "client1",
-                    Audience = "aud",
+                    Audiences = { "aud" },
                     CreationTime = DateTime.Now,
                     Type = "type",
                     Claims = new List<Claim>
@@ -300,7 +300,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                 AccessToken = new Token
                 {
                     ClientId = "client1",
-                    Audience = "aud",
+                    Audiences = { "aud" },
                     CreationTime = DateTime.Now,
                     Type = "type",
                     Claims = new List<Claim>
@@ -318,7 +318,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                 AccessToken = new Token
                 {
                     ClientId = "client2",
-                    Audience = "aud",
+                    Audiences = { "aud" },
                     CreationTime = DateTime.Now,
                     Type = "type",
                     Claims = new List<Claim>

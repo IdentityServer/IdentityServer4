@@ -12,6 +12,7 @@ using System.Linq;
 using IdentityModel;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
 namespace IdentityServer4.Services.Default
 {
@@ -78,10 +79,15 @@ namespace IdentityServer4.Services.Default
         {
             var payload = new JwtPayload(
                 token.Issuer,
-                token.Audience,
+                null,
                 null,
                 DateTimeHelper.UtcNow,
                 DateTimeHelper.UtcNow.AddSeconds(token.Lifetime));
+
+            foreach (var aud in token.Audiences)
+            {
+                payload.AddClaim(new Claim(JwtClaimTypes.Audience, aud));
+            }
 
             var amrClaims = token.Claims.Where(x => x.Type == JwtClaimTypes.AuthenticationMethod);
             var scopeClaims = token.Claims.Where(x => x.Type == JwtClaimTypes.Scope);

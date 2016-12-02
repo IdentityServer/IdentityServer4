@@ -109,7 +109,7 @@ namespace IdentityServer4.UnitTests.Stores.Default
                 AccessToken = new Token
                 {
                     ClientId = "client",
-                    Audience = "aud",
+                    Audiences = { "aud" },
                     CreationTime = DateTime.Now,
                     Type = "type",
                     Claims = new List<Claim>
@@ -129,7 +129,8 @@ namespace IdentityServer4.UnitTests.Stores.Default
             token1.Lifetime.Should().Be(token2.Lifetime);
             token1.Subject.GetSubjectId().Should().Be(token2.Subject.GetSubjectId());
             token1.Version.Should().Be(token2.Version);
-            token1.AccessToken.Audience.Should().Be(token2.AccessToken.Audience);
+            token1.AccessToken.Audiences.Count.Should().Be(1);
+            token1.AccessToken.Audiences.First().Should().Be("aud");
             token1.AccessToken.ClientId.Should().Be(token2.AccessToken.ClientId);
             token1.AccessToken.CreationTime.Should().Be(token2.AccessToken.CreationTime);
             token1.AccessToken.Type.Should().Be(token2.AccessToken.Type);
@@ -145,7 +146,7 @@ namespace IdentityServer4.UnitTests.Stores.Default
                 AccessToken = new Token
                 {
                     ClientId = "client",
-                    Audience = "aud",
+                    Audiences = { "aud" },
                     CreationTime = DateTime.Now,
                     Type = "type",
                     Claims = new List<Claim>
@@ -174,7 +175,7 @@ namespace IdentityServer4.UnitTests.Stores.Default
                 AccessToken = new Token
                 {
                     ClientId = "client",
-                    Audience = "aud",
+                    Audiences = { "aud" },
                     CreationTime = DateTime.Now,
                     Type = "type",
                     Claims = new List<Claim>
@@ -202,7 +203,7 @@ namespace IdentityServer4.UnitTests.Stores.Default
             var token1 = new Token()
             {
                 ClientId = "client",
-                Audience = "aud",
+                Audiences = { "aud" },
                 CreationTime = DateTime.Now,
                 Type = "type",
                 Claims = new List<Claim>
@@ -217,7 +218,8 @@ namespace IdentityServer4.UnitTests.Stores.Default
             var token2 = await _referenceTokens.GetReferenceTokenAsync("key");
 
             token1.ClientId.Should().Be(token2.ClientId);
-            token1.Audience.Should().Be(token2.Audience);
+            token1.Audiences.Count.Should().Be(1);
+            token1.Audiences.First().Should().Be("aud");
             token1.CreationTime.Should().Be(token2.CreationTime);
             token1.Type.Should().Be(token2.Type);
             token1.Lifetime.Should().Be(token2.Lifetime);
@@ -230,7 +232,7 @@ namespace IdentityServer4.UnitTests.Stores.Default
             var token1 = new Token()
             {
                 ClientId = "client",
-                Audience = "aud",
+                Audiences = { "aud" },
                 CreationTime = DateTime.Now,
                 Type = "type",
                 Claims = new List<Claim>
@@ -253,7 +255,7 @@ namespace IdentityServer4.UnitTests.Stores.Default
             var token1 = new Token()
             {
                 ClientId = "client",
-                Audience = "aud",
+                Audiences = { "aud" },
                 CreationTime = DateTime.Now,
                 Type = "type",
                 Claims = new List<Claim>
@@ -314,7 +316,7 @@ namespace IdentityServer4.UnitTests.Stores.Default
             await _referenceTokens.StoreReferenceTokenAsync("key", new Token()
             {
                 ClientId = "client1",
-                Audience = "aud",
+                Audiences = { "aud" },
                 CreationTime = DateTime.Now,
                 Lifetime = 1,
                 Type = "type",
@@ -332,7 +334,7 @@ namespace IdentityServer4.UnitTests.Stores.Default
                 AccessToken = new Token
                 {
                     ClientId = "client1",
-                    Audience = "aud",
+                    Audiences = { "aud" },
                     CreationTime = DateTime.Now,
                     Type = "type",
                     Claims = new List<Claim>

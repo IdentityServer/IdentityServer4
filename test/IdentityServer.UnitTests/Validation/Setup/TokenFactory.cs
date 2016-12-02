@@ -25,7 +25,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             var token = new Token(OidcConstants.TokenTypes.AccessToken)
             {
-                Audience = "https://idsvr.com/resources",
+                Audiences = { "https://idsvr.com/resources" },
                 Issuer = "https://idsvr.com",
                 Lifetime = lifetime,
                 Claims = claims,
@@ -53,7 +53,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             var token = new Token(OidcConstants.TokenTypes.AccessToken)
             {
-                Audience = "https://idsvr.com/resources",
+                Audiences = { "https://idsvr.com/resources" },
                 Issuer = "https://idsvr.com",
                 Lifetime = lifetime,
                 Claims = claims,
@@ -75,7 +75,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             var token = new Token(OidcConstants.TokenTypes.IdentityToken)
             {
-                Audience = clientId,
+                Audiences = { clientId },
                 ClientId = clientId,
                 Issuer = "https://idsvr.com",
                 Lifetime = 600,
@@ -101,7 +101,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             var token = new Token(OidcConstants.TokenTypes.IdentityToken)
             {
-                Audience = clientId,
+                Audiences = { clientId },
                 ClientId = clientId,
                 Issuer = "https://idsvr.com",
                 Lifetime = 600,
