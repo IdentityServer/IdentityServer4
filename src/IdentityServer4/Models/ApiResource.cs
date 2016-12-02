@@ -15,31 +15,33 @@ namespace IdentityServer4.Models
         {
         }
 
-        public ApiResource(string scopeName)
-            : this(scopeName, scopeName, null)
+        public ApiResource(string name)
+            : this(name, name, null)
         {
         }
 
-        public ApiResource(string scopeName, string displayName)
-            : this(scopeName, displayName, null)
+        public ApiResource(string name, string displayName)
+            : this(name, displayName, null)
         {
         }
 
-        public ApiResource(string scopeName, IEnumerable<string> userClaimTypes)
-            : this(scopeName, scopeName, userClaimTypes)
+        public ApiResource(string name, IEnumerable<string> claimTypes)
+            : this(name, name, claimTypes)
         {
         }
 
-        public ApiResource(string scopeName, string displayName, IEnumerable<string> userClaimTypes)
+        public ApiResource(string name, string displayName, IEnumerable<string> claimTypes)
         {
-            if (scopeName.IsMissing()) throw new ArgumentNullException(nameof(scopeName));
+            if (name.IsMissing()) throw new ArgumentNullException(nameof(name));
 
-            Name = scopeName;
-            Scopes.Add(new Scope(scopeName, displayName));
+            Name = name;
+            DisplayName = displayName;
 
-            if (!userClaimTypes.IsNullOrEmpty())
+            Scopes.Add(new Scope(name, displayName));
+
+            if (!claimTypes.IsNullOrEmpty())
             {
-                foreach (var type in userClaimTypes)
+                foreach (var type in claimTypes)
                 {
                     UserClaims.Add(new UserClaim(type));
                 }
@@ -55,6 +57,11 @@ namespace IdentityServer4.Models
         /// Gets or sets the name.
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Display name.
+        /// </summary>
+        public string DisplayName { get; set; }
 
         /// <summary>
         /// Gets or sets the api secrets.
