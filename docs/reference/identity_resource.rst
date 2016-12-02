@@ -19,4 +19,4 @@ This class model an identity resource.
 ``ShowInDiscoveryDocument``
     Specifies whether this scope is shown in the discovery document. Defaults to true.
 ``UserClaims``
-    List of associated :ref:`user claims <refUserClaim>` that should be included in the identity token.
+    List of associated user claim types that should be included in the identity token.
