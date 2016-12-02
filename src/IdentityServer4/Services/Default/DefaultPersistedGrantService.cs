@@ -45,7 +45,7 @@ namespace IdentityServer4.Services.Default
                 {
                     ClientId = x.ClientId,
                     SubjectId = subjectId,
-                    Scopes = x.Scopes
+                    Scopes = x.RequestedScopes
                 });
 
             var refresh = grants.Where(x => x.Type == Constants.PersistedGrantTypes.RefreshToken)

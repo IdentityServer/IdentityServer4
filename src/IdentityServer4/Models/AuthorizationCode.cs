@@ -109,13 +109,5 @@ namespace IdentityServer4.Models
         /// The code challenge method
         /// </value>
         public string CodeChallengeMethod { get; set; }
-
-        /// <summary>
-        /// Gets the scopes.
-        /// </summary>
-        /// <value>
-        /// The scopes.
-        /// </value>
-        public IEnumerable<string> Scopes => RequestedScopes; // TODO: do we need this? redundant w/ RequestedScopes
     }
 }
