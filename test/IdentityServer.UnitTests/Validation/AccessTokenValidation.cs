@@ -217,7 +217,8 @@ namespace IdentityServer4.UnitTests.Validation
         {
             var signer = Factory.CreateDefaultTokenCreator();
             var token = TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "valid", 600, "read", "write");
-            token.Audience = "invalid";
+            token.Audiences.Clear();
+            token.Audiences.Add("invalid");
             var jwt = await signer.CreateTokenAsync(token);
 
             var validator = Factory.CreateTokenValidator(null);

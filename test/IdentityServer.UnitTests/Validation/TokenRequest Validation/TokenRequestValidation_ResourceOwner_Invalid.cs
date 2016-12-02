@@ -39,24 +39,6 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task No_Scopes()
-        {
-            var client = await _clients.FindEnabledClientByIdAsync("roclient");
-            var validator = Factory.CreateTokenRequestValidator();
-
-            var parameters = new NameValueCollection();
-            parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.Password);
-            parameters.Add(OidcConstants.TokenRequest.UserName, "bob");
-            parameters.Add(OidcConstants.TokenRequest.Password, "bob");
-
-            var result = await validator.ValidateRequestAsync(parameters, client);
-
-            result.IsError.Should().BeTrue();
-            result.Error.Should().Be(OidcConstants.TokenErrors.InvalidScope);
-        }
-
-        [Fact]
-        [Trait("Category", Category)]
         public async Task Unknown_Scope()
         {
             var client = await _clients.FindEnabledClientByIdAsync("roclient");

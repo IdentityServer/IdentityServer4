@@ -59,7 +59,6 @@ namespace IdentityServer4.IntegrationTests.Clients
                     },
 
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    AllowAccessToAllScopes = true
                 },
 
                 ///////////////////////////////////////////
@@ -148,6 +147,19 @@ namespace IdentityServer4.IntegrationTests.Clients
                     {
                         "api1", "api2"
                     },
+                },
+
+                new Client
+                {
+                    ClientId = "implicit",
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowedScopes = {"api1"}
+                },
+                new Client
+                {
+                    ClientId = "implicit_and_client_creds",
+                    AllowedGrantTypes = GrantTypes.ImplicitAndClientCredentials,
+                    AllowedScopes = {"api1"}
                 },
             };
         }

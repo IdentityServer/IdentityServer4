@@ -30,17 +30,17 @@ namespace IdentityServer4.Models
 
             foreach(var type in claimTypes)
             {
-                UserClaims.Add(new UserClaim(type));
+                UserClaims.Add(type);
             }
         }
 
         /// <summary>
-        /// Indicates if scope is enabled and can be requested. Defaults to true.
+        /// Indicates if this resource is enabled and can be requested. Defaults to true.
         /// </summary>
         public bool Enabled { get; set; } = true;
 
         /// <summary>
-        /// Name of the identity resource. This is the value a client will use to request the scope.
+        /// The unique name of the identity resource. This is the value a client will use for the scope parameter in the authorize request.
         /// </summary>
         public string Name { get; set; }
 
@@ -55,12 +55,13 @@ namespace IdentityServer4.Models
         public string Description { get; set; }
 
         /// <summary>
-        /// Specifies whether the user can de-select the scope on the consent screen. Defaults to false.
+        /// Specifies whether the user can de-select the scope on the consent screen (if the consent screen wants to implement such a feature). Defaults to false.
         /// </summary>
         public bool Required { get; set; } = false;
 
         /// <summary>
-        /// Specifies whether the consent screen will emphasize this scope. Use this setting for sensitive or important scopes. Defaults to false.
+        /// Specifies whether the consent screen will emphasize this scope (if the consent screen wants to implement such a feature). 
+        /// Use this setting for sensitive or important scopes. Defaults to false.
         /// </summary>
         public bool Emphasize { get; set; } = false;
 
@@ -70,8 +71,8 @@ namespace IdentityServer4.Models
         public bool ShowInDiscoveryDocument { get; set; } = true;
         
         /// <summary>
-        /// List of user claims that should be included in the identity token.
+        /// List of associated user claims that should be included in the identity token.
         /// </summary>
-        public ICollection<UserClaim> UserClaims { get; set; } = new HashSet<UserClaim>();
+        public ICollection<string> UserClaims { get; set; } = new HashSet<string>();
     }
 }

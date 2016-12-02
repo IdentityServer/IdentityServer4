@@ -62,12 +62,6 @@ namespace IdentityServer4.UnitTests.Validation
             }
         };
 
-        Client _unrestrictedClient = new Client
-        {
-            ClientId = "unrestricted",
-            AllowAccessToAllScopes = true
-        };
-
         Client _restrictedClient = new Client
         {
             ClientId = "restricted",
@@ -168,18 +162,6 @@ namespace IdentityServer4.UnitTests.Validation
             var result = await validator.AreScopesValidAsync(scopes);
 
             result.Should().BeFalse();
-        }
-
-        [Fact]
-        [Trait("Category", Category)]
-        public async Task All_Scopes_Allowed_For_Unrestricted_Client()
-        {
-            var scopes = "openid email resource1 resource2".ParseScopesString();
-
-            var validator = Factory.CreateScopeValidator(_store);
-            var result = await validator.AreScopesAllowedAsync(_unrestrictedClient, scopes);
-
-            result.Should().BeTrue();
         }
 
         [Fact]

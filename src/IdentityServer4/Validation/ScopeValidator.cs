@@ -136,11 +136,6 @@ namespace IdentityServer4.Validation
 
         public async Task<bool> AreScopesAllowedAsync(Client client, IEnumerable<string> requestedScopes)
         {
-            if (client.AllowAccessToAllScopes)
-            {
-                return true;
-            }
-
             if (requestedScopes.Contains(IdentityServerConstants.StandardScopes.OfflineAccess))
             {
                 if (client.AllowOfflineAccess == false)

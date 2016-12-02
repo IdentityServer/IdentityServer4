@@ -76,7 +76,7 @@ namespace IdentityServer4
 
         internal static void AssertRequiredClaims(this ClaimsPrincipal principal)
         {
-            // todo: multi accounts?
+            // for now, we don't allow more than one identity in the principal/cookie
             if (principal.Identities.Count() != 1) throw new InvalidOperationException("only a single identity supported");
             if (principal.FindFirst(JwtClaimTypes.Subject) == null) throw new InvalidOperationException("sub claim is missing");
             if (principal.FindFirst(JwtClaimTypes.Name) == null) throw new InvalidOperationException("name claim is missing");

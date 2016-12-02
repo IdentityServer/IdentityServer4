@@ -22,7 +22,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
                     },
 
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    AllowAccessToAllScopes = true,
+                    AllowedScopes = { "api1", "api2", "api3-a", "api3-b" },
                     AccessTokenType = AccessTokenType.Reference
                 },
                 new Client
@@ -34,7 +34,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
                     },
 
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    AllowAccessToAllScopes = true,
+                    AllowedScopes = { "api1", "api2", "api3-a", "api3-b" },
                     AccessTokenType = AccessTokenType.Reference
                 },
                 new Client
@@ -58,7 +58,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
                     },
 
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
-                    AllowAccessToAllScopes = true,
+                    AllowedScopes = { "api1", "api2", "api3-a", "api3-b" },
                     AccessTokenType = AccessTokenType.Reference
                 }
             };

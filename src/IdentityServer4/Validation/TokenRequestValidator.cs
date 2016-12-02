@@ -511,16 +511,13 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // check if client still has offline_access scope
             /////////////////////////////////////////////
-            if (!_validatedRequest.Client.AllowAccessToAllScopes)
+            if (!_validatedRequest.Client.AllowOfflineAccess)
             {
-                if (!_validatedRequest.Client.AllowOfflineAccess)
-                {
-                    LogError("{clientId} does not have access to offline_access scope anymore", _validatedRequest.Client.ClientId);
-                    var error = "Client does not have access to offline_access scope anymore";
-                    await RaiseRefreshTokenRefreshFailureEventAsync(refreshTokenHandle, error);
+                LogError("{clientId} does not have access to offline_access scope anymore", _validatedRequest.Client.ClientId);
+                var error = "Client does not have access to offline_access scope anymore";
+                await RaiseRefreshTokenRefreshFailureEventAsync(refreshTokenHandle, error);
 
-                    return Invalid(OidcConstants.TokenErrors.InvalidGrant);
-                }
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
             _validatedRequest.RefreshToken = refreshToken;

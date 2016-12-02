@@ -8,7 +8,7 @@ using IdentityServer4.Models;
 
 namespace IdentityServer4.UnitTests.Common
 {
-    public class TestProfileService : IProfileService
+    public class MockProfileService : IProfileService
     {
         public Task GetProfileDataAsync(ProfileDataRequestContext context)
         {

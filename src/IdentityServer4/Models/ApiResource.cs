@@ -15,61 +15,73 @@ namespace IdentityServer4.Models
         {
         }
 
-        public ApiResource(string scopeName)
-            : this(scopeName, scopeName, null)
+        public ApiResource(string name)
+            : this(name, name, null)
         {
         }
 
-        public ApiResource(string scopeName, string displayName)
-            : this(scopeName, displayName, null)
+        public ApiResource(string name, string displayName)
+            : this(name, displayName, null)
         {
         }
 
-        public ApiResource(string scopeName, IEnumerable<string> userClaimTypes)
-            : this(scopeName, scopeName, userClaimTypes)
+        public ApiResource(string name, IEnumerable<string> claimTypes)
+            : this(name, name, claimTypes)
         {
         }
 
-        public ApiResource(string scopeName, string displayName, IEnumerable<string> userClaimTypes)
+        public ApiResource(string name, string displayName, IEnumerable<string> claimTypes)
         {
-            if (scopeName.IsMissing()) throw new ArgumentNullException(nameof(scopeName));
+            if (name.IsMissing()) throw new ArgumentNullException(nameof(name));
 
-            Name = scopeName;
-            Scopes.Add(new Scope(scopeName, displayName));
+            Name = name;
+            DisplayName = displayName;
 
-            if (!userClaimTypes.IsNullOrEmpty())
+            Scopes.Add(new Scope(name, displayName));
+
+            if (!claimTypes.IsNullOrEmpty())
             {
-                foreach (var type in userClaimTypes)
+                foreach (var type in claimTypes)
                 {
-                    UserClaims.Add(new UserClaim(type));
+                    UserClaims.Add(type);
                 }
             }
         }
 
         /// <summary>
-        /// Specifies if API is enabled (defaults to true)
+        /// Indicates if this API is enabled. Defaults to true.
         /// </summary>
         public bool Enabled { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets the name.
+        /// The unique name of the API. This value is used for authentication with introspection and will be added to the audience of the outgoing access token.
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the api secrets.
+        /// Display name of the API resource.
+        /// </summary>
+        public string DisplayName { get; set; }
+        
+        /// <summary>
+        /// Description of the API resource.
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// The API secret is used for the introspection endpoint. The API can authenticate with introspection using the API name and secret.
         /// </summary>
         public ICollection<Secret> ApiSecrets { get; set; } = new HashSet<Secret>();
 
         /// <summary>
-        /// Gets or sets the scopes.
+        /// List of accociated user claims that should be included in the access token.
         /// </summary>
-        public ICollection<Scope> Scopes { get; set; } = new HashSet<Scope>();
+        public ICollection<string> UserClaims { get; set; } = new HashSet<string>();
 
         /// <summary>
-        /// List of user claims that should be included in the access token.
+        /// An API must have at least one scope. Each scope can have different settings.
         /// </summary>
-        public ICollection<UserClaim> UserClaims { get; set; } = new HashSet<UserClaim>();
+        public ICollection<Scope> Scopes { get; set; } = new HashSet<Scope>();
 
         internal ApiResource CloneWithScopes(IEnumerable<Scope> scopes)
         {

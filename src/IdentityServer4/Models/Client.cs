@@ -125,15 +125,6 @@ namespace IdentityServer4.Models
         public bool LogoutSessionRequired { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets a value indicating whether the client has access to all scopes. Defaults to false.
-        /// You can set the allowed scopes via the AllowedScopes list.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if client has access to all scopes; otherwise, <c>false</c>.
-        /// </value>
-        public bool AllowAccessToAllScopes { get; set; } = false;
-
-        /// <summary>
         /// Gets or sets a value indicating whether [allow offline access].
         /// </summary>
         /// <value>

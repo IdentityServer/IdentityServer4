@@ -94,7 +94,7 @@ namespace IdentityServer4.ResponseHandling
                 
                 if (scopeDetail != null)
                 {
-                    scopeClaims.AddRange(scopeDetail.UserClaims.Select(c => c.Type));
+                    scopeClaims.AddRange(scopeDetail.UserClaims);
                 }
             }
 

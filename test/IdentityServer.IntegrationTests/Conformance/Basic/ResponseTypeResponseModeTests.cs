@@ -35,7 +35,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Basic
                 },
 
                 AllowedGrantTypes = GrantTypes.Code,
-                AllowAccessToAllScopes = true,
+                AllowedScopes = { "openid" },
 
                 RequireConsent = false,
                 RedirectUris = new List<string>
