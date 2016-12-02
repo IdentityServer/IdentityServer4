@@ -35,7 +35,7 @@ Then select the "Empty Web" option.
 
 Next, add the IdentityServer4 nuget package by adding the following line to your project.json under the ´dependencies´ property::
 
-    "IdentityServer4": "1.0.0-rc4"
+    "IdentityServer4": "1.0.0-rc4-update1"
     
 Alternatively you can use Package Manager Console to add the dependency by running the following command:
 
