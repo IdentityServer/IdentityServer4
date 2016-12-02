@@ -172,6 +172,14 @@ namespace IdentityServer4.Services.Default
                 AccessTokenType = request.Client.AccessTokenType
             };
 
+            foreach(var api in request.Resources.ApiResources)
+            {
+                if (api.Name.IsPresent())
+                {
+                    token.Audiences.Add(api.Name);
+                }
+            }
+
             return token;
         }
 
