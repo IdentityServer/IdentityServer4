@@ -54,7 +54,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
         public async Task GetRequestedClaimTypesAsync_when_no_scopes_requested_should_return_empty_claim_types()
         {
             var claims = await _subject.GetRequestedClaimTypesAsync(null);
-            claims.ClaimTypes.Should().BeEquivalentTo(new string[] { });
+            claims.Should().BeEquivalentTo(new string[] { });
         }
 
         [Fact]
@@ -64,7 +64,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             _identityResources.Add(new IdentityResource("id2", new[] { "c2", "c3" }));
 
             var claims = await _subject.GetRequestedClaimTypesAsync(new[] { "id1", "id2", "id3" });
-            claims.ClaimTypes.Should().BeEquivalentTo(new string[] { "c1", "c2", "c3" });
+            claims.Should().BeEquivalentTo(new string[] { "c1", "c2", "c3" });
         }
 
         [Fact]
@@ -74,7 +74,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             _identityResources.Add(new IdentityResource("id2", new[] { "c2", "c3" }));
 
             var claims = await _subject.GetRequestedClaimTypesAsync(new[] { "id1", "id2", "id3" });
-            claims.ClaimTypes.Should().BeEquivalentTo(new string[] { "c2", "c3" });
+            claims.Should().BeEquivalentTo(new string[] { "c2", "c3" });
         }
 
         [Fact]

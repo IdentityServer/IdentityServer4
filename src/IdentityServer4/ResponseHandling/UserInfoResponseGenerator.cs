@@ -37,13 +37,13 @@ namespace IdentityServer4.ResponseHandling
             
             var requestedClaimTypes = await GetRequestedClaimTypesAsync(scopes);
 
-            _logger.LogDebug("Requested claim types: {claimTypes}", requestedClaimTypes.ClaimTypes.ToSpaceSeparatedString());
+            _logger.LogDebug("Requested claim types: {claimTypes}", requestedClaimTypes.ToSpaceSeparatedString());
 
             var context = new ProfileDataRequestContext(
                 subject,
                 client,
                 IdentityServerConstants.ProfileDataCallers.UserInfoEndpoint,
-                requestedClaimTypes.ClaimTypes);
+                requestedClaimTypes);
 
             await _profile.GetProfileDataAsync(context);
             var profileClaims = context.IssuedClaims;
@@ -74,11 +74,11 @@ namespace IdentityServer4.ResponseHandling
             return results.ToClaimsDictionary();
         }
 
-        public async Task<RequestedClaimTypes> GetRequestedClaimTypesAsync(IEnumerable<string> scopes)
+        public async Task<IEnumerable<string>> GetRequestedClaimTypesAsync(IEnumerable<string> scopes)
         {
             if (scopes == null || !scopes.Any())
             {
-                return new RequestedClaimTypes();
+                return Enumerable.Empty<string>();
             }
 
             var scopeString = string.Join(" ", scopes);
@@ -97,7 +97,7 @@ namespace IdentityServer4.ResponseHandling
                 }
             }
 
-            return new RequestedClaimTypes(scopeClaims.Distinct());
+            return scopeClaims.Distinct();
         }
     }
 }
