@@ -48,10 +48,7 @@ namespace IdentityServer4.IntegrationTests.Clients
                         new Scope
                         {
                             Name = "api4.with.roles",
-                            UserClaims = new List<UserClaim>
-                            {
-                                new UserClaim("role")
-                            }
+                            UserClaims = { "role" }
                         }
                     }
                 }

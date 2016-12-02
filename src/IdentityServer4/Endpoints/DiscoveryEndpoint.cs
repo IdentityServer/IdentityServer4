@@ -112,8 +112,8 @@ namespace IdentityServer4.Endpoints
             {
                 var claims = new List<string>();
 
-                claims.AddRange(resources.IdentityResources.SelectMany(x => x.UserClaims).Select(x => x.Type));
-                claims.AddRange(resources.ApiResources.SelectMany(x => x.UserClaims).Select(x => x.Type));
+                claims.AddRange(resources.IdentityResources.SelectMany(x => x.UserClaims));
+                claims.AddRange(resources.ApiResources.SelectMany(x => x.UserClaims));
 
                 document.claims_supported = claims.Distinct().ToArray();
             }

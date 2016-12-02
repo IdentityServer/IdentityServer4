@@ -64,9 +64,9 @@ namespace IdentityServer4.Services.Default
             {
                 foreach (var scopeClaim in scope.UserClaims)
                 {
-                    if (includeAllIdentityClaims || scopeClaim.AlwaysIncludeInIdToken)
+                    if (includeAllIdentityClaims)
                     {
-                        additionalClaims.Add(scopeClaim.Type);
+                        additionalClaims.Add(scopeClaim);
                     }
                 }
             }
@@ -162,7 +162,7 @@ namespace IdentityServer4.Services.Default
                     {
                         foreach (var claim in api.UserClaims)
                         {
-                            additionalClaims.Add(claim.Type);
+                            additionalClaims.Add(claim);
                         }
                     }
 
@@ -174,7 +174,7 @@ namespace IdentityServer4.Services.Default
                         {
                             foreach (var claim in scope.UserClaims)
                             {
-                                additionalClaims.Add(claim.Type);
+                                additionalClaims.Add(claim);
                             }
                         }
                     }

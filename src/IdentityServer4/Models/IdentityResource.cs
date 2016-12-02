@@ -30,7 +30,7 @@ namespace IdentityServer4.Models
 
             foreach(var type in claimTypes)
             {
-                UserClaims.Add(new UserClaim(type));
+                UserClaims.Add(type);
             }
         }
 
@@ -73,6 +73,6 @@ namespace IdentityServer4.Models
         /// <summary>
         /// List of associated user claims that should be included in the identity token.
         /// </summary>
-        public ICollection<UserClaim> UserClaims { get; set; } = new HashSet<UserClaim>();
+        public ICollection<string> UserClaims { get; set; } = new HashSet<string>();
     }
 }

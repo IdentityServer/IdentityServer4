@@ -43,7 +43,7 @@ namespace IdentityServer4.Models
             {
                 foreach (var type in claimTypes)
                 {
-                    UserClaims.Add(new UserClaim(type));
+                    UserClaims.Add(type);
                 }
             }
         }
@@ -59,9 +59,14 @@ namespace IdentityServer4.Models
         public string Name { get; set; }
 
         /// <summary>
-        /// Display name. Can be used e.g. on the consent screeen
+        /// Display name of the API resource.
         /// </summary>
         public string DisplayName { get; set; }
+        
+        /// <summary>
+        /// Description of the API resource.
+        /// </summary>
+        public string Description { get; set; }
 
         /// <summary>
         /// The API secret is used for the introspection endpoint. The API can authenticate with introspection using the API name and secret.
@@ -71,7 +76,7 @@ namespace IdentityServer4.Models
         /// <summary>
         /// List of accociated user claims that should be included in the access token.
         /// </summary>
-        public ICollection<UserClaim> UserClaims { get; set; } = new HashSet<UserClaim>();
+        public ICollection<string> UserClaims { get; set; } = new HashSet<string>();
 
         /// <summary>
         /// An API must have at least one scope. Each scope can have different settings.
