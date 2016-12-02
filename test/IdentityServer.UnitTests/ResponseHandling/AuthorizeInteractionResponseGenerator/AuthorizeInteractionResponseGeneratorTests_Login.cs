@@ -27,7 +27,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
                 TestLogger.Create<AuthorizeInteractionResponseGenerator>(),
                 _options,
                 _mockConsentService,
-                new TestProfileService());
+                new MockProfileService());
         }
 
         [Fact]
