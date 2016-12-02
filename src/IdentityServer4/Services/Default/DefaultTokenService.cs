@@ -126,7 +126,7 @@ namespace IdentityServer4.Services.Default
 
             var token = new Token(OidcConstants.TokenTypes.IdentityToken)
             {
-                Audience = request.Client.ClientId,
+                Audiences = { request.Client.ClientId },
                 Issuer = issuer,
                 Lifetime = request.Client.IdentityTokenLifetime,
                 Claims = claims.Distinct(new ClaimComparer()).ToList(),
@@ -164,7 +164,7 @@ namespace IdentityServer4.Services.Default
             var issuer = _context.HttpContext.GetIssuerUri();
             var token = new Token(OidcConstants.TokenTypes.AccessToken)
             {
-                Audience = string.Format(Constants.AccessTokenAudience, issuer.EnsureTrailingSlash()),
+                Audiences = { string.Format(Constants.AccessTokenAudience, issuer.EnsureTrailingSlash()) },
                 Issuer = issuer,
                 Lifetime = request.Client.AccessTokenLifetime,
                 Claims = claims.Distinct(new ClaimComparer()).ToList(),

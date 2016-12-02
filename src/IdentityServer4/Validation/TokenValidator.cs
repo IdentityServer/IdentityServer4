@@ -296,14 +296,17 @@ namespace IdentityServer4.Validation
         {
             var claims = new List<Claim>
             {
-                new Claim(JwtClaimTypes.Audience, token.Audience),
                 new Claim(JwtClaimTypes.Issuer, token.Issuer),
                 new Claim(JwtClaimTypes.NotBefore, token.CreationTime.ToEpochTime().ToString(), ClaimValueTypes.Integer),
                 new Claim(JwtClaimTypes.Expiration, token.CreationTime.AddSeconds(token.Lifetime).ToEpochTime().ToString(), ClaimValueTypes.Integer)
             };
 
-            claims.AddRange(token.Claims);
+            foreach (var aud in token.Audiences)
+            {
+                claims.Add(new Claim(JwtClaimTypes.Audience, aud));
+            }
 
+            claims.AddRange(token.Claims);
             return claims;
         }
 
