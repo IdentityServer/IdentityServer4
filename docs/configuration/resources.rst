@@ -59,7 +59,7 @@ and define which user claims should be included in the identity token when this 
         };
     }
 
-See the reference section for more information on identity resource settings.
+See the :ref:`reference <refIdentityResource>` section for more information on identity resource settings.
 
 Defining API resources
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -110,4 +110,4 @@ To get access tokens for APIs, you also need to register them as a scope. This t
         };
     }
 
-See the reference section for more information on API resource settings.
+See the :ref:`reference <refApiResource>` section for more information on API resource settings.
