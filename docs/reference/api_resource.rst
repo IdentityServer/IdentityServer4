@@ -14,7 +14,7 @@ This class model an API resource.
 ``ApiSecrets``
     The API secret is used for the introspection endpoint. The API can authenticate with introspection using the API name and secret.
 ``UserClaims``
-    List of associated :ref:`user claims <refUserClaim>` that should be included in the access token.
+    List of associated user claim types that should be included in the access token.
 ``Scopes``
     An API must have at least one scope. Each scope can have different settings.
 
@@ -37,4 +37,4 @@ and give different clients access to different parts.
 ``ShowInDiscoveryDocument``
     Specifies whether this scope is shown in the discovery document. Defaults to true.
 ``UserClaims``
-    List of associated :ref:`user claims <refUserClaim>` that should be included in the access token. The claims specified here will be added to the list of claims specified for the API.
+    List of associated user claim types that should be included in the access token. The claims specified here will be added to the list of claims specified for the API.
