@@ -60,7 +60,6 @@ namespace IdentityServer4.ResponseHandling
                 _logger.LogInformation("Profile service returned to the following claim types: {types}", profileClaims.Select(c => c.Type).ToSpaceSeparatedString());
             }
 
-            // TODO: unit tests
             var subClaim = results.SingleOrDefault(x => x.Type == JwtClaimTypes.Subject);
             if (subClaim == null)
             {
@@ -98,7 +97,7 @@ namespace IdentityServer4.ResponseHandling
                 }
             }
 
-            return new RequestedClaimTypes(scopeClaims);
+            return new RequestedClaimTypes(scopeClaims.Distinct());
         }
     }
 }
