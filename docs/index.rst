@@ -105,6 +105,7 @@ There are several way we can help you out.
 
    reference/identity_resource
    reference/api_resource
+   reference/user_claim
    reference/client
    reference/grant_validation_result
 
