@@ -90,9 +90,6 @@ namespace IdentityServer4.Models
         /// </value>
         public NameValueCollection Parameters { get; }
 
-        // TODO: move into conset response
-        internal string Nonce => Parameters[IdentityModel.OidcConstants.AuthorizeRequest.Nonce];
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizationRequest"/> class.
         /// </summary>
