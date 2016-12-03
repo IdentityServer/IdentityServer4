@@ -4,18 +4,11 @@
 
 using FluentAssertions;
 using IdentityModel;
-using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services.Default;
-using IdentityServer4.Stores;
-using IdentityServer4.Stores.InMemory;
-using IdentityServer4.Stores.Serialization;
 using IdentityServer4.UnitTests.Common;
-using IdentityServer4.Validation;
-using System;
 using System.Linq;
-using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
@@ -29,8 +22,7 @@ namespace IdentityServer4.UnitTests.Services.Default
 
         ClaimsPrincipal _user;
         Client _client;
-        DefaultUserConsentStore _userConsentStore;
-        InMemoryPersistedGrantStore _grantStore = new InMemoryPersistedGrantStore();
+        TestUserConsentStore _userConsentStore = new TestUserConsentStore();
 
         public DefaultConsentServiceTests()
         {
@@ -46,11 +38,6 @@ namespace IdentityServer4.UnitTests.Services.Default
                 new Claim("bar", "bar2"),
                 new Claim(JwtClaimTypes.AuthenticationContextClassReference, "acr1")
             });
-
-            _userConsentStore = new DefaultUserConsentStore(
-                _grantStore, 
-                new PersistentGrantSerializer(), 
-                TestLogger.Create<DefaultUserConsentStore>());
 
             _subject = new DefaultConsentService(_userConsentStore);
         }

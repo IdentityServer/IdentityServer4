@@ -19,7 +19,7 @@ namespace IdentityServer4.Services.Default
             _parsers = parsers;
         }
 
-        public async Task<AuthorizationRequest> ParseAsync(string returnUrl)
+        public virtual async Task<AuthorizationRequest> ParseAsync(string returnUrl)
         {
             foreach (var parser in _parsers)
             {
@@ -33,7 +33,7 @@ namespace IdentityServer4.Services.Default
             return null;            
         }
 
-        public bool IsValidReturnUrl(string returnUrl)
+        public virtual bool IsValidReturnUrl(string returnUrl)
         {
             foreach (var parser in _parsers)
             {
