@@ -127,8 +127,10 @@ namespace IdentityServer4.Services.Default
             if (subject == null)
             {
                 var user = await _context.HttpContext.GetIdentityServerUserAsync();
-                subject = user.GetSubjectId();
+                subject = user?.GetSubjectId();
             }
+
+            if (subject == null) throw new ArgumentNullException("User is not currently authenticated, and no subject id passed", nameof(subject));
 
             var consentRequest = new ConsentRequest(request, subject);
             await _consentMessageStore.WriteAsync(consentRequest.Id, new Message<ConsentResponse>(consent));
