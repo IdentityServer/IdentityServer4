@@ -108,6 +108,10 @@ namespace Host
                 ClientId = "implicit",
                 ResponseType = "id_token",
                 Scope = { "openid profile" },
+                CallbackPath = new PathString("/signin-idsrv3"),
+                // uncomment this if you upgrade to 1.1
+                //SignedOutCallbackPath = new PathString("/signin-callback-idsrv3"),
+                RemoteSignOutPath = new PathString("/signout-idsrv3"),
                 TokenValidationParameters = new TokenValidationParameters
                 {
                     NameClaimType = "name",
@@ -126,6 +130,9 @@ namespace Host
                 ResponseType = "id_token",
                 Scope = { "openid profile" },
                 CallbackPath = new PathString("/signin-aad"),
+                // uncomment this if you upgrade to 1.1
+                //SignedOutCallbackPath = new PathString("/signout-callback-aad"),
+                RemoteSignOutPath = new PathString("/signout-aad"),
                 TokenValidationParameters = new TokenValidationParameters
                 {
                     NameClaimType = "name",
