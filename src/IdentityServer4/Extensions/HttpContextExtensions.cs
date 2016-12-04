@@ -55,9 +55,21 @@ namespace IdentityServer4.Extensions
             return context.GetOrigin() + context.GetBasePath();
         }
 
+        public static string GetIdentityServerRelativeUrl(this HttpContext context, string path)
+        {
+            if (!path.IsLocalUrl())
+            {
+                return null;
+            }
+
+            if (path.StartsWith("~/")) path = path.Substring(1);
+            path = context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + path.RemoveLeadingSlash();
+            return path;
+        }
+
         public static string GetIssuerUri(this HttpContext context)
         {
-            if (context == null) throw new ArgumentNullException("context");
+            if (context == null) throw new ArgumentNullException(nameof(context));
 
             // if they've explicitly configured a URI then use it,
             // otherwise dynamically calculate it

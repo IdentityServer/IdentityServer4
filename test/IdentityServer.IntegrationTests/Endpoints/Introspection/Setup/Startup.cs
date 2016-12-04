@@ -14,7 +14,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            var builder = services.AddDeveloperIdentityServer(options =>
+            var builder = services.AddIdentityServer(options =>
             {
                 options.IssuerUri = "https://idsvr4";
                 options.Endpoints.EnableAuthorizeEndpoint = false;
@@ -22,7 +22,8 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
 
             builder.AddInMemoryClients(Clients.Get());
             builder.AddInMemoryScopes(Scopes.Get());
-            builder.AddInMemoryUsers(new List<InMemoryUser>());
+            builder.AddInMemoryUsers(Users.Get());
+            builder.AddTemporarySigningCredential();
         }
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)

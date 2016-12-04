@@ -8,6 +8,10 @@ using Microsoft.AspNetCore.Http;
 using IdentityServer4.Configuration;
 using IdentityServer4.Services;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Security.Claims;
+using IdentityServer4.Events;
+using IdentityServer4.Extensions;
 
 namespace IdentityServer4.Hosting
 {
@@ -18,16 +22,19 @@ namespace IdentityServer4.Hosting
         private IAuthenticationHandler _handler;
         private readonly ISessionIdService _sessionId;
         private readonly ILogger<AuthenticationHandler> _logger;
+        private readonly IEventService _events;
 
         public AuthenticationHandler(
             IHttpContextAccessor context, 
             IdentityServerOptions options, 
             ISessionIdService sessionId,
+            IEventService events,
             ILogger<AuthenticationHandler> logger)
         {
             _context = context.HttpContext;
             _options = options;
             _sessionId = sessionId;
+            _events = events;
             _logger = logger;
         }
 
@@ -51,6 +58,7 @@ namespace IdentityServer4.Hosting
             if (context.AuthenticationScheme == _options.AuthenticationOptions.EffectiveAuthenticationScheme)
             {
                 AugmentContext(context);
+                await RaiseSignInEventAsync(context.Principal);
             }
             await _handler.SignInAsync(context);
         }
@@ -65,9 +73,13 @@ namespace IdentityServer4.Hosting
             _sessionId.CreateSessionId(context);
         }
 
-        public Task SignOutAsync(SignOutContext context)
+        public async Task SignOutAsync(SignOutContext context)
         {
-            return _handler.SignOutAsync(context);
+            if (context.AuthenticationScheme == _options.AuthenticationOptions.EffectiveAuthenticationScheme)
+            {
+                await RaiseSignOutEventAsync();
+            }
+            await _handler.SignOutAsync(context);
         }
 
         internal async Task InitAsync()
@@ -94,6 +106,20 @@ namespace IdentityServer4.Hosting
                 _context.Features.Set(auth);
             }
             return auth;
+        }
+
+        private async Task RaiseSignInEventAsync(ClaimsPrincipal principal)
+        {
+            await _events.RaiseLoginEventAsync(principal);
+        }
+
+        private async Task RaiseSignOutEventAsync()
+        {
+            var principal = await _context.GetIdentityServerUserAsync();
+            if (principal.IsAuthenticated())
+            {
+                await _events.RaiseLogoutEventAsync(principal);
+            }
         }
     }
 }

@@ -17,7 +17,7 @@ namespace IdentityServer4.ResponseHandling
 {
     public class TokenResponseGenerator : ITokenResponseGenerator
     {
-        private ILogger _logger;
+        private readonly ILogger _logger;
         private readonly ITokenService _tokenService;
         private readonly IRefreshTokenService _refreshTokenService;
         private readonly IScopeStore _scopes;

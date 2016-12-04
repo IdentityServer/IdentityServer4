@@ -201,3 +201,6 @@ docs/_build/
 tools/Cake/
 tools/packages.config.md5sum
 .idea
+
+# Visual Studio Code workspace options
+.vscode

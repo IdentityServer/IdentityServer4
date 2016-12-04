@@ -25,6 +25,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
 
         Client client;
         string client_id = "codewithproofkey_client";
+        string client_id_plain = "codewithproofkey_plain_client";
         string redirect_uri = "https://code_client/callback";
         string code_verifier = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
         string client_secret = "secret";
@@ -53,8 +54,31 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
                     new Secret(client_secret.Sha256())
                 },
 
-                AllowedGrantTypes = IdentityServer4.Models.GrantTypes.Code,
+                AllowedGrantTypes = GrantTypes.Code,
                 RequirePkce = true,
+
+                AllowAccessToAllScopes = true,
+
+                RequireConsent = false,
+                RedirectUris = new List<string>
+                {
+                    redirect_uri
+                }
+            });
+
+            // allow plain text PKCE
+            _pipeline.Clients.Add(client = new Client
+            {
+                Enabled = true,
+                ClientId = client_id_plain,
+                ClientSecrets = new List<Secret>
+                {
+                    new Secret(client_secret.Sha256())
+                },
+
+                AllowedGrantTypes = GrantTypes.Code,
+                RequirePkce = true,
+                AllowPlainTextPkce = true,
 
                 AllowAccessToAllScopes = true,
 
@@ -70,7 +94,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task Client_can_use_plain_code_challenge_method()
+        public async Task Client_cannot_use_plain_code_challenge_method()
         {
             await _pipeline.LoginAsync("bob");
 
@@ -84,11 +108,31 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
                 codeChallenge: code_challenge,
                 codeChallengeMethod: OidcConstants.CodeChallengeMethods.Plain);
 
+            _pipeline.ErrorWasCalled.Should().BeTrue();
+            _pipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task Client_can_use_plain_code_challenge_method()
+        {
+            await _pipeline.LoginAsync("bob");
+
+            var nonce = Guid.NewGuid().ToString();
+            var code_challenge = code_verifier;
+            var authorizeResponse = await _pipeline.RequestAuthorizationEndpointAsync(client_id_plain,
+                response_type,
+                Constants.StandardScopes.OpenId,
+                redirect_uri,
+                nonce: nonce,
+                codeChallenge: code_challenge,
+                codeChallengeMethod: OidcConstants.CodeChallengeMethods.Plain);
+
             authorizeResponse.IsError.Should().BeFalse();
 
             var code = authorizeResponse.Code;
 
-            var tokenClient = new TokenClient(MockIdSvrUiPipeline.TokenEndpoint, client_id, client_secret, _pipeline.Handler);
+            var tokenClient = new TokenClient(MockIdSvrUiPipeline.TokenEndpoint, client_id_plain, client_secret, _pipeline.Handler);
             var tokenResponse = await tokenClient.RequestAuthorizationCodeAsync(code, redirect_uri, code_verifier);
 
             tokenResponse.IsError.Should().BeFalse();
@@ -214,7 +258,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
 
             var nonce = Guid.NewGuid().ToString();
             var code_challenge = code_verifier;
-            var authorizeResponse = await _pipeline.RequestAuthorizationEndpointAsync(client_id,
+            var authorizeResponse = await _pipeline.RequestAuthorizationEndpointAsync(client_id_plain,
                 response_type,
                 Constants.StandardScopes.OpenId,
                 redirect_uri,
@@ -226,7 +270,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
 
             var code = authorizeResponse.Code;
 
-            var tokenClient = new TokenClient(MockIdSvrUiPipeline.TokenEndpoint, client_id, client_secret, _pipeline.Handler);
+            var tokenClient = new TokenClient(MockIdSvrUiPipeline.TokenEndpoint, client_id_plain, client_secret, _pipeline.Handler);
             var tokenResponse = await tokenClient.RequestAuthorizationCodeAsync(code, redirect_uri);
 
             tokenResponse.IsError.Should().BeTrue();
@@ -241,7 +285,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
 
             var nonce = Guid.NewGuid().ToString();
             var code_challenge = code_verifier;
-            var authorizeResponse = await _pipeline.RequestAuthorizationEndpointAsync(client_id,
+            var authorizeResponse = await _pipeline.RequestAuthorizationEndpointAsync(client_id_plain,
                 response_type,
                 Constants.StandardScopes.OpenId,
                 redirect_uri,
@@ -253,7 +297,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
 
             var code = authorizeResponse.Code;
 
-            var tokenClient = new TokenClient(MockIdSvrUiPipeline.TokenEndpoint, client_id, client_secret, _pipeline.Handler);
+            var tokenClient = new TokenClient(MockIdSvrUiPipeline.TokenEndpoint, client_id_plain, client_secret, _pipeline.Handler);
             var tokenResponse = await tokenClient.RequestAuthorizationCodeAsync(code, redirect_uri,
                 "a");
 
@@ -269,7 +313,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
 
             var nonce = Guid.NewGuid().ToString();
             var code_challenge = code_verifier;
-            var authorizeResponse = await _pipeline.RequestAuthorizationEndpointAsync(client_id,
+            var authorizeResponse = await _pipeline.RequestAuthorizationEndpointAsync(client_id_plain,
                 response_type,
                 Constants.StandardScopes.OpenId,
                 redirect_uri,
@@ -281,7 +325,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
 
             var code = authorizeResponse.Code;
 
-            var tokenClient = new TokenClient(MockIdSvrUiPipeline.TokenEndpoint, client_id, client_secret, _pipeline.Handler);
+            var tokenClient = new TokenClient(MockIdSvrUiPipeline.TokenEndpoint, client_id_plain, client_secret, _pipeline.Handler);
             var tokenResponse = await tokenClient.RequestAuthorizationCodeAsync(code, redirect_uri,
                 new string('a', _pipeline.Options.InputLengthRestrictions.CodeVerifierMaxLength + 1));
 
@@ -297,7 +341,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
 
             var nonce = Guid.NewGuid().ToString();
             var code_challenge = code_verifier;
-            var authorizeResponse = await _pipeline.RequestAuthorizationEndpointAsync(client_id,
+            var authorizeResponse = await _pipeline.RequestAuthorizationEndpointAsync(client_id_plain,
                 response_type,
                 Constants.StandardScopes.OpenId,
                 redirect_uri,
@@ -309,7 +353,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
 
             var code = authorizeResponse.Code;
 
-            var tokenClient = new TokenClient(MockIdSvrUiPipeline.TokenEndpoint, client_id, client_secret, _pipeline.Handler);
+            var tokenClient = new TokenClient(MockIdSvrUiPipeline.TokenEndpoint, client_id_plain, client_secret, _pipeline.Handler);
             var tokenResponse = await tokenClient.RequestAuthorizationCodeAsync(code, redirect_uri,
                 "mismatched_code_verifier");
 

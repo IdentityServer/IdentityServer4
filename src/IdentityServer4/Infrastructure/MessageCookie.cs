@@ -18,7 +18,7 @@ namespace IdentityServer4
 {
     internal class MessageCookie<TModel>
     {
-        static readonly JsonSerializerSettings settings = new JsonSerializerSettings
+        static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
         {
             NullValueHandling = NullValueHandling.Ignore,
             DefaultValueHandling = DefaultValueHandling.Ignore,
@@ -41,14 +41,11 @@ namespace IdentityServer4
             _protector = provider.CreateProtector(MessageType);
         }
 
-        string MessageType
-        {
-            get { return typeof(TModel).Name; }
-        }
+        string MessageType => typeof(TModel).Name;
 
         string Protect(Message<TModel> message)
         {
-            var json = JsonConvert.SerializeObject(message, settings);
+            var json = JsonConvert.SerializeObject(message, Settings);
             _logger.LogTrace("Protecting message: {0}", json);
 
             return _protector.Protect(json);
@@ -61,26 +58,14 @@ namespace IdentityServer4
             return message;
         }
 
-        string CookiePrefix
-        {
-            get
-            {
-                return MessageType + ".";
-            }
-        }
+        string CookiePrefix => MessageType + ".";
 
         string GetCookieFullName(string id)
         {
             return CookiePrefix + id;
         }
 
-        string CookiePath
-        {
-            get
-            {
-                return _context.HttpContext.GetBasePath().CleanUrlPath();
-            }
-        }
+        string CookiePath => _context.HttpContext.GetBasePath().CleanUrlPath();
 
         private IEnumerable<string> GetCookieNames()
         {
@@ -94,19 +79,13 @@ namespace IdentityServer4
             }
         }
 
-        private bool Secure
-        {
-            get
-            {
-                return _context.HttpContext.Request.IsHttps;
-            }
-        }
+        private bool Secure => _context.HttpContext.Request.IsHttps;
 
         public void Write(string id, Message<TModel> message)
         {
             ClearOverflow();
 
-            if (message == null) throw new ArgumentNullException("message");
+            if (message == null) throw new ArgumentNullException(nameof(message));
 
             var name = GetCookieFullName(id);
             var data = Protect(message);

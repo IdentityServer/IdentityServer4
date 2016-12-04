@@ -17,7 +17,7 @@ namespace Host.Configuration
             var users = new List<InMemoryUser>
             {
                 new InMemoryUser{Subject = "818727", Username = "alice", Password = "alice", 
-                    Claims = new Claim[]
+                    Claims = 
                     {
                         new Claim(JwtClaimTypes.Name, "Alice Smith"),
                         new Claim(JwtClaimTypes.GivenName, "Alice"),
@@ -31,7 +31,7 @@ namespace Host.Configuration
                     }
                 },
                 new InMemoryUser{Subject = "88421113", Username = "bob", Password = "bob", 
-                    Claims = new Claim[]
+                    Claims = 
                     {
                         new Claim(JwtClaimTypes.Name, "Bob Smith"),
                         new Claim(JwtClaimTypes.GivenName, "Bob"),

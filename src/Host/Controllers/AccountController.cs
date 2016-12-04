@@ -92,7 +92,7 @@ namespace IdentityServer4.Quickstart.UI.Controllers
                     };
 
                     await HttpContext.Authentication.SignInAsync(user.Subject, user.Username, props);
-                    
+
                     // make sure the returnUrl is still valid, and if yes - redirect back to authorize endpoint
                     if (_interaction.IsValidReturnUrl(model.ReturnUrl))
                     {
@@ -159,6 +159,12 @@ namespace IdentityServer4.Quickstart.UI.Controllers
         [HttpGet]
         public async Task<IActionResult> Logout(string logoutId)
         {
+            if (User.Identity.IsAuthenticated == false)
+            {
+                // if the user is not authenticated, then just show logged out page
+                return await Logout(new LogoutViewModel { LogoutId = logoutId });
+            }
+
             var context = await _interaction.GetLogoutContextAsync(logoutId);
             if (context?.IsAuthenticatedLogout == true)
             {
@@ -181,6 +187,13 @@ namespace IdentityServer4.Quickstart.UI.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout(LogoutViewModel model)
         {
+            var idp = User?.FindFirst(JwtClaimTypes.IdentityProvider)?.Value;
+            if (idp != null && idp != "local")
+            {
+                string url = "/Account/Logout?logoutId=" + model.LogoutId;
+                await HttpContext.Authentication.SignOutAsync(idp, new AuthenticationProperties { RedirectUri = url });
+            }
+
             // delete authentication cookie
             await HttpContext.Authentication.SignOutAsync();
 
@@ -213,10 +226,12 @@ namespace IdentityServer4.Quickstart.UI.Controllers
             returnUrl = "/account/externallogincallback?returnUrl=" + returnUrl;
 
             // start challenge and roundtrip the return URL
-            return new ChallengeResult(provider, new AuthenticationProperties
+            var props = new AuthenticationProperties
             {
-                RedirectUri = returnUrl
-            });
+                RedirectUri = returnUrl, 
+                Items = { { "scheme", provider } }
+            };
+            return new ChallengeResult(provider, props);
         }
 
         /// <summary>
@@ -226,7 +241,8 @@ namespace IdentityServer4.Quickstart.UI.Controllers
         public async Task<IActionResult> ExternalLoginCallback(string returnUrl)
         {
             // read external identity from the temporary cookie
-            var tempUser = await HttpContext.Authentication.AuthenticateAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme);
+            var info = await HttpContext.Authentication.GetAuthenticateInfoAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme);
+            var tempUser = info?.Principal;
             if (tempUser == null)
             {
                 throw new Exception("External authentication error");
@@ -250,7 +266,7 @@ namespace IdentityServer4.Quickstart.UI.Controllers
             // remove the user id claim from the claims collection and move to the userId property
             // also set the name of the external authentication provider
             claims.Remove(userIdClaim);
-            var provider = userIdClaim.Issuer;
+            var provider = info.Properties.Items["scheme"];
             var userId = userIdClaim.Value;
 
             // check if the external user is already provisioned

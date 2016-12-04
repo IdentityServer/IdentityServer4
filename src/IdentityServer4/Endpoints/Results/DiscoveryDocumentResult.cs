@@ -14,8 +14,8 @@ namespace IdentityServer4.Endpoints.Results
 {
     public class DiscoveryDocumentResult : IEndpointResult
     {
-        public DiscoveryDocument Document { get; private set; }
-        public Dictionary<string, object> CustomEntries { get; private set; }
+        public DiscoveryDocument Document { get; }
+        public Dictionary<string, object> CustomEntries { get; }
 
         public DiscoveryDocumentResult(DiscoveryDocument document, Dictionary<string, object> customEntries)
         {

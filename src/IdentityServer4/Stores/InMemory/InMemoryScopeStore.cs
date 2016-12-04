@@ -34,7 +34,7 @@ namespace IdentityServer4.Stores.InMemory
         /// </returns>
         public Task<IEnumerable<Scope>> FindScopesAsync(IEnumerable<string> scopeNames)
         {
-            if (scopeNames == null) throw new ArgumentNullException("scopeNames");
+            if (scopeNames == null) throw new ArgumentNullException(nameof(scopeNames));
             
             var scopes = from s in _scopes
                          where scopeNames.ToList().Contains(s.Name)
@@ -49,7 +49,6 @@ namespace IdentityServer4.Stores.InMemory
         /// </summary>
         /// <param name="publicOnly">if set to <c>true</c> only public scopes are returned.</param>
         /// <returns></returns>
-        /// <exception cref="System.NotImplementedException"></exception>
         public Task<IEnumerable<Scope>> GetScopesAsync(bool publicOnly = true)
         {
             if (publicOnly)

@@ -67,7 +67,7 @@ namespace IdentityServer4.Services.Default
                 var context = new ProfileDataRequestContext(
                     subject,
                     client,
-                    Constants.ProfileDataCallers.ClaimsProviderIdentityToken);
+                    IdentityServerConstants.ProfileDataCallers.ClaimsProviderIdentityToken);
 
                 await _profile.GetProfileDataAsync(context);
                 
@@ -100,7 +100,7 @@ namespace IdentityServer4.Services.Default
                 var context = new ProfileDataRequestContext(
                     subject,
                     client,
-                    Constants.ProfileDataCallers.ClaimsProviderIdentityToken,
+                    IdentityServerConstants.ProfileDataCallers.ClaimsProviderIdentityToken,
                     additionalClaims);
                 
                 await _profile.GetProfileDataAsync(context);
@@ -176,7 +176,7 @@ namespace IdentityServer4.Services.Default
                     var context = new ProfileDataRequestContext(
                         subject,
                         client,
-                        Constants.ProfileDataCallers.ClaimsProviderAccessToken);
+                        IdentityServerConstants.ProfileDataCallers.ClaimsProviderAccessToken);
 
                     await _profile.GetProfileDataAsync(context);
 
@@ -210,7 +210,7 @@ namespace IdentityServer4.Services.Default
                     var context = new ProfileDataRequestContext(
                         subject,
                         client,
-                        Constants.ProfileDataCallers.ClaimsProviderAccessToken,
+                        IdentityServerConstants.ProfileDataCallers.ClaimsProviderAccessToken,
                         additionalClaims.Distinct());
 
                     await _profile.GetProfileDataAsync(context);

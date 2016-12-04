@@ -202,6 +202,7 @@ namespace IdentityServer4
                 public const string Login = "returnUrl";
                 public const string Consent = "returnUrl";
                 public const string Logout = "logoutId";
+                public const string Custom = "returnUrl";
             }
 
             public static class DefaultRoutePaths
@@ -279,13 +280,6 @@ namespace IdentityServer4
         public static class RevocationErrors
         {
             public const string UnsupportedTokenType = "unsupported_token_type";
-        }
-
-        public static class ProfileDataCallers
-        {
-            public const string UserInfoEndpoint = "UserInfoEndpoint";
-            public const string ClaimsProviderIdentityToken = "ClaimsProviderIdentityToken";
-            public const string ClaimsProviderAccessToken = "ClaimsProviderAccessToken";
         }
 
         public class Filters

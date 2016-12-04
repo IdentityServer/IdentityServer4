@@ -1,3 +1,4 @@
+.. _refResourceOwnerPasswordValidator:
 Resource Owner Password Validation
 ===================================
 

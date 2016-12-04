@@ -79,7 +79,7 @@ namespace IdentityServer4.IntegrationTests.Common
 
             services.AddDataProtection();
 
-            services.AddDeveloperIdentityServer(options =>
+            services.AddIdentityServer(options =>
             {
                 Options = options;
 
@@ -93,7 +93,8 @@ namespace IdentityServer4.IntegrationTests.Common
             })
             .AddInMemoryClients(Clients)
             .AddInMemoryScopes(Scopes)
-            .AddInMemoryUsers(Users);
+            .AddInMemoryUsers(Users)
+            .AddTemporarySigningCredential();
         }
 
         public event Action<IApplicationBuilder> OnPreConfigure = x => { };

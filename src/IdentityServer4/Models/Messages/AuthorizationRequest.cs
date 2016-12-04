@@ -88,15 +88,9 @@ namespace IdentityServer4.Models
         /// <value>
         /// The parameters.
         /// </value>
-        public NameValueCollection Parameters { get; private set; }
+        public NameValueCollection Parameters { get; }
 
-        internal string Nonce
-        {
-            get
-            {
-                return Parameters[IdentityModel.OidcConstants.AuthorizeRequest.Nonce];
-            }
-        }
+        internal string Nonce => Parameters[IdentityModel.OidcConstants.AuthorizeRequest.Nonce];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizationRequest"/> class.

@@ -12,7 +12,6 @@ using System.Net;
 using IdentityModel.Client;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
@@ -169,6 +168,45 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
             var active = values["active"].GetType().Name.Should().Be("Boolean"); ;
             var scopes = values["scope"] as JArray;
 
+            scopes.Count.Should().Be(1);
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task Response_data_with_user_authentication_should_be_valid_using_single_scope()
+        {
+            var tokenClient = new TokenClient(
+                TokenEndpoint,
+                "ro.client",
+                "secret",
+                _handler);
+
+            var tokenResponse = await tokenClient.RequestResourceOwnerPasswordAsync("bob", "bob", "api1");
+            tokenResponse.IsError.Should().BeFalse();
+
+            var introspectionClient = new IntrospectionClient(
+                IntrospectionEndpoint,
+                "api1",
+                "secret",
+                _handler);
+
+            var response = await introspectionClient.SendAsync(new IntrospectionRequest
+            {
+                Token = tokenResponse.AccessToken
+            });
+
+            var values = response.Json.ToObject<Dictionary<string, object>>();
+
+            values["aud"].GetType().Name.Should().Be("String");
+            values["iss"].GetType().Name.Should().Be("String");
+            values["nbf"].GetType().Name.Should().Be("Int64");
+            values["exp"].GetType().Name.Should().Be("Int64");
+            values["auth_time"].GetType().Name.Should().Be("Int64");
+            values["client_id"].GetType().Name.Should().Be("String");
+            values["sub"].GetType().Name.Should().Be("String");
+            values["active"].GetType().Name.Should().Be("Boolean");
+
+            var scopes = values["scope"] as JArray;
             scopes.Count.Should().Be(1);
         }
 

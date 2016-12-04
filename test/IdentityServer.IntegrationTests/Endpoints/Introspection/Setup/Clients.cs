@@ -36,6 +36,18 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
                     AllowAccessToAllScopes = true,
                     AccessTokenType = AccessTokenType.Reference
+                },
+                new Client
+                {
+                    ClientId = "ro.client",
+                    ClientSecrets = new List<Secret>
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+                    AllowAccessToAllScopes = true,
+                    AccessTokenType = AccessTokenType.Reference
                 }
             };
         }

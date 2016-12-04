@@ -19,7 +19,6 @@ using Microsoft.IdentityModel.Tokens;
 using IdentityServer4.IntegrationTests.Common;
 using Newtonsoft.Json;
 using System.Text;
-using static IdentityModel.Client.TokenResponse;
 using Newtonsoft.Json.Linq;
 
 namespace IdentityServer4.IntegrationTests.Clients

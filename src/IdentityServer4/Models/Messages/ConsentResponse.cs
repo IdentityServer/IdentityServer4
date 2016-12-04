@@ -20,13 +20,7 @@ namespace IdentityServer4.Models
         /// <value>
         ///   <c>true</c> if consent was granted; otherwise, <c>false</c>.
         /// </value>
-        public bool Granted
-        {
-            get
-            {
-                return ScopesConsented != null && ScopesConsented.Any();
-            }
-        }
+        public bool Granted => ScopesConsented != null && ScopesConsented.Any();
 
         /// <summary>
         /// Gets or sets the scopes consented to.

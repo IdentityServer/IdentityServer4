@@ -35,7 +35,7 @@ namespace IdentityServer4.Services.Default
         /// <exception cref="System.ArgumentNullException">evt</exception>
         public virtual Task RaiseAsync<T>(Event<T> evt)
         {
-            if (evt == null) throw new ArgumentNullException("evt");
+            if (evt == null) throw new ArgumentNullException(nameof(evt));
 
             if (_helper.CanRaiseEvent(evt))
             {

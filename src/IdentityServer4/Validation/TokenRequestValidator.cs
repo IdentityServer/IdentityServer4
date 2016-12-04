@@ -271,7 +271,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // make sure user is enabled
             /////////////////////////////////////////////
-            var isActiveCtx = new IsActiveContext(_validatedRequest.AuthorizationCode.Subject, _validatedRequest.Client);
+            var isActiveCtx = new IsActiveContext(_validatedRequest.AuthorizationCode.Subject, _validatedRequest.Client, IdentityServerConstants.ProfileIsActiveCallers.AuthorizationCodeValidation);
             await _profile.IsActiveAsync(isActiveCtx);
 
             if (isActiveCtx.IsActive == false)
@@ -415,13 +415,12 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // make sure user is enabled
             /////////////////////////////////////////////
-            var isActiveCtx = new IsActiveContext(resourceOwnerContext.Result.Subject, _validatedRequest.Client);
+            var isActiveCtx = new IsActiveContext(resourceOwnerContext.Result.Subject, _validatedRequest.Client, IdentityServerConstants.ProfileIsActiveCallers.ResourceOwnerValidation);
             await _profile.IsActiveAsync(isActiveCtx);
 
             if (isActiveCtx.IsActive == false)
             {
                 LogError("User has been disabled: {subjectId}", resourceOwnerContext.Result.Subject.GetSubjectId());
-                var error = "User has been disabled: " + resourceOwnerContext.Result.Subject.GetSubjectId();
                 await RaiseFailedResourceOwnerAuthenticationEventAsync(userName, "user is inactive");
 
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
@@ -518,7 +517,7 @@ namespace IdentityServer4.Validation
             // make sure user is enabled
             /////////////////////////////////////////////
             var subject = _validatedRequest.RefreshToken.Subject;
-            var isActiveCtx = new IsActiveContext(subject, _validatedRequest.Client);
+            var isActiveCtx = new IsActiveContext(subject, _validatedRequest.Client, IdentityServerConstants.ProfileIsActiveCallers.RefreshTokenValidation);
             await _profile.IsActiveAsync(isActiveCtx);
 
             if (isActiveCtx.IsActive == false)
@@ -737,12 +736,12 @@ namespace IdentityServer4.Validation
 
         private async Task RaiseSuccessfulResourceOwnerAuthenticationEventAsync(string userName, string subjectId)
         {
-            await _events.RaiseSuccessfulResourceOwnerFlowAuthenticationEventAsync(userName, subjectId);
+            await _events.RaiseSuccessfulResourceOwnerPasswordAuthenticationEventAsync(userName, subjectId);
         }
 
         private async Task RaiseFailedResourceOwnerAuthenticationEventAsync(string userName, string error)
         {
-            await _events.RaiseFailedResourceOwnerFlowAuthenticationEventAsync(userName, error);
+            await _events.RaiseFailedResourceOwnerPasswordAuthenticationEventAsync(userName, error);
         }
 
         private async Task RaiseFailedAuthorizationCodeRedeemedEventAsync(string handle, string error)

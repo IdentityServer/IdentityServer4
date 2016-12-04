@@ -5,7 +5,6 @@
 using IdentityServer4.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System;
 
 namespace IdentityServer4.UnitTests.Common
 {

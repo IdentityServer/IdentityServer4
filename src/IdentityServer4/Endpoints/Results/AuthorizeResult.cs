@@ -18,7 +18,7 @@ namespace IdentityServer4.Endpoints.Results
 {
     class AuthorizeResult : IEndpointResult
     {
-        public AuthorizeResponse Response { get; private set; }
+        public AuthorizeResponse Response { get; }
 
         public AuthorizeResult(AuthorizeResponse response)
         {
@@ -110,12 +110,29 @@ namespace IdentityServer4.Endpoints.Results
             else if (Response.Request.ResponseMode == OidcConstants.ResponseModes.FormPost)
             {
                 context.Response.SetNoCache();
+                AddCspHeaders(context);
                 await context.Response.WriteHtmlAsync(GetFormPostHtml());
             }
             else
             {
                 //_logger.LogError("Unsupported response mode.");
                 throw new InvalidOperationException("Unsupported response mode");
+            }
+        }
+
+        private void AddCspHeaders(HttpContext context)
+        {
+            var formOrigin = Response.Request.RedirectUri.GetOrigin();
+            var value = $"default-src 'none'; script-src 'sha256-VuNUSJ59bpCpw62HM2JG/hCyGiqoPN3NqGvNXQPU+rY='; form-action {formOrigin}";
+
+            if (!context.Response.Headers.ContainsKey("Content-Security-Policy"))
+            {
+                context.Response.Headers.Add("Content-Security-Policy", value);
+            }
+
+            if (!context.Response.Headers.ContainsKey("X-Content-Security-Policy"))
+            {
+                context.Response.Headers.Add("X-Content-Security-Policy", value);
             }
         }
 

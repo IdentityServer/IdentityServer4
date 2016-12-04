@@ -12,7 +12,7 @@ namespace IdentityServer4.Endpoints.Results
 {
     public class JsonWebKeysResult : IEndpointResult
     {
-        public IEnumerable<JsonWebKey> WebKeys { get; private set; }
+        public IEnumerable<JsonWebKey> WebKeys { get; }
 
         public JsonWebKeysResult(IEnumerable<JsonWebKey> webKeys)
         {

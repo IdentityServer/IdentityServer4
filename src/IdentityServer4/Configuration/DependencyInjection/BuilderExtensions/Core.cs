@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Configuration;
 using IdentityServer4.Configuration.DependencyInjection;
@@ -14,9 +13,7 @@ using IdentityServer4.Models;
 using IdentityServer4.ResponseHandling;
 using IdentityServer4.Services;
 using IdentityServer4.Services.Default;
-using IdentityServer4.Services.InMemory;
 using IdentityServer4.Stores;
-using IdentityServer4.Stores.InMemory;
 using IdentityServer4.Stores.Serialization;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Cors.Infrastructure;
@@ -24,18 +21,18 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-using CryptoRandom = IdentityModel.CryptoRandom;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class IdentityServerBuilderExtensions
+    public static class IdentityServerBuilderExtensionsCore
     {
+        /// <summary>
+        /// Adds the required platform services.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
         public static IIdentityServerBuilder AddRequiredPlatformServices(this IIdentityServerBuilder builder)
         {
             builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -48,6 +45,11 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
+        /// <summary>
+        /// Adds the default endpoints.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
         public static IIdentityServerBuilder AddDefaultEndpoints(this IIdentityServerBuilder builder)
         {
             builder.Services.AddSingleton<IEndpointRouter>(resolver =>
@@ -73,6 +75,13 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
+        /// <summary>
+        /// Adds the endpoint.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="builder">The builder.</param>
+        /// <param name="endpoint">The endpoint.</param>
+        /// <returns></returns>
         public static IIdentityServerBuilder AddEndpoint<T>(this IIdentityServerBuilder builder, EndpointName endpoint)
             where T : class, IEndpoint
         {
@@ -82,6 +91,11 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
+        /// <summary>
+        /// Adds the core services.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
         public static IIdentityServerBuilder AddCoreServices(this IIdentityServerBuilder builder)
         {
             builder.Services.AddTransient<ScopeSecretValidator>();
@@ -106,6 +120,11 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
+        /// <summary>
+        /// Adds the pluggable services.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
         public static IIdentityServerBuilder AddPluggableServices(this IIdentityServerBuilder builder)
         {
             builder.Services.TryAddTransient<IPersistedGrantService, DefaultPersistedGrantService>();
@@ -124,6 +143,11 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
+        /// <summary>
+        /// Adds the validators.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
         public static IIdentityServerBuilder AddValidators(this IIdentityServerBuilder builder)
         {
             builder.Services.TryAddTransient<IEndSessionRequestValidator, EndSessionRequestValidator>();
@@ -141,6 +165,11 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
+        /// <summary>
+        /// Adds the response generators.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
         public static IIdentityServerBuilder AddResponseGenerators(this IIdentityServerBuilder builder)
         {
             builder.Services.TryAddTransient<ITokenResponseGenerator, TokenResponseGenerator>();
@@ -152,6 +181,11 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
+        /// <summary>
+        /// Adds the default secret parsers.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
         public static IIdentityServerBuilder AddDefaultSecretParsers(this IIdentityServerBuilder builder)
         {
             builder.Services.AddTransient<ISecretParser, BasicAuthenticationSecretParser>();
@@ -160,6 +194,11 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
+        /// <summary>
+        /// Adds the default secret validators.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
         public static IIdentityServerBuilder AddDefaultSecretValidators(this IIdentityServerBuilder builder)
         {
             builder.Services.AddTransient<ISecretValidator, HashedSharedSecretValidator>();
@@ -167,14 +206,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
-        public static IIdentityServerBuilder AddInMemoryCaching(this IIdentityServerBuilder builder)
-        {
-            builder.Services.TryAddTransient(typeof(ICache<>), typeof(DefaultCache<>));
-
-            return builder;
-        }
-
-        static void AddTransientDecorator<TService, TImplementation>(this IServiceCollection services)
+        internal static void AddTransientDecorator<TService, TImplementation>(this IServiceCollection services)
             where TService : class
             where TImplementation : class, TService
         {
@@ -182,7 +214,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<TService, TImplementation>();
         }
 
-        static void AddDecorator<TService>(this IServiceCollection services)
+        internal static void AddDecorator<TService>(this IServiceCollection services)
         {
             var registration = services.FirstOrDefault(x => x.ServiceType == typeof(TService));
             if (registration == null)
@@ -217,204 +249,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.Add(new ServiceDescriptor(typeof(Decorator<TService>), innerType, ServiceLifetime.Transient));
                 services.Add(new ServiceDescriptor(type, type, registration.Lifetime));
             }
-        }
-
-        public static IIdentityServerBuilder AddInMemoryScopes(this IIdentityServerBuilder builder, IEnumerable<Scope> scopes)
-        {
-            builder.Services.AddSingleton(scopes);
-            builder.Services.AddTransient<IScopeStore, InMemoryScopeStore>();
-
-            return builder;
-        }
-
-        public static IIdentityServerBuilder AddInMemoryClients(this IIdentityServerBuilder builder, IEnumerable<Client> clients)
-        {
-            builder.Services.AddSingleton(clients);
-
-            builder.Services.AddTransient<IClientStore, InMemoryClientStore>();
-            builder.Services.AddTransient<ICorsPolicyService, InMemoryCorsPolicyService>();
-
-            return builder;
-        }
-
-        public static IIdentityServerBuilder AddInMemoryUsers(this IIdentityServerBuilder builder, List<InMemoryUser> users)
-        {
-            builder.Services.AddSingleton(users);
-
-            builder.Services.AddTransient<IProfileService, InMemoryUserProfileService>();
-            builder.Services.AddTransient<IResourceOwnerPasswordValidator, InMemoryUserResourceOwnerPasswordValidator>();
-            builder.Services.AddTransient<InMemoryUserLoginService>();
-
-            return builder;
-        }
-
-        public static IIdentityServerBuilder AddInMemoryStores(this IIdentityServerBuilder builder)
-        {
-            builder.Services.TryAddSingleton<IPersistedGrantStore, InMemoryPersistedGrantStore>();
-
-            return builder;
-        }
-
-        public static IIdentityServerBuilder AddExtensionGrantValidator<T>(this IIdentityServerBuilder builder)
-            where T : class, IExtensionGrantValidator
-        {
-            builder.Services.AddTransient<IExtensionGrantValidator, T>();
-
-            return builder;
-        }
-
-        public static IIdentityServerBuilder AddResourceOwnerValidator<T>(this IIdentityServerBuilder builder)
-           where T : class, IResourceOwnerPasswordValidator
-        {
-            builder.Services.AddTransient<IResourceOwnerPasswordValidator, T>();
-
-            return builder;
-        }
-
-        public static IIdentityServerBuilder AddProfileService<T>(this IIdentityServerBuilder builder)
-           where T : class, IProfileService
-        {
-            builder.Services.AddTransient<IProfileService, T>();
-
-            return builder;
-        }
-
-        public static IIdentityServerBuilder AddSecretParser<T>(this IIdentityServerBuilder builder)
-            where T : class, ISecretParser
-        {
-            builder.Services.AddTransient<ISecretParser, T>();
-
-            return builder;
-        }
-
-        public static IIdentityServerBuilder AddSecretValidator<T>(this IIdentityServerBuilder builder)
-            where T : class, ISecretValidator
-        {
-            builder.Services.AddTransient<ISecretValidator, T>();
-
-            return builder;
-        }
-
-        /// <summary>
-        /// Adds the client store cache.
-        /// </summary>
-        /// <typeparam name="T">The type of the concrete client store class that is registered in DI.</typeparam>
-        /// <param name="builder">The builder.</param>
-        /// <returns></returns>
-        public static IIdentityServerBuilder AddClientStoreCache<T>(this IIdentityServerBuilder builder)
-            where T : IClientStore
-        {
-            builder.Services.AddTransient<IClientStore, CachingClientStore<T>>();
-            return builder;
-        }
-        
-        /// <summary>
-        /// Adds the client store cache.
-        /// </summary>
-        /// <typeparam name="T">The type of the concrete scope store class that is registered in DI.</typeparam>
-        /// <param name="builder">The builder.</param>
-        /// <returns></returns>
-        public static IIdentityServerBuilder AddScopeStoreCache<T>(this IIdentityServerBuilder builder)
-            where T : IScopeStore
-        {
-            builder.Services.AddTransient<IScopeStore, CachingScopeStore<T>>();
-            return builder;
-        }
-
-        public static IIdentityServerBuilder SetSigningCredential(this IIdentityServerBuilder builder, SigningCredentials credential)
-        {
-            // todo
-            //if (!(credential.Key is AsymmetricSecurityKey) &&
-            //    !credential.Key.IsSupportedAlgorithm(SecurityAlgorithms.RsaSha256Signature))
-            //{
-            //    throw new InvalidOperationException("Signing key is not asymmetric and does not support RS256");
-            //}
-
-            builder.Services.AddSingleton<ISigningCredentialStore>(new DefaultSigningCredentialsStore(credential));
-            builder.Services.AddSingleton<IValidationKeysStore>(new DefaultValidationKeysStore(new[] { credential.Key }));
-
-            return builder;
-        }
-
-        public static IIdentityServerBuilder SetSigningCredential(this IIdentityServerBuilder builder, X509Certificate2 certificate)
-        {
-            if (certificate == null) throw new ArgumentNullException(nameof(certificate));
-
-            if (!certificate.HasPrivateKey)
-            {
-                throw new InvalidOperationException("X509 certificate does not have a private key.");
-            }
-
-            var credential = new SigningCredentials(new X509SecurityKey(certificate), "RS256");
-            return builder.SetSigningCredential(credential);
-        }
-
-        public static IIdentityServerBuilder SetSigningCredential(this IIdentityServerBuilder builder, string name, StoreLocation location = StoreLocation.LocalMachine)
-        {
-            X509Certificate2 certificate;
-
-            if (location == StoreLocation.LocalMachine)
-            {
-                certificate = X509.LocalMachine.My.SubjectDistinguishedName.Find(name, validOnly: false).FirstOrDefault();
-            }
-            else
-            {
-                certificate = X509.CurrentUser.My.SubjectDistinguishedName.Find(name, validOnly: false).FirstOrDefault();
-            }
-
-            if (certificate == null) throw new InvalidOperationException($"certificate: '{name}' not found in certificate store");
-
-            return builder.SetSigningCredential(certificate);
-        }
-
-        public static IIdentityServerBuilder SetSigningCredential(this IIdentityServerBuilder builder, RsaSecurityKey rsaKey)
-        {
-            if (!rsaKey.HasPrivateKey)
-            {
-                throw new InvalidOperationException("RSA key does not have a private key.");
-            }
-
-            var credential = new SigningCredentials(rsaKey, "RS256");
-            return builder.SetSigningCredential(credential);
-        }
-
-        public static IIdentityServerBuilder SetTemporarySigningCredential(this IIdentityServerBuilder builder)
-        {
-            var rsa = RSA.Create();
-
-#if NET452
-            if (rsa.KeySize < 2048)
-            {
-                rsa.Dispose();
-                rsa = new RSACryptoServiceProvider(2048);
-            }
-#endif
-            RsaSecurityKey key = null;
-#if NET452
-            if (rsa is RSACryptoServiceProvider) 
-            {
-                var parameters = rsa.ExportParameters(includePrivateParameters: true);
-                key = new RsaSecurityKey(parameters);
-                        
-                rsa.Dispose();
-            }   
-#endif
-            if (key == null)
-            {
-                key = new RsaSecurityKey(rsa);
-            }
-
-            key.KeyId = CryptoRandom.CreateUniqueId();
-            
-            var credential = new SigningCredentials(key, "RS256");
-            return builder.SetSigningCredential(credential);
-        }
-
-        public static IIdentityServerBuilder AddValidationKeys(this IIdentityServerBuilder builder, params AsymmetricSecurityKey[] keys)
-        {
-            builder.Services.AddSingleton<IValidationKeysStore>(new DefaultValidationKeysStore(keys));
-
-            return builder;
         }
     }
 }

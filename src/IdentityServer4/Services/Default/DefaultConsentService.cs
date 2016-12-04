@@ -48,8 +48,8 @@ namespace IdentityServer4.Services.Default
         /// </exception>
         public virtual async Task<bool> RequiresConsentAsync(ClaimsPrincipal subject, Client client, IEnumerable<string> scopes)
         {
-            if (client == null) throw new ArgumentNullException("client");
-            if (subject == null) throw new ArgumentNullException("subject");
+            if (client == null) throw new ArgumentNullException(nameof(client));
+            if (subject == null) throw new ArgumentNullException(nameof(subject));
 
             if (!client.RequireConsent)
             {
@@ -98,8 +98,8 @@ namespace IdentityServer4.Services.Default
         /// </exception>
         public virtual async Task UpdateConsentAsync(ClaimsPrincipal subject, Client client, IEnumerable<string> scopes)
         {
-            if (client == null) throw new ArgumentNullException("client");
-            if (subject == null) throw new ArgumentNullException("subject");
+            if (client == null) throw new ArgumentNullException(nameof(client));
+            if (subject == null) throw new ArgumentNullException(nameof(subject));
 
             if (client.AllowRememberConsent)
             {

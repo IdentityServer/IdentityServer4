@@ -1,3 +1,4 @@
+.. _refHybridQuickstart:
 Switching to Hybrid Flow and adding API Access back
 ===================================================
 

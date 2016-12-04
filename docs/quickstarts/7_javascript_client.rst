@@ -1,3 +1,4 @@
+.. _refJavaScriptQuickstart:
 Adding a JavaScript client
 ==========================
 

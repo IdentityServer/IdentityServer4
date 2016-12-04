@@ -72,7 +72,7 @@ namespace IdentityServer4.Validation
                     principal.Identities.First().AddClaim(new Claim(JwtClaimTypes.ReferenceTokenId, result.ReferenceTokenId));
                 }
 
-                var isActiveCtx = new IsActiveContext(principal, result.Client);
+                var isActiveCtx = new IsActiveContext(principal, result.Client, IdentityServerConstants.ProfileIsActiveCallers.AccessTokenValidation);
                 await Profile.IsActiveAsync(isActiveCtx);
                 
                 if (isActiveCtx.IsActive == false)
@@ -122,7 +122,7 @@ namespace IdentityServer4.Validation
             {
                 var principal = Principal.Create("tokenvalidator", result.Claims.ToArray());
 
-                var isActiveCtx = new IsActiveContext(principal, result.Client);
+                var isActiveCtx = new IsActiveContext(principal, result.Client, IdentityServerConstants.ProfileIsActiveCallers.IdentityTokenValidation);
                 await Profile.IsActiveAsync(isActiveCtx);
                 
                 if (isActiveCtx.IsActive == false)

@@ -44,26 +44,15 @@ namespace IdentityServer4.Events
             ///////////////////////////
             private const int AuthenticationEventsStart = 1000;
 
-            public const int PreLoginSuccess = AuthenticationEventsStart + 0;
-            public const int PreLoginFailure = AuthenticationEventsStart + 1;
+            public const int UserLogin = AuthenticationEventsStart + 0;
 
-            public const int LocalLoginSuccess = AuthenticationEventsStart + 10;
-            public const int LocalLoginFailure = AuthenticationEventsStart + 11;
+            public const int UserLogout = AuthenticationEventsStart + 10;
 
-            public const int ExternalLoginSuccess = AuthenticationEventsStart + 20;
-            public const int ExternalLoginFailure = AuthenticationEventsStart + 21;
-            public const int ExternalLoginError = AuthenticationEventsStart + 22;
-            
-            public const int Logout = AuthenticationEventsStart + 30;
+            public const int ResourceOwnerPasswordLoginSuccess = AuthenticationEventsStart + 20;
+            public const int ResourceOwnerPasswordLoginFailure = AuthenticationEventsStart + 21;
 
-            public const int PartialLogin = AuthenticationEventsStart + 40;
-            public const int PartialLoginComplete = AuthenticationEventsStart + 41;
-
-            public const int ResourceOwnerFlowLoginSuccess = AuthenticationEventsStart + 50;
-            public const int ResourceOwnerFlowLoginFailure = AuthenticationEventsStart + 51;
-
-            public const int ClientAuthenticationSuccess = AuthenticationEventsStart + 60;
-            public const int ClientAuthenticationFailure = AuthenticationEventsStart + 61;
+            public const int ClientAuthenticationSuccess = AuthenticationEventsStart + 30;
+            public const int ClientAuthenticationFailure = AuthenticationEventsStart + 31;
 
             ///////////////////////////
             /// Token service related events

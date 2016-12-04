@@ -21,9 +21,12 @@ namespace IdentityServer4.Services.Default
 
         public void CreateSessionId(SignInContext context)
         {
-            var sid = CryptoRandom.CreateUniqueId();
-            context.Properties[OidcConstants.EndSessionRequest.Sid] = sid;
-            IssueSessionIdCookie(sid);
+            if (!context.Properties.ContainsKey(OidcConstants.EndSessionRequest.Sid))
+            {
+                context.Properties[OidcConstants.EndSessionRequest.Sid] = CryptoRandom.CreateUniqueId();
+            }
+
+            IssueSessionIdCookie(context.Properties[OidcConstants.EndSessionRequest.Sid]);
         }
 
         public async Task<string> GetCurrentSessionIdAsync()
@@ -40,18 +43,17 @@ namespace IdentityServer4.Services.Default
         public async Task EnsureSessionCookieAsync()
         {
             var sid = await GetCurrentSessionIdAsync();
-            EnsureSessionCookie(sid);
-        }
-
-        void EnsureSessionCookie(string sid)
-        {
             if (sid != null)
             {
                 IssueSessionIdCookie(sid);
             }
             else
             {
-                RemoveCookie();
+                // we don't want to delete the session id cookie if the user is
+                // no longer authenticated since we might be waiting for the 
+                // signout iframe to render -- it's a timing issue between the 
+                // logout page removing the authentication cookie and the 
+                // signout iframe callback from performing SLO
             }
         }
 

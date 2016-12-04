@@ -1,3 +1,4 @@
+.. _refResosurceOwnerQuickstart:
 Protecting an API using Passwords
 =================================
 

@@ -66,6 +66,7 @@ namespace IdentityServer4.Endpoints.Results
 
             if (redirect.IsLocalUrl())
             {
+                // TODO: look at GetIdentityServerRelativeUrl instead and logic if the above if check; compare to login result
                 if (redirect.StartsWith("~/")) redirect = redirect.Substring(1);
                 redirect = context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + redirect.RemoveLeadingSlash();
             }

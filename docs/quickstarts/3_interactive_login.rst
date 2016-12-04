@@ -1,3 +1,4 @@
+.. _refImplicitQuickstart:
 Adding User Authentication with OpenID Connect
 ==============================================
 
@@ -13,7 +14,7 @@ All the protocol support needed for OpenID Connect is already built into Identit
 You need to provide the necessary UI parts for login, logout, consent and error.
 
 While the look & feel as well as the exact workflows will probably always differ in every
-IdentityServer implementation, we provide a sample UI that you can use as a starting point.
+IdentityServer implementation, we provide an MVC-based sample UI that you can use as a starting point.
 
 This UI can be found in the `Quickstart UI repo <https://github.com/IdentityServer/IdentityServer4.Quickstart.UI>`_.
 You can either clone or download this repo and drop the controllers, views, models and CSS into your web application.
@@ -22,6 +23,8 @@ Alternatively you can run this command from the command line in your web applica
 automate the download::
 
     iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/dev/get.ps1'))
+
+See the `readme <https://github.com/IdentityServer/IdentityServer4.Quickstart.UI/blob/dev/README.md>`_ for the quickstart UI for more information. 
 
 Spend some time inspecting the controllers and models, the better you understand them, 
 the easier it will be to make future modifications.
@@ -47,7 +50,9 @@ Next add both middlewares to your pipeline - the cookies one is simple::
 
 The OpenID Connect middleware needs slightly more configuration.
 You point it to your IdentityServer, specify a client ID and tell it which middleware will do
-the local signin (namely the cookies middleware)::
+the local signin (namely the cookies middleware).  As well, we've turned off the JWT claim type mapping to allow well-known claims (e.g. 'sub' and 'idp') to flow through unmolested.  This "clearing" of the claim type mappings must be done before the call to `UseOpenIdConnectAuthentication()`::
+
+    JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
     app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
     {
@@ -201,7 +206,7 @@ Let's add these claims to the user, so IdentityServer can put them into the iden
                 Username = "alice",
                 Password = "password",
 
-                Claims = 
+                Claims = new []
                 {
                     new Claim("name", "Alice"),
                     new Claim("website", "https://alice.com")
@@ -213,7 +218,7 @@ Let's add these claims to the user, so IdentityServer can put them into the iden
                 Username = "bob",
                 Password = "password",
 
-                Claims = 
+                Claims = new []
                 {
                     new Claim("name", "Bob"),
                     new Claim("website", "https://bob.com")

@@ -3,7 +3,10 @@
 
 
 using IdentityServer4.Configuration;
+using IdentityServer4.Stores;
+using IdentityServer4.Stores.InMemory;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -30,6 +33,9 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.AddDefaultSecretParsers();
             builder.AddDefaultSecretValidators();
 
+            // provide default in-memory implementation, not suitable for most production scenarios
+            builder.AddInMemoryPersistedGrants();
+
             return new IdentityServerBuilder(services);
         }
 
@@ -43,27 +49,6 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.Configure<IdentityServerOptions>(configuration);
             return services.AddIdentityServer();
-        }
-
-        public static IIdentityServerBuilder AddDeveloperIdentityServer(this IServiceCollection services)
-        {
-            var builder = services.AddIdentityServer();
-            builder.AddInMemoryStores();
-            builder.SetTemporarySigningCredential();
-
-            return builder;
-        }
-
-        public static IIdentityServerBuilder AddDeveloperIdentityServer(this IServiceCollection services, Action<IdentityServerOptions> setupAction)
-        {
-            services.Configure(setupAction);
-            return services.AddDeveloperIdentityServer();
-        }
-
-        public static IIdentityServerBuilder AddDeveloperIdentityServer(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.Configure<IdentityServerOptions>(configuration);
-            return services.AddDeveloperIdentityServer();
         }
     }
 }

@@ -41,6 +41,7 @@ If you need help building or running your identity platform, let us know. Head o
    intro/terminology
    intro/specs
    intro/packaging
+   intro/support
 
 .. toctree::
    :maxdepth: 2
@@ -74,6 +75,7 @@ If you need help building or running your identity platform, let us know. Head o
    :hidden:
    :caption: Topics
 
+   topics/grant_types
    topics/secrets
    topics/extension_grants
    topics/resource_owner

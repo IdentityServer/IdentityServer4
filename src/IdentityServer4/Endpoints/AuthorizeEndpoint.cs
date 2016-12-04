@@ -187,6 +187,10 @@ namespace IdentityServer4.Endpoints
             {
                 return new ConsentPageResult(request);
             }
+            if (interactionResult.IsRedirect)
+            {
+                return new CustomRedirectResult(request, interactionResult.RedirectUrl);
+            }
 
             var response = await _authorizeResponseGenerator.CreateResponseAsync(request);
 
