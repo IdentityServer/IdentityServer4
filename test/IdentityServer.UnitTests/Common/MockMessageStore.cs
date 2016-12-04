@@ -15,7 +15,7 @@ namespace IdentityServer4.UnitTests.Common
 
         public Task DeleteAsync(string id)
         {
-            if (Messages.ContainsKey(id))
+            if (id != null && Messages.ContainsKey(id))
             {
                 Messages.Remove(id);
             }
@@ -24,8 +24,11 @@ namespace IdentityServer4.UnitTests.Common
 
         public Task<Message<TModel>> ReadAsync(string id)
         {
-            Message<TModel> val;
-            Messages.TryGetValue(id, out val);
+            Message<TModel> val = null;
+            if (id != null)
+            {
+                Messages.TryGetValue(id, out val);
+            }
             return Task.FromResult(val);
         }
 

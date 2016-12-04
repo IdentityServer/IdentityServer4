@@ -77,6 +77,7 @@ namespace IdentityServer4.Hosting
         {
             if (context.AuthenticationScheme == _options.AuthenticationOptions.EffectiveAuthenticationScheme)
             {
+                _sessionId.RemoveCookie();
                 await RaiseSignOutEventAsync();
             }
             await _handler.SignOutAsync(context);

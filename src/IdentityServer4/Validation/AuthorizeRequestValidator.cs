@@ -159,6 +159,15 @@ namespace IdentityServer4.Validation
             request.Client = client;
 
             //////////////////////////////////////////////////////////
+            // check if client protocol type is oidc
+            //////////////////////////////////////////////////////////
+            if (request.Client.ProtocolType != IdentityServerConstants.ProtocolTypes.OpenIdConnect)
+            {
+                LogError($"Invalid protocol type for OIDC authorize endpoint: {request.Client.ProtocolType}", request);
+                return Invalid(request, OidcConstants.AuthorizeErrors.UnauthorizedClient);
+            }
+
+            //////////////////////////////////////////////////////////
             // check if redirect_uri is valid
             //////////////////////////////////////////////////////////
             if (await _uriValidator.IsRedirectUriValidAsync(request.RedirectUri, request.Client) == false)
@@ -374,7 +383,7 @@ namespace IdentityServer4.Validation
 
             request.RequestedScopes = scope.FromSpaceSeparatedString().Distinct().ToList();
 
-            if (request.RequestedScopes.Contains(Constants.StandardScopes.OpenId))
+            if (request.RequestedScopes.Contains(IdentityServerConstants.StandardScopes.OpenId))
             {
                 request.IsOpenIdRequest = true;
             }
@@ -407,15 +416,15 @@ namespace IdentityServer4.Validation
                 return Invalid(request, OidcConstants.AuthorizeErrors.InvalidScope);
             }
 
-            if (_scopeValidator.ContainsResourceScopes)
+            if (_scopeValidator.ContainsApiResourceScopes)
             {
-                request.IsResourceRequest = true;
+                request.IsApiResourceRequest = true;
             }
 
             //////////////////////////////////////////////////////////
             // check scopes and scope restrictions
             //////////////////////////////////////////////////////////
-            if (!_scopeValidator.AreScopesAllowed(request.Client, request.RequestedScopes))
+            if (await _scopeValidator.AreScopesAllowedAsync(request.Client, request.RequestedScopes) == false)
             {
                 return Invalid(request, OidcConstants.AuthorizeErrors.UnauthorizedClient);
             }

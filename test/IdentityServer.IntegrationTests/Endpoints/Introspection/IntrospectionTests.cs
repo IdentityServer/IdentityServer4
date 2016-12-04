@@ -160,7 +160,14 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
 
             var values = response.Json.ToObject<Dictionary<string, object>>();
 
-            values["aud"].GetType().Name.Should().Be("String");
+            values["aud"].GetType().Name.Should().Be("JArray");
+
+            var audiences = ((JArray)values["aud"]);
+            foreach (var aud in audiences)
+            {
+                aud.Type.Should().Be(JTokenType.String);
+            }
+
             var iss = values["iss"].GetType().Name.Should().Be("String"); ;
             var nbf = values["nbf"].GetType().Name.Should().Be("Int64"); ;
             var exp = values["exp"].GetType().Name.Should().Be("Int64"); ;
@@ -197,7 +204,14 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
 
             var values = response.Json.ToObject<Dictionary<string, object>>();
 
-            values["aud"].GetType().Name.Should().Be("String");
+            values["aud"].GetType().Name.Should().Be("JArray");
+
+            var audiences = ((JArray)values["aud"]);
+            foreach (var aud in audiences)
+            {
+                aud.Type.Should().Be(JTokenType.String);
+            }
+
             values["iss"].GetType().Name.Should().Be("String");
             values["nbf"].GetType().Name.Should().Be("Int64");
             values["exp"].GetType().Name.Should().Be("Int64");
@@ -220,14 +234,13 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
                 "secret",
                 _handler);
 
-            var tokenResponse = await tokenClient.RequestClientCredentialsAsync("api1 api2 unrestricted.api");
+            var tokenResponse = await tokenClient.RequestClientCredentialsAsync("api3-a api3-b");
 
             var introspectionClient = new IntrospectionClient(
                 IntrospectionEndpoint,
-                "unrestricted.api",
+                "api3",
                 "secret",
                 _handler);
-
 
             var response = await introspectionClient.SendAsync(new IntrospectionRequest
             {
@@ -236,32 +249,39 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
 
             var values = response.Json.ToObject<Dictionary<string, object>>();
 
-            values["aud"].GetType().Name.Should().Be("String");
+            values["aud"].GetType().Name.Should().Be("JArray");
+
+            var audiences = ((JArray)values["aud"]);
+            foreach(var aud in audiences)
+            {
+                aud.Type.Should().Be(JTokenType.String);
+            }
+
             var iss = values["iss"].GetType().Name.Should().Be("String"); ;
             var nbf = values["nbf"].GetType().Name.Should().Be("Int64"); ;
             var exp = values["exp"].GetType().Name.Should().Be("Int64"); ;
             var clientId = values["client_id"].GetType().Name.Should().Be("String"); ;
             var active = values["active"].GetType().Name.Should().Be("Boolean"); ;
-            var scopes = values["scope"] as JArray;
-
-            scopes.Count.Should().Be(3);
+            var scopes = (values["scope"] as JArray).Select(x=>x.ToString()).ToArray();
+            scopes.Length.Should().Be(2);
+            scopes.Should().BeEquivalentTo(new string[] { "api3-a", "api3-b" });
         }
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task Valid_Token_Valid_Unrestricted_Scope()
+        public async Task Valid_Token_Many_Scopes_Api_Only_See_Its_Scope()
         {
             var tokenClient = new TokenClient(
                 TokenEndpoint,
-                "client1",
+                "client3",
                 "secret",
                 _handler);
 
-            var tokenResponse = await tokenClient.RequestClientCredentialsAsync("api1 api2 unrestricted.api");
+            var tokenResponse = await tokenClient.RequestClientCredentialsAsync("api1 api2 api3-a");
 
             var introspectionClient = new IntrospectionClient(
                 IntrospectionEndpoint,
-                "unrestricted.api",
+                "api3",
                 "secret",
                 _handler);
 
@@ -275,9 +295,10 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
 
             var scopes = from c in response.Claims
                          where c.Type == "scope"
-                         select c;
+                         select c.Value;
 
-            scopes.Count().Should().Be(3);
+            scopes.Count().Should().Be(1);
+            scopes.First().Should().Be("api3-a");
         }
 
         [Fact]

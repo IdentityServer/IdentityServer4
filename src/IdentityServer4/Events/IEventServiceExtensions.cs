@@ -7,6 +7,7 @@ using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
@@ -132,8 +133,7 @@ namespace IdentityServer4.Events
                 ClientId = token.ClientId,
                 TokenType = token.AccessTokenType,
                 Lifetime = token.Lifetime,
-                // TODO: extract scopes from claims collection
-                //Scopes = token.Claims.Scopes,
+                Scopes = token.Scopes,
                 Claims = token.Claims.ToClaimsDictionary(),
                 ReferenceTokenHandle = referenceTokenHandle
             };
@@ -172,11 +172,10 @@ namespace IdentityServer4.Events
             {
                 HandleId = id,
                 ClientId = code.ClientId,
-                Scopes = code.Scopes,
+                Scopes = code.RequestedScopes,
                 SubjectId = code.Subject.GetSubjectId(),
                 RedirectUri = code.RedirectUri,
-                // TODO:
-                //Lifetime = code.Client.AuthorizationCodeLifetime
+                Lifetime = code.Lifetime
             };
 
             await events.RaiseEventAsync(evt);
@@ -292,7 +291,7 @@ namespace IdentityServer4.Events
             await events.RaiseAsync(evt);
         }
 
-        public static async Task RaiseSuccessfulIntrospectionEndpointEventAsync(this IEventService events, string token, string tokenStatus, string scopeName)
+        public static async Task RaiseSuccessfulIntrospectionEndpointEventAsync(this IEventService events, string token, string tokenStatus, string apiName)
         {
             var evt = new Event<IntrospectionEndpointDetail>(
                 EventConstants.Categories.Endpoints,
@@ -303,13 +302,13 @@ namespace IdentityServer4.Events
                 {
                     Token = ObfuscateToken(token),
                     TokenStatus = tokenStatus,
-                    ScopeName = scopeName
+                    ApiName = apiName
                 });
 
             await events.RaiseAsync(evt);
         }
 
-        public static async Task RaiseFailureIntrospectionEndpointEventAsync(this IEventService events, string error, string token, string scopeName)
+        public static async Task RaiseFailureIntrospectionEndpointEventAsync(this IEventService events, string error, string token, string apiName)
         {
             var evt = new Event<IntrospectionEndpointDetail>(
                  EventConstants.Categories.Endpoints,
@@ -319,7 +318,7 @@ namespace IdentityServer4.Events
                  new IntrospectionEndpointDetail
                  {
                      Token = ObfuscateToken(token),
-                     ScopeName = scopeName
+                     ApiName = apiName
                  },
                  error);
 

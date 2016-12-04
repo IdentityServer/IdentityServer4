@@ -36,7 +36,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Basic
                 },
 
                 AllowedGrantTypes = GrantTypes.Code,
-                AllowAccessToAllScopes = true,
+                AllowedScopes = { "openid" },
 
                 RequireConsent = false,
                 RedirectUris = new List<string>
@@ -46,7 +46,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Basic
                 }
             });
 
-            _mockPipeline.Scopes.Add(StandardScopes.OpenId);
+            _mockPipeline.IdentityScopes.Add(new IdentityResources.OpenId());
 
             _mockPipeline.Users.Add(new InMemoryUser
             {

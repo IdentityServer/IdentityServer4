@@ -59,7 +59,6 @@ namespace IdentityServer4.IntegrationTests.Clients
                     },
 
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    AllowAccessToAllScopes = true
                 },
 
                 ///////////////////////////////////////////
@@ -75,14 +74,13 @@ namespace IdentityServer4.IntegrationTests.Clients
 
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
+                    AllowOfflineAccess = true,
                     AllowedScopes = 
                     {
-                        StandardScopes.OpenId.Name,
-                        StandardScopes.Email.Name,
-                        StandardScopes.OfflineAccess.Name,
-                        StandardScopes.Address.Name,
-                        StandardScopes.Roles.Name,
-
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Email,
+                        IdentityServerConstants.StandardScopes.Address,
+                        "roles",
                         "api1", "api2", "api4.with.roles"
                     }
                 },
@@ -119,9 +117,10 @@ namespace IdentityServer4.IntegrationTests.Clients
 
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
+                    AllowOfflineAccess = true,
                     AllowedScopes = 
                     {
-                        "api1", "api2", "offline_access"
+                        "api1", "api2"
                     },
 
                     AccessTokenType = AccessTokenType.Reference
@@ -148,6 +147,19 @@ namespace IdentityServer4.IntegrationTests.Clients
                     {
                         "api1", "api2"
                     },
+                },
+
+                new Client
+                {
+                    ClientId = "implicit",
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowedScopes = {"api1"}
+                },
+                new Client
+                {
+                    ClientId = "implicit_and_client_creds",
+                    AllowedGrantTypes = GrantTypes.ImplicitAndClientCredentials,
+                    AllowedScopes = {"api1"}
                 },
             };
         }

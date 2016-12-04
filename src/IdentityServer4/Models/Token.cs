@@ -32,12 +32,12 @@ namespace IdentityServer4.Models
         }
 
         /// <summary>
-        /// Gets or sets the audience.
+        /// Gets or sets the audiences.
         /// </summary>
         /// <value>
-        /// The audience.
+        /// The audiences.
         /// </value>
-        public string Audience { get; set; }
+        public ICollection<string> Audiences { get; set; } = new HashSet<string>();
         
         /// <summary>
         /// Gets or sets the issuer.

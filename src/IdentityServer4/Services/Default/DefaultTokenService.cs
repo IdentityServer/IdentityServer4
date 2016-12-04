@@ -6,6 +6,7 @@ using IdentityModel;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
+using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
@@ -39,9 +40,9 @@ namespace IdentityServer4.Services.Default
         protected readonly IClaimsService _claimsProvider;
 
         /// <summary>
-        /// The persisted grants
+        /// The reference token store
         /// </summary>
-        protected readonly IPersistedGrantService _grants;
+        protected readonly IReferenceTokenStore _referenceTokenStore;
 
         /// <summary>
         /// The signing service
@@ -58,16 +59,16 @@ namespace IdentityServer4.Services.Default
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="claimsProvider">The claims provider.</param>
-        /// <param name="grants">The grants.</param>
+        /// <param name="referenceTokenStore">The reference token store.</param>
         /// <param name="creationService">The signing service.</param>
         /// <param name="events">The events service.</param>
         /// <param name="logger">The logger.</param>
-        public DefaultTokenService(IHttpContextAccessor context, IClaimsService claimsProvider, IPersistedGrantService grants, ITokenCreationService creationService, IEventService events, ILogger<DefaultTokenService> logger)
+        public DefaultTokenService(IHttpContextAccessor context, IClaimsService claimsProvider, IReferenceTokenStore referenceTokenStore, ITokenCreationService creationService, IEventService events, ILogger<DefaultTokenService> logger)
         {
             _logger = logger;
             _context = context;
             _claimsProvider = claimsProvider;
-            _grants = grants;
+            _referenceTokenStore = referenceTokenStore;
             _creationService = creationService;
             _events = events;
         }
@@ -117,7 +118,7 @@ namespace IdentityServer4.Services.Default
             claims.AddRange(await _claimsProvider.GetIdentityTokenClaimsAsync(
                 request.Subject,
                 request.Client,
-                request.Scopes,
+                request.Resources,
                 request.IncludeAllIdentityClaims,
                 request.ValidatedRequest));
 
@@ -125,7 +126,7 @@ namespace IdentityServer4.Services.Default
 
             var token = new Token(OidcConstants.TokenTypes.IdentityToken)
             {
-                Audience = request.Client.ClientId,
+                Audiences = { request.Client.ClientId },
                 Issuer = issuer,
                 Lifetime = request.Client.IdentityTokenLifetime,
                 Claims = claims.Distinct(new ClaimComparer()).ToList(),
@@ -152,7 +153,7 @@ namespace IdentityServer4.Services.Default
             claims.AddRange(await _claimsProvider.GetAccessTokenClaimsAsync(
                 request.Subject,
                 request.Client,
-                request.Scopes,
+                request.Resources,
                 request.ValidatedRequest));
 
             if (request.Client.IncludeJwtId)
@@ -163,13 +164,21 @@ namespace IdentityServer4.Services.Default
             var issuer = _context.HttpContext.GetIssuerUri();
             var token = new Token(OidcConstants.TokenTypes.AccessToken)
             {
-                Audience = string.Format(Constants.AccessTokenAudience, issuer.EnsureTrailingSlash()),
+                Audiences = { string.Format(Constants.AccessTokenAudience, issuer.EnsureTrailingSlash()) },
                 Issuer = issuer,
                 Lifetime = request.Client.AccessTokenLifetime,
                 Claims = claims.Distinct(new ClaimComparer()).ToList(),
                 ClientId = request.Client.ClientId,
                 AccessTokenType = request.Client.AccessTokenType
             };
+
+            foreach(var api in request.Resources.ApiResources)
+            {
+                if (api.Name.IsPresent())
+                {
+                    token.Audiences.Add(api.Name);
+                }
+            }
 
             return token;
         }
@@ -199,7 +208,7 @@ namespace IdentityServer4.Services.Default
                     _logger.LogTrace("Creating reference access token");
 
                     var handle = CryptoRandom.CreateUniqueId();
-                    await _grants.StoreReferenceTokenAsync(handle, token);
+                    await _referenceTokenStore.StoreReferenceTokenAsync(handle, token);
 
                     tokenResult = handle;
                 }

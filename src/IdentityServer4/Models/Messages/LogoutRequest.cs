@@ -22,6 +22,8 @@ namespace IdentityServer4.Models
             if (request != null)
             {
                 ClientId = request.Client?.ClientId;
+                SessionId = request.SessionId;
+
                 if (request.PostLogOutUri != null)
                 {
                     PostLogoutRedirectUri = request.PostLogOutUri;
@@ -35,8 +37,12 @@ namespace IdentityServer4.Models
 
         public LogoutMessage(LogoutMessage message)
         {
-            ClientId = message?.ClientId;
-            PostLogoutRedirectUri = message?.PostLogoutRedirectUri;
+            if (message != null)
+            {
+                ClientId = message.ClientId;
+                PostLogoutRedirectUri = message.PostLogoutRedirectUri;
+                SessionId = message.SessionId;
+            }
         }
 
         /// <summary>
@@ -54,6 +60,22 @@ namespace IdentityServer4.Models
         /// The post logout redirect URI.
         /// </value>
         public string PostLogoutRedirectUri { get; set; }
+
+        /// <summary>
+        /// Gets or sets the session identifier for the user at logout time.
+        /// </summary>
+        /// <value>
+        /// The session identifier.
+        /// </value>
+        public string SessionId { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the user should be prompted for signout.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if the signout prompt should be shown; otherwise, <c>false</c>.
+        /// </value>
+        public bool ShowSignoutPrompt => ClientId.IsMissing();
     }
 
     /// <summary>
@@ -71,10 +93,8 @@ namespace IdentityServer4.Models
         /// Gets or sets the sign out iframe URL.
         /// </summary>
         /// <value>
-        /// The sign out i frame URL.
+        /// The sign out iframe URL.
         /// </value>
         public string SignOutIFrameUrl { get; set; }
-
-        public bool IsAuthenticatedLogout => ClientId.IsPresent();
     }
 }

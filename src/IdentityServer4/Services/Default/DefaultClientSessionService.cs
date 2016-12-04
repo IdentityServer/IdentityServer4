@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using IdentityServer4.Extensions;
+using IdentityServer4.Configuration;
 
 namespace IdentityServer4.Services.Default
 {
@@ -19,7 +20,7 @@ namespace IdentityServer4.Services.Default
     {
         const string ClientListKey = "ClientSessions";
 
-        static readonly JsonSerializerSettings settings = new JsonSerializerSettings
+        static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
         {
             NullValueHandling = NullValueHandling.Ignore,
             DefaultValueHandling = DefaultValueHandling.Ignore,
@@ -27,12 +28,18 @@ namespace IdentityServer4.Services.Default
 
         private readonly IHttpContextAccessor _context;
         private readonly ISessionIdService _sessionId;
+        private readonly IdentityServerOptions _options;
         private readonly ILogger<DefaultClientSessionService> _logger;
 
-        public DefaultClientSessionService(IHttpContextAccessor context, ISessionIdService sessionId, ILogger<DefaultClientSessionService> logger)
+        public DefaultClientSessionService(
+            IHttpContextAccessor context, 
+            ISessionIdService sessionId, 
+            IdentityServerOptions options,
+            ILogger<DefaultClientSessionService> logger)
         {
             _context = context;
             _sessionId = sessionId;
+            _options = options;
             _logger = logger;
         }
 
@@ -76,7 +83,7 @@ namespace IdentityServer4.Services.Default
             {
                 var bytes = Base64Url.Decode(value);
                 value = Encoding.UTF8.GetString(bytes);
-                return JsonConvert.DeserializeObject<string[]>(value, settings);
+                return JsonConvert.DeserializeObject<string[]>(value, SerializerSettings);
             }
 
             return Enumerable.Empty<string>();
@@ -143,36 +150,41 @@ namespace IdentityServer4.Services.Default
             await _context.HttpContext.ReIssueSignInCookie(info);
         }
 
-        public async Task EnsureClientListCookieAsync()
+        public async Task EnsureClientListCookieAsync(string sid)
         {
-            var value = await GetPropertyValueAsync();
-            SetCookie(value);
+            if (await _sessionId.GetCurrentSessionIdAsync() == sid)
+            {
+                var value = await GetPropertyValueAsync();
+                SetCookie(sid, value);
+            }
         }
 
-        public IEnumerable<string> GetClientListFromCookie()
+        public IEnumerable<string> GetClientListFromCookie(string sid)
         {
-            var value = GetCookie();
+            var value = GetCookie(sid);
             var list = DecodeList(value);
             return list;
         }
 
-        public void RemoveCookie()
+        public void RemoveCookie(string sid)
         {
-            SetCookie(null);
+            SetCookie(sid, null);
         }
 
-        string CookieName => ClientListKey + "." + _sessionId.GetCookieValue();
+        string GetCookieName(string sid)
+        {
+            return $"{_options.AuthenticationOptions.EffectiveAuthenticationScheme}.{ClientListKey}.{sid}";
+        }
 
         string CookiePath => _context.HttpContext.GetBasePath().CleanUrlPath();
-
         private bool Secure => _context.HttpContext.Request.IsHttps;
 
-        void SetCookie(string value)
+        void SetCookie(string sid, string value)
         {
             DateTime? expires = null;
             if (value.IsMissing())
             {
-                var existingValue = GetCookie();
+                var existingValue = GetCookie(sid);
                 if (existingValue == null)
                 {
                     // no need to write cookie to clear if we don't already have one
@@ -191,12 +203,12 @@ namespace IdentityServer4.Services.Default
                 Expires = expires
             };
 
-            _context.HttpContext.Response.Cookies.Append(CookieName, value, opts);
+            _context.HttpContext.Response.Cookies.Append(GetCookieName(sid), value, opts);
         }
 
-        string GetCookie()
+        string GetCookie(string sid)
         {
-            return _context.HttpContext.Request.Cookies[CookieName];
+            return _context.HttpContext.Request.Cookies[GetCookieName(sid)];
         }
     }
 }

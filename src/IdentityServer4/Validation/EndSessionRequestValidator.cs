@@ -88,6 +88,7 @@ namespace IdentityServer4.Validation
                     }
 
                     validatedRequest.Subject = subject;
+                    validatedRequest.SessionId = await _sessionId.GetCurrentSessionIdAsync();
                 }
 
                 var redirectUri = parameters.Get(OidcConstants.EndSessionRequest.PostLogoutRedirectUri);
@@ -159,56 +160,27 @@ namespace IdentityServer4.Validation
             };
 
             result.LogoutId = parameters[_options.UserInteractionOptions.LogoutIdParameter];
+            result.SessionId = parameters[OidcConstants.EndSessionRequest.Sid];
 
-            var sid = ValidateSid(parameters);
-            if (sid == null)
+            if (result.SessionId == null && result.LogoutId == null)
             {
-                result.Error = "Invalid session id";
+                return result;
             }
-            else
+
+            result.IsError = false;
+
+            if (result.SessionId.IsPresent())
             {
-                result.IsError = false;
-                result.ClientLogoutUrls = await GetClientEndSessionUrlsAsync(sid);
+                result.ClientLogoutUrls = await GetClientEndSessionUrlsAsync(result.SessionId);
             }
 
             return result;
         }
 
-        private string ValidateSid(NameValueCollection parameters)
-        {
-            var sidCookie = _sessionId.GetCookieValue();
-            if (sidCookie != null)
-            {
-                var sid = parameters[OidcConstants.EndSessionRequest.Sid];
-                if (sid != null)
-                {
-                    if (TimeConstantComparer.IsEqual(sid, sidCookie))
-                    {
-                        _logger.LogDebug("sid validation successful");
-                        return sid;
-                    }
-                    else
-                    {
-                        _logger.LogError("sid in query string does not match sid from cookie");
-                    }
-                }
-                else
-                {
-                    _logger.LogError("No sid in query string");
-                }
-            }
-            else
-            {
-                _logger.LogError("No sid in cookie");
-            }
-
-            return null;
-        }
-
         private async Task<IEnumerable<string>> GetClientEndSessionUrlsAsync(string sid)
         {
             // read client list to get URLs for client logout endpoints
-            var clientIds = _clientSession.GetClientListFromCookie();
+            var clientIds = _clientSession.GetClientListFromCookie(sid);
 
             var urls = new List<string>();
             foreach (var clientId in clientIds)

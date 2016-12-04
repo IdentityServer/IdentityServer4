@@ -35,7 +35,8 @@ namespace IdentityServer4.IntegrationTests.Common
 
         public IdentityServerOptions Options { get; set; }
         public List<Client> Clients { get; set; } = new List<Client>();
-        public List<Scope> Scopes { get; set; } = new List<Scope>();
+        public List<IdentityResource> IdentityScopes { get; set; } = new List<IdentityResource>();
+        public List<ApiResource> ApiScopes { get; set; } = new List<ApiResource>();
         public List<InMemoryUser> Users { get; set; } = new List<InMemoryUser>();
 
         public TestServer Server { get; set; }
@@ -92,7 +93,8 @@ namespace IdentityServer4.IntegrationTests.Common
                 };
             })
             .AddInMemoryClients(Clients)
-            .AddInMemoryScopes(Scopes)
+            .AddInMemoryIdentityResources(IdentityScopes)
+            .AddInMemoryApiResources(ApiScopes)
             .AddInMemoryUsers(Users)
             .AddTemporarySigningCredential();
         }

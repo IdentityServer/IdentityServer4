@@ -20,7 +20,7 @@ namespace IdentityServer4.Models
         public ConsentRequest(AuthorizationRequest request, string subject)
         {
             ClientId = request.ClientId;
-            Nonce = request.Nonce;
+            Nonce = request.Parameters[OidcConstants.AuthorizeRequest.Nonce];
             ScopesRequested = request.ScopesRequested;
             Subject = subject;
         }

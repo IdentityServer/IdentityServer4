@@ -130,10 +130,14 @@ namespace IdentityServer4.IntegrationTests.Clients
             
             payload.Count().Should().Be(6);
             payload.Should().Contain("iss", "https://idsvr4");
-            payload.Should().Contain("aud", "https://idsvr4/resources");
             payload.Should().Contain("client_id", ClientId);
             var scopes = payload["scope"] as JArray;
             scopes.First().ToString().Should().Be("api1");
+
+            var audiences = ((JArray)payload["aud"]).Select(x => x.ToString());
+            audiences.Count().Should().Be(2);
+            audiences.Should().Contain("https://idsvr4/resources");
+            audiences.Should().Contain("api");
         }
 
         private Dictionary<string, object> GetPayload(TokenResponse response)

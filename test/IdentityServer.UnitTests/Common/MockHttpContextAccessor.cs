@@ -14,15 +14,36 @@ namespace IdentityServer4.UnitTests.Common
     {
         HttpContext _context = new DefaultHttpContext();
 
-        public MockHttpContextAccessor(IdentityServerOptions options = null)
+        public MockHttpContextAccessor(IdentityServerOptions options = null, 
+            ISessionIdService sessionIdService = null,
+            IClientSessionService clientSessionService = null)
         {
             options = options ?? TestIdentityServerOptions.Create();
 
             var services = new ServiceCollection();
             services.AddSingleton(options);
-            services.AddTransient<ISessionIdService, DefaultSessionIdService>();
+            if (sessionIdService == null)
+            {
+                services.AddTransient<ISessionIdService, DefaultSessionIdService>();
+            }
+            else
+            {
+                services.AddSingleton(sessionIdService);
+            }
+
+            if (clientSessionService == null)
+            {
+                services.AddTransient<IClientSessionService, DefaultClientSessionService>();
+            }
+            else
+            {
+                services.AddSingleton(clientSessionService);
+            }
 
             _context.RequestServices = services.BuildServiceProvider();
+
+            // setups the authN middleware feature
+            _context.SetUser(null);
         }
 
         public HttpContext HttpContext

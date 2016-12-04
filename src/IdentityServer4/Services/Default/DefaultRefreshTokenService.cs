@@ -6,6 +6,7 @@ using IdentityModel;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
+using IdentityServer4.Stores;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -25,7 +26,7 @@ namespace IdentityServer4.Services.Default
         /// <summary>
         /// The refresh token store
         /// </summary>
-        protected readonly IPersistedGrantService _grants;
+        protected readonly IRefreshTokenStore _refreshTokenStore;
 
         /// <summary>
         /// The _events
@@ -37,10 +38,10 @@ namespace IdentityServer4.Services.Default
         /// </summary>
         /// <param name="grants">The grants store.</param>
         /// <param name="events">The events.</param>
-        public DefaultRefreshTokenService(IPersistedGrantService grants, IEventService events, ILogger<DefaultRefreshTokenService> logger)
+        public DefaultRefreshTokenService(IRefreshTokenStore refreshTokenStore, IEventService events, ILogger<DefaultRefreshTokenService> logger)
         {
             _logger = logger;
-            _grants = grants;
+            _refreshTokenStore = refreshTokenStore;
             _events = events;
         }
 
@@ -77,7 +78,7 @@ namespace IdentityServer4.Services.Default
                 AccessToken = accessToken,
             };
 
-            await _grants.StoreRefreshTokenAsync(handle, refreshToken);
+            await _refreshTokenStore.StoreRefreshTokenAsync(handle, refreshToken);
 
             await RaiseRefreshTokenIssuedEventAsync(handle, refreshToken);
             return handle;
@@ -103,7 +104,7 @@ namespace IdentityServer4.Services.Default
                 _logger.LogDebug("Token usage is one-time only. Generating new handle");
 
                 // delete old one
-                await _grants.RemoveRefreshTokenAsync(handle);
+                await _refreshTokenStore.RemoveRefreshTokenAsync(handle);
 
                 // create new one
                 handle = CryptoRandom.CreateUniqueId();
@@ -134,7 +135,7 @@ namespace IdentityServer4.Services.Default
 
             if (needsUpdate)
             {
-                await _grants.StoreRefreshTokenAsync(handle, refreshToken);
+                await _refreshTokenStore.StoreRefreshTokenAsync(handle, refreshToken);
                 _logger.LogDebug("Updated refresh token in store");
             }
             else

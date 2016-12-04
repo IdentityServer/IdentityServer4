@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 
 namespace IdentityServer4.Models
@@ -108,13 +109,5 @@ namespace IdentityServer4.Models
         /// The code challenge method
         /// </value>
         public string CodeChallengeMethod { get; set; }
-
-        /// <summary>
-        /// Gets the scopes.
-        /// </summary>
-        /// <value>
-        /// The scopes.
-        /// </value>
-        public IEnumerable<string> Scopes => RequestedScopes;
     }
 }

@@ -17,11 +17,13 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
 {
     public class TokenRequestValidation_General_Invalid
     {
+        private const string Category = "TokenRequest Validation - General - Invalid";
+
         IClientStore _clients = new InMemoryClientStore(TestClients.Get());
         ClaimsPrincipal _subject = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
 
         [Fact]
-        [Trait("Category", "TokenRequest Validation - General - Invalid")]
+        [Trait("Category", Category)]
         public void Parameters_Null()
         {
             var validator = Factory.CreateTokenRequestValidator();
@@ -32,7 +34,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         }
 
         [Fact]
-        [Trait("Category", "TokenRequest Validation - General - Invalid")]
+        [Trait("Category", Category)]
         public void Client_Null()
         {
             var validator = Factory.CreateTokenRequestValidator();
@@ -48,11 +50,11 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         }
 
         [Fact]
-        [Trait("Category", "TokenRequest Validation - General - Invalid")]
+        [Trait("Category", Category)]
         public async Task Unknown_Grant_Type()
         {
             var client = await _clients.FindEnabledClientByIdAsync("codeclient");
-            var grants = Factory.CreateGrantService();
+            var store = Factory.CreateAuthorizationCodeStore();
 
             var code = new AuthorizationCode
             {
@@ -63,10 +65,10 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 Subject = _subject
             };
 
-            await grants.StoreAuthorizationCodeAsync("valid", code);
+            await store.StoreAuthorizationCodeAsync("valid", code);
 
             var validator = Factory.CreateTokenRequestValidator(
-                grants: grants);
+                authorizationCodeStore: store);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, "unknown");
@@ -80,11 +82,30 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         }
 
         [Fact]
-        [Trait("Category", "TokenRequest Validation - General - Invalid")]
+        [Trait("Category", Category)]
+        public async Task Invalid_Protocol_Type()
+        {
+            var client = await _clients.FindEnabledClientByIdAsync("client.cred.wsfed");
+            var codeStore = Factory.CreateAuthorizationCodeStore();
+
+            var validator = Factory.CreateTokenRequestValidator(
+                authorizationCodeStore:codeStore);
+
+            var parameters = new NameValueCollection();
+            parameters.Add(OidcConstants.TokenRequest.GrantType, "client_credentials");
+
+            var result = await validator.ValidateRequestAsync(parameters, client);
+
+            result.IsError.Should().BeTrue();
+            result.Error.Should().Be(OidcConstants.TokenErrors.InvalidClient);
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
         public async Task Missing_Grant_Type()
         {
             var client = await _clients.FindEnabledClientByIdAsync("codeclient");
-            var grants = Factory.CreateGrantService();
+            var store = Factory.CreateAuthorizationCodeStore();
 
             var code = new AuthorizationCode
             {
@@ -95,10 +116,10 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 Subject = _subject
             };
 
-            await grants.StoreAuthorizationCodeAsync("valid", code);
+            await store.StoreAuthorizationCodeAsync("valid", code);
 
             var validator = Factory.CreateTokenRequestValidator(
-                grants: grants);
+                authorizationCodeStore: store);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.Code, "valid");

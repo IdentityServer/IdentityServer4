@@ -1,3 +1,4 @@
+.. _refSupport:
 Support and Consulting Options
 ==============================
 

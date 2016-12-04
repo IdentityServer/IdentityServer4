@@ -11,8 +11,10 @@ namespace IdentityServer4.Services
     public interface IIdentityServerInteractionService
     {
         Task<AuthorizationRequest> GetAuthorizationContextAsync(string returnUrl);
-        Task<LogoutRequest> GetLogoutContextAsync(string logoutId);
         Task<ErrorMessage> GetErrorContextAsync(string errorId);
+
+        Task<LogoutRequest> GetLogoutContextAsync(string logoutId);
+        Task<string> CreateLogoutContextAsync();
 
         bool IsValidReturnUrl(string returnUrl);
         Task GrantConsentAsync(AuthorizationRequest request, ConsentResponse consent, string subject = null);

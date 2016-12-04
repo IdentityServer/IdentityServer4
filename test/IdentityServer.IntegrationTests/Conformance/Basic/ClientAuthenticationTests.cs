@@ -24,7 +24,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Basic
 
         public ClientAuthenticationTests()
         {
-            _pipeline.Scopes.Add(StandardScopes.OpenId);
+            _pipeline.IdentityScopes.Add(new IdentityResources.OpenId());
             _pipeline.Clients.Add(new Client
             {
                 Enabled = true,
@@ -35,7 +35,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Basic
                 },
 
                 AllowedGrantTypes = GrantTypes.Code,
-                AllowAccessToAllScopes = true,
+                AllowedScopes = { "openid" },
 
                 RequireConsent = false,
                 RedirectUris = new List<string>

@@ -5,6 +5,7 @@
 using IdentityModel;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
+using IdentityServer4.Configuration;
 using Microsoft.AspNetCore.Http.Features.Authentication;
 using IdentityServer4.Extensions;
 
@@ -13,10 +14,12 @@ namespace IdentityServer4.Services.Default
     public class DefaultSessionIdService : ISessionIdService
     {
         private readonly HttpContext _context;
+        private readonly IdentityServerOptions _options;
 
-        public DefaultSessionIdService(IHttpContextAccessor context)
+        public DefaultSessionIdService(IHttpContextAccessor context, IdentityServerOptions options)
         {
             _context = context.HttpContext;
+            _options = options;
         }
 
         public void CreateSessionId(SignInContext context)
@@ -59,8 +62,7 @@ namespace IdentityServer4.Services.Default
 
         public string GetCookieName()
         {
-            // TODO: fix from config?
-            return "idsvr.session";
+            return $"{_options.AuthenticationOptions.EffectiveAuthenticationScheme}.session";
         }
 
         public string GetCookieValue()

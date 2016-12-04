@@ -89,7 +89,7 @@ namespace IdentityServer4.Endpoints
                 return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
             }
 
-            _logger.LogDebug("Processing singout callback request");
+            _logger.LogDebug("Processing signout callback request");
 
             var parameters = context.Request.Query.AsNameValueCollection();
             var result = await _endSessionRequestValidator.ValidateCallbackAsync(parameters);

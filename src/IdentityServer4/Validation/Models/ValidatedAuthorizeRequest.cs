@@ -102,12 +102,12 @@ namespace IdentityServer4.Validation
         public bool IsOpenIdRequest { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this instance is resource request.
+        /// Gets or sets a value indicating whether this instance is API resource request.
         /// </summary>
         /// <value>
-        /// <c>true</c> if this instance is resource request; otherwise, <c>false</c>.
+        /// <c>true</c> if this instance is API resource request; otherwise, <c>false</c>.
         /// </value>
-        public bool IsResourceRequest { get; set; }
+        public bool IsApiResourceRequest { get; set; }
 
         /// <summary>
         /// Gets or sets the nonce.

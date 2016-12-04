@@ -21,7 +21,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
             });
 
             builder.AddInMemoryClients(Clients.Get());
-            builder.AddInMemoryScopes(Scopes.Get());
+            builder.AddInMemoryApiResources(Scopes.GetApiScopes());
             builder.AddInMemoryUsers(Users.Get());
             builder.AddTemporarySigningCredential();
         }

@@ -74,9 +74,13 @@ namespace IdentityServer4.IntegrationTests.Clients
 
             payload.Count().Should().Be(6);
             payload.Should().Contain("iss", "https://idsvr4");
-            payload.Should().Contain("aud", "https://idsvr4/resources");
             payload.Should().Contain("client_id", "client");
-            
+
+            var audiences = ((JArray)payload["aud"]).Select(x => x.ToString());
+            audiences.Count().Should().Be(2);
+            audiences.Should().Contain("https://idsvr4/resources");
+            audiences.Should().Contain("api");
+
             var scopes = payload["scope"] as JArray;
             scopes.First().ToString().Should().Be("api1");
         }
@@ -102,8 +106,12 @@ namespace IdentityServer4.IntegrationTests.Clients
 
             payload.Count().Should().Be(6);
             payload.Should().Contain("iss", "https://idsvr4");
-            payload.Should().Contain("aud", "https://idsvr4/resources");
             payload.Should().Contain("client_id", "client");
+
+            var audiences = ((JArray)payload["aud"]).Select(x => x.ToString());
+            audiences.Count().Should().Be(2);
+            audiences.Should().Contain("https://idsvr4/resources");
+            audiences.Should().Contain("api");
 
             var scopes = payload["scope"] as JArray;
             scopes.Count().Should().Be(2);
@@ -132,8 +140,12 @@ namespace IdentityServer4.IntegrationTests.Clients
 
             payload.Count().Should().Be(6);
             payload.Should().Contain("iss", "https://idsvr4");
-            payload.Should().Contain("aud", "https://idsvr4/resources");
             payload.Should().Contain("client_id", "client");
+
+            var audiences = ((JArray)payload["aud"]).Select(x => x.ToString());
+            audiences.Count().Should().Be(2);
+            audiences.Should().Contain("https://idsvr4/resources");
+            audiences.Should().Contain("api");
 
             var scopes = payload["scope"] as JArray;
             scopes.Count().Should().Be(2);
@@ -182,8 +194,12 @@ namespace IdentityServer4.IntegrationTests.Clients
 
             payload.Count().Should().Be(6);
             payload.Should().Contain("iss", "https://idsvr4");
-            payload.Should().Contain("aud", "https://idsvr4/resources");
             payload.Should().Contain("client_id", "client");
+
+            var audiences = ((JArray)payload["aud"]).Select(x => x.ToString());
+            audiences.Count().Should().Be(2);
+            audiences.Should().Contain("https://idsvr4/resources");
+            audiences.Should().Contain("api");
 
             var scopes = payload["scope"] as JArray;
             scopes.First().ToString().Should().Be("api1");
@@ -220,6 +236,39 @@ namespace IdentityServer4.IntegrationTests.Clients
             response.HttpStatusCode.Should().Be(HttpStatusCode.BadRequest);
             response.Error.Should().Be("invalid_client");
         }
+
+        [Fact]
+        public async Task implicit_client_should_not_use_client_credential_grant()
+        {
+            var client = new TokenClient(
+                TokenEndpoint,
+                "implicit",
+                innerHttpMessageHandler: _handler);
+
+            var response = await client.RequestClientCredentialsAsync("api1");
+
+            response.IsError.Should().Be(true);
+            response.ErrorType.Should().Be(ResponseErrorType.Protocol);
+            response.HttpStatusCode.Should().Be(HttpStatusCode.BadRequest);
+            response.Error.Should().Be("unauthorized_client");
+        }
+
+        [Fact]
+        public async Task implicit_and_client_creds_client_should_not_use_client_credential_grant_without_secret()
+        {
+            var client = new TokenClient(
+                TokenEndpoint,
+                "implicit_and_client_creds",
+                innerHttpMessageHandler: _handler);
+
+            var response = await client.RequestClientCredentialsAsync("api1");
+
+            response.IsError.Should().Be(true);
+            response.ErrorType.Should().Be(ResponseErrorType.Protocol);
+            response.HttpStatusCode.Should().Be(HttpStatusCode.BadRequest);
+            response.Error.Should().Be("invalid_client");
+        }
+
 
         [Fact]
         public async Task Unknown_Scope()

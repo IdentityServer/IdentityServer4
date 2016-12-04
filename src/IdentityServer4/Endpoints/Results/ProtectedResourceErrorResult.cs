@@ -39,7 +39,6 @@ namespace IdentityServer4.Endpoints.Results
             }
 
             context.Response.Headers.Add("WwwAuthentication", new StringValues("Bearer"));
-            //TODO logger.LogInformation("Returning error: " + Error);
 
             return Task.FromResult(0);
         }

@@ -5,12 +5,14 @@
 using Microsoft.Extensions.Primitives;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Microsoft.AspNetCore.Http
 {
     public static class IReadableStringCollectionExtensions
     {
+        [DebuggerStepThrough]
         public static NameValueCollection AsNameValueCollection(this IEnumerable<KeyValuePair<string, StringValues>> collection)
         {
             var nv = new NameValueCollection();
@@ -23,6 +25,7 @@ namespace Microsoft.AspNetCore.Http
             return nv;
         }
 
+        [DebuggerStepThrough]
         public static NameValueCollection AsNameValueCollection(this IDictionary<string, StringValues> collection)
         {
             var nv = new NameValueCollection();

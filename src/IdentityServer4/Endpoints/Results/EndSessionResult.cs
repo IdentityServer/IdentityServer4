@@ -12,6 +12,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using IdentityServer4.Extensions;
 using System;
+using IdentityServer4.Services;
 
 namespace IdentityServer4.Endpoints.Results
 {
@@ -29,19 +30,23 @@ namespace IdentityServer4.Endpoints.Results
         internal EndSessionResult(
             EndSessionValidationResult result,
             IdentityServerOptions options,
+            IClientSessionService clientSessionService,
             IMessageStore<LogoutMessage> logoutMessageStore)
             : this(result)
         {
             _options = options;
+            _clientSessionService = clientSessionService;
             _logoutMessageStore = logoutMessageStore;
         }
 
         private IdentityServerOptions _options;
         private IMessageStore<LogoutMessage> _logoutMessageStore;
+        private IClientSessionService _clientSessionService;
 
         void Init(HttpContext context)
         {
             _options = _options ?? context.RequestServices.GetRequiredService<IdentityServerOptions>();
+            _clientSessionService = _clientSessionService ?? context.RequestServices.GetRequiredService<IClientSessionService>();
             _logoutMessageStore = _logoutMessageStore ?? context.RequestServices.GetRequiredService<IMessageStore<LogoutMessage>>();
         }
 
@@ -53,22 +58,20 @@ namespace IdentityServer4.Endpoints.Results
 
             string id = null;
 
-            if (validatedRequest != null &&
-                (validatedRequest.Client != null || validatedRequest.PostLogOutUri != null))
+            if (validatedRequest != null)
             {
                 var msg = new MessageWithId<LogoutMessage>(new LogoutMessage(validatedRequest));
                 id = msg.Id;
 
                 await _logoutMessageStore.WriteAsync(id, msg);
+                await _clientSessionService.EnsureClientListCookieAsync(validatedRequest.SessionId);
             }
 
             var redirect = _options.UserInteractionOptions.LogoutUrl;
 
             if (redirect.IsLocalUrl())
             {
-                // TODO: look at GetIdentityServerRelativeUrl instead and logic if the above if check; compare to login result
-                if (redirect.StartsWith("~/")) redirect = redirect.Substring(1);
-                redirect = context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + redirect.RemoveLeadingSlash();
+                redirect = context.GetIdentityServerRelativeUrl(redirect);
             }
 
             if (id != null)

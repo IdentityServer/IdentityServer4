@@ -43,10 +43,9 @@ This is important so the existing clients and api projects will continue to work
 Add IdentityServer packages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Add both the ``IdentityServer4`` and the ``IdentityServer4.AspNetIdentity`` packages to `project.json`::
+Add the ``IdentityServer4.AspNetIdentity`` package to `project.json`::
 
-    "IdentityServer4": "1.0.0-rc2",
-    "IdentityServer4.AspNetIdentity": "1.0.0-rc2"
+    "IdentityServer4.AspNetIdentity": "1.0.0-rc4-update1"
 
 
 Scopes and Clients Configuration
@@ -74,13 +73,13 @@ We've not yet copied over the consent code from the prior IdentityServer project
         RedirectUris           = { "http://localhost:5002/signin-oidc" },
         PostLogoutRedirectUris = { "http://localhost:5002" },
 
-        AllowedScopes = 
+        AllowedScopes =
         {
-            StandardScopes.OpenId.Name,
-            StandardScopes.Profile.Name,
-            StandardScopes.OfflineAccess.Name,
+            IdentityServerConstants.StandardScopes.OpenId,
+            IdentityServerConstants.StandardScopes.Profile,
             "api1"
-        }
+        },
+        AllowOfflineAccess = true
     }
 
 Configure IdentityServer
@@ -111,8 +110,10 @@ The ``AddAspNetIdentity`` extension method requires a generic parameter which is
         services.AddTransient<ISmsSender, AuthMessageSender>();
 
         // Adds IdentityServer
-        services.AddDeveloperIdentityServer()
-            .AddInMemoryScopes(Config.GetScopes())
+        services.AddIdentityServer()
+            .AddTemporarySigningCredential()
+            .AddInMemoryIdentityResources(Config.GetIdentityResources())
+            .AddInMemoryApiResources(Config.GetApiResources())
             .AddInMemoryClients(Config.GetClients())
             .AddAspNetIdentity<ApplicationUser>();
     }

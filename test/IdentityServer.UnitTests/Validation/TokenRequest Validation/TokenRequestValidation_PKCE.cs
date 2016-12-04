@@ -28,7 +28,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         public async Task valid_pkce_token_request_with_plain_method_should_succeed()
         {
             var client = await _clients.FindEnabledClientByIdAsync("codeclient.pkce");
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateAuthorizationCodeStore();
             var verifier = "x".Repeat(lengths.CodeVerifierMinLength);
 
             var code = new AuthorizationCode
@@ -49,7 +49,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             await grants.StoreAuthorizationCodeAsync("valid", code);
 
             var validator = Factory.CreateTokenRequestValidator(
-                grants: grants);
+                authorizationCodeStore: grants);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.AuthorizationCode);
@@ -67,7 +67,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         public async Task valid_pkce_token_request_with_plain_method_should_succeed_hybrid()
         {
             var client = await _clients.FindEnabledClientByIdAsync("hybridclient.pkce");
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateAuthorizationCodeStore();
             var verifier = "x".Repeat(lengths.CodeVerifierMinLength);
 
             var code = new AuthorizationCode
@@ -88,7 +88,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             await grants.StoreAuthorizationCodeAsync("valid", code);
 
             var validator = Factory.CreateTokenRequestValidator(
-                grants: grants);
+                authorizationCodeStore: grants);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.AuthorizationCode);
@@ -106,7 +106,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         public async Task valid_pkce_token_request_with_sha256_method_should_succeed()
         {
             var client = await _clients.FindEnabledClientByIdAsync("codeclient.pkce");
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateAuthorizationCodeStore();
 
             var verifier = "x".Repeat(lengths.CodeVerifierMinLength);
             var challenge = VerifierToSha256CodeChallenge(verifier);
@@ -129,7 +129,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             await grants.StoreAuthorizationCodeAsync("valid", code);
 
             var validator = Factory.CreateTokenRequestValidator(
-                grants: grants);
+                authorizationCodeStore: grants);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.AuthorizationCode);
@@ -147,7 +147,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         public async Task token_request_with_missing_code_challenge_and_verifier_should_fail()
         {
             var client = await _clients.FindEnabledClientByIdAsync("codeclient.pkce");
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateAuthorizationCodeStore();
 
             var code = new AuthorizationCode
             {
@@ -164,7 +164,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             await grants.StoreAuthorizationCodeAsync("valid", code);
 
             var validator = Factory.CreateTokenRequestValidator(
-                grants: grants);
+                authorizationCodeStore: grants);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.AuthorizationCode);
@@ -182,7 +182,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         public async Task token_request_with_missing_code_challenge_should_fail()
         {
             var client = await _clients.FindEnabledClientByIdAsync("codeclient.pkce");
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateAuthorizationCodeStore();
 
             var code = new AuthorizationCode
             {
@@ -200,7 +200,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             await grants.StoreAuthorizationCodeAsync("valid", code);
 
             var validator = Factory.CreateTokenRequestValidator(
-                grants: grants);
+                authorizationCodeStore: grants);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.AuthorizationCode);
@@ -219,7 +219,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         public async Task token_request_with_invalid_verifier_plain_method_should_fail()
         {
             var client = await _clients.FindEnabledClientByIdAsync("codeclient.pkce");
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateAuthorizationCodeStore();
             var verifier = "x".Repeat(lengths.CodeVerifierMinLength);
 
             var code = new AuthorizationCode
@@ -240,7 +240,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             await grants.StoreAuthorizationCodeAsync("valid", code);
 
             var validator = Factory.CreateTokenRequestValidator(
-                grants: grants);
+                authorizationCodeStore: grants);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.AuthorizationCode);
@@ -259,7 +259,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         public async Task token_request_with_invalid_verifier_sha256_method_should_fail()
         {
             var client = await _clients.FindEnabledClientByIdAsync("codeclient.pkce");
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateAuthorizationCodeStore();
 
             var verifier = "x".Repeat(lengths.CodeVerifierMinLength);
             var challenge = VerifierToSha256CodeChallenge(verifier);
@@ -282,7 +282,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             await grants.StoreAuthorizationCodeAsync("valid", code);
 
             var validator = Factory.CreateTokenRequestValidator(
-                grants: grants);
+                authorizationCodeStore: grants);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.AuthorizationCode);
@@ -301,7 +301,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         public async Task pkce_token_request_for_non_pkce_client_should_fail()
         {
             var client = await _clients.FindEnabledClientByIdAsync("codeclient");
-            var grants = Factory.CreateGrantService();
+            var grants = Factory.CreateAuthorizationCodeStore();
             var verifier = "x".Repeat(lengths.CodeVerifierMinLength);
 
             var code = new AuthorizationCode
@@ -322,7 +322,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             await grants.StoreAuthorizationCodeAsync("valid", code);
 
             var validator = Factory.CreateTokenRequestValidator(
-                grants: grants);
+                authorizationCodeStore: grants);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.AuthorizationCode);

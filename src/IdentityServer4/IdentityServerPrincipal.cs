@@ -18,7 +18,7 @@ namespace IdentityServer4
             string name,
             params Claim[] claims)
         {
-            return Create(subject, name, Constants.LocalIdentityProvider, new[] { OidcConstants.AuthenticationMethods.Password }, claims);
+            return Create(subject, name, IdentityServerConstants.LocalIdentityProvider, new[] { OidcConstants.AuthenticationMethods.Password }, claims);
         }
 
         public static ClaimsPrincipal Create(
@@ -36,7 +36,7 @@ namespace IdentityServer4
             IEnumerable<string> authenticationMethods,
             params Claim[] claims)
         {
-            return Create(subject, name, Constants.LocalIdentityProvider, authenticationMethods, claims);
+            return Create(subject, name, IdentityServerConstants.LocalIdentityProvider, authenticationMethods, claims);
         }
 
         public static ClaimsPrincipal Create(
@@ -76,7 +76,7 @@ namespace IdentityServer4
 
         internal static void AssertRequiredClaims(this ClaimsPrincipal principal)
         {
-            // todo: multi accounts?
+            // for now, we don't allow more than one identity in the principal/cookie
             if (principal.Identities.Count() != 1) throw new InvalidOperationException("only a single identity supported");
             if (principal.FindFirst(JwtClaimTypes.Subject) == null) throw new InvalidOperationException("sub claim is missing");
             if (principal.FindFirst(JwtClaimTypes.Name) == null) throw new InvalidOperationException("name claim is missing");
@@ -102,7 +102,7 @@ namespace IdentityServer4
 
             if (identity.FindFirst(JwtClaimTypes.IdentityProvider) == null)
             {
-                identity.AddClaim(new Claim(JwtClaimTypes.IdentityProvider, Constants.LocalIdentityProvider));
+                identity.AddClaim(new Claim(JwtClaimTypes.IdentityProvider, IdentityServerConstants.LocalIdentityProvider));
             }
 
             if (identity.FindFirst(JwtClaimTypes.AuthenticationMethod) == null)

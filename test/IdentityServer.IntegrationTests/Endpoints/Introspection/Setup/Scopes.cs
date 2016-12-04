@@ -9,34 +9,57 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
 {
     class Scopes
     {
-        public static IEnumerable<Scope> Get()
+        public static IEnumerable<ApiResource> GetApiScopes()
         {
-            return new List<Scope>
+            return new ApiResource[]
             {
-                new Scope
+                new ApiResource
                 {
                     Name = "api1",
-                    ScopeSecrets = new List<Secret>
+                    ApiSecrets = new List<Secret>
                     {
                         new Secret("secret".Sha256())
                     },
-                },
-                new Scope
-                {
-                    Name = "api2",
-                    ScopeSecrets = new List<Secret>
+                    Scopes =
                     {
-                        new Secret("secret".Sha256())
+                        new Scope
+                        {
+                            Name = "api1",
+                        },
                     }
                 },
-                new Scope
+                new ApiResource
                 {
-                    Name = "unrestricted.api",
-                    AllowUnrestrictedIntrospection = true,
-
-                    ScopeSecrets = new List<Secret>
+                    Name = "api2",
+                    ApiSecrets = new List<Secret>
                     {
                         new Secret("secret".Sha256())
+                    },
+                    Scopes =
+                    {
+                        new Scope
+                        {
+                            Name = "api2",
+                        },
+                    }
+                },
+                 new ApiResource
+                {
+                    Name = "api3",
+                    ApiSecrets = new List<Secret>
+                    {
+                        new Secret("secret".Sha256())
+                    },
+                    Scopes =
+                    {
+                        new Scope
+                        {
+                            Name = "api3-a",
+                        },
+                        new Scope
+                        {
+                            Name = "api3-b",
+                        },
                     }
                 }
             };

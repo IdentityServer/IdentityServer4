@@ -9,43 +9,47 @@ namespace IdentityServer4.IntegrationTests.Clients
 {
     class Scopes
     {
-        public static IEnumerable<Scope> Get()
+        public static IEnumerable<IdentityResource> GetIdentityScopes()
         {
-            return new List<Scope>
+            return new IdentityResource[]
             {
-                StandardScopes.OpenId,
-                StandardScopes.Email,
-                StandardScopes.OfflineAccess,
-                StandardScopes.Address,
-                StandardScopes.Roles,
+                new IdentityResources.OpenId(),
+                new IdentityResources.Email(),
+                new IdentityResources.Address(),
+                new IdentityResource("roles", new[] { "role" })
+            };
+        }
 
-                new Scope
+        public static IEnumerable<ApiResource> GetApiScopes()
+        {
+            return new List<ApiResource>
+            {
+                new ApiResource
                 {
-                    Name = "api1",
-                    Type = ScopeType.Resource,
-
-                    ScopeSecrets = new List<Secret>
+                    Name = "api",
+                    ApiSecrets = 
                     {
                         new Secret("secret".Sha256())
-                    }
-                },
-                new Scope
-                {
-                    Name = "api2",
-                    Type = ScopeType.Resource
-                },
-                new Scope
-                {
-                    Name = "api3",
-                    Type = ScopeType.Resource
-                },
-                new Scope
-                {
-                    Name = "api4.with.roles",
-                    Type = ScopeType.Resource,
-                    Claims = new List<ScopeClaim>
+                    },
+                    Scopes =
                     {
-                        new ScopeClaim("role")
+                        new Scope
+                        {
+                            Name = "api1",
+                        },
+                        new Scope
+                        {
+                            Name = "api2",
+                        },
+                        new Scope
+                        {
+                            Name = "api3",
+                        },
+                        new Scope
+                        {
+                            Name = "api4.with.roles",
+                            UserClaims = { "role" }
+                        }
                     }
                 }
             };

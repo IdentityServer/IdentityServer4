@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-rc2-*",
+  "version": "1.0.0-*",
   "authors": [ "Brock Allen", "Dominick Baier" ],
   "description": "OpenID Connect and OAuth 2.0 Framework for ASP.NET Core",
 

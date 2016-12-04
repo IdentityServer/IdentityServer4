@@ -98,7 +98,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IIdentityServerBuilder AddCoreServices(this IIdentityServerBuilder builder)
         {
-            builder.Services.AddTransient<ScopeSecretValidator>();
+            builder.Services.AddTransient<ApiSecretValidator>();
             builder.Services.AddTransient<SecretParser>();
             builder.Services.AddTransient<ClientSecretValidator>();
             builder.Services.AddTransient<SecretValidator>();
@@ -107,7 +107,9 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddTransient<BearerTokenUsageValidator>();
             builder.Services.AddTransient<PersistentGrantSerializer>();
             builder.Services.AddTransient<EventServiceHelper>();
+            builder.Services.AddTransient<ReturnUrlParser>();
 
+            builder.Services.AddTransient<IReturnUrlParser, OidcReturnUrlParser>();
             builder.Services.AddTransient<ISessionIdService, DefaultSessionIdService>();
             builder.Services.AddTransient<IClientSessionService, DefaultClientSessionService>();
             builder.Services.AddTransient(typeof(MessageCookie<>));
@@ -139,6 +141,10 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IProfileService, DefaultProfileService>();
             builder.Services.TryAddTransient(typeof(IMessageStore<>), typeof(CookieMessageStore<>));
             builder.Services.TryAddTransient<IIdentityServerInteractionService, DefaultIdentityServerInteractionService>();
+            builder.Services.TryAddTransient<IAuthorizationCodeStore, DefaultAuthorizationCodeStore>();
+            builder.Services.TryAddTransient<IRefreshTokenStore, DefaultRefreshTokenStore>();
+            builder.Services.TryAddTransient<IReferenceTokenStore, DefaultReferenceTokenStore>();
+            builder.Services.TryAddTransient<IUserConsentStore, DefaultUserConsentStore>();
 
             return builder;
         }
