@@ -63,7 +63,6 @@ namespace IdentityServer4.IntegrationTests.Common
                     ConfigureApp(app);
                 }
             });
-            var server = new TestServer(builder);
 
             Server = new TestServer(builder);
             Handler = Server.CreateHandler();
