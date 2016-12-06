@@ -5,6 +5,8 @@
 using IdentityModel;
 using IdentityServer4.Extensions;
 using IdentityServer4.Validation;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 
 namespace IdentityServer4.Models
 {
@@ -21,6 +23,7 @@ namespace IdentityServer4.Models
         {
             if (request != null)
             {
+                Parameters = request.Raw;
                 ClientId = request.Client?.ClientId;
                 SessionId = request.SessionId;
 
@@ -42,6 +45,7 @@ namespace IdentityServer4.Models
                 ClientId = message.ClientId;
                 PostLogoutRedirectUri = message.PostLogoutRedirectUri;
                 SessionId = message.SessionId;
+                Parameters = message.Parameters;
             }
         }
 
@@ -68,6 +72,14 @@ namespace IdentityServer4.Models
         /// The session identifier.
         /// </value>
         public string SessionId { get; set; }
+
+        /// <summary>
+        /// Gets the entire parameter collection.
+        /// </summary>
+        /// <value>
+        /// The parameters.
+        /// </value>
+        public NameValueCollection Parameters { get; } = new NameValueCollection();
 
         /// <summary>
         /// Gets or sets a value indicating whether the user should be prompted for signout.
