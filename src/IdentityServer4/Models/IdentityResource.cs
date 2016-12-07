@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using IdentityModel;
 using IdentityServer4.Extensions;
 using System;
 using System.Collections.Generic;
@@ -78,5 +79,66 @@ namespace IdentityServer4.Models
         /// List of associated user claims that should be included in the identity token.
         /// </summary>
         public ICollection<string> UserClaims { get; set; } = new HashSet<string>();
+
+
+        #region Standard scopes from the OIDC spec
+
+        /// <summary>
+        /// Standard identity resource (scope) OpenId from OIDC spec.
+        /// </summary>
+        public static readonly IdentityResource OpenId = new IdentityResource()
+        {
+            Name = IdentityServerConstants.StandardScopes.OpenId,
+            DisplayName = "Your user identifier",
+            Required = true,
+            UserClaims = { JwtClaimTypes.Subject }
+        };
+
+        /// <summary>
+        /// Standard identity resource (scope) Profile from OIDC spec.
+        /// </summary>
+        public static readonly IdentityResource Profile = new IdentityResource()
+        {
+            Name = IdentityServerConstants.StandardScopes.Profile,
+            DisplayName = "User profile",
+            Description = "Your user profile information (first name, last name, etc.)",
+            Emphasize = true,
+            UserClaims = Constants.ScopeToClaimsMapping[IdentityServerConstants.StandardScopes.Profile].ToList()
+        };
+
+        /// <summary>
+        /// Standard identity resource (scope) Email from OIDC spec.
+        /// </summary>
+        public static readonly IdentityResource Email = new IdentityResource()
+        {
+            Name = IdentityServerConstants.StandardScopes.Email,
+            DisplayName = "Your email address",
+            Emphasize = true,
+            UserClaims = (Constants.ScopeToClaimsMapping[IdentityServerConstants.StandardScopes.Email].ToList())
+        };
+
+        /// <summary>
+        /// Standard identity resource (scope) Phone from OIDC spec.
+        /// </summary>
+        public static readonly IdentityResource Phone = new IdentityResource()
+        {
+            Name = IdentityServerConstants.StandardScopes.Phone,
+            DisplayName = "Your phone number",
+            Emphasize = true,
+            UserClaims = (Constants.ScopeToClaimsMapping[IdentityServerConstants.StandardScopes.Phone].ToList())
+        };
+
+        /// <summary>
+        /// Standard identity resource (scope) Address from OIDC spec.
+        /// </summary>
+        public static readonly IdentityResource Address = new IdentityResource()
+        {
+            Name = IdentityServerConstants.StandardScopes.Address,
+            DisplayName = "Your postal address",
+            Emphasize = true,
+            UserClaims = (Constants.ScopeToClaimsMapping[IdentityServerConstants.StandardScopes.Address].ToList())
+        };
+
+        #endregion
     }
 }

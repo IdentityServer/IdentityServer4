@@ -78,7 +78,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
             });
 
             _mockPipeline.IdentityScopes.AddRange(new IdentityResource[] {
-                new IdentityResources.OpenId(),
+                IdentityResource.OpenId,
             });
 
             _mockPipeline.ApiScopes.AddRange(new ApiResource[] {

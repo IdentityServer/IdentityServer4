@@ -13,8 +13,8 @@ namespace IdentityServer4.UnitTests.Validation
         {
             return new IdentityResource[]
             {
-                new IdentityResources.OpenId(),
-                new IdentityResources.Profile(),
+                IdentityResource.OpenId,
+                IdentityResource.Profile,
             };
         }
 

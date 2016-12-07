@@ -15,9 +15,9 @@ namespace Host.Configuration
             return new[]
             {
                 // some standard scopes from the OIDC spec
-                new IdentityResources.OpenId(),
-                new IdentityResources.Profile(),
-                new IdentityResources.Email(),
+                IdentityResource.OpenId,
+                IdentityResource.Profile,
+                IdentityResource.Email,
 
                 // custom identity resource with some consolidated claims
                 new IdentityResource("custom.profile", new[] { JwtClaimTypes.Name, JwtClaimTypes.Email, "location" })
