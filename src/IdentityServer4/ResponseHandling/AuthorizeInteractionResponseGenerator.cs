@@ -63,13 +63,14 @@ namespace IdentityServer4.ResponseHandling
         /// <returns></returns>
         protected internal virtual async Task<InteractionResponse> ProcessLoginAsync(ValidatedAuthorizeRequest request)
         {
-            if (request.PromptMode == OidcConstants.PromptModes.Login)
+            if (request.PromptMode == OidcConstants.PromptModes.Login ||
+                request.PromptMode == OidcConstants.PromptModes.SelectAccount)
             {
                 // remove prompt so when we redirect back in from login page
                 // we won't think we need to force a prompt again
                 request.RemovePrompt();
 
-                _logger.LogInformation("Showing login: request contains prompt=login");
+                _logger.LogInformation("Showing login: request contains prompt={0}", request.PromptMode);
 
                 return new InteractionResponse() { IsLogin = true };
             }
