@@ -52,6 +52,8 @@ sudo bash "$SCRIPT_DIR/.dotnet/dotnet-install.sh" --install-dir .dotnet --no-pat
 export PATH="$SCRIPT_DIR/.dotnet":$PATH
 export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
+
+"$SCRIPT_DIR/.dotnet/dotnet"
 "$SCRIPT_DIR/.dotnet/dotnet" --info
 
 ###########################################################################
