@@ -42,7 +42,8 @@ namespace Host
                     //    RaiseSuccessEvents = true
                     //};
 
-                    options.AuthenticationOptions.FederatedSignOutPaths.Add("/signout-oidc");
+                    options.AuthenticationOptions.FederatedSignOutPaths.Add("/signout-callback-aad");
+                    options.AuthenticationOptions.FederatedSignOutPaths.Add("/signout-callback-idsrv3");
                 })
                 .AddInMemoryClients(Clients.Get())
                 .AddInMemoryIdentityResources(Resources.GetIdentityResources())
@@ -109,8 +110,7 @@ namespace Host
                 ResponseType = "id_token",
                 Scope = { "openid profile" },
                 CallbackPath = new PathString("/signin-idsrv3"),
-                // uncomment this if you upgrade to 1.1
-                //SignedOutCallbackPath = new PathString("/signin-callback-idsrv3"),
+                SignedOutCallbackPath = new PathString("/signout-callback-idsrv3"),
                 RemoteSignOutPath = new PathString("/signout-idsrv3"),
                 TokenValidationParameters = new TokenValidationParameters
                 {
@@ -130,8 +130,7 @@ namespace Host
                 ResponseType = "id_token",
                 Scope = { "openid profile" },
                 CallbackPath = new PathString("/signin-aad"),
-                // uncomment this if you upgrade to 1.1
-                //SignedOutCallbackPath = new PathString("/signout-callback-aad"),
+                SignedOutCallbackPath = new PathString("/signout-callback-aad"),
                 RemoteSignOutPath = new PathString("/signout-aad"),
                 TokenValidationParameters = new TokenValidationParameters
                 {
