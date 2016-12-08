@@ -33,8 +33,7 @@ Then select the "Empty Web" option.
 
 .. image:: images/0_empty_web.png
 
-.. note:: IdentityServer currently only targets ASP.NET Core 1.1, so if you are starting with an ASP.NET Core 1.0 project then you can follow 
-`this guide for updating to ASP.NET Core 1.1 <https://blogs.msdn.microsoft.com/webdev/2016/11/16/announcing-asp-net-core-1-1/>`_.
+.. note:: IdentityServer currently only targets ASP.NET Core 1.1, so if you are starting with an ASP.NET Core 1.0 project then you can follow `this guide for updating to ASP.NET Core 1.1 <https://blogs.msdn.microsoft.com/webdev/2016/11/16/announcing-asp-net-core-1-1/>`_.
 
 Next, add the IdentityServer4 nuget package by adding the following line to your project.json under the ´dependencies´ property::
 
