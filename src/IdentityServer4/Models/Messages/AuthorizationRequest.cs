@@ -31,13 +31,21 @@ namespace IdentityServer4.Models
         public string DisplayMode { get; set; }
 
         /// <summary>
+        /// Gets or sets the redirect URI.
+        /// </summary>
+        /// <value>
+        /// The redirect URI.
+        /// </value>
+        public string RedirectUri { get; set; }
+
+        /// <summary>
         /// The UI locales passed from the authorization request.
         /// </summary>
         /// <value>
         /// The UI locales.
         /// </value>
         public string UiLocales { get; set; }
-        
+
         /// <summary>
         /// The external identity provider requested. This is used to bypass home realm 
         /// discovery (HRD). This is provided via the <c>"idp:"</c> prefix to the <c>acr</c> 
@@ -56,7 +64,7 @@ namespace IdentityServer4.Models
         /// The tenant.
         /// </value>
         public string Tenant { get; set; }
-        
+
         /// <summary>
         /// The expected username the user will use to login. This is requested from the client 
         /// via the <c>login_hint</c> parameter on the authorize request.
@@ -65,7 +73,15 @@ namespace IdentityServer4.Models
         /// The LoginHint.
         /// </value>
         public string LoginHint { get; set; }
-        
+
+        /// <summary>
+        /// Gets or sets the prompt mode.
+        /// </summary>
+        /// <value>
+        /// The prompt mode.
+        /// </value>
+        public string PromptMode { get; set; }
+
         /// <summary>
         /// The acr values passed from the authorization request.
         /// </summary>
@@ -90,9 +106,6 @@ namespace IdentityServer4.Models
         /// </value>
         public NameValueCollection Parameters { get; }
 
-        // TODO: move into conset response
-        internal string Nonce => Parameters[IdentityModel.OidcConstants.AuthorizeRequest.Nonce];
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizationRequest"/> class.
         /// </summary>
@@ -108,25 +121,15 @@ namespace IdentityServer4.Models
         internal AuthorizationRequest(ValidatedAuthorizeRequest request)
         {
             ClientId = request.ClientId;
+            RedirectUri = request.RedirectUri;
             DisplayMode = request.DisplayMode;
             UiLocales = request.UiLocales;
-            LoginHint = request.LoginHint;
             IdP = request.GetIdP();
             Tenant = request.GetTenant();
-
-            // process acr values
-            var acrValues = request.GetAcrValues();
-            if (acrValues.Any())
-            {
-                AcrValues = acrValues;
-            }
-
-            // scopes
-            if (request.RequestedScopes.Any())
-            {
-                ScopesRequested = request.RequestedScopes;
-            }
-
+            LoginHint = request.LoginHint;
+            PromptMode = request.PromptMode;
+            AcrValues = request.GetAcrValues();
+            ScopesRequested = request.RequestedScopes;
             Parameters = request.Raw;
         }
     }

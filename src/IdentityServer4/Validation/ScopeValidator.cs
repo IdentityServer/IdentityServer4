@@ -75,7 +75,7 @@ namespace IdentityServer4.Validation
                 requestedScopes = requestedScopes.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess).ToArray();
             }
 
-            var resources = await _store.FindResourcesAsync(requestedScopes);
+            var resources = await _store.FindResourcesByScopeAsync(requestedScopes);
 
             foreach (var requestedScope in requestedScopes)
             {
@@ -146,7 +146,7 @@ namespace IdentityServer4.Validation
                 requestedScopes = requestedScopes.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess).ToArray();
             }
 
-            var resources = await _store.FindEnabledResourcesAsync(requestedScopes);
+            var resources = await _store.FindEnabledResourcesByScopeAsync(requestedScopes);
 
             foreach (var scope in requestedScopes)
             {

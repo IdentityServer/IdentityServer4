@@ -172,7 +172,7 @@ namespace IdentityServer4.Events
             {
                 HandleId = id,
                 ClientId = code.ClientId,
-                Scopes = code.Scopes,
+                Scopes = code.RequestedScopes,
                 SubjectId = code.Subject.GetSubjectId(),
                 RedirectUri = code.RedirectUri,
                 Lifetime = code.Lifetime

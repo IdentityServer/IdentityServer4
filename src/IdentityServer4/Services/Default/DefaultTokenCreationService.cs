@@ -13,6 +13,7 @@ using IdentityModel;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
+using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.Services.Default
 {
@@ -22,10 +23,12 @@ namespace IdentityServer4.Services.Default
     public class DefaultTokenCreationService : ITokenCreationService
     {
         private readonly IKeyMaterialService _keys;
+        private readonly ILogger _logger;
 
-        public DefaultTokenCreationService(IKeyMaterialService keys)
+        public DefaultTokenCreationService(IKeyMaterialService keys, ILogger<DefaultTokenCreationService> logger)
         {
             _keys = keys;
+            _logger = logger;
         }
 
         /// <summary>
@@ -64,7 +67,13 @@ namespace IdentityServer4.Services.Default
             var x509key = credential.Key as X509SecurityKey;
             if (x509key != null)
             {
-                header.Add("x5t", Base64Url.Encode(x509key.Certificate.GetCertHash()));
+                var cert = x509key.Certificate;
+                if (DateTime.UtcNow > cert.NotAfter)
+                {
+                    _logger.LogWarning("Certificate {subjectName} has expired on {expiration}", cert.Subject, cert.NotAfter.ToString());
+                }
+
+                header.Add("x5t", Base64Url.Encode(cert.GetCertHash()));
             }
 
             return header;

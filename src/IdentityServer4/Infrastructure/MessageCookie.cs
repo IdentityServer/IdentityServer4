@@ -4,6 +4,7 @@
 
 using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
+using IdentityServer4.Infrastructure;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
@@ -23,6 +24,11 @@ namespace IdentityServer4
             NullValueHandling = NullValueHandling.Ignore,
             DefaultValueHandling = DefaultValueHandling.Ignore,
         };
+
+        static MessageCookie()
+        {
+            Settings.Converters.Add(new NameValueCollectionConverter());
+        }
 
         private readonly ILogger<MessageCookie<TModel>> _logger;
         private readonly IdentityServerOptions _options;
@@ -54,7 +60,7 @@ namespace IdentityServer4
         Message<TModel> Unprotect(string data)
         {
             var json = _protector.Unprotect(data);
-            var message = JsonConvert.DeserializeObject<Message<TModel>>(json);
+            var message = JsonConvert.DeserializeObject<Message<TModel>>(json, Settings);
             return message;
         }
 

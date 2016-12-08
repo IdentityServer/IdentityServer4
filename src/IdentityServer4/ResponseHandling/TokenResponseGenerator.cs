@@ -87,7 +87,7 @@ namespace IdentityServer4.ResponseHandling
                     throw new InvalidOperationException("Client does not exist anymore.");
                 }
 
-                var resources = await _resources.FindEnabledResourcesAsync(request.AuthorizationCode.RequestedScopes);
+                var resources = await _resources.FindEnabledResourcesByScopeAsync(request.AuthorizationCode.RequestedScopes);
 
                 var tokenRequest = new TokenCreationRequest
                 {
@@ -147,7 +147,7 @@ namespace IdentityServer4.ResponseHandling
                     Client = request.Client,
                     Subject = subject,
                     ValidatedRequest = request,
-                    Resources = await _resources.FindEnabledResourcesAsync(oldAccessToken.Scopes),
+                    Resources = await _resources.FindEnabledResourcesByScopeAsync(oldAccessToken.Scopes),
                 };
 
                 var newAccessToken = await _tokenService.CreateAccessTokenAsync(creationRequest);
@@ -191,7 +191,7 @@ namespace IdentityServer4.ResponseHandling
                     throw new InvalidOperationException("Client does not exist anymore.");
                 }
 
-                var resources = await _resources.FindEnabledResourcesAsync(request.AuthorizationCode.RequestedScopes);
+                var resources = await _resources.FindEnabledResourcesByScopeAsync(request.AuthorizationCode.RequestedScopes);
 
                 tokenRequest = new TokenCreationRequest
                 {

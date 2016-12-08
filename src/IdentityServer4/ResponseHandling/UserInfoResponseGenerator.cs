@@ -37,13 +37,13 @@ namespace IdentityServer4.ResponseHandling
             
             var requestedClaimTypes = await GetRequestedClaimTypesAsync(scopes);
 
-            _logger.LogDebug("Requested claim types: {claimTypes}", requestedClaimTypes.ClaimTypes.ToSpaceSeparatedString());
+            _logger.LogDebug("Requested claim types: {claimTypes}", requestedClaimTypes.ToSpaceSeparatedString());
 
             var context = new ProfileDataRequestContext(
                 subject,
                 client,
                 IdentityServerConstants.ProfileDataCallers.UserInfoEndpoint,
-                requestedClaimTypes.ClaimTypes);
+                requestedClaimTypes);
 
             await _profile.GetProfileDataAsync(context);
             var profileClaims = context.IssuedClaims;
@@ -60,7 +60,6 @@ namespace IdentityServer4.ResponseHandling
                 _logger.LogInformation("Profile service returned to the following claim types: {types}", profileClaims.Select(c => c.Type).ToSpaceSeparatedString());
             }
 
-            // TODO: unit tests
             var subClaim = results.SingleOrDefault(x => x.Type == JwtClaimTypes.Subject);
             if (subClaim == null)
             {
@@ -75,17 +74,17 @@ namespace IdentityServer4.ResponseHandling
             return results.ToClaimsDictionary();
         }
 
-        public async Task<RequestedClaimTypes> GetRequestedClaimTypesAsync(IEnumerable<string> scopes)
+        public async Task<IEnumerable<string>> GetRequestedClaimTypesAsync(IEnumerable<string> scopes)
         {
             if (scopes == null || !scopes.Any())
             {
-                return new RequestedClaimTypes();
+                return Enumerable.Empty<string>();
             }
 
             var scopeString = string.Join(" ", scopes);
             _logger.LogDebug("Scopes in access token: {scopes}", scopeString);
 
-            var identityResources = await _resourceStore.FindEnabledIdentityResourcesAsync(scopes);
+            var identityResources = await _resourceStore.FindEnabledIdentityResourcesByScopeAsync(scopes);
             var scopeClaims = new List<string>();
 
             foreach (var scope in scopes)
@@ -98,7 +97,7 @@ namespace IdentityServer4.ResponseHandling
                 }
             }
 
-            return new RequestedClaimTypes(scopeClaims);
+            return scopeClaims.Distinct();
         }
     }
 }
