@@ -138,6 +138,14 @@ namespace IdentityServer4.Models
         public ICollection<string> AllowedScopes { get; set; } = new HashSet<string>();
 
         /// <summary>
+        /// Gets or sets a value indicating whether [always include user claims in id token].
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if [always include user claims in id token]; otherwise, <c>false</c>.
+        /// </value>
+        public bool AlwaysIncludeUserClaimsInIdToken { get; set; }
+
+        /// <summary>
         /// Lifetime of identity token in seconds (defaults to 300 seconds / 5 minutes)
         /// </summary>
         public int IdentityTokenLifetime { get; set; } = 300;

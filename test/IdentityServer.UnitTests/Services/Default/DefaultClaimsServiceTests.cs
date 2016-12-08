@@ -87,6 +87,20 @@ namespace IdentityServer4.UnitTests.Services.Default
         }
 
         [Fact]
+        public async Task GetIdentityTokenClaimsAsync_should_return_all_claims_when_client_configured_for_always_include_all_claims_in_id_token()
+        {
+            _client.AlwaysIncludeUserClaimsInIdToken = true;
+
+            _resources.IdentityResources.Add(new IdentityResource("id_scope", new[] { "foo" }));
+            _mockMockProfileService.ProfileClaims.Add(new Claim("foo", "foo1"));
+
+            var claims = await _subject.GetIdentityTokenClaimsAsync(_user, _client, _resources, false, _validatedRequest);
+
+            _mockMockProfileService.GetProfileWasCalled.Should().BeTrue();
+            _mockMockProfileService.ProfileContext.RequestedClaimTypes.Should().Contain("foo");
+        }
+
+        [Fact]
         public async Task GetIdentityTokenClaimsAsync_should_filter_protocol_claims_from_profile_service()
         {
             _resources.IdentityResources.Add(new IdentityResource("id_scope", new[] { "foo" }));

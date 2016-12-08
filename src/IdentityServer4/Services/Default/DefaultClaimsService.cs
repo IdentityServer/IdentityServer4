@@ -58,7 +58,7 @@ namespace IdentityServer4.Services.Default
             outputClaims.AddRange(GetOptionalClaims(subject));
 
             // fetch all identity claims that need to go into the id token
-            if (includeAllIdentityClaims)
+            if (includeAllIdentityClaims || client.AlwaysIncludeUserClaimsInIdToken)
             {
                 var additionalClaims = new List<string>();
 
