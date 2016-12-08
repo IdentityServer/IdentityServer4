@@ -33,14 +33,17 @@ Then select the "Empty Web" option.
 
 .. image:: images/0_empty_web.png
 
+.. note:: IdentityServer currently only targets ASP.NET Core 1.1, so if you are starting with an ASP.NET Core 1.0 project then you can follow 
+`this guide for updating to ASP.NET Core 1.1 <https://blogs.msdn.microsoft.com/webdev/2016/11/16/announcing-asp-net-core-1-1/>`_.
+
 Next, add the IdentityServer4 nuget package by adding the following line to your project.json under the ´dependencies´ property::
 
-    "IdentityServer4": "1.0.0-rc4-update1"
+    "IdentityServer4": "1.0.0-rc5"
     
 Alternatively you can use Package Manager Console to add the dependency by running the following command:
 
     "Install-Package IdentityServer4 -Pre"
- 
+
     
 IdentityServer uses the usual pattern to configure and add services to an ASP.NET Core host.
 In ``ConfigureServices`` the required services are configured and added to the DI system. 

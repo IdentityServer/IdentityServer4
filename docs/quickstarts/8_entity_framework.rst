@@ -15,7 +15,7 @@ These stores are modeled with interfaces, and we provide an EF implementation of
 
 Get started by adding a reference to the `IdentityServer4.EntityFramework` Nuget package in `project.json` in the IdentityServer project:: 
 
-    "IdentityServer4.EntityFramework": "1.0.0-rc4-update1"
+    "IdentityServer4.EntityFramework": "1.0.0-rc5"
 
 Adding SqlServer
 ^^^^^^^^^^^^^^^^
