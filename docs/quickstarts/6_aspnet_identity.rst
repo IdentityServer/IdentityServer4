@@ -34,6 +34,8 @@ Finally, your new project dialog should look something like this. Once it does, 
 
 .. image:: images/6_web_app_template_with_aspnet_identity.png
 
+.. note:: Don't forget to update your project to ASP.NET Core 1.1. You can follow `this guide for updating to ASP.NET Core 1.1 <https://blogs.msdn.microsoft.com/webdev/2016/11/16/announcing-asp-net-core-1-1/>`_.
+
 Modify hosting
 ^^^^^^^^^^^^^^^
 
