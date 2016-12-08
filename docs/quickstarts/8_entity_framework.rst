@@ -15,7 +15,7 @@ These stores are modeled with interfaces, and we provide an EF implementation of
 
 Get started by adding a reference to the `IdentityServer4.EntityFramework` Nuget package in `project.json` in the IdentityServer project:: 
 
-    "IdentityServer4.EntityFramework": "1.0.0-rc4-update1"
+    "IdentityServer4.EntityFramework": "1.0.0-rc5"
 
 Adding SqlServer
 ^^^^^^^^^^^^^^^^
@@ -26,7 +26,7 @@ For this quickstart we will use the LocalDb version of SqlServer that comes with
 To add SqlServer, we need several more dependencies. 
 In the `"dependencies"` section in `project.json` add these packages::
 
-  "Microsoft.EntityFrameworkCore.SqlServer": "1.0.0",
+  "Microsoft.EntityFrameworkCore.SqlServer": "1.1.0",
   "Microsoft.EntityFrameworkCore.Tools": "1.0.0-preview2-final"
 
 And then in the `"tools"` section add this configuration::

@@ -8,6 +8,9 @@ Then we can decided if and how a feature or a change could be implemented and if
 ## General feedback and discussions?
 Please start a discussion on the [core repo issue tracker](https://github.com/IdentityServer/IdentityServer4/issues).
 
+## Platform
+IdentityServer is built against ASP.NET Core 1.1.0 using the 1.0.0-preview2-003131 SDK. This is the only configuration we gonna support on the issue tracker.
+
 
 ## Bugs and feature requests?
 Please log a new issue in the appropriate GitHub repo:
