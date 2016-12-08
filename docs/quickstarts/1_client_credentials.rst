@@ -197,7 +197,7 @@ This is done using the ``SetBearerToken`` extension method::
     }
     else
     {
-        var content = response.Content.ReadAsStringAsync().Result;
+        var content = await response.Content.ReadAsStringAsync();
         Console.WriteLine(JArray.Parse(content));
     }
 
