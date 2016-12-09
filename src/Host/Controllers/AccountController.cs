@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using Host.Filters;
+using System.Security.Principal;
 
 namespace IdentityServer4.Quickstart.UI.Controllers
 {
@@ -52,7 +53,7 @@ namespace IdentityServer4.Quickstart.UI.Controllers
             if (context?.IdP != null)
             {
                 // if IdP is passed, then bypass showing the login screen
-                return ExternalLogin(context.IdP, returnUrl);
+                return await ExternalLogin(context.IdP, returnUrl);
             }
 
             var vm = await BuildLoginViewModelAsync(returnUrl, context);
@@ -60,7 +61,7 @@ namespace IdentityServer4.Quickstart.UI.Controllers
             if (vm.EnableLocalLogin == false && vm.ExternalProviders.Count() == 1)
             {
                 // only one option for logging in
-                return ExternalLogin(vm.ExternalProviders.First().AuthenticationScheme, returnUrl);
+                return await ExternalLogin(vm.ExternalProviders.First().AuthenticationScheme, returnUrl);
             }
 
             return View(vm);
@@ -202,13 +203,16 @@ namespace IdentityServer4.Quickstart.UI.Controllers
                     model.LogoutId = await _interaction.CreateLogoutContextAsync();
                 }
 
-                string url = "/Account/Logout?logoutId=" + model.LogoutId;
+                string url = Url.Action("Logout", new { logoutId = model.LogoutId });
                 try
                 {
                     // hack: try/catch to handle social providers that throw
                     await HttpContext.Authentication.SignOutAsync(idp, new AuthenticationProperties { RedirectUri = url });
                 }
-                catch(NotSupportedException)
+                catch(NotSupportedException) // this is for the external providers that don't have signout
+                {
+                }
+                catch(InvalidOperationException) // this is for Windows/Negotiate
                 {
                 }
             }
@@ -217,7 +221,7 @@ namespace IdentityServer4.Quickstart.UI.Controllers
             await HttpContext.Authentication.SignOutAsync();
 
             // set this so UI rendering sees an anonymous user
-            HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity());
+            ViewData["signed-out"] = true;
 
             // get context information (client name, post logout redirect URI and iframe for federated signout)
             var logout = await _interaction.GetLogoutContextAsync(model.LogoutId);
@@ -236,21 +240,32 @@ namespace IdentityServer4.Quickstart.UI.Controllers
         /// initiate roundtrip to external authentication provider
         /// </summary>
         [HttpGet]
-        public IActionResult ExternalLogin(string provider, string returnUrl)
+        public async Task<IActionResult> ExternalLogin(string provider, string returnUrl)
         {
-            if (returnUrl != null)
-            {
-                returnUrl = UrlEncoder.Default.Encode(returnUrl);
-            }
-            returnUrl = "/account/externallogincallback?returnUrl=" + returnUrl;
+            returnUrl = Url.Action("ExternalLoginCallback", new { returnUrl = returnUrl });
 
-            // start challenge and roundtrip the return URL
-            var props = new AuthenticationProperties
+            if (provider == "Negotiate" && HttpContext.User is WindowsPrincipal)
             {
-                RedirectUri = returnUrl, 
-                Items = { { "scheme", provider } }
-            };
-            return new ChallengeResult(provider, props);
+                var props = new AuthenticationProperties();
+                props.Items.Add("scheme", "Negotiate");
+
+                var id = new ClaimsIdentity(provider);
+                id.AddClaim(new Claim(ClaimTypes.NameIdentifier, HttpContext.User.Identity.Name));
+                id.AddClaim(new Claim(ClaimTypes.Name, HttpContext.User.Identity.Name));
+
+                await HttpContext.Authentication.SignInAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme, new ClaimsPrincipal(id), props);
+                return Redirect(returnUrl);
+            }
+            else
+            {
+                // start challenge and roundtrip the return URL
+                var props = new AuthenticationProperties
+                {
+                    RedirectUri = returnUrl,
+                    Items = { { "scheme", provider } }
+                };
+                return new ChallengeResult(provider, props);
+            }
         }
 
         /// <summary>

@@ -85,7 +85,7 @@ namespace IdentityServer4.Extensions
             return uri;
         }
 
-        internal static async Task<ClaimsPrincipal> GetIdentityServerUserAsync(this HttpContext context)
+        public static async Task<ClaimsPrincipal> GetIdentityServerUserAsync(this HttpContext context)
         {
             var options = context.RequestServices.GetRequiredService<IdentityServerOptions>();
             var user = await context.Authentication.AuthenticateAsync(options.AuthenticationOptions.EffectiveAuthenticationScheme);
