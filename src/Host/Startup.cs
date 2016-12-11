@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using Serilog.Events;
 using Microsoft.IdentityModel.Tokens;
-using System.Linq;
 using IdentityServer4;
 using IdentityServer4.Validation;
 using Serilog;
@@ -21,17 +20,6 @@ namespace Host
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<IISOptions>(options=>
-            {
-                const string windowsAuthType = "Negotiate";
-                var windows = options.AuthenticationDescriptions
-                    .FirstOrDefault(x => x.AuthenticationScheme == windowsAuthType);
-                if (windows != null)
-                {
-                    windows.DisplayName = "Windows";
-                }
-            });
-
             services.AddIdentityServer(options =>
                 {
                     //options.EventsOptions = new EventsOptions

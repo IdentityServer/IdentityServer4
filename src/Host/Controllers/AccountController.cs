@@ -33,6 +33,9 @@ namespace IdentityServer4.Quickstart.UI.Controllers
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IClientStore _clientStore;
 
+        // if you want to support Windows authentication, specify the scheme you want to use
+        private readonly string _windowsAuthenticationScheme = "Negotiate";
+
         public AccountController(
             InMemoryUserLoginService loginService,
             IIdentityServerInteractionService interaction,
@@ -115,13 +118,26 @@ namespace IdentityServer4.Quickstart.UI.Controllers
 
         async Task<LoginViewModel> BuildLoginViewModelAsync(string returnUrl, AuthorizationRequest context)
         {
-            var providers = HttpContext.Authentication.GetAuthenticationSchemes()
+            var schemes = HttpContext.Authentication.GetAuthenticationSchemes();
+
+            var providers = schemes
                 .Where(x => x.DisplayName != null)
                 .Select(x => new ExternalProvider
                 {
                     DisplayName = x.DisplayName,
                     AuthenticationScheme = x.AuthenticationScheme
+                }).ToList();
+
+            // add Windows provider if present
+            var windows = schemes.FirstOrDefault(s => s.AuthenticationScheme == _windowsAuthenticationScheme);
+            if (windows != null)
+            {
+                providers.Add(new ExternalProvider
+                {
+                    AuthenticationScheme = _windowsAuthenticationScheme,
+                    DisplayName = "Windows"
                 });
+            }
 
             var allowLocal = true;
             if (context?.ClientId != null)
@@ -133,7 +149,7 @@ namespace IdentityServer4.Quickstart.UI.Controllers
 
                     if (client.IdentityProviderRestrictions != null && client.IdentityProviderRestrictions.Any())
                     {
-                        providers = providers.Where(provider => client.IdentityProviderRestrictions.Contains(provider.AuthenticationScheme));
+                        providers = providers.Where(provider => client.IdentityProviderRestrictions.Contains(provider.AuthenticationScheme)).ToList();
                     }
                 }
             }
@@ -244,10 +260,10 @@ namespace IdentityServer4.Quickstart.UI.Controllers
         {
             returnUrl = Url.Action("ExternalLoginCallback", new { returnUrl = returnUrl });
 
-            if (provider == "Negotiate" && HttpContext.User is WindowsPrincipal)
+            if (provider == _windowsAuthenticationScheme && HttpContext.User is WindowsPrincipal)
             {
                 var props = new AuthenticationProperties();
-                props.Items.Add("scheme", "Negotiate");
+                props.Items.Add("scheme", _windowsAuthenticationScheme);
 
                 var id = new ClaimsIdentity(provider);
                 id.AddClaim(new Claim(ClaimTypes.NameIdentifier, HttpContext.User.Identity.Name));
