@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace IdentityServer4.Models
 {
-    internal static class ResourceExtensions
+    public static class ResourceExtensions
     {
         public static IEnumerable<string> ToScopeNames(this Resources resources)
         {
