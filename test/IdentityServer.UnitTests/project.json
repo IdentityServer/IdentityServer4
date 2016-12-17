@@ -4,22 +4,22 @@
   "dependencies": {
     "xunit": "2.2.0-beta2-build3300",
     "dotnet-test-xunit": "2.2.0-preview2-build1029",
-    "FluentAssertions": "4.6.1",
-    "Microsoft.AspNetCore.Http.Abstractions": "1.0.0",
-    "Microsoft.Extensions.PlatformAbstractions": "1.0.0",
-    "Microsoft.Extensions.Logging": "1.0.0",
+    "FluentAssertions": "4.17.0",
+    "Microsoft.AspNetCore.Http.Abstractions": "1.1.0",
+    "Microsoft.Extensions.PlatformAbstractions": "1.1.0",
+    "Microsoft.Extensions.Logging": "1.1.0",
     "IdentityServer4": {
       "target": "project"
     },
-    "Microsoft.Extensions.DependencyInjection": "1.0.0"
+    "Microsoft.Extensions.DependencyInjection": "1.1.0"
   },
 
   "frameworks": {
-    "netcoreapp1.0": {
+    "netcoreapp1.1": {
       "dependencies": {
         "Microsoft.NETCore.App": {
           "type": "platform",
-          "version": "1.0.0"
+          "version": "1.1.0"
         }
       },
       "imports": [
@@ -27,7 +27,7 @@
         "portable-net45+win8"
       ]
     },
-    "net452": { }
+    "net452": {}
   },
 
   "buildOptions": {

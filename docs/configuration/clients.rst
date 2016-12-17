@@ -29,7 +29,7 @@ In this scenario no interactive user is present - a service (aka client) wants t
                     ClientSecrets = { new Secret("secret".Sha256()) },
 
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    AllowedScopes = { "api1", "api2" }
+                    AllowedScopes = { "api1", "api2.read_only" }
                 }
             };
         }
@@ -58,7 +58,7 @@ This client uses the so called implicit flow to request an identity and access t
             IdentityServerConstants.StandardScopes.Profile,
             IdentityServerConstants.StandardScopes.Email,
             
-            "api1", "api2"
+            "api1", "api2.read_only"
         }
     };
 
@@ -89,6 +89,6 @@ This flow gives you the best security because the access tokens are transmitted 
             IdentityServerConstants.StandardScopes.Profile,
             IdentityServerConstants.StandardScopes.Email,
 
-            "api1", "api2"
+            "api1", "api2.read_only"
         },
     };

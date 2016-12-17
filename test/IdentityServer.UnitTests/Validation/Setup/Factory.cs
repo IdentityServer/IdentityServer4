@@ -104,7 +104,7 @@ namespace IdentityServer4.UnitTests.Validation
         internal static ITokenCreationService CreateDefaultTokenCreator()
         {
             return new DefaultTokenCreationService(
-                new DefaultKeyMaterialService(new IValidationKeysStore[] { }, new DefaultSigningCredentialsStore(TestCert.LoadSigningCredentials())));
+                new DefaultKeyMaterialService(new IValidationKeysStore[] { }, new DefaultSigningCredentialsStore(TestCert.LoadSigningCredentials())), TestLogger.Create<DefaultTokenCreationService>());
         }
 
         public static AuthorizeRequestValidator CreateAuthorizeRequestValidator(

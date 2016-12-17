@@ -115,7 +115,7 @@ The job of that middleware is:
 
 Add the following package to your project.json::
 
-    "IdentityServer4.AccessTokenValidation": "1.0.1-rc4"
+    "IdentityServer4.AccessTokenValidation": "1.0.1-rc5"
 
 You also need to add the middleware to your pipeline. 
 It must be added **before** MVC, e.g.::
@@ -128,9 +128,9 @@ It must be added **before** MVC, e.g.::
         app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
         {
             Authority = "http://localhost:5000",
-            AllowedScopes = { "api1" },
+            RequireHttpsMetadata = false,
 
-            RequireHttpsMetadata = false
+            ApiName = "api1"
         });
 
         app.UseMvc();
@@ -197,7 +197,7 @@ This is done using the ``SetBearerToken`` extension method::
     }
     else
     {
-        var content = response.Content.ReadAsStringAsync().Result;
+        var content = await response.Content.ReadAsStringAsync();
         Console.WriteLine(JArray.Parse(content));
     }
 

@@ -9,13 +9,13 @@ IdentityServer4.EntityFramework
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 There are two types of data that we are moving to the database. 
-The first is the configuration data (scopes and clients).
+The first is the configuration data (resources and clients).
 The second is operational data that IdentityServer produces as it's being used.
 These stores are modeled with interfaces, and we provide an EF implementation of these interfaces in the `IdentityServer4.EntityFramework` Nuget package.
 
 Get started by adding a reference to the `IdentityServer4.EntityFramework` Nuget package in `project.json` in the IdentityServer project:: 
 
-    "IdentityServer4.EntityFramework": "1.0.0-rc4-update1"
+    "IdentityServer4.EntityFramework": "1.0.0-rc5"
 
 Adding SqlServer
 ^^^^^^^^^^^^^^^^
@@ -26,7 +26,7 @@ For this quickstart we will use the LocalDb version of SqlServer that comes with
 To add SqlServer, we need several more dependencies. 
 In the `"dependencies"` section in `project.json` add these packages::
 
-  "Microsoft.EntityFrameworkCore.SqlServer": "1.0.0",
+  "Microsoft.EntityFrameworkCore.SqlServer": "1.1.0",
   "Microsoft.EntityFrameworkCore.Tools": "1.0.0-preview2-final"
 
 And then in the `"tools"` section add this configuration::
@@ -36,7 +36,7 @@ And then in the `"tools"` section add this configuration::
 Configuring the stores
 ^^^^^^^^^^^^^^^^^^^^^^
 
-The next step is to replace the current calls to ``AddInMemoryClients`` and ``AddInMemoryScopes`` in the ``Configure`` method in `Startup.cs`.
+The next step is to replace the current calls to ``AddInMemoryClients``, ``AddInMemoryIdentityResources``, and ``AddInMemoryApiResources`` in the ``Configure`` method in `Startup.cs`.
 We will replace them with this code::
 
   using Microsoft.EntityFrameworkCore;
@@ -49,7 +49,7 @@ We will replace them with this code::
       var connectionString = @"server=(localdb)\mssqllocaldb;database=IdentityServer4;trusted_connection=yes";
       var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
             
-      // configure identity server with in-memory users, but EF stores for clients and scopes
+      // configure identity server with in-memory users, but EF stores for clients and resources
       services.AddIdentityServer()
           .AddTemporarySigningCredential()
           .AddInMemoryUsers(Config.GetUsers())
