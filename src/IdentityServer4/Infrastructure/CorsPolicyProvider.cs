@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using IdentityServer4.Configuration;
 using IdentityServer4.Configuration.DependencyInjection;
 using IdentityServer4.Services;
+using IdentityServer4.Infrastructure;
 
 namespace IdentityServer4
 {
@@ -19,17 +20,21 @@ namespace IdentityServer4
         private readonly ILogger<CorsPolicyProvider> _logger;
         private readonly ICorsPolicyProvider _inner;
         private readonly IdentityServerOptions _options;
+        private readonly ICorsPathValidator _corsPathValidator;
 
         public CorsPolicyProvider(
             ILogger<CorsPolicyProvider> logger,
             Decorator<ICorsPolicyProvider> inner,
             IdentityServerOptions options,
-            ICorsPolicyService corsPolicyService)
+            ICorsPolicyService corsPolicyService,
+            ICorsPathValidator corsPathValidator
+            )
         {
             _logger = logger;
             _inner = inner.Instance;
             _options = options;
             _corsPolicyService = corsPolicyService;
+            _corsPathValidator = corsPathValidator;
         }
 
         public Task<CorsPolicy> GetPolicyAsync(HttpContext context, string policyName)
@@ -88,7 +93,7 @@ namespace IdentityServer4
 
         private bool IsPathAllowed(PathString path)
         {
-            return _options.CorsOptions.CorsPaths.Any(x => path == x);
+            return _corsPathValidator.IsPathAllowed(path, _options.CorsOptions);
         }
     }
 }

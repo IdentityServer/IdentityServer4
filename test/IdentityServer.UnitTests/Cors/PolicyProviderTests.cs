@@ -11,6 +11,7 @@ using Xunit;
 using IdentityServer4.Configuration;
 using IdentityServer4.Configuration.DependencyInjection;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using IdentityServer4.Infrastructure;
 
 namespace IdentityServer4.UnitTests.Hosting.Cors
 {
@@ -43,7 +44,8 @@ namespace IdentityServer4.UnitTests.Hosting.Cors
                 TestLogger.Create<CorsPolicyProvider>(),
                 new Decorator<ICorsPolicyProvider>(_mockInner),
                 _options,
-                _mockPolicy);
+                _mockPolicy,
+                new DefaultCorsPathValidator());
         }
 
         [Theory]

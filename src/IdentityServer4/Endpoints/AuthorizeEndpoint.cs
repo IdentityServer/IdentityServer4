@@ -31,6 +31,7 @@ namespace IdentityServer4.Endpoints
         private readonly IAuthorizeInteractionResponseGenerator _interactionGenerator;
         private readonly IMessageStore<ConsentResponse> _consentResponseStore;
         private readonly IAuthorizeResponseGenerator _authorizeResponseGenerator;
+        private readonly IMatchAuthorizeProtocolRoutePaths _pathMatcher;
 
         public AuthorizeEndpoint(
             IEventService events, 
@@ -38,7 +39,9 @@ namespace IdentityServer4.Endpoints
             IAuthorizeRequestValidator validator,
             IAuthorizeInteractionResponseGenerator interactionGenerator,
             IMessageStore<ConsentResponse> consentResponseStore,
-            IAuthorizeResponseGenerator authorizeResponseGenerator)
+            IAuthorizeResponseGenerator authorizeResponseGenerator,
+            IMatchAuthorizeProtocolRoutePaths pathMatcher
+            )
         {
             _events = events;
             _logger = logger;
@@ -46,6 +49,7 @@ namespace IdentityServer4.Endpoints
             _interactionGenerator = interactionGenerator;
             _consentResponseStore = consentResponseStore;
             _authorizeResponseGenerator = authorizeResponseGenerator;
+            _pathMatcher = pathMatcher;
         }
 
         public async Task<IEndpointResult> ProcessAsync(HttpContext context)
@@ -56,17 +60,17 @@ namespace IdentityServer4.Endpoints
                 return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
             }
 
-            if (context.Request.Path == Constants.ProtocolRoutePaths.Authorize.EnsureLeadingSlash())
+            if (_pathMatcher.IsAuthorizePath(context.Request.Path))
             {
                 return await ProcessAuthorizeAsync(context);
             }
 
-            if (context.Request.Path == Constants.ProtocolRoutePaths.AuthorizeAfterLogin.EnsureLeadingSlash())
+            if (_pathMatcher.IsAuthorizeAfterLoginPath(context.Request.Path))
             {
                 return await ProcessAuthorizeAfterLoginAsync(context);
             }
 
-            if (context.Request.Path == Constants.ProtocolRoutePaths.AuthorizeAfterConsent.EnsureLeadingSlash())
+            if (_pathMatcher.IsAuthorizeAfterConsentPath(context.Request.Path))
             {
                 return await ProcessAuthorizeAfterConsentAsync(context);
             }
