@@ -95,7 +95,7 @@ namespace IdentityServer4.ResponseHandling
                     Client = client,
                     Resources = resources,
                     Nonce = request.AuthorizationCode.Nonce,
-
+                    AccessTokenToHash = response.AccessToken,
                     ValidatedRequest = request
                 };
 
