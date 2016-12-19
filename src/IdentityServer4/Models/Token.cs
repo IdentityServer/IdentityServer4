@@ -93,7 +93,7 @@ namespace IdentityServer4.Models
         /// <value>
         /// The claims.
         /// </value>
-        public List<Claim> Claims { get; set; } = new List<Claim>();
+        public ICollection<Claim> Claims { get; set; } = new HashSet<Claim>(new ClaimComparer());
 
         /// <summary>
         /// Gets or sets the version.
