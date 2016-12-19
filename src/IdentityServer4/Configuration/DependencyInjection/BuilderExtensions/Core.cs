@@ -103,6 +103,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddTransient<PersistentGrantSerializer>();
             builder.Services.AddTransient<EventServiceHelper>();
             builder.Services.AddTransient<ReturnUrlParser>();
+            builder.Services.AddTransient<IdentityServerTools>();
 
             builder.Services.AddTransient<IReturnUrlParser, OidcReturnUrlParser>();
             builder.Services.AddTransient<ISessionIdService, DefaultSessionIdService>();
