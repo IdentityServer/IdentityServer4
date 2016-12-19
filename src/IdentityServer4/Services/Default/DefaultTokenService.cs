@@ -122,7 +122,7 @@ namespace IdentityServer4.Services.Default
                 request.IncludeAllIdentityClaims,
                 request.ValidatedRequest));
 
-            var issuer = _context.HttpContext.GetIssuerUri();
+            var issuer = _context.HttpContext.GetIdentityServerIssuerUri();
 
             var token = new Token(OidcConstants.TokenTypes.IdentityToken)
             {
@@ -161,7 +161,7 @@ namespace IdentityServer4.Services.Default
                 claims.Add(new Claim(JwtClaimTypes.JwtId, CryptoRandom.CreateUniqueId()));
             }
 
-            var issuer = _context.HttpContext.GetIssuerUri();
+            var issuer = _context.HttpContext.GetIdentityServerIssuerUri();
             var token = new Token(OidcConstants.TokenTypes.AccessToken)
             {
                 Audiences = { string.Format(Constants.AccessTokenAudience, issuer.EnsureTrailingSlash()) },

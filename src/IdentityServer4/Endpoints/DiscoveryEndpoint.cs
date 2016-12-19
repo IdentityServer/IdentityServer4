@@ -81,7 +81,7 @@ namespace IdentityServer4.Endpoints
 
             var document = new DiscoveryDocument
             {
-                issuer = context.GetIssuerUri(),
+                issuer = context.GetIdentityServerIssuerUri(),
                 subject_types_supported = new[] { "public" },
                 id_token_signing_alg_values_supported = new[] { Constants.SigningAlgorithms.RSA_SHA_256 },
                 code_challenge_methods_supported = new[] { OidcConstants.CodeChallengeMethods.Plain, OidcConstants.CodeChallengeMethods.Sha256 }

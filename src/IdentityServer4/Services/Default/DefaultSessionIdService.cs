@@ -97,7 +97,7 @@ namespace IdentityServer4.Services.Default
         CookieOptions CreateCookieOptions()
         {
             var secure = _context.Request.IsHttps;
-            var path = _context.GetBasePath().CleanUrlPath();
+            var path = _context.GetIdentityServerBasePath().CleanUrlPath();
 
             var options = new CookieOptions
             {

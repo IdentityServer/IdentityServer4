@@ -71,7 +71,7 @@ namespace IdentityServer4
             return CookiePrefix + id;
         }
 
-        string CookiePath => _context.HttpContext.GetBasePath().CleanUrlPath();
+        string CookiePath => _context.HttpContext.GetIdentityServerBasePath().CleanUrlPath();
 
         private IEnumerable<string> GetCookieNames()
         {

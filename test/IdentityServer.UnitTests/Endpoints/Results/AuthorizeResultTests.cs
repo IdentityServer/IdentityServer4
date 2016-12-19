@@ -33,8 +33,8 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
 
         public AuthorizeResultTests()
         {
-            _context.SetOrigin("https://server");
-            _context.SetBasePath("/");
+            _context.SetIdentityServerOrigin("https://server");
+            _context.SetIdentityServerBasePath("/");
             _context.Response.Body = new MemoryStream();
 
             _options.UserInteractionOptions.ErrorUrl = "~/error";

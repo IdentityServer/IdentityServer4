@@ -31,8 +31,8 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
 
         public EndSessionResultTests()
         {
-            _context.SetOrigin("https://server");
-            _context.SetBasePath("/");
+            _context.SetIdentityServerOrigin("https://server");
+            _context.SetIdentityServerBasePath("/");
 
             _options.UserInteractionOptions.LogoutUrl = "~/logout";
             _options.UserInteractionOptions.LogoutIdParameter = "logoutId";

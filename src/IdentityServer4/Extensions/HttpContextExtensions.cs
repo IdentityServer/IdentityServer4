@@ -16,21 +16,21 @@ namespace IdentityServer4.Extensions
 {
     public static class HttpContextExtensions
     {
-        public static void SetOrigin(this HttpContext context, string value)
+        public static void SetIdentityServerOrigin(this HttpContext context, string value)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
             context.Items[Constants.EnvironmentKeys.IdentityServerOrigin] = value;
         }
 
-        public static void SetBasePath(this HttpContext context, string value)
+        public static void SetIdentityServerBasePath(this HttpContext context, string value)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
             context.Items[Constants.EnvironmentKeys.IdentityServerBasePath] = value;
         }
 
-        public static string GetOrigin(this HttpContext context)
+        public static string GetIdentityServerOrigin(this HttpContext context)
         {
             return context.Items[Constants.EnvironmentKeys.IdentityServerOrigin] as string;
         }
@@ -38,9 +38,9 @@ namespace IdentityServer4.Extensions
         /// <summary>
         /// Gets the base path of IdentityServer. Can be used inside of Katana <c>Map</c>ped middleware.
         /// </summary>
-        /// <param name="env">The OWIN environment.</param>
+        /// <param name="context">The context.</param>
         /// <returns></returns>
-        public static string GetBasePath(this HttpContext context)
+        public static string GetIdentityServerBasePath(this HttpContext context)
         {
             return context.Items[Constants.EnvironmentKeys.IdentityServerBasePath] as string;
         }
@@ -48,13 +48,19 @@ namespace IdentityServer4.Extensions
         /// <summary>
         /// Gets the public base URL for IdentityServer.
         /// </summary>
-        /// <param name="env">The OWIN environment.</param>
+        /// <param name="context">The context.</param>
         /// <returns></returns>
         public static string GetIdentityServerBaseUrl(this HttpContext context)
         {
-            return context.GetOrigin() + context.GetBasePath();
+            return context.GetIdentityServerOrigin() + context.GetIdentityServerBasePath();
         }
 
+        /// <summary>
+        /// Gets the identity server relative URL.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="path">The path.</param>
+        /// <returns></returns>
         public static string GetIdentityServerRelativeUrl(this HttpContext context, string path)
         {
             if (!path.IsLocalUrl())
@@ -67,7 +73,13 @@ namespace IdentityServer4.Extensions
             return path;
         }
 
-        public static string GetIssuerUri(this HttpContext context)
+        /// <summary>
+        /// Gets the identity server issuer URI.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">context</exception>
+        public static string GetIdentityServerIssuerUri(this HttpContext context)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
@@ -85,6 +97,11 @@ namespace IdentityServer4.Extensions
             return uri;
         }
 
+        /// <summary>
+        /// Gets the identity server user asynchronous.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <returns></returns>
         public static async Task<ClaimsPrincipal> GetIdentityServerUserAsync(this HttpContext context)
         {
             var options = context.RequestServices.GetRequiredService<IdentityServerOptions>();
@@ -92,6 +109,11 @@ namespace IdentityServer4.Extensions
             return user;
         }
 
+        /// <summary>
+        /// Gets the identity server user information asynchronous.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <returns></returns>
         internal static async Task<AuthenticateInfo> GetIdentityServerUserInfoAsync(this HttpContext context)
         {
             var options = context.RequestServices.GetRequiredService<IdentityServerOptions>();

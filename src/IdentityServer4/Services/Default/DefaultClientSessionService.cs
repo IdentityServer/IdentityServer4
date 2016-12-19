@@ -176,7 +176,7 @@ namespace IdentityServer4.Services.Default
             return $"{_options.AuthenticationOptions.EffectiveAuthenticationScheme}.{ClientListKey}.{sid}";
         }
 
-        string CookiePath => _context.HttpContext.GetBasePath().CleanUrlPath();
+        string CookiePath => _context.HttpContext.GetIdentityServerBasePath().CleanUrlPath();
         private bool Secure => _context.HttpContext.Request.IsHttps;
 
         void SetCookie(string sid, string value)

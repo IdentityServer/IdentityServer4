@@ -195,7 +195,7 @@ namespace IdentityServer4.Validation
                     if (client.LogoutSessionRequired)
                     {
                         url = url.AddQueryString(OidcConstants.EndSessionRequest.Sid, sid);
-                        url = url.AddQueryString(OidcConstants.EndSessionRequest.Issuer, _context.HttpContext.GetIssuerUri());
+                        url = url.AddQueryString(OidcConstants.EndSessionRequest.Issuer, _context.HttpContext.GetIdentityServerIssuerUri());
                     }
 
                     urls.Add(url);
