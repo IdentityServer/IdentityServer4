@@ -75,7 +75,7 @@ namespace IdentityServer4.UnitTests.Services.Default
             {
                 ClientId = "client1",
                 Audiences = { "aud" },
-                CreationTime = DateTime.Now,
+                CreationTime = DateTime.UtcNow,
                 Type = "type",
                 Claims = new List<Claim>
                 {
@@ -88,7 +88,7 @@ namespace IdentityServer4.UnitTests.Services.Default
             {
                 ClientId = "client2",
                 Audiences = { "aud" },
-                CreationTime = DateTime.Now,
+                CreationTime = DateTime.UtcNow,
                 Type = "type",
                 Claims = new List<Claim>
                 {
@@ -100,7 +100,7 @@ namespace IdentityServer4.UnitTests.Services.Default
             {
                 ClientId = "client1",
                 Audiences = { "aud" },
-                CreationTime = DateTime.Now,
+                CreationTime = DateTime.UtcNow,
                 Type = "type",
                 Claims = new List<Claim>
                 {
@@ -111,13 +111,13 @@ namespace IdentityServer4.UnitTests.Services.Default
 
             await _refreshTokens.StoreRefreshTokenAsync("key4", new RefreshToken()
             {
-                CreationTime = DateTime.Now,
+                CreationTime = DateTime.UtcNow,
                 Lifetime = 10,
                 AccessToken = new Token
                 {
                     ClientId = "client1",
                     Audiences = { "aud" },
-                    CreationTime = DateTime.Now,
+                    CreationTime = DateTime.UtcNow,
                     Type = "type",
                     Claims = new List<Claim>
                     {
@@ -130,13 +130,13 @@ namespace IdentityServer4.UnitTests.Services.Default
             });
             await _refreshTokens.StoreRefreshTokenAsync("key5", new RefreshToken()
             {
-                CreationTime = DateTime.Now,
+                CreationTime = DateTime.UtcNow,
                 Lifetime = 10,
                 AccessToken = new Token
                 {
                     ClientId = "client1",
                     Audiences = { "aud" },
-                    CreationTime = DateTime.Now,
+                    CreationTime = DateTime.UtcNow,
                     Type = "type",
                     Claims = new List<Claim>
                     {
@@ -148,13 +148,13 @@ namespace IdentityServer4.UnitTests.Services.Default
             });
             await _refreshTokens.StoreRefreshTokenAsync("key6", new RefreshToken()
             {
-                CreationTime = DateTime.Now,
+                CreationTime = DateTime.UtcNow,
                 Lifetime = 10,
                 AccessToken = new Token
                 {
                     ClientId = "client2",
                     Audiences = { "aud" },
-                    CreationTime = DateTime.Now,
+                    CreationTime = DateTime.UtcNow,
                     Type = "type",
                     Claims = new List<Claim>
                     {
@@ -168,7 +168,7 @@ namespace IdentityServer4.UnitTests.Services.Default
             await _codes.StoreAuthorizationCodeAsync("key7", new AuthorizationCode()
             {
                 ClientId = "client1",
-                CreationTime = DateTime.Now,
+                CreationTime = DateTime.UtcNow,
                 Lifetime = 10,
                 Subject = _user,
                 CodeChallenge = "challenge",
@@ -179,7 +179,7 @@ namespace IdentityServer4.UnitTests.Services.Default
             await _codes.StoreAuthorizationCodeAsync("key8", new AuthorizationCode()
             {
                 ClientId = "client2",
-                CreationTime = DateTime.Now,
+                CreationTime = DateTime.UtcNow,
                 Lifetime = 10,
                 Subject = _user,
                 CodeChallenge = "challenge",
@@ -191,7 +191,7 @@ namespace IdentityServer4.UnitTests.Services.Default
             await _codes.StoreAuthorizationCodeAsync("key9", new AuthorizationCode()
             {
                 ClientId = "client1",
-                CreationTime = DateTime.Now,
+                CreationTime = DateTime.UtcNow,
                 Lifetime = 10,
                 Subject = IdentityServerPrincipal.Create("456", "alice"),
                 CodeChallenge = "challenge",
@@ -240,7 +240,8 @@ namespace IdentityServer4.UnitTests.Services.Default
             {
                 ClientId = "client1",
                 Audiences = { "aud" },
-                CreationTime = DateTime.Now,
+                CreationTime = DateTime.UtcNow,
+                Lifetime = 10,
                 Type = "type",
                 Claims = new List<Claim>
                 {
@@ -253,7 +254,8 @@ namespace IdentityServer4.UnitTests.Services.Default
             {
                 ClientId = "client2",
                 Audiences = { "aud" },
-                CreationTime = DateTime.Now,
+                CreationTime = DateTime.UtcNow,
+                Lifetime = 10,
                 Type = "type",
                 Claims = new List<Claim>
                 {
@@ -265,7 +267,8 @@ namespace IdentityServer4.UnitTests.Services.Default
             {
                 ClientId = "client1",
                 Audiences = { "aud" },
-                CreationTime = DateTime.Now,
+                CreationTime = DateTime.UtcNow,
+                Lifetime = 10,
                 Type = "type",
                 Claims = new List<Claim>
                 {
@@ -276,13 +279,13 @@ namespace IdentityServer4.UnitTests.Services.Default
 
             await _refreshTokens.StoreRefreshTokenAsync("key4", new RefreshToken()
             {
-                CreationTime = DateTime.Now,
+                CreationTime = DateTime.UtcNow,
                 Lifetime = 10,
                 AccessToken = new Token
                 {
                     ClientId = "client1",
                     Audiences = { "aud" },
-                    CreationTime = DateTime.Now,
+                    CreationTime = DateTime.UtcNow,
                     Type = "type",
                     Claims = new List<Claim>
                     {
@@ -295,13 +298,13 @@ namespace IdentityServer4.UnitTests.Services.Default
             });
             await _refreshTokens.StoreRefreshTokenAsync("key5", new RefreshToken()
             {
-                CreationTime = DateTime.Now,
+                CreationTime = DateTime.UtcNow,
                 Lifetime = 10,
                 AccessToken = new Token
                 {
                     ClientId = "client1",
                     Audiences = { "aud" },
-                    CreationTime = DateTime.Now,
+                    CreationTime = DateTime.UtcNow,
                     Type = "type",
                     Claims = new List<Claim>
                     {
@@ -313,13 +316,13 @@ namespace IdentityServer4.UnitTests.Services.Default
             });
             await _refreshTokens.StoreRefreshTokenAsync("key6", new RefreshToken()
             {
-                CreationTime = DateTime.Now,
+                CreationTime = DateTime.UtcNow,
                 Lifetime = 10,
                 AccessToken = new Token
                 {
                     ClientId = "client2",
                     Audiences = { "aud" },
-                    CreationTime = DateTime.Now,
+                    CreationTime = DateTime.UtcNow,
                     Type = "type",
                     Claims = new List<Claim>
                     {
@@ -333,7 +336,7 @@ namespace IdentityServer4.UnitTests.Services.Default
             await _codes.StoreAuthorizationCodeAsync("key7", new AuthorizationCode()
             {
                 ClientId = "client1",
-                CreationTime = DateTime.Now,
+                CreationTime = DateTime.UtcNow,
                 Lifetime = 10,
                 Subject = _user,
                 CodeChallenge = "challenge",
@@ -344,7 +347,7 @@ namespace IdentityServer4.UnitTests.Services.Default
             await _codes.StoreAuthorizationCodeAsync("key8", new AuthorizationCode()
             {
                 ClientId = "client2",
-                CreationTime = DateTime.Now,
+                CreationTime = DateTime.UtcNow,
                 Lifetime = 10,
                 Subject = _user,
                 CodeChallenge = "challenge",
@@ -356,7 +359,7 @@ namespace IdentityServer4.UnitTests.Services.Default
             await _codes.StoreAuthorizationCodeAsync("key9", new AuthorizationCode()
             {
                 ClientId = "client1",
-                CreationTime = DateTime.Now,
+                CreationTime = DateTime.UtcNow,
                 Lifetime = 10,
                 Subject = IdentityServerPrincipal.Create("456", "alice"),
                 CodeChallenge = "challenge",
