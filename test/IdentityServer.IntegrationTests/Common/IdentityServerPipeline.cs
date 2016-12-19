@@ -83,7 +83,7 @@ namespace IdentityServer4.IntegrationTests.Common
             {
                 Options = options;
 
-                options.EventsOptions = new EventsOptions
+                options.Events = new EventsOptions
                 {
                     RaiseErrorEvents = true,
                     RaiseFailureEvents = true,

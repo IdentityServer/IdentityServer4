@@ -173,7 +173,7 @@ namespace IdentityServer4.Services.Default
 
         string GetCookieName(string sid)
         {
-            return $"{_options.AuthenticationOptions.EffectiveAuthenticationScheme}.{ClientListKey}.{sid}";
+            return $"{_options.Authentication.EffectiveAuthenticationScheme}.{ClientListKey}.{sid}";
         }
 
         string CookiePath => _context.HttpContext.GetIdentityServerBasePath().CleanUrlPath();

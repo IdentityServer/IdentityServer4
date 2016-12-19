@@ -51,7 +51,7 @@ namespace IdentityServer4.IntegrationTests.Common
             if (CookieAuthenticationScheme != null)
             {
                 var idSvrOptions = app.ApplicationServices.GetRequiredService<IdentityServerOptions>();
-                idSvrOptions.AuthenticationOptions.AuthenticationScheme = CookieAuthenticationScheme;
+                idSvrOptions.Authentication.AuthenticationScheme = CookieAuthenticationScheme;
                 app.UseCookieAuthentication(new CookieAuthenticationOptions
                 {
                     AuthenticationScheme = CookieAuthenticationScheme
@@ -214,11 +214,11 @@ namespace IdentityServer4.IntegrationTests.Common
         }
         public void RemoveSessionCookie()
         {
-            BrowserClient.RemoveCookie("https://server/", $"{Options.AuthenticationOptions.EffectiveAuthenticationScheme}.session");
+            BrowserClient.RemoveCookie("https://server/", $"{Options.Authentication.EffectiveAuthenticationScheme}.session");
         }
         public Cookie GetSessionCookie()
         {
-            return BrowserClient.GetCookie("https://server/", $"{Options.AuthenticationOptions.EffectiveAuthenticationScheme}.session");
+            return BrowserClient.GetCookie("https://server/", $"{Options.Authentication.EffectiveAuthenticationScheme}.session");
         }
 
         public string CreateAuthorizeUrl(

@@ -30,8 +30,8 @@ namespace Host
                     //    RaiseSuccessEvents = true
                     //};
 
-                    options.AuthenticationOptions.FederatedSignOutPaths.Add("/signout-callback-aad");
-                    options.AuthenticationOptions.FederatedSignOutPaths.Add("/signout-callback-idsrv3");
+                    options.Authentication.FederatedSignOutPaths.Add("/signout-callback-aad");
+                    options.Authentication.FederatedSignOutPaths.Add("/signout-callback-idsrv3");
                 })
                 .AddInMemoryClients(Clients.Get())
                 .AddInMemoryIdentityResources(Resources.GetIdentityResources())

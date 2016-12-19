@@ -19,7 +19,7 @@ namespace IdentityServer4.IntegrationTests.Clients
             {
                 options.IssuerUri = "https://idsvr4";
 
-                options.EventsOptions = new EventsOptions
+                options.Events = new EventsOptions
                 {
                     RaiseErrorEvents = true,
                     RaiseFailureEvents = true,

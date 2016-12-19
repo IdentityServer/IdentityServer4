@@ -85,7 +85,7 @@ namespace Microsoft.AspNetCore.Http.Authentication
 
         public static string GetIdentityServerAuthenticationScheme(this AuthenticationManager manager)
         {
-            return manager.HttpContext.RequestServices.GetRequiredService<IdentityServerOptions>().AuthenticationOptions.EffectiveAuthenticationScheme;
+            return manager.HttpContext.RequestServices.GetRequiredService<IdentityServerOptions>().Authentication.EffectiveAuthenticationScheme;
         }
     }
 }

@@ -51,7 +51,7 @@ namespace IdentityServer4.UnitTests.Validation.EndSessionRequestValidation
         [Fact]
         public async Task anonymous_user_when_options_require_authenticated_user_should_return_error()
         {
-            _options.AuthenticationOptions.RequireAuthenticatedUserForSignOutMessage = true;
+            _options.Authentication.RequireAuthenticatedUserForSignOutMessage = true;
 
             var parameters = new NameValueCollection();
             var result = await _subject.ValidateAsync(parameters, null);

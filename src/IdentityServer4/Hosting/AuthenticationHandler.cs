@@ -54,7 +54,7 @@ namespace IdentityServer4.Hosting
 
         public async Task SignInAsync(SignInContext context)
         {
-            if (context.AuthenticationScheme == _options.AuthenticationOptions.EffectiveAuthenticationScheme)
+            if (context.AuthenticationScheme == _options.Authentication.EffectiveAuthenticationScheme)
             {
                 AugmentContext(context);
                 await RaiseSignInEventAsync(context.Principal);
@@ -74,7 +74,7 @@ namespace IdentityServer4.Hosting
 
         public async Task SignOutAsync(SignOutContext context)
         {
-            if (context.AuthenticationScheme == _options.AuthenticationOptions.EffectiveAuthenticationScheme)
+            if (context.AuthenticationScheme == _options.Authentication.EffectiveAuthenticationScheme)
             {
                 _sessionId.RemoveCookie();
                 await RaiseSignOutEventAsync();

@@ -53,7 +53,7 @@ namespace IdentityServer4.IntegrationTests.Pipeline
                 _idSvrSid = await sessionId.GetCurrentSessionIdAsync();
             };
             _pipeline.Initialize();
-            _pipeline.Options.AuthenticationOptions.FederatedSignOutPaths.Add(MockIdSvrUiPipeline.FederatedSignOutPath);
+            _pipeline.Options.Authentication.FederatedSignOutPaths.Add(MockIdSvrUiPipeline.FederatedSignOutPath);
         }
 
         [Fact]
@@ -100,7 +100,7 @@ namespace IdentityServer4.IntegrationTests.Pipeline
         [Fact]
         public async Task no_signout_paths_configured_should_not_render_page_with_iframe()
         {
-            _pipeline.Options.AuthenticationOptions.FederatedSignOutPaths.Clear();
+            _pipeline.Options.Authentication.FederatedSignOutPaths.Clear();
 
             await _pipeline.LoginAsync(_user);
 

@@ -105,7 +105,7 @@ namespace IdentityServer4.Extensions
         public static async Task<ClaimsPrincipal> GetIdentityServerUserAsync(this HttpContext context)
         {
             var options = context.RequestServices.GetRequiredService<IdentityServerOptions>();
-            var user = await context.Authentication.AuthenticateAsync(options.AuthenticationOptions.EffectiveAuthenticationScheme);
+            var user = await context.Authentication.AuthenticateAsync(options.Authentication.EffectiveAuthenticationScheme);
             return user;
         }
 
@@ -117,14 +117,14 @@ namespace IdentityServer4.Extensions
         internal static async Task<AuthenticateInfo> GetIdentityServerUserInfoAsync(this HttpContext context)
         {
             var options = context.RequestServices.GetRequiredService<IdentityServerOptions>();
-            var info = await context.Authentication.GetAuthenticateInfoAsync(options.AuthenticationOptions.EffectiveAuthenticationScheme);
+            var info = await context.Authentication.GetAuthenticateInfoAsync(options.Authentication.EffectiveAuthenticationScheme);
             return info;
         }
 
         internal static async Task ReIssueSignInCookie(this HttpContext context, AuthenticateInfo info)
         {
             var options = context.RequestServices.GetRequiredService<IdentityServerOptions>();
-            await context.Authentication.SignInAsync(options.AuthenticationOptions.EffectiveAuthenticationScheme, info.Principal, info.Properties);
+            await context.Authentication.SignInAsync(options.Authentication.EffectiveAuthenticationScheme, info.Principal, info.Properties);
         }
 
         internal static async Task<string> GetIdentityServerSignoutFrameCallbackUrlAsync(this HttpContext context, string sid = null)

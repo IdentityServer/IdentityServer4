@@ -56,7 +56,7 @@ namespace IdentityServer4.Validation
 
             var isAuthenticated = subject.IsAuthenticated();
 
-            if (!isAuthenticated && _options.AuthenticationOptions.RequireAuthenticatedUserForSignOutMessage)
+            if (!isAuthenticated && _options.Authentication.RequireAuthenticatedUserForSignOutMessage)
             {
                 return Invalid("User is anonymous. Ignoring end session parameters");
             }

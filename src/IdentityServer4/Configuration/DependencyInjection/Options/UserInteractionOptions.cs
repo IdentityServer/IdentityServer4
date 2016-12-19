@@ -9,7 +9,7 @@ namespace IdentityServer4.Configuration
     /// <summary>
     /// Options for aspects of the user interface.
     /// </summary>
-    public class UserInteractionOptions
+    public class UserInteraction
     {
         /// <summary>
         /// Gets or sets the login URL. If a local URL, the value must start with a leading slash.

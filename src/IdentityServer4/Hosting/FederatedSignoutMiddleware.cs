@@ -35,7 +35,7 @@ namespace IdentityServer4.Hosting
             await _next(context);
 
             if (context.Response.StatusCode == 200 && 
-                _options.AuthenticationOptions.FederatedSignOutPaths.Any(x=>x == context.Request.Path))
+                _options.Authentication.FederatedSignOutPaths.Any(x=>x == context.Request.Path))
             {
                 await ProcessResponseAsync(context);
             }

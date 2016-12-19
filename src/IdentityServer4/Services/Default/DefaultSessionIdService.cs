@@ -62,7 +62,7 @@ namespace IdentityServer4.Services.Default
 
         public string GetCookieName()
         {
-            return $"{_options.AuthenticationOptions.EffectiveAuthenticationScheme}.session";
+            return $"{_options.Authentication.EffectiveAuthenticationScheme}.session";
         }
 
         public string GetCookieValue()

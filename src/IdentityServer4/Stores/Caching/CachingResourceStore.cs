@@ -53,7 +53,7 @@ namespace IdentityServer4.Stores
             var key = AllKey;
 
             var all = await _allCache.GetAsync(key,
-                _options.CachingOptions.ScopeStoreExpiration,
+                _options.Caching.ScopeStoreExpiration,
                 () => _inner.GetAllResources(),
                 _logger);
 
@@ -63,7 +63,7 @@ namespace IdentityServer4.Stores
         public async Task<ApiResource> FindApiResourceAsync(string name)
         {
             var api = await _apiCache.GetAsync(name,
-                _options.CachingOptions.ScopeStoreExpiration,
+                _options.Caching.ScopeStoreExpiration,
                 () => _inner.FindApiResourceAsync(name),
                 _logger);
 
@@ -75,7 +75,7 @@ namespace IdentityServer4.Stores
             var key = GetKey(names);
 
             var identities = await _identityCache.GetAsync(key,
-                _options.CachingOptions.ScopeStoreExpiration,
+                _options.Caching.ScopeStoreExpiration,
                 () => _inner.FindIdentityResourcesByScopeAsync(names),
                 _logger);
 
@@ -87,7 +87,7 @@ namespace IdentityServer4.Stores
             var key = GetKey(names);
 
             var apis = await _apiByScopeCache.GetAsync(key,
-                _options.CachingOptions.ScopeStoreExpiration,
+                _options.Caching.ScopeStoreExpiration,
                 () => _inner.FindApiResourcesByScopeAsync(names),
                 _logger);
 

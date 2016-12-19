@@ -34,7 +34,7 @@ namespace IdentityServer4
 
         public Task<CorsPolicy> GetPolicyAsync(HttpContext context, string policyName)
         {
-            if (_options.CorsOptions.CorsPolicyName == policyName)
+            if (_options.Cors.CorsPolicyName == policyName)
             {
                 return ProcessAsync(context);
             }
@@ -88,7 +88,7 @@ namespace IdentityServer4
 
         private bool IsPathAllowed(PathString path)
         {
-            return _options.CorsOptions.CorsPaths.Any(x => path == x);
+            return _options.Cors.CorsPaths.Any(x => path == x);
         }
     }
 }
