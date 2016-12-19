@@ -101,7 +101,9 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddTransient<ExtensionGrantValidator>();
             builder.Services.AddTransient<BearerTokenUsageValidator>();
             builder.Services.AddTransient<PersistentGrantSerializer>();
-            builder.Services.AddTransient<EventServiceHelper>();
+            
+            // todo: events post-poned to 1.1 
+            //builder.Services.AddTransient<EventServiceHelper>();
             builder.Services.AddTransient<ReturnUrlParser>();
             builder.Services.AddTransient<IdentityServerTools>();
 
