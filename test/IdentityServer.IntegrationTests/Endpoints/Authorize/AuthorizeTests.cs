@@ -66,9 +66,9 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             });
 
             _mockPipeline.IdentityScopes.AddRange(new IdentityResource[] {
-                new IdentityResources.OpenId(),
-                new IdentityResources.Profile(),
-                new IdentityResources.Email(),
+                IdentityResource.OpenId,
+                IdentityResource.Profile,
+                IdentityResource.Email,
             });
             _mockPipeline.ApiScopes.AddRange(new ApiResource[] {
                 new ApiResource
