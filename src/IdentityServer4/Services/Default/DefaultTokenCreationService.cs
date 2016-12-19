@@ -68,7 +68,7 @@ namespace IdentityServer4.Services.Default
             if (x509key != null)
             {
                 var cert = x509key.Certificate;
-                if (DateTime.UtcNow > cert.NotAfter)
+                if (DateTimeHelper.UtcNow > cert.NotAfter)
                 {
                     _logger.LogWarning("Certificate {subjectName} has expired on {expiration}", cert.Subject, cert.NotAfter.ToString());
                 }
