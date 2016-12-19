@@ -6,8 +6,8 @@ using FluentAssertions;
 using IdentityModel;
 using IdentityServer4.Extensions;
 using IdentityServer4.IntegrationTests.Common;
+using IdentityServer4.Quickstart.UI.Helpers;
 using IdentityServer4.Services;
-using IdentityServer4.Services.InMemory;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -34,9 +34,9 @@ namespace IdentityServer4.IntegrationTests.Pipeline
             _user = IdentityServerPrincipal.Create("bob", "bob", new Claim(JwtClaimTypes.SessionId, "123"));
             _pipeline = new MockIdSvrUiPipeline();
 
-            _pipeline.Users.Add(new InMemoryUser
+            _pipeline.Users.Add(new TestUser
             {
-                Subject = "bob",
+                SubjectId = "bob",
                 Username = "bob",
                 Claims = new Claim[]
                {

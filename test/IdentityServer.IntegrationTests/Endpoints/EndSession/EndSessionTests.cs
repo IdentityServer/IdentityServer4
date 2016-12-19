@@ -5,7 +5,7 @@
 using FluentAssertions;
 using IdentityServer4.IntegrationTests.Common;
 using IdentityServer4.Models;
-using IdentityServer4.Services.InMemory;
+using IdentityServer4.Quickstart.UI.Helpers;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,9 +53,9 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
                 AllowAccessTokensViaBrowser = true
             });
 
-            _mockPipeline.Users.Add(new InMemoryUser
+            _mockPipeline.Users.Add(new TestUser
             {
-                Subject = "bob",
+                SubjectId = "bob",
                 Username = "bob",
                 Claims = new Claim[]
                 {

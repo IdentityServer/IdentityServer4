@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
-using System;
 
 namespace IdentityServer4.Validation
 {

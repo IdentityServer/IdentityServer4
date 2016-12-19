@@ -11,7 +11,7 @@ using IdentityServer4.Models;
 using System.Security.Claims;
 using System.Net.Http;
 using IdentityServer4.IntegrationTests.Common;
-using IdentityServer4.Services.InMemory;
+using IdentityServer4.Quickstart.UI.Helpers;
 
 namespace IdentityServer4.IntegrationTests.Pipeline
 {
@@ -35,9 +35,9 @@ namespace IdentityServer4.IntegrationTests.Pipeline
                 }
             });
 
-            _pipeline.Users.Add(new InMemoryUser
+            _pipeline.Users.Add(new TestUser
             {
-                Subject = "bob",
+                SubjectId = "bob",
                 Username = "bob",
                 Claims = new Claim[]
                 {

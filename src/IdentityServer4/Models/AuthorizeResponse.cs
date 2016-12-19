@@ -3,9 +3,7 @@
 
 
 using IdentityServer4.Extensions;
-using IdentityServer4.Stores;
 using IdentityServer4.Validation;
-using System.Linq;
 
 namespace IdentityServer4.Models
 {

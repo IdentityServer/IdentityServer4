@@ -5,19 +5,18 @@
 using IdentityModel;
 using IdentityServer4.Quickstart.UI.Models;
 using IdentityServer4.Services;
-using IdentityServer4.Services.InMemory;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using Host.Filters;
 using System.Security.Principal;
+using IdentityServer4.Quickstart.UI.Helpers;
 
 namespace IdentityServer4.Quickstart.UI.Controllers
 {
@@ -29,7 +28,8 @@ namespace IdentityServer4.Quickstart.UI.Controllers
     [SecurityHeaders]
     public class AccountController : Controller
     {
-        private readonly InMemoryUserLoginService _loginService;
+        private readonly TestUserStore _users;
+
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IClientStore _clientStore;
 
@@ -37,11 +37,11 @@ namespace IdentityServer4.Quickstart.UI.Controllers
         private readonly string _windowsAuthenticationScheme = "Negotiate";
 
         public AccountController(
-            InMemoryUserLoginService loginService,
+            TestUserStore users,
             IIdentityServerInteractionService interaction,
             IClientStore clientStore)
         {
-            _loginService = loginService;
+            _users = users;
             _interaction = interaction;
             _clientStore = clientStore;
         }
@@ -80,10 +80,10 @@ namespace IdentityServer4.Quickstart.UI.Controllers
             if (ModelState.IsValid)
             {
                 // validate username/password against in-memory store
-                if (_loginService.ValidateCredentials(model.Username, model.Password))
+                if (_users.ValidateCredentials(model.Username, model.Password))
                 {
                     // issue authentication cookie with subject ID and username
-                    var user = _loginService.FindByUsername(model.Username);
+                    var user = _users.FindByUsername(model.Username);
 
                     AuthenticationProperties props = null;
                     // only set explicit expiration here if persistent. 
@@ -97,7 +97,7 @@ namespace IdentityServer4.Quickstart.UI.Controllers
                         };
                     };
 
-                    await HttpContext.Authentication.SignInAsync(user.Subject, user.Username, props);
+                    await HttpContext.Authentication.SignInAsync(user.SubjectId, user.Username, props);
 
                     // make sure the returnUrl is still valid, and if yes - redirect back to authorize endpoint
                     if (_interaction.IsValidReturnUrl(model.ReturnUrl))
@@ -320,12 +320,12 @@ namespace IdentityServer4.Quickstart.UI.Controllers
             var userId = userIdClaim.Value;
 
             // check if the external user is already provisioned
-            var user = _loginService.FindByExternalProvider(provider, userId);
+            var user = _users.FindByExternalProvider(provider, userId);
             if (user == null)
             {
                 // this sample simply auto-provisions new external user
                 // another common approach is to start a registrations workflow first
-                user = _loginService.AutoProvisionUser(provider, userId, claims);
+                user = _users.AutoProvisionUser(provider, userId, claims);
             }
 
             var additionalClaims = new List<Claim>();
@@ -338,7 +338,7 @@ namespace IdentityServer4.Quickstart.UI.Controllers
             }
 
             // issue authentication cookie for user
-            await HttpContext.Authentication.SignInAsync(user.Subject, user.Username, provider, additionalClaims.ToArray());
+            await HttpContext.Authentication.SignInAsync(user.SubjectId, user.Username, provider, additionalClaims.ToArray());
 
             // delete temporary cookie used during external authentication
             await HttpContext.Authentication.SignOutAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme);

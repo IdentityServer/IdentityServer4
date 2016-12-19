@@ -72,7 +72,7 @@ namespace IdentityServer4.IntegrationTests.Clients
 
             var amr = payload["amr"] as JArray;
             amr.Count().Should().Be(1);
-            amr.First().ToString().Should().Be("password");
+            amr.First().ToString().Should().Be("pwd");
         }
 
         [Fact]
@@ -107,7 +107,7 @@ namespace IdentityServer4.IntegrationTests.Clients
 
             var amr = payload["amr"] as JArray;
             amr.Count().Should().Be(1);
-            amr.First().ToString().Should().Be("password");
+            amr.First().ToString().Should().Be("pwd");
 
             var scopes = ((JArray)payload["scope"]).Select(x => x.ToString());
             scopes.Count().Should().Be(8);
@@ -156,7 +156,7 @@ namespace IdentityServer4.IntegrationTests.Clients
 
             var amr = payload["amr"] as JArray;
             amr.Count().Should().Be(1);
-            amr.First().ToString().Should().Be("password");
+            amr.First().ToString().Should().Be("pwd");
 
             var scopes = ((JArray)payload["scope"]).Select(x=>x.ToString());
             scopes.Count().Should().Be(3);
@@ -197,7 +197,7 @@ namespace IdentityServer4.IntegrationTests.Clients
 
             var amr = payload["amr"] as JArray;
             amr.Count().Should().Be(1);
-            amr.First().ToString().Should().Be("password");
+            amr.First().ToString().Should().Be("pwd");
 
             var scopes = ((JArray)payload["scope"]).Select(x => x.ToString());
             scopes.Count().Should().Be(4);

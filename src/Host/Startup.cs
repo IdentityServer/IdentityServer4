@@ -36,11 +36,11 @@ namespace Host
                 .AddInMemoryClients(Clients.Get())
                 .AddInMemoryIdentityResources(Resources.GetIdentityResources())
                 .AddInMemoryApiResources(Resources.GetApiResources())
-                .AddInMemoryUsers(Users.Get())
                 .AddTemporarySigningCredential()
                 .AddExtensionGrantValidator<Extensions.ExtensionGrantValidator>()
                 .AddSecretParser<ClientAssertionSecretParser>()
-                .AddSecretValidator<PrivateKeyJwtSecretValidator>();
+                .AddSecretValidator<PrivateKeyJwtSecretValidator>()
+                .AddTestUsers();
 
             services.AddMvc();
         }

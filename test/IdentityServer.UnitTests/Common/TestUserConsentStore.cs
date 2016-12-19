@@ -3,12 +3,8 @@
 
 
 using IdentityServer4.Stores;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Stores.Serialization;
-using Microsoft.Extensions.Logging;
 using IdentityServer4.Stores.InMemory;
 using IdentityServer4.Models;
 

@@ -10,7 +10,6 @@ using IdentityServer4.Configuration;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using System;
 
 namespace IdentityServer4.Stores
 {

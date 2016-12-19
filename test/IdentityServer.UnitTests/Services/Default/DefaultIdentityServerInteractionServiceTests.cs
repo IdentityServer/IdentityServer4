@@ -9,7 +9,6 @@ using IdentityServer4.Services.Default;
 using IdentityServer4.UnitTests.Common;
 using System;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
 

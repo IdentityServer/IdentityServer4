@@ -63,7 +63,7 @@ namespace IdentityServer4.IntegrationTests.Clients
             userInfo.Claims.Should().Contain(c => c.Type == "email_verified" && c.Value == "True");
         }
 
-        [Fact]
+        [Fact(Skip = "TODO: Dom")]
         public async Task Address_Scope()
         {
             var tokenClient = new TokenClient(

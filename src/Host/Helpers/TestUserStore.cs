@@ -2,31 +2,24 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using System.Linq;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
 using IdentityModel;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System;
 
-namespace IdentityServer4.Services.InMemory
+namespace IdentityServer4.Quickstart.UI.Helpers
 {
-    /// <summary>
-    /// Sample implementation of a user login/provisioning services.
-    /// This sample uses an in-memory store and is not suitable for production
-    /// However, feel free to implement this (or a similar logic) using some form of persistent backing store
-    /// </summary>
-    public class InMemoryUserLoginService
+    public class TestUserStore
     {
-        private readonly List<InMemoryUser> _users;
+        private readonly List<TestUser> _users;
 
-        public InMemoryUserLoginService(List<InMemoryUser> users)
+        public TestUserStore(List<TestUser> users)
         {
             _users = users;
         }
 
-        /// <summary>
-        /// Check username and password against in-memory users
-        /// </summary>
         public bool ValidateCredentials(string username, string password)
         {
             var user = FindByUsername(username);
@@ -38,33 +31,29 @@ namespace IdentityServer4.Services.InMemory
             return false;
         }
 
-        /// <summary>
-        /// Find a user by username
-        /// </summary>
-        public InMemoryUser FindByUsername(string username)
+        public TestUser FindBySubjectId(string subjectId)
         {
-            return _users.FirstOrDefault(x=>x.Username.Equals(username, System.StringComparison.OrdinalIgnoreCase));
+            return _users.FirstOrDefault(x => x.SubjectId == subjectId);
         }
 
-        /// <summary>
-        /// Find an external user by looking up the name of the provider and the unique id of that user issued by the provider
-        /// </summary>
-        public InMemoryUser FindByExternalProvider(string provider, string userId)
+        public TestUser FindByUsername(string username)
         {
-            return _users.FirstOrDefault(x => 
-                x.Provider == provider &&
-                x.ProviderId == userId);
+            return _users.FirstOrDefault(x => x.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
         }
 
-        /// <summary>
-        /// Sample auto-provision logic of new external users
-        /// </summary>
-        public InMemoryUser AutoProvisionUser(string provider, string userId, List<Claim> claims)
+        public TestUser FindByExternalProvider(string provider, string userId)
+        {
+            return _users.FirstOrDefault(x =>
+                x.ProviderName == provider &&
+                x.ProviderSubjectId == userId);
+        }
+
+        public TestUser AutoProvisionUser(string provider, string userId, List<Claim> claims)
         {
             // create a list of claims that we want to transfer into our store
             var filtered = new List<Claim>();
 
-            foreach(var claim in claims)
+            foreach (var claim in claims)
             {
                 // if the external system sends a display name - translate that to the standard OIDC name claim
                 if (claim.Type == ClaimTypes.Name)
@@ -82,9 +71,9 @@ namespace IdentityServer4.Services.InMemory
                     filtered.Add(claim);
                 }
             }
-        
+
             // if no display name was provided, try to construct by first and/or last name
-            if (!filtered.Any(x=>x.Type == JwtClaimTypes.Name))
+            if (!filtered.Any(x => x.Type == JwtClaimTypes.Name))
             {
                 var first = filtered.FirstOrDefault(x => x.Type == JwtClaimTypes.GivenName)?.Value;
                 var last = filtered.FirstOrDefault(x => x.Type == JwtClaimTypes.FamilyName)?.Value;
@@ -109,13 +98,12 @@ namespace IdentityServer4.Services.InMemory
             var name = filtered.FirstOrDefault(c => c.Type == JwtClaimTypes.Name)?.Value ?? sub;
 
             // create new user
-            var user = new InMemoryUser()
+            var user = new TestUser()
             {
-                Enabled = true,
-                Subject = sub,
+                SubjectId = sub,
                 Username = name,
-                Provider = provider,
-                ProviderId = userId,
+                ProviderName = provider,
+                ProviderSubjectId = userId,
                 Claims = filtered
             };
 
