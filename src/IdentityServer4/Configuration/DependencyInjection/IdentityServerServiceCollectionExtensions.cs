@@ -3,10 +3,7 @@
 
 
 using IdentityServer4.Configuration;
-using IdentityServer4.Stores;
-using IdentityServer4.Stores.InMemory;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 
 namespace Microsoft.Extensions.DependencyInjection

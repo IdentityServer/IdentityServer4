@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Http;
 using IdentityServer4.Configuration;
 using IdentityServer4.Services;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Security.Claims;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;

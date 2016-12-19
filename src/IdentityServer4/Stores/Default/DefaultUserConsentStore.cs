@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Stores.Serialization;
 using Microsoft.Extensions.Logging;
-using IdentityServer4.Extensions;
-using System;
 
 namespace IdentityServer4.Stores
 {

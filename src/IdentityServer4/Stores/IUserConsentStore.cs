@@ -3,7 +3,6 @@
 
 
 using IdentityServer4.Models;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Stores

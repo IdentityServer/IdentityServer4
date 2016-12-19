@@ -1,8 +1,6 @@
-﻿using IdentityServer4.Extensions;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Specialized;
-using System.Linq;
 
 namespace IdentityServer4.Infrastructure
 {
