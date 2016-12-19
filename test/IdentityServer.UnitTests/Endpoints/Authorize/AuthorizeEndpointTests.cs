@@ -16,6 +16,7 @@ using IdentityServer4.Endpoints.Results;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Extensions;
 using IdentityServer4.UnitTests.Common;
+using IdentityServer4.Hosting;
 
 namespace IdentityServer4.UnitTests.Endpoints.Authorize
 {
@@ -37,6 +38,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
         StubAuthorizeInteractionResponseGenerator _stubInteractionGenerator = new StubAuthorizeInteractionResponseGenerator();
         MockMessageStore<ConsentResponse> _mockUserConsentResponseMessageStore = new MockMessageStore<ConsentResponse>();
         StubAuthorizeResponseGenerator _stubAuthorizeResponseGenerator = new StubAuthorizeResponseGenerator();
+        IMatchAuthorizeProtocolRoutePaths _pathMatcher = new DefaultAuthorizeProtocolRouteMatcher();
 
         public AuthorizeEndpointTests()
         {
@@ -71,7 +73,8 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
                 _stubAuthorizeRequestValidator,
                 _stubInteractionGenerator,
                 _mockUserConsentResponseMessageStore,
-                _stubAuthorizeResponseGenerator);
+                _stubAuthorizeResponseGenerator,
+                _pathMatcher);
         }
 
         [Fact]
