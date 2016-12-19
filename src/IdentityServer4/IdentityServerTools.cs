@@ -10,6 +10,7 @@ using IdentityServer4.Extensions;
 using System.Security.Claims;
 using IdentityServer4.Services;
 using IdentityModel;
+using System;
 
 namespace IdentityServer4
 {
@@ -26,6 +27,8 @@ namespace IdentityServer4
 
         public virtual async Task<string> IssueJwtAsync(int lifetime, IEnumerable<Claim> claims)
         {
+            if (claims == null) throw new ArgumentNullException(nameof(claims));
+
             var issuer = _contextAccessor.HttpContext.GetIdentityServerIssuerUri();
 
             var token = new Token
