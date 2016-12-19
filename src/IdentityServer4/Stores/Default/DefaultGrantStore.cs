@@ -47,7 +47,7 @@ namespace IdentityServer4.Stores
             key = GetHashedKey(key);
 
             var grant = await _store.GetAsync(key);
-            if (grant != null && grant.Type == _grantType)
+            if (grant != null && grant.Type == _grantType && !grant.Expiration.HasExpired())
             {
                 return _serializer.Deserialize<T>(grant.Data);
             }
@@ -55,7 +55,12 @@ namespace IdentityServer4.Stores
             return default(T);
         }
 
-        protected async Task StoreItemAsync(string key, T item, string clientId, string subjectId, DateTime created, int lifetime)
+        protected Task StoreItemAsync(string key, T item, string clientId, string subjectId, DateTime created, int lifetime)
+        {
+            return StoreItemAsync(key, item, clientId, subjectId, created, created.AddSeconds(lifetime));
+        }
+
+        protected async Task StoreItemAsync(string key, T item, string clientId, string subjectId, DateTime created, DateTime? expiration)
         {
             key = GetHashedKey(key);
 
@@ -68,7 +73,7 @@ namespace IdentityServer4.Stores
                 ClientId = clientId,
                 SubjectId = subjectId,
                 CreationTime = created,
-                Expiration = created.AddSeconds(lifetime),
+                Expiration = expiration,
                 Data = json,
             };
 

@@ -21,7 +21,6 @@ namespace IdentityServer4.UnitTests.Stores.Default
 {
     public class DefaultPersistedGrantStoreTests
     {
-        DefaultPersistedGrantService _subject;
         InMemoryPersistedGrantStore _store = new InMemoryPersistedGrantStore();
         IAuthorizationCodeStore _codes;
         IRefreshTokenStore _refreshTokens;
@@ -32,10 +31,6 @@ namespace IdentityServer4.UnitTests.Stores.Default
 
         public DefaultPersistedGrantStoreTests()
         {
-            _subject = new DefaultPersistedGrantService(
-                _store, 
-                new PersistentGrantSerializer(), 
-                TestLogger.Create<DefaultPersistedGrantService>());
             _codes = new DefaultAuthorizationCodeStore(_store,
                 new PersistentGrantSerializer(),
                 TestLogger.Create<DefaultAuthorizationCodeStore>());
@@ -56,7 +51,7 @@ namespace IdentityServer4.UnitTests.Stores.Default
             var code1 = new AuthorizationCode()
             {
                 ClientId = "test",
-                CreationTime = DateTime.Now,
+                CreationTime = DateTime.UtcNow,
                 Lifetime = 10,
                 Subject = _user,
                 CodeChallenge = "challenge",
@@ -84,7 +79,7 @@ namespace IdentityServer4.UnitTests.Stores.Default
             var code1 = new AuthorizationCode()
             {
                 ClientId = "test",
-                CreationTime = DateTime.Now,
+                CreationTime = DateTime.UtcNow,
                 Lifetime = 10,
                 Subject = _user,
                 CodeChallenge = "challenge",
@@ -100,17 +95,37 @@ namespace IdentityServer4.UnitTests.Stores.Default
         }
 
         [Fact]
+        public async Task expired_code_should_not_load()
+        {
+            var code1 = new AuthorizationCode()
+            {
+                ClientId = "test",
+                CreationTime = DateTime.UtcNow.AddHours(-1),
+                Lifetime = 10,
+                Subject = _user,
+                CodeChallenge = "challenge",
+                RedirectUri = "http://client/cb",
+                Nonce = "nonce",
+                RequestedScopes = new string[] { "scope1", "scope2" }
+            };
+            await _codes.StoreAuthorizationCodeAsync("key", code1);
+            
+            var code2 = await _codes.GetAuthorizationCodeAsync("key");
+            code2.Should().BeNull();
+        }
+
+        [Fact]
         public async Task StoreRefreshTokenAsync_should_persist_grant()
         {
             var token1 = new RefreshToken()
             {
-                CreationTime = DateTime.Now,
+                CreationTime = DateTime.UtcNow,
                 Lifetime = 10,
                 AccessToken = new Token
                 {
                     ClientId = "client",
                     Audiences = { "aud" },
-                    CreationTime = DateTime.Now,
+                    CreationTime = DateTime.UtcNow,
                     Type = "type",
                     Claims = new List<Claim>
                     {
@@ -141,13 +156,13 @@ namespace IdentityServer4.UnitTests.Stores.Default
         {
             var token1 = new RefreshToken()
             {
-                CreationTime = DateTime.Now,
+                CreationTime = DateTime.UtcNow,
                 Lifetime = 10,
                 AccessToken = new Token
                 {
                     ClientId = "client",
                     Audiences = { "aud" },
-                    CreationTime = DateTime.Now,
+                    CreationTime = DateTime.UtcNow,
                     Type = "type",
                     Claims = new List<Claim>
                     {
@@ -166,17 +181,45 @@ namespace IdentityServer4.UnitTests.Stores.Default
         }
 
         [Fact]
-        public async Task RemoveRefreshTokenAsync_by_sub_and_client_should_remove_grant()
+        public async Task expired_refresh_token_should_not_load()
         {
             var token1 = new RefreshToken()
             {
-                CreationTime = DateTime.Now,
+                CreationTime = DateTime.UtcNow.AddHours(-1),
                 Lifetime = 10,
                 AccessToken = new Token
                 {
                     ClientId = "client",
                     Audiences = { "aud" },
-                    CreationTime = DateTime.Now,
+                    CreationTime = DateTime.UtcNow,
+                    Type = "type",
+                    Claims = new List<Claim>
+                    {
+                        new Claim("sub", "123"),
+                        new Claim("scope", "foo")
+                    }
+                },
+                Version = 1
+            };
+
+            await _refreshTokens.StoreRefreshTokenAsync("key", token1);
+            var token2 = await _refreshTokens.GetRefreshTokenAsync("key");
+
+            token2.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task RemoveRefreshTokenAsync_by_sub_and_client_should_remove_grant()
+        {
+            var token1 = new RefreshToken()
+            {
+                CreationTime = DateTime.UtcNow,
+                Lifetime = 10,
+                AccessToken = new Token
+                {
+                    ClientId = "client",
+                    Audiences = { "aud" },
+                    CreationTime = DateTime.UtcNow,
                     Type = "type",
                     Claims = new List<Claim>
                     {
@@ -204,7 +247,8 @@ namespace IdentityServer4.UnitTests.Stores.Default
             {
                 ClientId = "client",
                 Audiences = { "aud" },
-                CreationTime = DateTime.Now,
+                CreationTime = DateTime.UtcNow,
+                Lifetime = 10,
                 Type = "type",
                 Claims = new List<Claim>
                 {
@@ -233,7 +277,7 @@ namespace IdentityServer4.UnitTests.Stores.Default
             {
                 ClientId = "client",
                 Audiences = { "aud" },
-                CreationTime = DateTime.Now,
+                CreationTime = DateTime.UtcNow,
                 Type = "type",
                 Claims = new List<Claim>
                 {
@@ -250,13 +294,36 @@ namespace IdentityServer4.UnitTests.Stores.Default
         }
 
         [Fact]
+        public async Task expired_reference_token_should_not_load()
+        {
+            var token1 = new Token()
+            {
+                ClientId = "client",
+                Audiences = { "aud" },
+                CreationTime = DateTime.UtcNow.AddHours(-1),
+                Type = "type",
+                Claims = new List<Claim>
+                {
+                    new Claim("sub", "123"),
+                    new Claim("scope", "foo")
+                },
+                Version = 1
+            };
+
+            await _referenceTokens.StoreReferenceTokenAsync("key", token1);
+
+            var token2 = await _referenceTokens.GetReferenceTokenAsync("key");
+            token2.Should().BeNull();
+        }
+
+        [Fact]
         public async Task RemoveReferenceTokenAsync_by_sub_and_client_should_remove_grant()
         {
             var token1 = new Token()
             {
                 ClientId = "client",
                 Audiences = { "aud" },
-                CreationTime = DateTime.Now,
+                CreationTime = DateTime.UtcNow,
                 Type = "type",
                 Claims = new List<Claim>
                 {
@@ -311,14 +378,32 @@ namespace IdentityServer4.UnitTests.Stores.Default
         }
 
         [Fact]
+        public async Task expired_user_consent_should_not_load()
+        {
+            var consent1 = new Consent()
+            {
+                ClientId = "client",
+                SubjectId = "123",
+                Scopes = new string[] { "foo", "bar" },
+                CreationTime = DateTime.UtcNow.AddHours(-1),
+                Expiration = DateTime.UtcNow.AddSeconds(-1)
+            };
+
+            await _userConsent.StoreUserConsentAsync(consent1);
+
+            var consent2 = await _userConsent.GetUserConsentAsync("123", "client");
+            consent2.Should().BeNull();
+        }
+
+        [Fact]
         public async Task same_key_for_different_grant_types_should_not_interfere_with_each_other()
         {
             await _referenceTokens.StoreReferenceTokenAsync("key", new Token()
             {
                 ClientId = "client1",
                 Audiences = { "aud" },
-                CreationTime = DateTime.Now,
-                Lifetime = 1,
+                CreationTime = DateTime.UtcNow,
+                Lifetime = 10,
                 Type = "type",
                 Claims = new List<Claim>
                 {
@@ -329,13 +414,13 @@ namespace IdentityServer4.UnitTests.Stores.Default
             });
             await _refreshTokens.StoreRefreshTokenAsync("key", new RefreshToken()
             {
-                CreationTime = DateTime.Now,
-                Lifetime = 2,
+                CreationTime = DateTime.UtcNow,
+                Lifetime = 20,
                 AccessToken = new Token
                 {
                     ClientId = "client1",
                     Audiences = { "aud" },
-                    CreationTime = DateTime.Now,
+                    CreationTime = DateTime.UtcNow,
                     Type = "type",
                     Claims = new List<Claim>
                     {
@@ -349,8 +434,8 @@ namespace IdentityServer4.UnitTests.Stores.Default
             await _codes.StoreAuthorizationCodeAsync("key", new AuthorizationCode()
             {
                 ClientId = "client1",
-                CreationTime = DateTime.Now,
-                Lifetime = 3,
+                CreationTime = DateTime.UtcNow,
+                Lifetime = 30,
                 Subject = _user,
                 CodeChallenge = "challenge",
                 RedirectUri = "http://client/cb",
@@ -358,9 +443,9 @@ namespace IdentityServer4.UnitTests.Stores.Default
                 RequestedScopes = new string[] { "quux1", "quux2" }
             });
 
-            (await _codes.GetAuthorizationCodeAsync("key")).Lifetime.Should().Be(3);
-            (await _refreshTokens.GetRefreshTokenAsync("key")).Lifetime.Should().Be(2);
-            (await _referenceTokens.GetReferenceTokenAsync("key")).Lifetime.Should().Be(1);
+            (await _codes.GetAuthorizationCodeAsync("key")).Lifetime.Should().Be(30);
+            (await _refreshTokens.GetRefreshTokenAsync("key")).Lifetime.Should().Be(20);
+            (await _referenceTokens.GetReferenceTokenAsync("key")).Lifetime.Should().Be(10);
         }
     }
 }

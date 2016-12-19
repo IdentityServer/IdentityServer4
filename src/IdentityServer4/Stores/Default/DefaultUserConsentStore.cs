@@ -39,7 +39,7 @@ namespace IdentityServer4.Stores
         public Task StoreUserConsentAsync(Consent consent)
         {
             var key = GetConsentKey(consent.ClientId, consent.SubjectId);
-            return StoreItemAsync(key, consent, consent.ClientId, consent.SubjectId, DateTimeHelper.UtcNow, Int32.MaxValue);
+            return StoreItemAsync(key, consent, consent.ClientId, consent.SubjectId, consent.CreationTime, consent.Expiration);
         }
 
         /// <summary>

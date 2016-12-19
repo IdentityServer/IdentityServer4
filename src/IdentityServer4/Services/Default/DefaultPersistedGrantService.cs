@@ -45,7 +45,9 @@ namespace IdentityServer4.Services.Default
                 {
                     ClientId = x.ClientId,
                     SubjectId = subjectId,
-                    Scopes = x.RequestedScopes
+                    Scopes = x.RequestedScopes,
+                    CreationTime = x.CreationTime,
+                    Expiration = x.CreationTime.AddSeconds(x.Lifetime)
                 });
 
             var refresh = grants.Where(x => x.Type == Constants.PersistedGrantTypes.RefreshToken)
@@ -54,7 +56,9 @@ namespace IdentityServer4.Services.Default
                 {
                     ClientId = x.ClientId,
                     SubjectId = subjectId,
-                    Scopes = x.Scopes
+                    Scopes = x.Scopes,
+                    CreationTime = x.CreationTime,
+                    Expiration = x.CreationTime.AddSeconds(x.Lifetime)
                 });
 
             var access = grants.Where(x => x.Type == Constants.PersistedGrantTypes.ReferenceToken)
@@ -63,7 +67,9 @@ namespace IdentityServer4.Services.Default
                 {
                     ClientId = x.ClientId,
                     SubjectId = subjectId,
-                    Scopes = x.Scopes
+                    Scopes = x.Scopes,
+                    CreationTime = x.CreationTime,
+                    Expiration = x.CreationTime.AddSeconds(x.Lifetime)
                 });
 
             consents = Join(consents, codes);
@@ -83,7 +89,9 @@ namespace IdentityServer4.Services.Default
                 {
                     ClientId = f.ClientId,
                     SubjectId = f.SubjectId,
-                    Scopes = scopes
+                    Scopes = scopes,
+                    CreationTime = f.CreationTime,
+                    Expiration = f.Expiration
                 };
             return query;
         }
