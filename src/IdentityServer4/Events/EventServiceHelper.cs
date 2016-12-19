@@ -49,7 +49,11 @@ namespace IdentityServer4.Events
                 ProcessId = Process.GetCurrentProcess().Id,
             };
 
-            if (_context.HttpContext.Connection.RemoteIpAddress != null)
+            if (_context.HttpContext.Request.Headers.ContainsKey("HTTP_X_FORWARDED_FOR"))
+            {
+                evt.Context.RemoteIpAddress = _context.HttpContext.Request.Headers["HTTP_X_FORWARDED_FOR"];
+            }
+            else if (_context.HttpContext.Connection.RemoteIpAddress != null)
             {
                 evt.Context.RemoteIpAddress = _context.HttpContext.Connection.RemoteIpAddress.ToString();
             }
