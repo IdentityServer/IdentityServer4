@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using Xunit;
 using System.Net.Http;
 using IdentityServer4.IntegrationTests.Common;
-using IdentityServer4.Quickstart.UI.Helpers;
+using IdentityServer4.Quickstart.UI.Users;
 
 namespace IdentityServer4.IntegrationTests.Conformance.Basic
 {

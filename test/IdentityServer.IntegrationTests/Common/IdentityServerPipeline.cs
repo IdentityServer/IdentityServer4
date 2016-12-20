@@ -4,7 +4,7 @@
 
 using IdentityServer4.Configuration;
 using IdentityServer4.Models;
-using IdentityServer4.Quickstart.UI.Helpers;
+using IdentityServer4.Quickstart.UI.Users;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;

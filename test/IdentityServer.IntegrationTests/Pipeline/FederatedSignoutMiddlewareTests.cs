@@ -6,7 +6,7 @@ using FluentAssertions;
 using IdentityModel;
 using IdentityServer4.Extensions;
 using IdentityServer4.IntegrationTests.Common;
-using IdentityServer4.Quickstart.UI.Helpers;
+using IdentityServer4.Quickstart.UI.Users;
 using IdentityServer4.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;

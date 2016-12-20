@@ -5,7 +5,7 @@
 using FluentAssertions;
 using IdentityServer4.IntegrationTests.Common;
 using IdentityServer4.Models;
-using IdentityServer4.Quickstart.UI.Helpers;
+using IdentityServer4.Quickstart.UI.Users;
 using System;
 using System.Collections.Generic;
 using System.Net;

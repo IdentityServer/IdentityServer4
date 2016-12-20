@@ -3,20 +3,20 @@
 
 
 using IdentityModel;
+using IdentityServer4.Models;
+using IdentityServer4.Quickstart.UI.Filters;
 using IdentityServer4.Quickstart.UI.Models;
+using IdentityServer4.Quickstart.UI.Users;
 using IdentityServer4.Services;
+using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
-using IdentityServer4.Models;
-using IdentityServer4.Stores;
-using Host.Filters;
 using System.Security.Principal;
-using IdentityServer4.Quickstart.UI.Helpers;
+using System.Threading.Tasks;
 
 namespace IdentityServer4.Quickstart.UI.Controllers
 {

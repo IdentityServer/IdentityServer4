@@ -6,7 +6,7 @@ using IdentityModel;
 using System.Collections.Generic;
 using System.Security.Claims;
 
-namespace IdentityServer4.Quickstart.UI.Helpers
+namespace IdentityServer4.Quickstart.UI.Users
 {
     public class TestUsers
     {

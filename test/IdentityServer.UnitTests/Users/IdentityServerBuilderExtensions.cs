@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityServer4.Quickstart.UI.Helpers;
+using IdentityServer4.Quickstart.UI.Users;
 using System.Collections.Generic;
 
 namespace Microsoft.Extensions.DependencyInjection

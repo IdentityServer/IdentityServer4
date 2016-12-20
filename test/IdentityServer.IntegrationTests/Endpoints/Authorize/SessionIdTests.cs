@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using IdentityServer4.Models;
 using System.Security.Claims;
 using IdentityServer4.IntegrationTests.Common;
-using IdentityServer4.Quickstart.UI.Helpers;
+using IdentityServer4.Quickstart.UI.Users;
 
 namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 {

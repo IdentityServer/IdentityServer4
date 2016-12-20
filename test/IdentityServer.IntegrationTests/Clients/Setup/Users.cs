@@ -3,7 +3,7 @@
 
 
 using IdentityModel;
-using IdentityServer4.Quickstart.UI.Helpers;
+using IdentityServer4.Quickstart.UI.Users;
 using System.Collections.Generic;
 using System.Security.Claims;
 
