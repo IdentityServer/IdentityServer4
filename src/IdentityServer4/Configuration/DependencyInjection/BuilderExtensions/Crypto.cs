@@ -65,17 +65,31 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="location">The location.</param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException">certificate: '{name}'</exception>
-        public static IIdentityServerBuilder AddSigningCredential(this IIdentityServerBuilder builder, string name, StoreLocation location = StoreLocation.LocalMachine)
+        public static IIdentityServerBuilder AddSigningCredential(this IIdentityServerBuilder builder, string name, StoreLocation location = StoreLocation.LocalMachine, NameType nameType = NameType.SubjectDistinguishedName)
         {
-            X509Certificate2 certificate;
+            X509Certificate2 certificate = null;
 
             if (location == StoreLocation.LocalMachine)
             {
-                certificate = X509.LocalMachine.My.SubjectDistinguishedName.Find(name, validOnly: false).FirstOrDefault();
+                if (nameType == NameType.SubjectDistinguishedName)
+                {
+                    certificate = X509.LocalMachine.My.SubjectDistinguishedName.Find(name, validOnly: false).FirstOrDefault();
+                }
+                else if (nameType == NameType.Thumbprint)
+                {
+                    certificate = X509.LocalMachine.My.Thumbprint.Find(name, validOnly: false).FirstOrDefault();
+                }
             }
             else
             {
-                certificate = X509.CurrentUser.My.SubjectDistinguishedName.Find(name, validOnly: false).FirstOrDefault();
+                if (nameType == NameType.SubjectDistinguishedName)
+                {
+                    certificate = X509.CurrentUser.My.SubjectDistinguishedName.Find(name, validOnly: false).FirstOrDefault();
+                }
+                else if (nameType == NameType.Thumbprint)
+                {
+                    certificate = X509.CurrentUser.My.Thumbprint.Find(name, validOnly: false).FirstOrDefault();
+                }
             }
 
             if (certificate == null) throw new InvalidOperationException($"certificate: '{name}' not found in certificate store");
@@ -150,5 +164,11 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return builder;
         }
+    }
+
+    public enum NameType
+    {
+        SubjectDistinguishedName,
+        Thumbprint
     }
 }
