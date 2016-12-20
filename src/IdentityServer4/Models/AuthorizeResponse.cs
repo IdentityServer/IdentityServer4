@@ -7,7 +7,7 @@ using IdentityServer4.Validation;
 
 namespace IdentityServer4.Models
 {
-    class AuthorizeResponse
+    public class AuthorizeResponse
     {
         public ValidatedAuthorizeRequest Request { get; set; }
         public string RedirectUri => Request?.RedirectUri;
