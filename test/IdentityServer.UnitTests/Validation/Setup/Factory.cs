@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using IdentityServer4.Stores;
 using IdentityServer4.UnitTests.Common;
 using IdentityServer4.Stores.Serialization;
-using IdentityServer4.Stores.InMemory;
 
 namespace IdentityServer4.UnitTests.Validation
 {

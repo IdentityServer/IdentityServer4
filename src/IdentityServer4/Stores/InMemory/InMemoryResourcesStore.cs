@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Stores.InMemory
+namespace IdentityServer4.Stores
 {
     /// <summary>
     /// In-memory resource store

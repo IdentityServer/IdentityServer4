@@ -5,7 +5,7 @@
 using FluentAssertions;
 using IdentityServer4.Models;
 using IdentityServer4.ResponseHandling;
-using IdentityServer4.Stores.InMemory;
+using IdentityServer4.Stores;
 using IdentityServer4.UnitTests.Common;
 using System;
 using System.Collections.Generic;

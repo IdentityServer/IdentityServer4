@@ -12,7 +12,6 @@ using IdentityModel;
 using IdentityServer4.Configuration;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
-using IdentityServer4.Stores.InMemory;
 using IdentityServer4.UnitTests.Common;
 using IdentityServer4.UnitTests.Validation;
 using IdentityServer4.Validation;

@@ -4,7 +4,6 @@
 
 using IdentityServer4.Hosting;
 using IdentityServer4.Stores;
-using IdentityServer4.Stores.InMemory;
 using Microsoft.Extensions.Logging;
 using System;
 
