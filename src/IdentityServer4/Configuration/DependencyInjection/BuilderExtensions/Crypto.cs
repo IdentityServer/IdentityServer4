@@ -132,7 +132,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 key = new RsaSecurityKey(rsa);
             }
 
-            key.KeyId = CryptoRandom.CreateUniqueId();
+            key.KeyId = CryptoRandom.CreateUniqueId(16);
             
             var credential = new SigningCredentials(key, "RS256");
             return builder.AddSigningCredential(credential);

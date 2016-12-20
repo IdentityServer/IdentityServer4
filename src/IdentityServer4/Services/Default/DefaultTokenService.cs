@@ -158,7 +158,7 @@ namespace IdentityServer4.Services.Default
 
             if (request.Client.IncludeJwtId)
             {
-                claims.Add(new Claim(JwtClaimTypes.JwtId, CryptoRandom.CreateUniqueId()));
+                claims.Add(new Claim(JwtClaimTypes.JwtId, CryptoRandom.CreateUniqueId(16)));
             }
 
             var issuer = _context.HttpContext.GetIdentityServerIssuerUri();

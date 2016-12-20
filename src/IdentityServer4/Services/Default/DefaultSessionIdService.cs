@@ -26,7 +26,7 @@ namespace IdentityServer4.Services.Default
         {
             if (!context.Properties.ContainsKey(OidcConstants.EndSessionRequest.Sid))
             {
-                context.Properties[OidcConstants.EndSessionRequest.Sid] = CryptoRandom.CreateUniqueId();
+                context.Properties[OidcConstants.EndSessionRequest.Sid] = CryptoRandom.CreateUniqueId(16);
             }
 
             IssueSessionIdCookie(context.Properties[OidcConstants.EndSessionRequest.Sid]);
