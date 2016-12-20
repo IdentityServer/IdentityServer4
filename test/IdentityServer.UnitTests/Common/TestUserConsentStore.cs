@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using IdentityServer4.Stores.Serialization;
 using IdentityServer4.Stores.InMemory;
 using IdentityServer4.Models;
-using IdentityServer4.Services.Default;
+using IdentityServer4.Services;
 
 namespace IdentityServer4.UnitTests.Common
 {

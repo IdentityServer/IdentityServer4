@@ -3,7 +3,6 @@
 
 
 using IdentityServer4.Services;
-using IdentityServer4.Services.Default;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.UnitTests.Common

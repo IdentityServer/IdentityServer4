@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityModel;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
@@ -11,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Services.Default
+namespace IdentityServer4.Services
 {
     /// <summary>
     /// Default refresh token service

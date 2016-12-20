@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using System;
 
-namespace IdentityServer4.Services.Default
+namespace IdentityServer4.Services
 {
     public class DefaultCache<T> : ICache<T>
         where T : class

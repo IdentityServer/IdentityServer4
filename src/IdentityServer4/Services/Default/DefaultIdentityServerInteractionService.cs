@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 
-namespace IdentityServer4.Services.Default
+namespace IdentityServer4.Services
 {
     class DefaultIdentityServerInteractionService : IIdentityServerInteractionService
     {

@@ -5,7 +5,7 @@
 using IdentityServer4.Models;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Services.Default
+namespace IdentityServer4.Services
 {
     public class DefaultHashingService : IHashingService
     {

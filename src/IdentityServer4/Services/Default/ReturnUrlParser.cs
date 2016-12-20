@@ -6,7 +6,7 @@ using IdentityServer4.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Services.Default
+namespace IdentityServer4.Services
 {
     public class ReturnUrlParser
     {

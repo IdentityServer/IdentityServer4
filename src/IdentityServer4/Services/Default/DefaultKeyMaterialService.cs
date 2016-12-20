@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 using IdentityServer4.Stores;
 
-namespace IdentityServer4.Services.Default
+namespace IdentityServer4.Services
 {
     public class DefaultKeyMaterialService : IKeyMaterialService
     {

@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Services.Default
+namespace IdentityServer4.Services
 {
     /// <summary>
     /// Default implementation of the event service. Write events raised to the log.

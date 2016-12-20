@@ -10,7 +10,7 @@ using IdentityServer4.Stores.Serialization;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace IdentityServer4.Services.Default
+namespace IdentityServer4.Services
 {
     /// <summary>
     /// Default persisted grant service

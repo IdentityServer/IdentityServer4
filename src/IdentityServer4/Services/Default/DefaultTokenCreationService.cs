@@ -15,7 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using Microsoft.Extensions.Logging;
 
-namespace IdentityServer4.Services.Default
+namespace IdentityServer4.Services
 {
     /// <summary>
     /// Default token creation service

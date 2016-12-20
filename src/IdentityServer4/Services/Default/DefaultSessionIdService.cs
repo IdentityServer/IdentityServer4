@@ -9,7 +9,7 @@ using IdentityServer4.Configuration;
 using Microsoft.AspNetCore.Http.Features.Authentication;
 using IdentityServer4.Extensions;
 
-namespace IdentityServer4.Services.Default
+namespace IdentityServer4.Services
 {
     public class DefaultSessionIdService : ISessionIdService
     {

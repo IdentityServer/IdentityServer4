@@ -5,7 +5,7 @@
 using FluentAssertions;
 using IdentityModel;
 using IdentityServer4.Models;
-using IdentityServer4.Services.Default;
+using IdentityServer4.Services;
 using IdentityServer4.UnitTests.Common;
 using IdentityServer4.Validation;
 using System.Linq;

@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Http;
 using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
 
-namespace IdentityServer4.Services.Default
+namespace IdentityServer4.Services
 {
     internal class OidcReturnUrlParser : IReturnUrlParser
     {

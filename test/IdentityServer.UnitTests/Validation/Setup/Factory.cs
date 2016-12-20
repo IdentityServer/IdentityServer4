@@ -4,7 +4,6 @@
 
 using IdentityServer4.Configuration;
 using IdentityServer4.Services;
-using IdentityServer4.Services.Default;
 using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;

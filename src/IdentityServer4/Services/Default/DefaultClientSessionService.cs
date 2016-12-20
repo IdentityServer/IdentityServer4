@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 using IdentityServer4.Extensions;
 using IdentityServer4.Configuration;
 
-namespace IdentityServer4.Services.Default
+namespace IdentityServer4.Services
 {
     public class DefaultClientSessionService : IClientSessionService
     {
