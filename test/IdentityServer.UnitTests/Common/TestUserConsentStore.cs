@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using IdentityServer4.Stores.Serialization;
 using IdentityServer4.Stores.InMemory;
 using IdentityServer4.Models;
+using IdentityServer4.Services.Default;
 
 namespace IdentityServer4.UnitTests.Common
 {
@@ -20,6 +21,7 @@ namespace IdentityServer4.UnitTests.Common
             _userConsentStore = new DefaultUserConsentStore(
                _grantStore,
                new PersistentGrantSerializer(),
+                new DefaultHandleGenerationService(),
                TestLogger.Create<DefaultUserConsentStore>());
         }
 

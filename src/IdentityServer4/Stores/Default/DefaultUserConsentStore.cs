@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Stores.Serialization;
 using Microsoft.Extensions.Logging;
+using IdentityServer4.Services;
 
 namespace IdentityServer4.Stores
 {
@@ -18,9 +19,10 @@ namespace IdentityServer4.Stores
     {
         public DefaultUserConsentStore(
             IPersistedGrantStore store, 
-            PersistentGrantSerializer serializer, 
+            PersistentGrantSerializer serializer,
+            IHandleGenerationService handleGenerationService,
             ILogger<DefaultUserConsentStore> logger) 
-            : base(Constants.PersistedGrantTypes.UserConsent, store, serializer, logger)
+            : base(Constants.PersistedGrantTypes.UserConsent, store, serializer, handleGenerationService, logger)
         {
         }
 

@@ -4,6 +4,7 @@
 
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
+using IdentityServer4.Services;
 using IdentityServer4.Stores.Serialization;
 using Microsoft.Extensions.Logging;
 using System;
@@ -21,10 +22,12 @@ namespace IdentityServer4.Stores
         private readonly ILogger _logger;
         private readonly IPersistedGrantStore _store;
         private readonly PersistentGrantSerializer _serializer;
+        private readonly IHandleGenerationService _handleGenerationService;
 
         protected DefaultGrantStore(string grantType,
             IPersistedGrantStore store,
             PersistentGrantSerializer serializer,
+            IHandleGenerationService handleGenerationService,
             ILogger logger)
         {
             if (grantType.IsMissing()) throw new ArgumentNullException(nameof(grantType));
@@ -32,6 +35,7 @@ namespace IdentityServer4.Stores
             _grantType = grantType;
             _store = store;
             _serializer = serializer;
+            _handleGenerationService = handleGenerationService;
             _logger = logger;
         }
 
@@ -53,6 +57,13 @@ namespace IdentityServer4.Stores
             }
 
             return default(T);
+        }
+
+        protected async Task<string> CreateItemAsync(T item, string clientId, string subjectId, DateTime created, int lifetime)
+        {
+            var handle = await _handleGenerationService.GenerateAsync();
+            await StoreItemAsync(handle, item, clientId, subjectId, created, created.AddSeconds(lifetime));
+            return handle;
         }
 
         protected Task StoreItemAsync(string key, T item, string clientId, string subjectId, DateTime created, int lifetime)

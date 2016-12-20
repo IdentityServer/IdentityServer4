@@ -224,24 +224,28 @@ namespace IdentityServer4.UnitTests.Validation
         {
             return new DefaultAuthorizationCodeStore(new InMemoryPersistedGrantStore(),
                 new PersistentGrantSerializer(),
+                new DefaultHandleGenerationService(),
                 TestLogger.Create<DefaultAuthorizationCodeStore>());
         }
         public static IRefreshTokenStore CreateRefreshTokenStore()
         {
             return new DefaultRefreshTokenStore(new InMemoryPersistedGrantStore(),
                 new PersistentGrantSerializer(),
+                new DefaultHandleGenerationService(),
                 TestLogger.Create<DefaultRefreshTokenStore>());
         }
         public static IReferenceTokenStore CreateReferenceTokenStore()
         {
             return new DefaultReferenceTokenStore(new InMemoryPersistedGrantStore(),
                 new PersistentGrantSerializer(),
+                new DefaultHandleGenerationService(),
                 TestLogger.Create<DefaultReferenceTokenStore>());
         }
         public static IUserConsentStore CreateUserConsentStore()
         {
             return new DefaultUserConsentStore(new InMemoryPersistedGrantStore(),
                 new PersistentGrantSerializer(),
+                new DefaultHandleGenerationService(),
                 TestLogger.Create<DefaultUserConsentStore>());
         }
     }

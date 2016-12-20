@@ -97,8 +97,7 @@ namespace IdentityServer4.ResponseHandling
             };
 
             // store id token and access token and return authorization code
-            var id = CryptoRandom.CreateUniqueId();
-            await _authorizationCodeStore.StoreAuthorizationCodeAsync(id, code);
+            var id = await _authorizationCodeStore.StoreAuthorizationCodeAsync(code);
 
             await RaiseCodeIssuedEventAsync(id, code);
 

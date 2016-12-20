@@ -142,6 +142,8 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IRefreshTokenStore, DefaultRefreshTokenStore>();
             builder.Services.TryAddTransient<IReferenceTokenStore, DefaultReferenceTokenStore>();
             builder.Services.TryAddTransient<IUserConsentStore, DefaultUserConsentStore>();
+            builder.Services.TryAddTransient<IHashingService, DefaultHashingService>();
+            builder.Services.TryAddTransient<IHandleGenerationService, DefaultHandleGenerationService>();
 
             return builder;
         }

@@ -70,7 +70,6 @@ namespace IdentityServer4.Services.Default
                 lifetime = client.SlidingRefreshTokenLifetime;
             }
 
-            var handle = CryptoRandom.CreateUniqueId();
             var refreshToken = new RefreshToken
             {
                 CreationTime = DateTimeHelper.UtcNow,
@@ -78,7 +77,7 @@ namespace IdentityServer4.Services.Default
                 AccessToken = accessToken,
             };
 
-            await _refreshTokenStore.StoreRefreshTokenAsync(handle, refreshToken);
+            var handle = await _refreshTokenStore.StoreRefreshTokenAsync(refreshToken);
 
             await RaiseRefreshTokenIssuedEventAsync(handle, refreshToken);
             return handle;
@@ -97,6 +96,9 @@ namespace IdentityServer4.Services.Default
         {
             _logger.LogDebug("Updating refresh token");
 
+            var originalHandle = handle;
+
+            bool needsCreate = false;
             bool needsUpdate = false;
 
             if (client.RefreshTokenUsage == TokenUsage.OneTimeOnly)
@@ -107,8 +109,7 @@ namespace IdentityServer4.Services.Default
                 await _refreshTokenStore.RemoveRefreshTokenAsync(handle);
 
                 // create new one
-                handle = CryptoRandom.CreateUniqueId();
-                needsUpdate = true;
+                needsCreate = true;
             }
 
             if (client.RefreshTokenExpiration == TokenExpiration.Sliding)
@@ -133,9 +134,14 @@ namespace IdentityServer4.Services.Default
                 needsUpdate = true;
             }
 
-            if (needsUpdate)
+            if (needsCreate)
             {
-                await _refreshTokenStore.StoreRefreshTokenAsync(handle, refreshToken);
+                handle = await _refreshTokenStore.StoreRefreshTokenAsync(refreshToken);
+                _logger.LogDebug("Created refresh token in store");
+            }
+            else if (needsUpdate)
+            {
+                await _refreshTokenStore.UpdateRefreshTokenAsync(handle, refreshToken);
                 _logger.LogDebug("Updated refresh token in store");
             }
             else
@@ -143,8 +149,7 @@ namespace IdentityServer4.Services.Default
                 _logger.LogDebug("No updates to refresh token done");
             }
 
-            await RaiseRefreshTokenRefreshedEventAsync(handle, handle, refreshToken);
-            _logger.LogDebug("No updates to refresh token done");
+            await RaiseRefreshTokenRefreshedEventAsync(originalHandle, handle, refreshToken);
 
             return handle;
         }

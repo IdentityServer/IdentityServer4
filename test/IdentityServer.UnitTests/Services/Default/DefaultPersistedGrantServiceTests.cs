@@ -37,15 +37,19 @@ namespace IdentityServer4.UnitTests.Services.Default
                 TestLogger.Create<DefaultPersistedGrantService>());
             _codes = new DefaultAuthorizationCodeStore(_store,
                 new PersistentGrantSerializer(),
+                new DefaultHandleGenerationService(),
                 TestLogger.Create<DefaultAuthorizationCodeStore>());
             _refreshTokens = new DefaultRefreshTokenStore(_store,
                 new PersistentGrantSerializer(),
+                new DefaultHandleGenerationService(),
                 TestLogger.Create<DefaultRefreshTokenStore>());
             _referenceTokens = new DefaultReferenceTokenStore(_store,
                 new PersistentGrantSerializer(),
+                new DefaultHandleGenerationService(),
                 TestLogger.Create<DefaultReferenceTokenStore>());
             _userConsent = new DefaultUserConsentStore(_store,
                 new PersistentGrantSerializer(),
+                new DefaultHandleGenerationService(),
                 TestLogger.Create<DefaultUserConsentStore>());
         }
 
@@ -71,7 +75,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                 Scopes = new string[] { "foo3" }
             });
 
-            await _referenceTokens.StoreReferenceTokenAsync("key1", new Token()
+            var handle1 = await _referenceTokens.StoreReferenceTokenAsync(new Token()
             {
                 ClientId = "client1",
                 Audiences = { "aud" },
@@ -84,7 +88,8 @@ namespace IdentityServer4.UnitTests.Services.Default
                     new Claim("scope", "bar2"),
                 },
             });
-            await _referenceTokens.StoreReferenceTokenAsync("key2", new Token()
+
+            var handle2 = await _referenceTokens.StoreReferenceTokenAsync(new Token()
             {
                 ClientId = "client2",
                 Audiences = { "aud" },
@@ -96,7 +101,8 @@ namespace IdentityServer4.UnitTests.Services.Default
                     new Claim("scope", "bar3"),
                 },
             });
-            await _referenceTokens.StoreReferenceTokenAsync("key3", new Token()
+
+            var handle3 = await _referenceTokens.StoreReferenceTokenAsync(new Token()
             {
                 ClientId = "client1",
                 Audiences = { "aud" },
@@ -109,7 +115,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                 },
             });
 
-            await _refreshTokens.StoreRefreshTokenAsync("key4", new RefreshToken()
+            var handle4 = await _refreshTokens.StoreRefreshTokenAsync(new RefreshToken()
             {
                 CreationTime = DateTime.UtcNow,
                 Lifetime = 10,
@@ -128,7 +134,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                 },
                 Version = 1
             });
-            await _refreshTokens.StoreRefreshTokenAsync("key5", new RefreshToken()
+            var handle5 = await _refreshTokens.StoreRefreshTokenAsync(new RefreshToken()
             {
                 CreationTime = DateTime.UtcNow,
                 Lifetime = 10,
@@ -146,7 +152,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                 },
                 Version = 1
             });
-            await _refreshTokens.StoreRefreshTokenAsync("key6", new RefreshToken()
+            var handle6 = await _refreshTokens.StoreRefreshTokenAsync(new RefreshToken()
             {
                 CreationTime = DateTime.UtcNow,
                 Lifetime = 10,
@@ -165,7 +171,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                 Version = 1
             });
 
-            await _codes.StoreAuthorizationCodeAsync("key7", new AuthorizationCode()
+            var handle7 = await _codes.StoreAuthorizationCodeAsync(new AuthorizationCode()
             {
                 ClientId = "client1",
                 CreationTime = DateTime.UtcNow,
@@ -176,7 +182,8 @@ namespace IdentityServer4.UnitTests.Services.Default
                 Nonce = "nonce",
                 RequestedScopes = new string[] { "quux1", "quux2" }
             });
-            await _codes.StoreAuthorizationCodeAsync("key8", new AuthorizationCode()
+
+            var handle8 = await _codes.StoreAuthorizationCodeAsync(new AuthorizationCode()
             {
                 ClientId = "client2",
                 CreationTime = DateTime.UtcNow,
@@ -188,7 +195,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                 RequestedScopes = new string[] { "quux3" }
             });
 
-            await _codes.StoreAuthorizationCodeAsync("key9", new AuthorizationCode()
+            var handle9 = await _codes.StoreAuthorizationCodeAsync(new AuthorizationCode()
             {
                 ClientId = "client1",
                 CreationTime = DateTime.UtcNow,
@@ -236,7 +243,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                 Scopes = new string[] { "foo3" }
             });
 
-            await _referenceTokens.StoreReferenceTokenAsync("key1", new Token()
+            var handle1 = await _referenceTokens.StoreReferenceTokenAsync(new Token()
             {
                 ClientId = "client1",
                 Audiences = { "aud" },
@@ -250,7 +257,8 @@ namespace IdentityServer4.UnitTests.Services.Default
                     new Claim("scope", "bar2"),
                 },
             });
-            await _referenceTokens.StoreReferenceTokenAsync("key2", new Token()
+
+            var handle2 = await _referenceTokens.StoreReferenceTokenAsync(new Token()
             {
                 ClientId = "client2",
                 Audiences = { "aud" },
@@ -263,7 +271,8 @@ namespace IdentityServer4.UnitTests.Services.Default
                     new Claim("scope", "bar3"),
                 },
             });
-            await _referenceTokens.StoreReferenceTokenAsync("key3", new Token()
+
+            var handle3 = await _referenceTokens.StoreReferenceTokenAsync(new Token()
             {
                 ClientId = "client1",
                 Audiences = { "aud" },
@@ -277,7 +286,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                 },
             });
 
-            await _refreshTokens.StoreRefreshTokenAsync("key4", new RefreshToken()
+            var handle4 = await _refreshTokens.StoreRefreshTokenAsync(new RefreshToken()
             {
                 CreationTime = DateTime.UtcNow,
                 Lifetime = 10,
@@ -296,7 +305,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                 },
                 Version = 1
             });
-            await _refreshTokens.StoreRefreshTokenAsync("key5", new RefreshToken()
+            var handle5 = await _refreshTokens.StoreRefreshTokenAsync(new RefreshToken()
             {
                 CreationTime = DateTime.UtcNow,
                 Lifetime = 10,
@@ -314,7 +323,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                 },
                 Version = 1
             });
-            await _refreshTokens.StoreRefreshTokenAsync("key6", new RefreshToken()
+            var handle6 = await _refreshTokens.StoreRefreshTokenAsync(new RefreshToken()
             {
                 CreationTime = DateTime.UtcNow,
                 Lifetime = 10,
@@ -333,7 +342,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                 Version = 1
             });
 
-            await _codes.StoreAuthorizationCodeAsync("key7", new AuthorizationCode()
+            var handle7 = await _codes.StoreAuthorizationCodeAsync(new AuthorizationCode()
             {
                 ClientId = "client1",
                 CreationTime = DateTime.UtcNow,
@@ -344,7 +353,8 @@ namespace IdentityServer4.UnitTests.Services.Default
                 Nonce = "nonce",
                 RequestedScopes = new string[] { "quux1", "quux2" }
             });
-            await _codes.StoreAuthorizationCodeAsync("key8", new AuthorizationCode()
+
+            var handle8 = await _codes.StoreAuthorizationCodeAsync(new AuthorizationCode()
             {
                 ClientId = "client2",
                 CreationTime = DateTime.UtcNow,
@@ -356,7 +366,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                 RequestedScopes = new string[] { "quux3" }
             });
 
-            await _codes.StoreAuthorizationCodeAsync("key9", new AuthorizationCode()
+            var handle9 = await _codes.StoreAuthorizationCodeAsync(new AuthorizationCode()
             {
                 ClientId = "client1",
                 CreationTime = DateTime.UtcNow,
@@ -370,15 +380,15 @@ namespace IdentityServer4.UnitTests.Services.Default
 
             await _subject.RemoveAllGrantsAsync("123", "client1");
 
-            (await _referenceTokens.GetReferenceTokenAsync("key1")).Should().BeNull();
-            (await _referenceTokens.GetReferenceTokenAsync("key2")).Should().NotBeNull();
-            (await _referenceTokens.GetReferenceTokenAsync("key3")).Should().NotBeNull();
-            (await _refreshTokens.GetRefreshTokenAsync("key4")).Should().BeNull();
-            (await _refreshTokens.GetRefreshTokenAsync("key5")).Should().NotBeNull();
-            (await _refreshTokens.GetRefreshTokenAsync("key6")).Should().NotBeNull();
-            (await _codes.GetAuthorizationCodeAsync("key7")).Should().BeNull();
-            (await _codes.GetAuthorizationCodeAsync("key8")).Should().NotBeNull();
-            (await _codes.GetAuthorizationCodeAsync("key9")).Should().NotBeNull();
+            (await _referenceTokens.GetReferenceTokenAsync(handle1)).Should().BeNull();
+            (await _referenceTokens.GetReferenceTokenAsync(handle2)).Should().NotBeNull();
+            (await _referenceTokens.GetReferenceTokenAsync(handle3)).Should().NotBeNull();
+            (await _refreshTokens.GetRefreshTokenAsync(handle4)).Should().BeNull();
+            (await _refreshTokens.GetRefreshTokenAsync(handle5)).Should().NotBeNull();
+            (await _refreshTokens.GetRefreshTokenAsync(handle6)).Should().NotBeNull();
+            (await _codes.GetAuthorizationCodeAsync(handle7)).Should().BeNull();
+            (await _codes.GetAuthorizationCodeAsync(handle8)).Should().NotBeNull();
+            (await _codes.GetAuthorizationCodeAsync(handle9)).Should().NotBeNull();
         }
     }
 }

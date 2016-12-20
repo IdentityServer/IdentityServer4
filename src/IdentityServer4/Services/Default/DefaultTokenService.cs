@@ -207,8 +207,7 @@ namespace IdentityServer4.Services.Default
                 {
                     _logger.LogTrace("Creating reference access token");
 
-                    var handle = CryptoRandom.CreateUniqueId();
-                    await _referenceTokenStore.StoreReferenceTokenAsync(handle, token);
+                    var handle = await _referenceTokenStore.StoreReferenceTokenAsync(token);
 
                     tokenResult = handle;
                 }
