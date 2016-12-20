@@ -22,25 +22,18 @@ namespace Host
         {
             services.AddIdentityServer(options =>
                 {
-                    //options.EventsOptions = new EventsOptions
-                    //{
-                    //    RaiseErrorEvents = true,
-                    //    RaiseFailureEvents = true,
-                    //    RaiseInformationEvents = true,
-                    //    RaiseSuccessEvents = true
-                    //};
-
                     options.Authentication.FederatedSignOutPaths.Add("/signout-callback-aad");
                     options.Authentication.FederatedSignOutPaths.Add("/signout-callback-idsrv3");
                 })
-                .AddInMemoryClients(Clients.Get())
-                .AddInMemoryIdentityResources(Resources.GetIdentityResources())
-                .AddInMemoryApiResources(Resources.GetApiResources())
-                .AddTemporarySigningCredential()
-                .AddExtensionGrantValidator<Extensions.ExtensionGrantValidator>()
-                .AddSecretParser<ClientAssertionSecretParser>()
-                .AddSecretValidator<PrivateKeyJwtSecretValidator>()
-                .AddTestUsers();
+            .AddInMemoryClients(Clients.Get())
+            .AddInMemoryIdentityResources(Resources.GetIdentityResources())
+            .AddInMemoryApiResources(Resources.GetApiResources())
+            .AddTemporarySigningCredential()
+
+            .AddExtensionGrantValidator<Extensions.ExtensionGrantValidator>()
+            .AddSecretParser<ClientAssertionSecretParser>()
+            .AddSecretValidator<PrivateKeyJwtSecretValidator>()
+            .AddTestUsers();
 
             services.AddMvc();
         }
