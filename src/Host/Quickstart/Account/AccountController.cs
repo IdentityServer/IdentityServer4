@@ -33,6 +33,7 @@ namespace IdentityServer4.Quickstart.UI
 
         // if you want to support Windows authentication, specify the scheme you want to use
         private readonly string _windowsAuthenticationScheme = "Negotiate";
+        private readonly AccountService _account;
 
         public AccountController(
             IIdentityServerInteractionService interaction,
@@ -44,6 +45,8 @@ namespace IdentityServer4.Quickstart.UI
 
             _interaction = interaction;
             _clientStore = clientStore;
+
+            _account = new AccountService(users, interaction, clientStore);
         }
 
         /// <summary>
