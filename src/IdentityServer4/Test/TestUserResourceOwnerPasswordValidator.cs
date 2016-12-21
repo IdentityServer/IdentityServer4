@@ -6,7 +6,7 @@ using IdentityModel;
 using IdentityServer4.Validation;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Quickstart.UI.Users
+namespace IdentityServer4.Test
 {
     public class TestUserResourceOwnerPasswordValidator : IResourceOwnerPasswordValidator
     {

@@ -3,14 +3,13 @@
 
 
 using IdentityServer4.Models;
-using IdentityServer4.Quickstart.UI.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Quickstart.UI.Services
+namespace IdentityServer4.Quickstart.UI
 {
     public class ConsentService
     {
@@ -56,12 +55,12 @@ namespace IdentityServer4.Quickstart.UI.Services
                 }
                 else
                 {
-                    result.Error = "You must pick at least one permission.";
+                    result.ValidationError = "You must pick at least one permission.";
                 }
             }
             else
             {
-                result.Error = "Invalid selection";
+                result.ValidationError = "Invalid selection";
             }
 
             if (grantedConsent != null)

@@ -2,16 +2,13 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityServer4.Quickstart.UI.Filters;
-using IdentityServer4.Quickstart.UI.Models;
-using IdentityServer4.Quickstart.UI.Services;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Quickstart.UI.Controllers
+namespace IdentityServer4.Quickstart.UI
 {
     /// <summary>
     /// This controller processes the consent UI
@@ -56,17 +53,17 @@ namespace IdentityServer4.Quickstart.UI.Controllers
         {
             var result = await _consent.ProcessConsent(model);
 
-            if (result.RedirectUri != null)
+            if (result.IsRedirect)
             {
                 return Redirect(result.RedirectUri);
             }
 
-            if (result.Error != null)
+            if (result.HasValidationError)
             {
-                ModelState.AddModelError("", result.Error);
+                ModelState.AddModelError("", result.ValidationError);
             }
 
-            if (result.ViewModel != null)
+            if (result.ShowView)
             {
                 return View("Index", result.ViewModel);
             }

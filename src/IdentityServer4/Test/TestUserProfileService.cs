@@ -7,7 +7,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Services;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Quickstart.UI.Users
+namespace IdentityServer4.Test
 {
     public class TestUserProfileService : IProfileService
     {

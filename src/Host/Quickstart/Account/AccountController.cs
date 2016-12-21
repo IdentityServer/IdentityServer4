@@ -4,11 +4,9 @@
 
 using IdentityModel;
 using IdentityServer4.Models;
-using IdentityServer4.Quickstart.UI.Filters;
-using IdentityServer4.Quickstart.UI.Models;
-using IdentityServer4.Quickstart.UI.Users;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
+using IdentityServer4.Test;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -18,7 +16,7 @@ using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Quickstart.UI.Controllers
+namespace IdentityServer4.Quickstart.UI
 {
     /// <summary>
     /// This sample controller implements a typical login/logout/provision workflow for local and external accounts.
@@ -37,11 +35,13 @@ namespace IdentityServer4.Quickstart.UI.Controllers
         private readonly string _windowsAuthenticationScheme = "Negotiate";
 
         public AccountController(
-            TestUserStore users,
             IIdentityServerInteractionService interaction,
-            IClientStore clientStore)
+            IClientStore clientStore,
+            TestUserStore users = null)
         {
-            _users = users;
+            // if the TestUserStore is not in DI, then we'll just use the global users collection
+            _users = users ?? new TestUserStore(TestUsers.Users);
+
             _interaction = interaction;
             _clientStore = clientStore;
         }

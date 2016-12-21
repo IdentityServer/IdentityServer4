@@ -13,6 +13,7 @@ using IdentityServer4;
 using IdentityServer4.Validation;
 using Serilog;
 using Microsoft.AspNetCore.Http;
+using IdentityServer4.Quickstart.UI;
 
 namespace Host
 {
@@ -33,7 +34,7 @@ namespace Host
             .AddExtensionGrantValidator<Extensions.ExtensionGrantValidator>()
             .AddSecretParser<ClientAssertionSecretParser>()
             .AddSecretValidator<PrivateKeyJwtSecretValidator>()
-            .AddTestUsers();
+            .AddTestUsers(TestUsers.Users);
 
             services.AddMvc();
         }

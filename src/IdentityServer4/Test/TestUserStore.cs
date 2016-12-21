@@ -9,7 +9,7 @@ using System.Linq;
 using System.Security.Claims;
 using System;
 
-namespace IdentityServer4.Quickstart.UI.Users
+namespace IdentityServer4.Test
 {
     public class TestUserStore
     {
