@@ -32,3 +32,7 @@ IdentityServer4 is built using the following great open source projects
 IdentityServer4 is a [.NET Foundation](http://www.dotnetfoundation.org/) project
 
 <img src="https://cloud.githubusercontent.com/assets/1454075/10598539/1c44ba0a-76fa-11e5-9d7e-af1b363c524a.png" width="144">
+
+![openid_certified](https://cloud.githubusercontent.com/assets/1454075/7611268/4d19de32-f97b-11e4-895b-31b2455a7ca6.png)
+
+[Certified](http://openid.net/certification/) OpenID Connect implementation.
