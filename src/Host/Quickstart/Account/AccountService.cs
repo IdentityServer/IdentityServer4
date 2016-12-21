@@ -18,9 +18,6 @@ namespace IdentityServer4.Quickstart.UI
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        // if you want to support Windows authentication, specify the schemes you want to use
-        public static readonly string[] WindowsAuthenticationSchemes = new string[] { "Negotiate", "NTLM" };
-
         public AccountService(
             IIdentityServerInteractionService interaction,
             IHttpContextAccessor httpContextAccessor,
@@ -49,22 +46,25 @@ namespace IdentityServer4.Quickstart.UI
             var schemes = _httpContextAccessor.HttpContext.Authentication.GetAuthenticationSchemes();
 
             var providers = schemes
-                .Where(x => x.DisplayName != null && !WindowsAuthenticationSchemes.Contains(x.AuthenticationScheme))
+                .Where(x => x.DisplayName != null && !AccountOptions.WindowsAuthenticationSchemes.Contains(x.AuthenticationScheme))
                 .Select(x => new ExternalProvider
                 {
                     DisplayName = x.DisplayName,
                     AuthenticationScheme = x.AuthenticationScheme
                 }).ToList();
 
-            // this is needed to handle windows auth schemes
-            var windowsSchemes = schemes.Where(s => WindowsAuthenticationSchemes.Contains(s.AuthenticationScheme));
-            if (windowsSchemes.Any())
+            if (AccountOptions.WindowsAuthenticationEnabled)
             {
-                providers.Add(new ExternalProvider
+                // this is needed to handle windows auth schemes
+                var windowsSchemes = schemes.Where(s => AccountOptions.WindowsAuthenticationSchemes.Contains(s.AuthenticationScheme));
+                if (windowsSchemes.Any())
                 {
-                    AuthenticationScheme = WindowsAuthenticationSchemes.First(),
-                    DisplayName = "Windows"
-                });
+                    providers.Add(new ExternalProvider
+                    {
+                        AuthenticationScheme = AccountOptions.WindowsAuthenticationSchemes.First(),
+                        DisplayName = AccountOptions.WindowsAuthenticationDisplayName
+                    });
+                }
             }
 
             var allowLocal = true;
@@ -84,7 +84,8 @@ namespace IdentityServer4.Quickstart.UI
 
             return new LoginViewModel
             {
-                EnableLocalLogin = allowLocal,
+                AllowRememberLogin = AccountOptions.AllowRememberLogin,
+                EnableLocalLogin = allowLocal && AccountOptions.AllowLocalLogin,
                 ReturnUrl = returnUrl,
                 Username = context?.LoginHint,
                 ExternalProviders = providers.ToArray()
@@ -101,7 +102,7 @@ namespace IdentityServer4.Quickstart.UI
 
         public async Task<LogoutViewModel> BuildLogoutViewModelAsync(string logoutId)
         {
-            var vm = new LogoutViewModel { LogoutId = logoutId, ShowLogoutPrompt = true };
+            var vm = new LogoutViewModel { LogoutId = logoutId, ShowLogoutPrompt = AccountOptions.ShowLogoutPrompt };
 
             var user = await _httpContextAccessor.HttpContext.GetIdentityServerUserAsync();
             if (user == null || user.Identity.IsAuthenticated == false)
@@ -131,6 +132,7 @@ namespace IdentityServer4.Quickstart.UI
 
             var vm = new LoggedOutViewModel
             {
+                AutomaticRedirectAfterSignOut = AccountOptions.AutomaticRedirectAfterSignOut,
                 PostLogoutRedirectUri = logout?.PostLogoutRedirectUri,
                 ClientName = logout?.ClientId,
                 SignOutIframeUrl = logout?.SignOutIFrameUrl,

@@ -27,6 +27,8 @@
 
 @section scripts
 {
-    @*uncomment this script to experiment with automatic redirect to client after signout*@
-    @*<script src="~/js/signout-redirect.js"></script>*@
+    @if (Model.AutomaticRedirectAfterSignOut)
+    {
+        <script src="~/js/signout-redirect.js"></script>
+    }
 }

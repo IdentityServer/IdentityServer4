@@ -75,12 +75,12 @@ namespace IdentityServer4.Quickstart.UI
                     AuthenticationProperties props = null;
                     // only set explicit expiration here if persistent. 
                     // otherwise we reply upon expiration configured in cookie middleware.
-                    if (model.RememberLogin)
+                    if (AccountOptions.AllowRememberLogin && model.RememberLogin)
                     {
                         props = new AuthenticationProperties
                         {
                             IsPersistent = true,
-                            ExpiresUtc = DateTimeOffset.UtcNow.AddMonths(1)
+                            ExpiresUtc = DateTimeOffset.UtcNow.Add(AccountOptions.RememberMeLoginDuration)
                         };
                     };
 
@@ -97,7 +97,7 @@ namespace IdentityServer4.Quickstart.UI
                     return Redirect("~/");
                 }
 
-                ModelState.AddModelError("", "Invalid username or password.");
+                ModelState.AddModelError("", AccountOptions.InvalidCredentialsErrorMessage);
             }
 
             // something went wrong, show form with error
@@ -162,7 +162,7 @@ namespace IdentityServer4.Quickstart.UI
             returnUrl = Url.Action("ExternalLoginCallback", new { returnUrl = returnUrl });
 
             // windows authentication is modeled as external in the asp.net core authentication manager, so we need special handling
-            if (AccountService.WindowsAuthenticationSchemes.Contains(provider))
+            if (AccountOptions.WindowsAuthenticationSchemes.Contains(provider))
             {
                 // but they don't support the redirect uri, so this URL is re-triggered when we call challenge
                 if (HttpContext.User is WindowsPrincipal)
@@ -180,7 +180,7 @@ namespace IdentityServer4.Quickstart.UI
                 else
                 {
                     // this triggers all of the windows auth schemes we're supporting so the browser can use what it supports
-                    return new ChallengeResult(AccountService.WindowsAuthenticationSchemes);
+                    return new ChallengeResult(AccountOptions.WindowsAuthenticationSchemes);
                 }
             }
             else
