@@ -8,7 +8,7 @@ OpenID Connect and OAuth 2.0 Framework for ASP.NET Core
 This is the main repo for IdentityServer4 - but there's more:
 
 * [Documentation](https://identityserver4.readthedocs.io)
-* [Commercial support options](https://www.identityserver.com/)
+* [Consulting, training and support](https://www.identityserver.io/)
 * [Samples](https://github.com/IdentityServer/IdentityServer4.Samples)
 * [Access token validation](https://github.com/IdentityServer/IdentityServer4.AccessTokenValidation)
 * [Quickstart UI](https://github.com/IdentityServer/IdentityServer4.Quickstart.UI)
