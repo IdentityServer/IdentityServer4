@@ -76,7 +76,7 @@ namespace IdentityServer4.Validation
                 new Claim(JwtClaimTypes.Subject, subject),
                 new Claim(JwtClaimTypes.AuthenticationMethod, authenticationMethod),
                 new Claim(JwtClaimTypes.IdentityProvider, identityProvider),
-                new Claim(JwtClaimTypes.AuthenticationTime, DateTimeHelper.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer)
+                new Claim(JwtClaimTypes.AuthenticationTime, IdentityServerDateTime.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer)
             };
 
             if (!claims.IsNullOrEmpty())

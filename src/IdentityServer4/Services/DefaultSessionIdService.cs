@@ -77,7 +77,7 @@ namespace IdentityServer4.Services
             {
                 // only remove it if we have it in the request
                 var options = CreateCookieOptions();
-                options.Expires = DateTimeHelper.UtcNow.AddYears(-1);
+                options.Expires = IdentityServerDateTime.UtcNow.AddYears(-1);
 
                 _context.Response.Cookies.Append(name, ".", options);
             }

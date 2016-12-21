@@ -41,15 +41,15 @@ namespace IdentityServer4.UnitTests.Validation
         
         public AccessTokenValidation()
         {
-            originalNowFunc = DateTimeHelper.UtcNowFunc;
-            DateTimeHelper.UtcNowFunc = () => UtcNow;
+            originalNowFunc = IdentityServerDateTime.UtcNowFunc;
+            IdentityServerDateTime.UtcNowFunc = () => UtcNow;
         }
 
         public void Dispose()
         {
             if (originalNowFunc != null)
             {
-                DateTimeHelper.UtcNowFunc = originalNowFunc;
+                IdentityServerDateTime.UtcNowFunc = originalNowFunc;
             }
         }
 

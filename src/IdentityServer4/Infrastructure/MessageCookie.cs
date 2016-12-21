@@ -146,7 +146,7 @@ namespace IdentityServer4
                 ".",
                 new CookieOptions
                 {
-                    Expires = DateTimeHelper.UtcNow.AddYears(-1),
+                    Expires = IdentityServerDateTime.UtcNow.AddYears(-1),
                     HttpOnly = true,
                     Secure = Secure,
                     Path = CookiePath

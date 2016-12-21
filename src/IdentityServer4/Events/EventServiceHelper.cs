@@ -45,7 +45,7 @@ namespace IdentityServer4.Events
             evt.Context = new EventContext
             {
                 ActivityId = _context.HttpContext.TraceIdentifier,
-                TimeStamp = DateTimeHelper.UtcNow,
+                TimeStamp = IdentityServerDateTime.UtcNow,
                 ProcessId = Process.GetCurrentProcess().Id,
             };
 

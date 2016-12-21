@@ -6,10 +6,9 @@ using System;
 
 namespace IdentityServer4
 {
-    internal static class DateTimeHelper
+    public static class IdentityServerDateTime
     {
-        internal static Func<DateTime> UtcNowFunc = () => DateTime.UtcNow;
-
-        internal static DateTime UtcNow => UtcNowFunc();
+        public static DateTime UtcNow => UtcNowFunc();
+        public static Func<DateTime> UtcNowFunc = () => DateTime.UtcNow;
     }
 }

@@ -138,7 +138,7 @@ namespace IdentityServer4.ResponseHandling
             if (request.MaxAge.HasValue)
             {
                 var authTime = request.Subject.GetAuthenticationTime();
-                if (DateTimeHelper.UtcNow > authTime.AddSeconds(request.MaxAge.Value))
+                if (IdentityServerDateTime.UtcNow > authTime.AddSeconds(request.MaxAge.Value))
                 {
                     _logger.LogInformation("Showing login: Requested MaxAge exceeded.");
 

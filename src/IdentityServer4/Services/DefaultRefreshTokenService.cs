@@ -71,7 +71,7 @@ namespace IdentityServer4.Services
 
             var refreshToken = new RefreshToken
             {
-                CreationTime = DateTimeHelper.UtcNow,
+                CreationTime = IdentityServerDateTime.UtcNow,
                 Lifetime = lifetime,
                 AccessToken = accessToken,
             };

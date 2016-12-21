@@ -192,7 +192,7 @@ namespace IdentityServer4.Services
                 }
 
                 value = ".";
-                expires = DateTimeHelper.UtcNow.AddYears(-1);
+                expires = IdentityServerDateTime.UtcNow.AddYears(-1);
             }
 
             var opts = new CookieOptions

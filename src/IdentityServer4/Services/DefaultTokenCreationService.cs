@@ -68,7 +68,7 @@ namespace IdentityServer4.Services
             if (x509key != null)
             {
                 var cert = x509key.Certificate;
-                if (DateTimeHelper.UtcNow > cert.NotAfter)
+                if (IdentityServerDateTime.UtcNow > cert.NotAfter)
                 {
                     _logger.LogWarning("Certificate {subjectName} has expired on {expiration}", cert.Subject, cert.NotAfter.ToString());
                 }
@@ -90,8 +90,8 @@ namespace IdentityServer4.Services
                 token.Issuer,
                 null,
                 null,
-                DateTimeHelper.UtcNow,
-                DateTimeHelper.UtcNow.AddSeconds(token.Lifetime));
+                IdentityServerDateTime.UtcNow,
+                IdentityServerDateTime.UtcNow.AddSeconds(token.Lifetime));
 
             foreach (var aud in token.Audiences)
             {
