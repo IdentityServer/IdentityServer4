@@ -1,5 +1,10 @@
 ﻿@model LoggedOutViewModel
 
+@{ 
+    // set this so the layout rendering sees an anonymous user
+    ViewData["signed-out"] = true;
+}
+
 <div class="page-header logged-out">
     <h1>
         Logout
@@ -23,5 +28,5 @@
 @section scripts
 {
     @*uncomment this script to experiment with automatic redirect to client after signout*@
-    <script src="~/js/signout-redirect.js"></script>
+    @*<script src="~/js/signout-redirect.js"></script>*@
 }

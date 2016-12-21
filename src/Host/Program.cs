@@ -5,6 +5,7 @@
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using System;
+using Microsoft.Net.Http.Server;
 
 namespace Host
 {
@@ -17,7 +18,7 @@ namespace Host
             var host = new WebHostBuilder()
                 //.UseWebListener(options =>
                 //{
-                //    options.ListenerSettings.Authentication.Schemes = AuthenticationSchemes.Negotiate;
+                //    options.ListenerSettings.Authentication.Schemes = AuthenticationSchemes.Negotiate | AuthenticationSchemes.NTLM;
                 //    options.ListenerSettings.Authentication.AllowAnonymous = true;
                 //})
                 .UseKestrel()

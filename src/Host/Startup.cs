@@ -91,6 +91,7 @@ namespace Host
                 ClientId = "implicit",
                 ResponseType = "id_token",
                 Scope = { "openid profile" },
+                SaveTokens = true,
                 CallbackPath = new PathString("/signin-idsrv3"),
                 SignedOutCallbackPath = new PathString("/signout-callback-idsrv3"),
                 RemoteSignOutPath = new PathString("/signout-idsrv3"),

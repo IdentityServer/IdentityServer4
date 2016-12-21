@@ -20,7 +20,8 @@
     "Microsoft.Extensions.Logging.Console": "1.1.0",
     "Microsoft.Extensions.Logging.Debug": "1.1.0",
     "Serilog.Extensions.Logging": "1.3.1",
-    "Serilog.Sinks.File": "3.1.1"
+    "Serilog.Sinks.File": "3.1.1",
+    "Microsoft.AspNetCore.Authentication": "1.1.0"
   },
 
   "tools": {
