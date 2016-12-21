@@ -2,39 +2,32 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityServer4.Models;
 using IdentityServer4.Quickstart.UI.Filters;
 using IdentityServer4.Quickstart.UI.Models;
+using IdentityServer4.Quickstart.UI.Services;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Quickstart.UI.Controllers
 {
     /// <summary>
-    /// This controller implements the consent logic
+    /// This controller processes the consent UI
     /// </summary>
     [SecurityHeaders]
     public class ConsentController : Controller
     {
-        private readonly ILogger<ConsentController> _logger;
-        private readonly IClientStore _clientStore;
-        private readonly IResourceStore _resourceStore;
-        private readonly IIdentityServerInteractionService _interaction;
-        
+        private readonly ConsentService _consent;
+
         public ConsentController(
-            ILogger<ConsentController> logger,
             IIdentityServerInteractionService interaction,
             IClientStore clientStore,
-            IResourceStore resourceStore)
+            IResourceStore resourceStore,
+            ILogger<ConsentController> logger)
         {
-            _logger = logger;
-            _interaction = interaction;
-            _clientStore = clientStore;
-            _resourceStore = resourceStore;
+            _consent = new ConsentService(interaction, clientStore, resourceStore, logger);
         }
 
         /// <summary>
@@ -45,7 +38,7 @@ namespace IdentityServer4.Quickstart.UI.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(string returnUrl)
         {
-            var vm = await BuildViewModelAsync(returnUrl);
+            var vm = await _consent.BuildViewModelAsync(returnUrl);
             if (vm != null)
             {
                 return View("Index", vm);
@@ -61,84 +54,24 @@ namespace IdentityServer4.Quickstart.UI.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(ConsentInputModel model)
         {
-            // parse the return URL back to an AuthorizeRequest object
-            var request = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl);
-            ConsentResponse response = null;
+            var result = await _consent.ProcessConsent(model);
 
-            // user clicked 'no' - send back the standard 'access_denied' response
-            if (model.Button == "no")
+            if (result.RedirectUri != null)
             {
-                response = ConsentResponse.Denied;
-            }
-            // user clicked 'yes' - validate the data
-            else if (model.Button == "yes" && model != null)
-            {
-                // if the user consented to some scope, build the response model
-                if (model.ScopesConsented != null && model.ScopesConsented.Any())
-                {
-                    response = new ConsentResponse
-                    {
-                        RememberConsent = model.RememberConsent,
-                        ScopesConsented = model.ScopesConsented
-                    };
-                }
-                else
-                {
-                    ModelState.AddModelError("", "You must pick at least one permission.");
-                }
-            }
-            else
-            {
-                ModelState.AddModelError("", "Invalid Selection");
+                return Redirect(result.RedirectUri);
             }
 
-            if (response != null)
+            if (result.Error != null)
             {
-                // communicate outcome of consent back to identityserver
-                await _interaction.GrantConsentAsync(request, response);
-
-                // redirect back to authorization endpoint
-                return Redirect(model.ReturnUrl);
+                ModelState.AddModelError("", result.Error);
             }
 
-            var vm = await BuildViewModelAsync(model.ReturnUrl, model);
-            if (vm != null)
+            if (result.ViewModel != null)
             {
-                return View("Index", vm);
+                return View("Index", result.ViewModel);
             }
 
             return View("Error");
-        }
-
-        async Task<ConsentViewModel> BuildViewModelAsync(string returnUrl, ConsentInputModel model = null)
-        {
-            var request = await _interaction.GetAuthorizationContextAsync(returnUrl);
-            if (request != null)
-            {
-                var client = await _clientStore.FindEnabledClientByIdAsync(request.ClientId);
-                if (client != null)
-                {
-                    var resources = await _resourceStore.FindEnabledResourcesByScopeAsync(request.ScopesRequested);
-                    if (resources != null && (resources.IdentityResources.Any() || resources.ApiResources.Any()))
-                    {
-                        return new ConsentViewModel(model, returnUrl, request, client, resources);
-                    }
-                    else
-                    {
-                        _logger.LogError("No scopes matching: {0}", request.ScopesRequested.Aggregate((x, y) => x + ", " + y));
-                    }
-                }
-                else
-                {
-                    _logger.LogError("Invalid client id: {0}", request.ClientId);
-                }
-            }
-            else
-            {
-                _logger.LogError("No consent request matching request: {0}", returnUrl);
-            }
-
-            return null;
         }
     }
 }
