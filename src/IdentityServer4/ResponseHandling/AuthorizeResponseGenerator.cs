@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.ResponseHandling
 {
-    class AuthorizeResponseGenerator : IAuthorizeResponseGenerator
+    public class AuthorizeResponseGenerator : IAuthorizeResponseGenerator
     {
         private readonly ILogger<AuthorizeResponseGenerator> _logger;
         private readonly ITokenService _tokenService;
