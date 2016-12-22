@@ -31,6 +31,15 @@ namespace IdentityServer4.Validation
         public Dictionary<string, object> CustomResponse { get; set; } = new Dictionary<string, object>();
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="GrantValidationResult"/> class with no subject.
+        /// Warning: the resulting access token will only contain the client identity.
+        /// </summary>
+        public GrantValidationResult(Dictionary<string, object> customResponse = null)
+            : this(null, customResponse)
+        {
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="GrantValidationResult"/> class with a given principal.
         /// Warning: the principal needs to include the required claims - it is recommended to use the other constructor that does validation.
         /// </summary>
