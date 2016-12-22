@@ -73,20 +73,20 @@ namespace IdentityServer4.Validation
             return new BearerTokenUsageValidationResult();
         }
 
-        public Task<BearerTokenUsageValidationResult> ValidatePostBodyAsync(HttpContext context)
+        public async Task<BearerTokenUsageValidationResult> ValidatePostBodyAsync(HttpContext context)
         {
-            var token = context.Request.Form["access_token"].FirstOrDefault();
+            var token = (await context.Request.ReadFormAsync())["access_token"].FirstOrDefault();
             if (token.IsPresent())
             {
-                return Task.FromResult(new BearerTokenUsageValidationResult
+                return new BearerTokenUsageValidationResult
                 {
                     TokenFound = true,
                     Token = token,
                     UsageType = BearerTokenUsageType.PostBody
-                });
+                };
             }
 
-            return Task.FromResult(new BearerTokenUsageValidationResult());
+            return new BearerTokenUsageValidationResult();
         }
     }
 }

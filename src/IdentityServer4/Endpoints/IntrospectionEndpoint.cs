@@ -57,7 +57,7 @@ namespace IdentityServer4.Endpoints
                 return new StatusCodeResult(401);
             }
 
-            var parameters = context.Request.Form.AsNameValueCollection();
+            var parameters = (await context.Request.ReadFormAsync()).AsNameValueCollection();
 
             var validationResult = await _requestValidator.ValidateAsync(parameters, apiResult.Resource);
             var response = await _generator.ProcessAsync(validationResult, apiResult.Resource);
