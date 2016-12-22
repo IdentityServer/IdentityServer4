@@ -57,7 +57,6 @@ namespace IdentityServer4.Services
                 return false;
             }
 
-            // TODO: validate that this is a correct statement
             if (!client.AllowRememberConsent)
             {
                 return true;
