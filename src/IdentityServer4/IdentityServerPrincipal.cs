@@ -64,7 +64,6 @@ namespace IdentityServer4
                 allClaims.Add(new Claim(JwtClaimTypes.AuthenticationMethod, amr));
             }
 
-            // todo: filtering?
             foreach (var claim in claims)
             {
                 allClaims.Add(claim);

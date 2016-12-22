@@ -76,8 +76,6 @@ namespace IdentityServer4.Validation
             claims = claims.Where(x => x.Type != JwtClaimTypes.Scope ||
                 (x.Type == JwtClaimTypes.Scope && supportedScopes.Contains(x.Value)));
 
-            // TODO: filter out the user claims this API is not allowed to see?
-
             // all is good
             var success = new IntrospectionRequestValidationResult
             {

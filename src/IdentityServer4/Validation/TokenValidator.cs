@@ -251,15 +251,6 @@ namespace IdentityServer4.Validation
                 return Invalid(OidcConstants.ProtectedResourceErrors.InvalidToken);
             }
 
-            // TODO: review
-            //if (token.Type != OidcConstants.TokenTypes.AccessToken)
-            //{
-            //    LogError("Token handle does not resolve to an access token - but instead to: " + token.Type);
-
-            //    await _tokenHandles.RemoveAsync(tokenHandle);
-            //    return Invalid(OidcConstants.ProtectedResourceErrors.InvalidToken);
-            //}
-
             if (IdentityServerDateTime.UtcNow >= token.CreationTime.AddSeconds(token.Lifetime))
             {
                 LogError("Token expired.");

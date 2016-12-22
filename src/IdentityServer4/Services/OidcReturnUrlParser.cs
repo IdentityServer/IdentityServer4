@@ -48,7 +48,6 @@ namespace IdentityServer4.Services
 
         public bool IsValidReturnUrl(string returnUrl)
         {
-            // TODO: allow remote urls, once supported
             if (returnUrl.IsLocalUrl())
             {
                 var index = returnUrl.IndexOf('?');
