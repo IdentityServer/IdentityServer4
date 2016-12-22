@@ -19,7 +19,7 @@ namespace IdentityServer4.Stores
     {
         public DefaultUserConsentStore(
             IPersistedGrantStore store, 
-            PersistentGrantSerializer serializer,
+            IPersistentGrantSerializer serializer,
             IHandleGenerationService handleGenerationService,
             ILogger<DefaultUserConsentStore> logger) 
             : base(Constants.PersistedGrantTypes.UserConsent, store, serializer, handleGenerationService, logger)

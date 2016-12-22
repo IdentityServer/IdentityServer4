@@ -21,12 +21,12 @@ namespace IdentityServer4.Stores
         private readonly string _grantType;
         private readonly ILogger _logger;
         private readonly IPersistedGrantStore _store;
-        private readonly PersistentGrantSerializer _serializer;
+        private readonly IPersistentGrantSerializer _serializer;
         private readonly IHandleGenerationService _handleGenerationService;
 
         protected DefaultGrantStore(string grantType,
             IPersistedGrantStore store,
-            PersistentGrantSerializer serializer,
+            IPersistentGrantSerializer serializer,
             IHandleGenerationService handleGenerationService,
             ILogger logger)
         {

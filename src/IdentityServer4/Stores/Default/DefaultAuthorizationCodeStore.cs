@@ -19,8 +19,8 @@ namespace IdentityServer4.Stores
     public class DefaultAuthorizationCodeStore : DefaultGrantStore<AuthorizationCode>, IAuthorizationCodeStore
     {
         public DefaultAuthorizationCodeStore(
-            IPersistedGrantStore store, 
-            PersistentGrantSerializer serializer,
+            IPersistedGrantStore store,
+            IPersistentGrantSerializer serializer,
             IHandleGenerationService handleGenerationService,
             ILogger<DefaultAuthorizationCodeStore> logger) 
             : base(Constants.PersistedGrantTypes.AuthorizationCode, store, serializer, handleGenerationService, logger)
