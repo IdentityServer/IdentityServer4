@@ -242,7 +242,13 @@ namespace IdentityServer4.Services
         /// <returns></returns>
         protected virtual IEnumerable<Claim> FilterProtocolClaims(IEnumerable<Claim> claims)
         {
-            return claims.Where(x => !Constants.Filters.ClaimsProviderFilterClaimTypes.Contains(x.Type));
+            var claimsToFilter = claims.Where(x => Constants.Filters.ClaimsServiceFilterClaimTypes.Contains(x.Type));
+            if (claimsToFilter.Any())
+            {
+                var types = claimsToFilter.Select(x => x.Type);
+                _logger.LogInformation("Claim types from profile service that were filtered: {claimTypes}", types);
+            }
+            return claims.Except(claimsToFilter);
         }
     }
 }

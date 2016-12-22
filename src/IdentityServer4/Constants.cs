@@ -283,7 +283,7 @@ namespace IdentityServer4
             };
 
             // filter list for claims returned from profile service prior to creating tokens
-            public static readonly string[] ClaimsProviderFilterClaimTypes = new string[]
+            public static readonly string[] ClaimsServiceFilterClaimTypes = new string[]
             {
                 // TODO: consider JwtClaimTypes.AuthenticationContextClassReference,
                 JwtClaimTypes.AccessTokenHash,
