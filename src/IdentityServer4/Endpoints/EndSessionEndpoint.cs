@@ -50,7 +50,7 @@ namespace IdentityServer4.Endpoints
             }
             else if (context.Request.Method == "POST")
             {
-                parameters = context.Request.Form.AsNameValueCollection();
+                parameters = (await context.Request.ReadFormAsync()).AsNameValueCollection();
             }
             else
             {
