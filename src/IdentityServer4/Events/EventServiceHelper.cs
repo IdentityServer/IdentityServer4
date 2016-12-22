@@ -26,13 +26,13 @@ namespace IdentityServer4.Events
             switch (evt.EventType)
             {
                 case EventTypes.Failure:
-                    return _options.EventsOptions.RaiseFailureEvents;
+                    return _options.Events.RaiseFailureEvents;
                 case EventTypes.Information:
-                    return _options.EventsOptions.RaiseInformationEvents;
+                    return _options.Events.RaiseInformationEvents;
                 case EventTypes.Success:
-                    return _options.EventsOptions.RaiseSuccessEvents;
+                    return _options.Events.RaiseSuccessEvents;
                 case EventTypes.Error:
-                    return _options.EventsOptions.RaiseErrorEvents;
+                    return _options.Events.RaiseErrorEvents;
             }
 
             return false;
@@ -45,7 +45,7 @@ namespace IdentityServer4.Events
             evt.Context = new EventContext
             {
                 ActivityId = _context.HttpContext.TraceIdentifier,
-                TimeStamp = DateTimeHelper.UtcNow,
+                TimeStamp = IdentityServerDateTime.UtcNow,
                 ProcessId = Process.GetCurrentProcess().Id,
             };
 

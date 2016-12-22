@@ -40,14 +40,14 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 }
             };
 
-            await grants.StoreAuthorizationCodeAsync("valid", code);
+            var handle = await grants.StoreAuthorizationCodeAsync(code);
 
             var validator = Factory.CreateTokenRequestValidator(
                 authorizationCodeStore: grants);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.AuthorizationCode);
-            parameters.Add(OidcConstants.TokenRequest.Code, "valid");
+            parameters.Add(OidcConstants.TokenRequest.Code, handle);
             parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server/cb");
 
             var result = await validator.ValidateRequestAsync(parameters, client);
@@ -75,14 +75,14 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 }
             };
 
-            await grants.StoreAuthorizationCodeAsync("valid", code);
+            var handle = await grants.StoreAuthorizationCodeAsync(code);
 
             var validator = Factory.CreateTokenRequestValidator(
                 authorizationCodeStore: grants);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.AuthorizationCode);
-            parameters.Add(OidcConstants.TokenRequest.Code, "valid");
+            parameters.Add(OidcConstants.TokenRequest.Code, handle);
             parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server/cb");
 
             var result = await validator.ValidateRequestAsync(parameters, client);
@@ -248,10 +248,9 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 Lifetime = 600,
                 CreationTime = DateTime.UtcNow
             };
-            var handle = Guid.NewGuid().ToString();
 
             var grants = Factory.CreateRefreshTokenStore();
-            await grants.StoreRefreshTokenAsync(handle, refreshToken);
+            var handle = await grants.StoreRefreshTokenAsync(refreshToken);
 
             var client = await _clients.FindEnabledClientByIdAsync("roclient");
 
@@ -284,10 +283,9 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 Lifetime = 600,
                 CreationTime = DateTime.UtcNow
             };
-            var handle = Guid.NewGuid().ToString();
 
             var grants = Factory.CreateRefreshTokenStore();
-            await grants.StoreRefreshTokenAsync(handle, refreshToken);
+            var handle = await grants.StoreRefreshTokenAsync(refreshToken);
 
             var client = await _clients.FindEnabledClientByIdAsync("roclient_restricted_refresh");
 

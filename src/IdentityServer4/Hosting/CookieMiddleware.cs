@@ -21,12 +21,12 @@ namespace IdentityServer4.Hosting
             // only do stuff with cookies if we're showing UI
             if (options.Endpoints.EnableAuthorizeEndpoint)
             {
-                if (options.AuthenticationOptions.AuthenticationScheme.IsMissing())
+                if (options.Authentication.AuthenticationScheme.IsMissing())
                 {
-                    logger.LogDebug("Using built-in CookieAuthentication middleware with scheme: {authenticationScheme}", options.AuthenticationOptions.EffectiveAuthenticationScheme);
+                    logger.LogDebug("Using built-in CookieAuthentication middleware with scheme: {authenticationScheme}", options.Authentication.EffectiveAuthenticationScheme);
                     app.UseCookieAuthentication(new CookieAuthenticationOptions
                     {
-                        AuthenticationScheme = options.AuthenticationOptions.EffectiveAuthenticationScheme,
+                        AuthenticationScheme = options.Authentication.EffectiveAuthenticationScheme,
                         AutomaticAuthenticate = true,
                         SlidingExpiration = false,
                         ExpireTimeSpan = Constants.DefaultCookieTimeSpan,
@@ -35,7 +35,7 @@ namespace IdentityServer4.Hosting
                 }
                 else
                 {
-                    logger.LogDebug("Using hosting application's CookieAuthentication middleware with scheme: {authenticationScheme}", options.AuthenticationOptions.EffectiveAuthenticationScheme);
+                    logger.LogDebug("Using hosting application's CookieAuthentication middleware with scheme: {authenticationScheme}", options.Authentication.EffectiveAuthenticationScheme);
                 }
 
                 app.UseMiddleware<AuthenticationMiddleware>();

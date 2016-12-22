@@ -13,7 +13,7 @@ namespace IdentityServer4.Hosting
         public static void ConfigureCors(this IApplicationBuilder app)
         {
             var options = app.ApplicationServices.GetRequiredService<IdentityServerOptions>();
-            app.UseCors(options.CorsOptions.CorsPolicyName);
+            app.UseCors(options.Cors.CorsPolicyName);
         }
     }
 }

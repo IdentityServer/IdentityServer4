@@ -41,15 +41,15 @@ namespace IdentityServer4.UnitTests.Validation
         
         public AccessTokenValidation()
         {
-            originalNowFunc = DateTimeHelper.UtcNowFunc;
-            DateTimeHelper.UtcNowFunc = () => UtcNow;
+            originalNowFunc = IdentityServerDateTime.UtcNowFunc;
+            IdentityServerDateTime.UtcNowFunc = () => UtcNow;
         }
 
         public void Dispose()
         {
             if (originalNowFunc != null)
             {
-                DateTimeHelper.UtcNowFunc = originalNowFunc;
+                IdentityServerDateTime.UtcNowFunc = originalNowFunc;
             }
         }
 
@@ -62,11 +62,10 @@ namespace IdentityServer4.UnitTests.Validation
             var validator = Factory.CreateTokenValidator(store);
 
             var token = TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "valid", 600, "read", "write");
-            var handle = "123";
 
-            await store.StoreReferenceTokenAsync(handle, token);
+            var handle = await store.StoreReferenceTokenAsync(token);
 
-            var result = await validator.ValidateAccessTokenAsync("123");
+            var result = await validator.ValidateAccessTokenAsync(handle);
 
             result.IsError.Should().BeFalse();
             result.Claims.Count().Should().Be(8);
@@ -81,11 +80,10 @@ namespace IdentityServer4.UnitTests.Validation
             var validator = Factory.CreateTokenValidator(store);
 
             var token = TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "valid", 600, "read", "write");
-            var handle = "123";
 
-            await store.StoreReferenceTokenAsync(handle, token);
+            var handle = await store.StoreReferenceTokenAsync(token);
 
-            var result = await validator.ValidateAccessTokenAsync("123", "read");
+            var result = await validator.ValidateAccessTokenAsync(handle, "read");
 
             result.IsError.Should().BeFalse();
         }
@@ -98,11 +96,10 @@ namespace IdentityServer4.UnitTests.Validation
             var validator = Factory.CreateTokenValidator(store);
 
             var token = TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "valid", 600, "read", "write");
-            var handle = "123";
 
-            await store.StoreReferenceTokenAsync(handle, token);
+            var handle = await store.StoreReferenceTokenAsync(token);
 
-            var result = await validator.ValidateAccessTokenAsync("123", "missing");
+            var result = await validator.ValidateAccessTokenAsync(handle, "missing");
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.ProtectedResourceErrors.InsufficientScope);
@@ -144,13 +141,12 @@ namespace IdentityServer4.UnitTests.Validation
             var validator = Factory.CreateTokenValidator(store);
 
             var token = TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "valid", 2, "read", "write");
-            var handle = "123";
 
-            await store.StoreReferenceTokenAsync(handle, token);
+            var handle = await store.StoreReferenceTokenAsync(token);
             
             now = now.AddMilliseconds(2000);
 
-            var result = await validator.ValidateAccessTokenAsync("123");
+            var result = await validator.ValidateAccessTokenAsync(handle);
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.ProtectedResourceErrors.ExpiredToken);
@@ -236,11 +232,10 @@ namespace IdentityServer4.UnitTests.Validation
             var validator = Factory.CreateTokenValidator(store);
 
             var token = TokenFactory.CreateAccessToken(new Client { ClientId = "unknown" }, "valid", 600, "read", "write");
-            var handle = "123";
 
-            await store.StoreReferenceTokenAsync(handle, token);
+            var handle = await store.StoreReferenceTokenAsync(token);
 
-            var result = await validator.ValidateAccessTokenAsync("123");
+            var result = await validator.ValidateAccessTokenAsync(handle);
 
             result.IsError.Should().BeTrue();
         }

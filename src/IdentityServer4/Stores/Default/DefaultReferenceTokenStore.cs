@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Stores.Serialization;
 using Microsoft.Extensions.Logging;
+using IdentityServer4.Services;
 
 namespace IdentityServer4.Stores
 {
@@ -18,9 +19,10 @@ namespace IdentityServer4.Stores
     {
         public DefaultReferenceTokenStore(
             IPersistedGrantStore store, 
-            PersistentGrantSerializer serializer, 
+            IPersistentGrantSerializer serializer,
+            IHandleGenerationService handleGenerationService,
             ILogger<DefaultReferenceTokenStore> logger) 
-            : base(Constants.PersistedGrantTypes.ReferenceToken, store, serializer, logger)
+            : base(Constants.PersistedGrantTypes.ReferenceToken, store, serializer, handleGenerationService, logger)
         {
         }
 
@@ -30,9 +32,9 @@ namespace IdentityServer4.Stores
         /// <param name="handle">The handle.</param>
         /// <param name="token">The token.</param>
         /// <returns></returns>
-        public Task StoreReferenceTokenAsync(string handle, Token token)
+        public Task<string> StoreReferenceTokenAsync(Token token)
         {
-            return StoreItemAsync(handle, token, token.ClientId, token.SubjectId, token.CreationTime, token.Lifetime);
+            return CreateItemAsync(token, token.ClientId, token.SubjectId, token.CreationTime, token.Lifetime);
         }
 
         /// <summary>

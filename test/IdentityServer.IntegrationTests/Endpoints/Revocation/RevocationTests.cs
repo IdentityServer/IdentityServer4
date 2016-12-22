@@ -6,7 +6,7 @@ using FluentAssertions;
 using IdentityModel.Client;
 using IdentityServer4.IntegrationTests.Common;
 using IdentityServer4.Models;
-using IdentityServer4.Services.InMemory;
+using IdentityServer4.Test;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -65,9 +65,9 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
                 AccessTokenType = AccessTokenType.Reference,
             });
 
-            _mockPipeline.Users.Add(new InMemoryUser
+            _mockPipeline.Users.Add(new TestUser
             {
-                Subject = "bob",
+                SubjectId = "bob",
                 Username = "bob",
                 Claims = new Claim[]
                 {

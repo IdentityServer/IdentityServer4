@@ -127,15 +127,17 @@ namespace IdentityServer4.Models
         /// <summary>
         /// Gets or sets a value indicating whether [allow offline access].
         /// </summary>
-        /// <value>
-        ///   <c>true</c> if [allow offline access]; otherwise, <c>false</c>.
-        /// </value>
         public bool AllowOfflineAccess { get; set; } = false;
 
         /// <summary>
         /// Specifies the api scopes that the client is allowed to request. If empty, the client can't access any scope
         /// </summary>
         public ICollection<string> AllowedScopes { get; set; } = new HashSet<string>();
+
+        /// <summary>
+        /// When requesting both an id token and access token, should the user claims always be added to the id token instead of requring the client to use the userinfo endpoint.
+        /// </summary>
+        public bool AlwaysIncludeUserClaimsInIdToken { get; set; } = false;
 
         /// <summary>
         /// Lifetime of identity token in seconds (defaults to 300 seconds / 5 minutes)
@@ -249,7 +251,6 @@ namespace IdentityServer4.Models
             }
 
             // spaces are not allowed in grant types
-            // todo: check for other characters?
             foreach (var type in grantTypes)
             {
                 if (type.Contains(' '))

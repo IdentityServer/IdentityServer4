@@ -57,7 +57,7 @@ namespace IdentityServer4.Endpoints.Results
                 returnUrl = context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + returnUrl.RemoveLeadingSlash();
             }
 
-            var url = _url.AddQueryString(_options.UserInteractionOptions.CustomRedirectReturnUrlParameter, returnUrl);
+            var url = _url.AddQueryString(_options.UserInteraction.CustomRedirectReturnUrlParameter, returnUrl);
             context.Response.RedirectToAbsoluteUrl(url);
 
             return Task.FromResult(0);

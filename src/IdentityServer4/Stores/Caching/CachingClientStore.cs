@@ -30,7 +30,7 @@ namespace IdentityServer4.Stores
         public async Task<Client> FindClientByIdAsync(string clientId)
         {
             var client = await _cache.GetAsync(clientId,
-                _options.CachingOptions.ClientStoreExpiration,
+                _options.Caching.ClientStoreExpiration,
                 () => _inner.FindClientByIdAsync(clientId),
                 _logger);
 

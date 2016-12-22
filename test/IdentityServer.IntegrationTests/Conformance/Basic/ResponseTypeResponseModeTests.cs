@@ -5,7 +5,7 @@
 using FluentAssertions;
 using IdentityServer4.IntegrationTests.Common;
 using IdentityServer4.Models;
-using IdentityServer4.Services.InMemory;
+using IdentityServer4.Test;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -46,9 +46,9 @@ namespace IdentityServer4.IntegrationTests.Conformance.Basic
 
             _mockPipeline.IdentityScopes.Add(new IdentityResources.OpenId());
 
-            _mockPipeline.Users.Add(new InMemoryUser
+            _mockPipeline.Users.Add(new TestUser
             {
-                Subject = "bob",
+                SubjectId = "bob",
                 Username = "bob",
                 Claims = new Claim[]
                     {

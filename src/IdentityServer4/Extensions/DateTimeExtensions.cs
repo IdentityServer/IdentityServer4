@@ -12,20 +12,31 @@ namespace IdentityServer4.Extensions
         [DebuggerStepThrough]
         public static bool HasExceeded(this DateTime creationTime, int seconds)
         {
-            return (DateTimeHelper.UtcNow > creationTime.AddSeconds(seconds));
+            return (IdentityServerDateTime.UtcNow > creationTime.AddSeconds(seconds));
         }
 
         [DebuggerStepThrough]
         public static int GetLifetimeInSeconds(this DateTime creationTime)
         {
-            return ((int)(DateTimeHelper.UtcNow - creationTime).TotalSeconds);
+            return ((int)(IdentityServerDateTime.UtcNow - creationTime).TotalSeconds);
         }
 
         [DebuggerStepThrough]
         public static bool HasExpired(this DateTime? expirationTime)
         {
             if (expirationTime.HasValue &&
-                expirationTime < DateTimeHelper.UtcNow)
+                expirationTime.Value.HasExpired())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        [DebuggerStepThrough]
+        public static bool HasExpired(this DateTime expirationTime)
+        {
+            if (expirationTime < IdentityServerDateTime.UtcNow)
             {
                 return true;
             }

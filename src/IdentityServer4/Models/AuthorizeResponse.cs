@@ -3,13 +3,11 @@
 
 
 using IdentityServer4.Extensions;
-using IdentityServer4.Stores;
 using IdentityServer4.Validation;
-using System.Linq;
 
 namespace IdentityServer4.Models
 {
-    class AuthorizeResponse
+    public class AuthorizeResponse
     {
         public ValidatedAuthorizeRequest Request { get; set; }
         public string RedirectUri => Request?.RedirectUri;

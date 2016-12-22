@@ -11,7 +11,7 @@ using IdentityServer4.Models;
 using System.Security.Claims;
 using System.Net.Http;
 using IdentityServer4.IntegrationTests.Common;
-using IdentityServer4.Services.InMemory;
+using IdentityServer4.Test;
 
 namespace IdentityServer4.IntegrationTests.Pipeline
 {
@@ -35,9 +35,9 @@ namespace IdentityServer4.IntegrationTests.Pipeline
                 }
             });
 
-            _pipeline.Users.Add(new InMemoryUser
+            _pipeline.Users.Add(new TestUser
             {
-                Subject = "bob",
+                SubjectId = "bob",
                 Username = "bob",
                 Claims = new Claim[]
                 {
@@ -78,8 +78,6 @@ namespace IdentityServer4.IntegrationTests.Pipeline
         [InlineData(MockIdSvrUiPipeline.DiscoveryKeysEndpoint)]
         [InlineData(MockIdSvrUiPipeline.TokenEndpoint)]
         [InlineData(MockIdSvrUiPipeline.UserInfoEndpoint)]
-        // TODO: once we enable id_token validation
-        //[InlineData(MockIdSvrUiPipeline.IdentityTokenValidationEndpoint)]
         [InlineData(MockIdSvrUiPipeline.RevocationEndpoint)]
         [Trait("Category", Category)]
         public async Task cors_request_to_allowed_endpoints_should_succeed(string url)

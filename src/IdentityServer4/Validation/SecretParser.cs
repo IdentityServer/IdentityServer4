@@ -28,8 +28,7 @@ namespace IdentityServer4.Validation
             ParsedSecret bestSecret = null;
             foreach (var parser in _parsers)
             {
-                ParsedSecret parsedSecret = null;
-                parsedSecret = await parser.ParseAsync(context);
+                var parsedSecret = await parser.ParseAsync(context);
                 if (parsedSecret != null)
                 {
                     _logger.LogDebug("Parser found secret: {type}", parser.GetType().Name);

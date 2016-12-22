@@ -57,7 +57,7 @@ namespace IdentityServer4.Endpoints
 
             if (context.Request.Path.Value.EndsWith("/jwks"))
             {
-                return ExecuteJwksAsync(context);
+                return ExecuteJwksAsync();
             }
             else
             {
@@ -81,18 +81,18 @@ namespace IdentityServer4.Endpoints
 
             var document = new DiscoveryDocument
             {
-                issuer = context.GetIssuerUri(),
+                issuer = context.GetIdentityServerIssuerUri(),
                 subject_types_supported = new[] { "public" },
                 id_token_signing_alg_values_supported = new[] { Constants.SigningAlgorithms.RSA_SHA_256 },
                 code_challenge_methods_supported = new[] { OidcConstants.CodeChallengeMethods.Plain, OidcConstants.CodeChallengeMethods.Sha256 }
             };
 
             // scopes
-            if (_options.DiscoveryOptions.ShowIdentityScopes)
+            if (_options.Discovery.ShowIdentityScopes)
             {
                 scopes.AddRange(resources.IdentityResources.Where(x=>x.ShowInDiscoveryDocument).Select(x=>x.Name));
             }
-            if (_options.DiscoveryOptions.ShowApiScopes)
+            if (_options.Discovery.ShowApiScopes)
             {
                 var apiScopes = from api in resources.ApiResources
                                 from scope in api.Scopes
@@ -108,7 +108,7 @@ namespace IdentityServer4.Endpoints
             }
 
             // claims
-            if (_options.DiscoveryOptions.ShowClaims)
+            if (_options.Discovery.ShowClaims)
             {
                 var claims = new List<string>();
 
@@ -119,7 +119,7 @@ namespace IdentityServer4.Endpoints
             }
 
             // grant types
-            if (_options.DiscoveryOptions.ShowGrantTypes)
+            if (_options.Discovery.ShowGrantTypes)
             {
                 var standardGrantTypes = new List<string>
                 {
@@ -136,7 +136,7 @@ namespace IdentityServer4.Endpoints
                 
                 var showGrantTypes = new List<string>(standardGrantTypes);
 
-                if (_options.DiscoveryOptions.ShowExtensionGrantTypes)
+                if (_options.Discovery.ShowExtensionGrantTypes)
                 {
                     showGrantTypes.AddRange(_extensionGrants.GetAvailableGrantTypes());
                 }
@@ -145,25 +145,25 @@ namespace IdentityServer4.Endpoints
             }
 
             // response types
-            if (_options.DiscoveryOptions.ShowResponseTypes)
+            if (_options.Discovery.ShowResponseTypes)
             {
                 document.response_types_supported = Constants.SupportedResponseTypes.ToArray();
             }
 
             // response modes
-            if (_options.DiscoveryOptions.ShowResponseModes)
+            if (_options.Discovery.ShowResponseModes)
             {
                 document.response_modes_supported = Constants.SupportedResponseModes.ToArray();
             }
 
             // token endpoint authentication methods
-            if (_options.DiscoveryOptions.ShowTokenEndpointAuthenticationMethods)
+            if (_options.Discovery.ShowTokenEndpointAuthenticationMethods)
             {
                 document.token_endpoint_auth_methods_supported = _parsers.GetAvailableAuthenticationMethods().ToArray();
             }
 
             // endpoints
-            if (_options.DiscoveryOptions.ShowEndpoints)
+            if (_options.Discovery.ShowEndpoints)
             {
                 if (_options.Endpoints.EnableAuthorizeEndpoint)
                 {
@@ -203,7 +203,7 @@ namespace IdentityServer4.Endpoints
                 }
             }
 
-            if (_options.DiscoveryOptions.ShowKeySet)
+            if (_options.Discovery.ShowKeySet)
             {
                 if ((await _keys.GetValidationKeysAsync()).Any())
                 {
@@ -211,14 +211,14 @@ namespace IdentityServer4.Endpoints
                 }
             }
 
-            return new DiscoveryDocumentResult(document, _options.DiscoveryOptions.CustomEntries);
+            return new DiscoveryDocumentResult(document, _options.Discovery.CustomEntries);
         }
 
-        private async Task<IEndpointResult> ExecuteJwksAsync(HttpContext context)
+        private async Task<IEndpointResult> ExecuteJwksAsync()
         {
             _logger.LogDebug("Start key discovery request");
 
-            if (_options.DiscoveryOptions.ShowKeySet == false)
+            if (_options.Discovery.ShowKeySet == false)
             {
                 _logger.LogInformation("Key discovery disabled. 404.");
                 return new StatusCodeResult(404);

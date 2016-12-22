@@ -3,7 +3,7 @@
 
 
 using FluentAssertions;
-using IdentityServer4.Services.Default;
+using IdentityServer4.Services;
 using IdentityServer4.UnitTests.Common;
 using Xunit;
 

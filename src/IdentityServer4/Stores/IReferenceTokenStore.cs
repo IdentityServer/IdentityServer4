@@ -12,7 +12,7 @@ namespace IdentityServer4.Stores
     /// </summary>
     public interface IReferenceTokenStore
     {
-        Task StoreReferenceTokenAsync(string handle, Token token);
+        Task<string> StoreReferenceTokenAsync(Token token);
         Task<Token> GetReferenceTokenAsync(string handle);
         Task RemoveReferenceTokenAsync(string handle);
         Task RemoveReferenceTokensAsync(string subjectId, string clientId);

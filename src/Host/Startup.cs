@@ -9,11 +9,11 @@ using Microsoft.Extensions.Logging;
 using System;
 using Serilog.Events;
 using Microsoft.IdentityModel.Tokens;
-using System.Linq;
 using IdentityServer4;
 using IdentityServer4.Validation;
 using Serilog;
 using Microsoft.AspNetCore.Http;
+using IdentityServer4.Quickstart.UI;
 
 namespace Host
 {
@@ -21,38 +21,20 @@ namespace Host
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<IISOptions>(options=>
-            {
-                const string windowsAuthType = "Negotiate";
-                var windows = options.AuthenticationDescriptions
-                    .FirstOrDefault(x => x.AuthenticationScheme == windowsAuthType);
-                if (windows != null)
-                {
-                    windows.DisplayName = "Windows";
-                }
-            });
-
             services.AddIdentityServer(options =>
                 {
-                    //options.EventsOptions = new EventsOptions
-                    //{
-                    //    RaiseErrorEvents = true,
-                    //    RaiseFailureEvents = true,
-                    //    RaiseInformationEvents = true,
-                    //    RaiseSuccessEvents = true
-                    //};
-
-                    options.AuthenticationOptions.FederatedSignOutPaths.Add("/signout-callback-aad");
-                    options.AuthenticationOptions.FederatedSignOutPaths.Add("/signout-callback-idsrv3");
+                    options.Authentication.FederatedSignOutPaths.Add("/signout-callback-aad");
+                    options.Authentication.FederatedSignOutPaths.Add("/signout-callback-idsrv3");
                 })
-                .AddInMemoryClients(Clients.Get())
-                .AddInMemoryIdentityResources(Resources.GetIdentityResources())
-                .AddInMemoryApiResources(Resources.GetApiResources())
-                .AddInMemoryUsers(Users.Get())
-                .AddTemporarySigningCredential()
-                .AddExtensionGrantValidator<Extensions.ExtensionGrantValidator>()
-                .AddSecretParser<ClientAssertionSecretParser>()
-                .AddSecretValidator<PrivateKeyJwtSecretValidator>();
+            .AddInMemoryClients(Clients.Get())
+            .AddInMemoryIdentityResources(Resources.GetIdentityResources())
+            .AddInMemoryApiResources(Resources.GetApiResources())
+            .AddTemporarySigningCredential()
+
+            .AddExtensionGrantValidator<Extensions.ExtensionGrantValidator>()
+            .AddSecretParser<ClientAssertionSecretParser>()
+            .AddSecretValidator<PrivateKeyJwtSecretValidator>()
+            .AddTestUsers(TestUsers.Users);
 
             services.AddMvc();
         }
@@ -109,6 +91,7 @@ namespace Host
                 ClientId = "implicit",
                 ResponseType = "id_token",
                 Scope = { "openid profile" },
+                SaveTokens = true,
                 CallbackPath = new PathString("/signin-idsrv3"),
                 SignedOutCallbackPath = new PathString("/signout-callback-idsrv3"),
                 RemoteSignOutPath = new PathString("/signout-idsrv3"),

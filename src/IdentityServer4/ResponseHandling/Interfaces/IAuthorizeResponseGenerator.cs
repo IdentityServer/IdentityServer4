@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.ResponseHandling
 {
-    interface IAuthorizeResponseGenerator
+    public interface IAuthorizeResponseGenerator
     {
         Task<AuthorizeResponse> CreateResponseAsync(ValidatedAuthorizeRequest request);
     }

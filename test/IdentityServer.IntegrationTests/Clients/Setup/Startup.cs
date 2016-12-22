@@ -19,7 +19,7 @@ namespace IdentityServer4.IntegrationTests.Clients
             {
                 options.IssuerUri = "https://idsvr4";
 
-                options.EventsOptions = new EventsOptions
+                options.Events = new EventsOptions
                 {
                     RaiseErrorEvents = true,
                     RaiseFailureEvents = true,
@@ -31,7 +31,7 @@ namespace IdentityServer4.IntegrationTests.Clients
             builder.AddInMemoryClients(Clients.Get());
             builder.AddInMemoryIdentityResources(Scopes.GetIdentityScopes());
             builder.AddInMemoryApiResources(Scopes.GetApiScopes());
-            builder.AddInMemoryUsers(Users.Get());
+            builder.AddTestUsers(Users.Get());
 
             builder.AddTemporarySigningCredential();
 

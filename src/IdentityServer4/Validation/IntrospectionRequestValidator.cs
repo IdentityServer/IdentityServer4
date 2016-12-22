@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
-using System;
 
 namespace IdentityServer4.Validation
 {
@@ -71,7 +70,11 @@ namespace IdentityServer4.Validation
                 return fail;
             }
 
-            // TODO: filter out the scope claims this API is not allowed to see?
+            var claims = tokenValidationResult.Claims;
+
+            // filter out scopes that this API resource does not own
+            claims = claims.Where(x => x.Type != JwtClaimTypes.Scope ||
+                (x.Type == JwtClaimTypes.Scope && supportedScopes.Contains(x.Value)));
 
             // all is good
             var success = new IntrospectionRequestValidationResult
@@ -79,7 +82,7 @@ namespace IdentityServer4.Validation
                 IsActive = true,
                 IsError = false,
                 Token = token,
-                Claims = tokenValidationResult.Claims
+                Claims = claims
             };
 
             _logger.LogDebug("Introspection request validation successful.");

@@ -88,7 +88,7 @@ namespace IdentityServer4.Endpoints
             _logger.LogTrace("Client validation successful");
 
             // validate the token request
-            var form = context.Request.Form.AsNameValueCollection();
+            var form = (await context.Request.ReadFormAsync()).AsNameValueCollection();
             var requestResult = await _requestValidator.ValidateRequestAsync(form, client);
 
             if (requestResult.IsError)

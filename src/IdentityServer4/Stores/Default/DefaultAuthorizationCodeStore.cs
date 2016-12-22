@@ -7,6 +7,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Stores.Serialization;
 using Microsoft.Extensions.Logging;
 using IdentityServer4.Extensions;
+using IdentityServer4.Services;
 
 namespace IdentityServer4.Stores
 {
@@ -18,22 +19,22 @@ namespace IdentityServer4.Stores
     public class DefaultAuthorizationCodeStore : DefaultGrantStore<AuthorizationCode>, IAuthorizationCodeStore
     {
         public DefaultAuthorizationCodeStore(
-            IPersistedGrantStore store, 
-            PersistentGrantSerializer serializer, 
+            IPersistedGrantStore store,
+            IPersistentGrantSerializer serializer,
+            IHandleGenerationService handleGenerationService,
             ILogger<DefaultAuthorizationCodeStore> logger) 
-            : base(Constants.PersistedGrantTypes.AuthorizationCode, store, serializer, logger)
+            : base(Constants.PersistedGrantTypes.AuthorizationCode, store, serializer, handleGenerationService, logger)
         {
         }
 
         /// <summary>
         /// Stores the authorization code asynchronous.
         /// </summary>
-        /// <param name="handle">The handle.</param>
         /// <param name="code">The code.</param>
         /// <returns></returns>
-        public Task StoreAuthorizationCodeAsync(string handle, AuthorizationCode code)
+        public Task<string> StoreAuthorizationCodeAsync(AuthorizationCode code)
         {
-            return StoreItemAsync(handle, code, code.ClientId, code.Subject.GetSubjectId(), code.CreationTime, code.Lifetime);
+            return CreateItemAsync(code, code.ClientId, code.Subject.GetSubjectId(), code.CreationTime, code.Lifetime);
         }
 
         /// <summary>

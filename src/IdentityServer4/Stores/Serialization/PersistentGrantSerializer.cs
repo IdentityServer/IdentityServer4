@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace IdentityServer4.Stores.Serialization
 {
-    public class PersistentGrantSerializer
+    public class PersistentGrantSerializer : IPersistentGrantSerializer
     {
         private readonly JsonSerializerSettings _settings;
 
@@ -18,12 +18,12 @@ namespace IdentityServer4.Stores.Serialization
             _settings.Converters.Add(new ClaimsPrincipalConverter());
         }
 
-        public virtual string Serialize<T>(T value)
+        public string Serialize<T>(T value)
         {
             return JsonConvert.SerializeObject(value, _settings);
         }
 
-        public virtual T Deserialize<T>(string json)
+        public T Deserialize<T>(string json)
         {
             return JsonConvert.DeserializeObject<T>(json, _settings);
         }

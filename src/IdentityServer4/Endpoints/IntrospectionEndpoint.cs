@@ -57,7 +57,7 @@ namespace IdentityServer4.Endpoints
                 return new StatusCodeResult(401);
             }
 
-            var parameters = context.Request.Form.AsNameValueCollection();
+            var parameters = (await context.Request.ReadFormAsync()).AsNameValueCollection();
 
             var validationResult = await _requestValidator.ValidateAsync(parameters, apiResult.Resource);
             var response = await _generator.ProcessAsync(validationResult, apiResult.Resource);
@@ -73,8 +73,7 @@ namespace IdentityServer4.Endpoints
                 if (validationResult.FailureReason == IntrospectionRequestValidationFailureReason.MissingToken)
                 {
                     await RaiseFailureEventAsync(validationResult.ErrorDescription, validationResult.Token, apiResult.Resource.Name);
-                    //todo return BadRequest("missing_token");
-                    return new StatusCodeResult(400);
+                    return new BadRequestResult("missing_token");
                 }
 
                 if (validationResult.FailureReason == IntrospectionRequestValidationFailureReason.InvalidToken)

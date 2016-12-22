@@ -31,11 +31,11 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
 
         public EndSessionCallbackResultTests()
         {
-            _context.SetOrigin("https://server");
-            _context.SetBasePath("/");
+            _context.SetIdentityServerOrigin("https://server");
+            _context.SetIdentityServerBasePath("/");
             _context.Response.Body = new MemoryStream();
 
-            _subject = new EndSessionCallbackResult(_result, _mockSessionId, _mockClientSession, _mockLogoutMessageStore, _options);
+            _subject = new EndSessionCallbackResult(_result, _mockClientSession, _mockLogoutMessageStore, _options);
         }
 
         [Fact]

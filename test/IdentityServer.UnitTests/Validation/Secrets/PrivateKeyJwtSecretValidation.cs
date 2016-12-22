@@ -12,7 +12,6 @@ using IdentityModel;
 using IdentityServer4.Configuration;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
-using IdentityServer4.Stores.InMemory;
 using IdentityServer4.UnitTests.Common;
 using IdentityServer4.UnitTests.Validation;
 using IdentityServer4.Validation;
@@ -44,7 +43,7 @@ namespace IdentityServer4.Tests.Validation.Secrets
         private JwtSecurityToken CreateToken(string clientId, DateTime? nowOverride = null)
         {
             var certificate = TestCert.Load();
-            var now = nowOverride ?? DateTime.Now;
+            var now = nowOverride ?? DateTime.UtcNow;
 
             var token = new JwtSecurityToken(
                     clientId,
@@ -186,7 +185,7 @@ namespace IdentityServer4.Tests.Validation.Secrets
             var clientId = "certificate_valid";
             var client = await _clients.FindEnabledClientByIdAsync(clientId);
 
-            var token = CreateToken(clientId, DateTime.Now.AddHours(-1));
+            var token = CreateToken(clientId, DateTime.UtcNow.AddHours(-1));
             var secret = new ParsedSecret
             {
                 Id = clientId,

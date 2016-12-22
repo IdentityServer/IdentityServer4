@@ -4,14 +4,12 @@
 
 using IdentityServer4.Configuration;
 using IdentityServer4.Services;
-using IdentityServer4.Services.Default;
 using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using IdentityServer4.Stores;
 using IdentityServer4.UnitTests.Common;
 using IdentityServer4.Stores.Serialization;
-using IdentityServer4.Stores.InMemory;
 
 namespace IdentityServer4.UnitTests.Validation
 {
@@ -224,24 +222,28 @@ namespace IdentityServer4.UnitTests.Validation
         {
             return new DefaultAuthorizationCodeStore(new InMemoryPersistedGrantStore(),
                 new PersistentGrantSerializer(),
+                new DefaultHandleGenerationService(),
                 TestLogger.Create<DefaultAuthorizationCodeStore>());
         }
         public static IRefreshTokenStore CreateRefreshTokenStore()
         {
             return new DefaultRefreshTokenStore(new InMemoryPersistedGrantStore(),
                 new PersistentGrantSerializer(),
+                new DefaultHandleGenerationService(),
                 TestLogger.Create<DefaultRefreshTokenStore>());
         }
         public static IReferenceTokenStore CreateReferenceTokenStore()
         {
             return new DefaultReferenceTokenStore(new InMemoryPersistedGrantStore(),
                 new PersistentGrantSerializer(),
+                new DefaultHandleGenerationService(),
                 TestLogger.Create<DefaultReferenceTokenStore>());
         }
         public static IUserConsentStore CreateUserConsentStore()
         {
             return new DefaultUserConsentStore(new InMemoryPersistedGrantStore(),
                 new PersistentGrantSerializer(),
+                new DefaultHandleGenerationService(),
                 TestLogger.Create<DefaultUserConsentStore>());
         }
     }

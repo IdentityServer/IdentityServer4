@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Http;
 using IdentityServer4.Configuration;
 using IdentityServer4.Services;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Security.Claims;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;
@@ -55,7 +54,7 @@ namespace IdentityServer4.Hosting
 
         public async Task SignInAsync(SignInContext context)
         {
-            if (context.AuthenticationScheme == _options.AuthenticationOptions.EffectiveAuthenticationScheme)
+            if (context.AuthenticationScheme == _options.Authentication.EffectiveAuthenticationScheme)
             {
                 AugmentContext(context);
                 await RaiseSignInEventAsync(context.Principal);
@@ -75,7 +74,7 @@ namespace IdentityServer4.Hosting
 
         public async Task SignOutAsync(SignOutContext context)
         {
-            if (context.AuthenticationScheme == _options.AuthenticationOptions.EffectiveAuthenticationScheme)
+            if (context.AuthenticationScheme == _options.Authentication.EffectiveAuthenticationScheme)
             {
                 _sessionId.RemoveCookie();
                 await RaiseSignOutEventAsync();

@@ -22,7 +22,7 @@ namespace IdentityServer4.Endpoints
 
         public Task<IEndpointResult> ProcessAsync(HttpContext context)
         {
-            IEndpointResult result = null;
+            IEndpointResult result;
 
             if (context.Request.Method != "GET")
             {

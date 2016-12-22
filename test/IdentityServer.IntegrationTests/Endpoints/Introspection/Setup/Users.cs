@@ -2,20 +2,20 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityServer4.Services.InMemory;
+using IdentityServer4.Test;
 using System.Collections.Generic;
 
 namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
 {
     public static class Users
     {
-        public static List<InMemoryUser> Get()
+        public static List<TestUser> Get()
         {
-            return new List<InMemoryUser>
+            return new List<TestUser>
             {
-                new InMemoryUser
+                new TestUser
                 {
-                    Subject = "1",
+                    SubjectId = "1",
                     Username = "bob",
                     Password = "bob"
                 }

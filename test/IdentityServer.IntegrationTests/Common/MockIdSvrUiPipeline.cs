@@ -51,7 +51,7 @@ namespace IdentityServer4.IntegrationTests.Common
             if (CookieAuthenticationScheme != null)
             {
                 var idSvrOptions = app.ApplicationServices.GetRequiredService<IdentityServerOptions>();
-                idSvrOptions.AuthenticationOptions.AuthenticationScheme = CookieAuthenticationScheme;
+                idSvrOptions.Authentication.AuthenticationScheme = CookieAuthenticationScheme;
                 app.UseCookieAuthentication(new CookieAuthenticationOptions
                 {
                     AuthenticationScheme = CookieAuthenticationScheme
@@ -113,7 +113,7 @@ namespace IdentityServer4.IntegrationTests.Common
             {
                 await ctx.Authentication.SignInAsync(CookieAuthenticationScheme, Subject);
                 Subject = null;
-                var url = ctx.Request.Query[this.Options.UserInteractionOptions.LoginReturnUrlParameter].FirstOrDefault();
+                var url = ctx.Request.Query[this.Options.UserInteraction.LoginReturnUrlParameter].FirstOrDefault();
                 if (url != null)
                 {
                     ctx.Response.Redirect(url);
@@ -161,7 +161,7 @@ namespace IdentityServer4.IntegrationTests.Common
                 await interaction.GrantConsentAsync(ConsentRequest, ConsentResponse);
                 ConsentResponse = null;
 
-                var url = ctx.Request.Query[this.Options.UserInteractionOptions.ConsentReturnUrlParameter].FirstOrDefault();
+                var url = ctx.Request.Query[this.Options.UserInteraction.ConsentReturnUrlParameter].FirstOrDefault();
                 if (url != null)
                 {
                     ctx.Response.Redirect(url);
@@ -203,7 +203,7 @@ namespace IdentityServer4.IntegrationTests.Common
 
         public async Task LoginAsync(string subject)
         {
-            var user = Users.Single(x => x.Subject == subject);
+            var user = Users.Single(x => x.SubjectId == subject);
             var name = user.Claims.Where(x => x.Type == "name").Select(x => x.Value).FirstOrDefault() ?? user.Username;
             await LoginAsync(IdentityServerPrincipal.Create(subject, name));
         }
@@ -214,11 +214,11 @@ namespace IdentityServer4.IntegrationTests.Common
         }
         public void RemoveSessionCookie()
         {
-            BrowserClient.RemoveCookie("https://server/", $"{Options.AuthenticationOptions.EffectiveAuthenticationScheme}.session");
+            BrowserClient.RemoveCookie("https://server/", $"{Options.Authentication.EffectiveAuthenticationScheme}.session");
         }
         public Cookie GetSessionCookie()
         {
-            return BrowserClient.GetCookie("https://server/", $"{Options.AuthenticationOptions.EffectiveAuthenticationScheme}.session");
+            return BrowserClient.GetCookie("https://server/", $"{Options.Authentication.EffectiveAuthenticationScheme}.session");
         }
 
         public string CreateAuthorizeUrl(

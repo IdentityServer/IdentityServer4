@@ -71,10 +71,9 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 Lifetime = 10,
                 CreationTime = DateTime.UtcNow.AddSeconds(-15)
             };
-            var handle = Guid.NewGuid().ToString();
 
             var grants = Factory.CreateRefreshTokenStore();
-            await grants.StoreRefreshTokenAsync(handle, refreshToken);
+            var handle = await grants.StoreRefreshTokenAsync(refreshToken);
 
             var client = await _clients.FindEnabledClientByIdAsync("roclient");
 
@@ -104,10 +103,9 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                     CreationTime = DateTime.UtcNow
                 }
             };
-            var handle = Guid.NewGuid().ToString();
 
             var grants = Factory.CreateRefreshTokenStore();
-            await grants.StoreRefreshTokenAsync(handle, refreshToken);
+            var handle = await grants.StoreRefreshTokenAsync(refreshToken);
 
             var client = await _clients.FindEnabledClientByIdAsync("roclient");
 
@@ -137,10 +135,9 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 Lifetime = 600,
                 CreationTime = DateTime.UtcNow
             };
-            var handle = Guid.NewGuid().ToString();
 
             var grants = Factory.CreateRefreshTokenStore();
-            await grants.StoreRefreshTokenAsync(handle, refreshToken);
+            var handle = await grants.StoreRefreshTokenAsync(refreshToken);
 
             var client = await _clients.FindEnabledClientByIdAsync("roclient_restricted");
 
@@ -173,10 +170,9 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 Lifetime = 600,
                 CreationTime = DateTime.UtcNow
             };
-            var handle = Guid.NewGuid().ToString();
 
             var grants = Factory.CreateRefreshTokenStore();
-            await grants.StoreRefreshTokenAsync(handle, refreshToken);
+            var handle = await grants.StoreRefreshTokenAsync(refreshToken);
 
             var client = await _clients.FindEnabledClientByIdAsync("roclient");
 

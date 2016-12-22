@@ -4,7 +4,7 @@
 
 using IdentityServer4.Configuration;
 using IdentityServer4.Models;
-using IdentityServer4.Services.InMemory;
+using IdentityServer4.Test;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -37,7 +37,7 @@ namespace IdentityServer4.IntegrationTests.Common
         public List<Client> Clients { get; set; } = new List<Client>();
         public List<IdentityResource> IdentityScopes { get; set; } = new List<IdentityResource>();
         public List<ApiResource> ApiScopes { get; set; } = new List<ApiResource>();
-        public List<InMemoryUser> Users { get; set; } = new List<InMemoryUser>();
+        public List<TestUser> Users { get; set; } = new List<TestUser>();
 
         public TestServer Server { get; set; }
         public HttpMessageHandler Handler { get; set; }
@@ -83,7 +83,7 @@ namespace IdentityServer4.IntegrationTests.Common
             {
                 Options = options;
 
-                options.EventsOptions = new EventsOptions
+                options.Events = new EventsOptions
                 {
                     RaiseErrorEvents = true,
                     RaiseFailureEvents = true,
@@ -94,7 +94,7 @@ namespace IdentityServer4.IntegrationTests.Common
             .AddInMemoryClients(Clients)
             .AddInMemoryIdentityResources(IdentityScopes)
             .AddInMemoryApiResources(ApiScopes)
-            .AddInMemoryUsers(Users)
+            .AddTestUsers(Users)
             .AddTemporarySigningCredential();
         }
 

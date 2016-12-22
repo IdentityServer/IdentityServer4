@@ -31,14 +31,16 @@ namespace IdentityServer4.Endpoints.Results
                 context.Response.StatusCode = Constants.ProtectedResourceErrorStatusCodes[Error];
             }
 
-            var parameter = string.Format("error=\"{0}\"", Error);
-            if (ErrorDescription.IsPresent())
+            var errorString = string.Format($"error=\"{Error}\"");
+            if (ErrorDescription.IsMissing())
             {
-                parameter = string.Format("{0}, error_description=\"{1}\"",
-                    parameter, ErrorDescription);
+                context.Response.Headers.Add("WwwAuthentication", new StringValues(new[] { "Bearer", errorString }));
             }
-
-            context.Response.Headers.Add("WwwAuthentication", new StringValues("Bearer"));
+            else
+            {
+                var errorDescriptionString = string.Format($"error_description=\"{ErrorDescription}\"");
+                context.Response.Headers.Add("WwwAuthentication", new StringValues(new[] { "Bearer", errorString, errorDescriptionString }));
+            }
 
             return Task.FromResult(0);
         }

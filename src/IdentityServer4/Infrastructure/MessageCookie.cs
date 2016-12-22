@@ -71,7 +71,7 @@ namespace IdentityServer4
             return CookiePrefix + id;
         }
 
-        string CookiePath => _context.HttpContext.GetBasePath().CleanUrlPath();
+        string CookiePath => _context.HttpContext.GetIdentityServerBasePath().CleanUrlPath();
 
         private IEnumerable<string> GetCookieNames()
         {
@@ -146,7 +146,7 @@ namespace IdentityServer4
                 ".",
                 new CookieOptions
                 {
-                    Expires = DateTimeHelper.UtcNow.AddYears(-1),
+                    Expires = IdentityServerDateTime.UtcNow.AddYears(-1),
                     HttpOnly = true,
                     Secure = Secure,
                     Path = CookiePath
@@ -179,7 +179,7 @@ namespace IdentityServer4
         private void ClearOverflow()
         {
             var names = GetCookieNames();
-            var toKeep = _options.UserInteractionOptions.CookieMessageThreshold;
+            var toKeep = _options.UserInteraction.CookieMessageThreshold;
 
             if (names.Count() >= toKeep)
             {

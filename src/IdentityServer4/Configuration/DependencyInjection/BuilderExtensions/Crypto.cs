@@ -24,11 +24,11 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IIdentityServerBuilder AddSigningCredential(this IIdentityServerBuilder builder, SigningCredentials credential)
         {
             // todo
-            //if (!(credential.Key is AsymmetricSecurityKey) &&
-            //    !credential.Key.IsSupportedAlgorithm(SecurityAlgorithms.RsaSha256Signature))
-            //{
-            //    throw new InvalidOperationException("Signing key is not asymmetric and does not support RS256");
-            //}
+            if (!(credential.Key is AsymmetricSecurityKey))
+                //&& !credential.Key.IsSupportedAlgorithm(SecurityAlgorithms.RsaSha256Signature))
+            {
+                throw new InvalidOperationException("Signing key is not asymmetric");
+            }
 
             builder.Services.AddSingleton<ISigningCredentialStore>(new DefaultSigningCredentialsStore(credential));
             builder.Services.AddSingleton<IValidationKeysStore>(new DefaultValidationKeysStore(new[] { credential.Key }));
@@ -63,19 +63,33 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="builder">The builder.</param>
         /// <param name="name">The name.</param>
         /// <param name="location">The location.</param>
-        /// <returns></returns>
+        /// <param name="nameType">Name parameter can be either a distinguished name or a thumbprint</param>
         /// <exception cref="InvalidOperationException">certificate: '{name}'</exception>
-        public static IIdentityServerBuilder AddSigningCredential(this IIdentityServerBuilder builder, string name, StoreLocation location = StoreLocation.LocalMachine)
+        public static IIdentityServerBuilder AddSigningCredential(this IIdentityServerBuilder builder, string name, StoreLocation location = StoreLocation.LocalMachine, NameType nameType = NameType.SubjectDistinguishedName)
         {
-            X509Certificate2 certificate;
+            X509Certificate2 certificate = null;
 
             if (location == StoreLocation.LocalMachine)
             {
-                certificate = X509.LocalMachine.My.SubjectDistinguishedName.Find(name, validOnly: false).FirstOrDefault();
+                if (nameType == NameType.SubjectDistinguishedName)
+                {
+                    certificate = X509.LocalMachine.My.SubjectDistinguishedName.Find(name, validOnly: false).FirstOrDefault();
+                }
+                else if (nameType == NameType.Thumbprint)
+                {
+                    certificate = X509.LocalMachine.My.Thumbprint.Find(name, validOnly: false).FirstOrDefault();
+                }
             }
             else
             {
-                certificate = X509.CurrentUser.My.SubjectDistinguishedName.Find(name, validOnly: false).FirstOrDefault();
+                if (nameType == NameType.SubjectDistinguishedName)
+                {
+                    certificate = X509.CurrentUser.My.SubjectDistinguishedName.Find(name, validOnly: false).FirstOrDefault();
+                }
+                else if (nameType == NameType.Thumbprint)
+                {
+                    certificate = X509.CurrentUser.My.Thumbprint.Find(name, validOnly: false).FirstOrDefault();
+                }
             }
 
             if (certificate == null) throw new InvalidOperationException($"certificate: '{name}' not found in certificate store");
@@ -132,7 +146,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 key = new RsaSecurityKey(rsa);
             }
 
-            key.KeyId = CryptoRandom.CreateUniqueId();
+            key.KeyId = CryptoRandom.CreateUniqueId(16);
             
             var credential = new SigningCredentials(key, "RS256");
             return builder.AddSigningCredential(credential);
@@ -150,5 +164,11 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return builder;
         }
+    }
+
+    public enum NameType
+    {
+        SubjectDistinguishedName,
+        Thumbprint
     }
 }

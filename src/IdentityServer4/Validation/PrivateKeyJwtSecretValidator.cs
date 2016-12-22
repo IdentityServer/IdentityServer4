@@ -29,7 +29,7 @@ namespace IdentityServer4.Validation
         /// </summary>
         public PrivateKeyJwtSecretValidator(IHttpContextAccessor contextAccessor, ILogger<PrivateKeyJwtSecretValidator> logger)
         {
-            _audienceUri = string.Concat(contextAccessor.HttpContext.GetIssuerUri().EnsureTrailingSlash(), Constants.ProtocolRoutePaths.Token);
+            _audienceUri = string.Concat(contextAccessor.HttpContext.GetIdentityServerIssuerUri().EnsureTrailingSlash(), Constants.ProtocolRoutePaths.Token);
             _logger = logger;
         }
 
@@ -118,8 +118,6 @@ namespace IdentityServer4.Validation
 
         private List<SecurityKey> GetTrustedKeys(IReadOnlyCollection<Secret> secrets, string jwtTokenString)
         {
-            var token = new JwtSecurityToken(jwtTokenString);
-
             var trustedKeys = GetAllTrustedCertificates(secrets)
                                 .Select(c => (SecurityKey)new X509SecurityKey(c))
                                 .ToList();

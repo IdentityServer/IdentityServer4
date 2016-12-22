@@ -33,8 +33,6 @@ namespace IdentityServer4.ResponseHandling
         {
             _logger.LogTrace("Creating userinfo response");
 
-            var profileData = new Dictionary<string, object>();
-            
             var requestedClaimTypes = await GetRequestedClaimTypesAsync(scopes);
 
             _logger.LogDebug("Requested claim types: {claimTypes}", requestedClaimTypes.ToSpaceSeparatedString());

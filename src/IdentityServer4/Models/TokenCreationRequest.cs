@@ -4,7 +4,6 @@
 
 using IdentityServer4.Validation;
 using System;
-using System.Collections.Generic;
 using System.Security.Claims;
 
 namespace IdentityServer4.Models
@@ -87,8 +86,6 @@ namespace IdentityServer4.Models
 
         private void LogAndStop(string name)
         {
-            // todo
-            //Logger.ErrorFormat("{0} is null", name);
             throw new ArgumentNullException(name);
         }
     }

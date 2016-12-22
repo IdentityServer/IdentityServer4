@@ -5,6 +5,7 @@
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using System;
+using Microsoft.Net.Http.Server;
 
 namespace Host
 {
@@ -15,6 +16,11 @@ namespace Host
             Console.Title = "IdentityServer4";
 
             var host = new WebHostBuilder()
+                //.UseWebListener(options =>
+                //{
+                //    options.ListenerSettings.Authentication.Schemes = AuthenticationSchemes.Negotiate | AuthenticationSchemes.NTLM;
+                //    options.ListenerSettings.Authentication.AllowAnonymous = true;
+                //})
                 .UseKestrel()
                 .UseUrls("http://localhost:1941")
                 .UseContentRoot(Directory.GetCurrentDirectory())

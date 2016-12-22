@@ -12,7 +12,7 @@ namespace IdentityServer4.Stores
     /// </summary>
     public interface IAuthorizationCodeStore
     {
-        Task StoreAuthorizationCodeAsync(string handle, AuthorizationCode code);
+        Task<string> StoreAuthorizationCodeAsync(AuthorizationCode code);
         Task<AuthorizationCode> GetAuthorizationCodeAsync(string code);
         Task RemoveAuthorizationCodeAsync(string code);
    }

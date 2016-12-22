@@ -94,7 +94,7 @@ namespace IdentityServer4.Validation
 
             var clientId = request.ClientId;
             var sessionId = request.SessionId;
-            var salt = CryptoRandom.CreateUniqueId();
+            var salt = CryptoRandom.CreateUniqueId(16);
 
             var uri = new Uri(request.RedirectUri);
             var origin = uri.Scheme + "://" + uri.Host;

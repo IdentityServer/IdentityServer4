@@ -152,7 +152,7 @@ namespace IdentityServer4.IntegrationTests.Clients
         private string CreateToken(string clientId, DateTime? nowOverride = null)
         {
             var certificate = TestCert.Load();
-            var now = nowOverride ?? DateTime.Now;
+            var now = nowOverride ?? DateTime.UtcNow;
 
             var token = new JwtSecurityToken(
                     clientId,

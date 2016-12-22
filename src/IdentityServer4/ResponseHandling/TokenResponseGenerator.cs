@@ -95,7 +95,7 @@ namespace IdentityServer4.ResponseHandling
                     Client = client,
                     Resources = resources,
                     Nonce = request.AuthorizationCode.Nonce,
-
+                    AccessTokenToHash = response.AccessToken,
                     ValidatedRequest = request
                 };
 
@@ -136,10 +136,6 @@ namespace IdentityServer4.ResponseHandling
             
             if (request.Client.UpdateAccessTokenClaimsOnRefresh)
             {
-                // TODO: we don't seem to update the request.RefreshToken.AccessToken with the newly created one. do we need to?
-                // what change in behavior would we introduce by doing that? the claims in the user would change over time for the 
-                // call into IsActive.
-
                 var subject = request.RefreshToken.Subject;
 
                 var creationRequest = new TokenCreationRequest
@@ -155,7 +151,7 @@ namespace IdentityServer4.ResponseHandling
             }
             else
             {
-                oldAccessToken.CreationTime = DateTimeHelper.UtcNow;
+                oldAccessToken.CreationTime = IdentityServerDateTime.UtcNow;
                 oldAccessToken.Lifetime = request.Client.AccessTokenLifetime;
 
                 accessTokenString = await _tokenService.CreateSecurityTokenAsync(oldAccessToken);

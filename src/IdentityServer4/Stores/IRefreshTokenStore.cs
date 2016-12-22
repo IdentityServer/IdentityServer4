@@ -12,7 +12,8 @@ namespace IdentityServer4.Stores
     /// </summary>
     public interface IRefreshTokenStore
     {
-        Task StoreRefreshTokenAsync(string handle, RefreshToken refreshToken);
+        Task<string> StoreRefreshTokenAsync(RefreshToken refreshToken);
+        Task UpdateRefreshTokenAsync(string handle, RefreshToken refreshToken);
         Task<RefreshToken> GetRefreshTokenAsync(string refreshTokenHandle);
         Task RemoveRefreshTokenAsync(string refreshTokenHandle);
         Task RemoveRefreshTokensAsync(string subjectId, string clientId);

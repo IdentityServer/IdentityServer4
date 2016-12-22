@@ -56,7 +56,7 @@ namespace IdentityServer4
                 new Claim(JwtClaimTypes.Subject, subject),
                 new Claim(JwtClaimTypes.Name, name),
                 new Claim(JwtClaimTypes.IdentityProvider, identityProvider),
-                new Claim(JwtClaimTypes.AuthenticationTime, DateTimeHelper.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer)
+                new Claim(JwtClaimTypes.AuthenticationTime, IdentityServerDateTime.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer)
             };
 
             foreach (var amr in authenticationMethods)
@@ -64,7 +64,6 @@ namespace IdentityServer4
                 allClaims.Add(new Claim(JwtClaimTypes.AuthenticationMethod, amr));
             }
 
-            // todo: filtering?
             foreach (var claim in claims)
             {
                 allClaims.Add(claim);
@@ -112,7 +111,7 @@ namespace IdentityServer4
 
             if (identity.FindFirst(JwtClaimTypes.AuthenticationTime) == null)
             {
-                identity.AddClaim(new Claim(JwtClaimTypes.AuthenticationTime, DateTimeHelper.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer));
+                identity.AddClaim(new Claim(JwtClaimTypes.AuthenticationTime, IdentityServerDateTime.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer));
             }
         }
 

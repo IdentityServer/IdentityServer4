@@ -6,7 +6,6 @@ using FluentAssertions;
 using IdentityModel;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
-using IdentityServer4.Stores.InMemory;
 using System;
 using System.Collections.Specialized;
 using System.Security.Claims;
@@ -65,14 +64,14 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 Subject = _subject
             };
 
-            await store.StoreAuthorizationCodeAsync("valid", code);
+            var handle = await store.StoreAuthorizationCodeAsync(code);
 
             var validator = Factory.CreateTokenRequestValidator(
                 authorizationCodeStore: store);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, "unknown");
-            parameters.Add(OidcConstants.TokenRequest.Code, "valid");
+            parameters.Add(OidcConstants.TokenRequest.Code, handle);
             parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server/cb");
 
             var result = await validator.ValidateRequestAsync(parameters, client);
@@ -116,13 +115,13 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 Subject = _subject
             };
 
-            await store.StoreAuthorizationCodeAsync("valid", code);
+            var handle = await store.StoreAuthorizationCodeAsync(code);
 
             var validator = Factory.CreateTokenRequestValidator(
                 authorizationCodeStore: store);
 
             var parameters = new NameValueCollection();
-            parameters.Add(OidcConstants.TokenRequest.Code, "valid");
+            parameters.Add(OidcConstants.TokenRequest.Code, handle);
             parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server/cb");
 
             var result = await validator.ValidateRequestAsync(parameters, client);

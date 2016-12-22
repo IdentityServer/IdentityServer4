@@ -10,7 +10,6 @@ using IdentityServer4.Events;
 using IdentityServer4.Hosting;
 using IdentityServer4.ResponseHandling;
 using IdentityServer4.Services;
-using IdentityServer4.Services.Default;
 using IdentityServer4.Stores;
 using IdentityServer4.Stores.Serialization;
 using IdentityServer4.Validation;
@@ -100,9 +99,11 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddTransient<ScopeValidator>();
             builder.Services.AddTransient<ExtensionGrantValidator>();
             builder.Services.AddTransient<BearerTokenUsageValidator>();
-            builder.Services.AddTransient<PersistentGrantSerializer>();
+            
+            // todo: events post-poned to 1.1 
             builder.Services.AddTransient<EventServiceHelper>();
             builder.Services.AddTransient<ReturnUrlParser>();
+            builder.Services.AddTransient<IdentityServerTools>();
 
             builder.Services.AddTransient<IReturnUrlParser, OidcReturnUrlParser>();
             builder.Services.AddTransient<ISessionIdService, DefaultSessionIdService>();
@@ -139,6 +140,8 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IRefreshTokenStore, DefaultRefreshTokenStore>();
             builder.Services.TryAddTransient<IReferenceTokenStore, DefaultReferenceTokenStore>();
             builder.Services.TryAddTransient<IUserConsentStore, DefaultUserConsentStore>();
+            builder.Services.TryAddTransient<IHandleGenerationService, DefaultHandleGenerationService>();
+            builder.Services.TryAddTransient<IPersistentGrantSerializer, PersistentGrantSerializer>();
 
             return builder;
         }

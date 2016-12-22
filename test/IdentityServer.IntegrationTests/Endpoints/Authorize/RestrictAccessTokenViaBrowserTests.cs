@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using IdentityServer4.Models;
 using System.Security.Claims;
 using IdentityServer4.IntegrationTests.Common;
-using IdentityServer4.Services.InMemory;
+using IdentityServer4.Test;
 
 namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 {
@@ -63,9 +63,9 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                 },
             });
 
-            _mockPipeline.Users.Add(new InMemoryUser
+            _mockPipeline.Users.Add(new TestUser
             {
-                Subject = "bob",
+                SubjectId = "bob",
                 Username = "bob",
                 Claims = new Claim[]
                 {

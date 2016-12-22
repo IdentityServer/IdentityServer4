@@ -16,7 +16,6 @@ namespace IdentityServer4.Validation
         /// </summary>
         /// <param name="request">The validated request.</param>
         /// <returns>The validation result</returns>
-        // todo
         Task<AuthorizeRequestValidationResult> ValidateAsync(ValidatedAuthorizeRequest request);
     }
 }

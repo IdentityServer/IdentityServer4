@@ -40,7 +40,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 Subject = _subject
             };
 
-            await store.StoreAuthorizationCodeAsync("valid", code);
+            var handle = await store.StoreAuthorizationCodeAsync(code);
 
             var validator = Factory.CreateTokenRequestValidator(
                 authorizationCodeStore: store);
@@ -71,7 +71,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 Subject = _subject
             };
 
-            await store.StoreAuthorizationCodeAsync("valid", code);
+            var handle = await store.StoreAuthorizationCodeAsync(code);
 
             var validator = Factory.CreateTokenRequestValidator(
                 authorizationCodeStore: store);
@@ -104,7 +104,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 Subject = _subject
             };
 
-            await store.StoreAuthorizationCodeAsync("valid", code);
+            var handle = await store.StoreAuthorizationCodeAsync(code);
 
             var validator = Factory.CreateTokenRequestValidator(
                 authorizationCodeStore: store);
@@ -137,14 +137,14 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 Subject = _subject
             };
 
-            await store.StoreAuthorizationCodeAsync("valid", code);
+            var handle = await store.StoreAuthorizationCodeAsync(code);
 
             var validator = Factory.CreateTokenRequestValidator(
                 authorizationCodeStore: store);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.AuthorizationCode);
-            parameters.Add(OidcConstants.TokenRequest.Code, "valid");
+            parameters.Add(OidcConstants.TokenRequest.Code, handle);
             parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server/cb");
 
             var result = await validator.ValidateRequestAsync(parameters, client);
@@ -169,14 +169,14 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 Subject = _subject
             };
 
-            await store.StoreAuthorizationCodeAsync("valid", code);
+            var handle = await store.StoreAuthorizationCodeAsync(code);
 
             var validator = Factory.CreateTokenRequestValidator(
                 authorizationCodeStore: store);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.AuthorizationCode);
-            parameters.Add(OidcConstants.TokenRequest.Code, "valid");
+            parameters.Add(OidcConstants.TokenRequest.Code, handle);
             parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server/cb");
 
             var result = await validator.ValidateRequestAsync(parameters, client);
@@ -202,14 +202,14 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 Subject = _subject
             };
 
-            await store.StoreAuthorizationCodeAsync("valid", code);
+            var handle = await store.StoreAuthorizationCodeAsync(code);
 
             var validator = Factory.CreateTokenRequestValidator(
                 authorizationCodeStore: store);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.AuthorizationCode);
-            parameters.Add(OidcConstants.TokenRequest.Code, "valid");
+            parameters.Add(OidcConstants.TokenRequest.Code, handle);
             parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server/cb");
 
             var result = await validator.ValidateRequestAsync(parameters, client2);
@@ -234,14 +234,14 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 Subject = _subject
             };
 
-            await store.StoreAuthorizationCodeAsync("valid", code);
+            var handle = await store.StoreAuthorizationCodeAsync(code);
 
             var validator = Factory.CreateTokenRequestValidator(
                 authorizationCodeStore: store);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.AuthorizationCode);
-            parameters.Add(OidcConstants.TokenRequest.Code, "valid");
+            parameters.Add(OidcConstants.TokenRequest.Code, handle);
 
             var result = await validator.ValidateRequestAsync(parameters, client);
 
@@ -265,14 +265,14 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 Subject = _subject
             };
 
-            await store.StoreAuthorizationCodeAsync("valid", code);
+            var handle = await store.StoreAuthorizationCodeAsync(code);
 
             var validator = Factory.CreateTokenRequestValidator(
                 authorizationCodeStore: store);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.AuthorizationCode);
-            parameters.Add(OidcConstants.TokenRequest.Code, "valid");
+            parameters.Add(OidcConstants.TokenRequest.Code, handle);
             parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server2/cb");
 
             var result = await validator.ValidateRequestAsync(parameters, client);
@@ -298,14 +298,14 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 Subject = _subject
             };
 
-            await store.StoreAuthorizationCodeAsync("valid", code);
+            var handle = await store.StoreAuthorizationCodeAsync(code);
 
             var validator = Factory.CreateTokenRequestValidator(
                 authorizationCodeStore: store);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.AuthorizationCode);
-            parameters.Add(OidcConstants.TokenRequest.Code, "valid");
+            parameters.Add(OidcConstants.TokenRequest.Code, handle);
             parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server/cb");
 
             var result = await validator.ValidateRequestAsync(parameters, client);
@@ -334,14 +334,14 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 }
             };
 
-            await store.StoreAuthorizationCodeAsync("valid", code);
+            var handle = await store.StoreAuthorizationCodeAsync(code);
 
             var validator = Factory.CreateTokenRequestValidator(
                 authorizationCodeStore: store);
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.AuthorizationCode);
-            parameters.Add(OidcConstants.TokenRequest.Code, "valid");
+            parameters.Add(OidcConstants.TokenRequest.Code, handle);
             parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server/cb");
 
             // request first time
@@ -378,7 +378,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
                 }
             };
 
-            await store.StoreAuthorizationCodeAsync("valid", code);
+            var handle = await store.StoreAuthorizationCodeAsync(code);
 
             var validator = Factory.CreateTokenRequestValidator(
                 authorizationCodeStore: store,
@@ -386,7 +386,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.AuthorizationCode);
-            parameters.Add(OidcConstants.TokenRequest.Code, "valid");
+            parameters.Add(OidcConstants.TokenRequest.Code, handle);
             parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server/cb");
 
             var result = await validator.ValidateRequestAsync(parameters, client);

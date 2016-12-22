@@ -82,7 +82,7 @@ namespace IdentityServer4.IntegrationTests.Clients
             var userInfo = await userInfoclient.GetAsync(response.AccessToken);
 
             userInfo.IsError.Should().BeFalse();
-            userInfo.Raw.Should().Be("{\"sub\":\"88421113\",\"address\":{\"street_address\":\"One Hacker Way\",\"locality\":\"Heidelberg\",\"postal_code\":69118,\"country\":\"Germany\"}}");
+            userInfo.Raw.Should().Be("{\"address\":{\"street_address\":\"One Hacker Way\",\"locality\":\"Heidelberg\",\"postal_code\":69118,\"country\":\"Germany\"},\"sub\":\"88421113\"}");
         }
 
         [Fact]

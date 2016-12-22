@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Stores.Serialization;
 using Microsoft.Extensions.Logging;
+using IdentityServer4.Services;
 
 namespace IdentityServer4.Stores
 {
@@ -18,13 +19,19 @@ namespace IdentityServer4.Stores
     {
         public DefaultRefreshTokenStore(
             IPersistedGrantStore store, 
-            PersistentGrantSerializer serializer, 
+            IPersistentGrantSerializer serializer, 
+            IHandleGenerationService handleGenerationService,
             ILogger<DefaultRefreshTokenStore> logger) 
-            : base(Constants.PersistedGrantTypes.RefreshToken, store, serializer, logger)
+            : base(Constants.PersistedGrantTypes.RefreshToken, store, serializer, handleGenerationService, logger)
         {
         }
 
-        public Task StoreRefreshTokenAsync(string handle, RefreshToken refreshToken)
+        public async Task<string> StoreRefreshTokenAsync(RefreshToken refreshToken)
+        {
+            return await CreateItemAsync(refreshToken, refreshToken.ClientId, refreshToken.SubjectId, refreshToken.CreationTime, refreshToken.Lifetime);
+        }
+
+        public Task UpdateRefreshTokenAsync(string handle, RefreshToken refreshToken)
         {
             return StoreItemAsync(handle, refreshToken, refreshToken.ClientId, refreshToken.SubjectId, refreshToken.CreationTime, refreshToken.Lifetime);
         }

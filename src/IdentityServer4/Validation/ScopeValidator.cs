@@ -121,7 +121,7 @@ namespace IdentityServer4.Validation
                     }
                     else
                     {
-                        GrantedResources.ApiResources.Add(api.CloneWithScopes(new Scope[] { scope }));
+                        GrantedResources.ApiResources.Add(api.CloneWithScopes(new[] { scope }));
                     }
                 }
             }
