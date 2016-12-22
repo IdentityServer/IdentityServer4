@@ -19,7 +19,7 @@ namespace IdentityServer4.Stores
     {
         public DefaultRefreshTokenStore(
             IPersistedGrantStore store, 
-            PersistentGrantSerializer serializer, 
+            IPersistentGrantSerializer serializer, 
             IHandleGenerationService handleGenerationService,
             ILogger<DefaultRefreshTokenStore> logger) 
             : base(Constants.PersistedGrantTypes.RefreshToken, store, serializer, handleGenerationService, logger)

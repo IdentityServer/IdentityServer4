@@ -19,7 +19,7 @@ namespace IdentityServer4.Stores
     {
         public DefaultReferenceTokenStore(
             IPersistedGrantStore store, 
-            PersistentGrantSerializer serializer,
+            IPersistentGrantSerializer serializer,
             IHandleGenerationService handleGenerationService,
             ILogger<DefaultReferenceTokenStore> logger) 
             : base(Constants.PersistedGrantTypes.ReferenceToken, store, serializer, handleGenerationService, logger)

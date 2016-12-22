@@ -19,10 +19,10 @@ namespace IdentityServer4.Services
     {
         private readonly ILogger<DefaultPersistedGrantService> _logger;
         private readonly IPersistedGrantStore _store;
-        private readonly PersistentGrantSerializer _serializer;
+        private readonly IPersistentGrantSerializer _serializer;
 
         public DefaultPersistedGrantService(IPersistedGrantStore store, 
-            PersistentGrantSerializer serializer,
+            IPersistentGrantSerializer serializer,
             ILogger<DefaultPersistedGrantService> logger)
         {
             _store = store;
