@@ -251,7 +251,6 @@ namespace IdentityServer4.Models
             }
 
             // spaces are not allowed in grant types
-            // todo: check for other characters?
             foreach (var type in grantTypes)
             {
                 if (type.Contains(' '))

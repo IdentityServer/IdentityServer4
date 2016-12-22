@@ -86,8 +86,6 @@ namespace IdentityServer4.Models
 
         private void LogAndStop(string name)
         {
-            // todo
-            //Logger.ErrorFormat("{0} is null", name);
             throw new ArgumentNullException(name);
         }
     }

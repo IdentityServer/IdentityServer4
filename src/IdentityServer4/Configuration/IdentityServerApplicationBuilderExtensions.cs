@@ -32,7 +32,6 @@ namespace Microsoft.AspNetCore.Builder
 
             var logger = loggerFactory.CreateLogger("IdentityServer4.Startup");
 
-            // todo: which other services to test for?
             app.TestService(typeof(IPersistedGrantStore), logger, "No storage mechanism for grants specified. Use the 'AddInMemoryPersistedGrants' extension method to register a development version.");
             app.TestService(typeof(IClientStore), logger, "No storage mechanism for clients specified. Use the 'AddInMemoryClients' extension method to register a development version.");
             app.TestService(typeof(IResourceStore), logger, "No storage mechanism for resources specified. Use the 'AddInMemoryResources' extension method to register a development version.");

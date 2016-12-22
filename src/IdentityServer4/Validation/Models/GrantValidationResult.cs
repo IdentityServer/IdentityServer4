@@ -47,7 +47,11 @@ namespace IdentityServer4.Validation
         {
             IsError = false;
 
-            // TODO: more checks on claims (amr, etc...)
+            if (principal.Identities.Count() != 1) throw new InvalidOperationException("only a single identity supported");
+            if (principal.FindFirst(JwtClaimTypes.Subject) == null) throw new InvalidOperationException("sub claim is missing");
+            if (principal.FindFirst(JwtClaimTypes.IdentityProvider) == null) throw new InvalidOperationException("idp claim is missing");
+            if (principal.FindFirst(JwtClaimTypes.AuthenticationMethod) == null) throw new InvalidOperationException("amr claim is missing");
+
             Subject = principal;
             CustomResponse = customResponse;
         }
@@ -72,7 +76,7 @@ namespace IdentityServer4.Validation
         /// <param name="claims">Additional claims that will be maintained in the principal.</param>
         /// <param name="identityProvider">The identity provider.</param>
         public GrantValidationResult(
-            string subject, 
+            string subject,
             string authenticationMethod,
             IEnumerable<Claim> claims = null,
             string identityProvider = IdentityServerConstants.LocalIdentityProvider,
