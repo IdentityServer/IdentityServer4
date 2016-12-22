@@ -27,16 +27,17 @@ namespace IdentityServer4.Services
         /// <summary>
         /// The user service
         /// </summary>
-        protected readonly IProfileService _profile;
+        protected readonly IProfileService Profile;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultClaimsProvider"/> class.
+        /// Initializes a new instance of the <see cref="DefaultClaimsService"/> class.
         /// </summary>
-        /// <param name="users">The users service</param>
+        /// <param name="profile">The profile service</param>
+        /// <param name="logger">The logger</param>
         public DefaultClaimsService(IProfileService profile, ILogger<DefaultClaimsService> logger)
         {
             _logger = logger;
-            _profile = profile;
+            Profile = profile;
         }
 
         /// <summary>
@@ -44,7 +45,7 @@ namespace IdentityServer4.Services
         /// </summary>
         /// <param name="subject">The subject</param>
         /// <param name="client">The client</param>
-        /// <param name="identityResources">The requested scopes</param>
+        /// <param name="resources">The requested resources</param>
         /// <param name="includeAllIdentityClaims">Specifies if all claims should be included in the token, or if the userinfo endpoint can be used to retrieve them</param>
         /// <param name="request">The raw request</param>
         /// <returns>
@@ -78,7 +79,7 @@ namespace IdentityServer4.Services
                         IdentityServerConstants.ProfileDataCallers.ClaimsProviderIdentityToken,
                         additionalClaims);
 
-                    await _profile.GetProfileDataAsync(context);
+                    await Profile.GetProfileDataAsync(context);
 
                     var claims = FilterProtocolClaims(context.IssuedClaims);
                     if (claims != null)
@@ -96,7 +97,7 @@ namespace IdentityServer4.Services
         /// </summary>
         /// <param name="subject">The subject.</param>
         /// <param name="client">The client.</param>
-        /// <param name="scopes">The requested scopes.</param>
+        /// <param name="resources">The requested resources</param>
         /// <param name="request">The raw request.</param>
         /// <returns>
         /// Claims for the access token
@@ -187,7 +188,7 @@ namespace IdentityServer4.Services
                         IdentityServerConstants.ProfileDataCallers.ClaimsProviderAccessToken,
                         additionalClaims.Distinct());
 
-                    await _profile.GetProfileDataAsync(context);
+                    await Profile.GetProfileDataAsync(context);
 
                     var claims = FilterProtocolClaims(context.IssuedClaims);
                     if (claims != null)

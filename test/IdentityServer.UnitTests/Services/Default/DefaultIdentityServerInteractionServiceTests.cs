@@ -55,7 +55,7 @@ namespace IdentityServer4.UnitTests.Services.Default
             var context = await _subject.GetLogoutContextAsync("id");
 
             context.SignOutIFrameUrl.Should().NotBeNull();
-            context.SignOutIFrameUrl.Should().Contain(_options.UserInteractionOptions.LogoutIdParameter + "=id");
+            context.SignOutIFrameUrl.Should().Contain(_options.UserInteraction.LogoutIdParameter + "=id");
         }
 
         [Fact]
@@ -65,7 +65,7 @@ namespace IdentityServer4.UnitTests.Services.Default
             var context = await _subject.GetLogoutContextAsync(null);
 
             context.SignOutIFrameUrl.Should().NotBeNull();
-            context.SignOutIFrameUrl.Should().NotContain(_options.UserInteractionOptions.LogoutIdParameter + "=");
+            context.SignOutIFrameUrl.Should().NotContain(_options.UserInteraction.LogoutIdParameter + "=");
         }
 
         [Fact]

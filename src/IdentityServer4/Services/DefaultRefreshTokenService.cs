@@ -25,23 +25,24 @@ namespace IdentityServer4.Services
         /// <summary>
         /// The refresh token store
         /// </summary>
-        protected readonly IRefreshTokenStore _refreshTokenStore;
+        protected readonly IRefreshTokenStore RefreshTokenStore;
 
         /// <summary>
         /// The _events
         /// </summary>
-        protected readonly IEventService _events;
+        protected readonly IEventService Events;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultRefreshTokenService" /> class.
         /// </summary>
-        /// <param name="grants">The grants store.</param>
+        /// <param name="refreshTokenStore">The refresh token store</param>
         /// <param name="events">The events.</param>
+        /// <param name="logger">The logger</param>
         public DefaultRefreshTokenService(IRefreshTokenStore refreshTokenStore, IEventService events, ILogger<DefaultRefreshTokenService> logger)
         {
             _logger = logger;
-            _refreshTokenStore = refreshTokenStore;
-            _events = events;
+            RefreshTokenStore = refreshTokenStore;
+            Events = events;
         }
 
         /// <summary>
@@ -76,7 +77,7 @@ namespace IdentityServer4.Services
                 AccessToken = accessToken,
             };
 
-            var handle = await _refreshTokenStore.StoreRefreshTokenAsync(refreshToken);
+            var handle = await RefreshTokenStore.StoreRefreshTokenAsync(refreshToken);
 
             await RaiseRefreshTokenIssuedEventAsync(handle, refreshToken);
             return handle;
@@ -105,7 +106,7 @@ namespace IdentityServer4.Services
                 _logger.LogDebug("Token usage is one-time only. Generating new handle");
 
                 // delete old one
-                await _refreshTokenStore.RemoveRefreshTokenAsync(handle);
+                await RefreshTokenStore.RemoveRefreshTokenAsync(handle);
 
                 // create new one
                 needsCreate = true;
@@ -135,12 +136,12 @@ namespace IdentityServer4.Services
 
             if (needsCreate)
             {
-                handle = await _refreshTokenStore.StoreRefreshTokenAsync(refreshToken);
+                handle = await RefreshTokenStore.StoreRefreshTokenAsync(refreshToken);
                 _logger.LogDebug("Created refresh token in store");
             }
             else if (needsUpdate)
             {
-                await _refreshTokenStore.UpdateRefreshTokenAsync(handle, refreshToken);
+                await RefreshTokenStore.UpdateRefreshTokenAsync(handle, refreshToken);
                 _logger.LogDebug("Updated refresh token in store");
             }
             else
@@ -160,7 +161,7 @@ namespace IdentityServer4.Services
         /// <param name="token">The token.</param>
         protected async Task RaiseRefreshTokenIssuedEventAsync(string handle, RefreshToken token)
         {
-            await _events.RaiseRefreshTokenIssuedEventAsync(handle, token);
+            await Events.RaiseRefreshTokenIssuedEventAsync(handle, token);
         }
 
         /// <summary>
@@ -171,7 +172,7 @@ namespace IdentityServer4.Services
         /// <param name="token">The token.</param>
         protected async Task RaiseRefreshTokenRefreshedEventAsync(string oldHandle, string newHandle, RefreshToken token)
         {
-            await _events.RaiseSuccessfulRefreshTokenRefreshEventAsync(oldHandle, newHandle, token);
+            await Events.RaiseSuccessfulRefreshTokenRefreshEventAsync(oldHandle, newHandle, token);
         }
     }
 }

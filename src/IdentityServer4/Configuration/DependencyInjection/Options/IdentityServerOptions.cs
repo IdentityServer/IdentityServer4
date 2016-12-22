@@ -12,7 +12,8 @@ namespace IdentityServer4.Configuration
     public class IdentityServerOptions
     {
         /// <summary>
-        /// Gets or sets the unique name of this server instance, e.g. https://myissuer.com
+        /// Gets or sets the unique name of this server instance, e.g. https://myissuer.com.
+        /// If not set, the issuer name is inferred from the request
         /// </summary>
         /// <value>
         /// Unique name of this server instance, e.g. https://myissuer.com
@@ -49,7 +50,7 @@ namespace IdentityServer4.Configuration
         /// <value>
         /// The protocol logout urls.
         /// </value>
-        public List<string> ProtocolLogoutUrls { get; set; } = new List<string>();
+        public ICollection<string> ProtocolLogoutUrls { get; set; } = new HashSet<string>();
 
         /// <summary>
         /// Gets or sets the events options.
@@ -73,7 +74,7 @@ namespace IdentityServer4.Configuration
         /// <value>
         /// The user interaction options.
         /// </value>
-        public UserInteraction UserInteractionOptions { get; set; } = new UserInteraction();
+        public UserInteractionOptions UserInteraction { get; set; } = new UserInteractionOptions();
 
         /// <summary>
         /// Gets or sets the caching options.

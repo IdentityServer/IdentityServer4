@@ -23,6 +23,7 @@ namespace IdentityServer4.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="InMemoryCorsPolicyService"/> class.
         /// </summary>
+        /// <param name="logger">The logger</param>
         /// <param name="clients">The clients.</param>
         public InMemoryCorsPolicyService(ILogger<InMemoryCorsPolicyService> logger, IEnumerable<Client> clients)
         {

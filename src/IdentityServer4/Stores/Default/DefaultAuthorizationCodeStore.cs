@@ -30,7 +30,6 @@ namespace IdentityServer4.Stores
         /// <summary>
         /// Stores the authorization code asynchronous.
         /// </summary>
-        /// <param name="handle">The handle.</param>
         /// <param name="code">The code.</param>
         /// <returns></returns>
         public Task<string> StoreAuthorizationCodeAsync(AuthorizationCode code)

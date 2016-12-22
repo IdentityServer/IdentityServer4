@@ -75,7 +75,7 @@ namespace IdentityServer4.Services
 
             if (iframeUrl != null && logoutId != null)
             {
-                iframeUrl = iframeUrl.AddQueryString(_options.UserInteractionOptions.LogoutIdParameter, logoutId);
+                iframeUrl = iframeUrl.AddQueryString(_options.UserInteraction.LogoutIdParameter, logoutId);
             }
 
             return new LogoutRequest(iframeUrl, msg?.Data);

@@ -159,7 +159,7 @@ namespace IdentityServer4.Validation
                 IsError = true
             };
 
-            result.LogoutId = parameters[_options.UserInteractionOptions.LogoutIdParameter];
+            result.LogoutId = parameters[_options.UserInteraction.LogoutIdParameter];
             result.SessionId = parameters[OidcConstants.EndSessionRequest.Sid];
 
             if (result.SessionId == null && result.LogoutId == null)

@@ -21,7 +21,6 @@ namespace IdentityServer4.Stores
         /// <summary>
         /// Initializes a new instance of the <see cref="InMemoryResourcesStore" /> class.
         /// </summary>
-        /// <param name="resources">The resources.</param>
         public InMemoryResourcesStore(IEnumerable<IdentityResource> identityResources = null, IEnumerable<ApiResource> apiResources = null)
         {
             _identityResources = identityResources ?? Enumerable.Empty<IdentityResource>();

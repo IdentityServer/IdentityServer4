@@ -50,7 +50,6 @@ namespace IdentityServer4.Services
         /// Creates the JWT header
         /// </summary>
         /// <param name="token">The token.</param>
-        /// <param name="credential">The credentials.</param>
         /// <returns>The JWT header</returns>
         protected virtual async Task<JwtHeader> CreateHeaderAsync(Token token)
         {

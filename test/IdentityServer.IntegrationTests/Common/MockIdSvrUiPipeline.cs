@@ -113,7 +113,7 @@ namespace IdentityServer4.IntegrationTests.Common
             {
                 await ctx.Authentication.SignInAsync(CookieAuthenticationScheme, Subject);
                 Subject = null;
-                var url = ctx.Request.Query[this.Options.UserInteractionOptions.LoginReturnUrlParameter].FirstOrDefault();
+                var url = ctx.Request.Query[this.Options.UserInteraction.LoginReturnUrlParameter].FirstOrDefault();
                 if (url != null)
                 {
                     ctx.Response.Redirect(url);
@@ -161,7 +161,7 @@ namespace IdentityServer4.IntegrationTests.Common
                 await interaction.GrantConsentAsync(ConsentRequest, ConsentResponse);
                 ConsentResponse = null;
 
-                var url = ctx.Request.Query[this.Options.UserInteractionOptions.ConsentReturnUrlParameter].FirstOrDefault();
+                var url = ctx.Request.Query[this.Options.UserInteraction.ConsentReturnUrlParameter].FirstOrDefault();
                 if (url != null)
                 {
                     ctx.Response.Redirect(url);

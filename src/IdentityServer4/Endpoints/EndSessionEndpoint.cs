@@ -43,7 +43,7 @@ namespace IdentityServer4.Endpoints
 
         private async Task<IEndpointResult> ProcessSignoutAsync(HttpContext context)
         {
-            NameValueCollection parameters = null;
+            NameValueCollection parameters;
             if (context.Request.Method == "GET")
             {
                 parameters = context.Request.Query.AsNameValueCollection();

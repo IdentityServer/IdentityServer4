@@ -94,8 +94,8 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
         [Trait("Category", Category)]
         public async Task get_request_should_redirect_to_configured_logout_path()
         {
-            _mockPipeline.Options.UserInteractionOptions.LogoutUrl = "/logout";
-            _mockPipeline.Options.UserInteractionOptions.LogoutIdParameter = "id";
+            _mockPipeline.Options.UserInteraction.LogoutUrl = "/logout";
+            _mockPipeline.Options.UserInteraction.LogoutIdParameter = "id";
 
             await _mockPipeline.LoginAsync(IdentityServerPrincipal.Create("bob", "Bob Loblaw"));
 

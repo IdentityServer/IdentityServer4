@@ -118,8 +118,6 @@ namespace IdentityServer4.Validation
 
         private List<SecurityKey> GetTrustedKeys(IReadOnlyCollection<Secret> secrets, string jwtTokenString)
         {
-            var token = new JwtSecurityToken(jwtTokenString);
-
             var trustedKeys = GetAllTrustedCertificates(secrets)
                                 .Select(c => (SecurityKey)new X509SecurityKey(c))
                                 .ToList();

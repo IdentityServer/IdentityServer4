@@ -179,7 +179,7 @@ namespace IdentityServer4
         private void ClearOverflow()
         {
             var names = GetCookieNames();
-            var toKeep = _options.UserInteractionOptions.CookieMessageThreshold;
+            var toKeep = _options.UserInteraction.CookieMessageThreshold;
 
             if (names.Count() >= toKeep)
             {

@@ -60,7 +60,8 @@ namespace IdentityServer4.Validation
         /// Initializes a new instance of the <see cref="GrantValidationResult"/> class with an error and description.
         /// </summary>
         /// <param name="error">The error.</param>
-        /// /// <param name="errorDescription">The error description.</param>
+        /// <param name="errorDescription">The error description.</param>
+        /// <param name="customResponse">Custom response elements</param>
         public GrantValidationResult(TokenRequestErrors error, string errorDescription = null, Dictionary<string, object> customResponse = null)
         {
             Error = ConvertTokenErrorEnumToString(error);

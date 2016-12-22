@@ -32,27 +32,27 @@ namespace IdentityServer4.Services
         /// <summary>
         /// The HTTP context accessor
         /// </summary>
-        protected readonly IHttpContextAccessor _context;
+        protected readonly IHttpContextAccessor Context;
 
         /// <summary>
         /// The claims provider
         /// </summary>
-        protected readonly IClaimsService _claimsProvider;
+        protected readonly IClaimsService ClaimsProvider;
 
         /// <summary>
         /// The reference token store
         /// </summary>
-        protected readonly IReferenceTokenStore _referenceTokenStore;
+        protected readonly IReferenceTokenStore ReferenceTokenStore;
 
         /// <summary>
         /// The signing service
         /// </summary>
-        protected readonly ITokenCreationService _creationService;
+        protected readonly ITokenCreationService CreationService;
 
         /// <summary>
         /// The events service
         /// </summary>
-        protected readonly IEventService _events;
+        protected readonly IEventService Events;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultTokenService" /> class. This overloaded constructor is deprecated and will be removed in 3.0.0.
@@ -66,11 +66,11 @@ namespace IdentityServer4.Services
         public DefaultTokenService(IHttpContextAccessor context, IClaimsService claimsProvider, IReferenceTokenStore referenceTokenStore, ITokenCreationService creationService, IEventService events, ILogger<DefaultTokenService> logger)
         {
             _logger = logger;
-            _context = context;
-            _claimsProvider = claimsProvider;
-            _referenceTokenStore = referenceTokenStore;
-            _creationService = creationService;
-            _events = events;
+            Context = context;
+            ClaimsProvider = claimsProvider;
+            ReferenceTokenStore = referenceTokenStore;
+            CreationService = creationService;
+            Events = events;
         }
 
         /// <summary>
@@ -115,14 +115,14 @@ namespace IdentityServer4.Services
                 claims.Add(new Claim(JwtClaimTypes.SessionId, request.ValidatedRequest.SessionId));
             }
 
-            claims.AddRange(await _claimsProvider.GetIdentityTokenClaimsAsync(
+            claims.AddRange(await ClaimsProvider.GetIdentityTokenClaimsAsync(
                 request.Subject,
                 request.Client,
                 request.Resources,
                 request.IncludeAllIdentityClaims,
                 request.ValidatedRequest));
 
-            var issuer = _context.HttpContext.GetIdentityServerIssuerUri();
+            var issuer = Context.HttpContext.GetIdentityServerIssuerUri();
 
             var token = new Token(OidcConstants.TokenTypes.IdentityToken)
             {
@@ -150,7 +150,7 @@ namespace IdentityServer4.Services
             request.Validate();
 
             var claims = new List<Claim>();
-            claims.AddRange(await _claimsProvider.GetAccessTokenClaimsAsync(
+            claims.AddRange(await ClaimsProvider.GetAccessTokenClaimsAsync(
                 request.Subject,
                 request.Client,
                 request.Resources,
@@ -161,7 +161,7 @@ namespace IdentityServer4.Services
                 claims.Add(new Claim(JwtClaimTypes.JwtId, CryptoRandom.CreateUniqueId(16)));
             }
 
-            var issuer = _context.HttpContext.GetIdentityServerIssuerUri();
+            var issuer = Context.HttpContext.GetIdentityServerIssuerUri();
             var token = new Token(OidcConstants.TokenTypes.AccessToken)
             {
                 Audiences = { string.Format(Constants.AccessTokenAudience, issuer.EnsureTrailingSlash()) },
@@ -201,13 +201,13 @@ namespace IdentityServer4.Services
                 {
                     _logger.LogTrace("Creating JWT access token");
 
-                    tokenResult = await _creationService.CreateTokenAsync(token);
+                    tokenResult = await CreationService.CreateTokenAsync(token);
                 }
                 else
                 {
                     _logger.LogTrace("Creating reference access token");
 
-                    var handle = await _referenceTokenStore.StoreReferenceTokenAsync(token);
+                    var handle = await ReferenceTokenStore.StoreReferenceTokenAsync(token);
 
                     tokenResult = handle;
                 }
@@ -216,14 +216,14 @@ namespace IdentityServer4.Services
             {
                 _logger.LogTrace("Creating JWT identity token");
 
-                tokenResult = await _creationService.CreateTokenAsync(token);
+                tokenResult = await CreationService.CreateTokenAsync(token);
             }
             else
             {
                 throw new InvalidOperationException("Invalid token type.");
             }
 
-            await _events.RaiseTokenIssuedEventAsync(token, tokenResult);
+            await Events.RaiseTokenIssuedEventAsync(token, tokenResult);
             return tokenResult;
         }
 

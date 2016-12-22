@@ -67,7 +67,7 @@ namespace IdentityServer4.Endpoints.Results
                 await _clientSessionService.EnsureClientListCookieAsync(validatedRequest.SessionId);
             }
 
-            var redirect = _options.UserInteractionOptions.LogoutUrl;
+            var redirect = _options.UserInteraction.LogoutUrl;
 
             if (redirect.IsLocalUrl())
             {
@@ -76,7 +76,7 @@ namespace IdentityServer4.Endpoints.Results
 
             if (id != null)
             {
-                redirect = redirect.AddQueryString(_options.UserInteractionOptions.LogoutIdParameter, id);
+                redirect = redirect.AddQueryString(_options.UserInteraction.LogoutIdParameter, id);
             }
 
             context.Response.Redirect(redirect);

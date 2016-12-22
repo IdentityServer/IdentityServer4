@@ -63,7 +63,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="builder">The builder.</param>
         /// <param name="name">The name.</param>
         /// <param name="location">The location.</param>
-        /// <returns></returns>
+        /// <param name="nameType">Name parameter can be either a distinguished name or a thumbprint</param>
         /// <exception cref="InvalidOperationException">certificate: '{name}'</exception>
         public static IIdentityServerBuilder AddSigningCredential(this IIdentityServerBuilder builder, string name, StoreLocation location = StoreLocation.LocalMachine, NameType nameType = NameType.SubjectDistinguishedName)
         {

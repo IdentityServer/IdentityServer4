@@ -57,7 +57,7 @@ namespace IdentityServer4.Endpoints
 
             if (context.Request.Path.Value.EndsWith("/jwks"))
             {
-                return ExecuteJwksAsync(context);
+                return ExecuteJwksAsync();
             }
             else
             {
@@ -214,7 +214,7 @@ namespace IdentityServer4.Endpoints
             return new DiscoveryDocumentResult(document, _options.Discovery.CustomEntries);
         }
 
-        private async Task<IEndpointResult> ExecuteJwksAsync(HttpContext context)
+        private async Task<IEndpointResult> ExecuteJwksAsync()
         {
             _logger.LogDebug("Start key discovery request");
 
