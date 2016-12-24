@@ -15,7 +15,7 @@ These stores are modeled with interfaces, and we provide an EF implementation of
 
 Get started by adding a reference to the `IdentityServer4.EntityFramework` Nuget package in `project.json` in the IdentityServer project:: 
 
-    "IdentityServer4.EntityFramework": "1.0.0-rc5"
+    "IdentityServer4.EntityFramework": "1.0.0"
 
 Adding SqlServer
 ^^^^^^^^^^^^^^^^
@@ -46,13 +46,13 @@ We will replace them with this code::
   {
       services.AddMvc();
 
-      var connectionString = @"server=(localdb)\mssqllocaldb;database=IdentityServer4;trusted_connection=yes";
+      var connectionString = @"server=(localdb)\mssqllocaldb;database=IdentityServer4.Quickstart;trusted_connection=yes";
       var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
             
       // configure identity server with in-memory users, but EF stores for clients and resources
       services.AddIdentityServer()
           .AddTemporarySigningCredential()
-          .AddInMemoryUsers(Config.GetUsers())
+          .AddTestUsers(Config.GetUsers())
           .AddConfigurationStore(builder =>
               builder.UseSqlServer(connectionString, options =>
                   options.MigrationsAssembly(migrationsAssembly)))
