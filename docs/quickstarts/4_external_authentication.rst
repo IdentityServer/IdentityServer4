@@ -86,4 +86,4 @@ Next add the middleware::
         }
     });
 
-.. note:: The quickstart UI auto-provisions external users. IOW - if an external user logs in for the first time, a new local user is created, all the external claims are copied over and associated with the new user. The way you deal with such a situation is completely up to you though. Maybe you want to show some sort of registration UI first. The source code for the in-memory quickstart can be found `here <https://github.com/IdentityServer/IdentityServer4/blob/dev/src/IdentityServer4/Quickstart/Services/InMemoryLoginService.cs>`_.
+.. note:: The quickstart UI auto-provisions external users. IOW - if an external user logs in for the first time, a new local user is created, all the external claims are copied over and associated with the new user. The way you deal with such a situation is completely up to you though. Maybe you want to show some sort of registration UI first. The source code for the default quickstart can be found `here <https://github.com/IdentityServer/IdentityServer4/blob/dev/src/Host/Quickstart/Account/AccountService.cs>`_.

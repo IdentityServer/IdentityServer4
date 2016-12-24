@@ -29,7 +29,9 @@ See the `readme <https://github.com/IdentityServer/IdentityServer4.Quickstart.UI
 .. note:: The ``release`` branch of the UI repo has the UI that matches the latest stable release. The ``dev`` branch goes along with the current dev build of IdentityServer4. If you are looking for a specific version of the UI - check the tags.
 
 Spend some time inspecting the controllers and models, the better you understand them, 
-the easier it will be to make future modifications.
+the easier it will be to make future modifications. 
+Most of the code lives in the "Quickstart" folder using a "feature folder" style. 
+If this style doesn't suit you, feel free to organize the code in any way you want.
 
 Creating an MVC client
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -119,7 +121,7 @@ Use the ``AddInMemoryIdentityResources`` extension method where you call ``AddId
             .AddInMemoryIdentityResources(Config.GetIdentityResources())
             .AddInMemoryApiResources(Config.GetApiResources())
             .AddInMemoryClients(Config.GetClients())
-            .AddInMemoryUsers(Config.GetUsers());
+            .AddTestUsers(Config.GetUsers());
     }
 
 Adding a client for OpenID Connect implicit flow
@@ -208,13 +210,13 @@ This scope also includes claims like *name* or *website*.
 
 Let's add these claims to the user, so IdentityServer can put them into the identity token::
 
-    public static List<InMemoryUser> GetUsers()
+    public static List<TestUser> GetUsers()
     {
-        return new List<InMemoryUser>
+        return new List<TestUser>
         {
-            new InMemoryUser
+            new TestUser
             {
-                Subject = "1",
+                SubjectId = "1",
                 Username = "alice",
                 Password = "password",
 
@@ -224,9 +226,9 @@ Let's add these claims to the user, so IdentityServer can put them into the iden
                     new Claim("website", "https://alice.com")
                 }
             },
-            new InMemoryUser
+            new TestUser
             {
-                Subject = "2",
+                SubjectId = "2",
                 Username = "bob",
                 Password = "password",
 
@@ -245,6 +247,6 @@ Feel free to add more claims - and also more scopes. The ``Scope`` property on t
 middleware is where you configure which scopes will be sent to IdentityServer during authentication.
 
 It is also noteworthy, that the retrieval of claims for tokens is an extensibility point - ``IProfileService``.
-Since we are using the in-memory user store, the ``InMemoryUserProfileService`` is used by default.
-You can inspect the source code `here <https://github.com/IdentityServer/IdentityServer4/blob/dev/src/IdentityServer4/Services/InMemory/InMemoryUserProfileService.cs>`_
+Since we are using ``AddTestUsers``, the ``TestUserProfileService`` is used by default.
+You can inspect the source code `here <https://github.com/IdentityServer/IdentityServer4/blob/dev/src/IdentityServer4/Test/TestUserProfileService.cs>`_
 to see how it works.

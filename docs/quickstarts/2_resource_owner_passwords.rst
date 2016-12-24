@@ -18,29 +18,29 @@ Just like there are in-memory stores for resources (aka scopes) and clients, the
 
 .. note:: Check the ASP.NET Identity based quickstarts for more information on how to properly store and manage user accounts.
 
-The class ``InMemoryUser`` represents a user and its claims. Let's create a couple of users
+The class ``TestUser`` represents a test user and its claims. Let's create a couple of users
 by adding the following code to our config class::
 
-    public static List<InMemoryUser> GetUsers()
+    public static List<TestUser> GetUsers()
     {
-        return new List<InMemoryUser>
+        return new List<TestUser>
         {
-            new InMemoryUser
+            new TestUser
             {
-                Subject = "1",
+                SubjectId = "1",
                 Username = "alice",
                 Password = "password"
             },
-            new InMemoryUser
+            new TestUser
             {
-                Subject = "2",
+                SubjectId = "2",
                 Username = "bob",
                 Password = "password"
             }
         };
     }
 
-Then register the in-memory users with IdentityServer::
+Then register the test users with IdentityServer::
 
     public void ConfigureServices(IServiceCollection services)
     {
@@ -49,14 +49,14 @@ Then register the in-memory users with IdentityServer::
             .AddTemporarySigningCredential()
             .AddInMemoryApiResources(Config.GetApiResources())
             .AddInMemoryClients(Config.GetClients())
-            .AddInMemoryUsers(Config.GetUsers());
+            .AddTestUsers(Config.GetUsers());
     }
 
-The ``AddInMemoryUsers`` extension method does a couple of things under the hood
+The ``AddTestUsers`` extension method does a couple of things under the hood
 
-* makes the list of users available via DI
 * adds support for the resource owner password grant
 * adds support to user related services typically used by a login UI (we'll use that in the next quickstart)
+* adds support for a profile service based on the test users (you'll learn more about that in the next quickstart)
 
 Adding a client for the resource owner password grant
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

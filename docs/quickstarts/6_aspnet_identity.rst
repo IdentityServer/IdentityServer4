@@ -47,7 +47,7 @@ Add IdentityServer packages
 
 Add the ``IdentityServer4.AspNetIdentity`` package to `project.json`::
 
-    "IdentityServer4.AspNetIdentity": "1.0.0-rc5"
+    "IdentityServer4.AspNetIdentity": "1.0.0"
 
 
 Scopes and Clients Configuration
