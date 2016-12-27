@@ -76,6 +76,7 @@ namespace IdentityServer4.Validation
         /// <param name="authenticationMethod">The authentication method which describes the custom grant type.</param>
         /// <param name="claims">Additional claims that will be maintained in the principal.</param>
         /// <param name="identityProvider">The identity provider.</param>
+        /// <param name="customResponse">The custom response</param>
         public GrantValidationResult(
             string subject,
             string authenticationMethod,

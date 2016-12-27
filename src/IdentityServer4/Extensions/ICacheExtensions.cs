@@ -20,6 +20,7 @@ namespace IdentityServer4.Extensions
         /// <param name="key">The key.</param>
         /// <param name="duration">The duration.</param>
         /// <param name="get">The get function.</param>
+        /// <param name="logger">Logger</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">
         /// cache
