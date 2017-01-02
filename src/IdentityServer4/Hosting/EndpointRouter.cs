@@ -65,7 +65,7 @@ namespace IdentityServer4.Hosting
             }
             else
             {
-                _logger.LogWarning("{endpoint} endpoint requested, but is diabled in endpoint options.", endpointName);
+                _logger.LogWarning("{endpoint} endpoint requested, but is disabled in endpoint options.", endpointName);
             }
 
             return null;
