@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using IdentityServer4.Models;
 using System.Security.Claims;
 using IdentityServer4.IntegrationTests.Common;
-using IdentityServer4.Services.InMemory;
+using IdentityServer4.Test;
 
 namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 {
@@ -53,9 +53,9 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                 }
             });
 
-            _mockPipeline.Users.Add(new InMemoryUser
+            _mockPipeline.Users.Add(new TestUser
             {
-                Subject = "bob",
+                SubjectId = "bob",
                 Username = "bob",
                 Claims = new Claim[]
                 {
@@ -65,19 +65,26 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                 }
             });
 
-            _mockPipeline.Scopes.AddRange(new Scope[] {
-                StandardScopes.OpenId,
-                StandardScopes.Profile,
-                StandardScopes.Email,
-                new Scope
+            _mockPipeline.IdentityScopes.AddRange(new IdentityResource[] {
+                new IdentityResources.OpenId(),
+                new IdentityResources.Profile(),
+                new IdentityResources.Email(),
+            });
+            _mockPipeline.ApiScopes.AddRange(new ApiResource[] {
+                new ApiResource
                 {
-                    Name = "api1",
-                    Type = ScopeType.Resource
-                },
-                new Scope
-                {
-                    Name = "api2",
-                    Type = ScopeType.Resource
+                    Name = "api",
+                    Scopes =
+                    {
+                        new Scope
+                        {
+                            Name = "api1",
+                        },
+                        new Scope
+                        {
+                            Name = "api2",
+                        }
+                    }
                 }
             });
 
@@ -136,7 +143,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                     ui_locales ="ui_locale_value",
                     custom_foo ="foo_value"
                 });
-            var response = await _mockPipeline.BrowserClient.GetAsync(url);
+            var response = await _mockPipeline.BrowserClient.GetAsync(url + "&foo=bar");
 
             _mockPipeline.LoginRequest.Should().NotBeNull();
             _mockPipeline.LoginRequest.ClientId.Should().Be("client1");
@@ -146,7 +153,8 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.LoginRequest.Tenant.Should().Be("tenant_value");
             _mockPipeline.LoginRequest.LoginHint.Should().Be("login_hint_value");
             _mockPipeline.LoginRequest.AcrValues.ShouldAllBeEquivalentTo(new string[] { "acr_2", "acr_1" });
-            // todo: add custom params to signin message
+            _mockPipeline.LoginRequest.Parameters.AllKeys.Should().Contain("foo");
+            _mockPipeline.LoginRequest.Parameters["foo"].Should().Be("bar");
         }
 
         [Fact]

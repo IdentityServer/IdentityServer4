@@ -7,6 +7,7 @@ using IdentityServer4.Events;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
+using IdentityServer4.Stores;
 using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
 using System;
@@ -15,18 +16,18 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.ResponseHandling
 {
-    class AuthorizeResponseGenerator : IAuthorizeResponseGenerator
+    public class AuthorizeResponseGenerator : IAuthorizeResponseGenerator
     {
         private readonly ILogger<AuthorizeResponseGenerator> _logger;
         private readonly ITokenService _tokenService;
-        private readonly IPersistedGrantService _grants;
+        private readonly IAuthorizationCodeStore _authorizationCodeStore;
         private readonly IEventService _events;
 
-        public AuthorizeResponseGenerator(ILogger<AuthorizeResponseGenerator> logger, ITokenService tokenService, IPersistedGrantService grants, IEventService events)
+        public AuthorizeResponseGenerator(ILogger<AuthorizeResponseGenerator> logger, ITokenService tokenService, IAuthorizationCodeStore authorizationCodeStore, IEventService events)
         {
             _logger = logger;
             _tokenService = tokenService;
-            _grants = grants;
+            _authorizationCodeStore = authorizationCodeStore;
             _events = events;
         }
 
@@ -88,7 +89,7 @@ namespace IdentityServer4.ResponseHandling
                 CodeChallengeMethod = request.CodeChallengeMethod,
 
                 IsOpenId = request.IsOpenIdRequest,
-                RequestedScopes = request.ValidatedScopes.GrantedScopes.Select(a => a.Name),
+                RequestedScopes = request.ValidatedScopes.GrantedResources.ToScopeNames(),
                 RedirectUri = request.RedirectUri,
                 Nonce = request.Nonce,
 
@@ -96,8 +97,7 @@ namespace IdentityServer4.ResponseHandling
             };
 
             // store id token and access token and return authorization code
-            var id = CryptoRandom.CreateUniqueId();
-            await _grants.StoreAuthorizationCodeAsync(id, code);
+            var id = await _authorizationCodeStore.StoreAuthorizationCodeAsync(code);
 
             await RaiseCodeIssuedEventAsync(id, code);
 
@@ -119,7 +119,7 @@ namespace IdentityServer4.ResponseHandling
                 {
                     Subject = request.Subject,
                     Client = request.Client,
-                    Scopes = request.ValidatedScopes.GrantedScopes,
+                    Resources = request.ValidatedScopes.GrantedResources,
 
                     ValidatedRequest = request
                 };
@@ -138,9 +138,10 @@ namespace IdentityServer4.ResponseHandling
                     ValidatedRequest = request,
                     Subject = request.Subject,
                     Client = request.Client,
-                    Scopes = request.ValidatedScopes.GrantedScopes,
+                    Resources = request.ValidatedScopes.GrantedResources,
 
                     Nonce = request.Raw.Get(OidcConstants.AuthorizeRequest.Nonce),
+                    // if no access token is requested, then we need to include all the claims in the id token
                     IncludeAllIdentityClaims = !request.AccessTokenRequested,
                     AccessTokenToHash = accessTokenValue,
                     AuthorizationCodeToHash = authorizationCode

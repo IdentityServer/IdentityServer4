@@ -31,26 +31,22 @@ namespace IdentityServer4.Endpoints.Results
 
         internal EndSessionCallbackResult(
             EndSessionCallbackValidationResult result,
-            ISessionIdService sessionId,
             IClientSessionService clientList,
             IMessageStore<LogoutMessage> logoutMessageStore,
             IdentityServerOptions options)
             : this(result)
         {
-            _sessionId = sessionId;
             _clientList = clientList;
             _logoutMessageStore = logoutMessageStore;
             _options = options;
         }
 
-        private ISessionIdService _sessionId;
         private IClientSessionService _clientList;
         private IMessageStore<LogoutMessage> _logoutMessageStore;
         private IdentityServerOptions _options;
 
         void Init(HttpContext context)
         {
-            _sessionId = _sessionId ?? context.RequestServices.GetRequiredService<ISessionIdService>();
             _clientList = _clientList ?? context.RequestServices.GetRequiredService<IClientSessionService>();
             _logoutMessageStore = _logoutMessageStore ?? context.RequestServices.GetRequiredService<IMessageStore<LogoutMessage>>();
             _options = _options ?? context.RequestServices.GetRequiredService<IdentityServerOptions>();
@@ -59,6 +55,11 @@ namespace IdentityServer4.Endpoints.Results
         public async Task ExecuteAsync(HttpContext context)
         {
             Init(context);
+
+            if (_result.SessionId != null)
+            {
+                _clientList.RemoveCookie(_result.SessionId);
+            }
 
             if (_result.LogoutId != null)
             {
@@ -71,9 +72,6 @@ namespace IdentityServer4.Endpoints.Results
             }
             else
             {
-                _sessionId.RemoveCookie();
-                _clientList.RemoveCookie();
-
                 context.Response.SetNoCache();
                 AddXfoHeaders(context);
                 AddCspHeaders(context);
@@ -85,13 +83,14 @@ namespace IdentityServer4.Endpoints.Results
 
         private void AddCspHeaders(HttpContext context)
         {
-            var value = "default-src 'none';style-src 'sha256-u+OupXgfekP+x/f6rMdoEAspPCYUtca912isERnoEjY='";
+            // 'unsafe-inline' for edge
+            // the hash matches the embedded style element being used below
+            var value = "default-src 'none'; style-src 'unsafe-inline' 'sha256-u+OupXgfekP+x/f6rMdoEAspPCYUtca912isERnoEjY='";
 
             var origins = _result.ClientLogoutUrls?.Select(x => x.GetOrigin());
             if (origins != null && origins.Any())
             {
                 var list = origins.Aggregate((x, y) => $"{x} {y}");
-                // this hash matches the style being used below for the iframe
                 value += $";frame-src {list}";
             }
 
@@ -110,7 +109,7 @@ namespace IdentityServer4.Endpoints.Results
         {
             if (!context.Response.Headers.ContainsKey("X-Frame-Options"))
             {
-                var logoutPageUrl = _options.UserInteractionOptions.LogoutUrl;
+                var logoutPageUrl = _options.UserInteraction.LogoutUrl;
                 if (logoutPageUrl.IsLocalUrl())
                 {
                     context.Response.Headers.Add("X-Frame-Options", "SAMEORIGIN");

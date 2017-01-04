@@ -20,14 +20,14 @@ namespace IdentityServer4.ResponseHandling
         private readonly ILogger _logger;
         private readonly ITokenService _tokenService;
         private readonly IRefreshTokenService _refreshTokenService;
-        private readonly IScopeStore _scopes;
+        private readonly IResourceStore _resources;
         private readonly IClientStore _clients;
        
-        public TokenResponseGenerator(ITokenService tokenService, IRefreshTokenService refreshTokenService, IScopeStore scopes, IClientStore clients, ILoggerFactory loggerFactory)
+        public TokenResponseGenerator(ITokenService tokenService, IRefreshTokenService refreshTokenService, IResourceStore resources, IClientStore clients, ILoggerFactory loggerFactory)
         {
             _tokenService = tokenService;
             _refreshTokenService = refreshTokenService;
-            _scopes = scopes;
+            _resources = resources;
             _clients = clients;
             _logger = loggerFactory.CreateLogger<TokenResponseGenerator>();
         }
@@ -87,16 +87,15 @@ namespace IdentityServer4.ResponseHandling
                     throw new InvalidOperationException("Client does not exist anymore.");
                 }
 
-                var scopes = await _scopes.FindEnabledScopesAsync(request.AuthorizationCode.RequestedScopes);
-
+                var resources = await _resources.FindEnabledResourcesByScopeAsync(request.AuthorizationCode.RequestedScopes);
 
                 var tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.AuthorizationCode.Subject,
                     Client = client,
-                    Scopes = scopes,
+                    Resources = resources,
                     Nonce = request.AuthorizationCode.Nonce,
-
+                    AccessTokenToHash = response.AccessToken,
                     ValidatedRequest = request
                 };
 
@@ -144,7 +143,7 @@ namespace IdentityServer4.ResponseHandling
                     Client = request.Client,
                     Subject = subject,
                     ValidatedRequest = request,
-                    Scopes = await _scopes.FindEnabledScopesAsync(oldAccessToken.Scopes)
+                    Resources = await _resources.FindEnabledResourcesByScopeAsync(oldAccessToken.Scopes),
                 };
 
                 var newAccessToken = await _tokenService.CreateAccessTokenAsync(creationRequest);
@@ -152,7 +151,7 @@ namespace IdentityServer4.ResponseHandling
             }
             else
             {
-                oldAccessToken.CreationTime = DateTimeHelper.UtcNow;
+                oldAccessToken.CreationTime = IdentityServerDateTime.UtcNow;
                 oldAccessToken.Lifetime = request.Client.AccessTokenLifetime;
 
                 accessTokenString = await _tokenService.CreateSecurityTokenAsync(oldAccessToken);
@@ -161,11 +160,11 @@ namespace IdentityServer4.ResponseHandling
             var handle = await _refreshTokenService.UpdateRefreshTokenAsync(request.RefreshTokenHandle, request.RefreshToken, request.Client);
 
             return new TokenResponse
-                {
-                    AccessToken = accessTokenString,
-                    AccessTokenLifetime = request.Client.AccessTokenLifetime,
-                    RefreshToken = handle
-                };
+            {
+                AccessToken = accessTokenString,
+                AccessTokenLifetime = request.Client.AccessTokenLifetime,
+                RefreshToken = handle
+            };
         }
 
         private async Task<Tuple<string, string>> CreateAccessTokenAsync(ValidatedTokenRequest request)
@@ -175,7 +174,7 @@ namespace IdentityServer4.ResponseHandling
 
             if (request.AuthorizationCode != null)
             {
-                createRefreshToken = request.AuthorizationCode.RequestedScopes.Contains(Constants.StandardScopes.OfflineAccess);
+                createRefreshToken = request.AuthorizationCode.RequestedScopes.Contains(IdentityServerConstants.StandardScopes.OfflineAccess);
 
                 // load the client that belongs to the authorization code
                 Client client = null;
@@ -188,13 +187,13 @@ namespace IdentityServer4.ResponseHandling
                     throw new InvalidOperationException("Client does not exist anymore.");
                 }
 
-                var scopes = await _scopes.FindEnabledScopesAsync(request.AuthorizationCode.RequestedScopes);
+                var resources = await _resources.FindEnabledResourcesByScopeAsync(request.AuthorizationCode.RequestedScopes);
 
                 tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.AuthorizationCode.Subject,
                     Client = client,
-                    Scopes = scopes,
+                    Resources = resources,
                     ValidatedRequest = request
                 };
             }
@@ -206,7 +205,7 @@ namespace IdentityServer4.ResponseHandling
                 {
                     Subject = request.Subject,
                     Client = request.Client,
-                    Scopes = request.ValidatedScopes.GrantedScopes,
+                    Resources = request.ValidatedScopes.GrantedResources,
                     ValidatedRequest = request
                 };
             }

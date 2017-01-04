@@ -10,6 +10,7 @@ using IdentityServer4.ResponseHandling;
 using IdentityServer4.UnitTests.Common;
 using IdentityServer4.Validation;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -27,7 +28,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
                 TestLogger.Create<AuthorizeInteractionResponseGenerator>(),
                 _options,
                 _mockConsentService,
-                new TestProfileService());
+                new MockProfileService());
         }
 
         [Fact]
@@ -70,7 +71,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
                 {
                     IdentityProviderRestrictions = new List<string> 
                     {
-                        Constants.LocalIdentityProvider
+                        IdentityServerConstants.LocalIdentityProvider
                     }
                 }
             };
@@ -109,7 +110,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
                 ClientId = "foo",
                 Client = new Client(),
                  AuthenticationContextReferenceClasses = new List<string>{
-                    "idp:" + Constants.LocalIdentityProvider
+                    "idp:" + IdentityServerConstants.LocalIdentityProvider
                 },
                 Subject = IdentityServerPrincipal.Create("123", "dom")
             };
@@ -153,6 +154,57 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             var result = await _subject.ProcessLoginAsync(request);
 
             result.IsLogin.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task prompt_login_should_sign_in()
+        {
+            var request = new ValidatedAuthorizeRequest
+            {
+                ClientId = "foo",
+                Subject = IdentityServerPrincipal.Create("123", "dom"),
+                PromptMode = OidcConstants.PromptModes.Login,
+                Raw = new NameValueCollection()
+            };
+
+            var result = await _subject.ProcessLoginAsync(request);
+
+            result.IsLogin.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task prompt_select_account_should_sign_in()
+        {
+            var request = new ValidatedAuthorizeRequest
+            {
+                ClientId = "foo",
+                Subject = IdentityServerPrincipal.Create("123", "dom"),
+                PromptMode = OidcConstants.PromptModes.SelectAccount,
+                Raw = new NameValueCollection()
+            };
+
+            var result = await _subject.ProcessLoginAsync(request);
+
+            result.IsLogin.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task prompt_for_signin_should_remove_prompt_from_raw_url()
+        {
+            var request = new ValidatedAuthorizeRequest
+            {
+                ClientId = "foo",
+                Subject = IdentityServerPrincipal.Create("123", "dom"),
+                PromptMode = OidcConstants.PromptModes.Login,
+                Raw = new NameValueCollection
+                {
+                    { OidcConstants.AuthorizeRequest.Prompt, OidcConstants.PromptModes.Login }
+                }
+            };
+
+            var result = await _subject.ProcessLoginAsync(request);
+
+            request.Raw.AllKeys.Should().NotContain(OidcConstants.AuthorizeRequest.Prompt);
         }
     }
 }

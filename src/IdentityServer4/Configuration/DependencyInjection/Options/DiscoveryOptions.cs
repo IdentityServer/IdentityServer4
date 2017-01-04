@@ -27,9 +27,9 @@ namespace IdentityServer4.Configuration
         public bool ShowIdentityScopes { get; set; } = true;
 
         /// <summary>
-        /// Show resource scopes
+        /// Show API scopes
         /// </summary>
-        public bool ShowResourceScopes { get; set; } = true;
+        public bool ShowApiScopes { get; set; } = true;
 
         /// <summary>
         /// Show identity claims

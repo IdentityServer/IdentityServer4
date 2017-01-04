@@ -4,10 +4,10 @@
   "dependencies": {
     "xunit": "2.2.0-beta2-build3300",
     "dotnet-test-xunit": "2.2.0-preview2-build1029",
-    "FluentAssertions": "4.6.1",
-    "IdentityModel": "2.0.0",
-    "Microsoft.AspNetCore.TestHost": "1.0.0",
-    "Microsoft.AspNetCore.Http.Abstractions": "1.0.0",
+    "FluentAssertions": "4.17.0",
+    "Microsoft.AspNetCore.TestHost": "1.1.0",
+    "Microsoft.AspNetCore.Http.Abstractions": "1.1.0",
+    "Microsoft.Extensions.PlatformAbstractions": "1.1.0",
     "Microsoft.AspNet.WebApi.Client": "5.2.3",
     "IdentityServer4": {
       "target": "project"
@@ -15,11 +15,11 @@
   },
 
   "frameworks": {
-    "netcoreapp1.0": {
+    "netcoreapp1.1": {
       "dependencies": {
         "Microsoft.NETCore.App": {
           "type": "platform",
-          "version": "1.0.0"
+          "version": "1.1.0"
         }
       },
       "imports": [

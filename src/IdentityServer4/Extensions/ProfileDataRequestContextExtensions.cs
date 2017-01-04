@@ -12,12 +12,7 @@ namespace IdentityServer4.Models
     {
         public static List<Claim> FilterClaims(this ProfileDataRequestContext context, IEnumerable<Claim> claims)
         {
-            var result = new List<Claim>(claims);
-            if (!context.AllClaimsRequested)
-            {
-                result = claims.Where(x => context.RequestedClaimTypes.Contains(x.Type)).ToList();
-            }
-            return result;
+            return claims.Where(x => context.RequestedClaimTypes.Contains(x.Type)).ToList();
         }
 
         public static void AddFilteredClaims(this ProfileDataRequestContext context, IEnumerable<Claim> claims)

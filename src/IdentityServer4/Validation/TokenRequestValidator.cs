@@ -9,6 +9,7 @@ using IdentityServer4.Extensions;
 using IdentityServer4.Logging;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
+using IdentityServer4.Stores;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,8 @@ namespace IdentityServer4.Validation
     {
         private readonly ILogger _logger;
         private readonly IdentityServerOptions _options;
-        private readonly IPersistedGrantService _grants;
+        private readonly IAuthorizationCodeStore _authorizationCodeStore;
+        private readonly IRefreshTokenStore _refreshTokenStore;
         private readonly ExtensionGrantValidator _extensionGrantValidator;
         private readonly ICustomTokenRequestValidator _customRequestValidator;
         private readonly ScopeValidator _scopeValidator;
@@ -33,11 +35,12 @@ namespace IdentityServer4.Validation
 
         private ValidatedTokenRequest _validatedRequest;
 
-        public TokenRequestValidator(IdentityServerOptions options, IPersistedGrantService grants, IResourceOwnerPasswordValidator resourceOwnerValidator, IProfileService profile, ExtensionGrantValidator extensionGrantValidator, ICustomTokenRequestValidator customRequestValidator, ScopeValidator scopeValidator, IEventService events, ILogger<TokenRequestValidator> logger)
+        public TokenRequestValidator(IdentityServerOptions options, IAuthorizationCodeStore authorizationCodeStore, IRefreshTokenStore refreshTokenStore, IResourceOwnerPasswordValidator resourceOwnerValidator, IProfileService profile, ExtensionGrantValidator extensionGrantValidator, ICustomTokenRequestValidator customRequestValidator, ScopeValidator scopeValidator, IEventService events, ILogger<TokenRequestValidator> logger)
         {
             _logger = logger;
             _options = options;
-            _grants = grants;
+            _authorizationCodeStore = authorizationCodeStore;
+            _refreshTokenStore = refreshTokenStore;
             _resourceOwnerValidator = resourceOwnerValidator;
             _profile = profile;
             _extensionGrantValidator = extensionGrantValidator;
@@ -59,6 +62,15 @@ namespace IdentityServer4.Validation
                 Client = client,
                 Options = _options
             };
+
+            /////////////////////////////////////////////
+            // check client protocol type
+            /////////////////////////////////////////////
+            if (client.ProtocolType != IdentityServerConstants.ProtocolTypes.OpenIdConnect)
+            {
+                LogError("Client {clientId} has invalid protocol type for token endpoint: {protocolType}", client.ClientId, client.ProtocolType);
+                return Invalid(OidcConstants.TokenErrors.InvalidClient);
+            }
 
             /////////////////////////////////////////////
             // check grant type
@@ -164,7 +176,7 @@ namespace IdentityServer4.Validation
 
             _validatedRequest.AuthorizationCodeHandle = code;
 
-            var authZcode = await _grants.GetAuthorizationCodeAsync(code);
+            var authZcode = await _authorizationCodeStore.GetAuthorizationCodeAsync(code);
             if (authZcode == null)
             {
                 LogError("Authorization code cannot be found in the store: {code}", code);
@@ -173,7 +185,7 @@ namespace IdentityServer4.Validation
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
-            await _grants.RemoveAuthorizationCodeAsync(code);
+            await _authorizationCodeStore.RemoveAuthorizationCodeAsync(code);
 
             /////////////////////////////////////////////
             // populate session id
@@ -462,7 +474,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // check if refresh token is valid
             /////////////////////////////////////////////
-            var refreshToken = await _grants.GetRefreshTokenAsync(refreshTokenHandle);
+            var refreshToken = await _refreshTokenStore.GetRefreshTokenAsync(refreshTokenHandle);
             if (refreshToken == null)
             {
                 LogError("Refresh token cannot be found in store: {refreshToken}", refreshTokenHandle);
@@ -481,7 +493,7 @@ namespace IdentityServer4.Validation
                 LogError(error);
                 await RaiseRefreshTokenRefreshFailureEventAsync(refreshTokenHandle, error);
 
-                await _grants.RemoveRefreshTokenAsync(refreshTokenHandle);
+                await _refreshTokenStore.RemoveRefreshTokenAsync(refreshTokenHandle);
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
@@ -499,16 +511,13 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // check if client still has offline_access scope
             /////////////////////////////////////////////
-            if (!_validatedRequest.Client.AllowAccessToAllScopes)
+            if (!_validatedRequest.Client.AllowOfflineAccess)
             {
-                if (!_validatedRequest.Client.AllowedScopes.Contains(Constants.StandardScopes.OfflineAccess))
-                {
-                    LogError("{clientId} does not have access to offline_access scope anymore", _validatedRequest.Client.ClientId);
-                    var error = "Client does not have access to offline_access scope anymore";
-                    await RaiseRefreshTokenRefreshFailureEventAsync(refreshTokenHandle, error);
+                LogError("{clientId} does not have access to offline_access scope anymore", _validatedRequest.Client.ClientId);
+                var error = "Client does not have access to offline_access scope anymore";
+                await RaiseRefreshTokenRefreshFailureEventAsync(refreshTokenHandle, error);
 
-                    return Invalid(OidcConstants.TokenErrors.InvalidGrant);
-                }
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
             _validatedRequest.RefreshToken = refreshToken;
@@ -607,9 +616,14 @@ namespace IdentityServer4.Validation
             {
                 _logger.LogTrace("Client provided no scopes - checking allowed scopes list");
 
-                if (!_validatedRequest.Client.AllowedScopes.IsNullOrEmpty())
+                var clientAllowedScopes = _validatedRequest.Client.AllowedScopes;
+                if (!clientAllowedScopes.IsNullOrEmpty())
                 {
-                    scopes = _validatedRequest.Client.AllowedScopes.ToSpaceSeparatedString();
+                    if (_validatedRequest.Client.AllowOfflineAccess)
+                    {
+                        clientAllowedScopes.Add(IdentityServerConstants.StandardScopes.OfflineAccess);
+                    }
+                    scopes = clientAllowedScopes.ToSpaceSeparatedString();
                     _logger.LogTrace("Defaulting to: {scopes}", scopes);
                 }
                 else
@@ -633,13 +647,13 @@ namespace IdentityServer4.Validation
                 return false;
             }
 
-            if (!_scopeValidator.AreScopesAllowed(_validatedRequest.Client, requestedScopes))
+            if (!(await _scopeValidator.AreScopesAllowedAsync(_validatedRequest.Client, requestedScopes)))
             {
                 LogError();
                 return false;
             }
 
-            if (!await _scopeValidator.AreScopesValidAsync(requestedScopes))
+            if (!(await _scopeValidator.AreScopesValidAsync(requestedScopes)))
             {
                 LogError();
                 return false;
@@ -736,12 +750,12 @@ namespace IdentityServer4.Validation
 
         private async Task RaiseSuccessfulResourceOwnerAuthenticationEventAsync(string userName, string subjectId)
         {
-            await _events.RaiseSuccessfulResourceOwnerFlowAuthenticationEventAsync(userName, subjectId);
+            await _events.RaiseSuccessfulResourceOwnerPasswordAuthenticationEventAsync(userName, subjectId);
         }
 
         private async Task RaiseFailedResourceOwnerAuthenticationEventAsync(string userName, string error)
         {
-            await _events.RaiseFailedResourceOwnerFlowAuthenticationEventAsync(userName, error);
+            await _events.RaiseFailedResourceOwnerPasswordAuthenticationEventAsync(userName, error);
         }
 
         private async Task RaiseFailedAuthorizationCodeRedeemedEventAsync(string handle, string error)

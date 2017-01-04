@@ -65,7 +65,7 @@ namespace IdentityServer4.Endpoints
 
             var tokenResult = await _tokenValidator.ValidateAccessTokenAsync(
                 tokenUsageResult.Token,
-                Constants.StandardScopes.OpenId);
+                IdentityServerConstants.StandardScopes.OpenId);
 
             if (tokenResult.IsError)
             {
@@ -108,7 +108,7 @@ namespace IdentityServer4.Endpoints
 
         private async Task RaiseFailureEventAsync(string error)
         {
-            if (_options.EventsOptions.RaiseFailureEvents)
+            if (_options.Events.RaiseFailureEvents)
             {
                 await _events.RaiseFailureEndpointEventAsync(EventConstants.EndpointNames.UserInfo, error);
             }

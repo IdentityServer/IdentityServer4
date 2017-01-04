@@ -7,7 +7,7 @@ using IdentityModel;
 using IdentityServer4.Configuration;
 using IdentityServer4.Models;
 using IdentityServer4.ResponseHandling;
-using IdentityServer4.Stores.InMemory;
+using IdentityServer4.Stores;
 using IdentityServer4.UnitTests.Common;
 using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
@@ -25,7 +25,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
         AuthorizeInteractionResponseGenerator _subject;
         IdentityServerOptions _options = new IdentityServerOptions();
         MockConsentService _mockConsent = new MockConsentService();
-        TestProfileService _fakeUserService = new TestProfileService();
+        MockProfileService _fakeUserService = new MockProfileService();
 
         void RequiresConsent(bool value)
         {
@@ -46,34 +46,44 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             _mockConsent.ConsentScopes.Should().BeEquivalentTo(scopes);
         }
 
-        private static IEnumerable<Scope> GetScopes()
+        private static IEnumerable<IdentityResource> GetIdentityScopes()
         {
-            return new Scope[]
+            return new IdentityResource[]
             {
-                StandardScopes.OpenId,
-                StandardScopes.Profile,
-                StandardScopes.Email,
+                new IdentityResources.OpenId(),
+                new IdentityResources.Profile(),
+                new IdentityResources.Email(),
+            };
+        }
 
-                new Scope
+        private static IEnumerable<ApiResource> GetApiScopes()
+        {
+            return new ApiResource[]
+            {
+                new ApiResource
                 {
-                    Name = "read",
-                    DisplayName = "Read data",
-                    Type = ScopeType.Resource,
-                    Emphasize = false,
-                },
-                new Scope
-                {
-                    Name = "write",
-                    DisplayName = "Write data",
-                    Type = ScopeType.Resource,
-                    Emphasize = true,
-                },
-                new Scope
-                {
-                    Name = "forbidden",
-                    Type = ScopeType.Resource,
-                    DisplayName = "Forbidden scope",
-                    Emphasize = true
+                    Name = "api",
+                    Scopes =
+                    {
+                        new Scope
+                        {
+                            Name = "read",
+                            DisplayName = "Read data",
+                            Emphasize = false,
+                        },
+                        new Scope
+                        {
+                            Name = "write",
+                            DisplayName = "Write data",
+                            Emphasize = true,
+                        },
+                        new Scope
+                        {
+                            Name = "forbidden",
+                            DisplayName = "Forbidden scope",
+                            Emphasize = true
+                        }
+                    }
                 }
              };
         }
@@ -248,7 +258,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
         {
             RequiresConsent(true);
             var client = new Client {};
-            var scopeValidator = new ScopeValidator(new InMemoryScopeStore(GetScopes()), TestLogger.Create<ScopeValidator>());
+            var scopeValidator = new ScopeValidator(new InMemoryResourcesStore(GetIdentityScopes(), GetApiScopes()), TestLogger.Create<ScopeValidator>());
             var request = new ValidatedAuthorizeRequest()
             {
                 ResponseMode = OidcConstants.ResponseModes.Fragment,
@@ -281,7 +291,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
                 ResponseMode = OidcConstants.ResponseModes.Fragment,
                 State = "12345",
                 RedirectUri = "https://client.com/callback",
-                ValidatedScopes = new ScopeValidator(new InMemoryScopeStore(GetScopes()), new LoggerFactory().CreateLogger<ScopeValidator>()),
+                ValidatedScopes = new ScopeValidator(new InMemoryResourcesStore(GetIdentityScopes(), GetApiScopes()), new LoggerFactory().CreateLogger<ScopeValidator>()),
                 Client = new Client {
                     AllowRememberConsent = false
                 }
@@ -293,8 +303,8 @@ namespace IdentityServer4.UnitTests.ResponseHandling
                 ScopesConsented = new string[] { "read" }
             };
             var result = _subject.ProcessConsentAsync(request, consent).Result;
-            request.ValidatedScopes.GrantedScopes.Count.Should().Be(1);
-            "read".Should().Be(request.ValidatedScopes.GrantedScopes.First().Name);
+            request.ValidatedScopes.GrantedResources.ApiResources.SelectMany(x=>x.Scopes).Count().Should().Be(1);
+            "read".Should().Be(request.ValidatedScopes.GrantedResources.ApiResources.SelectMany(x=>x.Scopes).First().Name);
             request.WasConsentShown.Should().BeTrue();
             result.IsConsent.Should().BeFalse();
             AssertUpdateConsentNotCalled();
@@ -309,7 +319,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
                 ResponseMode = OidcConstants.ResponseModes.Fragment,
                 State = "12345",
                 RedirectUri = "https://client.com/callback",
-                ValidatedScopes = new ScopeValidator(new InMemoryScopeStore(GetScopes()), new LoggerFactory().CreateLogger<ScopeValidator>()),
+                ValidatedScopes = new ScopeValidator(new InMemoryResourcesStore(GetIdentityScopes(), GetApiScopes()), new LoggerFactory().CreateLogger<ScopeValidator>()),
                 Client = new Client {
                     AllowRememberConsent = false
                 }
@@ -321,8 +331,8 @@ namespace IdentityServer4.UnitTests.ResponseHandling
                 ScopesConsented = new string[] { "read" }
             };
             var result = _subject.ProcessConsentAsync(request, consent).Result;
-            request.ValidatedScopes.GrantedScopes.Count.Should().Be(1);
-            "read".Should().Be(request.ValidatedScopes.GrantedScopes.First().Name);
+            request.ValidatedScopes.GrantedResources.ApiResources.SelectMany(x=>x.Scopes).Count().Should().Be(1);
+            "read".Should().Be(request.ValidatedScopes.GrantedResources.ApiResources.SelectMany(x => x.Scopes).First().Name);
             request.WasConsentShown.Should().BeTrue();
             result.IsConsent.Should().BeFalse();
             AssertUpdateConsentNotCalled();
@@ -339,7 +349,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
                 ResponseMode = OidcConstants.ResponseModes.Fragment,
                 State = "12345",
                 RedirectUri = "https://client.com/callback",
-                ValidatedScopes = new ScopeValidator(new InMemoryScopeStore(GetScopes()), new LoggerFactory().CreateLogger<ScopeValidator>()),
+                ValidatedScopes = new ScopeValidator(new InMemoryResourcesStore(GetIdentityScopes(), GetApiScopes()), new LoggerFactory().CreateLogger<ScopeValidator>()),
                 Client = client,
                 Subject = user
             };

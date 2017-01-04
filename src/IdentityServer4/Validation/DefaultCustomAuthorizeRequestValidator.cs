@@ -18,7 +18,6 @@ namespace IdentityServer4.Validation
         /// <returns>
         /// The validation result
         /// </returns>
-        // todo - maybe split up in two interfaces - semantics for tokens have changed because of custom response fields
         public Task<AuthorizeRequestValidationResult> ValidateAsync(ValidatedAuthorizeRequest request)
         {
             return Task.FromResult(new AuthorizeRequestValidationResult

@@ -9,6 +9,9 @@ using System.Linq;
 
 namespace IdentityServer4.Configuration
 {
+    /// <summary>
+    /// Options for CORS
+    /// </summary>
     public class CorsOptions
     {
         /// <summary>

@@ -16,17 +16,17 @@ namespace IdentityServer4.Hosting
         {
             var logger = app.ApplicationServices.GetRequiredService<ILoggerFactory>().CreateLogger(typeof(CookieMiddlewareExtensions).FullName);
 
-            var idSvrOptions = app.ApplicationServices.GetRequiredService<IdentityServerOptions>();
+            var options = app.ApplicationServices.GetRequiredService<IdentityServerOptions>();
 
             // only do stuff with cookies if we're showing UI
-            if (idSvrOptions.Endpoints.EnableAuthorizeEndpoint)
+            if (options.Endpoints.EnableAuthorizeEndpoint)
             {
-                if (idSvrOptions.AuthenticationOptions.AuthenticationScheme.IsMissing())
+                if (options.Authentication.AuthenticationScheme.IsMissing())
                 {
-                    logger.LogDebug("AuthenticationScheme is missing; configuring CookieAuthentication middleware");
+                    logger.LogDebug("Using built-in CookieAuthentication middleware with scheme: {authenticationScheme}", options.Authentication.EffectiveAuthenticationScheme);
                     app.UseCookieAuthentication(new CookieAuthenticationOptions
                     {
-                        AuthenticationScheme = idSvrOptions.AuthenticationOptions.EffectiveAuthenticationScheme,
+                        AuthenticationScheme = options.Authentication.EffectiveAuthenticationScheme,
                         AutomaticAuthenticate = true,
                         SlidingExpiration = false,
                         ExpireTimeSpan = Constants.DefaultCookieTimeSpan,
@@ -35,7 +35,7 @@ namespace IdentityServer4.Hosting
                 }
                 else
                 {
-                    logger.LogDebug("AuthenticationScheme is configured; using hosting application's CookieAuthentication middleware");
+                    logger.LogDebug("Using hosting application's CookieAuthentication middleware with scheme: {authenticationScheme}", options.Authentication.EffectiveAuthenticationScheme);
                 }
 
                 app.UseMiddleware<AuthenticationMiddleware>();

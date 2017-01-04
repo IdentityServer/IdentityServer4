@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace IdentityServer4.Stores.InMemory
+namespace IdentityServer4.Stores
 {
     /// <summary>
     /// In-memory persisted grant store

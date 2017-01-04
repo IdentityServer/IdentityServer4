@@ -19,7 +19,7 @@ namespace IdentityServer4.Models
         /// <value>
         /// The creation time.
         /// </value>
-        public DateTime CreationTime { get; set; } = DateTimeHelper.UtcNow;
+        public DateTime CreationTime { get; set; } = IdentityServerDateTime.UtcNow;
 
         /// <summary>
         /// Gets or sets the life time.
@@ -108,13 +108,5 @@ namespace IdentityServer4.Models
         /// The code challenge method
         /// </value>
         public string CodeChallengeMethod { get; set; }
-
-        /// <summary>
-        /// Gets the scopes.
-        /// </summary>
-        /// <value>
-        /// The scopes.
-        /// </value>
-        public IEnumerable<string> Scopes => RequestedScopes;
     }
 }

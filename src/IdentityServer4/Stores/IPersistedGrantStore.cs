@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace IdentityServer4.Stores
 {
     /// <summary>
-    /// Store interface for persisting grants.
+    /// Interface for persisting any type of grant.
     /// </summary>
     public interface IPersistedGrantStore
     {

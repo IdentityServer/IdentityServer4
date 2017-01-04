@@ -2,10 +2,9 @@ notifications:
   email:
     recipients:
       - identity@leastprivilege.com
-    on_success: always
-    on_failure: always
 
 language: csharp
+# dotnet: 1.0.0-preview2-003131
 os:
   - osx
   - linux

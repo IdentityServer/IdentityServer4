@@ -5,6 +5,7 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using IdentityServer4.Extensions;
+using System;
 
 namespace IdentityServer4.Models
 {
@@ -26,20 +27,14 @@ namespace IdentityServer4.Models
         /// <param name="client">The client.</param>
         /// <param name="caller">The caller.</param>
         /// <param name="requestedClaimTypes">The requested claim types.</param>
-        public ProfileDataRequestContext(ClaimsPrincipal subject, Client client, string caller, IEnumerable<string> requestedClaimTypes = null)
+        public ProfileDataRequestContext(ClaimsPrincipal subject, Client client, string caller, IEnumerable<string> requestedClaimTypes)
         {
+            if (requestedClaimTypes.IsNullOrEmpty()) throw new ArgumentException("No claim types requested", nameof(requestedClaimTypes));
+
             Subject = subject;
             Client = client;
             Caller = caller;
-
-            if (requestedClaimTypes.IsNullOrEmpty())
-            {
-                AllClaimsRequested = true;
-            }
-            else
-            {
-                RequestedClaimTypes = requestedClaimTypes;
-            }
+            RequestedClaimTypes = requestedClaimTypes;
         }
 
         /// <summary>
@@ -49,14 +44,6 @@ namespace IdentityServer4.Models
         /// The subject.
         /// </value>
         public ClaimsPrincipal Subject { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether all claims are requested.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if all claims are requested; otherwise, <c>false</c>.
-        /// </value>
-        public bool AllClaimsRequested { get; set; }
 
         /// <summary>
         /// Gets or sets the requested claim types.

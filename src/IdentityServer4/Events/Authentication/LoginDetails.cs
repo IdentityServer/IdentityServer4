@@ -2,37 +2,43 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityServer4.Models;
-
 namespace IdentityServer4.Events
 {
     /// <summary>
     /// Event details for login events
     /// </summary>
-    public class LoginDetails : AuthenticationDetails
+    public class LoginDetails
     {
         /// <summary>
-        /// Gets or sets the sign in identifier.
+        /// Gets or sets the subject identifier.
         /// </summary>
         /// <value>
-        /// The sign in identifier.
+        /// The subject identifier.
         /// </value>
-        public string SignInId { get; set; }
+        public string SubjectId { get; set; }
 
         /// <summary>
-        /// Gets or sets the sign in message.
+        /// Gets or sets the user's name.
         /// </summary>
         /// <value>
-        /// The sign in message.
+        /// The name.
         /// </value>
-        public AuthorizationRequest AuthorizationRequest { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether login was a partial login.
+        /// Gets or sets the IdP.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if is a partial login; otherwise, <c>false</c>.
+        /// The IdP.
         /// </value>
-        public bool PartialLogin { get; set; }      
+        public string IdP { get; set; }
+
+        /// <summary>
+        /// Gets or sets the amr.
+        /// </summary>
+        /// <value>
+        /// The amr.
+        /// </value>
+        public string Amr { get; set; }
     }
 }

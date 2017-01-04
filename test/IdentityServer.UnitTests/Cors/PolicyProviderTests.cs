@@ -33,10 +33,10 @@ namespace IdentityServer4.UnitTests.Hosting.Cors
         public void Init()
         {
             _options = new IdentityServerOptions();
-            _options.CorsOptions.CorsPaths.Clear();
+            _options.Cors.CorsPaths.Clear();
             foreach(var path in _allowedPaths)
             {
-                _options.CorsOptions.CorsPaths.Add(new PathString(path));
+                _options.Cors.CorsPaths.Add(new PathString(path));
             }
 
             _subject = new CorsPolicyProvider(
@@ -68,7 +68,7 @@ namespace IdentityServer4.UnitTests.Hosting.Cors
             ctx.Request.Path = new PathString(path);
             ctx.Request.Headers.Add("Origin", "http://notserver");
 
-            var response = await _subject.GetPolicyAsync(ctx, _options.CorsOptions.CorsPolicyName);
+            var response = await _subject.GetPolicyAsync(ctx, _options.Cors.CorsPolicyName);
 
             _mockPolicy.WasCalled.Should().BeTrue();
             _mockInner.WasCalled.Should().BeFalse();
@@ -96,7 +96,7 @@ namespace IdentityServer4.UnitTests.Hosting.Cors
             ctx.Request.Path = new PathString(path);
             ctx.Request.Headers.Add("Origin", "http://notserver");
 
-            var response = await _subject.GetPolicyAsync(ctx, _options.CorsOptions.CorsPolicyName);
+            var response = await _subject.GetPolicyAsync(ctx, _options.Cors.CorsPolicyName);
 
             _mockPolicy.WasCalled.Should().BeFalse();
             _mockInner.WasCalled.Should().BeFalse();
@@ -140,7 +140,7 @@ namespace IdentityServer4.UnitTests.Hosting.Cors
             ctx.Request.Path = new PathString("/foo");
             ctx.Request.Headers.Add("Origin", "https://server");
 
-            var response = await _subject.GetPolicyAsync(ctx, _options.CorsOptions.CorsPolicyName);
+            var response = await _subject.GetPolicyAsync(ctx, _options.Cors.CorsPolicyName);
 
             _mockPolicy.WasCalled.Should().BeFalse();
             _mockInner.WasCalled.Should().BeFalse();
@@ -163,7 +163,7 @@ namespace IdentityServer4.UnitTests.Hosting.Cors
             ctx.Request.Path = new PathString("/foo");
             ctx.Request.Headers.Add("Origin", origin);
 
-            var response = await _subject.GetPolicyAsync(ctx, _options.CorsOptions.CorsPolicyName);
+            var response = await _subject.GetPolicyAsync(ctx, _options.Cors.CorsPolicyName);
 
             _mockPolicy.WasCalled.Should().BeTrue();
             _mockInner.WasCalled.Should().BeFalse();

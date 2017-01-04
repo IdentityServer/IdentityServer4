@@ -9,13 +9,13 @@ IdentityServer4.EntityFramework
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 There are two types of data that we are moving to the database. 
-The first is the configuration data (scopes and clients).
+The first is the configuration data (resources and clients).
 The second is operational data that IdentityServer produces as it's being used.
 These stores are modeled with interfaces, and we provide an EF implementation of these interfaces in the `IdentityServer4.EntityFramework` Nuget package.
 
 Get started by adding a reference to the `IdentityServer4.EntityFramework` Nuget package in `project.json` in the IdentityServer project:: 
 
-    "IdentityServer4.EntityFramework": "1.0.0-rc2"
+    "IdentityServer4.EntityFramework": "1.0.0"
 
 Adding SqlServer
 ^^^^^^^^^^^^^^^^
@@ -26,7 +26,7 @@ For this quickstart we will use the LocalDb version of SqlServer that comes with
 To add SqlServer, we need several more dependencies. 
 In the `"dependencies"` section in `project.json` add these packages::
 
-  "Microsoft.EntityFrameworkCore.SqlServer": "1.0.0",
+  "Microsoft.EntityFrameworkCore.SqlServer": "1.1.0",
   "Microsoft.EntityFrameworkCore.Tools": "1.0.0-preview2-final"
 
 And then in the `"tools"` section add this configuration::
@@ -36,7 +36,7 @@ And then in the `"tools"` section add this configuration::
 Configuring the stores
 ^^^^^^^^^^^^^^^^^^^^^^
 
-The next step is to replace the current calls to ``AddInMemoryClients`` and ``AddInMemoryScopes`` in the ``Configure`` method in `Startup.cs`.
+The next step is to replace the current calls to ``AddInMemoryClients``, ``AddInMemoryIdentityResources``, and ``AddInMemoryApiResources`` in the ``Configure`` method in `Startup.cs`.
 We will replace them with this code::
 
   using Microsoft.EntityFrameworkCore;
@@ -46,12 +46,13 @@ We will replace them with this code::
   {
       services.AddMvc();
 
-      var connectionString = @"server=(localdb)\mssqllocaldb;database=IdentityServer4;trusted_connection=yes";
+      var connectionString = @"server=(localdb)\mssqllocaldb;database=IdentityServer4.Quickstart;trusted_connection=yes";
       var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
             
-      // configure identity server with in-memory users, but EF stores for clients and scopes
-      services.AddDeveloperIdentityServer()
-          .AddInMemoryUsers(Config.GetUsers())
+      // configure identity server with in-memory users, but EF stores for clients and resources
+      services.AddIdentityServer()
+          .AddTemporarySigningCredential()
+          .AddTestUsers(Config.GetUsers())
           .AddConfigurationStore(builder =>
               builder.UseSqlServer(connectionString, options =>
                   options.MigrationsAssembly(migrationsAssembly)))
@@ -81,14 +82,15 @@ Adding migrations
 To create the migrations, open a command prompt in the IdentityServer project directory.
 In the command prompt run these two commands::
 
-   dotnet ef migrations add InitialIdentityServerMigration -c PersistedGrantDbContext 
-   dotnet ef migrations add InitialIdentityServerMigration -c ConfigurationDbContext
+    dotnet ef migrations add InitialIdentityServerPersistedGrantDbMigration -c PersistedGrantDbContext -o Data/Migrations/IdentityServer/PersistedGrantDb
+    dotnet ef migrations add InitialIdentityServerConfigurationDbMigration -c ConfigurationDbContext -o Data/Migrations/IdentityServer/ConfigurationDb
+
 
 It should look something like this:
 
 .. image:: images/8_add_migrations.png
 
-You should now see a `~/Migrations` folder in the project. 
+You should now see a `~/Data/Migrations/IdentityServer` folder in the project. 
 This contains the code for the newly created migrations.
 
 Initialize the database
@@ -101,11 +103,11 @@ In `Startup.cs` add this method to help initialize the database::
 
     private void InitializeDatabase(IApplicationBuilder app)
     {
-        using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+        using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
         {
-            scope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
+            serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
 
-            var context = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+            var context = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
             context.Database.Migrate();
             if (!context.Clients.Any())
             {
@@ -116,11 +118,20 @@ In `Startup.cs` add this method to help initialize the database::
                 context.SaveChanges();
             }
 
-            if (!context.Scopes.Any())
+            if (!context.IdentityResources.Any())
             {
-                foreach (var client in Config.GetScopes())
+                foreach (var resource in Config.GetIdentityResources())
                 {
-                    context.Scopes.Add(client.ToEntity());
+                    context.IdentityResources.Add(resource.ToEntity());
+                }
+                context.SaveChanges();
+            }
+
+            if (!context.ApiResources.Any())
+            {
+                foreach (var resource in Config.GetApiResources())
+                {
+                    context.ApiResources.Add(resource.ToEntity());
                 }
                 context.SaveChanges();
             }
@@ -148,5 +159,3 @@ Run the client applications
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You should now be able to run any of the existing client applications and sign-in, get tokens, and call the API -- all based upon the database configuration.
-
-

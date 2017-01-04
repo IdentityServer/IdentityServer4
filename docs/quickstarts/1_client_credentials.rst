@@ -7,24 +7,20 @@ This quickstart presents the most basic scenario for protecting APIs using Ident
 In this scenario we will define an API and a client that wants to access it.
 The client will request an access token at IdentityServer and use it to gain access to the API.
 
-Defining the scope
-^^^^^^^^^^^^^^^^^^
+Defining the API
+^^^^^^^^^^^^^^^^
 Scopes define the resources in your system that you want to protect, e.g. APIs.
 
 Since we are using the in-memory configuration for this walkthrough - all you need to do 
-to add an API, is to create an object of type ``Scope`` and set the appropriate properties.
+to add an API, is to create an object of type ``ApiResource`` and set the appropriate properties.
 
 Add a file (e.g. ``config.cs``) into your project and add the following code::
 
-    public static IEnumerable<Scope> GetScopes()
+    public static IEnumerable<ApiResource> GetApiResources()
     {
-        return new List<Scope>
+        return new List<ApiResource>
         {
-            new Scope
-            {
-                Name = "api1",
-                Description = "My API"
-            }
+            new ApiResource("api1", "My API")
         };
     }
 
@@ -68,9 +64,10 @@ under the covers these add the relevant stores and data into the DI system::
 
     public void ConfigureServices(IServiceCollection services)
     {
-        // configure identity server with in-memory stores, keys, clients and scopes
-        services.AddDeveloperIdentityServer()
-            .AddInMemoryScopes(Config.GetScopes())
+        // configure identity server with in-memory stores, keys, clients and resources
+        services.AddIdentityServer()
+            .AddTemporarySigningCredential()
+            .AddInMemoryApiResources(Config.GetApiResources())
             .AddInMemoryClients(Config.GetClients());
     }
 
@@ -118,7 +115,7 @@ The job of that middleware is:
 
 Add the following package to your project.json::
 
-    "IdentityServer4.AccessTokenValidation": "1.0.1-rc2"
+    "IdentityServer4.AccessTokenValidation": "1.0.1"
 
 You also need to add the middleware to your pipeline. 
 It must be added **before** MVC, e.g.::
@@ -131,9 +128,9 @@ It must be added **before** MVC, e.g.::
         app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
         {
             Authority = "http://localhost:5000",
-            ScopeName = "api1",
+            RequireHttpsMetadata = false,
 
-            RequireHttpsMetadata = false
+            ApiName = "api1"
         });
 
         app.UseMvc();
@@ -165,7 +162,7 @@ endpoint addresses can be read from the metadata::
     var disco = await DiscoveryClient.GetAsync("http://localhost:5000");
 
 Next you can use the ``TokenClient`` class to request the token.
-You create an instance you need to pass in the token endpoint address, client id and secret.
+To create an instance you need to pass in the token endpoint address, client id and secret.
 
 Next you can use the ``RequestClientCredentialsAsync`` method to request a token for your API::
 
@@ -198,9 +195,11 @@ This is done using the ``SetBearerToken`` extension method::
     {
         Console.WriteLine(response.StatusCode);
     }
-
-    var content = response.Content.ReadAsStringAsync().Result;
-    Console.WriteLine(JArray.Parse(content));
+    else
+    {
+        var content = await response.Content.ReadAsStringAsync();
+        Console.WriteLine(JArray.Parse(content));
+    }
 
 The output should look like this:
 

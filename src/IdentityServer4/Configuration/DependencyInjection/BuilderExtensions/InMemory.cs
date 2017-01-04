@@ -4,11 +4,7 @@
 
 using IdentityServer4.Models;
 using IdentityServer4.Services;
-using IdentityServer4.Services.Default;
-using IdentityServer4.Services.InMemory;
 using IdentityServer4.Stores;
-using IdentityServer4.Stores.InMemory;
-using IdentityServer4.Validation;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Collections.Generic;
@@ -31,15 +27,29 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Adds the in memory scopes.
+        /// Adds the in memory identity resources.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        /// <param name="scopes">The scopes.</param>
+        /// <param name="identityResources">The identity resources.</param>
         /// <returns></returns>
-        public static IIdentityServerBuilder AddInMemoryScopes(this IIdentityServerBuilder builder, IEnumerable<Scope> scopes)
+        public static IIdentityServerBuilder AddInMemoryIdentityResources(this IIdentityServerBuilder builder, IEnumerable<IdentityResource> identityResources)
         {
-            builder.Services.AddSingleton(scopes);
-            builder.Services.AddTransient<IScopeStore, InMemoryScopeStore>();
+            builder.Services.AddSingleton(identityResources);
+            builder.Services.TryAddTransient<IResourceStore, InMemoryResourcesStore>();
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds the in memory API resources.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="apiResources">The API resources.</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddInMemoryApiResources(this IIdentityServerBuilder builder, IEnumerable<ApiResource> apiResources)
+        {
+            builder.Services.AddSingleton(apiResources);
+            builder.Services.TryAddTransient<IResourceStore, InMemoryResourcesStore>();
 
             return builder;
         }
@@ -61,28 +71,11 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Adds the in memory users.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <param name="users">The users.</param>
-        /// <returns></returns>
-        public static IIdentityServerBuilder AddInMemoryUsers(this IIdentityServerBuilder builder, List<InMemoryUser> users)
-        {
-            builder.Services.AddSingleton(users);
-
-            builder.Services.AddTransient<IProfileService, InMemoryUserProfileService>();
-            builder.Services.AddTransient<IResourceOwnerPasswordValidator, InMemoryUserResourceOwnerPasswordValidator>();
-            builder.Services.AddTransient<InMemoryUserLoginService>();
-
-            return builder;
-        }
-
-        /// <summary>
         /// Adds the in memory stores.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns></returns>
-        public static IIdentityServerBuilder AddInMemoryStores(this IIdentityServerBuilder builder)
+        public static IIdentityServerBuilder AddInMemoryPersistedGrants(this IIdentityServerBuilder builder)
         {
             builder.Services.TryAddSingleton<IPersistedGrantStore, InMemoryPersistedGrantStore>();
 

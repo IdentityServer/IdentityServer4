@@ -6,7 +6,7 @@ using FluentAssertions;
 using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
-using IdentityServer4.Stores.InMemory;
+using IdentityServer4.Stores;
 using IdentityServer4.UnitTests.Common;
 using IdentityServer4.Validation;
 using System.Collections.Generic;
@@ -51,7 +51,7 @@ namespace IdentityServer4.UnitTests.Validation.EndSessionRequestValidation
         [Fact]
         public async Task anonymous_user_when_options_require_authenticated_user_should_return_error()
         {
-            _options.AuthenticationOptions.RequireAuthenticatedUserForSignOutMessage = true;
+            _options.Authentication.RequireAuthenticatedUserForSignOutMessage = true;
 
             var parameters = new NameValueCollection();
             var result = await _subject.ValidateAsync(parameters, null);

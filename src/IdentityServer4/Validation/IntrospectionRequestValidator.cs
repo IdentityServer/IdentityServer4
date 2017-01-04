@@ -22,7 +22,7 @@ namespace IdentityServer4.Validation
             _logger = logger;
         }
 
-        public async Task<IntrospectionRequestValidationResult> ValidateAsync(NameValueCollection parameters, Scope scope)
+        public async Task<IntrospectionRequestValidationResult> ValidateAsync(NameValueCollection parameters, ApiResource apiResource)
         {
             _logger.LogDebug("Introspection request validation started.");
 
@@ -53,14 +53,15 @@ namespace IdentityServer4.Validation
                 return fail;
             }
 
-            // check expected scope
-            var expectedScope = tokenValidationResult.Claims.FirstOrDefault(
-                c => c.Type == JwtClaimTypes.Scope && c.Value == scope.Name);
+            // check expected scopes
+            var supportedScopes = apiResource.Scopes.Select(x => x.Name);
+            var expectedScopes = tokenValidationResult.Claims.Where(
+                c => c.Type == JwtClaimTypes.Scope && supportedScopes.Contains(c.Value));
 
             // expected scope not present
-            if (expectedScope == null)
+            if (!expectedScopes.Any())
             {
-                _logger.LogError("Expected scope of {scope} is missing", scope.Name);
+                _logger.LogError("Expected scope {scopes} is missing in token", supportedScopes);
 
                 fail.IsActive = false;
                 fail.IsError = true;
@@ -69,13 +70,19 @@ namespace IdentityServer4.Validation
                 return fail;
             }
 
+            var claims = tokenValidationResult.Claims;
+
+            // filter out scopes that this API resource does not own
+            claims = claims.Where(x => x.Type != JwtClaimTypes.Scope ||
+                (x.Type == JwtClaimTypes.Scope && supportedScopes.Contains(x.Value)));
+
             // all is good
             var success = new IntrospectionRequestValidationResult
             {
                 IsActive = true,
                 IsError = false,
                 Token = token,
-                Claims = tokenValidationResult.Claims
+                Claims = claims
             };
 
             _logger.LogDebug("Introspection request validation successful.");

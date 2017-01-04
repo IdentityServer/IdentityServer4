@@ -7,12 +7,12 @@ using IdentityServer4.Validation;
 
 namespace IdentityServer4.Models
 {
-    class AuthorizeResponse
+    public class AuthorizeResponse
     {
         public ValidatedAuthorizeRequest Request { get; set; }
         public string RedirectUri => Request?.RedirectUri;
         public string State => Request?.State;
-        public string Scope => Request?.ValidatedScopes?.GrantedScopes?.ToSpaceSeparatedString();
+        public string Scope => Request?.ValidatedScopes?.GrantedResources?.ToScopeNames()?.ToSpaceSeparatedString();
 
         public string IdentityToken { get; set; }
         public string AccessToken { get; set; }

@@ -33,10 +33,17 @@ Then select the "Empty Web" option.
 
 .. image:: images/0_empty_web.png
 
-Next, add the IdentityServer4 nuget package by adding the following line to your project.json::
+.. note:: IdentityServer currently only targets ASP.NET Core 1.1, so if you are starting with an ASP.NET Core 1.0 project then you can follow `this guide for updating to ASP.NET Core 1.1 <https://blogs.msdn.microsoft.com/webdev/2016/11/16/announcing-asp-net-core-1-1/>`_.
 
-    "IdentityServer4": "1.0.0-rc2"
+Next, add the IdentityServer4 nuget package by adding the following line to your project.json under the ´dependencies´ property::
+
+    "IdentityServer4": "1.0.0"
     
+Alternatively you can use Package Manager Console to add the dependency by running the following command:
+
+    "Install-Package IdentityServer4"
+
+
 IdentityServer uses the usual pattern to configure and add services to an ASP.NET Core host.
 In ``ConfigureServices`` the required services are configured and added to the DI system. 
 In ``Configure`` the middleware is added to the HTTP pipeline.
@@ -47,7 +54,8 @@ Modify your ``Startup.cs`` file to look like this::
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDeveloperIdentityServer();
+            services.AddIdentityServer()
+                .AddTemporarySigningCredential();
         }
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
@@ -59,12 +67,15 @@ Modify your ``Startup.cs`` file to look like this::
         }
     }
 
-``AddDeveloperIdentityServer`` is a convenient way to quickly setup IdentityServer with
-in-memory keys and data stores. This is only useful for development and test scenarios. 
+``AddIdentityServer`` registers the IdentityServer services in DI. It also registers an in-memory store for runtime state.
+This is useful for development scenarios. For production scenarios you need a persistent or shared store like a database or cache for that.
+See the :ref:`EntityFramework <refEntityFrameworkQuickstart>` quickstart for more information.
 
-For real deployments you would rather use keys loaded from a secured location,
-as well as persistent backing stores.
-But as the name says, this allows you to get quickly started.
+The ``AddTemporarySigningCredential`` extension creates temporary key material for signing tokens on every start.
+Again this might be useful to get started, but needs to be replaced by some persistent key material for production scenarios.
+See the :ref:`cryptography docs <refCrypto>` for more information.
+
+.. Note:: IdentityServer is not yet ready to be launched. In fact, when you try it, you should see an exception at startup time stating that services are missing. We will add those services in the following quickstarts.
 
 Modify hosting
 ^^^^^^^^^^^^^^^

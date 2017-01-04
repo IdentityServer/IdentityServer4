@@ -10,7 +10,6 @@ using IdentityServer4.Events;
 using IdentityServer4.Hosting;
 using IdentityServer4.ResponseHandling;
 using IdentityServer4.Services;
-using IdentityServer4.Services.Default;
 using IdentityServer4.Stores;
 using IdentityServer4.Stores.Serialization;
 using IdentityServer4.Validation;
@@ -93,16 +92,20 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IIdentityServerBuilder AddCoreServices(this IIdentityServerBuilder builder)
         {
-            builder.Services.AddTransient<ScopeSecretValidator>();
+            builder.Services.AddTransient<ApiSecretValidator>();
             builder.Services.AddTransient<SecretParser>();
             builder.Services.AddTransient<ClientSecretValidator>();
             builder.Services.AddTransient<SecretValidator>();
             builder.Services.AddTransient<ScopeValidator>();
             builder.Services.AddTransient<ExtensionGrantValidator>();
             builder.Services.AddTransient<BearerTokenUsageValidator>();
-            builder.Services.AddTransient<PersistentGrantSerializer>();
+            
+            // todo: events post-poned to 1.1 
             builder.Services.AddTransient<EventServiceHelper>();
+            builder.Services.AddTransient<ReturnUrlParser>();
+            builder.Services.AddTransient<IdentityServerTools>();
 
+            builder.Services.AddTransient<IReturnUrlParser, OidcReturnUrlParser>();
             builder.Services.AddTransient<ISessionIdService, DefaultSessionIdService>();
             builder.Services.AddTransient<IClientSessionService, DefaultClientSessionService>();
             builder.Services.AddTransient(typeof(MessageCookie<>));
@@ -133,6 +136,12 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IProfileService, DefaultProfileService>();
             builder.Services.TryAddTransient(typeof(IMessageStore<>), typeof(CookieMessageStore<>));
             builder.Services.TryAddTransient<IIdentityServerInteractionService, DefaultIdentityServerInteractionService>();
+            builder.Services.TryAddTransient<IAuthorizationCodeStore, DefaultAuthorizationCodeStore>();
+            builder.Services.TryAddTransient<IRefreshTokenStore, DefaultRefreshTokenStore>();
+            builder.Services.TryAddTransient<IReferenceTokenStore, DefaultReferenceTokenStore>();
+            builder.Services.TryAddTransient<IUserConsentStore, DefaultUserConsentStore>();
+            builder.Services.TryAddTransient<IHandleGenerationService, DefaultHandleGenerationService>();
+            builder.Services.TryAddTransient<IPersistentGrantSerializer, PersistentGrantSerializer>();
 
             return builder;
         }

@@ -2,29 +2,27 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityServer4.Models;
-
 namespace IdentityServer4.Events
 {
     /// <summary>
     /// Event details for logout events
     /// </summary>
-    public class LogoutDetails : AuthenticationDetails
+    public class LogoutDetails
     {
         /// <summary>
-        /// Gets or sets the sign out identifier.
+        /// Gets or sets the subject identifier.
         /// </summary>
         /// <value>
-        /// The sign out identifier.
+        /// The subject identifier.
         /// </value>
-        public string SignOutId { get; set; }
+        public string SubjectId { get; set; }
 
         /// <summary>
-        /// Gets or sets the sign out message.
+        /// Gets or sets the user's name.
         /// </summary>
         /// <value>
-        /// The sign out message.
+        /// The name.
         /// </value>
-        public LogoutRequest SignOutMessage { get; set; }
+        public string Name { get; set; }
     }
 }

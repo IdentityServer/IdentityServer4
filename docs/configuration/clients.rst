@@ -25,18 +25,11 @@ In this scenario no interactive user is present - a service (aka client) wants t
             {
                 new Client
                 {
-                    ClientId = "service.client",
-                    ClientSecrets = new List<Secret>
-                    {
-                        new Secret("secret".Sha256())
-                    },
+                    ClientId = "service.client",                    
+                    ClientSecrets = { new Secret("secret".Sha256()) },
 
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
-
-                    AllowedScopes = new List<string>
-                    {
-                        "api1", "api2"
-                    }
+                    AllowedScopes = { "api1", "api2.read_only" }
                 }
             };
         }
@@ -55,26 +48,18 @@ This client uses the so called implicit flow to request an identity and access t
         AllowedGrantTypes = GrantTypes.Implicit,
         AllowAccessTokensViaBrowser = true,
 
-        RedirectUris = new List<string>
-        {
-            "http://localhost:7017/index.html",
-        },
-        PostLogoutRedirectUris = new List<string>
-        {
-            "http://localhost:7017/index.html",
-        },
-        AllowedCorsOrigins = new List<string>
-        {
-            "http://localhost:7017"
-        },
+        RedirectUris =           { "http://localhost:7017/index.html" },
+        PostLogoutRedirectUris = { "http://localhost:7017/index.html" },
+        AllowedCorsOrigins =     { "http://localhost:7017" },
 
-        AllowedScopes = new List<string>
+        AllowedScopes = 
         {
-            StandardScopes.OpenId.Name,
-            StandardScopes.Profile.Name,
-            StandardScopes.Email.Name,
-            "api1", "api2"
-        },
+            IdentityServerConstants.StandardScopes.OpenId,
+            IdentityServerConstants.StandardScopes.Profile,
+            IdentityServerConstants.StandardScopes.Email,
+            
+            "api1", "api2.read_only"
+        }
     };
 
 .. _startClientsMVC:
@@ -88,30 +73,22 @@ This flow gives you the best security because the access tokens are transmitted 
     {
         ClientId = "mvc",
         ClientName = "MVC Client",
-        ClientSecrets = new List<Secret>
-        {
-            new Secret("secret".Sha256())
-        },
         ClientUri = "http://identityserver.io",
 
         AllowedGrantTypes = GrantTypes.Hybrid,
+        AllowOfflineAccess = true,
+        ClientSecrets = { new Secret("secret".Sha256()) },
         
-        RedirectUris = new List<string>
-        {
-            "http://localhost:21402/signin-oidc"
-        },
-        PostLogoutRedirectUris = new List<string>
-        {
-            "http://localhost:21402/"
-        },
-        LogoutUri = "http://localhost:21402/signout-oidc",
+        RedirectUris =           { "http://localhost:21402/signin-oidc" },
+        PostLogoutRedirectUris = { "http://localhost:21402/" },
+        LogoutUri =                "http://localhost:21402/signout-oidc",
 
-        AllowedScopes = new List<string>
+        AllowedScopes = 
         {
-            StandardScopes.OpenId.Name,
-            StandardScopes.Profile.Name,
-            StandardScopes.OfflineAccess.Name,
+            IdentityServerConstants.StandardScopes.OpenId,
+            IdentityServerConstants.StandardScopes.Profile,
+            IdentityServerConstants.StandardScopes.Email,
 
-            "api1", "api2",
+            "api1", "api2.read_only"
         },
     };

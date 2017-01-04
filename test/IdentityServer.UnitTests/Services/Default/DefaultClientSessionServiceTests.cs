@@ -3,7 +3,8 @@
 
 
 using FluentAssertions;
-using IdentityServer4.Services.Default;
+using IdentityServer4.Configuration;
+using IdentityServer4.Services;
 using IdentityServer4.UnitTests.Common;
 using System;
 using System.Linq;
@@ -20,6 +21,7 @@ namespace IdentityServer4.UnitTests.Services.Default
         MockHttpContextAccessor _mockHttpContext = new MockHttpContextAccessor();
         MockSessionIdService _stubSessionId = new MockSessionIdService();
         StubAuthenticationHandler _stubAuthHandler;
+        IdentityServerOptions _options = new IdentityServerOptions();
         ClaimsPrincipal _user;
 
         public DefaultClientSessionServiceTests()
@@ -28,7 +30,7 @@ namespace IdentityServer4.UnitTests.Services.Default
             _stubAuthHandler = new StubAuthenticationHandler(_user, IdentityServerConstants.DefaultCookieAuthenticationScheme);
             _mockHttpContext.HttpContext.GetAuthentication().Handler = _stubAuthHandler;
 
-            _subject = new DefaultClientSessionService(_mockHttpContext, _stubSessionId, TestLogger.Create<DefaultClientSessionService>());
+            _subject = new DefaultClientSessionService(_mockHttpContext, _stubSessionId, _options, TestLogger.Create<DefaultClientSessionService>());
         }
 
         [Fact]
@@ -72,14 +74,14 @@ namespace IdentityServer4.UnitTests.Services.Default
         public async Task EnsureClientListCookieAsync_should_add_cookie()
         {
             await _subject.AddClientIdAsync("client");
-            await _subject.EnsureClientListCookieAsync();
+            await _subject.EnsureClientListCookieAsync(await _stubSessionId.GetCurrentSessionIdAsync());
             _mockHttpContext.HttpContext.Response.Headers.Where(x => x.Key.Equals("Set-Cookie", StringComparison.OrdinalIgnoreCase)).Count().Should().Be(1);
         }
 
         [Fact]
         public async Task EnsureClientListCookieAsync_should_not_add_cookie_if_no_clients_in_list()
         {
-            await _subject.EnsureClientListCookieAsync();
+            await _subject.EnsureClientListCookieAsync(await _stubSessionId.GetCurrentSessionIdAsync());
             _mockHttpContext.HttpContext.Response.Headers.Where(x => x.Key.Equals("Set-Cookie", StringComparison.OrdinalIgnoreCase)).Count().Should().Be(0);
         }
 
@@ -88,12 +90,12 @@ namespace IdentityServer4.UnitTests.Services.Default
         {
             await _subject.AddClientIdAsync("client1");
             await _subject.AddClientIdAsync("client2");
-            await _subject.EnsureClientListCookieAsync();
+            await _subject.EnsureClientListCookieAsync(await _stubSessionId.GetCurrentSessionIdAsync());
 
             var cookie = _mockHttpContext.HttpContext.Response.Headers.First(x => x.Key.Equals("Set-Cookie", StringComparison.OrdinalIgnoreCase)).Value;
             _mockHttpContext.HttpContext.Request.Headers.Add("Cookie", cookie);
 
-            var clients = _subject.GetClientListFromCookie();
+            var clients = _subject.GetClientListFromCookie(await _stubSessionId.GetCurrentSessionIdAsync());
             clients.Should().Contain(new string[] { "client2", "client1" });
         }
 
@@ -102,7 +104,7 @@ namespace IdentityServer4.UnitTests.Services.Default
         {
             await _subject.AddClientIdAsync("client1");
             await _subject.AddClientIdAsync("client2");
-            await _subject.EnsureClientListCookieAsync();
+            await _subject.EnsureClientListCookieAsync(await _stubSessionId.GetCurrentSessionIdAsync());
 
             var cookieContainer = new CookieContainer();
             var cookies = _mockHttpContext.HttpContext.Response.Headers.Where(x => x.Key.Equals("Set-Cookie", StringComparison.OrdinalIgnoreCase)).Select(x=>x.Value);
@@ -112,7 +114,7 @@ namespace IdentityServer4.UnitTests.Services.Default
             string cookie = cookieContainer.GetCookieHeader(new Uri("http://server"));
             _mockHttpContext.HttpContext.Request.Headers.Add("Cookie", cookie);
 
-            _subject.RemoveCookie();
+            _subject.RemoveCookie(await _stubSessionId.GetCurrentSessionIdAsync());
 
             cookies = _mockHttpContext.HttpContext.Response.Headers.Where(x => x.Key.Equals("Set-Cookie", StringComparison.OrdinalIgnoreCase)).Select(x => x.Value);
             cookies.Count().Should().BeGreaterThan(0);
@@ -121,9 +123,9 @@ namespace IdentityServer4.UnitTests.Services.Default
         }
 
         [Fact]
-        public void RemoveCookie_should_not_remove_cookie_if_no_client_list()
+        public async Task RemoveCookie_should_not_remove_cookie_if_no_client_list()
         {
-            _subject.RemoveCookie();
+            _subject.RemoveCookie(await _stubSessionId.GetCurrentSessionIdAsync());
 
             var cookies = _mockHttpContext.HttpContext.Response.Headers.Where(x => x.Key.Equals("Set-Cookie", StringComparison.OrdinalIgnoreCase)).Select(x => x.Value);
             cookies.Count().Should().Be(0);

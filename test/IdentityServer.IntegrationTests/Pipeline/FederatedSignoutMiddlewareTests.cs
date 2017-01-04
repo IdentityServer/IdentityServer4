@@ -6,8 +6,8 @@ using FluentAssertions;
 using IdentityModel;
 using IdentityServer4.Extensions;
 using IdentityServer4.IntegrationTests.Common;
+using IdentityServer4.Test;
 using IdentityServer4.Services;
-using IdentityServer4.Services.InMemory;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -34,9 +34,9 @@ namespace IdentityServer4.IntegrationTests.Pipeline
             _user = IdentityServerPrincipal.Create("bob", "bob", new Claim(JwtClaimTypes.SessionId, "123"));
             _pipeline = new MockIdSvrUiPipeline();
 
-            _pipeline.Users.Add(new InMemoryUser
+            _pipeline.Users.Add(new TestUser
             {
-                Subject = "bob",
+                SubjectId = "bob",
                 Username = "bob",
                 Claims = new Claim[]
                {
@@ -53,7 +53,7 @@ namespace IdentityServer4.IntegrationTests.Pipeline
                 _idSvrSid = await sessionId.GetCurrentSessionIdAsync();
             };
             _pipeline.Initialize();
-            _pipeline.Options.AuthenticationOptions.FederatedSignOutPaths.Add(MockIdSvrUiPipeline.FederatedSignOutPath);
+            _pipeline.Options.Authentication.FederatedSignOutPaths.Add(MockIdSvrUiPipeline.FederatedSignOutPath);
         }
 
         [Fact]
@@ -100,7 +100,7 @@ namespace IdentityServer4.IntegrationTests.Pipeline
         [Fact]
         public async Task no_signout_paths_configured_should_not_render_page_with_iframe()
         {
-            _pipeline.Options.AuthenticationOptions.FederatedSignOutPaths.Clear();
+            _pipeline.Options.Authentication.FederatedSignOutPaths.Clear();
 
             await _pipeline.LoginAsync(_user);
 

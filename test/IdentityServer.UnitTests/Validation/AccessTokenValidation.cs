@@ -41,15 +41,15 @@ namespace IdentityServer4.UnitTests.Validation
         
         public AccessTokenValidation()
         {
-            originalNowFunc = DateTimeHelper.UtcNowFunc;
-            DateTimeHelper.UtcNowFunc = () => UtcNow;
+            originalNowFunc = IdentityServerDateTime.UtcNowFunc;
+            IdentityServerDateTime.UtcNowFunc = () => UtcNow;
         }
 
         public void Dispose()
         {
             if (originalNowFunc != null)
             {
-                DateTimeHelper.UtcNowFunc = originalNowFunc;
+                IdentityServerDateTime.UtcNowFunc = originalNowFunc;
             }
         }
 
@@ -58,15 +58,14 @@ namespace IdentityServer4.UnitTests.Validation
         [Trait("Category", Category)]
         public async Task Valid_Reference_Token()
         {
-            var grants = Factory.CreateGrantService();
-            var validator = Factory.CreateTokenValidator(grants);
+            var store = Factory.CreateReferenceTokenStore();
+            var validator = Factory.CreateTokenValidator(store);
 
             var token = TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "valid", 600, "read", "write");
-            var handle = "123";
 
-            await grants.StoreReferenceTokenAsync(handle, token);
+            var handle = await store.StoreReferenceTokenAsync(token);
 
-            var result = await validator.ValidateAccessTokenAsync("123");
+            var result = await validator.ValidateAccessTokenAsync(handle);
 
             result.IsError.Should().BeFalse();
             result.Claims.Count().Should().Be(8);
@@ -77,15 +76,14 @@ namespace IdentityServer4.UnitTests.Validation
         [Trait("Category", Category)]
         public async Task Valid_Reference_Token_with_required_Scope()
         {
-            var grants = Factory.CreateGrantService();
-            var validator = Factory.CreateTokenValidator(grants);
+            var store = Factory.CreateReferenceTokenStore();
+            var validator = Factory.CreateTokenValidator(store);
 
             var token = TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "valid", 600, "read", "write");
-            var handle = "123";
 
-            await grants.StoreReferenceTokenAsync(handle, token);
+            var handle = await store.StoreReferenceTokenAsync(token);
 
-            var result = await validator.ValidateAccessTokenAsync("123", "read");
+            var result = await validator.ValidateAccessTokenAsync(handle, "read");
 
             result.IsError.Should().BeFalse();
         }
@@ -94,15 +92,14 @@ namespace IdentityServer4.UnitTests.Validation
         [Trait("Category", Category)]
         public async Task Valid_Reference_Token_with_missing_Scope()
         {
-            var grants = Factory.CreateGrantService();
-            var validator = Factory.CreateTokenValidator(grants);
+            var store = Factory.CreateReferenceTokenStore();
+            var validator = Factory.CreateTokenValidator(store);
 
             var token = TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "valid", 600, "read", "write");
-            var handle = "123";
 
-            await grants.StoreReferenceTokenAsync(handle, token);
+            var handle = await store.StoreReferenceTokenAsync(token);
 
-            var result = await validator.ValidateAccessTokenAsync("123", "missing");
+            var result = await validator.ValidateAccessTokenAsync(handle, "missing");
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.ProtectedResourceErrors.InsufficientScope);
@@ -140,17 +137,16 @@ namespace IdentityServer4.UnitTests.Validation
         {
             now = DateTime.UtcNow;
 
-            var grants = Factory.CreateGrantService();
-            var validator = Factory.CreateTokenValidator(grants);
+            var store = Factory.CreateReferenceTokenStore();
+            var validator = Factory.CreateTokenValidator(store);
 
             var token = TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "valid", 2, "read", "write");
-            var handle = "123";
 
-            await grants.StoreReferenceTokenAsync(handle, token);
+            var handle = await store.StoreReferenceTokenAsync(token);
             
             now = now.AddMilliseconds(2000);
 
-            var result = await validator.ValidateAccessTokenAsync("123");
+            var result = await validator.ValidateAccessTokenAsync(handle);
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.ProtectedResourceErrors.ExpiredToken);
@@ -217,7 +213,8 @@ namespace IdentityServer4.UnitTests.Validation
         {
             var signer = Factory.CreateDefaultTokenCreator();
             var token = TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "valid", 600, "read", "write");
-            token.Audience = "invalid";
+            token.Audiences.Clear();
+            token.Audiences.Add("invalid");
             var jwt = await signer.CreateTokenAsync(token);
 
             var validator = Factory.CreateTokenValidator(null);
@@ -231,15 +228,14 @@ namespace IdentityServer4.UnitTests.Validation
         [Trait("Category", Category)]
         public async Task Valid_AccessToken_but_Client_not_active()
         {
-            var grants = Factory.CreateGrantService();
-            var validator = Factory.CreateTokenValidator(grants);
+            var store = Factory.CreateReferenceTokenStore();
+            var validator = Factory.CreateTokenValidator(store);
 
             var token = TokenFactory.CreateAccessToken(new Client { ClientId = "unknown" }, "valid", 600, "read", "write");
-            var handle = "123";
 
-            await grants.StoreReferenceTokenAsync(handle, token);
+            var handle = await store.StoreReferenceTokenAsync(token);
 
-            var result = await validator.ValidateAccessTokenAsync("123");
+            var result = await validator.ValidateAccessTokenAsync(handle);
 
             result.IsError.Should().BeTrue();
         }

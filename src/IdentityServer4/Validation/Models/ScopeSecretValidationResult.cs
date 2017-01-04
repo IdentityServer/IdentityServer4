@@ -7,16 +7,16 @@ using IdentityServer4.Models;
 namespace IdentityServer4.Validation
 {
     /// <summary>
-    /// Validation result for client validation
+    /// Validation result for API validation
     /// </summary>
-    public class ScopeSecretValidationResult : ValidationResult
+    public class ApiSecretValidationResult : ValidationResult
     {
         /// <summary>
-        /// Gets or sets the client.
+        /// Gets or sets the resource.
         /// </summary>
         /// <value>
-        /// The client.
+        /// The resource.
         /// </value>
-        public Scope Scope { get; set; }
+        public ApiResource Resource { get; set; }
     }
 }

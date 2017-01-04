@@ -11,9 +11,7 @@ to the ASP.NET Core pipeline and configure the identityserver base address and t
             app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
             {
                 Authority = "https://demo.identityserver.io",
-                ScopeName = "api1",
-
-                AutomaticAuthenticate = true
+                AllowedScopes = { "api1" },
             });
 
             app.UseMvc();

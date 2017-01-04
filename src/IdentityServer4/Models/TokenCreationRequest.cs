@@ -4,7 +4,6 @@
 
 using IdentityServer4.Validation;
 using System;
-using System.Collections.Generic;
 using System.Security.Claims;
 
 namespace IdentityServer4.Models
@@ -31,12 +30,12 @@ namespace IdentityServer4.Models
         public Client Client { get; set; }
 
         /// <summary>
-        /// Gets or sets the scopes.
+        /// Gets or sets the resources.
         /// </summary>
         /// <value>
-        /// The scopes.
+        /// The resources.
         /// </value>
-        public IEnumerable<Scope> Scopes { get; set; }
+        public Resources Resources { get; set; }
 
         /// <summary>
         /// Gets or sets the validated request.
@@ -81,14 +80,12 @@ namespace IdentityServer4.Models
         internal void Validate()
         {
             if (Client == null) LogAndStop("client");
-            if (Scopes == null) LogAndStop("scopes");
+            if (Resources == null) LogAndStop("resources");
             if (ValidatedRequest == null) LogAndStop("validatedRequest");
         }
 
         private void LogAndStop(string name)
         {
-            // todo
-            //Logger.ErrorFormat("{0} is null", name);
             throw new ArgumentNullException(name);
         }
     }

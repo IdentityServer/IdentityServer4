@@ -4,6 +4,8 @@ Blog posts
 Team posts
 ^^^^^^^^^^
 * `Announcing IdentityServer4 RC1 <https://leastprivilege.com/2016/09/06/identityserver4-rc1/>`_
+* `Optimizing Tokens for size <https://leastprivilege.com/2016/12/14/optimizing-identity-tokens-for-size/>`_
+* `Identity vs Permissions <https://leastprivilege.com/2016/12/16/identity-vs-permissions/>`_
 
 What's new posts
 ^^^^^^^^^^^^^^^^
@@ -11,6 +13,9 @@ What's new posts
 * `New in IdentityServer4: Default Scopes <https://leastprivilege.com/2016/09/14/new-in-identityserver4-default-scopes/>`_
 * `New in IdentityServer4: Support for Extension Grants <https://leastprivilege.com/2016/09/20/new-in-identityserver4-support-for-extension-grants/>`_
 * `New in IdentityServer4: Resource Owner Password Validation <https://leastprivilege.com/2016/09/29/new-in-identityserver4-resource-owner-password-validation/>`_
+* `New in IdentityServer4: Resource-based Configuration <https://leastprivilege.com/2016/12/01/new-in-identityserver4-resource-based-configuration/>`_
+
+
 
 Community posts
 ^^^^^^^^^^^^^^^

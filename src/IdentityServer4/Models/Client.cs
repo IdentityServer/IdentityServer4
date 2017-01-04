@@ -30,6 +30,14 @@ namespace IdentityServer4.Models
         public string ClientId { get; set; }
 
         /// <summary>
+        /// Gets or sets the protocol type.
+        /// </summary>
+        /// <value>
+        /// The protocol type.
+        /// </value>
+        public string ProtocolType { get; set; } = IdentityServerConstants.ProtocolTypes.OpenIdConnect;
+
+        /// <summary>
         /// Client secrets - only relevant for flows that require a secret
         /// </summary>
         public ICollection<Secret> ClientSecrets { get; set; } = new HashSet<Secret>();
@@ -117,18 +125,19 @@ namespace IdentityServer4.Models
         public bool LogoutSessionRequired { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets a value indicating whether the client has access to all scopes. Defaults to false.
-        /// You can set the allowed scopes via the AllowedScopes list.
+        /// Gets or sets a value indicating whether [allow offline access].
         /// </summary>
-        /// <value>
-        /// <c>true</c> if client has access to all scopes; otherwise, <c>false</c>.
-        /// </value>
-        public bool AllowAccessToAllScopes { get; set; } = false;
+        public bool AllowOfflineAccess { get; set; } = false;
 
         /// <summary>
-        /// Specifies the scopes that the client is allowed to request. If empty, the client can't access any scope
+        /// Specifies the api scopes that the client is allowed to request. If empty, the client can't access any scope
         /// </summary>
         public ICollection<string> AllowedScopes { get; set; } = new HashSet<string>();
+
+        /// <summary>
+        /// When requesting both an id token and access token, should the user claims always be added to the id token instead of requring the client to use the userinfo endpoint.
+        /// </summary>
+        public bool AlwaysIncludeUserClaimsInIdToken { get; set; } = false;
 
         /// <summary>
         /// Lifetime of identity token in seconds (defaults to 300 seconds / 5 minutes)
@@ -242,7 +251,6 @@ namespace IdentityServer4.Models
             }
 
             // spaces are not allowed in grant types
-            // todo: check for other characters?
             foreach (var type in grantTypes)
             {
                 if (type.Contains(' '))

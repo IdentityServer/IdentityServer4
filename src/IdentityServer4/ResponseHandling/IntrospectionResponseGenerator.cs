@@ -22,37 +22,33 @@ namespace IdentityServer4.ResponseHandling
             _logger = logger;
         }
 
-        public Task<Dictionary<string, object>> ProcessAsync(IntrospectionRequestValidationResult validationResult, Scope scope)
+        public Task<Dictionary<string, object>> ProcessAsync(IntrospectionRequestValidationResult validationResult, ApiResource apiResource)
         {
             _logger.LogTrace("Creating introspection response");
 
-            var response = new Dictionary<string, object>();
-            
             if (validationResult.IsActive == false)
             {
                 _logger.LogDebug("Creating introspection response for inactive token.");
 
+                var response = new Dictionary<string, object>();
                 response.Add("active", false);
                 return Task.FromResult(response);
             }
-
-            if (scope.AllowUnrestrictedIntrospection)
-            {
-                _logger.LogDebug("Creating unrestricted introspection response for active token.");
-
-                response = validationResult.Claims.ToClaimsDictionary();
-                response.Add("active", true);
-            }
             else
-            {
-                _logger.LogDebug("Creating restricted introspection response for active token.");
+            { 
+                _logger.LogDebug("Creating introspection response for active token.");
 
-                response = validationResult.Claims.Where(c => c.Type != JwtClaimTypes.Scope).ToClaimsDictionary();
+                var response = validationResult.Claims.Where(c => c.Type != JwtClaimTypes.Scope).ToClaimsDictionary();
+
+                var allowedScopes = apiResource.Scopes.Select(x => x.Name);
+                var scopes = validationResult.Claims.Where(c => c.Type == JwtClaimTypes.Scope).Select(x => x.Value);
+                scopes = scopes.Where(x => allowedScopes.Contains(x));
+                response.Add("scope", scopes.ToArray());
+
                 response.Add("active", true);
-                response.Add("scope", new[] { scope.Name });
-            }
 
-            return Task.FromResult(response);
+                return Task.FromResult(response);
+            }
         }
     }
 }

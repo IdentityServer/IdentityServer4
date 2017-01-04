@@ -4,14 +4,12 @@
 
 using IdentityServer4.Configuration;
 using IdentityServer4.Services;
-using IdentityServer4.Services.Default;
 using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using IdentityServer4.Stores;
 using IdentityServer4.UnitTests.Common;
 using IdentityServer4.Stores.Serialization;
-using IdentityServer4.Stores.InMemory;
 
 namespace IdentityServer4.UnitTests.Validation
 {
@@ -22,15 +20,16 @@ namespace IdentityServer4.UnitTests.Validation
             return new InMemoryClientStore(TestClients.Get());
         }
 
-        public static ScopeValidator CreateScopeValidator(IScopeStore store)
+        public static ScopeValidator CreateScopeValidator(IResourceStore store)
         {
             return new ScopeValidator(store, TestLogger.Create<ScopeValidator>());
         }
 
         public static TokenRequestValidator CreateTokenRequestValidator(
             IdentityServerOptions options = null,
-            IScopeStore scopes = null,
-            IPersistedGrantService grants = null,
+            IResourceStore resourceStore = null,
+            IAuthorizationCodeStore authorizationCodeStore = null,
+            IRefreshTokenStore refreshTokenStore = null,
             IResourceOwnerPasswordValidator resourceOwnerValidator = null,
             IProfileService profile = null,
             IEnumerable<IExtensionGrantValidator> extensionGrantValidators = null,
@@ -42,9 +41,9 @@ namespace IdentityServer4.UnitTests.Validation
                 options = TestIdentityServerOptions.Create();
             }
 
-            if (scopes == null)
+            if (resourceStore == null)
             {
-                scopes = new InMemoryScopeStore(TestScopes.Get());
+                resourceStore = new InMemoryResourcesStore(TestScopes.GetIdentity(), TestScopes.GetApis());
             }
 
             if (resourceOwnerValidator == null)
@@ -72,19 +71,25 @@ namespace IdentityServer4.UnitTests.Validation
                 aggregateExtensionGrantValidator = new ExtensionGrantValidator(extensionGrantValidators, TestLogger.Create<ExtensionGrantValidator>());
             }
 
-            if (grants == null)
+            if (authorizationCodeStore == null)
             {
-                grants = CreateGrantService();
+                authorizationCodeStore = CreateAuthorizationCodeStore();
+            }
+
+            if (refreshTokenStore == null)
+            {
+                refreshTokenStore = CreateRefreshTokenStore();
             }
 
             if (scopeValidator == null)
             {
-                scopeValidator = new ScopeValidator(scopes, new LoggerFactory().CreateLogger<ScopeValidator>());
+                scopeValidator = new ScopeValidator(resourceStore, new LoggerFactory().CreateLogger<ScopeValidator>());
             }
 
             return new TokenRequestValidator(
                 options,
-                grants,
+                authorizationCodeStore,
+                refreshTokenStore,
                 resourceOwnerValidator,
                 profile,
                 aggregateExtensionGrantValidator,
@@ -97,12 +102,12 @@ namespace IdentityServer4.UnitTests.Validation
         internal static ITokenCreationService CreateDefaultTokenCreator()
         {
             return new DefaultTokenCreationService(
-                new DefaultKeyMaterialService(new IValidationKeysStore[] { }, new DefaultSigningCredentialsStore(TestCert.LoadSigningCredentials())));
+                new DefaultKeyMaterialService(new IValidationKeysStore[] { }, new DefaultSigningCredentialsStore(TestCert.LoadSigningCredentials())), TestLogger.Create<DefaultTokenCreationService>());
         }
 
         public static AuthorizeRequestValidator CreateAuthorizeRequestValidator(
             IdentityServerOptions options = null,
-            IScopeStore scopes = null,
+            IResourceStore resourceStore = null,
             IClientStore clients = null,
             IProfileService profile = null,
             ICustomAuthorizeRequestValidator customValidator = null,
@@ -114,9 +119,9 @@ namespace IdentityServer4.UnitTests.Validation
                 options = TestIdentityServerOptions.Create();
             }
 
-            if (scopes == null)
+            if (resourceStore == null)
             {
-                scopes = new InMemoryScopeStore(TestScopes.Get());
+                resourceStore = new InMemoryResourcesStore(TestScopes.GetIdentity(), TestScopes.GetApis());
             }
 
             if (clients == null)
@@ -136,7 +141,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             if (scopeValidator == null)
             {
-                scopeValidator = new ScopeValidator(scopes, new LoggerFactory().CreateLogger<ScopeValidator>());
+                scopeValidator = new ScopeValidator(resourceStore, new LoggerFactory().CreateLogger<ScopeValidator>());
             }
 
             var sessionId = new MockSessionIdService();
@@ -151,16 +156,16 @@ namespace IdentityServer4.UnitTests.Validation
                 TestLogger.Create<AuthorizeRequestValidator>());
         }
 
-        public static TokenValidator CreateTokenValidator(IPersistedGrantService grants = null, IProfileService profile = null)
+        public static TokenValidator CreateTokenValidator(IReferenceTokenStore store = null, IProfileService profile = null)
         {
             if (profile == null)
             {
                 profile = new TestProfileService();
             }
 
-            if (grants == null)
+            if (store == null)
             {
-                grants = CreateGrantService();
+                store = CreateReferenceTokenStore();
             }
 
             var clients = CreateClientStore();
@@ -170,7 +175,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             var validator = new TokenValidator(
                 clients: clients,
-                grants: grants,
+                referenceTokenStore: store,
                 customValidator: new DefaultCustomTokenValidator(
                     profile: profile,
                     clients: clients,
@@ -213,11 +218,33 @@ namespace IdentityServer4.UnitTests.Validation
             return new ClientSecretValidator(clients, parser, validator, new TestEventService(), TestLogger.Create<ClientSecretValidator>());
         }
 
-        public static IPersistedGrantService CreateGrantService()
+        public static IAuthorizationCodeStore CreateAuthorizationCodeStore()
         {
-            return new DefaultPersistedGrantService(new InMemoryPersistedGrantStore(),
+            return new DefaultAuthorizationCodeStore(new InMemoryPersistedGrantStore(),
                 new PersistentGrantSerializer(),
-                TestLogger.Create<DefaultPersistedGrantService>());
+                new DefaultHandleGenerationService(),
+                TestLogger.Create<DefaultAuthorizationCodeStore>());
+        }
+        public static IRefreshTokenStore CreateRefreshTokenStore()
+        {
+            return new DefaultRefreshTokenStore(new InMemoryPersistedGrantStore(),
+                new PersistentGrantSerializer(),
+                new DefaultHandleGenerationService(),
+                TestLogger.Create<DefaultRefreshTokenStore>());
+        }
+        public static IReferenceTokenStore CreateReferenceTokenStore()
+        {
+            return new DefaultReferenceTokenStore(new InMemoryPersistedGrantStore(),
+                new PersistentGrantSerializer(),
+                new DefaultHandleGenerationService(),
+                TestLogger.Create<DefaultReferenceTokenStore>());
+        }
+        public static IUserConsentStore CreateUserConsentStore()
+        {
+            return new DefaultUserConsentStore(new InMemoryPersistedGrantStore(),
+                new PersistentGrantSerializer(),
+                new DefaultHandleGenerationService(),
+                TestLogger.Create<DefaultUserConsentStore>());
         }
     }
 }

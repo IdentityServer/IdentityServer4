@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System;
 using IdentityServer4.Extensions;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Http.Authentication;
 
 namespace IdentityServer4.Hosting
 {
@@ -34,7 +35,7 @@ namespace IdentityServer4.Hosting
             await _next(context);
 
             if (context.Response.StatusCode == 200 && 
-                _options.AuthenticationOptions.FederatedSignOutPaths.Any(x=>x == context.Request.Path))
+                _options.Authentication.FederatedSignOutPaths.Any(x=>x == context.Request.Path))
             {
                 await ProcessResponseAsync(context);
             }
@@ -47,19 +48,19 @@ namespace IdentityServer4.Hosting
             var user = await context.GetIdentityServerUserAsync();
             if (user != null)
             {
-                var sid = user.FindFirst(OidcConstants.EndSessionRequest.Sid)?.Value;
-                if (sid != null)
+                var upstreamSid = user.FindFirst(OidcConstants.EndSessionRequest.Sid)?.Value;
+                if (upstreamSid != null)
                 {
                     var sidParam = await GetSidRequestParamAsync(context.Request);
-                    if (TimeConstantComparer.IsEqual(sid, sidParam))
+                    if (TimeConstantComparer.IsEqual(upstreamSid, sidParam))
                     {
-                        _logger.LogDebug("sid parameter matches current sid");
+                        _logger.LogDebug("sid parameter matches external idp sid claim for current user");
 
                         var iframeUrl = await context.GetIdentityServerSignoutFrameCallbackUrlAsync();
                         if (iframeUrl != null)
                         {
                             _logger.LogDebug("Rendering signout callback iframe");
-                            await RenderResponseAsync(context, iframeUrl, sid);
+                            await RenderResponseAsync(context, iframeUrl);
                         }
                         else
                         {
@@ -96,9 +97,11 @@ namespace IdentityServer4.Hosting
             return null;
         }
 
-        private async Task RenderResponseAsync(HttpContext context, string iframeUrl, string sid)
+        private async Task RenderResponseAsync(HttpContext context, string iframeUrl)
         {
-            await context.Authentication.SignOutAsync(_options.AuthenticationOptions.EffectiveAuthenticationScheme);
+            context.Response.SetNoCache();
+
+            await context.Authentication.SignOutAsync();
 
             if (context.Response.Body.CanWrite)
             {

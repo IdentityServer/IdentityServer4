@@ -9,27 +9,37 @@ namespace IdentityServer4.UnitTests.Validation
 {
     class TestScopes
     {
-        public static IEnumerable<Scope> Get()
+        public static IEnumerable<IdentityResource> GetIdentity()
         {
-            return new Scope[]
+            return new IdentityResource[]
             {
-                StandardScopes.OpenId,
-                StandardScopes.Profile,
-                StandardScopes.OfflineAccess,
+                new IdentityResources.OpenId(),
+                new IdentityResources.Profile(),
+            };
+        }
 
-                new Scope
+        public static IEnumerable<ApiResource> GetApis()
+        {
+            return new ApiResource[]
+            {
+                new ApiResource
                 {
-                    Name = "resource",
-                    Description = "resource scope",
-                    Type = ScopeType.Resource
-                },
-                new Scope
-                {
-                    Name = "resource2",
-                    Description = "resource scope",
-                    Type = ScopeType.Resource
-                },
-             };
+                    Name = "api",
+                    Scopes =
+                    {
+                        new Scope
+                        {
+                            Name = "resource",
+                            Description = "resource scope",
+                        },
+                        new Scope
+                        {
+                            Name = "resource2",
+                            Description = "resource scope",
+                        },
+                    }
+                }
+            };
         }
     }
 }

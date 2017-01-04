@@ -25,18 +25,19 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
         EndSessionValidationResult _result = new EndSessionValidationResult();
         IdentityServerOptions _options = new IdentityServerOptions();
         MockMessageStore<LogoutMessage> _mockLogoutMessageStore = new MockMessageStore<LogoutMessage>();
+        MockClientSessionService _mockClientSessionService = new MockClientSessionService();
 
         DefaultHttpContext _context = new DefaultHttpContext();
 
         public EndSessionResultTests()
         {
-            _context.SetOrigin("https://server");
-            _context.SetBasePath("/");
+            _context.SetIdentityServerOrigin("https://server");
+            _context.SetIdentityServerBasePath("/");
 
-            _options.UserInteractionOptions.LogoutUrl = "~/logout";
-            _options.UserInteractionOptions.LogoutIdParameter = "logoutId";
+            _options.UserInteraction.LogoutUrl = "~/logout";
+            _options.UserInteraction.LogoutIdParameter = "logoutId";
 
-            _subject = new EndSessionResult(_result, _options, _mockLogoutMessageStore);
+            _subject = new EndSessionResult(_result, _options, _mockClientSessionService, _mockLogoutMessageStore);
         }
 
         [Fact]

@@ -62,19 +62,20 @@ namespace IdentityServer4.ResponseHandling
         /// <returns></returns>
         protected internal virtual async Task<InteractionResponse> ProcessLoginAsync(ValidatedAuthorizeRequest request)
         {
-            if (request.PromptMode == OidcConstants.PromptModes.Login)
+            if (request.PromptMode == OidcConstants.PromptModes.Login ||
+                request.PromptMode == OidcConstants.PromptModes.SelectAccount)
             {
                 // remove prompt so when we redirect back in from login page
                 // we won't think we need to force a prompt again
                 request.RemovePrompt();
 
-                _logger.LogInformation("Showing login: request contains prompt=login");
+                _logger.LogInformation("Showing login: request contains prompt={0}", request.PromptMode);
 
                 return new InteractionResponse() { IsLogin = true };
             }
 
             // unauthenticated user
-            var isAuthenticated = request.Subject.Identity.IsAuthenticated;
+            var isAuthenticated = request.Subject.IsAuthenticated();
             
             // user de-activated
             bool isActive = false;
@@ -137,7 +138,7 @@ namespace IdentityServer4.ResponseHandling
             if (request.MaxAge.HasValue)
             {
                 var authTime = request.Subject.GetAuthenticationTime();
-                if (DateTimeHelper.UtcNow > authTime.AddSeconds(request.MaxAge.Value))
+                if (IdentityServerDateTime.UtcNow > authTime.AddSeconds(request.MaxAge.Value))
                 {
                     _logger.LogInformation("Showing login: Requested MaxAge exceeded.");
 
@@ -146,7 +147,7 @@ namespace IdentityServer4.ResponseHandling
             }
 
             // check local idp restrictions
-            if (currentIdp == Constants.LocalIdentityProvider && !request.Client.EnableLocalLogin)
+            if (currentIdp == IdentityServerConstants.LocalIdentityProvider && !request.Client.EnableLocalLogin)
             {
                 _logger.LogInformation("Showing login: User logged in locally, but client does not allow local logins");
                 return new InteractionResponse() { IsLogin = true };
@@ -243,7 +244,7 @@ namespace IdentityServer4.ResponseHandling
                                 if (consent.RememberConsent)
                                 {
                                     // remember what user actually selected
-                                    scopes = request.ValidatedScopes.GrantedScopes.Select(x => x.Name);
+                                    scopes = request.ValidatedScopes.GrantedResources.ToScopeNames();
                                     _logger.LogDebug("User indicated to remember consent for scopes: {scopes}", scopes);
                                 }
 

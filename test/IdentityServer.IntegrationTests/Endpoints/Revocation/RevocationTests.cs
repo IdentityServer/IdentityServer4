@@ -6,7 +6,7 @@ using FluentAssertions;
 using IdentityModel.Client;
 using IdentityServer4.IntegrationTests.Common;
 using IdentityServer4.Models;
-using IdentityServer4.Services.InMemory;
+using IdentityServer4.Test;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -37,16 +37,37 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
                 ClientSecrets = new List<Secret> { new Secret(client_secret.Sha256()) },
                 AllowedGrantTypes = GrantTypes.Code,
                 RequireConsent = false,
-                AllowedScopes = new List<string> { "api", "offline_access" },
+                AllowOfflineAccess = true,
+                AllowedScopes = new List<string> { "api" },
                 RedirectUris = new List<string> { redirect_uri },
                 AllowAccessTokensViaBrowser = true,
                 AccessTokenType = AccessTokenType.Reference,
                 RefreshTokenUsage = TokenUsage.ReUse
             });
-
-            _mockPipeline.Users.Add(new InMemoryUser
+            _mockPipeline.Clients.Add(new Client
             {
-                Subject = "bob",
+                ClientId = "implicit",
+                AllowedGrantTypes = GrantTypes.Implicit,
+                RequireConsent = false,
+                AllowedScopes = new List<string> { "api" },
+                RedirectUris = new List<string> { redirect_uri },
+                AllowAccessTokensViaBrowser = true,
+                AccessTokenType = AccessTokenType.Reference,
+            });
+            _mockPipeline.Clients.Add(new Client
+            {
+                ClientId = "implicit_and_client_creds",
+                AllowedGrantTypes = GrantTypes.ImplicitAndClientCredentials,
+                RequireConsent = false,
+                AllowedScopes = new List<string> { "api" },
+                RedirectUris = new List<string> { redirect_uri },
+                AllowAccessTokensViaBrowser = true,
+                AccessTokenType = AccessTokenType.Reference,
+            });
+
+            _mockPipeline.Users.Add(new TestUser
+            {
+                SubjectId = "bob",
                 Username = "bob",
                 Claims = new Claim[]
                 {
@@ -56,14 +77,22 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
                 }
             });
 
-            _mockPipeline.Scopes.AddRange(new Scope[] {
-                StandardScopes.OpenId,
-                StandardScopes.OfflineAccess,
-                new Scope
+            _mockPipeline.IdentityScopes.AddRange(new IdentityResource[] {
+                new IdentityResources.OpenId(),
+            });
+
+            _mockPipeline.ApiScopes.AddRange(new ApiResource[] {
+                new ApiResource
                 {
-                    Name = scope_name,
-                    ScopeSecrets = new List<Secret> { new Secret(scope_secret.Sha256()) },
-                    Type = ScopeType.Resource
+                    Name = "api",
+                    ApiSecrets = new List<Secret> { new Secret(scope_secret.Sha256()) },
+                    Scopes =
+                    {
+                        new Scope
+                        {
+                            Name = scope_name,
+                        }
+                    }
                 }
             });
 
@@ -105,12 +134,33 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
             return new Tokens(tokenResponse);
         }
 
-        async Task<bool> IsAccessTokenValidAsync(Tokens tokens)
+        async Task<string> GetAccessTokenForImplicitClientAsync(string clientId)
+        {
+            await _mockPipeline.LoginAsync("bob");
+
+            var authorizationResponse = await _mockPipeline.RequestAuthorizationEndpointAsync(
+                clientId,
+                "token",
+                "api",
+                "https://client/callback");
+
+            authorizationResponse.IsError.Should().BeFalse();
+            authorizationResponse.AccessToken.Should().NotBeNull();
+
+            return authorizationResponse.AccessToken;
+        }
+
+        Task<bool> IsAccessTokenValidAsync(Tokens tokens)
+        {
+            return IsAccessTokenValidAsync(tokens.AccessToken);
+        }
+
+        async Task<bool> IsAccessTokenValidAsync(string token)
         {
             var introspectionClient = new IntrospectionClient(MockIdSvrUiPipeline.IntrospectionEndpoint, scope_name, scope_secret, _mockPipeline.Handler);
             var response = await introspectionClient.SendAsync(new IntrospectionRequest
             {
-                Token = tokens.AccessToken,
+                Token = token,
                 TokenTypeHint = IdentityModel.OidcConstants.TokenTypes.AccessToken
             });
             return response.IsError == false && response.IsActive;
@@ -313,6 +363,44 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             (await UseRefreshTokenAsync(tokens)).Should().BeFalse();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task implicit_client_without_secret_revoking_token_should_succeed()
+        {
+            var token = await GetAccessTokenForImplicitClientAsync("implicit");
+
+            var data = new Dictionary<string, string>
+            {
+                { "client_id", "implicit" },
+                { "token", token },
+            };
+
+            (await IsAccessTokenValidAsync(token)).Should().BeTrue();
+
+            var response = await _mockPipeline.Client.PostAsync(MockIdSvrUiPipeline.RevocationEndpoint, new FormUrlEncodedContent(data));
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            (await IsAccessTokenValidAsync(token)).Should().BeFalse();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task implicit_and_client_creds_client_without_secret_revoking_token_should_fail()
+        {
+            var token = await GetAccessTokenForImplicitClientAsync("implicit_and_client_creds");
+
+            var data = new Dictionary<string, string>
+            {
+                { "client_id", "implicit_and_client_creds" },
+                { "token", token },
+            };
+
+            (await IsAccessTokenValidAsync(token)).Should().BeTrue();
+
+            var response = await _mockPipeline.Client.PostAsync(MockIdSvrUiPipeline.RevocationEndpoint, new FormUrlEncodedContent(data));
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            (await IsAccessTokenValidAsync(token)).Should().BeTrue();
         }
     }
 }

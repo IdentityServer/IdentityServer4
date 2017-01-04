@@ -20,7 +20,7 @@ namespace IdentityServer4.UnitTests.Common
             return Task.FromResult(0);
         }
 
-        public Task EnsureClientListCookieAsync()
+        public Task EnsureClientListCookieAsync(string sid)
         {
             return Task.FromResult(0);
         }
@@ -30,12 +30,12 @@ namespace IdentityServer4.UnitTests.Common
             return Task.FromResult<IEnumerable<string>>(Clients);
         }
 
-        public IEnumerable<string> GetClientListFromCookie()
+        public IEnumerable<string> GetClientListFromCookie(string sid)
         {
             return Clients;
         }
 
-        public void RemoveCookie()
+        public void RemoveCookie(string sid)
         {
             RemoveCookieWasCalled = true;
             Clients.Clear();

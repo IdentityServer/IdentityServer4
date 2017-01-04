@@ -13,6 +13,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Events;
 using Microsoft.AspNetCore.Http;
+using IdentityServer4.Stores;
 
 namespace IdentityServer4.Endpoints
 {
@@ -21,19 +22,22 @@ namespace IdentityServer4.Endpoints
         private readonly ILogger _logger;
         private readonly ClientSecretValidator _clientValidator;
         private readonly ITokenRevocationRequestValidator _requestValidator;
-        private readonly IPersistedGrantService _grants;
+        private readonly IReferenceTokenStore _referenceTokenStore;
+        private readonly IRefreshTokenStore _refreshTokenStore;
         private readonly IEventService _events;
 
         public RevocationEndpoint(ILogger<RevocationEndpoint> logger,
             ClientSecretValidator clientValidator,
             ITokenRevocationRequestValidator requestValidator,
-            IPersistedGrantService grants,
+            IReferenceTokenStore referenceTokenStore,
+            IRefreshTokenStore refreshTokenStore,
             IEventService events)
         {
             _logger = logger;
             _clientValidator = clientValidator;
             _requestValidator = requestValidator;
-            _grants = grants;
+            _referenceTokenStore = referenceTokenStore;
+            _refreshTokenStore = refreshTokenStore;
             _events = events;
         }
 
@@ -84,7 +88,7 @@ namespace IdentityServer4.Endpoints
             _logger.LogTrace("Client validation successful");
 
             // validate the token request
-            var form = context.Request.Form.AsNameValueCollection();
+            var form = (await context.Request.ReadFormAsync()).AsNameValueCollection();
             var requestResult = await _requestValidator.ValidateRequestAsync(form, client);
 
             if (requestResult.IsError)
@@ -131,14 +135,14 @@ namespace IdentityServer4.Endpoints
         // revoke access token only if it belongs to client doing the request
         private async Task<bool> RevokeAccessTokenAsync(string handle, Client client)
         {
-            var token = await _grants.GetReferenceTokenAsync(handle);
+            var token = await _referenceTokenStore.GetReferenceTokenAsync(handle);
 
             if (token != null)
             {
                 if (token.ClientId == client.ClientId)
                 {
                     _logger.LogDebug("Access token revoked");
-                    await _grants.RemoveReferenceTokenAsync(handle);
+                    await _referenceTokenStore.RemoveReferenceTokenAsync(handle);
                 }
                 else
                 {
@@ -157,15 +161,15 @@ namespace IdentityServer4.Endpoints
         // revoke refresh token only if it belongs to client doing the request
         private async Task<bool> RevokeRefreshTokenAsync(string handle, Client client)
         {
-            var token = await _grants.GetRefreshTokenAsync(handle);
+            var token = await _refreshTokenStore.GetRefreshTokenAsync(handle);
 
             if (token != null)
             {
                 if (token.ClientId == client.ClientId)
                 {
                     _logger.LogDebug("Refresh token revoked");
-                    await _grants.RemoveRefreshTokensAsync(token.SubjectId, token.ClientId);
-                    await _grants.RemoveReferenceTokensAsync(token.SubjectId, token.ClientId);
+                    await _refreshTokenStore.RemoveRefreshTokensAsync(token.SubjectId, token.ClientId);
+                    await _referenceTokenStore.RemoveReferenceTokensAsync(token.SubjectId, token.ClientId);
                 }
                 else
                 {

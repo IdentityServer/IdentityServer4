@@ -165,7 +165,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
             ((AuthorizeResult)result).Response.IsError.Should().BeTrue();
         }
 
-        [Fact]
+        [Fact(Skip = "bring back events in 1.1")]
         [Trait("Category", Category)]
         public async Task authorize_request_validation_produces_error_should_raise_failed_endpoint_event()
         {
@@ -193,7 +193,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
             ((AuthorizeResult)result).Response.IsError.Should().BeTrue();
         }
 
-        [Fact]
+        [Fact(Skip = "bring back events in 1.1")]
         [Trait("Category", Category)]
         public async Task interaction_produces_error_should_raise_failed_endpoint_event()
         {

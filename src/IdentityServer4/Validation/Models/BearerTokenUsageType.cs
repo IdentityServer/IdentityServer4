@@ -8,7 +8,6 @@ using System.ComponentModel;
 
 namespace IdentityServer4.Validation
 {
-    [EditorBrowsable(EditorBrowsableState.Never)]
     public enum BearerTokenUsageType
     {
         AuthorizationHeader = 0,

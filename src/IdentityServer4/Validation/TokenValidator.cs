@@ -26,19 +26,19 @@ namespace IdentityServer4.Validation
         private readonly ILogger _logger;
         private readonly IdentityServerOptions _options;
         private readonly IHttpContextAccessor _context;
-        private readonly IPersistedGrantService _grants;
+        private readonly IReferenceTokenStore _referenceTokenStore;
         private readonly ICustomTokenValidator _customValidator;
         private readonly IClientStore _clients;
         private readonly IKeyMaterialService _keys;
 
         private readonly TokenValidationLog _log;
         
-        public TokenValidator(IdentityServerOptions options, IHttpContextAccessor context, IClientStore clients, IPersistedGrantService grants, ICustomTokenValidator customValidator, IKeyMaterialService keys, ILogger<TokenValidator> logger)
+        public TokenValidator(IdentityServerOptions options, IHttpContextAccessor context, IClientStore clients, IReferenceTokenStore referenceTokenStore, ICustomTokenValidator customValidator, IKeyMaterialService keys, ILogger<TokenValidator> logger)
         {
             _options = options;
             _context = context;
             _clients = clients;
-            _grants = grants;
+            _referenceTokenStore = referenceTokenStore;
             _customValidator = customValidator;
             _keys = keys;
             _logger = logger;
@@ -134,7 +134,7 @@ namespace IdentityServer4.Validation
                 _log.AccessTokenType = AccessTokenType.Jwt.ToString();
                 result = await ValidateJwtAsync(
                     token,
-                    string.Format(Constants.AccessTokenAudience, _context.HttpContext.GetIssuerUri().EnsureTrailingSlash()),
+                    string.Format(Constants.AccessTokenAudience, _context.HttpContext.GetIdentityServerIssuerUri().EnsureTrailingSlash()),
                     await _keys.GetValidationKeysAsync());
             }
             else
@@ -194,7 +194,7 @@ namespace IdentityServer4.Validation
 
             var parameters = new TokenValidationParameters
             {
-                ValidIssuer = _context.HttpContext.GetIssuerUri(),
+                ValidIssuer = _context.HttpContext.GetIdentityServerIssuerUri(),
                 IssuerSigningKeys = validationKeys,
                 ValidateLifetime = validateLifetime,
                 ValidAudience = audience
@@ -243,7 +243,7 @@ namespace IdentityServer4.Validation
         private async Task<TokenValidationResult> ValidateReferenceAccessTokenAsync(string tokenHandle)
         {
             _log.TokenHandle = tokenHandle;
-            var token = await _grants.GetReferenceTokenAsync(tokenHandle);
+            var token = await _referenceTokenStore.GetReferenceTokenAsync(tokenHandle);
 
             if (token == null)
             {
@@ -251,20 +251,11 @@ namespace IdentityServer4.Validation
                 return Invalid(OidcConstants.ProtectedResourceErrors.InvalidToken);
             }
 
-            // TODO: review
-            //if (token.Type != OidcConstants.TokenTypes.AccessToken)
-            //{
-            //    LogError("Token handle does not resolve to an access token - but instead to: " + token.Type);
-
-            //    await _tokenHandles.RemoveAsync(tokenHandle);
-            //    return Invalid(OidcConstants.ProtectedResourceErrors.InvalidToken);
-            //}
-
-            if (DateTimeHelper.UtcNow >= token.CreationTime.AddSeconds(token.Lifetime))
+            if (IdentityServerDateTime.UtcNow >= token.CreationTime.AddSeconds(token.Lifetime))
             {
                 LogError("Token expired.");
 
-                await _grants.RemoveReferenceTokenAsync(tokenHandle);
+                await _referenceTokenStore.RemoveReferenceTokenAsync(tokenHandle);
                 return Invalid(OidcConstants.ProtectedResourceErrors.ExpiredToken);
             }
 
@@ -296,14 +287,17 @@ namespace IdentityServer4.Validation
         {
             var claims = new List<Claim>
             {
-                new Claim(JwtClaimTypes.Audience, token.Audience),
                 new Claim(JwtClaimTypes.Issuer, token.Issuer),
                 new Claim(JwtClaimTypes.NotBefore, token.CreationTime.ToEpochTime().ToString(), ClaimValueTypes.Integer),
                 new Claim(JwtClaimTypes.Expiration, token.CreationTime.AddSeconds(token.Lifetime).ToEpochTime().ToString(), ClaimValueTypes.Integer)
             };
 
-            claims.AddRange(token.Claims);
+            foreach (var aud in token.Audiences)
+            {
+                claims.Add(new Claim(JwtClaimTypes.Audience, aud));
+            }
 
+            claims.AddRange(token.Claims);
             return claims;
         }
 

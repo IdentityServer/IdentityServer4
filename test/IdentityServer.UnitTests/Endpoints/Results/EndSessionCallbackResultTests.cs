@@ -31,11 +31,11 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
 
         public EndSessionCallbackResultTests()
         {
-            _context.SetOrigin("https://server");
-            _context.SetBasePath("/");
+            _context.SetIdentityServerOrigin("https://server");
+            _context.SetIdentityServerBasePath("/");
             _context.Response.Body = new MemoryStream();
 
-            _subject = new EndSessionCallbackResult(_result, _mockSessionId, _mockClientSession, _mockLogoutMessageStore, _options);
+            _subject = new EndSessionCallbackResult(_result, _mockClientSession, _mockLogoutMessageStore, _options);
         }
 
         [Fact]
@@ -63,11 +63,11 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
         public async Task success_should_clear_cookies()
         {
             _result.IsError = false;
+            _result.SessionId = "5";
 
             await _subject.ExecuteAsync(_context);
 
             _mockClientSession.RemoveCookieWasCalled.Should().BeTrue();
-            _mockSessionId.RemoveCookieWasCalled.Should().BeTrue();
         }
 
         [Fact]

@@ -14,18 +14,24 @@ All the protocol support needed for OpenID Connect is already built into Identit
 You need to provide the necessary UI parts for login, logout, consent and error.
 
 While the look & feel as well as the exact workflows will probably always differ in every
-IdentityServer implementation, we provide a sample UI that you can use as a starting point.
+IdentityServer implementation, we provide an MVC-based sample UI that you can use as a starting point.
 
-This UI can be found in the `Quickstart UI repo <https://github.com/IdentityServer/IdentityServer4.Quickstart.UI>`_.
+This UI can be found in the `Quickstart UI repo <https://github.com/IdentityServer/IdentityServer4.Quickstart.UI/tree/release>`_.
 You can either clone or download this repo and drop the controllers, views, models and CSS into your web application.
 
 Alternatively you can run this command from the command line in your web application to
 automate the download::
 
-    iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/dev/get.ps1'))
+    iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/release/get.ps1'))
+
+See the `readme <https://github.com/IdentityServer/IdentityServer4.Quickstart.UI/blob/release/README.md>`_ for the quickstart UI for more information. 
+
+.. note:: The ``release`` branch of the UI repo has the UI that matches the latest stable release. The ``dev`` branch goes along with the current dev build of IdentityServer4. If you are looking for a specific version of the UI - check the tags.
 
 Spend some time inspecting the controllers and models, the better you understand them, 
-the easier it will be to make future modifications.
+the easier it will be to make future modifications. 
+Most of the code lives in the "Quickstart" folder using a "feature folder" style. 
+If this style doesn't suit you, feel free to organize the code in any way you want.
 
 Creating an MVC client
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -48,7 +54,9 @@ Next add both middlewares to your pipeline - the cookies one is simple::
 
 The OpenID Connect middleware needs slightly more configuration.
 You point it to your IdentityServer, specify a client ID and tell it which middleware will do
-the local signin (namely the cookies middleware)::
+the local signin (namely the cookies middleware).  As well, we've turned off the JWT claim type mapping to allow well-known claims (e.g. 'sub' and 'idp') to flow through unmolested.  This "clearing" of the claim type mappings must be done before the call to `UseOpenIdConnectAuthentication()`::
+
+    JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
     app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
     {
@@ -79,32 +87,42 @@ Also modify the view of that action to display the claims of the user, e.g.::
 If you now navigate to that controller using the browser, a redirect attempt will be made
 to IdentityServer - this will result in an error because the MVC client is not registered yet.
 
-Adding support for OpenID Connect Scopes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Adding support for OpenID Connect Identity Scopes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Similar to OAuth 2.0, OpenID Connect also uses the scopes concept.
 Again, scopes represent something you want to protect and that clients want to access.
 In contrast to OAuth, scopes in OIDC don't represent APIs, but identity data like user id, 
 name or email address.
 
 Add support for the standard ``openid`` (subject id) and ``profile`` (first name, last name etc..) scopes
-by adding these scopes to your scopes configuration::
+by adding a new helper (in ``config.cs``) to create a collection of ``IdentityResource`` objects::
 
-    public static IEnumerable<Scope> GetScopes()
+    public static IEnumerable<IdentityResource> GetIdentityResources()
     {
-        return new List<Scope>
+        return new List<IdentityResource>
         {
-            StandardScopes.OpenId,
-            StandardScopes.Profile,
-
-            new Scope
-            {
-                Name = "api1",
-                Description = "My API"
-            }
+            new IdentityResources.OpenId(),
+            new IdentityResources.Profile(),
         };
     }
 
 .. note:: All standard scopes and their corresponding claims can be found in the OpenID Connect `specification <https://openid.net/specs/openid-connect-core-1_0.html#ScopeClaims>`_
+
+You will then need to add these identity resources to your IdentityServer configuration in ``Startup.cs``. 
+Use the ``AddInMemoryIdentityResources`` extension method where you call ``AddIdentityServer()``::
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddMvc();
+
+        // configure identity server with in-memory stores, keys, clients and scopes
+        services.AddIdentityServer()
+            .AddTemporarySigningCredential()
+            .AddInMemoryIdentityResources(Config.GetIdentityResources())
+            .AddInMemoryApiResources(Config.GetApiResources())
+            .AddInMemoryClients(Config.GetClients())
+            .AddTestUsers(Config.GetUsers());
+    }
 
 Adding a client for OpenID Connect implicit flow
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -136,8 +154,8 @@ Add the following to your clients configuration::
 
                 AllowedScopes = new List<string>
                 {
-                    StandardScopes.OpenId.Name,
-                    StandardScopes.Profile.Name
+                    IdentityServerConstants.StandardScopes.OpenId,
+                    IdentityServerConstants.StandardScopes.Profile
                 }
             }
         };
@@ -192,29 +210,29 @@ This scope also includes claims like *name* or *website*.
 
 Let's add these claims to the user, so IdentityServer can put them into the identity token::
 
-    public static List<InMemoryUser> GetUsers()
+    public static List<TestUser> GetUsers()
     {
-        return new List<InMemoryUser>
+        return new List<TestUser>
         {
-            new InMemoryUser
+            new TestUser
             {
-                Subject = "1",
+                SubjectId = "1",
                 Username = "alice",
                 Password = "password",
 
-                Claims = 
+                Claims = new []
                 {
                     new Claim("name", "Alice"),
                     new Claim("website", "https://alice.com")
                 }
             },
-            new InMemoryUser
+            new TestUser
             {
-                Subject = "2",
+                SubjectId = "2",
                 Username = "bob",
                 Password = "password",
 
-                Claims = 
+                Claims = new []
                 {
                     new Claim("name", "Bob"),
                     new Claim("website", "https://bob.com")
@@ -229,6 +247,6 @@ Feel free to add more claims - and also more scopes. The ``Scope`` property on t
 middleware is where you configure which scopes will be sent to IdentityServer during authentication.
 
 It is also noteworthy, that the retrieval of claims for tokens is an extensibility point - ``IProfileService``.
-Since we are using the in-memory user store, the ``InMemoryUserProfileService`` is used by default.
-You can inspect the source code `here <https://github.com/IdentityServer/IdentityServer4/blob/dev/src/IdentityServer4/Services/InMemory/InMemoryUserProfileService.cs>`_
+Since we are using ``AddTestUsers``, the ``TestUserProfileService`` is used by default.
+You can inspect the source code `here <https://github.com/IdentityServer/IdentityServer4/blob/dev/src/IdentityServer4/Test/TestUserProfileService.cs>`_
 to see how it works.
