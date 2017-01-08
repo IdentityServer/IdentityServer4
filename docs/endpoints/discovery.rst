@@ -20,10 +20,10 @@ You can programmatically access the discovery endpoint using the `IdentityModel 
 
 For security reasons DiscoveryClient has a configurable validation policy that checks the following rules by default:
 
- * HTTPS must be used for the discovery endpoint and all protocol endpoints
- * The issuer name should match the authority specified when downloading the document (that’s actually a MUST in the discovery spec)
- * The protocol endpoints should be “beneath” the authority – and not on a different server or URL (this could be especially interesting for multi-tenant OPs)
- * A key set must be specified
+* HTTPS must be used for the discovery endpoint and all protocol endpoints
+* The issuer name should match the authority specified when downloading the document (that’s actually a MUST in the discovery spec)
+* The protocol endpoints should be “beneath” the authority – and not on a different server or URL (this could be especially interesting for multi-tenant OPs)
+* A key set must be specified
 
 If for whatever reason (e.g. dev environments) you need to relax a setting, you can use the following code::
 
