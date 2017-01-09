@@ -77,8 +77,8 @@ namespace Host
             {
                 AuthenticationScheme = "Google",
                 SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
-                ClientId = "998042782978-s07498t8i8jas7npj4crve1skpromf37.apps.googleusercontent.com",
-                ClientSecret = "HsnwJri_53zn7VcO1Fm7THBb",
+                ClientId = "708996912208-9m4dkjb5hscn7cjrn5u0r4tbgkbj1fko.apps.googleusercontent.com",
+                ClientSecret = "wdfPY6t8H8cecgjlxud__4Gh"
             });
 
             app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions

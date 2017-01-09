@@ -13,12 +13,12 @@ namespace IdentityServer4.Services
 {
     public class DefaultSessionIdService : ISessionIdService
     {
-        private readonly HttpContext _context;
+        private readonly IHttpContextAccessor _context;
         private readonly IdentityServerOptions _options;
 
         public DefaultSessionIdService(IHttpContextAccessor context, IdentityServerOptions options)
         {
-            _context = context.HttpContext;
+            _context = context;
             _options = options;
         }
 
@@ -34,7 +34,7 @@ namespace IdentityServer4.Services
 
         public async Task<string> GetCurrentSessionIdAsync()
         {
-            var info = await _context.GetIdentityServerUserInfoAsync();
+            var info = await _context.HttpContext.GetIdentityServerUserInfoAsync();
             if (info.Properties.Items.ContainsKey(OidcConstants.EndSessionRequest.Sid))
             {
                 var sid = info.Properties.Items[OidcConstants.EndSessionRequest.Sid];
@@ -67,19 +67,19 @@ namespace IdentityServer4.Services
 
         public string GetCookieValue()
         {
-            return _context.Request.Cookies[GetCookieName()];
+            return _context.HttpContext.Request.Cookies[GetCookieName()];
         }
 
         public void RemoveCookie()
         {
             var name = GetCookieName();
-            if (_context.Request.Cookies.ContainsKey(name))
+            if (_context.HttpContext.Request.Cookies.ContainsKey(name))
             {
                 // only remove it if we have it in the request
                 var options = CreateCookieOptions();
                 options.Expires = IdentityServerDateTime.UtcNow.AddYears(-1);
 
-                _context.Response.Cookies.Append(name, ".", options);
+                _context.HttpContext.Response.Cookies.Append(name, ".", options);
             }
         }
 
@@ -87,7 +87,7 @@ namespace IdentityServer4.Services
         {
             if (GetCookieValue() != sid)
             {
-                _context.Response.Cookies.Append(
+                _context.HttpContext.Response.Cookies.Append(
                     GetCookieName(),
                     sid,
                     CreateCookieOptions());
@@ -96,8 +96,8 @@ namespace IdentityServer4.Services
 
         CookieOptions CreateCookieOptions()
         {
-            var secure = _context.Request.IsHttps;
-            var path = _context.GetIdentityServerBasePath().CleanUrlPath();
+            var secure = _context.HttpContext.Request.IsHttps;
+            var path = _context.HttpContext.GetIdentityServerBasePath().CleanUrlPath();
 
             var options = new CookieOptions
             {
