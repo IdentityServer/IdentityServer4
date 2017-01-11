@@ -20,7 +20,7 @@
     "Microsoft.AspNetCore.Cors": "1.1.0",
     "Microsoft.AspNetCore.Authentication.Cookies": "1.1.0",
 
-    "System.IdentityModel.Tokens.Jwt": "5.1.1",
+    "System.IdentityModel.Tokens.Jwt": "5.1.2",
     
     "IdentityModel": "2.3.1"
   },
