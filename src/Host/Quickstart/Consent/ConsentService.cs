@@ -62,7 +62,7 @@ namespace IdentityServer4.Quickstart.UI
                 }
                 else
                 {
-                    result.ValidationError = ConsentOptions.MuchChooseOneErrorMessage;
+                    result.ValidationError = ConsentOptions.MustChooseOneErrorMessage;
                 }
             }
             else
