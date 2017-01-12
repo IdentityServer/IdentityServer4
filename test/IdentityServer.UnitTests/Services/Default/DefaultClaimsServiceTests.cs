@@ -8,6 +8,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.UnitTests.Common;
 using IdentityServer4.Validation;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -105,7 +106,30 @@ namespace IdentityServer4.UnitTests.Services.Default
 
             var claims = await _subject.GetIdentityTokenClaimsAsync(_user, _client, _resources, true, _validatedRequest);
 
-            claims.Count(x=>x.Type == "aud" && x.Value == "bar").Should().Be(0);
+            claims.Count(x => x.Type == "aud" && x.Value == "bar").Should().Be(0);
+        }
+
+        [Fact]
+        public async Task GetIdentityTokenClaimsAsync_should_always_call_GetProfileDataAsync_when_subject_is_not_null()
+        {
+            var claims = await _subject.GetIdentityTokenClaimsAsync(_user, _client, _resources, true, _validatedRequest);
+
+            _mockMockProfileService.GetProfileWasCalled.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task GetIdentityTokenClaimsAsync_should_add_IssuedClaims_present_in_context()
+        {
+            _mockMockProfileService.ProfileClaims = new HashSet<Claim>
+            {
+                new Claim("foo", "fooValue"),
+                new Claim("bar", "barValue")
+            };
+
+            var claims = await _subject.GetIdentityTokenClaimsAsync(_user, _client, _resources, true, _validatedRequest);
+
+            claims.Should().Contain(x => x.Type == "foo" && x.Value == "fooValue");
+            claims.Should().Contain(x => x.Type == "bar" && x.Value == "barValue");
         }
 
         [Fact]
@@ -204,7 +228,7 @@ namespace IdentityServer4.UnitTests.Services.Default
         }
 
         [Fact]
-        public async Task GetAccessTokenClaimsAsync_should_only_contain_api_claims()
+        public async Task GetAccessTokenClaimsAsync_should_not_contain_identity_claims()
         {
             _resources.IdentityResources.Add(new IdentityResource("id1", new[] { "foo" }));
             _resources.ApiResources.Add(new ApiResource("api1", new string[] { "bar" }));
@@ -279,6 +303,29 @@ namespace IdentityServer4.UnitTests.Services.Default
 
             _mockMockProfileService.ProfileContext.RequestedClaimTypes.Should().Contain("foo");
             _mockMockProfileService.ProfileContext.RequestedClaimTypes.Should().Contain("bar");
+        }
+
+        [Fact]
+        public async Task GetAccessTokenClaimsAsync_should_always_call_GetProfileDataAsync_when_subject_is_not_null()
+        {
+            var claims = await _subject.GetAccessTokenClaimsAsync(_user, _client, _resources, _validatedRequest);
+
+            _mockMockProfileService.GetProfileWasCalled.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task GetAccessTokenClaimsAsync_should_add_IssuedClaims_present_in_context()
+        {
+            _mockMockProfileService.ProfileClaims = new HashSet<Claim>
+            {
+                new Claim("foo", "fooValue"),
+                new Claim("bar", "barValue")
+            };
+
+            var claims = await _subject.GetAccessTokenClaimsAsync(_user, _client, _resources, _validatedRequest);
+
+            claims.Should().Contain(x => x.Type == "foo" && x.Value == "fooValue");
+            claims.Should().Contain(x => x.Type == "bar" && x.Value == "barValue");
         }
     }
 }

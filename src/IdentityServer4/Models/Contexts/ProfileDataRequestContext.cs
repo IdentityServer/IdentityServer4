@@ -29,8 +29,6 @@ namespace IdentityServer4.Models
         /// <param name="requestedClaimTypes">The requested claim types.</param>
         public ProfileDataRequestContext(ClaimsPrincipal subject, Client client, string caller, IEnumerable<string> requestedClaimTypes)
         {
-            if (requestedClaimTypes.IsNullOrEmpty()) throw new ArgumentException("No claim types requested", nameof(requestedClaimTypes));
-
             Subject = subject;
             Client = client;
             Caller = caller;

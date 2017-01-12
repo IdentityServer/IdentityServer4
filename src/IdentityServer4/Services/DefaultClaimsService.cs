@@ -71,21 +71,18 @@ namespace IdentityServer4.Services
                     }
                 }
 
-                if (additionalClaims.Count > 0)
-                {
-                    var context = new ProfileDataRequestContext(
+                var context = new ProfileDataRequestContext(
                         subject,
                         client,
                         IdentityServerConstants.ProfileDataCallers.ClaimsProviderIdentityToken,
                         additionalClaims);
 
-                    await Profile.GetProfileDataAsync(context);
+                await Profile.GetProfileDataAsync(context);
 
-                    var claims = FilterProtocolClaims(context.IssuedClaims);
-                    if (claims != null)
-                    {
-                        outputClaims.AddRange(claims);
-                    }
+                var claims = FilterProtocolClaims(context.IssuedClaims);
+                if (claims != null)
+                {
+                    outputClaims.AddRange(claims);
                 }
             }
 
@@ -180,21 +177,18 @@ namespace IdentityServer4.Services
                     }
                 }
 
-                if (additionalClaims.Count > 0)
-                {
-                    var context = new ProfileDataRequestContext(
+                var context = new ProfileDataRequestContext(
                         subject,
                         client,
                         IdentityServerConstants.ProfileDataCallers.ClaimsProviderAccessToken,
                         additionalClaims.Distinct());
 
-                    await Profile.GetProfileDataAsync(context);
+                await Profile.GetProfileDataAsync(context);
 
-                    var claims = FilterProtocolClaims(context.IssuedClaims);
-                    if (claims != null)
-                    {
-                        outputClaims.AddRange(claims);
-                    }
+                var claims = FilterProtocolClaims(context.IssuedClaims);
+                if (claims != null)
+                {
+                    outputClaims.AddRange(claims);
                 }
             }
 
