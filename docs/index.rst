@@ -116,5 +116,6 @@ IdentityServer is officially certified by the OpenID Foundation and part of the 
    :hidden:
    :caption: Misc
 
+   misc/training
    misc/blogs
    misc/videos
