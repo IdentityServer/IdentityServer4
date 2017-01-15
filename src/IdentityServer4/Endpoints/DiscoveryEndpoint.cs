@@ -76,8 +76,6 @@ namespace IdentityServer4.Endpoints
             }
 
             var baseUrl = context.GetIdentityServerBaseUrl().EnsureTrailingSlash();
-            var resources = await _resourceStore.GetAllEnabledResourcesAsync();
-            var scopes = new List<string>();
 
             var document = new DiscoveryDocument
             {
@@ -87,35 +85,44 @@ namespace IdentityServer4.Endpoints
                 code_challenge_methods_supported = new[] { OidcConstants.CodeChallengeMethods.Plain, OidcConstants.CodeChallengeMethods.Sha256 }
             };
 
-            // scopes
-            if (_options.Discovery.ShowIdentityScopes)
+            // check to see if we need to load resources
+            if (_options.Discovery.ShowIdentityScopes ||
+                _options.Discovery.ShowApiScopes ||
+                _options.Discovery.ShowClaims)
             {
-                scopes.AddRange(resources.IdentityResources.Where(x=>x.ShowInDiscoveryDocument).Select(x=>x.Name));
-            }
-            if (_options.Discovery.ShowApiScopes)
-            {
-                var apiScopes = from api in resources.ApiResources
-                                from scope in api.Scopes
-                                where scope.ShowInDiscoveryDocument
-                                select scope.Name;
-                scopes.AddRange(apiScopes);
-                scopes.Add(IdentityServerConstants.StandardScopes.OfflineAccess);
-            }
+                var resources = await _resourceStore.GetAllEnabledResourcesAsync();
+                var scopes = new List<string>();
 
-            if (scopes.Any())
-            {
-                document.scopes_supported = scopes.ToArray();
-            }
+                // scopes
+                if (_options.Discovery.ShowIdentityScopes)
+                {
+                    scopes.AddRange(resources.IdentityResources.Where(x=>x.ShowInDiscoveryDocument).Select(x=>x.Name));
+                }
+                if (_options.Discovery.ShowApiScopes)
+                {
+                    var apiScopes = from api in resources.ApiResources
+                                    from scope in api.Scopes
+                                    where scope.ShowInDiscoveryDocument
+                                    select scope.Name;
+                    scopes.AddRange(apiScopes);
+                    scopes.Add(IdentityServerConstants.StandardScopes.OfflineAccess);
+                }
 
-            // claims
-            if (_options.Discovery.ShowClaims)
-            {
-                var claims = new List<string>();
+                if (scopes.Any())
+                {
+                    document.scopes_supported = scopes.ToArray();
+                }
 
-                claims.AddRange(resources.IdentityResources.SelectMany(x => x.UserClaims));
-                claims.AddRange(resources.ApiResources.SelectMany(x => x.UserClaims));
+                // claims
+                if (_options.Discovery.ShowClaims)
+                {
+                    var claims = new List<string>();
 
-                document.claims_supported = claims.Distinct().ToArray();
+                    claims.AddRange(resources.IdentityResources.SelectMany(x => x.UserClaims));
+                    claims.AddRange(resources.ApiResources.SelectMany(x => x.UserClaims));
+
+                    document.claims_supported = claims.Distinct().ToArray();
+                }
             }
 
             // grant types

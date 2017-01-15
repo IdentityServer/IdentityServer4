@@ -33,11 +33,10 @@ namespace IdentityServer4.Services
         
         public async Task<IEnumerable<Consent>> GetAllGrantsAsync(string subjectId)
         {
-            var grants = await _store.GetAllAsync(subjectId);
+            var grants = (await _store.GetAllAsync(subjectId)).ToArray();
 
             try
             {
-
                 var consents = grants.Where(x => x.Type == Constants.PersistedGrantTypes.UserConsent)
                     .Select(x => _serializer.Deserialize<Consent>(x.Data));
 

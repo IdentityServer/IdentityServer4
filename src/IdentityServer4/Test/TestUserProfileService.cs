@@ -5,24 +5,36 @@
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
+using Microsoft.Extensions.Logging;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Test
 {
     public class TestUserProfileService : IProfileService
     {
+        private readonly ILogger<TestUserProfileService> _logger;
         private readonly TestUserStore _users;
 
-        public TestUserProfileService(TestUserStore users)
+        public TestUserProfileService(TestUserStore users, ILogger<TestUserProfileService> logger)
         {
             _users = users;
+            _logger = logger;
         }
 
         public Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
-            var user = _users.FindBySubjectId(context.Subject.GetSubjectId());
+            _logger.LogDebug("Get profile called for {subject} from {client} with {claimTypes} because {caller}",
+                context.Subject.GetSubjectId(),
+                context.Client.ClientName,
+                context.RequestedClaimTypes,
+                context.Caller);
 
-            context.AddFilteredClaims(user.Claims);
+            if (context.RequestedClaimTypes.Any())
+            {
+                var user = _users.FindBySubjectId(context.Subject.GetSubjectId());
+                context.AddFilteredClaims(user.Claims);
+            }
 
             return Task.FromResult(0);
         }

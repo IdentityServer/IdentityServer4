@@ -1,5 +1,5 @@
 {
-  "version": "1.0.1-*",
+  "version": "1.0.2-*",
   "authors": [ "Brock Allen", "Dominick Baier" ],
   "description": "OpenID Connect and OAuth 2.0 Framework for ASP.NET Core",
 
@@ -20,9 +20,9 @@
     "Microsoft.AspNetCore.Cors": "1.1.0",
     "Microsoft.AspNetCore.Authentication.Cookies": "1.1.0",
 
-    "System.IdentityModel.Tokens.Jwt": "5.1.0",
+    "System.IdentityModel.Tokens.Jwt": "5.1.2",
     
-    "IdentityModel": "2.2.2"
+    "IdentityModel": "2.3.1"
   },
 
   "frameworks": {
