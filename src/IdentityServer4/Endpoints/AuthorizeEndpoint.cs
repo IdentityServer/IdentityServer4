@@ -50,15 +50,15 @@ namespace IdentityServer4.Endpoints
 
         public async Task<IEndpointResult> ProcessAsync(HttpContext context)
         {
+            if (context.Request.Path == Constants.ProtocolRoutePaths.Authorize.EnsureLeadingSlash())
+            {
+                return await ProcessAuthorizeAsync(context);
+            }
+
             if (context.Request.Method != "GET")
             {
                 _logger.LogWarning("Invalid HTTP method for authorize endpoint.");
                 return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
-            }
-
-            if (context.Request.Path == Constants.ProtocolRoutePaths.Authorize.EnsureLeadingSlash())
-            {
-                return await ProcessAuthorizeAsync(context);
             }
 
             if (context.Request.Path == Constants.ProtocolRoutePaths.AuthorizeAfterLogin.EnsureLeadingSlash())
@@ -78,9 +78,27 @@ namespace IdentityServer4.Endpoints
         {
             _logger.LogDebug("Start authorize request");
 
-            var values = context.Request.Query.AsNameValueCollection();
-            var user = await context.GetIdentityServerUserAsync();
+            NameValueCollection values;
 
+            if (context.Request.Method == "GET")
+            {
+                values = context.Request.Query.AsNameValueCollection();
+            }
+            else if (context.Request.Method == "POST")
+            {
+                if (!context.Request.HasFormContentType)
+                {
+                    return new StatusCodeResult(HttpStatusCode.UnsupportedMediaType);
+                }
+
+                values = context.Request.Form.AsNameValueCollection();
+            }
+            else
+            {
+                return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
+            }
+
+            var user = await context.GetIdentityServerUserAsync();
             var result = await ProcessAuthorizeRequestAsync(values, user, null);
 
             _logger.LogTrace("End authorize request. result type: {0}", result?.GetType().ToString() ?? "-none-");
