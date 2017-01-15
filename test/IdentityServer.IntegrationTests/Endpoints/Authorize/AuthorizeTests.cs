@@ -116,8 +116,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
         {
             var response = await _mockPipeline.BrowserClient.PostAsync(MockIdSvrUiPipeline.AuthorizeEndpoint,
                 new FormUrlEncodedContent(
-                    new Dictionary<string, string>
-                    { }));
+                    new Dictionary<string, string>{ }));
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
