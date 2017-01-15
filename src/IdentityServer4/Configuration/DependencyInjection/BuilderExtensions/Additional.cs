@@ -134,5 +134,19 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return builder;
         }
+
+        /// <summary>
+        /// Adds the custom authorize request validator.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddCustomTokenRequestValidator<T>(this IIdentityServerBuilder builder)
+           where T : class, ICustomTokenRequestValidator
+        {
+            builder.Services.AddTransient<ICustomTokenRequestValidator, T>();
+
+            return builder;
+        }
     }
 }
