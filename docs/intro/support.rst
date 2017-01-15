@@ -34,7 +34,7 @@ Please `get in touch <mailto:identity@leastprivilege.com>`_ with us to discuss p
 **Training**
 
 Brock and Dominick are regularly doing workshops around identity & acess control for modern applications.
-Check the agenda and upcoming dates  `here <https://identityserver.io/training>`_
+Check the agenda and upcoming dates  `here <https://identityserver.io/training>`_.
 
 **Production support in North America**
 
