@@ -1,5 +1,5 @@
 .. _refOptions:
-IdentityServer options
+IdentityServer Options
 ======================
 
 * ``IssuerUri``
