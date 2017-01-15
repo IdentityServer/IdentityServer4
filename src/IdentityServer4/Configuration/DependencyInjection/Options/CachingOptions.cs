@@ -27,6 +27,6 @@ namespace IdentityServer4.Configuration
         /// <value>
         /// The scope store expiration.
         /// </value>
-        public TimeSpan ScopeStoreExpiration { get; set; } = Default;
+        public TimeSpan ResourceStoreExpiration { get; set; } = Default;
     }
 }
