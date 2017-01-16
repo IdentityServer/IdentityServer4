@@ -8,9 +8,12 @@ Configuring services
 ^^^^^^^^^^^^^^^^^^^^
 You add the IdentityServer services to the DI system by calling::
 
-    var builder = services.AddIdentityServer();
+    public void ConfigureServices(IServiceCollection services)
+    {
+        var builder = services.AddIdentityServer();
+    }
 
-in ``ConfigureServices``. Optionally you can pass in options into this call. See :ref:`here <refOptions>` for details on options.
+Optionally you can pass in options into this call. See :ref:`here <refOptions>` for details on options.
 
 This will return you a builder object that in turn has a number of convenience methods to wire up additional services.
 
@@ -53,8 +56,9 @@ Configuring the pipeline
 ^^^^^^^^^^^^^^^^^^^^^^^^
 You need to add IdentityServer to the pipeline by calling::
 
-    app.UseIdentityServer();
-
-in ``Configure``.
+    public void Configure(IApplicationBuilder app)
+    {
+        app.UseIdentityServer();
+    }
 
 Be aware that order matters in the pipeline. You want to add IdentitySever e.g. before the UI framework that implementes the login screen etc.
