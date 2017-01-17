@@ -88,6 +88,10 @@ namespace IdentityServer4.Services
                     outputClaims.AddRange(claims);
                 }
             }
+            else
+            {
+                _logger.LogDebug("In addition to an id_token, an access_token was requested. No claims other than sub are included in the id_token. To obtain more user claims, either use the user info endpoint or set AlwaysIncludeUserClaimsInIdToken on the client configuration.");
+            }
 
             return outputClaims;
         }
