@@ -1,6 +1,9 @@
 Welcome to IdentityServer4
 ==========================
 
+.. image:: images/logo.png
+   :align: center
+
 IdentityServer4 is an OpenID Connect and OAuth 2.0 framework for ASP.NET Core.
 
 It enables the following features in your applications:
