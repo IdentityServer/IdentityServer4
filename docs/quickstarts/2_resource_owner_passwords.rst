@@ -111,7 +111,7 @@ Again IdentityModel's ``TokenClient`` can help out here::
 
 When you send the token to the identity API endpoint, you will notice one small
 but important difference compared to the client credentials grant. The access token will
-now contain a ``sub`` claim which uniquely identifies the user. "How will I notice this and what should I see"
+now contain a ``sub`` claim which uniquely identifies the user. This "sub" claim can be seen by examining the content variable after the call to the API and also will be displayed on the screen by the console application. 
 
 The presence (or absence) of the ``sub`` claim let's the API distinguish between calls on behalf
 of clients and calls on behalf of users.
