@@ -19,7 +19,9 @@ Just like there are in-memory stores for resources (aka scopes) and clients, the
 .. note:: Check the ASP.NET Identity based quickstarts for more information on how to properly store and manage user accounts.
 
 The class ``TestUser`` represents a test user and its claims. Let's create a couple of users
-by adding the following code to our config class::
+by adding the following code to our config class:
+First add the following using statement to the config.cs file: 
+using IdentityServer4.Test;
 
     public static List<TestUser> GetUsers()
     {
