@@ -101,7 +101,7 @@ namespace IdentityServer4.Validation
 
                     if (api.Enabled == false)
                     {
-                        _logger.LogError("API {api} that conatins scope is disabled: {requestedScope}", api.Name, requestedScope);
+                        _logger.LogError("API {api} that contains scope is disabled: {requestedScope}", api.Name, requestedScope);
                         return false;
                     }
 
