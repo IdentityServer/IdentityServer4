@@ -19,6 +19,11 @@ This is the main repo for IdentityServer4 - but there's more:
 
 IdentityServer is built against ASP.NET Core 1.1.0 using the 1.0.0-preview2-003131 SDK. This is the only configuration we gonna support on the issue tracker.
 
+### How to build
+
+* [Install](https://www.microsoft.com/net/download/core#/current) .NET Core 1.1 
+* Run build.ps1 from Powershell
+
 ### Acknowledgements
 
 IdentityServer4 is built using the following great open source projects
