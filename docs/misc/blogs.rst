@@ -4,6 +4,7 @@ Blog posts
 Team posts
 ^^^^^^^^^^
 * `Announcing IdentityServer4 RC1 <https://leastprivilege.com/2016/09/06/identityserver4-rc1/>`_
+* `Platforms where you can run IdentityServer4 <https://leastprivilege.com/2017/01/15/platforms-where-you-can-run-identityserver4/>`_ 
 * `Optimizing Tokens for size <https://leastprivilege.com/2016/12/14/optimizing-identity-tokens-for-size/>`_
 * `Identity vs Permissions <https://leastprivilege.com/2016/12/16/identity-vs-permissions/>`_
 * `Bootstraping OpenID Connect: Discovery <https://leastprivilege.com/2017/01/06/bootstrapping-openid-connect-discovery/>`_
