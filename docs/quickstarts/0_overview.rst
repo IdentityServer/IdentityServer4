@@ -118,7 +118,7 @@ we use the following configuration for the IdentityServer host in the quickstart
 
 How to run the quickstart
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-As mentioned abve every quickstart has a reference solution - you can find the code in the 
+As mentioned above every quickstart has a reference solution - you can find the code in the 
 `IdentityServer4.Samples <https://github.com/IdentityServer/IdentityServer4.Samples>`_
 repo in the quickstarts folder.
 
