@@ -22,7 +22,7 @@
 
     "System.IdentityModel.Tokens.Jwt": "5.1.2",
     
-    "IdentityModel": "2.3.1"
+    "IdentityModel": "2.4.0"
   },
 
   "frameworks": {
