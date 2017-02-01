@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using Microsoft.Extensions.Logging;
@@ -39,7 +40,7 @@ namespace IdentityServer4.Validation
                            select scope.Name;
 
             var requiredScopes = identity.Union(apiQuery);
-            return requiredScopes.All(x => consentedScopes.Contains(x));
+            return requiredScopes.All(consentedScopes.Contains);
         }
 
         public void SetConsentedScopes(IEnumerable<string> consentedScopes)
@@ -49,14 +50,14 @@ namespace IdentityServer4.Validation
             var offline = consentedScopes.Contains(IdentityServerConstants.StandardScopes.OfflineAccess);
             if (offline)
             {
-                consentedScopes.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess);
+                consentedScopes = consentedScopes.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess);
             }
 
             var identityToKeep = GrantedResources.IdentityResources.Where(x => x.Required || consentedScopes.Contains(x.Name));
             var apisToKeep = from api in GrantedResources.ApiResources
                              where api.Scopes != null
                              let scopesToKeep = (from scope in api.Scopes
-                                                 where scope.Required == true || consentedScopes.Contains(scope.Name)
+                                                 where scope.Required || consentedScopes.Contains(scope.Name)
                                                  select scope)
                              where scopesToKeep.Any()
                              select api.CloneWithScopes(scopesToKeep);
@@ -200,6 +201,10 @@ namespace IdentityServer4.Validation
                         return false;
                     }
                     break;
+                case Constants.ScopeRequirement.None:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
 
             return true;

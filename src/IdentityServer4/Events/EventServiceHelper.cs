@@ -33,9 +33,9 @@ namespace IdentityServer4.Events
                     return _options.Events.RaiseSuccessEvents;
                 case EventTypes.Error:
                     return _options.Events.RaiseErrorEvents;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
-
-            return false;
         }
 
         public virtual Event<T> PrepareEvent<T>(Event<T> evt)
@@ -46,7 +46,7 @@ namespace IdentityServer4.Events
             {
                 ActivityId = _context.HttpContext.TraceIdentifier,
                 TimeStamp = IdentityServerDateTime.UtcNow,
-                ProcessId = Process.GetCurrentProcess().Id,
+                ProcessId = Process.GetCurrentProcess().Id
             };
 
             if (_context.HttpContext.Connection.RemoteIpAddress != null)

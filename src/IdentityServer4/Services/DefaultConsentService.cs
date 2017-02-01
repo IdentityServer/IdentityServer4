@@ -21,16 +21,16 @@ namespace IdentityServer4.Services
         /// <summary>
         /// The user consent store
         /// </summary>
-        protected readonly IUserConsentStore _userConsentStore;
+        protected readonly IUserConsentStore UserConsentStore;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultConsentService" /> class.
         /// </summary>
-        /// <param name="grants">The grants.</param>
+        /// <param name="userConsentStore"></param>
         /// <exception cref="System.ArgumentNullException">store</exception>
         public DefaultConsentService(IUserConsentStore userConsentStore)
         {
-            _userConsentStore = userConsentStore;
+            UserConsentStore = userConsentStore;
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace IdentityServer4.Services
                 return true;
             }
             
-            var consent = await _userConsentStore.GetUserConsentAsync(subject.GetSubjectId(), client.ClientId);
+            var consent = await UserConsentStore.GetUserConsentAsync(subject.GetSubjectId(), client.ClientId);
             if (consent?.Scopes != null)
             {
                 var intersect = scopes.Intersect(consent.Scopes);
@@ -114,11 +114,11 @@ namespace IdentityServer4.Services
                         ClientId = clientId,
                         Scopes = scopes
                     };
-                    await _userConsentStore.StoreUserConsentAsync(consent);
+                    await UserConsentStore.StoreUserConsentAsync(consent);
                 }
                 else
                 {
-                    await _userConsentStore.RemoveUserConsentAsync(subjectId, clientId);
+                    await UserConsentStore.RemoveUserConsentAsync(subjectId, clientId);
                 }
             }
         }
