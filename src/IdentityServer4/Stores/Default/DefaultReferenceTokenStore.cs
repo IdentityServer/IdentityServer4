@@ -29,7 +29,6 @@ namespace IdentityServer4.Stores
         /// <summary>
         /// Stores the reference token asynchronous.
         /// </summary>
-        /// <param name="handle">The handle.</param>
         /// <param name="token">The token.</param>
         /// <returns></returns>
         public Task<string> StoreReferenceTokenAsync(Token token)
