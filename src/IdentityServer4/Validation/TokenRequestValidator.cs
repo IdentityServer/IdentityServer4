@@ -502,7 +502,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             if (_validatedRequest.Client.ClientId != refreshToken.ClientId)
             {
-                LogError("{clientId} tries to refresh token belonging to {clientId}", _validatedRequest.Client.ClientId, refreshToken.ClientId);
+                LogError("{0} tries to refresh token belonging to {1}", _validatedRequest.Client.ClientId, refreshToken.ClientId);
                 await RaiseRefreshTokenRefreshFailureEventAsync(refreshTokenHandle, "Invalid client binding");
 
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
