@@ -25,6 +25,7 @@ namespace Host
                 {
                     options.Authentication.FederatedSignOutPaths.Add("/signout-callback-aad");
                     options.Authentication.FederatedSignOutPaths.Add("/signout-callback-idsrv3");
+                    options.Authentication.FederatedSignOutPaths.Add("/signout-callback-adfs");
                 })
             .AddInMemoryClients(Clients.Get())
             .AddInMemoryIdentityResources(Resources.GetIdentityResources())
@@ -115,6 +116,26 @@ namespace Host
                 CallbackPath = new PathString("/signin-aad"),
                 SignedOutCallbackPath = new PathString("/signout-callback-aad"),
                 RemoteSignOutPath = new PathString("/signout-aad"),
+                TokenValidationParameters = new TokenValidationParameters
+                {
+                    NameClaimType = "name",
+                    RoleClaimType = "role"
+                }
+            });
+
+            app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
+            {
+                AuthenticationScheme = "adfs",
+                SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
+                SignOutScheme = IdentityServerConstants.SignoutScheme,
+                DisplayName = "ADFS",
+                Authority = "https://adfs.leastprivilege.vm/adfs",
+                ClientId = "c0ea8d99-f1e7-43b0-a100-7dee3f2e5c3c",
+                ResponseType = "id_token",
+                Scope = { "openid profile" },
+                CallbackPath = new PathString("/signin-adfs"),
+                SignedOutCallbackPath = new PathString("/signout-callback-adfs"),
+                RemoteSignOutPath = new PathString("/signout-adfs"),
                 TokenValidationParameters = new TokenValidationParameters
                 {
                     NameClaimType = "name",
