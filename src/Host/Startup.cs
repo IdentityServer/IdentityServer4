@@ -31,8 +31,8 @@ namespace Host
             .AddInMemoryIdentityResources(Resources.GetIdentityResources())
             .AddInMemoryApiResources(Resources.GetApiResources())
             .AddTemporarySigningCredential()
-
             .AddExtensionGrantValidator<Extensions.ExtensionGrantValidator>()
+            .AddExtensionGrantValidator<Extensions.NoSubjectExtensionGrantValidator>()
             .AddSecretParser<ClientAssertionSecretParser>()
             .AddSecretValidator<PrivateKeyJwtSecretValidator>()
             .AddTestUsers(TestUsers.Users);

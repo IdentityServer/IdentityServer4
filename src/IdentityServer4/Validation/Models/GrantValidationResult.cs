@@ -35,8 +35,9 @@ namespace IdentityServer4.Validation
         /// Warning: the resulting access token will only contain the client identity.
         /// </summary>
         public GrantValidationResult(Dictionary<string, object> customResponse = null)
-            : this(null, customResponse)
         {
+            IsError = false;
+            CustomResponse = customResponse;
         }
 
         /// <summary>
