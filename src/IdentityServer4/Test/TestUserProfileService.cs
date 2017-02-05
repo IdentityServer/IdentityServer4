@@ -24,9 +24,9 @@ namespace IdentityServer4.Test
 
         public Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
-            _logger.LogDebug("Get profile called for {subject} from {client} with {claimTypes} because {caller}",
+            _logger.LogDebug("Get profile called for subject {subject} from client {client} with claim types{claimTypes} via {caller}",
                 context.Subject.GetSubjectId(),
-                context.Client.ClientName,
+                context.Client.ClientName ?? context.Client.ClientId,
                 context.RequestedClaimTypes,
                 context.Caller);
 
