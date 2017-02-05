@@ -234,15 +234,6 @@ namespace IdentityServer4.Endpoints
             var webKeys = new List<Models.JsonWebKey>();
             foreach (var key in await _keys.GetValidationKeysAsync())
             {
-                // todo
-                //if (!(key is AsymmetricSecurityKey) &&
-                //     !key.IsSupportedAlgorithm(SecurityAlgorithms.RsaSha256Signature))
-                //{
-                //    var error = "signing key is not asymmetric and does not support RS256";
-                //    _logger.LogError(error);
-                //    throw new InvalidOperationException(error);
-                //}
-              
                 var x509Key = key as X509SecurityKey;
                 if (x509Key != null)
                 {
