@@ -61,7 +61,7 @@ After authentication, you can see that the claims are now being sourced from Goo
 Further experiments
 ^^^^^^^^^^^^^^^^^^^
 You can add an additional external provider.
-We have a cloud-hosted demo version of IdentityServer3 which you can integrate using OpenID Connect.
+We have a cloud-hosted demo version of IdentityServer4 which you can integrate using OpenID Connect.
 
 First add the OpenID Connect package to project.json::
 
