@@ -49,8 +49,7 @@ this allows requesting refresh tokens for long lived API access::
             "api1"
         },
         AllowOfflineAccess = true
-    }
-};
+    };
 
 Modifying the MVC client
 ^^^^^^^^^^^^^^^^^^^^^^^^
