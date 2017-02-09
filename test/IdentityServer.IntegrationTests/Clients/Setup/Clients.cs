@@ -112,7 +112,7 @@ namespace IdentityServer4.IntegrationTests.Clients
                         new Secret("secret".Sha256())
                     },
 
-                    AllowedGrantTypes = GrantTypes.List("custom"),
+                    AllowedGrantTypes = GrantTypes.List("custom", "custom.nosubject"),
 
                     AllowedScopes = 
                     {

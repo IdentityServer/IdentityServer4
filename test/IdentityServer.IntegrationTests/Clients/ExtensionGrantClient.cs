@@ -81,6 +81,44 @@ namespace IdentityServer4.IntegrationTests.Clients
         }
 
         [Fact]
+        public async Task Valid_Client_No_Subject()
+        {
+            var client = new TokenClient(
+                TokenEndpoint,
+                "client.custom",
+                "secret",
+                innerHttpMessageHandler: _handler);
+
+            var customParameters = new Dictionary<string, string>
+                {
+                    { "custom_credential", "custom credential"}
+                };
+
+            var response = await client.RequestCustomGrantAsync("custom.nosubject", "api1", customParameters);
+
+            response.IsError.Should().BeFalse();
+            response.HttpStatusCode.Should().Be(HttpStatusCode.OK);
+            response.ExpiresIn.Should().Be(3600);
+            response.TokenType.Should().Be("Bearer");
+            response.IdentityToken.Should().BeNull();
+            response.RefreshToken.Should().BeNull();
+
+            var payload = GetPayload(response);
+
+            payload.Count().Should().Be(6);
+            payload.Should().Contain("iss", "https://idsvr4");
+            payload.Should().Contain("client_id", "client.custom");
+
+            var audiences = ((JArray)payload["aud"]).Select(x => x.ToString());
+            audiences.Count().Should().Be(2);
+            audiences.Should().Contain("https://idsvr4/resources");
+            audiences.Should().Contain("api");
+
+            var scopes = payload["scope"] as JArray;
+            scopes.First().ToString().Should().Be("api1");
+        }
+
+        [Fact]
         public async Task Valid_Client_with_default_Scopes()
         {
             var client = new TokenClient(
