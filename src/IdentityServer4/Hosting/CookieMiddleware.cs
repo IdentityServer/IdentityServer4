@@ -32,6 +32,14 @@ namespace IdentityServer4.Hosting
                         ExpireTimeSpan = Constants.DefaultCookieTimeSpan,
                         CookieName = IdentityServerConstants.DefaultCookieAuthenticationScheme,
                     });
+
+                    logger.LogDebug("Adding CookieAuthentication middleware for external authentication with scheme: {authenticationScheme}", IdentityServerConstants.ExternalCookieAuthenticationScheme);
+                    app.UseCookieAuthentication(new CookieAuthenticationOptions
+                    {
+                        AuthenticationScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
+                        AutomaticAuthenticate = false,
+                        AutomaticChallenge = false
+                    });
                 }
                 else
                 {
