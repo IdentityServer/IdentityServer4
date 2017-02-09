@@ -27,5 +27,17 @@ When the middleware calls the configured metadata endpoint during token validati
         System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
     #endif
 
+The highest level error you will likely see will be:
+    
+    System.InvalidOperationException: IDX10803: Unable to obtain configuration from: 'https://MYWEBSITE.LOCAL/.well-known/openid-configuration'.
+
+The originating error will reflect something similar to the following:
+    
+    System.Security.Authentication.AuthenticationException: A call to SSPI failed, see inner exception. ---> System.ComponentModel.Win32Exception: The client and server cannot communicate, because they do not possess a common algorithm
+
+
+
+==========================================
+
 You can get the middleware from `nuget <https://www.nuget.org/packages/IdentityServer4.AccessTokenValidation/>`_ 
 or `github <https://github.com/IdentityServer/IdentityServer4.AccessTokenValidation>`_.
