@@ -27,9 +27,6 @@ namespace IdentityServer4.IntegrationTests.Clients
             return Task.FromResult(0);
         }
 
-        public string GrantType
-        {
-            get { return "custom2"; }
-        }
+        public string GrantType => "custom2";
     }
 }
