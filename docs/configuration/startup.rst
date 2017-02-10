@@ -58,13 +58,30 @@ The use of ``TestUser`` is not recommended in production.
 **Additional services**
 
 * ``AddExtensionGrantValidator``
+    Adds ``IExtensionGrantValidator`` implementation for use with extension grants.
+
 * ``AddSecretParser``
+    Adds ``ISecretParser`` implementation for parsing client or API resource credentials.
+
 * ``AddSecretValidator``
+    Adds ``ISecretValidator`` implementation for validating client or API resource credentials against a credential store.
+
 * ``AddResourceOwnerValidator``
+    Adds ``IResourceOwnerPasswordValidator`` implementation for validating user credentials for the resource owner password credentials grant type.
+
 * ``AddProfileService``
+    Adds ``IProfileService`` implementation for connecting to your custom user profile store.
+    The ``DefaultProfileService`` class provides the default implementation which relies upon the authentication cookie as the only source of claims for issuing in tokens.
+
 * ``AddAuthorizeInteractionResponseGenerator``
+    Adds ``IAuthorizeInteractionResponseGenerator`` implementation to customize logic at authorization endpoint for when a user must be shown a UI for error, login, consent, or any other custom page.
+    The ``AuthorizeInteractionResponseGenerator`` class provides a default implementation, so consider deriving from this existing class if you need to augment the existing behavior.
+
 * ``AddCustomAuthorizeRequestValidator``
+    Adds ``ICustomAuthorizeRequestValidator`` implementation to customize request parameter validation at the authorization endpoint.
+
 * ``AddCustomTokenRequestValidator``
+    Adds ``ICustomTokenRequestValidator`` implementation to customize request parameter validation at the token endpoint.
 
 **Caching**
 
