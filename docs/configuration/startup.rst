@@ -38,15 +38,22 @@ Use of these configuration APIs are designed for use when prototyping, developin
 This style of configuration might also be appropriate for production scenarios if the configuration rarely changes, or it is not inconvenient to require restarting the application if the value must be changed.
 
 * ``AddInMemoryClients``
-    Adds the in-memory collection of ``Client`` configuration objects.
+    Registers ``IClientStore`` and ``ICorsPolicyService`` implementations based on the in-memory collection of ``Client`` configuration objects.
 * ``AddInMemoryIdentityResources``
-    Adds the in-memory collection of ``IdentityResource`` configuration objects.
+    Registers ``IResourceStore`` implementation based on the in-memory collection of ``IdentityResource`` configuration objects.
 * ``AddInMemoryApiResources``
-    Adds the in-memory collection of ``ApiResource`` configuration objects.
+    Registers ``IResourceStore`` implementation based on the in-memory collection of ``ApiResource`` configuration objects.
 
 **Test stores**
 
+The ``TestUser`` class models a user, their credentials, and claims in IdentityServer. 
+Use of ``TestUser`` is simiar to the use of the "in-memory" stores in that it is intended for when prototyping, developing, and/or testing.
+The use of ``TestUser`` is not recommended in production.
+
 * ``AddTestUsers``
+    Registers ``TestUserStore`` based on a collection of ``TestUser`` objects.
+    ``TestUserStore`` is used by the default quickstart UI.
+    Also registers implementations of ``IProfileService`` and ``IResourceOwnerPasswordValidator``.
 
 **Additional services**
 
@@ -61,9 +68,24 @@ This style of configuration might also be appropriate for production scenarios i
 
 **Caching**
 
-* ``AddClientStoreCache``
-* ``AddResourceStoreCache``
+Client and resource configuration data is used frequently by IdentityServer.
+If this data is being loaded from a database or other external store, then it might be expensive to frequently re-load the same data.
 
+* ``AddClientStoreCache``
+    Registers a ``IClientStore`` decorator implementation which will maintain an in-memory cache of ``Client`` configuration objects.
+    The cacue duration is configurable on the ``Caching`` configuration options on the ``IdentityServerOptions``.
+
+* ``AddResourceStoreCache``
+    Registers a ``IResourceStore`` decorator implementation which will maintain an in-memory cache of ``IdentityResource`` and ``ApiResource`` configuration objects.
+    The cacue duration is configurable on the ``Caching`` configuration options on the ``IdentityServerOptions``.
+
+Further customization of the cache is possible:
+
+The default caching relies upon the ``ICache<T>`` implementation.
+If you wish to customize the caching behavior for the specific configuration objects, you can replace this implementation in the dependency injection system.
+
+The default implementation of the ``ICache<T>`` itself relies upon the ``IMemoryCache`` interface (and ``MemoryCache`` implementation) provided by .NET.
+If you wish to customize the in-memory caching behavior, you can replace the ``IMemoryCache`` implementation in the dependency injection system.
 
 Configuring the pipeline
 ^^^^^^^^^^^^^^^^^^^^^^^^
