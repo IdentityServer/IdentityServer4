@@ -31,6 +31,17 @@ A ``returnUrl`` parameter will be passed informing your login page where the use
 Login Context
 ^^^^^^^^^^^^^
 
-On your login page you might require information about the context of the request such as client, prompt parameter, IdP hint, or something else.
-This is made available via the ``GetAuthorizationContextAsync`` API on the ``IIdentityServerInteractionService`` (:doc:`../reference/interactionservice`).
-This API accepts the ``returnUrl`` as a parameter and returns a ``AuthorizationRequest`` object with the contextual values.
+On your login page you might require information about the context of the request in order to customize the login experience (such as client, prompt parameter, IdP hint, or something else).
+This is made available via the ``GetAuthorizationContextAsync`` API on the :doc:`../reference/interactionservice`.
+
+AuthenticationManager and Claims
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The ``AuthenticationManager`` from ASP.NET Core is used to issue the authentication cookie and sign a user in. 
+The authentication scheme used must match the cookie middleware you are using (see above).
+
+When you sign the user in you must issue at least a ``sub`` claim and a ``name`` claim.
+IdentityServer provides a few ``SignInAsync`` extension methods on the ``AuthenticationManager`` to make this more convenient.
+
+You can also optionally issue an ``idp`` claim (for the identity provider user), an ``amr`` claim (for the authentication method used), and/or an ``auth_time`` claim (for the epoch time a user authenticated).
+If you do not provide these, then IdentityServer will provide default values.
