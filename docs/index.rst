@@ -90,6 +90,7 @@ IdentityServer is officially certified by the OpenID Foundation and part of the 
    topics/idps
    topics/signin
    topics/signout
+   topics/consent
    topics/logging
    topics/refresh_tokens
    topics/reference_tokens
