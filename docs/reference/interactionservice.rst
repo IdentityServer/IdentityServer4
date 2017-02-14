@@ -2,26 +2,41 @@
 IdentityServer Interaction Service
 ==================================
 
-This interface is intended to provide services be used by the user interface to communicate with IdentityServer, mainly pertaining to user interaction.
+The ``IIdentityServerInteractionService`` interface is intended to provide services be used by the user interface to communicate with IdentityServer, mainly pertaining to user interaction.
+It is available from the dependency injection system and would normally be injected as a constructor parameter into your MVC controllers for the user interface of IdentityServer.
+
+IIdentityServerInteractionService APIs
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ``GetAuthorizationContextAsync``
-    Returns the ``AuthorizationRequest`` for the login and consent pages.
-
-``GetErrorContextAsync``
-    Returns the ``ErrorMessage`` for the error page.
-
-``GetLogoutContextAsync``
-    Returns the ``LogoutRequest`` for the logout page.
+    Returns the ``AuthorizationRequest`` based on the ``returnUrl`` passed to the login or consent pages.
 
 ``IsValidReturnUrl``
-    Indicates if the passed URL is a valid URL to redirect the user to after login or consent.
+    Indicates if the ``returnUrl`` is a valid URL for redirect after login or consent.
+
+``GetErrorContextAsync``
+    Returns the ``ErrorMessage`` based on the ``errorId`` passed to the error page.
+
+``GetLogoutContextAsync``
+    Returns the ``LogoutRequest`` based on the ``logoutId`` passed to the logout page.
+
+``CreateLogoutContextAsync``
+    Used to create a ``logoutId`` if there is not one presently.
+    This creates a cookie capturing all the current state needed for signout and the ``logoutId`` identifies that cookie.
+    This is typically used when there is no current ``logoutId`` and the logout page must capture the current user's state needed for singout prior to redirecting to an external identity provider for signout.
+    The newly created ``logoutId`` would need to be round-tripped to the external identity provider at signout time, and then used on the signout callback page in the same way it would be on the normal logout page.
 
 ``GrantConsentAsync``
-    Informs IdentityServer of the user's consent to a particular authorization request.
+    Accepts a ``ConsentResponse`` to inform IdentityServer of the user's consent to a particular ``AuthorizationRequest``.
 
 ``GetAllUserConsentsAsync``
+    Returns a collection of ``Consent`` for the user.
+
 ``RevokeUserConsentAsync``
+    Revokes all of a user's consents and grants for a client.
+
 ``RevokeTokensForCurrentSessionAsync``
+    Revokes all of a user's consents and grants for clients the user has signed into during their current session.
 
 AuthorizationRequest
 ^^^^^^^^^^^^^^^^^^^^
@@ -53,7 +68,7 @@ AuthorizationRequest
     The entire parameter collection passed to the authorization request.
 
 ErrorMessage
-^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^
 ``DisplayMode``
     The display mode passed from the authorization request.
 ``UiLocales``
@@ -64,7 +79,7 @@ ErrorMessage
     The per-request identifier. This can be used to display to the end user and can be used in diagnostics.
 
 LogoutRequest
-^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^
 ``ClientId``
     The client identifier that initiated the request.
 ``PostLogoutRedirectUri``
@@ -77,3 +92,23 @@ LogoutRequest
     The entire parameter collection passed to the end session endpoint.
 ``ShowSignoutPrompt``
     Indicates if the user should be prompted for signout based upon the parameters passed to the end session endpoint.
+
+ConsentResponse
+^^^^^^^^^^^^^^^
+``ScopesConsented``
+    The collection of scopes the user consented to.
+``RememberConsent``
+    Flag indicating if the user's consent is to be persisted.
+
+Consent
+^^^^^^^
+``SubjectId``
+    The subject id that granted the consent.
+``ClientId``
+    The client identifier for the consent.
+``Scopes``
+    The collection of scopes consented to.
+``CreationTime``
+    The date and time when the consent was granted.
+``Expiration``
+    The date and time when the consent will expire.
