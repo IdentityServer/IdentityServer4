@@ -87,7 +87,6 @@ IdentityServer is officially certified by the OpenID Foundation and part of the 
    topics/resource_owner
    topics/crypto
    topics/deployment
-   topics/idps
    topics/signin
    topics/signin_external_providers
    topics/consent
