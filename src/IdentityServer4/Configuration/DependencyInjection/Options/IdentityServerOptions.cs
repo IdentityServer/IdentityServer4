@@ -45,14 +45,6 @@ namespace IdentityServer4.Configuration
         public AuthenticationOptions Authentication { get; set; } = new AuthenticationOptions();
 
         /// <summary>
-        /// Gets or sets the protocol logout urls.
-        /// </summary>
-        /// <value>
-        /// The protocol logout urls.
-        /// </value>
-        public ICollection<string> ProtocolLogoutUrls { get; set; } = new HashSet<string>();
-
-        /// <summary>
         /// Gets or sets the events options.
         /// </summary>
         /// <value>

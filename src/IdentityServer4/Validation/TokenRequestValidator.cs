@@ -200,7 +200,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             if (authZcode.ClientId != _validatedRequest.Client.ClientId)
             {
-                LogError("Client {clientId} is trying to use a code from client {clientId}", _validatedRequest.Client.ClientId, authZcode.ClientId);
+                LogError("Client {0} is trying to use a code from client {1}", _validatedRequest.Client.ClientId, authZcode.ClientId);
                 await RaiseFailedAuthorizationCodeRedeemedEventAsync(code, "Invalid client binding");
 
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
@@ -502,7 +502,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             if (_validatedRequest.Client.ClientId != refreshToken.ClientId)
             {
-                LogError("{clientId} tries to refresh token belonging to {clientId}", _validatedRequest.Client.ClientId, refreshToken.ClientId);
+                LogError("{0} tries to refresh token belonging to {1}", _validatedRequest.Client.ClientId, refreshToken.ClientId);
                 await RaiseRefreshTokenRefreshFailureEventAsync(refreshTokenHandle, "Invalid client binding");
 
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
