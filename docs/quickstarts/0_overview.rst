@@ -115,3 +115,17 @@ we use the following configuration for the IdentityServer host in the quickstart
     }
 
 .. Note:: We recommend to configure the same port for IIS Express and self-hosting. This way you can switch between the two without having to modify any configuration in your clients.
+
+How to run the quickstart
+^^^^^^^^^^^^^^^^^^^^^^^^^
+As mentioned above every quickstart has a reference solution - you can find the code in the 
+`IdentityServer4.Samples <https://github.com/IdentityServer/IdentityServer4.Samples>`_
+repo in the quickstarts folder.
+
+The easiest way to run the individual parts of a quickstart solution is to set the startup mode to "current selection".
+Right click the solution and select "Set Startup Projects":
+
+.. image:: images/0_startup_mode.png
+
+Typically you start IdentityServer first, then the API, and then the client. Only run in the debugger if you actually want to debug.
+Otherwise Ctrl+F5 is the best way to run the projects.

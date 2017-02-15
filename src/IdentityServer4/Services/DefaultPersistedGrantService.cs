@@ -9,6 +9,7 @@ using IdentityServer4.Stores;
 using IdentityServer4.Stores.Serialization;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace IdentityServer4.Services
 {
@@ -32,49 +33,58 @@ namespace IdentityServer4.Services
         
         public async Task<IEnumerable<Consent>> GetAllGrantsAsync(string subjectId)
         {
-            var grants = await _store.GetAllAsync(subjectId);
+            var grants = (await _store.GetAllAsync(subjectId)).ToArray();
 
-            var consents = grants.Where(x => x.Type == Constants.PersistedGrantTypes.UserConsent)
-                .Select(x => _serializer.Deserialize<Consent>(x.Data));
+            try
+            {
+                var consents = grants.Where(x => x.Type == Constants.PersistedGrantTypes.UserConsent)
+                    .Select(x => _serializer.Deserialize<Consent>(x.Data));
 
-            var codes = grants.Where(x => x.Type == Constants.PersistedGrantTypes.AuthorizationCode)
-                .Select(x => _serializer.Deserialize<AuthorizationCode>(x.Data))
-                .Select(x => new Consent
-                {
-                    ClientId = x.ClientId,
-                    SubjectId = subjectId,
-                    Scopes = x.RequestedScopes,
-                    CreationTime = x.CreationTime,
-                    Expiration = x.CreationTime.AddSeconds(x.Lifetime)
-                });
+                var codes = grants.Where(x => x.Type == Constants.PersistedGrantTypes.AuthorizationCode)
+                    .Select(x => _serializer.Deserialize<AuthorizationCode>(x.Data))
+                    .Select(x => new Consent
+                    {
+                        ClientId = x.ClientId,
+                        SubjectId = subjectId,
+                        Scopes = x.RequestedScopes,
+                        CreationTime = x.CreationTime,
+                        Expiration = x.CreationTime.AddSeconds(x.Lifetime)
+                    });
 
-            var refresh = grants.Where(x => x.Type == Constants.PersistedGrantTypes.RefreshToken)
-                .Select(x => _serializer.Deserialize<RefreshToken>(x.Data))
-                .Select(x => new Consent
-                {
-                    ClientId = x.ClientId,
-                    SubjectId = subjectId,
-                    Scopes = x.Scopes,
-                    CreationTime = x.CreationTime,
-                    Expiration = x.CreationTime.AddSeconds(x.Lifetime)
-                });
+                var refresh = grants.Where(x => x.Type == Constants.PersistedGrantTypes.RefreshToken)
+                    .Select(x => _serializer.Deserialize<RefreshToken>(x.Data))
+                    .Select(x => new Consent
+                    {
+                        ClientId = x.ClientId,
+                        SubjectId = subjectId,
+                        Scopes = x.Scopes,
+                        CreationTime = x.CreationTime,
+                        Expiration = x.CreationTime.AddSeconds(x.Lifetime)
+                    });
 
-            var access = grants.Where(x => x.Type == Constants.PersistedGrantTypes.ReferenceToken)
-                .Select(x => _serializer.Deserialize<Token>(x.Data))
-                .Select(x => new Consent
-                {
-                    ClientId = x.ClientId,
-                    SubjectId = subjectId,
-                    Scopes = x.Scopes,
-                    CreationTime = x.CreationTime,
-                    Expiration = x.CreationTime.AddSeconds(x.Lifetime)
-                });
+                var access = grants.Where(x => x.Type == Constants.PersistedGrantTypes.ReferenceToken)
+                    .Select(x => _serializer.Deserialize<Token>(x.Data))
+                    .Select(x => new Consent
+                    {
+                        ClientId = x.ClientId,
+                        SubjectId = subjectId,
+                        Scopes = x.Scopes,
+                        CreationTime = x.CreationTime,
+                        Expiration = x.CreationTime.AddSeconds(x.Lifetime)
+                    });
 
-            consents = Join(consents, codes);
-            consents = Join(consents, refresh);
-            consents = Join(consents, access);
+                consents = Join(consents, codes);
+                consents = Join(consents, refresh);
+                consents = Join(consents, access);
 
-            return consents.ToArray();
+                return consents.ToArray();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Failed processing results from grant store. Exception: {0}", ex.Message);
+            }
+
+            return Enumerable.Empty<Consent>();
         }
 
         IEnumerable<Consent> Join(IEnumerable<Consent> first, IEnumerable<Consent> second)

@@ -4,7 +4,7 @@ Defining Resources
 The first thing you will typically define in your system are the resources that you want to protect.
 That could be identity information of your users, like profile data or email addresses, or access to APIs.
 
-.. note:: You can define resources using a C# object model - or load the from a data store. An implementation of ``IResourceStore`` deals with these low-level details. For this document we are using the in-memory implementation.
+.. note:: You can define resources using a C# object model - or load them from a data store. An implementation of ``IResourceStore`` deals with these low-level details. For this document we are using the in-memory implementation.
 
 Defining identity resources
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -11,6 +11,7 @@ using IdentityServer4.Models;
 using System.Security.Claims;
 using IdentityServer4.IntegrationTests.Common;
 using IdentityServer4.Test;
+using System.Net.Http;
 
 namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 {
@@ -98,6 +99,26 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             var response = await _mockPipeline.BrowserClient.GetAsync(MockIdSvrUiPipeline.AuthorizeEndpoint);
 
             response.StatusCode.Should().NotBe(HttpStatusCode.NotFound);
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task post_request_without_form_should_return_415()
+        {
+            var response = await _mockPipeline.BrowserClient.PostAsync(MockIdSvrUiPipeline.AuthorizeEndpoint, new StringContent("foo"));
+
+            response.StatusCode.Should().Be(HttpStatusCode.UnsupportedMediaType);
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task post_request_should_return_200()
+        {
+            var response = await _mockPipeline.BrowserClient.PostAsync(MockIdSvrUiPipeline.AuthorizeEndpoint,
+                new FormUrlEncodedContent(
+                    new Dictionary<string, string>{ }));
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         [Fact]

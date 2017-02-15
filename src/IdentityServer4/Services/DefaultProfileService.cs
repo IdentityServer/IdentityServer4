@@ -4,6 +4,9 @@
 
 using System.Threading.Tasks;
 using IdentityServer4.Models;
+using IdentityServer4.Extensions;
+using Microsoft.Extensions.Logging;
+using System.Linq;
 
 namespace IdentityServer4.Services
 {
@@ -13,6 +16,13 @@ namespace IdentityServer4.Services
     /// <seealso cref="IdentityServer4.Services.IProfileService" />
     public class DefaultProfileService : IProfileService
     {
+        private readonly ILogger<DefaultProfileService> _logger;
+
+        public DefaultProfileService(ILogger<DefaultProfileService> logger)
+        {
+            _logger = logger;
+        }
+
         /// <summary>
         /// This method is called whenever claims about the user are requested (e.g. during token creation or via the userinfo endpoint)
         /// </summary>
@@ -20,7 +30,17 @@ namespace IdentityServer4.Services
         /// <returns></returns>
         public Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
-            context.AddFilteredClaims(context.Subject.Claims);
+            _logger.LogDebug("Get profile called for {subject} from {client} with {claimTypes} because {caller}",
+                context.Subject.GetSubjectId(),
+                context.Client.ClientName,
+                context.RequestedClaimTypes,
+                context.Caller);
+
+            if (context.RequestedClaimTypes.Any())
+            {
+                context.AddFilteredClaims(context.Subject.Claims);
+            }
+
             return Task.FromResult(0);
         }
 

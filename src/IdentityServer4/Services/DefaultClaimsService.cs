@@ -61,32 +61,36 @@ namespace IdentityServer4.Services
             // fetch all identity claims that need to go into the id token
             if (includeAllIdentityClaims || client.AlwaysIncludeUserClaimsInIdToken)
             {
-                var additionalClaims = new List<string>();
+                var additionalClaimTypes = new List<string>();
 
                 foreach (var identityResource in resources.IdentityResources)
                 {
                     foreach (var userClaim in identityResource.UserClaims)
                     {
-                        additionalClaims.Add(userClaim);
+                        additionalClaimTypes.Add(userClaim);
                     }
                 }
 
-                if (additionalClaims.Count > 0)
+                // filter so we don't ask for claim types that we will eventually filter out
+                additionalClaimTypes = FilterRequestedClaimTypes(additionalClaimTypes).ToList();
+
+                var context = new ProfileDataRequestContext(
+                    subject,
+                    client,
+                    IdentityServerConstants.ProfileDataCallers.ClaimsProviderIdentityToken,
+                    additionalClaimTypes);
+
+                await Profile.GetProfileDataAsync(context);
+
+                var claims = FilterProtocolClaims(context.IssuedClaims);
+                if (claims != null)
                 {
-                    var context = new ProfileDataRequestContext(
-                        subject,
-                        client,
-                        IdentityServerConstants.ProfileDataCallers.ClaimsProviderIdentityToken,
-                        additionalClaims);
-
-                    await Profile.GetProfileDataAsync(context);
-
-                    var claims = FilterProtocolClaims(context.IssuedClaims);
-                    if (claims != null)
-                    {
-                        outputClaims.AddRange(claims);
-                    }
+                    outputClaims.AddRange(claims);
                 }
+            }
+            else
+            {
+                _logger.LogDebug("In addition to an id_token, an access_token was requested. No claims other than sub are included in the id_token. To obtain more user claims, either use the user info endpoint or set AlwaysIncludeUserClaimsInIdToken on the client configuration.");
             }
 
             return outputClaims;
@@ -155,7 +159,7 @@ namespace IdentityServer4.Services
                 outputClaims.AddRange(GetOptionalClaims(subject));
 
                 // fetch all resource claims that need to go into the access token
-                var additionalClaims = new List<string>();
+                var additionalClaimTypes = new List<string>();
                 foreach (var api in resources.ApiResources)
                 {
                     // add claims configured on api resource
@@ -163,7 +167,7 @@ namespace IdentityServer4.Services
                     {
                         foreach (var claim in api.UserClaims)
                         {
-                            additionalClaims.Add(claim);
+                            additionalClaimTypes.Add(claim);
                         }
                     }
 
@@ -174,27 +178,27 @@ namespace IdentityServer4.Services
                         {
                             foreach (var claim in scope.UserClaims)
                             {
-                                additionalClaims.Add(claim);
+                                additionalClaimTypes.Add(claim);
                             }
                         }
                     }
                 }
 
-                if (additionalClaims.Count > 0)
+                // filter so we don't ask for claim types that we will eventually filter out
+                additionalClaimTypes = FilterRequestedClaimTypes(additionalClaimTypes).ToList();
+
+                var context = new ProfileDataRequestContext(
+                    subject,
+                    client,
+                    IdentityServerConstants.ProfileDataCallers.ClaimsProviderAccessToken,
+                    additionalClaimTypes.Distinct());
+
+                await Profile.GetProfileDataAsync(context);
+
+                var claims = FilterProtocolClaims(context.IssuedClaims);
+                if (claims != null)
                 {
-                    var context = new ProfileDataRequestContext(
-                        subject,
-                        client,
-                        IdentityServerConstants.ProfileDataCallers.ClaimsProviderAccessToken,
-                        additionalClaims.Distinct());
-
-                    await Profile.GetProfileDataAsync(context);
-
-                    var claims = FilterProtocolClaims(context.IssuedClaims);
-                    if (claims != null)
-                    {
-                        outputClaims.AddRange(claims);
-                    }
+                    outputClaims.AddRange(claims);
                 }
             }
 
@@ -246,9 +250,19 @@ namespace IdentityServer4.Services
             if (claimsToFilter.Any())
             {
                 var types = claimsToFilter.Select(x => x.Type);
-                _logger.LogInformation("Claim types from profile service that were filtered: {claimTypes}", types);
+                _logger.LogDebug("Claim types from profile service that were filtered: {claimTypes}", types);
             }
             return claims.Except(claimsToFilter);
+        }
+
+        /// <summary>
+        /// Filters out protocol claims like amr, nonce etc..
+        /// </summary>
+        /// <param name="claimTypes">The claim types.</param>
+        protected virtual IEnumerable<string> FilterRequestedClaimTypes(IEnumerable<string> claimTypes)
+        {
+            var claimTypesToFilter = claimTypes.Where(x => Constants.Filters.ClaimsServiceFilterClaimTypes.Contains(x));
+            return claimTypes.Except(claimTypesToFilter);
         }
     }
 }

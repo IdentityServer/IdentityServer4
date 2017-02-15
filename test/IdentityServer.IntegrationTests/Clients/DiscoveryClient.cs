@@ -42,6 +42,8 @@ namespace IdentityServer.IntegrationTests.Clients
         public async Task Discovery_document_should_have_expected_values()
         {
             var client = new DiscoveryClient(DiscoveryEndpoint, _handler);
+            client.Policy.ValidateIssuerName = false;
+
             var doc = await client.GetAsync();
 
             // endpoints

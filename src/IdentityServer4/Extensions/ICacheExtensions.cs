@@ -20,13 +20,12 @@ namespace IdentityServer4.Extensions
         /// <param name="key">The key.</param>
         /// <param name="duration">The duration.</param>
         /// <param name="get">The get function.</param>
+        /// <param name="logger">The logger.</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
-        /// cache
-        /// or
-        /// get
-        /// </exception>
         /// <exception cref="System.ArgumentNullException">cache
+        /// or
+        /// get</exception>
+        /// <exception cref="ArgumentNullException">cache
         /// or
         /// get</exception>
         public static async Task<T> GetAsync<T>(this ICache<T> cache, string key, TimeSpan duration, Func<Task<T>> get, ILogger logger)

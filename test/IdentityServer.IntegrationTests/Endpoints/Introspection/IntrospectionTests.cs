@@ -168,14 +168,14 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
                 aud.Type.Should().Be(JTokenType.String);
             }
 
-            var iss = values["iss"].GetType().Name.Should().Be("String"); ;
-            var nbf = values["nbf"].GetType().Name.Should().Be("Int64"); ;
-            var exp = values["exp"].GetType().Name.Should().Be("Int64"); ;
-            var clientId = values["client_id"].GetType().Name.Should().Be("String"); ;
-            var active = values["active"].GetType().Name.Should().Be("Boolean"); ;
-            var scopes = values["scope"] as JArray;
+            values["iss"].GetType().Name.Should().Be("String");
+            values["nbf"].GetType().Name.Should().Be("Int64");
+            values["exp"].GetType().Name.Should().Be("Int64");
+            values["client_id"].GetType().Name.Should().Be("String");
+            values["active"].GetType().Name.Should().Be("Boolean");
+            values["scope"].GetType().Name.Should().Be("String");
 
-            scopes.Count.Should().Be(1);
+            values["scope"].ToString().Should().Be("api1");
         }
 
         [Fact]
@@ -219,9 +219,9 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
             values["client_id"].GetType().Name.Should().Be("String");
             values["sub"].GetType().Name.Should().Be("String");
             values["active"].GetType().Name.Should().Be("Boolean");
+            values["scope"].GetType().Name.Should().Be("String");
 
-            var scopes = values["scope"] as JArray;
-            scopes.Count.Should().Be(1);
+            values["scope"].ToString().Should().Be("api1");
         }
 
         [Fact]
@@ -257,14 +257,15 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
                 aud.Type.Should().Be(JTokenType.String);
             }
 
-            var iss = values["iss"].GetType().Name.Should().Be("String"); ;
-            var nbf = values["nbf"].GetType().Name.Should().Be("Int64"); ;
-            var exp = values["exp"].GetType().Name.Should().Be("Int64"); ;
-            var clientId = values["client_id"].GetType().Name.Should().Be("String"); ;
-            var active = values["active"].GetType().Name.Should().Be("Boolean"); ;
-            var scopes = (values["scope"] as JArray).Select(x=>x.ToString()).ToArray();
-            scopes.Length.Should().Be(2);
-            scopes.Should().BeEquivalentTo(new string[] { "api3-a", "api3-b" });
+            values["iss"].GetType().Name.Should().Be("String"); 
+            values["nbf"].GetType().Name.Should().Be("Int64"); 
+            values["exp"].GetType().Name.Should().Be("Int64"); 
+            values["client_id"].GetType().Name.Should().Be("String"); 
+            values["active"].GetType().Name.Should().Be("Boolean"); 
+            values["scope"].GetType().Name.Should().Be("String");
+
+            var scopes = values["scope"].ToString();
+            scopes.Should().Be("api3-a api3-b");
         }
 
         [Fact]

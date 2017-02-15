@@ -25,13 +25,14 @@ namespace Host
                 {
                     options.Authentication.FederatedSignOutPaths.Add("/signout-callback-aad");
                     options.Authentication.FederatedSignOutPaths.Add("/signout-callback-idsrv3");
+                    options.Authentication.FederatedSignOutPaths.Add("/signout-callback-adfs");
                 })
             .AddInMemoryClients(Clients.Get())
             .AddInMemoryIdentityResources(Resources.GetIdentityResources())
             .AddInMemoryApiResources(Resources.GetApiResources())
             .AddTemporarySigningCredential()
-
             .AddExtensionGrantValidator<Extensions.ExtensionGrantValidator>()
+            .AddExtensionGrantValidator<Extensions.NoSubjectExtensionGrantValidator>()
             .AddSecretParser<ClientAssertionSecretParser>()
             .AddSecretValidator<PrivateKeyJwtSecretValidator>()
             .AddTestUsers(TestUsers.Users);
@@ -77,8 +78,8 @@ namespace Host
             {
                 AuthenticationScheme = "Google",
                 SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
-                ClientId = "998042782978-s07498t8i8jas7npj4crve1skpromf37.apps.googleusercontent.com",
-                ClientSecret = "HsnwJri_53zn7VcO1Fm7THBb",
+                ClientId = "708996912208-9m4dkjb5hscn7cjrn5u0r4tbgkbj1fko.apps.googleusercontent.com",
+                ClientSecret = "wdfPY6t8H8cecgjlxud__4Gh"
             });
 
             app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
@@ -115,6 +116,26 @@ namespace Host
                 CallbackPath = new PathString("/signin-aad"),
                 SignedOutCallbackPath = new PathString("/signout-callback-aad"),
                 RemoteSignOutPath = new PathString("/signout-aad"),
+                TokenValidationParameters = new TokenValidationParameters
+                {
+                    NameClaimType = "name",
+                    RoleClaimType = "role"
+                }
+            });
+
+            app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
+            {
+                AuthenticationScheme = "adfs",
+                SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
+                SignOutScheme = IdentityServerConstants.SignoutScheme,
+                DisplayName = "ADFS",
+                Authority = "https://adfs.leastprivilege.vm/adfs",
+                ClientId = "c0ea8d99-f1e7-43b0-a100-7dee3f2e5c3c",
+                ResponseType = "id_token",
+                Scope = { "openid profile" },
+                CallbackPath = new PathString("/signin-adfs"),
+                SignedOutCallbackPath = new PathString("/signout-callback-adfs"),
+                RemoteSignOutPath = new PathString("/signout-adfs"),
                 TokenValidationParameters = new TokenValidationParameters
                 {
                     NameClaimType = "name",

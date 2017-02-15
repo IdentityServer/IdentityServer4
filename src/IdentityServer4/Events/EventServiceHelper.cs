@@ -33,9 +33,9 @@ namespace IdentityServer4.Events
                     return _options.Events.RaiseSuccessEvents;
                 case EventTypes.Error:
                     return _options.Events.RaiseErrorEvents;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
-
-            return false;
         }
 
         public virtual Event<T> PrepareEvent<T>(Event<T> evt)

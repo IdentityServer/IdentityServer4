@@ -75,7 +75,7 @@ IdentityModel
 ^^^^^^^^^^^^^
 You can programmatically create URLs for the authorize endpoint using the `IdentityModel <https://github.com/IdentityModel/IdentityModel2>`_ library::
 
-    var request = new AuthorizeRequest(doc.AuthorizationEndpoint);
+    var request = new AuthorizeRequest(doc.AuthorizeEndpoint);
     var url = request.CreateAuthorizeUrl(
         clientId:     "client",
         responseType: OidcConstants.ResponseTypes.CodeIdToken,

@@ -35,8 +35,9 @@ namespace IdentityServer4.Validation
         /// Warning: the resulting access token will only contain the client identity.
         /// </summary>
         public GrantValidationResult(Dictionary<string, object> customResponse = null)
-            : this(null, customResponse)
         {
+            IsError = false;
+            CustomResponse = customResponse;
         }
 
         /// <summary>
@@ -70,12 +71,13 @@ namespace IdentityServer4.Validation
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GrantValidationResult"/> class.
+        /// Initializes a new instance of the <see cref="GrantValidationResult" /> class.
         /// </summary>
         /// <param name="subject">The subject claim used to uniquely identifier the user.</param>
         /// <param name="authenticationMethod">The authentication method which describes the custom grant type.</param>
         /// <param name="claims">Additional claims that will be maintained in the principal.</param>
         /// <param name="identityProvider">The identity provider.</param>
+        /// <param name="customResponse">The custom response.</param>
         public GrantValidationResult(
             string subject,
             string authenticationMethod,

@@ -53,7 +53,14 @@ namespace IdentityServer4.Stores
             var grant = await _store.GetAsync(key);
             if (grant != null && grant.Type == _grantType && !grant.Expiration.HasExpired())
             {
-                return _serializer.Deserialize<T>(grant.Data);
+                try
+                {
+                    return _serializer.Deserialize<T>(grant.Data);
+                }
+                catch(Exception ex)
+                {
+                    _logger.LogError("Failed to deserailize JSON from grant store. Exception: {0}", ex.Message);
+                }
             }
 
             return default(T);

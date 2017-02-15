@@ -5,6 +5,7 @@
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -49,7 +50,7 @@ namespace IdentityServer4.Validation
             var offline = consentedScopes.Contains(IdentityServerConstants.StandardScopes.OfflineAccess);
             if (offline)
             {
-                consentedScopes.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess);
+                consentedScopes = consentedScopes.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess);
             }
 
             var identityToKeep = GrantedResources.IdentityResources.Where(x => x.Required || consentedScopes.Contains(x.Name));
@@ -101,7 +102,7 @@ namespace IdentityServer4.Validation
 
                     if (api.Enabled == false)
                     {
-                        _logger.LogError("API {api} that conatins scope is disabled: {requestedScope}", api.Name, requestedScope);
+                        _logger.LogError("API {api} that contains scope is disabled: {requestedScope}", api.Name, requestedScope);
                         return false;
                     }
 

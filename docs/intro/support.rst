@@ -31,6 +31,11 @@ Commercial support
 Both Brock and I do consulting around identity & access control architecture in general, and IdentityServer in particular.
 Please `get in touch <mailto:identity@leastprivilege.com>`_ with us to discuss possible options.
 
+**Training**
+
+Brock and Dominick are regularly doing workshops around identity & acess control for modern applications.
+Check the agenda and upcoming dates  `here <https://identityserver.io/training>`_.
+
 **Production support in North America**
 
 If you are looking for production support in North America - `write us an email <mailto:identityserversupport@solliance.net>`_. 

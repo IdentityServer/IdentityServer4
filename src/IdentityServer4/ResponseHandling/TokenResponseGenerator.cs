@@ -22,7 +22,7 @@ namespace IdentityServer4.ResponseHandling
         private readonly IRefreshTokenService _refreshTokenService;
         private readonly IResourceStore _resources;
         private readonly IClientStore _clients;
-       
+
         public TokenResponseGenerator(ITokenService tokenService, IRefreshTokenService refreshTokenService, IResourceStore resources, IClientStore clients, ILoggerFactory loggerFactory)
         {
             _tokenService = tokenService;
@@ -133,7 +133,7 @@ namespace IdentityServer4.ResponseHandling
 
             var oldAccessToken = request.RefreshToken.AccessToken;
             string accessTokenString;
-            
+
             if (request.Client.UpdateAccessTokenClaimsOnRefresh)
             {
                 var subject = request.RefreshToken.Subject;
@@ -161,6 +161,7 @@ namespace IdentityServer4.ResponseHandling
 
             return new TokenResponse
             {
+                IdentityToken = await CreateIdTokenFromRefreshTokenRequestAsync(request, accessTokenString),
                 AccessToken = accessTokenString,
                 AccessTokenLifetime = request.Client.AccessTokenLifetime,
                 RefreshToken = handle
@@ -220,6 +221,22 @@ namespace IdentityServer4.ResponseHandling
 
             var securityToken = await _tokenService.CreateSecurityTokenAsync(accessToken);
             return Tuple.Create(securityToken, refreshToken);
+        }
+
+        private async Task<string> CreateIdTokenFromRefreshTokenRequestAsync(ValidatedTokenRequest request, string newAccessToken)
+        {
+            var oldAccessToken = request.RefreshToken.AccessToken;
+            var tokenRequest = new TokenCreationRequest
+            {
+                Subject = request.RefreshToken.Subject,
+                Client = request.Client,
+                Resources = await _resources.FindEnabledResourcesByScopeAsync(oldAccessToken.Scopes),
+                ValidatedRequest = request,
+                AccessTokenToHash = newAccessToken
+            };
+
+            var idToken = await _tokenService.CreateIdentityTokenAsync(tokenRequest);
+            return await _tokenService.CreateSecurityTokenAsync(idToken);
         }
     }
 }
