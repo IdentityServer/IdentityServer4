@@ -225,18 +225,24 @@ namespace IdentityServer4.ResponseHandling
 
         private async Task<string> CreateIdTokenFromRefreshTokenRequestAsync(ValidatedTokenRequest request, string newAccessToken)
         {
-            var oldAccessToken = request.RefreshToken.AccessToken;
-            var tokenRequest = new TokenCreationRequest
+            var resources = await _resources.FindResourcesByScopeAsync(request.RefreshToken.Scopes);
+            if (resources.IdentityResources.Any())
             {
-                Subject = request.RefreshToken.Subject,
-                Client = request.Client,
-                Resources = await _resources.FindEnabledResourcesByScopeAsync(oldAccessToken.Scopes),
-                ValidatedRequest = request,
-                AccessTokenToHash = newAccessToken
-            };
+                var oldAccessToken = request.RefreshToken.AccessToken;
+                var tokenRequest = new TokenCreationRequest
+                {
+                    Subject = request.RefreshToken.Subject,
+                    Client = request.Client,
+                    Resources = await _resources.FindEnabledResourcesByScopeAsync(oldAccessToken.Scopes),
+                    ValidatedRequest = request,
+                    AccessTokenToHash = newAccessToken
+                };
 
-            var idToken = await _tokenService.CreateIdentityTokenAsync(tokenRequest);
-            return await _tokenService.CreateSecurityTokenAsync(idToken);
+                var idToken = await _tokenService.CreateIdentityTokenAsync(tokenRequest);
+                return await _tokenService.CreateSecurityTokenAsync(idToken);
+            }
+
+            return null;
         }
     }
 }

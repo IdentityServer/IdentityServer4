@@ -30,7 +30,7 @@ namespace IdentityServer4.IntegrationTests.Clients
         }
 
         [Fact]
-        public async Task requesting_a_refresh_token_should_return_expected_results()
+        public async Task requesting_a_refresh_token_without_identity_scopes_should_return_expected_results()
         {
             var client = new TokenClient(
                 TokenEndpoint,
@@ -39,6 +39,32 @@ namespace IdentityServer4.IntegrationTests.Clients
                 innerHttpMessageHandler: _handler);
 
             var response = await client.RequestResourceOwnerPasswordAsync("bob", "bob", "api1 offline_access");
+
+            response.IsError.Should().BeFalse();
+            response.ExpiresIn.Should().Be(3600);
+            response.TokenType.Should().Be("Bearer");
+            response.IdentityToken.Should().BeNull();
+            response.RefreshToken.Should().NotBeNull();
+
+            response = await client.RequestRefreshTokenAsync(response.RefreshToken);
+
+            response.IsError.Should().BeFalse();
+            response.ExpiresIn.Should().Be(3600);
+            response.TokenType.Should().Be("Bearer");
+            response.IdentityToken.Should().BeNull();
+            response.RefreshToken.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async Task requesting_a_refresh_token_with_identity_scopes_should_return_expected_results()
+        {
+            var client = new TokenClient(
+                TokenEndpoint,
+                "roclient",
+                "secret",
+                innerHttpMessageHandler: _handler);
+
+            var response = await client.RequestResourceOwnerPasswordAsync("bob", "bob", "openid api1 offline_access");
 
             response.IsError.Should().BeFalse();
             response.ExpiresIn.Should().Be(3600);
