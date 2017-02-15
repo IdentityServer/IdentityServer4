@@ -88,6 +88,11 @@ IdentityServer is officially certified by the OpenID Foundation and part of the 
    topics/crypto
    topics/deployment
    topics/idps
+   topics/signin
+   topics/signin_external_providers
+   topics/consent
+   topics/signout_external_providers
+   topics/signout_federated
    topics/signout
    topics/logging
    topics/refresh_tokens
@@ -115,6 +120,7 @@ IdentityServer is officially certified by the OpenID Foundation and part of the 
    reference/api_resource
    reference/client
    reference/grant_validation_result
+   reference/interactionservice
    reference/options
 
 .. toctree::
