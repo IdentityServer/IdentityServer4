@@ -59,7 +59,7 @@ namespace IdentityServer4.Validation
             }
             catch (Exception e)
             {
-                _logger.LogError("Grant validation error", e);
+                _logger.LogError(1, e, "Grant validation error: {message}", e.Message);
                 return new GrantValidationResult(TokenRequestErrors.InvalidGrant);
             }
         }
