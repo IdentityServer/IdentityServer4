@@ -98,6 +98,7 @@ IdentityServer is officially certified by the OpenID Foundation and part of the 
    topics/refresh_tokens
    topics/reference_tokens
    topics/windows
+   topics/cors
 
 .. toctree::
    :maxdepth: 2
