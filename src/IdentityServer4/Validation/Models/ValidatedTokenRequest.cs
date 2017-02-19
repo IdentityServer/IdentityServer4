@@ -13,14 +13,6 @@ namespace IdentityServer4.Validation
     public class ValidatedTokenRequest : ValidatedRequest
     {
         /// <summary>
-        /// Gets or sets the client.
-        /// </summary>
-        /// <value>
-        /// The client.
-        /// </value>
-        public Client Client { get; set; }
-        
-        /// <summary>
         /// Gets or sets the type of the grant.
         /// </summary>
         /// <value>

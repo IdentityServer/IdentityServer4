@@ -38,14 +38,6 @@ namespace IdentityServer4.Validation
         public string GrantType { get; set; }
 
         /// <summary>
-        /// Gets or sets the client.
-        /// </summary>
-        /// <value>
-        /// The client.
-        /// </value>
-        public Client Client { get; set; }
-
-        /// <summary>
         /// Gets or sets the redirect URI.
         /// </summary>
         /// <value>

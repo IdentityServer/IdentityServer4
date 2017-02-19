@@ -3,6 +3,7 @@
 
 
 using IdentityServer4.Configuration;
+using IdentityServer4.Models;
 using System.Collections.Specialized;
 using System.Security.Claims;
 
@@ -20,6 +21,14 @@ namespace IdentityServer4.Validation
         /// The raw.
         /// </value>
         public NameValueCollection Raw { get; set; }
+
+        /// <summary>
+        /// Gets or sets the client.
+        /// </summary>
+        /// <value>
+        /// The client.
+        /// </value>
+        public Client Client { get; set; }
 
         /// <summary>
         /// Gets or sets the subject.
