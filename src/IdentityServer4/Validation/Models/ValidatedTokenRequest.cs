@@ -83,5 +83,13 @@ namespace IdentityServer4.Validation
         /// The code verifier.
         /// </value>
         public string CodeVerifier { get; set; }
+
+        /// <summary>
+        /// Gets or sets the per-request configuration overrides.
+        /// </summary>
+        /// <value>
+        /// The overrides.
+        /// </value>
+        public TokenRequestOverrides Overrides { get; set; } = new TokenRequestOverrides();
     }
 }
