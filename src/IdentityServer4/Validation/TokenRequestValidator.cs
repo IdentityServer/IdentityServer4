@@ -60,12 +60,10 @@ namespace IdentityServer4.Validation
             _validatedRequest = new ValidatedTokenRequest
             {
                 Raw = parameters,
-                Client = client,
-                AccessTokenLifetime = client.AccessTokenLifetime,
-                AccessTokenType =  client.AccessTokenType,
-                ClientClaims = client.Claims.Select(c => new Claim(c.Type, c.Value)).ToList(),
                 Options = _options
             };
+
+            _validatedRequest.SetClient(client);
 
             /////////////////////////////////////////////
             // check client protocol type
