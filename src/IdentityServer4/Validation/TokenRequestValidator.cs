@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -60,6 +61,9 @@ namespace IdentityServer4.Validation
             {
                 Raw = parameters,
                 Client = client,
+                AccessTokenLifetime = client.AccessTokenLifetime,
+                AccessTokenType =  client.AccessTokenType,
+                ClientClaims = client.Claims.Select(c => new Claim(c.Type, c.Value)).ToList()
                 Options = _options
             };
 
