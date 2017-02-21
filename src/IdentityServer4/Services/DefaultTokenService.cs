@@ -167,7 +167,7 @@ namespace IdentityServer4.Services
                 Audiences = { string.Format(Constants.AccessTokenAudience, issuer.EnsureTrailingSlash()) },
                 Issuer = issuer,
                 Lifetime = request.ValidatedRequest.AccessTokenLifetime,
-                Claims = request.ValidatedRequest.ClientClaims,
+                Claims = claims,
                 ClientId = request.ValidatedRequest.Client.ClientId,
                 AccessTokenType = request.ValidatedRequest.AccessTokenType
             };
