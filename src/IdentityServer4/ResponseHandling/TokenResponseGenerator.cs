@@ -92,7 +92,6 @@ namespace IdentityServer4.ResponseHandling
                 var tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.AuthorizationCode.Subject,
-                    Client = client,
                     Resources = resources,
                     Nonce = request.AuthorizationCode.Nonce,
                     AccessTokenToHash = response.AccessToken,
@@ -140,7 +139,6 @@ namespace IdentityServer4.ResponseHandling
 
                 var creationRequest = new TokenCreationRequest
                 {
-                    Client = request.Client,
                     Subject = subject,
                     ValidatedRequest = request,
                     Resources = await _resources.FindEnabledResourcesByScopeAsync(oldAccessToken.Scopes),
@@ -194,7 +192,6 @@ namespace IdentityServer4.ResponseHandling
                 tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.AuthorizationCode.Subject,
-                    Client = client,
                     Resources = resources,
                     ValidatedRequest = request
                 };
@@ -206,7 +203,6 @@ namespace IdentityServer4.ResponseHandling
                 tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.Subject,
-                    Client = request.Client,
                     Resources = request.ValidatedScopes.GrantedResources,
                     ValidatedRequest = request
                 };
@@ -233,7 +229,6 @@ namespace IdentityServer4.ResponseHandling
                 var tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.RefreshToken.Subject,
-                    Client = request.Client,
                     Resources = await _resources.FindEnabledResourcesByScopeAsync(oldAccessToken.Scopes),
                     ValidatedRequest = request,
                     AccessTokenToHash = newAccessToken

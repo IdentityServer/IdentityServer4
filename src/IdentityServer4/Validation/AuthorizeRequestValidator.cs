@@ -157,6 +157,9 @@ namespace IdentityServer4.Validation
             }
 
             request.Client = client;
+            request.AccessTokenLifetime = client.AccessTokenLifetime;
+            request.AccessTokenType = client.AccessTokenType;
+            request.ClientClaims = client.Claims.Select(c => new Claim(c.Type, c.Value)).ToList();
 
             //////////////////////////////////////////////////////////
             // check if client protocol type is oidc
