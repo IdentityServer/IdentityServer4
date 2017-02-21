@@ -8,6 +8,7 @@ using IdentityServer4.Models;
 using System.Collections.Specialized;
 using System.Security.Claims;
 using IdentityModel;
+using System.Linq;
 
 namespace IdentityServer4.Validation
 {
@@ -81,5 +82,13 @@ namespace IdentityServer4.Validation
         /// The validated scopes.
         /// </value>
         public ScopeValidator ValidatedScopes { get; set; }
+
+        public void SetClient(Client client)
+        {
+            Client = client;
+            AccessTokenLifetime = client.AccessTokenLifetime;
+            AccessTokenType = client.AccessTokenType;
+            ClientClaims = client.Claims.Select(c => new Claim(c.Type, c.Value)).ToList();
+        }
     }
 }
