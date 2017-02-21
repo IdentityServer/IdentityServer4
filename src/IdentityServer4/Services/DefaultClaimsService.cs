@@ -53,6 +53,9 @@ namespace IdentityServer4.Services
         /// </returns>
         public virtual async Task<IEnumerable<Claim>> GetIdentityTokenClaimsAsync(ClaimsPrincipal subject, Client client, Resources resources, bool includeAllIdentityClaims, ValidatedRequest request)
         {
+            // client parameter should not be used anymore - will be removed in later version
+            client = null;
+
             _logger.LogDebug("Getting claims for identity token for subject: {subject} and client: {clientId}",
                 subject.GetSubjectId(),
                 request.Client.ClientId);
@@ -110,6 +113,9 @@ namespace IdentityServer4.Services
         /// </returns>
         public virtual async Task<IEnumerable<Claim>> GetAccessTokenClaimsAsync(ClaimsPrincipal subject, Client client, Resources resources, ValidatedRequest request)
         {
+            // client parameter should not be used anymore - will be removed in later version
+            client = null;
+
             _logger.LogDebug("Getting claims for access token for client: {clientId}", request.Client.ClientId);
 
             // add client_id
