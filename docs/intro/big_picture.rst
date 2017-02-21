@@ -5,7 +5,7 @@ Most modern applications look more or less like this:
 
 .. image:: images/appArch.png
 
-The typical interactions are:
+The most common interactions are:
 
 * Browsers communicate with web applications
 
@@ -20,46 +20,44 @@ The typical interactions are:
 * Web APIs communicate with web APIs (sometimes on their own, sometimes on behalf of a user)
 
 Typically each and every layer (front-end, middle-tier and back-end) has to protect resources and
-implement authentication and/or authorization – and quite typically against the same user store.
+implement authentication and/or authorization – often against the same user store.
 
-This is why we don’t implement these fundamental security functions in the business applications/endpoints themselves,
-but rather outsource that critical functionality to a service - the security token service.
+Outsourcing these fundamental security functions to a security token service prevents duplicating that functionality across those applications and endpoints.
 
-This leads to the following security architecture and usage of protocols:
+Restructuring the application to support a security token service leads to the following architecture and protocols:
 
 .. image:: images/protocols.png
 
-This divides the security concerns into two parts.
+Such a design divides security concerns into two parts:
 
 Authentication
 ^^^^^^^^^^^^^^
-Authentication is needed when an application needs to know about the identity of the current user.
+Authentication is needed when an application needs to know the identity of the current user.
 Typically these applications manage data on behalf of that user and need to make sure that this user can only
-access the data he is allowed to. The most common example for that is (classic) web applications –
-but native and JS-based applications also have need for authentication.
+access the data for which he is allowed. The most common example for that is (classic) web applications –
+but native and JS-based applications also have a need for authentication.
 
 The most common authentication protocols are SAML2p, WS-Federation and OpenID Connect – SAML2p being the
 most popular and the most widely deployed.
 
-OpenID Connect is the newest of the three, but is generally considered to be the future because it has the
+OpenID Connect is the newest of the three, but is considered to be the future because it has the
 most potential for modern applications. It was built for mobile application scenarios right from the start
 and is designed to be API friendly.
 
 API Access
 ^^^^^^^^^^
 Applications have two fundamental ways with which they communicate with APIs – using the application identity,
-or delegating the user’s identity. Sometimes both ways need to be combined.
+or delegating the user’s identity. Sometimes both methods need to be combined.
 
 OAuth2 is a protocol that allows applications to request access tokens from a security token service and use them
-to communicate with APIs. This reduces complexity on both the client applications as well as the APIs since
+to communicate with APIs. This delegation reduces complexity in both the client applications as well as the APIs since
 authentication and authorization can be centralized.
 
 OpenID Connect and OAuth 2.0 – better together
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 OpenID Connect and OAuth 2.0 are very similar – in fact OpenID Connect is an extension on top of OAuth 2.0.
-This means that you can combine the two fundamental security concerns – authentication and API access into a single protocol –
-and often a single round trip to the security token service.
+The two fundamental security concerns, authentication and API access, are combined into a  single protocol - often with a single round trip to the security token service. 
 
-This is why we believe that the combination of OpenID Connect and OAuth 2.0 is the best approach to secure modern
+We believe that the combination of OpenID Connect and OAuth 2.0 is the best approach to secure modern
 applications for the foreseeable future. IdentityServer4 is an implementation of these two protocols and is
 highly optimized to solve the typical security problems of today’s mobile, native and web applications.
