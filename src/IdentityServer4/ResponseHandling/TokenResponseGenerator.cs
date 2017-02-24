@@ -114,7 +114,7 @@ namespace IdentityServer4.ResponseHandling
             var response = new TokenResponse
             {
                 AccessToken = tokens.AccessTokens,
-                AccessTokenLifetime = validationResult.ValidatedRequest.Client.AccessTokenLifetime,
+                AccessTokenLifetime = validationResult.ValidatedRequest.AccessTokenLifetime,
                 Custom = validationResult.CustomResponse
             };
 
