@@ -132,7 +132,9 @@ namespace IdentityServer4.IntegrationTests.Clients
                     AllowedScopes =
                     {
                         "api1", "api2"
-                    }
+                    },
+
+                    AlwaysSendClientClaims = true
                 },
 
                 ///////////////////////////////////////////

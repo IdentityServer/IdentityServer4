@@ -16,6 +16,7 @@ namespace IdentityServer4.IntegrationTests.Clients
             var lifetime = context.Request.Raw.Get("lifetime");
             var extraClaim = context.Request.Raw.Get("claim");
             var tokenType = context.Request.Raw.Get("type");
+            var sub = context.Request.Raw.Get("sub");
 
             if (!string.IsNullOrEmpty(lifetime))
             {
@@ -39,7 +40,15 @@ namespace IdentityServer4.IntegrationTests.Clients
                 context.Request.ClientClaims.Add(new Claim("extra", extraClaim));
             }
 
-            context.Result = new GrantValidationResult();
+            if (!string.IsNullOrEmpty(sub))
+            {
+                context.Result = new GrantValidationResult(sub, "delegation");
+            }
+            else
+            {
+                context.Result = new GrantValidationResult();
+            }
+
             return Task.FromResult(0);
         }
 
