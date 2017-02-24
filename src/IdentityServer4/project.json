@@ -1,5 +1,6 @@
 {
-  "version": "1.0.0-rc5-*",
+  "name": "cloudscribe.IDS4Fork",
+  "version": "1.1.0-rc20161215",
   "authors": [ "Brock Allen", "Dominick Baier" ],
   "description": "OpenID Connect and OAuth 2.0 Framework for ASP.NET Core",
 
@@ -21,7 +22,7 @@
     "Microsoft.AspNetCore.Authentication.Cookies": "1.1.0",
 
     "System.IdentityModel.Tokens.Jwt": "5.1.0",
-    
+
     "IdentityModel": "2.1.1"
   },
 
@@ -36,6 +37,6 @@
         "System.Diagnostics.Process": "4.3.0"
       }
     },
-    "net452": { }
+    "net452": {}
   }
 }
