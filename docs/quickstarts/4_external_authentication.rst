@@ -27,18 +27,9 @@ Next we need to add the middleware to the pipeline.
 Order is important, the additional authentication middleware must run **after**
 IdentityServer and **before** MVC.
 
-The cookie middleware is used to temporarily store the outcome of the external authentication
-in a temporary cookie - register it like this::
-
-    app.UseCookieAuthentication(new CookieAuthenticationOptions
-    {
-        AuthenticationScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
-
-        AutomaticAuthenticate = false,
-        AutomaticChallenge = false
-    });
-
-After that add the Google middleware::
+By default, we wire up a cookie middleware behind the scenes, so that the external authentication can
+store its outcome. You simply need to add the external authentication middleware to the pipeline and make it use
+the ``IdentityServerConstants.ExternalCookieAuthenticationScheme`` sign-in scheme::
 
     app.UseGoogleAuthentication(new GoogleOptions
     {

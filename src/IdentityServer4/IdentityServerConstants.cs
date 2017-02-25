@@ -9,7 +9,7 @@ namespace IdentityServer4
         public const string LocalIdentityProvider = "local";
         public const string DefaultCookieAuthenticationScheme = "idsrv";
         public const string SignoutScheme = "idsrv";
-        public const string ExternalCookieAuthenticationScheme = "external";
+        public const string ExternalCookieAuthenticationScheme = "idsrv.external";
 
         public static class ProtocolTypes
         {

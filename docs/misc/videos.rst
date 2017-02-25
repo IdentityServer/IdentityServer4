@@ -3,11 +3,11 @@ Videos
 
 2017
 ^^^^
+* `IdentityServer4: New and Improved for ASP.NET Core <https://vimeo.com/204141878>`_
 * `IdentityServer4 on DotNetRocks <https://www.dotnetrocks.com/?show=1409>`_
 
 2016
 ^^^^
-
 * `The history of .NET identity and IdentityServer Channel9 interview <https://channel9.msdn.com/events/Seth-on-the-Road/NDC-London-2016/Dominick-Baier-on-Identity-Server>`_ 
 * `Authentication & secure API access for native & mobile Applications - Dominick Baier <https://vimeo.com/171942749>`_
 * `ASP.NET Identity 3 - Brock Allen <https://vimeo.com/172009501>`_

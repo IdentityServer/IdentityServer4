@@ -19,6 +19,29 @@ namespace Host
 {
     public class Startup
     {
+        public Startup(ILoggerFactory loggerFactory)
+        {
+            Func<LogEvent, bool> serilogFilter = (e) =>
+            {
+                var context = e.Properties["SourceContext"].ToString();
+
+                return (context.StartsWith("\"IdentityServer") ||
+                        context.StartsWith("\"IdentityModel") ||
+                        e.Level == LogEventLevel.Error ||
+                        e.Level == LogEventLevel.Fatal);
+            };
+
+            var serilog = new LoggerConfiguration()
+                .MinimumLevel.Verbose()
+                .Enrich.FromLogContext()
+                .Filter.ByIncludingOnly(serilogFilter)
+                .WriteTo.LiterateConsole(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message}{NewLine}{Exception}{NewLine}")
+                .WriteTo.File(@"identityserver4_log.txt")
+                .CreateLogger();
+
+            loggerFactory.AddSerilog(serilog);
+        }
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddIdentityServer(options =>
@@ -42,37 +65,9 @@ namespace Host
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
-            // serilog filter
-            Func<LogEvent, bool> serilogFilter = (e) =>
-            {
-                var context = e.Properties["SourceContext"].ToString();
-
-                return (context.StartsWith("\"IdentityServer") ||
-                        context.StartsWith("\"IdentityModel") ||
-                        e.Level == LogEventLevel.Error ||
-                        e.Level == LogEventLevel.Fatal);
-            };
-        
-            var serilog = new LoggerConfiguration()
-                .MinimumLevel.Verbose()
-                .Enrich.FromLogContext()
-                .Filter.ByIncludingOnly(serilogFilter)
-                .WriteTo.LiterateConsole(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message}{NewLine}{Exception}{NewLine}")
-                .WriteTo.File(@"identityserver4_log.txt")
-                .CreateLogger();
-
-            loggerFactory.AddSerilog(serilog);
-
             app.UseDeveloperExceptionPage();
 
             app.UseIdentityServer();
-
-            app.UseCookieAuthentication(new CookieAuthenticationOptions
-            {
-                AuthenticationScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
-                AutomaticAuthenticate = false,
-                AutomaticChallenge = false
-            });
 
             app.UseGoogleAuthentication(new GoogleOptions
             {
