@@ -64,7 +64,8 @@ namespace IdentityServer4.IntegrationTests.Clients
 
             var unixNow = DateTime.UtcNow.ToEpochTime();
             var exp = Int64.Parse(payload["exp"].ToString());
-            exp.Should().Be(unixNow + 3600);
+            exp.Should().BeLessThan(unixNow + 3605);
+            exp.Should().BeGreaterThan(unixNow + 3595);
 
             payload.Count().Should().Be(10);
             payload.Should().Contain("iss", "https://idsvr4");
@@ -258,7 +259,8 @@ namespace IdentityServer4.IntegrationTests.Clients
 
             var unixNow = DateTime.UtcNow.ToEpochTime();
             var exp = Int64.Parse(payload["exp"].ToString());
-            exp.Should().Be(unixNow + 5000);
+            exp.Should().BeLessThan(unixNow + 5005);
+            exp.Should().BeGreaterThan(unixNow + 4995);
 
             payload.Count().Should().Be(10);
             payload.Should().Contain("iss", "https://idsvr4");
