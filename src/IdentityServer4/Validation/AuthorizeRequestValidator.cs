@@ -156,7 +156,7 @@ namespace IdentityServer4.Validation
                 return Invalid(request, OidcConstants.AuthorizeErrors.UnauthorizedClient);
             }
 
-            request.Client = client;
+            request.SetClient(client);
 
             //////////////////////////////////////////////////////////
             // check if client protocol type is oidc

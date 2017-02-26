@@ -22,14 +22,6 @@ namespace IdentityServer4.Models
         public ClaimsPrincipal Subject { get; set; }
 
         /// <summary>
-        /// Gets or sets the client.
-        /// </summary>
-        /// <value>
-        /// The client.
-        /// </value>
-        public Client Client { get; set; }
-
-        /// <summary>
         /// Gets or sets the resources.
         /// </summary>
         /// <value>
@@ -79,7 +71,7 @@ namespace IdentityServer4.Models
 
         internal void Validate()
         {
-            if (Client == null) LogAndStop("client");
+            //if (Client == null) LogAndStop("client");
             if (Resources == null) LogAndStop("resources");
             if (ValidatedRequest == null) LogAndStop("validatedRequest");
         }

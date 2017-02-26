@@ -27,10 +27,6 @@ namespace IdentityServer4.UnitTests.Services.Default
 
         public DefaultClaimsServiceTests()
         {
-            _validatedRequest = new ValidatedRequest
-            {
-            };
-
             _client = new Client
             {
                 ClientId = "client",
@@ -46,6 +42,9 @@ namespace IdentityServer4.UnitTests.Services.Default
             });
 
             _subject = new DefaultClaimsService(_mockMockProfileService, TestLogger.Create<DefaultClaimsService>());
+
+            _validatedRequest = new ValidatedRequest();
+            _validatedRequest.SetClient(_client);
         }
 
         [Fact]
@@ -119,7 +118,7 @@ namespace IdentityServer4.UnitTests.Services.Default
         [Fact]
         public async Task GetAccessTokenClaimsAsync_client_claims_should_be_prefixed()
         {
-            _client.PrefixClientClaims = true;
+            _validatedRequest.Client.PrefixClientClaims = true;
             var claims = await _subject.GetAccessTokenClaimsAsync(null, _client, _resources, _validatedRequest);
 
             claims.Where(x => x.Type == "client_some_claim" && x.Value == "some_claim_value").Count().Should().Be(1);
@@ -128,7 +127,7 @@ namespace IdentityServer4.UnitTests.Services.Default
         [Fact]
         public async Task GetAccessTokenClaimsAsync_should_contain_client_claims_when_no_subject()
         {
-            _client.PrefixClientClaims = false;
+            _validatedRequest.Client.PrefixClientClaims = false;
             var claims = await _subject.GetAccessTokenClaimsAsync(null, _client, _resources, _validatedRequest);
 
             claims.Where(x => x.Type == "some_claim" && x.Value == "some_claim_value").Count().Should().Be(1);
@@ -137,8 +136,8 @@ namespace IdentityServer4.UnitTests.Services.Default
         [Fact]
         public async Task GetAccessTokenClaimsAsync_should_contain_client_claims_when_configured_to_send_client_claims()
         {
-            _client.PrefixClientClaims = false;
-            _client.AlwaysSendClientClaims = true;
+            _validatedRequest.Client.PrefixClientClaims = false;
+            _validatedRequest.Client.AlwaysSendClientClaims = true;
 
             var claims = await _subject.GetAccessTokenClaimsAsync(_user, _client, _resources, _validatedRequest);
 

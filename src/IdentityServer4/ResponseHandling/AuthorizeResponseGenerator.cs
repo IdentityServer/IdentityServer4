@@ -118,7 +118,6 @@ namespace IdentityServer4.ResponseHandling
                 var tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.Subject,
-                    Client = request.Client,
                     Resources = request.ValidatedScopes.GrantedResources,
 
                     ValidatedRequest = request
@@ -137,7 +136,6 @@ namespace IdentityServer4.ResponseHandling
                 {
                     ValidatedRequest = request,
                     Subject = request.Subject,
-                    Client = request.Client,
                     Resources = request.ValidatedScopes.GrantedResources,
 
                     Nonce = request.Raw.Get(OidcConstants.AuthorizeRequest.Nonce),

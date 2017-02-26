@@ -119,6 +119,23 @@ namespace IdentityServer4.IntegrationTests.Clients
                         "api1", "api2"
                     }
                 },
+                new Client
+                {
+                    ClientId = "client.dynamic",
+                    ClientSecrets =
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    AllowedGrantTypes = GrantTypes.List("dynamic"),
+
+                    AllowedScopes =
+                    {
+                        "api1", "api2"
+                    },
+
+                    AlwaysSendClientClaims = true
+                },
 
                 ///////////////////////////////////////////
                 // Introspection Client Sample
