@@ -131,7 +131,7 @@ namespace IdentityServer4.Services
                 Lifetime = request.ValidatedRequest.Client.IdentityTokenLifetime,
                 Claims = claims.Distinct(new ClaimComparer()).ToList(),
                 ClientId = request.ValidatedRequest.Client.ClientId,
-                AccessTokenType = request.ValidatedRequest.Client.AccessTokenType
+                AccessTokenType = request.ValidatedRequest.AccessTokenType
             };
 
             return token;

@@ -60,7 +60,7 @@ namespace IdentityServer4.ResponseHandling
             var response = new TokenResponse
             {
                 AccessToken = tokens.AccessTokens,
-                AccessTokenLifetime = request.Client.AccessTokenLifetime
+                AccessTokenLifetime = request.AccessTokenLifetime
             };
 
             //////////////////////////
@@ -150,7 +150,7 @@ namespace IdentityServer4.ResponseHandling
             else
             {
                 oldAccessToken.CreationTime = IdentityServerDateTime.UtcNow;
-                oldAccessToken.Lifetime = request.Client.AccessTokenLifetime;
+                oldAccessToken.Lifetime = request.AccessTokenLifetime;
 
                 accessTokenString = await _tokenService.CreateSecurityTokenAsync(oldAccessToken);
             }
@@ -161,7 +161,7 @@ namespace IdentityServer4.ResponseHandling
             {
                 IdentityToken = await CreateIdTokenFromRefreshTokenRequestAsync(request, accessTokenString),
                 AccessToken = accessTokenString,
-                AccessTokenLifetime = request.Client.AccessTokenLifetime,
+                AccessTokenLifetime = request.AccessTokenLifetime,
                 RefreshToken = handle
             };
         }
