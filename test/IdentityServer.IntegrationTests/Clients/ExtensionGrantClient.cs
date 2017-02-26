@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -60,6 +61,10 @@ namespace IdentityServer4.IntegrationTests.Clients
             response.RefreshToken.Should().BeNull();
 
             var payload = GetPayload(response);
+
+            var unixNow = DateTime.UtcNow.ToEpochTime();
+            var exp = Int64.Parse(payload["exp"].ToString());
+            exp.Should().Be(unixNow + 3600);
 
             payload.Count().Should().Be(10);
             payload.Should().Contain("iss", "https://idsvr4");
@@ -250,6 +255,10 @@ namespace IdentityServer4.IntegrationTests.Clients
             response.RefreshToken.Should().BeNull();
 
             var payload = GetPayload(response);
+
+            var unixNow = DateTime.UtcNow.ToEpochTime();
+            var exp = Int64.Parse(payload["exp"].ToString());
+            exp.Should().Be(unixNow + 5000);
 
             payload.Count().Should().Be(10);
             payload.Should().Contain("iss", "https://idsvr4");
