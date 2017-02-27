@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -59,9 +60,10 @@ namespace IdentityServer4.Validation
             _validatedRequest = new ValidatedTokenRequest
             {
                 Raw = parameters,
-                Client = client,
                 Options = _options
             };
+
+            _validatedRequest.SetClient(client);
 
             /////////////////////////////////////////////
             // check client protocol type

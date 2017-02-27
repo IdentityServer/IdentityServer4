@@ -20,14 +20,6 @@ namespace IdentityServer4.Validation
         public bool IsAuthenticated => Client != null;
 
         /// <summary>
-        /// Gets or sets the client.
-        /// </summary>
-        /// <value>
-        /// The client.
-        /// </value>
-        public Client Client { get; set; }
-
-        /// <summary>
         /// Gets or sets the post-logout URI.
         /// </summary>
         /// <value>

@@ -117,7 +117,7 @@ namespace IdentityServer4.Services
 
             claims.AddRange(await ClaimsProvider.GetIdentityTokenClaimsAsync(
                 request.Subject,
-                request.Client,
+                request.ValidatedRequest.Client,
                 request.Resources,
                 request.IncludeAllIdentityClaims,
                 request.ValidatedRequest));
@@ -126,12 +126,12 @@ namespace IdentityServer4.Services
 
             var token = new Token(OidcConstants.TokenTypes.IdentityToken)
             {
-                Audiences = { request.Client.ClientId },
+                Audiences = { request.ValidatedRequest.Client.ClientId },
                 Issuer = issuer,
-                Lifetime = request.Client.IdentityTokenLifetime,
+                Lifetime = request.ValidatedRequest.Client.IdentityTokenLifetime,
                 Claims = claims.Distinct(new ClaimComparer()).ToList(),
-                ClientId = request.Client.ClientId,
-                AccessTokenType = request.Client.AccessTokenType
+                ClientId = request.ValidatedRequest.Client.ClientId,
+                AccessTokenType = request.ValidatedRequest.AccessTokenType
             };
 
             return token;
@@ -152,11 +152,11 @@ namespace IdentityServer4.Services
             var claims = new List<Claim>();
             claims.AddRange(await ClaimsProvider.GetAccessTokenClaimsAsync(
                 request.Subject,
-                request.Client,
+                request.ValidatedRequest.Client,
                 request.Resources,
                 request.ValidatedRequest));
 
-            if (request.Client.IncludeJwtId)
+            if (request.ValidatedRequest.Client.IncludeJwtId)
             {
                 claims.Add(new Claim(JwtClaimTypes.JwtId, CryptoRandom.CreateUniqueId(16)));
             }
@@ -166,10 +166,10 @@ namespace IdentityServer4.Services
             {
                 Audiences = { string.Format(Constants.AccessTokenAudience, issuer.EnsureTrailingSlash()) },
                 Issuer = issuer,
-                Lifetime = request.Client.AccessTokenLifetime,
-                Claims = claims.Distinct(new ClaimComparer()).ToList(),
-                ClientId = request.Client.ClientId,
-                AccessTokenType = request.Client.AccessTokenType
+                Lifetime = request.ValidatedRequest.AccessTokenLifetime,
+                Claims = claims,
+                ClientId = request.ValidatedRequest.Client.ClientId,
+                AccessTokenType = request.ValidatedRequest.AccessTokenType
             };
 
             foreach(var api in request.Resources.ApiResources)
