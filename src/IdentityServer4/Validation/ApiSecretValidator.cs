@@ -42,7 +42,7 @@ namespace IdentityServer4.Validation
             {
                 await RaiseFailureEvent("unknown", "No API id or secret found");
 
-                _logger.LogError("No scope secret found");
+                _logger.LogError("No API secret found");
                 return fail;
             }
 
