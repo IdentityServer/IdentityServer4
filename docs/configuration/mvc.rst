@@ -18,14 +18,14 @@ In your MVC application startup, you can use the standard Microsoft ASP.NET Open
 
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
-                AuthenticationScheme = "cookies",
+                AuthenticationScheme = "Cookies",
                 AutomaticAuthenticate = true,
             });
 
             var oidcOptions = new OpenIdConnectOptions
             {
                 AuthenticationScheme = "oidc",
-                SignInScheme = "cookies",
+                SignInScheme = "Cookies",
 
                 Authority = "https://demo.identityserver.io",
                 ClientId = "mvc",
