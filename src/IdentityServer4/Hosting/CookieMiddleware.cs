@@ -15,7 +15,6 @@ namespace IdentityServer4.Hosting
         public static void ConfigureCookies(this IApplicationBuilder app)
         {
             var logger = app.ApplicationServices.GetRequiredService<ILoggerFactory>().CreateLogger(typeof(CookieMiddlewareExtensions).FullName);
-
             var options = app.ApplicationServices.GetRequiredService<IdentityServerOptions>();
 
             // only do stuff with cookies if we're showing UI
