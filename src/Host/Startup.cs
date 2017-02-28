@@ -42,10 +42,12 @@ namespace Host
             loggerFactory.AddSerilog(serilog);
         }
 
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddIdentityServer(options =>
                 {
+                    options.Authentication.AuthenticationScheme = "my.cookie";
+
                     options.Authentication.FederatedSignOutPaths.Add("/signout-callback-aad");
                     options.Authentication.FederatedSignOutPaths.Add("/signout-callback-idsrv3");
                     options.Authentication.FederatedSignOutPaths.Add("/signout-callback-adfs");
@@ -61,6 +63,10 @@ namespace Host
             .AddTestUsers(TestUsers.Users);
 
             services.AddMvc();
+
+            // only use for development until this bug is fixed
+            // https://github.com/aspnet/DependencyInjection/pull/470
+            return services.BuildServiceProvider(validateScopes: true);
         }
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
