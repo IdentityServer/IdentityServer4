@@ -46,8 +46,6 @@ namespace Host
         {
             services.AddIdentityServer(options =>
                 {
-                    options.Authentication.AuthenticationScheme = "my.cookie";
-
                     options.Authentication.FederatedSignOutPaths.Add("/signout-callback-aad");
                     options.Authentication.FederatedSignOutPaths.Add("/signout-callback-idsrv3");
                     options.Authentication.FederatedSignOutPaths.Add("/signout-callback-adfs");
