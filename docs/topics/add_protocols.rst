@@ -29,7 +29,7 @@ To achieve the above workflow, some interaction points with IdentityServer are n
 
 **Access to configuration and redirecting to the login page**
 
-You can get access to the IdentityServer configuration by injecting the `IdentityServerOptions`
+You can get access to the IdentityServer configuration by injecting the ``IdentityServerOptions``
 class into your code. This, e.g. has the configured path to the login page::
 
     var returnUrl = Url.Action("Index");
@@ -65,7 +65,7 @@ protocol parameters.
 
 **Access to configuration and key material for creating the protocol response**
 
-By injecting the `IKeyMaterialService` into your code, you get access to the configured 
+By injecting the ``IKeyMaterialService`` into your code, you get access to the configured 
 signing credential and validation keys::
 
     var credential = await _keys.GetSigningCredentialsAsync();
