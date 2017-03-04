@@ -4,7 +4,6 @@
 
 using FluentAssertions;
 using IdentityServer4.Models;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -131,20 +130,6 @@ namespace IdentityServer4.UnitTests.Validation
             client.AllowedGrantTypes.Add("good_value");
 
             client.AllowedGrantTypes.Count.Should().Be(2);
-        }
-
-        [Fact]
-        public void collection_should_serialize()
-        {
-            var client = new Client()
-            {
-                AllowedGrantTypes = { "foo", "bar" }
-            };
-
-            var json = JsonConvert.SerializeObject(client);
-            client = JsonConvert.DeserializeObject<Client>(json);
-
-            client.AllowedGrantTypes.ShouldBeEquivalentTo(new string[] { "foo", "bar" });
         }
     }
 }
