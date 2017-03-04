@@ -105,5 +105,31 @@ namespace IdentityServer4.UnitTests.Validation
 
             act.ShouldThrow<InvalidOperationException>();
         }
+
+        [Fact]
+        public void adding_invalid_value_to_collection_should_throw()
+        {
+            var client = new Client()
+            {
+                AllowedGrantTypes = { "foo" }
+            };
+
+            Action act = () => client.AllowedGrantTypes.Add("bad value");
+
+            act.ShouldThrow<InvalidOperationException>();
+        }
+
+        [Fact]
+        public void adding_valid_value_to_collection_should_succeed()
+        {
+            var client = new Client()
+            {
+                AllowedGrantTypes = { "foo" }
+            };
+
+            client.AllowedGrantTypes.Add("good_value");
+
+            client.AllowedGrantTypes.Count.Should().Be(2);
+        }
     }
 }
