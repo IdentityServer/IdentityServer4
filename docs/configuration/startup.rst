@@ -90,11 +90,11 @@ If this data is being loaded from a database or other external store, then it mi
 
 * ``AddClientStoreCache``
     Registers a ``IClientStore`` decorator implementation which will maintain an in-memory cache of ``Client`` configuration objects.
-    The cacue duration is configurable on the ``Caching`` configuration options on the ``IdentityServerOptions``.
+    The cache duration is configurable on the ``Caching`` configuration options on the ``IdentityServerOptions``.
 
 * ``AddResourceStoreCache``
     Registers a ``IResourceStore`` decorator implementation which will maintain an in-memory cache of ``IdentityResource`` and ``ApiResource`` configuration objects.
-    The cacue duration is configurable on the ``Caching`` configuration options on the ``IdentityServerOptions``.
+    The cache duration is configurable on the ``Caching`` configuration options on the ``IdentityServerOptions``.
 
 Further customization of the cache is possible:
 
