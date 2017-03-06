@@ -82,7 +82,7 @@ Adding an API
 ^^^^^^^^^^^^^
 Next, add an API to your solution. 
 
-You can use the ASP.NET Core Web API template for that.
+You can use the ASP.NET Core Web API template for that, or add the ``Microsoft.AspNetCore.Mvc`` package to your project.
 Again, we recommend you take control over the ports and use the same technique as you used
 to configure Kestrel and the launch profile as before.
 This walkthrough assumes you have configured your API to run on ``http://localhost:5001``.
