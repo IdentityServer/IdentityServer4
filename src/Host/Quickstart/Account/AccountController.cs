@@ -54,7 +54,7 @@ namespace IdentityServer4.Quickstart.UI
             if (vm.IsExternalLoginOnly)
             {
                 // only one option for logging in
-                return await ExternalLogin(vm.ExternalProviders.First().AuthenticationScheme, returnUrl);
+                return await ExternalLogin(vm.ExternalLoginScheme, returnUrl);
             }
 
             return View(vm);

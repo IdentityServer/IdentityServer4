@@ -47,7 +47,7 @@ namespace Host
             services.AddIdentityServer(options =>
                 {
                     options.Authentication.FederatedSignOutPaths.Add("/signout-callback-aad");
-                    options.Authentication.FederatedSignOutPaths.Add("/signout-callback-idsrv3");
+                    options.Authentication.FederatedSignOutPaths.Add("/signout-callback-idsrv");
                     options.Authentication.FederatedSignOutPaths.Add("/signout-callback-adfs");
                 })
             .AddInMemoryClients(Clients.Get())
@@ -67,7 +67,7 @@ namespace Host
             return services.BuildServiceProvider(validateScopes: true);
         }
 
-        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app)
         {
             app.UseDeveloperExceptionPage();
 
@@ -83,18 +83,18 @@ namespace Host
 
             app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
             {
-                AuthenticationScheme = "idsrv3",
+                AuthenticationScheme = "idsrv",
                 SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
                 SignOutScheme = IdentityServerConstants.SignoutScheme,
-                DisplayName = "IdentityServer3",
+                DisplayName = "IdentityServer",
                 Authority = "https://demo.identityserver.io/",
                 ClientId = "implicit",
                 ResponseType = "id_token",
                 Scope = { "openid profile" },
                 SaveTokens = true,
-                CallbackPath = new PathString("/signin-idsrv3"),
-                SignedOutCallbackPath = new PathString("/signout-callback-idsrv3"),
-                RemoteSignOutPath = new PathString("/signout-idsrv3"),
+                CallbackPath = new PathString("/signin-idsrv"),
+                SignedOutCallbackPath = new PathString("/signout-callback-idsrv"),
+                RemoteSignOutPath = new PathString("/signout-idsrv"),
                 TokenValidationParameters = new TokenValidationParameters
                 {
                     NameClaimType = "name",
