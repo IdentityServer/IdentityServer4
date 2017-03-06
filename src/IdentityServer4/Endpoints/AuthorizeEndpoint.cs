@@ -191,7 +191,7 @@ namespace IdentityServer4.Endpoints
             var interactionResult = await _interactionGenerator.ProcessInteractionAsync(request, consent);
             if (interactionResult.IsError)
             {
-                return await CreateErrorResultAsync("Interaction generator error", request, interactionResult.Error);
+                return await CreateErrorResultAsync("Interaction generator error", request, interactionResult.Error, logError: false);
             }
             if (interactionResult.IsLogin)
             {
@@ -230,9 +230,14 @@ namespace IdentityServer4.Endpoints
             string logMessage,
             ValidatedAuthorizeRequest request = null, 
             string error = OidcConstants.AuthorizeErrors.ServerError, 
-            string errorDescription = null)
+            string errorDescription = null, 
+            bool logError = true)
         {
-            _logger.LogError(logMessage);
+            if (logError)
+            {
+                _logger.LogError(logMessage);
+            }
+
             if (request != null)
             {
                 var details = new AuthorizeRequestValidationLog(request);
