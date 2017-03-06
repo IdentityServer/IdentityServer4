@@ -111,10 +111,10 @@ namespace IdentityServer4.UnitTests.Validation
         {
             var client = new Client()
             {
-                AllowedGrantTypes = { "foo" }
+                AllowedGrantTypes = { "implicit" }
             };
 
-            Action act = () => client.AllowedGrantTypes.Add("bad value");
+            Action act = () => client.AllowedGrantTypes.Add("authorization_code");
 
             act.ShouldThrow<InvalidOperationException>();
         }
@@ -124,10 +124,10 @@ namespace IdentityServer4.UnitTests.Validation
         {
             var client = new Client()
             {
-                AllowedGrantTypes = { "foo" }
+                AllowedGrantTypes = { "implicit" }
             };
 
-            client.AllowedGrantTypes.Add("good_value");
+            client.AllowedGrantTypes.Add("custom");
 
             client.AllowedGrantTypes.Count.Should().Be(2);
         }

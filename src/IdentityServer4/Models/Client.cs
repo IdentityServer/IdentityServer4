@@ -18,7 +18,7 @@ namespace IdentityServer4.Models
     public class Client
     {
         // setting grant types should be atomic
-        private ICollection<string> _allowedGrantTypes = new ValidatingHashSet();
+        private ICollection<string> _allowedGrantTypes = new GrantTypeValidatingHashSet(GrantTypes.Implicit);
 
         /// <summary>
         /// Specifies if client is enabled (defaults to true)
@@ -82,7 +82,7 @@ namespace IdentityServer4.Models
             set
             {
                 ValidateGrantTypes(value);
-                _allowedGrantTypes = new ValidatingHashSet(new HashSet<string>(value));
+                _allowedGrantTypes = new GrantTypeValidatingHashSet(value);
             }
         }
 
@@ -287,18 +287,13 @@ namespace IdentityServer4.Models
             }
         }
 
-        internal class ValidatingHashSet : ICollection<string>
+        internal class GrantTypeValidatingHashSet : ICollection<string>
         {
             private readonly ICollection<string> _inner;
 
-            public ValidatingHashSet()
+            public GrantTypeValidatingHashSet(IEnumerable<string> values)
             {
-                _inner = new HashSet<string>();
-            }
-
-            public ValidatingHashSet(HashSet<string> inner)
-            {
-                _inner = inner;
+                _inner = new HashSet<string>(values);
             }
 
             ICollection<string> Clone()
