@@ -4,7 +4,6 @@
 
 using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
-using IdentityServer4.Models;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -14,28 +13,19 @@ namespace IdentityServer4.Endpoints.Results
 {
     public class DiscoveryDocumentResult : IEndpointResult
     {
-        public DiscoveryDocument Document { get; }
-        public Dictionary<string, object> CustomEntries { get; }
+        public Dictionary<string, object> Entries { get; }
 
-        public DiscoveryDocumentResult(DiscoveryDocument document, Dictionary<string, object> customEntries)
+        public DiscoveryDocumentResult(Dictionary<string, object> entries)
         {
-            if (document == null) throw new ArgumentNullException(nameof(document));
+            if (entries == null) throw new ArgumentNullException(nameof(entries));
 
-            Document = document;
-            CustomEntries = customEntries;
+            Entries = entries;
         }
         
         public Task ExecuteAsync(HttpContext context)
         {
-            if (!CustomEntries.IsNullOrEmpty())
-            {
-                var jobject = ObjectSerializer.ToJObject(Document);
-                jobject.AddDictionary(CustomEntries);
-
+                var jobject = ObjectSerializer.ToJObject(Entries);
                 return context.Response.WriteJsonAsync(jobject);
-            }
-
-            return context.Response.WriteJsonAsync(Document);
         }
     }
 }

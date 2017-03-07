@@ -83,7 +83,7 @@ namespace Host
 
             app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
             {
-                AuthenticationScheme = "idsrv",
+                AuthenticationScheme = "demoidsrv",
                 SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
                 SignOutScheme = IdentityServerConstants.SignoutScheme,
                 DisplayName = "IdentityServer",

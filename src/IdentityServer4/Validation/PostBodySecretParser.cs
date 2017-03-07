@@ -62,7 +62,7 @@ namespace IdentityServer4.Validation
                 {
                     if (id.Length > _options.InputLengthRestrictions.ClientId)
                     {
-                        _logger.LogError("Client ID exceeds maximum lenght.");
+                        _logger.LogError("Client ID exceeds maximum length.");
                         return null;
                     }
 
@@ -70,7 +70,7 @@ namespace IdentityServer4.Validation
                     {
                         if (secret.Length > _options.InputLengthRestrictions.ClientSecret)
                         {
-                            _logger.LogError("Client secret exceeds maximum lenght.");
+                            _logger.LogError("Client secret exceeds maximum length.");
                             return null;
                         }
 

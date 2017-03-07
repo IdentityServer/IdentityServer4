@@ -4,6 +4,7 @@ Videos
 2017
 ^^^^
 * `IdentityServer4: New and Improved for ASP.NET Core <https://vimeo.com/204141878>`_
+* `Building JavaScript and mobile/native Clients for Token-based Architectures <https://vimeo.com/205451987>`_
 * `IdentityServer4 on DotNetRocks <https://www.dotnetrocks.com/?show=1409>`_
 
 2016
