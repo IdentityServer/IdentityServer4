@@ -30,6 +30,9 @@ namespace IdentityServer4.Hosting
                         SlidingExpiration = options.Authentication.CookieSlidingExpiration,
                         ExpireTimeSpan = options.Authentication.CookieLifetime,
                         CookieName = IdentityServerConstants.DefaultCookieAuthenticationScheme,
+                        LoginPath = options.UserInteraction.LoginUrl,
+                        LogoutPath = options.UserInteraction.LogoutUrl,
+                        ReturnUrlParameter = options.UserInteraction.LoginReturnUrlParameter
                     });
 
                     logger.LogDebug("Adding CookieAuthentication middleware for external authentication with scheme: {authenticationScheme}", IdentityServerConstants.ExternalCookieAuthenticationScheme);
