@@ -1,7 +1,10 @@
-﻿using IdentityModel;
+﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+
+using IdentityModel;
 using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
-using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using IdentityServer4.Validation;
@@ -15,6 +18,10 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.ResponseHandling
 {
+    /// <summary>
+    /// Default implementation of the discovery endpoint response generator
+    /// </summary>
+    /// <seealso cref="IdentityServer4.ResponseHandling.IDiscoveryResponseGenerator" />
     public class DiscoveryResponseGenerator : IDiscoveryResponseGenerator
     {
         protected IdentityServerOptions Options;
@@ -43,6 +50,11 @@ namespace IdentityServer4.ResponseHandling
             Logger = logger;
         }
 
+        /// <summary>
+        /// Creates the discovery document.
+        /// </summary>
+        /// <param name="baseUrl">The base URL.</param>
+        /// <param name="issuerUri">The issuer URI.</param>
         public virtual async Task<Dictionary<string, object>> CreateDiscoveryDocumentAsync(string baseUrl, string issuerUri)
         {
             var entries = new Dictionary<string, object>();
@@ -223,6 +235,9 @@ namespace IdentityServer4.ResponseHandling
             return entries;
         }
 
+        /// <summary>
+        /// Creates the JWK document.
+        /// </summary>
         public virtual async Task<IEnumerable<Models.JsonWebKey>> CreateJwkDocumentAsync()
         {
             var webKeys = new List<Models.JsonWebKey>();
