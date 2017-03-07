@@ -62,6 +62,11 @@ namespace IdentityServer4.Configuration
         public bool ShowTokenEndpointAuthenticationMethods { get; set; } = true;
 
         /// <summary>
+        /// Turns relative paths that start with ~/ into absolute paths
+        /// </summary>
+        public bool ExpandRelativePathsInCustomEntries { get; set; } = true;
+
+        /// <summary>
         /// Adds custom entries to the discovery document
         /// </summary>
         public Dictionary<string, object> CustomEntries { get; set; } = new Dictionary<string, object>();
