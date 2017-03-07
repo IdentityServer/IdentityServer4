@@ -7,39 +7,27 @@ using IdentityServer4.Configuration;
 using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
-using IdentityServer4.Models;
 using IdentityServer4.ResponseHandling;
-using IdentityServer4.Services;
-using IdentityServer4.Stores;
-using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Endpoints
 {
     public class DiscoveryEndpoint : IEndpoint
     {
-        private readonly IdentityServerOptions _options;
-        private readonly ExtensionGrantValidator _extensionGrants;
-        private readonly IKeyMaterialService _keys;
         private readonly ILogger _logger;
-        private readonly SecretParser _parsers;
-        private readonly IResourceOwnerPasswordValidator _resourceOwnerValidator;
-        private readonly IResourceStore _resourceStore;
-
+        private readonly IdentityServerOptions _options;
         private readonly IDiscoveryResponseGenerator _responseGenerator;
 
         public DiscoveryEndpoint(
             ILogger<DiscoveryEndpoint> logger, 
+            IdentityServerOptions options,
             IDiscoveryResponseGenerator responseGenerator)
         {
+            _logger = logger;
+            _options = options;
             _responseGenerator = responseGenerator;
         }
 
