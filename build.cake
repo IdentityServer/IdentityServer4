@@ -15,17 +15,26 @@ Task("Build")
     .IsDependentOn("Restore")
     .Does(() =>
 {
-	var projects = GetFiles("./**/*.csproj");
-
-	foreach(var project in projects)
-	{
-        var settings = new DotNetCoreBuildSettings 
+    var settings = new DotNetCoreBuildSettings 
         {
             Configuration = configuration
         };
 
-        DotNetCoreBuild(project.GetDirectory().FullPath, settings); 
-    }
+    if (!IsRunningOnWindows())
+        {
+            settings.Framework = "netstandard1.4";
+        }
+
+    DotNetCoreBuild(Directory("./src/IdentityServer4"), settings);
+    
+    if (!IsRunningOnWindows())
+        {
+            settings.Framework = "netcoreapp1.1";
+        }
+
+    DotNetCoreBuild(Directory("./src/Host"), settings);     
+    DotNetCoreBuild(Directory("./test/IdentityServer.IntegrationTests"), settings);
+    DotNetCoreBuild(Directory("./test/IdentityServer.UnitTests"), settings);
 });
 
 Task("RunTests")
