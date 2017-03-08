@@ -1,24 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{5461C61B-B06E-46BA-B206-925B660BE727}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A1559F7F-B0FC-49B8-8E19-6B6AED56E082}"
-	ProjectSection(SolutionItems) = preProject
-		global.json = global.json
-	EndProjectSection
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "IdentityServer4", "src\IdentityServer4\IdentityServer4.xproj", "{407C030E-60E6-41F7-AF43-0AC48EDCC17D}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Host", "src\Host\Host.xproj", "{784B3C88-30FA-415D-B99E-584063064508}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{45C22EDD-91B1-4AEF-8620-77F4E3E7C544}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "IdentityServer.UnitTests", "test\IdentityServer.UnitTests\IdentityServer.UnitTests.xproj", "{D95E6C3E-1906-4323-93D0-490A6A2042CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer4", "src\IdentityServer4\IdentityServer4.csproj", "{407C030E-60E6-41F7-AF43-0AC48EDCC17D}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "IdentityServer.IntegrationTests", "test\IdentityServer.IntegrationTests\IdentityServer.IntegrationTests.xproj", "{8601FDBB-D19A-4757-8E07-9DA7E43EAC73}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Host", "src\Host\Host.csproj", "{784B3C88-30FA-415D-B99E-584063064508}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer.UnitTests", "test\IdentityServer.UnitTests\IdentityServer.UnitTests.csproj", "{D95E6C3E-1906-4323-93D0-490A6A2042CD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer.IntegrationTests", "test\IdentityServer.IntegrationTests\IdentityServer.IntegrationTests.csproj", "{8601FDBB-D19A-4757-8E07-9DA7E43EAC73}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
