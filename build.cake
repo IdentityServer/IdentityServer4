@@ -6,8 +6,6 @@ var configuration   = Argument<string>("configuration", "Release");
 ///////////////////////////////////////////////////////////////////////////////
 var isLocalBuild        = !AppVeyor.IsRunningOnAppVeyor;
 var packPath            = Directory("./src/IdentityServer4");
-var sourcePath          = Directory("./src");
-var testsPath           = Directory("test");
 var buildArtifacts      = Directory("./artifacts/packages");
 
 Task("Build")
