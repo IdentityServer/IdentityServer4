@@ -16,6 +16,8 @@ deploy:
   on:
     branch: dev
 
+image: Visual Studio 2017 RC
+
 #---------------------------------#
 #  Skip builds for doc changes    #
 #---------------------------------#
