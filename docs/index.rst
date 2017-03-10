@@ -49,6 +49,7 @@ IdentityServer is officially certified by the OpenID Foundation and part of the 
    intro/packaging
    intro/support
    intro/test
+   intro/contributing
 
 .. toctree::
    :maxdepth: 2
