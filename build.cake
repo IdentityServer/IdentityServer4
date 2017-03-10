@@ -18,14 +18,24 @@ Task("Build")
             Configuration = configuration
         };
 
+    if (!IsRunningOnWindows())
+        {
+            settings.Framework = "netstandard1.4";
+        }
+
     DotNetCoreBuild(Directory("./src/IdentityServer4"), settings);
-    DotNetCoreBuild(Directory("./src/Host"), settings);     
     
+    if (!IsRunningOnWindows())
+        {
+            settings.Framework = "netcoreapp1.1";
+        }
+
+    DotNetCoreBuild(Directory("./src/Host"), settings);     
     DotNetCoreBuild(Directory("./test/IdentityServer.IntegrationTests"), settings);
     DotNetCoreBuild(Directory("./test/IdentityServer.UnitTests"), settings);
 });
 
-Task("Test")
+Task("RunTests")
     .IsDependentOn("Restore")
     .IsDependentOn("Clean")
     .Does(() =>
@@ -39,6 +49,12 @@ Task("Test")
             Configuration = configuration
         };
 
+        if (!IsRunningOnWindows())
+        {
+            Information("Not running on Windows - skipping tests for full .NET Framework");
+            settings.Framework = "netcoreapp1.1";
+        }
+
         DotNetCoreTest(project.FullPath, settings);
     }
 });
@@ -48,6 +64,12 @@ Task("Pack")
     .IsDependentOn("Clean")
     .Does(() =>
 {
+    if (!IsRunningOnWindows())
+        {
+            Information("Not running on Windows - skipping pack");
+            return;
+        }
+
     var settings = new DotNetCorePackSettings
     {
         Configuration = configuration,
@@ -87,7 +109,7 @@ Task("Restore")
 
 Task("Default")
   .IsDependentOn("Build")
-  .IsDependentOn("Test")
+  .IsDependentOn("RunTests")
   .IsDependentOn("Pack");
 
 RunTarget(target);
