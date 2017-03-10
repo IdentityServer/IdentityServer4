@@ -38,9 +38,9 @@ Authentication/Logout
 ^^^^^^^^^^^^^^^^^^^^^
 
 ``PostLogoutRedirectUris``
-    Specifies allowed URIs to redirect to after logout
+    Specifies allowed URIs to redirect to after logout. See the `OIDC Connect Session Management spec <https://openid.net/specs/openid-connect-session-1_0.html>`_ for more details.
 ``LogoutUri``
-    Specifies logout URI at client for HTTP based logout
+    Specifies logout URI at client for HTTP based logout. See the `OIDC Front-Channel spec <https://openid.net/specs/openid-connect-frontchannel-1_0.html>`_ for more details.
 ``LogoutSessionRequired``
     Specifies if the user's session id should be sent to the LogoutUri. Defaults to true.
 ``EnableLocalLogin``
