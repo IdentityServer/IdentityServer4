@@ -5,17 +5,19 @@ We are very open to community contributions, but there are a couple of guideline
 How to contribute?
 ^^^^^^^^^^^^^^^^^^
 The easiest ways to contribute is to open an issue and start a discussion. 
-Then we can decided if and how a feature or a change could be implemented and if you should submit a pull requests with code changes.
+Then we can decide if and how a feature or a change could be implemented. 
+If you should submit a pull requests with code changes, start with a description, only make the minimal changes to start with and provide tests that cover those changes.
 
 Also read this first: `Being a good open source citizen <https://hackernoon.com/being-a-good-open-source-citizen-9060d0ab9732#.x3hocgw85>`_
 
 General feedback and discussions?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Please start a discussion on the [core repo issue tracker](https://github.com/IdentityServer/IdentityServer4/issues).
+Please start a discussion on the `core repo issue tracker <https://github.com/IdentityServer/IdentityServer4/issues>`_.
 
 Platform
 ^^^^^^^^
-IdentityServer is built against ASP.NET Core 1.1.0 using the RTM tooling that ships with Visual Studio 2017. This is the only configuration accept.
+IdentityServer is built against ASP.NET Core 1.1.0 using the RTM tooling that ships with Visual Studio 2017. 
+This is the only configuration we accept.
 
 Bugs and feature requests?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -45,7 +47,7 @@ We generally don't want to take ownership of those contribution libraries, we ar
 
 **Naming conventions**
 
-If you publish nuget libraries that contribute to IdentityServer we would like to ask you to **not** use the IdentityServer4 pre-fix - rather use a suffix, e.g.
+If you publish nuget packages that contribute to IdentityServer, we would like to ask you to **not** use the IdentityServer4 prefix - rather use a suffix, e.g.
 
 **good** MyProject.MongoDb.IdentityServer4
 
