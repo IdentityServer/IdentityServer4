@@ -48,12 +48,6 @@ Task("Pack")
     .IsDependentOn("Clean")
     .Does(() =>
 {
-    if (!IsRunningOnWindows())
-        {
-            Information("Not running on Windows - skipping pack");
-            return;
-        }
-
     var settings = new DotNetCorePackSettings
     {
         Configuration = configuration,
