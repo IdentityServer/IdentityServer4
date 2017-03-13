@@ -3,13 +3,11 @@
 
 
 using FluentAssertions;
-using IdentityModel;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using IdentityServer4.UnitTests.Common;
 using IdentityServer4.Validation;
 using System.Collections.Specialized;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
