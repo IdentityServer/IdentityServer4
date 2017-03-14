@@ -202,8 +202,7 @@ namespace IdentityServer4.Validation
 
             try
             {
-                SecurityToken jwtToken;
-                var id = handler.ValidateToken(jwt, parameters, out jwtToken);
+                var id = handler.ValidateToken(jwt, parameters, out var jwtToken);
 
                 // if access token contains an ID, log it
                 var jwtId = id.FindFirst(JwtClaimTypes.JwtId);

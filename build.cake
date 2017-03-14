@@ -4,12 +4,11 @@ var configuration   = Argument<string>("configuration", "Release");
 ///////////////////////////////////////////////////////////////////////////////
 // GLOBAL VARIABLES
 ///////////////////////////////////////////////////////////////////////////////
-var isAppVeyor          = AppVeyor.IsRunningOnAppVeyor;
-var isWindows           = IsRunningOnWindows();
 var packPath            = Directory("./src/IdentityServer4");
 var buildArtifacts      = Directory("./artifacts/packages");
 
-// build targets
+var isAppVeyor          = AppVeyor.IsRunningOnAppVeyor;
+var isWindows           = IsRunningOnWindows();
 var netcore             = "netcoreapp1.1";
 var netstandard         = "netstandard1.4";
 

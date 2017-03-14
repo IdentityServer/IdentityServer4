@@ -5,7 +5,6 @@
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using System;
-using Microsoft.Net.Http.Server;
 
 namespace Host
 {

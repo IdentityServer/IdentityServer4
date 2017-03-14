@@ -22,13 +22,13 @@ namespace IdentityServer4.Services
     /// </summary>
     public class DefaultTokenCreationService : ITokenCreationService
     {
-        private readonly IKeyMaterialService _keys;
-        private readonly ILogger _logger;
+        protected readonly IKeyMaterialService Keys;
+        protected readonly ILogger Logger;
 
         public DefaultTokenCreationService(IKeyMaterialService keys, ILogger<DefaultTokenCreationService> logger)
         {
-            _keys = keys;
-            _logger = logger;
+            Keys = keys;
+            Logger = logger;
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace IdentityServer4.Services
         /// <returns>The JWT header</returns>
         protected virtual async Task<JwtHeader> CreateHeaderAsync(Token token)
         {
-            var credential = await _keys.GetSigningCredentialsAsync();
+            var credential = await Keys.GetSigningCredentialsAsync();
 
             if (credential == null)
             {
@@ -63,13 +63,12 @@ namespace IdentityServer4.Services
             var header = new JwtHeader(credential);
 
             // emit x5t claim for backwards compatibility with v4 of MS JWT library
-            var x509key = credential.Key as X509SecurityKey;
-            if (x509key != null)
+            if (credential.Key is X509SecurityKey x509key)
             {
                 var cert = x509key.Certificate;
                 if (IdentityServerDateTime.UtcNow > cert.NotAfter)
                 {
-                    _logger.LogWarning("Certificate {subjectName} has expired on {expiration}", cert.Subject, cert.NotAfter.ToString());
+                    Logger.LogWarning("Certificate {subjectName} has expired on {expiration}", cert.Subject, cert.NotAfter.ToString());
                 }
 
                 header.Add("x5t", Base64Url.Encode(cert.GetCertHash()));
