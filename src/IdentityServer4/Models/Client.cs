@@ -96,7 +96,7 @@ namespace IdentityServer4.Models
         public bool AllowPlainTextPkce { get; set; } = false;
 
         /// <summary>
-        /// Controls whether access tokens are transmitted via the browser for this client (defaults to true).
+        /// Controls whether access tokens are transmitted via the browser for this client (defaults to false).
         /// This can prevent accidental leakage of access tokens when multiple response types are allowed.
         /// </summary>
         /// <value>
