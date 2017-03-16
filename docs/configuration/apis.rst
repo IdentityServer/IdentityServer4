@@ -18,8 +18,14 @@ to the ASP.NET Core pipeline and configure the identityserver base address and t
         }
     }
 
-You can get the middleware from `nuget <https://www.nuget.org/packages/IdentityServer4.AccessTokenValidation/>`_ 
+You can get middleware from IdentityServer4.AccessTokenValidation on `nuget <https://www.nuget.org/packages/IdentityServer4.AccessTokenValidation/>`_ 
 or `github <https://github.com/IdentityServer/IdentityServer4.AccessTokenValidation>`_.
+
+**Note on Nuget Package Restore in Visual Studio**
+
+If you cannot compile and see an error like this after adding this package or another, it may be necessary to force a package restore. Closing and reopening a project/solution is an easy way to force nuget to restore packages in Visual Studio 2017.
+
+    'IApplicationBuilder' does not contain a definition for 'UseIdentityServerAuthentication' and no extension method 'UseIdentityServerAuthentication' accepting a first argument of type 'IApplicationBuilder' could be found (are you missing a using directive or an assembly reference?)
 
 **Note on Targeting Earlier .NET Frameworks**
 
