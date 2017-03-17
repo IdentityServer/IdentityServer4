@@ -95,12 +95,10 @@ namespace IdentityServer4.Validation
             };
             try
             {
-                SecurityToken token;
                 var handler = new JwtSecurityTokenHandler();
-                handler.ValidateToken(jwtTokenString, tokenValidationParameters, out token);
+                handler.ValidateToken(jwtTokenString, tokenValidationParameters, out var token);
 
                 var jwtToken = (JwtSecurityToken)token;
-
                 if (jwtToken.Subject != jwtToken.Issuer)
                 {
                     _logger.LogError("Both 'sub' and 'iss' in the client assertion token must have a value of client_id.");
