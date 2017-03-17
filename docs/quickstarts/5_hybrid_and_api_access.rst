@@ -112,3 +112,15 @@ and set it on your *HttpClient*::
         ViewBag.Json = JArray.Parse(content).ToString();
         return View("json");
     }
+
+The bearer token HTTP header can be set directly or with the ``SetBearerToken`` extension method
+that is provided by the client library called IdentityModel.
+
+You may need to add IdentityModel to your MVC client's project.json::
+
+    "IdentityModel": "2.0.0"
+    
+Alternatively, you can change ``client.SetBearerToken(accessToken)`` to::
+
+    client.DefaultRequestHeaders.Authorization =
+        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken)
