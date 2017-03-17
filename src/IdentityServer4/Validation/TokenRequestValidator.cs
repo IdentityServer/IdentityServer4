@@ -273,7 +273,7 @@ namespace IdentityServer4.Validation
             {
                 if (codeVerifier.IsPresent())
                 {
-                    LogError("Unexpected code_verifier: {codeVerifier}", codeVerifier);
+                    LogError("Unexpected code_verifier: {codeVerifier}. This happens when the client is trying to use PKCE, but it is not enabled. Set RequirePkce to true.", codeVerifier);
                     return Invalid(OidcConstants.TokenErrors.InvalidGrant);
                 }
             }
