@@ -54,6 +54,48 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
+        /// Adds a client store.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddClientStore<T>(this IIdentityServerBuilder builder)
+           where T : class, IClientStore
+        {
+            builder.Services.AddTransient<IClientStore, T>();
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds a resource store.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddResourceStore<T>(this IIdentityServerBuilder builder)
+           where T : class, IResourceStore
+        {
+            builder.Services.AddTransient<IResourceStore, T>();
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds a CORS policy service.
+        /// </summary>
+        /// <typeparam name="T">The type of the concrete scope store class that is registered in DI.</typeparam>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddCorsPolicyService<T>(this IIdentityServerBuilder builder)
+            where T : class, ICorsPolicyService
+        {
+            builder.Services.AddTransient<ICorsPolicyService, T>();
+            return builder;
+        }
+
+
+        /// <summary>
         /// Adds the secret parser.
         /// </summary>
         /// <typeparam name="T"></typeparam>
