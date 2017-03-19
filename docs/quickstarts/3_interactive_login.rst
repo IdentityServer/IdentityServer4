@@ -40,10 +40,10 @@ Use the ASP.NET Core "Web Application" template for that.
 Configure the application to use port 5002 (see the overview part for instructions on how to do that).
 
 To add support for OpenID Connect authentication to the MVC application, add the following
-packages to project.json::
+NuGet packages:
 
-    "Microsoft.AspNetCore.Authentication.Cookies": "1.0.0",
-    "Microsoft.AspNetCore.Authentication.OpenIdConnect": "1.0.0"
+* `Microsoft.AspNetCore.Authentication.Cookies`
+* `Microsoft.AspNetCore.Authentication.OpenIdConnect`
 
 Next add both middlewares to your pipeline - the cookies one is simple::
 
@@ -150,7 +150,7 @@ Add the following to your clients configuration::
                 RedirectUris = { "http://localhost:5002/signin-oidc" },
 
                 // where to redirect to after logout
-                PostLogoutRedirectUris = { "http://localhost:5002" },
+                PostLogoutRedirectUris = { "http://localhost:5002/signout-callback-oidc" },
 
                 AllowedScopes = new List<string>
                 {
