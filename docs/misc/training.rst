@@ -3,7 +3,7 @@ Training
 
 Our workshop
 ^^^^^^^^^^^^
-Brock and Dominick are regularly doing workshops around identity & acess control for modern applications.
+Brock and Dominick are regularly doing workshops around identity & access control for modern applications.
 Check the agenda and upcoming dates `here <https://identityserver.io/training>`_.
 
 PluralSight courses
