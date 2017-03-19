@@ -27,7 +27,7 @@ namespace IdentityServer4.Services
         /// <summary>
         /// The logger
         /// </summary>
-        private readonly ILogger _logger;
+        protected readonly ILogger Logger;
 
         /// <summary>
         /// The HTTP context accessor
@@ -65,7 +65,7 @@ namespace IdentityServer4.Services
         /// <param name="logger">The logger.</param>
         public DefaultTokenService(IHttpContextAccessor context, IClaimsService claimsProvider, IReferenceTokenStore referenceTokenStore, ITokenCreationService creationService, IEventService events, ILogger<DefaultTokenService> logger)
         {
-            _logger = logger;
+            Logger = logger;
             Context = context;
             ClaimsProvider = claimsProvider;
             ReferenceTokenStore = referenceTokenStore;
@@ -82,7 +82,7 @@ namespace IdentityServer4.Services
         /// </returns>
         public virtual async Task<Token> CreateIdentityTokenAsync(TokenCreationRequest request)
         {
-            _logger.LogTrace("Creating identity token");
+            Logger.LogTrace("Creating identity token");
             request.Validate();
 
             // host provided claims
@@ -146,7 +146,7 @@ namespace IdentityServer4.Services
         /// </returns>
         public virtual async Task<Token> CreateAccessTokenAsync(TokenCreationRequest request)
         {
-            _logger.LogTrace("Creating access token");
+            Logger.LogTrace("Creating access token");
             request.Validate();
 
             var claims = new List<Claim>();
@@ -199,13 +199,13 @@ namespace IdentityServer4.Services
             {
                 if (token.AccessTokenType == AccessTokenType.Jwt)
                 {
-                    _logger.LogTrace("Creating JWT access token");
+                    Logger.LogTrace("Creating JWT access token");
 
                     tokenResult = await CreationService.CreateTokenAsync(token);
                 }
                 else
                 {
-                    _logger.LogTrace("Creating reference access token");
+                    Logger.LogTrace("Creating reference access token");
 
                     var handle = await ReferenceTokenStore.StoreReferenceTokenAsync(token);
 
@@ -214,7 +214,7 @@ namespace IdentityServer4.Services
             }
             else if (token.Type == OidcConstants.TokenTypes.IdentityToken)
             {
-                _logger.LogTrace("Creating JWT identity token");
+                Logger.LogTrace("Creating JWT identity token");
 
                 tokenResult = await CreationService.CreateTokenAsync(token);
             }

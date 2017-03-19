@@ -389,5 +389,38 @@ namespace IdentityServer4.UnitTests.Services.Default
             (await _codes.GetAuthorizationCodeAsync(handle8)).Should().NotBeNull();
             (await _codes.GetAuthorizationCodeAsync(handle9)).Should().NotBeNull();
         }
+
+        [Fact]
+        public async Task GetAllGrantsAsync_should_aggregate_correctly()
+        {
+            await _userConsent.StoreUserConsentAsync(new Consent()
+            {
+                ClientId = "client1",
+                SubjectId = "123",
+                Scopes = new string[] { "foo1", "foo2" }
+            });
+
+            var grants = await _subject.GetAllGrantsAsync("123");
+
+            grants.Count().Should().Be(1);
+            grants.First().Scopes.Should().Contain(new string[] { "foo1", "foo2" });
+
+            var handle9 = await _codes.StoreAuthorizationCodeAsync(new AuthorizationCode()
+            {
+                ClientId = "client1",
+                CreationTime = DateTime.UtcNow,
+                Lifetime = 10,
+                Subject = IdentityServerPrincipal.Create("123", "alice"),
+                CodeChallenge = "challenge",
+                RedirectUri = "http://client/cb",
+                Nonce = "nonce",
+                RequestedScopes = new string[] { "quux3" }
+            });
+
+            grants = await _subject.GetAllGrantsAsync("123");
+
+            grants.Count().Should().Be(1);
+            grants.First().Scopes.Should().Contain(new string[] { "foo1", "foo2", "quux3" });
+        }
     }
 }

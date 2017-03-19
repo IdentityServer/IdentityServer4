@@ -24,13 +24,13 @@ namespace IdentityServer4.ResponseHandling
     /// <seealso cref="IdentityServer4.ResponseHandling.IDiscoveryResponseGenerator" />
     public class DiscoveryResponseGenerator : IDiscoveryResponseGenerator
     {
-        protected IdentityServerOptions Options;
-        protected ExtensionGrantValidator ExtensionGrants;
-        protected IKeyMaterialService Keys;
-        protected IResourceOwnerPasswordValidator ResourceOwnerValidator;
-        protected IResourceStore ResourceStore;
-        protected SecretParser SecretParsers;
-        protected ILogger Logger;
+        protected readonly IdentityServerOptions Options;
+        protected readonly ExtensionGrantValidator ExtensionGrants;
+        protected readonly IKeyMaterialService Keys;
+        protected readonly IResourceOwnerPasswordValidator ResourceOwnerValidator;
+        protected readonly IResourceStore ResourceStore;
+        protected readonly SecretParser SecretParsers;
+        protected readonly ILogger Logger;
 
         public DiscoveryResponseGenerator(
             IdentityServerOptions options, 

@@ -15,7 +15,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -54,16 +53,13 @@ namespace IdentityServer4.Validation
         {
             _logger.LogDebug("Start token request validation");
 
-            if (client == null) throw new ArgumentNullException(nameof(client));
-            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
-
             _validatedRequest = new ValidatedTokenRequest
             {
-                Raw = parameters,
+                Raw = parameters ?? throw new ArgumentNullException(nameof(parameters)),
                 Options = _options
             };
 
-            _validatedRequest.SetClient(client);
+            _validatedRequest.SetClient(client ?? throw new ArgumentNullException(nameof(client)));
 
             /////////////////////////////////////////////
             // check client protocol type
@@ -277,7 +273,7 @@ namespace IdentityServer4.Validation
             {
                 if (codeVerifier.IsPresent())
                 {
-                    LogError("Unexpected code_verifier: {codeVerifier}", codeVerifier);
+                    LogError("Unexpected code_verifier: {codeVerifier}. This happens when the client is trying to use PKCE, but it is not enabled. Set RequirePkce to true.", codeVerifier);
                     return Invalid(OidcConstants.TokenErrors.InvalidGrant);
                 }
             }

@@ -9,8 +9,7 @@ Also read this first: [Being a good open source citizen](https://hackernoon.com/
 Please start a discussion on the [core repo issue tracker](https://github.com/IdentityServer/IdentityServer4/issues).
 
 ## Platform
-IdentityServer is built against ASP.NET Core 1.1.0 using the 1.0.0-preview2-003131 SDK. This is the only configuration we gonna support on the issue tracker.
-
+IdentityServer is built against ASP.NET Core 1.1 using the RTM tooling that ships with Visual Studio 2017. This is the only configuration accept.
 
 ## Bugs and feature requests?
 Please log a new issue in the appropriate GitHub repo:
@@ -27,7 +26,7 @@ The best way to get your bug fixed is to be as detailed as you can be about the 
 Providing a minimal project with steps to reproduce the problem is ideal.
 Here are questions you can answer before you file a bug to make sure you're not missing any important information.
 
-1. Did you read the [documentation](https://identityserver.github.io/Documentation)?
+1. Did you read the [documentation](https://docs.identityserver.io)?
 2. Did you include the snippet of broken code in the issue?
 3. What are the *EXACT* steps to reproduce this problem?
 

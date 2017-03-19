@@ -91,8 +91,8 @@ namespace IdentityServer4.Services
         {
             var query =
                 from f in first
-                join s in second on f.ClientId equals s.ClientId
-                let scopes = f.Scopes.Union(s.Scopes).Distinct()
+                let matches = (from s in second where f.ClientId == s.ClientId from scope in s.Scopes select scope)
+                let scopes = f.Scopes.Union(matches).Distinct()
                 select new Consent
                 {
                     ClientId = f.ClientId,
