@@ -13,18 +13,18 @@ namespace IdentityServer4.Test
 {
     public class TestUserProfileService : IProfileService
     {
-        private readonly ILogger<TestUserProfileService> _logger;
-        private readonly TestUserStore _users;
+        protected readonly ILogger Logger;
+        protected readonly TestUserStore Users;
 
         public TestUserProfileService(TestUserStore users, ILogger<TestUserProfileService> logger)
         {
-            _users = users;
-            _logger = logger;
+            Users = users;
+            Logger = logger;
         }
 
-        public Task GetProfileDataAsync(ProfileDataRequestContext context)
+        public virtual Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
-            _logger.LogDebug("Get profile called for subject {subject} from client {client} with claim types{claimTypes} via {caller}",
+            Logger.LogDebug("Get profile called for subject {subject} from client {client} with claim types {claimTypes} via {caller}",
                 context.Subject.GetSubjectId(),
                 context.Client.ClientName ?? context.Client.ClientId,
                 context.RequestedClaimTypes,
@@ -32,14 +32,14 @@ namespace IdentityServer4.Test
 
             if (context.RequestedClaimTypes.Any())
             {
-                var user = _users.FindBySubjectId(context.Subject.GetSubjectId());
+                var user = Users.FindBySubjectId(context.Subject.GetSubjectId());
                 context.AddFilteredClaims(user.Claims);
             }
 
             return Task.FromResult(0);
         }
 
-        public Task IsActiveAsync(IsActiveContext context)
+        public virtual Task IsActiveAsync(IsActiveContext context)
         {
             context.IsActive = true;
 
