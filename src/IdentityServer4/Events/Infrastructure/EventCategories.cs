@@ -7,5 +7,7 @@ namespace IdentityServer4.Events
     public static class EventCategories
     {
         public const string UserAuthentication = "User Authentication";
-   }
+        public const string ClientAuthentication = "Client Authentication";
+        public const string Token = "Token";
+    }
 }

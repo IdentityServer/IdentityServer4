@@ -6,10 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Configuration;
 using IdentityServer4.Validation;
-using IdentityServer4.Services;
 using IdentityServer4.ResponseHandling;
 using Microsoft.Extensions.Logging;
-using IdentityServer4.Events;
 using IdentityServer4.Hosting;
 using IdentityServer4.Endpoints.Results;
 using IdentityModel;
@@ -20,19 +18,17 @@ namespace IdentityServer4.Endpoints
     public class UserInfoEndpoint : IEndpoint
     {
         private readonly ILogger _logger;
-        private readonly IEventService _events;
         private readonly IUserInfoResponseGenerator _generator;
         private readonly IdentityServerOptions _options;
         private readonly BearerTokenUsageValidator _tokenUsageValidator;
         private readonly ITokenValidator _tokenValidator;
 
-        public UserInfoEndpoint(IdentityServerOptions options, ITokenValidator tokenValidator, IUserInfoResponseGenerator generator, BearerTokenUsageValidator tokenUsageValidator, IEventService events, ILogger<UserInfoEndpoint> logger)
+        public UserInfoEndpoint(IdentityServerOptions options, ITokenValidator tokenValidator, IUserInfoResponseGenerator generator, BearerTokenUsageValidator tokenUsageValidator, ILogger<UserInfoEndpoint> logger)
         {
             _options = options;
             _tokenValidator = tokenValidator;
             _tokenUsageValidator = tokenUsageValidator;
             _generator = generator;
-            _events = events;
             _logger = logger;
         }
 
@@ -57,7 +53,7 @@ namespace IdentityServer4.Endpoints
                 var error = "No access token found.";
 
                 _logger.LogError(error);
-                await RaiseFailureEventAsync(error);
+
                 return Error(OidcConstants.ProtectedResourceErrors.InvalidToken);
             }
 
@@ -70,7 +66,7 @@ namespace IdentityServer4.Endpoints
             if (tokenResult.IsError)
             {
                 _logger.LogError(tokenResult.Error);
-                await RaiseFailureEventAsync(tokenResult.Error);
+
                 return Error(tokenResult.Error);
             }
 
@@ -82,7 +78,7 @@ namespace IdentityServer4.Endpoints
             {
                 var error = "Token contains no sub claim";
                 _logger.LogError(error);
-                await RaiseFailureEventAsync(error);
+
                 return Error(OidcConstants.ProtectedResourceErrors.InvalidToken);
             }
 
@@ -91,7 +87,6 @@ namespace IdentityServer4.Endpoints
             var payload = await _generator.ProcessAsync(subject, scopes, tokenResult.Client);
 
             _logger.LogDebug("End userinfo request");
-            await RaiseSuccessEventAsync();
 
             return new UserInfoResult(payload);
         }
@@ -99,21 +94,6 @@ namespace IdentityServer4.Endpoints
         private IEndpointResult Error(string error, string description = null)
         {
             return new ProtectedResourceErrorResult(error, description);
-        }
-
-        private async Task RaiseSuccessEventAsync()
-        {
-            // TODO: events
-            //await _events.RaiseSuccessfulEndpointEventAsync(EventConstants.EndpointNames.UserInfo);
-        }
-
-        private async Task RaiseFailureEventAsync(string error)
-        {
-            // TODO: events
-            //if (_options.Events.RaiseFailureEvents)
-            //{
-            //    await _events.RaiseFailureEndpointEventAsync(EventConstants.EndpointNames.UserInfo, error);
-            //}
         }
     }
 }

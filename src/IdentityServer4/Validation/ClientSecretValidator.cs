@@ -81,20 +81,18 @@ namespace IdentityServer4.Validation
                 Client = client
             };
 
-            await RaiseSuccessEvent(client.ClientId);
+            await RaiseSuccessEvent(client.ClientId, parsedSecret.Type);
             return success;
         }
 
-        private async Task RaiseSuccessEvent(string clientId)
+        private Task RaiseSuccessEvent(string clientId, string authMethod)
         {
-            // TODO: events
-            //await _events.RaiseSuccessfulClientAuthenticationEventAsync(clientId, EventConstants.ClientTypes.Client);
+            return _events.RaiseAsync(new ClientAuthenticationSuccessEvent(clientId, authMethod));
         }
 
-        private async Task RaiseFailureEvent(string clientId, string message)
+        private Task RaiseFailureEvent(string clientId, string message)
         {
-            // TODO: events
-            //await _events.RaiseFailureClientAuthenticationEventAsync(message, clientId, EventConstants.ClientTypes.Client);
+            return _events.RaiseAsync(new ClientAuthenticationFailureEvent(clientId, message));
         }
     }
 }

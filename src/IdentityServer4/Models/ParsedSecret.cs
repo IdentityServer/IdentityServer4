@@ -5,7 +5,7 @@
 namespace IdentityServer4.Models
 {
     /// <summary>
-    /// Represents a secret extracted from the OWIN environment
+    /// Represents a secret extracted from the HttpContext
     /// </summary>
     public class ParsedSecret
     {

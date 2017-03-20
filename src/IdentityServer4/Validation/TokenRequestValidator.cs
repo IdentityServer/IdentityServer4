@@ -746,14 +746,14 @@ namespace IdentityServer4.Validation
             _logger.LogInformation("Token request validation success\n{details}", details);
         }
 
-        private async Task RaiseSuccessfulResourceOwnerAuthenticationEventAsync(string userName, string subjectId)
+        private Task RaiseSuccessfulResourceOwnerAuthenticationEventAsync(string userName, string subjectId)
         {
-            await _events.RaiseSuccessfulResourceOwnerPasswordAuthenticationEventAsync(userName, subjectId);
+            return _events.RaiseAsync(new UserLoginSuccessEvent(userName, subjectId));
         }
 
-        private async Task RaiseFailedResourceOwnerAuthenticationEventAsync(string userName, string error)
+        private Task RaiseFailedResourceOwnerAuthenticationEventAsync(string userName, string error)
         {
-            await _events.RaiseFailedResourceOwnerPasswordAuthenticationEventAsync(userName, error);
+            return _events.RaiseAsync(new UserLoginFailureEvent(userName, error));
         }
 
         private async Task RaiseFailedAuthorizationCodeRedeemedEventAsync(string handle, string error)
