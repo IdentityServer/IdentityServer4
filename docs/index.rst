@@ -44,6 +44,7 @@ IdentityServer is officially certified by the OpenID Foundation and part of the 
    :caption: Introduction
 
    intro/big_picture
+   intro/architecture
    intro/terminology
    intro/specs
    intro/packaging
