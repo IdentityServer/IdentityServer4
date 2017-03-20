@@ -455,12 +455,12 @@ namespace IdentityServer4.Events
         //    await events.RaiseAsync(evt);
         //}
 
-        private static async Task RaiseEventAsync<T>(this IEventService events, Event<T> evt)
-        {
-            if (events == null) throw new ArgumentNullException(nameof(events));
+        //private static async Task RaiseEventAsync<T>(this IEventService events, Event<T> evt)
+        //{
+        //    if (events == null) throw new ArgumentNullException(nameof(events));
 
-            await events.RaiseAsync(evt);
-        }
+        //    await events.RaiseAsync(evt);
+        //}
 
         private static string ObfuscateToken(string token)
         {

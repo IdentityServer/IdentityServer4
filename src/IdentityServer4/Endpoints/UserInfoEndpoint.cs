@@ -103,15 +103,17 @@ namespace IdentityServer4.Endpoints
 
         private async Task RaiseSuccessEventAsync()
         {
-            await _events.RaiseSuccessfulEndpointEventAsync(EventConstants.EndpointNames.UserInfo);
+            // TODO: events
+            //await _events.RaiseSuccessfulEndpointEventAsync(EventConstants.EndpointNames.UserInfo);
         }
 
         private async Task RaiseFailureEventAsync(string error)
         {
-            if (_options.Events.RaiseFailureEvents)
-            {
-                await _events.RaiseFailureEndpointEventAsync(EventConstants.EndpointNames.UserInfo, error);
-            }
+            // TODO: events
+            //if (_options.Events.RaiseFailureEvents)
+            //{
+            //    await _events.RaiseFailureEndpointEventAsync(EventConstants.EndpointNames.UserInfo, error);
+            //}
         }
     }
 }

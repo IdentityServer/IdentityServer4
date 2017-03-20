@@ -87,12 +87,14 @@ namespace IdentityServer4.Validation
 
         private async Task RaiseSuccessEvent(string clientId)
         {
-            await _events.RaiseSuccessfulClientAuthenticationEventAsync(clientId, EventConstants.ClientTypes.Client);
+            // TODO: events
+            //await _events.RaiseSuccessfulClientAuthenticationEventAsync(clientId, EventConstants.ClientTypes.Client);
         }
 
         private async Task RaiseFailureEvent(string clientId, string message)
         {
-            await _events.RaiseFailureClientAuthenticationEventAsync(message, clientId, EventConstants.ClientTypes.Client);
+            // TODO: events
+            //await _events.RaiseFailureClientAuthenticationEventAsync(message, clientId, EventConstants.ClientTypes.Client);
         }
     }
 }

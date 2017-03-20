@@ -4,16 +4,17 @@
 
 using IdentityServer4.Extensions;
 using System;
+using System.Threading.Tasks;
 
 namespace IdentityServer4.Events
 {
     /// <summary>
     /// Models base class for events raised from IdentityServer.
     /// </summary>
-    public class Event<T>
+    public abstract class Event
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Event{T}" /> class.
+        /// Initializes a new instance of the <see cref="Event" /> class.
         /// </summary>
         /// <param name="category">The category.</param>
         /// <param name="name">The name.</param>
@@ -32,55 +33,9 @@ namespace IdentityServer4.Events
             Message = message;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Event{T}" /> class.
-        /// </summary>
-        /// <param name="category">The category.</param>
-        /// <param name="name">The name.</param>
-        /// <param name="type">The type.</param>
-        /// <param name="id">The identifier.</param>
-        /// <param name="details">The details.</param>
-        /// <param name="message">The message.</param>
-        public Event(string category, string name, EventTypes type, int id, T details, string message = null)
-            : this(category, name, type, id, message)
+        protected internal virtual Task PrepareAsync()
         {
-            Details = details;
-        }
-
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Event{T}" /> class.
-        /// </summary>
-        /// <param name="category">The category.</param>
-        /// <param name="name">The name.</param>
-        /// <param name="type">The type.</param>
-        /// <param name="id">The identifier.</param>
-        /// <param name="detailsFunc">The details function.</param>
-        /// <param name="message">The message.</param>
-        public Event(string category, string name, EventTypes type, int id, Func<T> detailsFunc, string message = null)
-            : this(category, name, type, id, message)
-        {
-            DetailsFunc = detailsFunc;
-        }
-
-        /// <summary>
-        /// Gets or sets the details function.
-        /// </summary>
-        /// <value>
-        /// The details function.
-        /// </value>
-        [Newtonsoft.Json.JsonIgnore]
-        public Func<T> DetailsFunc { get; set; }
-
-        /// <summary>
-        /// Allows event to defer data initialization until the event will be raised.
-        /// </summary>
-        internal void Prepare()
-        {
-            if (DetailsFunc != null)
-            {
-                Details = DetailsFunc();
-            }
+            return Task.FromResult(0);
         }
 
         /// <summary>
@@ -124,19 +79,43 @@ namespace IdentityServer4.Events
         public string Message { get; set; }
 
         /// <summary>
-        /// Gets or sets the event details.
+        /// Gets or sets the per-request activity identifier.
         /// </summary>
         /// <value>
-        /// The details.
+        /// The activity identifier.
         /// </value>
-        public T Details { get; set; }
+        public string ActivityId { get; set; }
 
         /// <summary>
-        /// Gets or sets the event context.
+        /// Gets or sets the time stamp when the event was raised.
         /// </summary>
         /// <value>
-        /// The context.
+        /// The time stamp.
         /// </value>
-        public EventContext Context { get; set; }
+        public DateTime TimeStamp { get; set; }
+
+        /// <summary>
+        /// Gets or sets the server process identifier.
+        /// </summary>
+        /// <value>
+        /// The process identifier.
+        /// </value>
+        public int ProcessId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the local ip address of the current request.
+        /// </summary>
+        /// <value>
+        /// The local ip address.
+        /// </value>
+        public string LocalIpAddress { get; set; }
+
+        /// <summary>
+        /// Gets or sets the remote ip address of the current request.
+        /// </summary>
+        /// <value>
+        /// The remote ip address.
+        /// </value>
+        public string RemoteIpAddress { get; set; }
     }
 }

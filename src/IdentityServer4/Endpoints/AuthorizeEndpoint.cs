@@ -255,12 +255,14 @@ namespace IdentityServer4.Endpoints
 
         private async Task RaiseSuccessEventAsync()
         {
-            await _events.RaiseSuccessfulEndpointEventAsync(EventConstants.EndpointNames.Authorize);
+            // TODO: events
+            //await _events.RaiseSuccessfulEndpointEventAsync(EventConstants.EndpointNames.Authorize);
         }
 
         private async Task RaiseFailureEventAsync(string error)
         {
-            await _events.RaiseFailureEndpointEventAsync(EventConstants.EndpointNames.Authorize, error);
+            // TODO: events
+            //await _events.RaiseFailureEndpointEventAsync(EventConstants.EndpointNames.Authorize, error);
         }
-   }
+    }
 }
