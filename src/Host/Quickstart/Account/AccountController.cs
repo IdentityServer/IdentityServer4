@@ -17,6 +17,7 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using IdentityServer4.Events;
+using IdentityServer4.Extensions;
 
 namespace IdentityServer4.Quickstart.UI
 {
@@ -156,6 +157,12 @@ namespace IdentityServer4.Quickstart.UI
 
             // delete local authentication cookie
             await HttpContext.Authentication.SignOutAsync();
+
+            var user = await HttpContext.GetIdentityServerUserAsync();
+            if (user != null)
+            {
+                await _events.RaiseAsync(new UserLogoutSuccessEvent(user.GetSubjectId()));
+            }
 
             return View("LoggedOut", vm);
         }
