@@ -3,7 +3,7 @@ Using EntityFramework Core for configuration data
 =================================================
 
 IdentityServer is designed for extensibility, and one of the extensibility points is the storage mechanism used for data that IdentityServer needs.
-This quickstart shows to how configure IdentityServer to use EntityFramework (EF) as the storage mechanism for this data (rather than using the in-memory implementations we had been using up until now).
+This quickstart shows how to configure IdentityServer to use EntityFramework (EF) as the storage mechanism for this data (rather than using the in-memory implementations we had been using up until now).
 
 IdentityServer4.EntityFramework
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -13,9 +13,9 @@ The first is the configuration data (resources and clients).
 The second is operational data that IdentityServer produces as it's being used.
 These stores are modeled with interfaces, and we provide an EF implementation of these interfaces in the `IdentityServer4.EntityFramework` Nuget package.
 
-Get started by adding a reference to the `IdentityServer4.EntityFramework` Nuget package in `project.json` in the IdentityServer project:: 
+Get started by adding a reference to the `IdentityServer4.EntityFramework` Nuget package the IdentityServer project (use at least version "1.0.1").
 
-    "IdentityServer4.EntityFramework": "1.0.0"
+.. image:: images/8_nuget.png
 
 Adding SqlServer
 ^^^^^^^^^^^^^^^^
@@ -23,15 +23,37 @@ Adding SqlServer
 Given EF's flexibility, you can then use any EF-supported database.
 For this quickstart we will use the LocalDb version of SqlServer that comes with Visual Studio.
 
-To add SqlServer, we need several more dependencies. 
-In the `"dependencies"` section in `project.json` add these packages::
+To add SqlServer, we need several more NuGet packages.  
 
-  "Microsoft.EntityFrameworkCore.SqlServer": "1.1.0",
-  "Microsoft.EntityFrameworkCore.Tools": "1.0.0-preview2-final"
+Add `Microsoft.EntityFrameworkCore.SqlServer`:
 
-And then in the `"tools"` section add this configuration::
+.. image:: images/8_nuget_ef_sqlserver.png
 
-    "Microsoft.EntityFrameworkCore.Tools": "1.0.0-preview2-final"
+And `Microsoft.EntityFrameworkCore.Tools`:
+
+.. image:: images/8_nuget_ef_tools.png
+
+Next, we need to add some command line tooling (more details `here <https://docs.microsoft.com/en-us/ef/core/miscellaneous/cli/dotnet>`_).
+Unfortunately this must be done by hand-editing your `.csproj` file.
+To edit the `.csproj` by right-click the project and select "Edit projectname.csproj":
+
+.. image:: images/8_edit_csproj.png
+
+And then add the below snippet before the end `</Project>` element::
+
+    <ItemGroup>
+        <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="1.0.0" />
+    </ItemGroup>
+
+It should look something like this:
+
+.. image:: images/8_csproj.png
+
+Save and close the file. 
+To test that you have the tools properly installed, you can open a command shell in the same directory as the project and run `dotnet ef`.
+It should look like this:
+
+.. image:: images/8_dotnet_ef_command_line.png
 
 Configuring the stores
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -46,7 +68,7 @@ We will replace them with this code::
   {
       services.AddMvc();
 
-      var connectionString = @"server=(localdb)\mssqllocaldb;database=IdentityServer4.Quickstart;trusted_connection=yes";
+      var connectionString = @"server=(localdb)\mssqllocaldb;database=IdentityServer4.Quickstart.EntityFramework;trusted_connection=yes";
       var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
             
       // configure identity server with in-memory users, but EF stores for clients and resources

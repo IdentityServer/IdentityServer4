@@ -32,10 +32,9 @@ Add the static file middleware
 
 Given that this project is designed to mainly run client-side, we need ASP.NET Core to serve up the static HTML and JavaScript files that will make up our application.
 The static file middleware is designed to do this.
-Add the NuGet package ``Microsoft.AspNetCore.StaticFiles`` to `project.json`::
+Add the NuGet package ``Microsoft.AspNetCore.StaticFiles``.
 
-    "Microsoft.AspNetCore.StaticFiles": "1.0.0"
-
+.. image:: images/7_nuget_static_files.png
 
 Register the static file middleware
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -257,9 +256,9 @@ This will allow Ajax calls to be made from `http://localhost:5003` to `http://lo
 
 **CORS NuGet Package**
 
-Add the ``Microsoft.AspNetCore.Cors`` NuGet package to `project.json` in the web API project::
+Add the ``Microsoft.AspNetCore.Cors`` NuGet package.
 
-    "Microsoft.AspNetCore.Cors": "1.0.0"
+.. image:: images/7_nuget_cors.png
 
 **Configure CORS**
 
