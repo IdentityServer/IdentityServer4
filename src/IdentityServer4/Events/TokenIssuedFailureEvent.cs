@@ -33,12 +33,20 @@ namespace IdentityServer4.Events
         public TokenIssuedFailureEvent(TokenRequestValidationResult result)
             : this()
         {
-            ClientId = result.ValidatedRequest.Client.ClientId;
-            ClientName = result.ValidatedRequest.Client.ClientName;
-            Endpoint = EndpointName.Token.ToString();
-            SubjectId = result.ValidatedRequest?.Subject?.GetSubjectId();
-            GrantType = result.ValidatedRequest?.GrantType;
-            Scopes = result.ValidatedRequest?.ValidatedScopes?.GrantedResources.ToScopeNames().ToSpaceSeparatedString();
+            if (result.ValidatedRequest != null)
+            {
+                ClientId = result.ValidatedRequest.Client.ClientId;
+                ClientName = result.ValidatedRequest.Client.ClientName;
+                Endpoint = EndpointName.Token.ToString();
+                GrantType = result.ValidatedRequest.GrantType;
+                Scopes = result.ValidatedRequest.ValidatedScopes?.GrantedResources.ToScopeNames().ToSpaceSeparatedString();
+
+                if (result.ValidatedRequest.Subject != null && result.ValidatedRequest.Subject.Identity.IsAuthenticated)
+                {
+                    SubjectId = result.ValidatedRequest.Subject.GetSubjectId();
+                }
+            }
+
             Error = result.Error;
             ErrorDescription = result.ErrorDescription;
         }
