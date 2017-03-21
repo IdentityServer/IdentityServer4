@@ -28,7 +28,7 @@ namespace Microsoft.Extensions.DependencyInjection
             // todo
             if (!(credential.Key is AsymmetricSecurityKey
                 || (credential.Key is JsonWebKey && ((JsonWebKey)credential.Key).HasPrivateKey)))
-                //&& !credential.Key.IsSupportedAlgorithm(SecurityAlgorithms.RsaSha256Signature))
+            //&& !credential.Key.IsSupportedAlgorithm(SecurityAlgorithms.RsaSha256Signature))
             {
                 throw new InvalidOperationException("Signing key is not asymmetric");
             }
@@ -125,7 +125,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IIdentityServerBuilder AddTemporarySigningCredential(this IIdentityServerBuilder builder)
         {
             var key = CreateRsaSecurityKey();
-            
+
             return builder.AddSigningCredential(new SigningCredentials(key, "RS256"));
         }
 
@@ -134,43 +134,34 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns></returns>
-        public static IIdentityServerBuilder AddTemporarySigningCredential(this IIdentityServerBuilder builder, bool persist, string filename = null)
+        public static IIdentityServerBuilder AddDeveloperSigningCredential(this IIdentityServerBuilder builder, string filename = null)
         {
-            if (persist == true)
+            if (filename == null)
             {
-                if (filename == null)
-                {
-                    filename = Path.Combine(Directory.GetCurrentDirectory(), "tempkey.rsa");
-                }
-
-                if (File.Exists(filename))
-                {
-                    var keyFile = File.ReadAllText(filename);
-                    var tempKey = JsonConvert.DeserializeObject<TemporaryRsaKey>(keyFile);
-
-                    return builder.AddSigningCredential(CreateRsaSecurityKey(tempKey.Parameters, tempKey.KeyId));
-                }
-                else
-                {
-                    var key = CreateRsaSecurityKey();
-                    var parameters = key.Rsa.ExportParameters(includePrivateParameters: true);
-
-                    var tempKey = new TemporaryRsaKey
-                    {
-                        Parameters = parameters,
-                        KeyId = key.KeyId
-                    };
-
-                    try
-                    {
-                        File.WriteAllText(filename, JsonConvert.SerializeObject(tempKey));
-                        return builder.AddSigningCredential(key);
-                    }
-                    catch { }
-                }
+                filename = Path.Combine(Directory.GetCurrentDirectory(), "tempkey.rsa");
             }
 
-            return builder.AddTemporarySigningCredential();
+            if (File.Exists(filename))
+            {
+                var keyFile = File.ReadAllText(filename);
+                var tempKey = JsonConvert.DeserializeObject<TemporaryRsaKey>(keyFile);
+
+                return builder.AddSigningCredential(CreateRsaSecurityKey(tempKey.Parameters, tempKey.KeyId));
+            }
+            else
+            {
+                var key = CreateRsaSecurityKey();
+                var parameters = key.Rsa.ExportParameters(includePrivateParameters: true);
+
+                var tempKey = new TemporaryRsaKey
+                {
+                    Parameters = parameters,
+                    KeyId = key.KeyId
+                };
+
+                File.WriteAllText(filename, JsonConvert.SerializeObject(tempKey));
+                return builder.AddSigningCredential(key);
+            }
         }
 
         public static RsaSecurityKey CreateRsaSecurityKey(RSAParameters parameters, string id)
