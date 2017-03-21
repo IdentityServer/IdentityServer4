@@ -7,11 +7,17 @@ The clients needs to be explicitly authorized to request refresh tokens by setti
 
 Additional client settings
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-* ``AbsoluteRefreshTokenLifetime`` Maximum lifetime of a refresh token in seconds. Defaults to 2592000 seconds / 30 days
-* ``SlidingRefreshTokenLifetime`` Sliding lifetime of a refresh token in seconds. Defaults to 1296000 seconds / 15 days
-* ``RefreshTokenUsage``
-    ReUse: the refresh token handle will stay the same when refreshing tokens
-    OneTime: the refresh token handle will be updated when refreshing tokens
-* ``RefreshTokenExpiration``
-    Absolute: the refresh token will expire on a fixed point in time (specified by the AbsoluteRefreshTokenLifetime)
-    Sliding: when refreshing the token, the lifetime of the refresh token will be renewed (by the amount specified in SlidingRefreshTokenLifetime). The lifetime will not exceed the absolute lifetime.
+``AbsoluteRefreshTokenLifetime``
+    Maximum lifetime of a refresh token in seconds. Defaults to 2592000 seconds / 30 days
+``SlidingRefreshTokenLifetime``
+    Sliding lifetime of a refresh token in seconds. Defaults to 1296000 seconds / 15 days
+``RefreshTokenUsage``
+    ``ReUse`` the refresh token handle will stay the same when refreshing tokens
+    
+    ``OneTime`` the refresh token handle will be updated when refreshing tokens
+``RefreshTokenExpiration``
+    ``Absolute`` the refresh token will expire on a fixed point in time (specified by the AbsoluteRefreshTokenLifetime)
+    
+    ``Sliding`` when refreshing the token, the lifetime of the refresh token will be renewed (by the amount specified in SlidingRefreshTokenLifetime). The lifetime will not exceed `AbsoluteRefreshTokenLifetime`.
+``UpdateAccessTokenClaimsOnRefresh``
+    Gets or sets a value indicating whether the access token (and its claims) should be updated on a refresh token request.
