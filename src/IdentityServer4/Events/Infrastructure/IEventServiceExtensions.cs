@@ -49,56 +49,7 @@ namespace IdentityServer4.Events
         //    await events.RaiseEventAsync(evt);
         }
 
-        public static async Task RaiseSuccessfulResourceOwnerPasswordAuthenticationEventAsync(this IEventService events, 
-            string userName, string subjectId)
-        {
-            //var evt = new Event<LoginDetails>(
-            //    EventConstants.Categories.Authentication,
-            //    "Resource Owner Password Login Success",
-            //    EventTypes.Success,
-            //    EventConstants.Ids.ResourceOwnerPasswordLoginSuccess,
-            //    new LoginDetails
-            //    {
-            //        SubjectId = subjectId,
-            //        Name = userName,
-            //    });
-
-            //await events.RaiseEventAsync(evt);
-        }
-
-        public static async Task RaiseFailedResourceOwnerPasswordAuthenticationEventAsync(this IEventService events, 
-            string userName, string error)
-        {
-            //var evt = new Event<LoginDetails>(
-            //    EventConstants.Categories.Authentication,
-            //    "Resource Owner Password Login Failure",
-            //    EventTypes.Failure,
-            //    EventConstants.Ids.ResourceOwnerPasswordLoginFailure,
-            //    new LoginDetails
-            //    {
-            //        Name = userName
-            //    },
-            //    error);
-
-            //await events.RaiseEventAsync(evt);
-        }
-
-        //public static async Task RaiseClientPermissionsRevokedEventAsync(this IEventService events, ClaimsPrincipal user, string clientId)
-        //{
-        //    var evt = new Event<ClientPermissionsRevokedDetails>(
-        //        EventConstants.Categories.Information,
-        //        "Client Permissions Revoked",
-        //        EventTypes.Information,
-        //        EventConstants.Ids.ClientPermissionRevoked,
-        //        new ClientPermissionsRevokedDetails
-        //        {
-        //            Subject = user.GetSubjectId(),
-        //            Name = user.Identity.Name,
-        //            ClientId = clientId
-        //        });
-
-        //    await events.RaiseEventAsync(evt);
-        //}
+       
 
         public static async Task RaiseTokenIssuedEventAsync(this IEventService events, Token token, string rawToken)
         {
@@ -220,76 +171,6 @@ namespace IdentityServer4.Events
             //await events.RaiseEventAsync(evt);
         }
 
-        //public static async Task RaiseUnhandledExceptionEventAsync(this IEventService events, Exception exception)
-        //{
-        //    var evt = new Event<object>(
-        //        EventConstants.Categories.InternalError,
-        //        "Unhandled exception",
-        //        EventTypes.Error,
-        //        EventConstants.Ids.UnhandledExceptionError, 
-        //        exception.ToString());
-
-        //    await events.RaiseEventAsync(evt);
-        //}
-
-        public static async Task RaiseSuccessfulClientAuthenticationEventAsync(this IEventService events, string clientId, string clientType)
-        {
-            //var evt = new Event<ClientAuthenticationDetails>(
-            //    EventConstants.Categories.ClientAuthentication,
-            //    "Client authentication success",
-            //    EventTypes.Success,
-            //    EventConstants.Ids.ClientAuthenticationSuccess,
-            //    new ClientAuthenticationDetails
-            //    {
-            //        ClientId = clientId,
-            //        ClientType = clientType
-            //    });
-
-            //await events.RaiseAsync(evt);
-        }
-
-        public static async Task RaiseFailureClientAuthenticationEventAsync(this IEventService events, string message, string clientId, string clientType)
-        {
-            //var evt = new Event<ClientAuthenticationDetails>(
-            //    EventConstants.Categories.ClientAuthentication,
-            //    "Client authentication failure",
-            //    EventTypes.Failure,
-            //    EventConstants.Ids.ClientAuthenticationFailure,
-            //    new ClientAuthenticationDetails
-            //    {
-            //        ClientId = clientId,
-            //        ClientType = clientType
-            //    },
-            //    message);
-
-            //await events.RaiseAsync(evt);
-        }
-
-        public static async Task RaiseSuccessfulEndpointEventAsync(this IEventService events, string endpointName)
-        {
-            //var evt = new Event<EndpointDetail>(
-            //    EventConstants.Categories.Endpoints,
-            //    "Endpoint success",
-            //    EventTypes.Success,
-            //    EventConstants.Ids.EndpointSuccess,
-            //    new EndpointDetail { EndpointName = endpointName });
-
-            //await events.RaiseAsync(evt);
-        }
-
-        public static async Task RaiseFailureEndpointEventAsync(this IEventService events, string endpointName, string error)
-        {
-            //var evt = new Event<EndpointDetail>(
-            //     EventConstants.Categories.Endpoints,
-            //     "Endpoint failure",
-            //     EventTypes.Failure,
-            //     EventConstants.Ids.EndpointFailure,
-            //     new EndpointDetail { EndpointName = endpointName },
-            //     error);
-
-            //await events.RaiseAsync(evt);
-        }
-
         public static async Task RaiseSuccessfulIntrospectionEndpointEventAsync(this IEventService events, string token, string tokenStatus, string apiName)
         {
             //var evt = new Event<IntrospectionEndpointDetail>(
@@ -374,93 +255,7 @@ namespace IdentityServer4.Events
             //await events.RaiseAsync(evt);
         }
 
-        //public static Task RaiseSuccessRefreshTokenRefreshEventAsync(this IEventService events, Client client, string handle)
-        //{
-        //    return Task.FromResult(0);
-        //}
-
-        //public static async Task RaiseNoCertificateConfiguredEventAsync(this IEventService events)
-        //{
-        //    var evt = new Event<object>(
-        //        EventConstants.Categories.Information,
-        //        "No signing certificate configured",
-        //        EventTypes.Information,
-        //        EventConstants.Ids.NoSigningCertificateConfigured);
-
-        //    await events.RaiseAsync(evt);
-        //}
-
-        //public static async Task RaiseCertificatePrivateKeyNotAccessibleEventAsync(this IEventService events, X509Certificate2 cert)
-        //{
-        //    var evt = new Event<SigningCertificateDetail>(
-        //        EventConstants.Categories.InternalError,
-        //        "Signing certificate has no private key, or key is not accessible",
-        //        EventTypes.Error,
-        //        EventConstants.Ids.SigningCertificatePrivateKeyNotAccessible,
-        //        new SigningCertificateDetail
-        //        {
-        //            SigningCertificateName = cert.SubjectName.Name,
-        //            SigningCertificateExpiration = cert.NotAfter
-        //        },
-        //        "Make sure the account running your application has access to the private key");
-
-        //    await events.RaiseAsync(evt);
-        //}
-
-        //public static async Task RaiseCertificateKeyLengthTooShortEventAsync(this IEventService events, X509Certificate2 cert)
-        //{
-        //    var evt = new Event<SigningCertificateDetail>(
-        //        EventConstants.Categories.InternalError,
-        //        "Signing certificate key length is less than 2048 bits.",
-        //        EventTypes.Error,
-        //        EventConstants.Ids.SigningCertificatePrivateKeyNotAccessible,
-        //        new SigningCertificateDetail
-        //        {
-        //            SigningCertificateName = cert.SubjectName.Name,
-        //            SigningCertificateExpiration = cert.NotAfter
-        //        });
-
-        //    await events.RaiseAsync(evt);
-        //}
-
-        //public static async Task RaiseCertificateExpiringSoonEventAsync(this IEventService events, X509Certificate2 cert)
-        //{
-        //    var evt = new Event<SigningCertificateDetail>(
-        //        EventConstants.Categories.Information,
-        //        "The signing certificate will expire in the next 30 days",
-        //        EventTypes.Information,
-        //        EventConstants.Ids.SigningCertificateExpiringSoon,
-        //        new SigningCertificateDetail
-        //        {
-        //            SigningCertificateName = cert.SubjectName.Name,
-        //            SigningCertificateExpiration = cert.NotAfter
-        //        });
-
-        //    await events.RaiseAsync(evt);
-        //}
-
-        //public static async Task RaiseCertificateValidatedEventAsync(this IEventService events, X509Certificate2 cert)
-        //{
-        //    var evt = new Event<SigningCertificateDetail>(
-        //        EventConstants.Categories.Information,
-        //        "Signing certificate validation success",
-        //        EventTypes.Information,
-        //        EventConstants.Ids.SigningCertificateValidated,
-        //        new SigningCertificateDetail
-        //        {
-        //            SigningCertificateName = cert.SubjectName.Name,
-        //            SigningCertificateExpiration = cert.NotAfter
-        //        });
-
-        //    await events.RaiseAsync(evt);
-        //}
-
-        private static async Task RaiseEventAsync<T>(this IEventService events, Event<T> evt)
-        {
-            if (events == null) throw new ArgumentNullException(nameof(events));
-
-            await events.RaiseAsync(evt);
-        }
+       
 
         private static string ObfuscateToken(string token)
         {

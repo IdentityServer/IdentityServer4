@@ -2,48 +2,86 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityServer4.Events;
-using IdentityServer4.Logging;
-using Microsoft.Extensions.Logging;
 using System;
+using System.Diagnostics;
+using Microsoft.AspNetCore.Http;
+using IdentityServer4.Configuration;
 using System.Threading.Tasks;
+using IdentityServer4.Services;
 
-namespace IdentityServer4.Services
+namespace IdentityServer4.Events
 {
-    /// <summary>
-    /// Default implementation of the event service. Write events raised to the log.
-    /// </summary>
     public class DefaultEventService : IEventService
     {
-        private readonly EventServiceHelper _helper;
+        protected readonly IdentityServerOptions Options;
+        protected readonly IHttpContextAccessor Context;
+        protected readonly IEventSink Sink;
 
-        /// <summary>
-        /// The logger
-        /// </summary>
-        private readonly ILogger _logger;
-
-        public DefaultEventService(ILogger<DefaultEventService> logger, EventServiceHelper helper)
+        public DefaultEventService(IdentityServerOptions options, IHttpContextAccessor context, IEventSink sink)
         {
-            _logger = logger;
-            _helper = helper;
+            Options = options;
+            Context = context;
+            Sink = sink;
         }
 
-        /// <summary>
-        /// Raises the specified event.
-        /// </summary>
-        /// <param name="evt">The event.</param>
-        /// <exception cref="System.ArgumentNullException">evt</exception>
-        public virtual Task RaiseAsync<T>(Event<T> evt)
+        public async Task RaiseAsync(Event evt)
         {
-            if (evt == null) throw new ArgumentNullException(nameof(evt));
+            if (evt == null) throw new ArgumentNullException("evt");
 
-            if (_helper.CanRaiseEvent(evt))
+            if (CanRaiseEvent(evt))
             {
-                var json = LogSerializer.Serialize(_helper.PrepareEvent(evt));
-                _logger.LogInformation(json);
+                await PrepareEventAsync(evt);
+                await Sink.PersistAsync(evt);
+            }
+        }
+
+        public bool CanRaiseEventType(EventTypes evtType)
+        {
+            switch (evtType)
+            {
+                case EventTypes.Failure:
+                    return Options.Events.RaiseFailureEvents;
+                case EventTypes.Information:
+                    return Options.Events.RaiseInformationEvents;
+                case EventTypes.Success:
+                    return Options.Events.RaiseSuccessEvents;
+                case EventTypes.Error:
+                    return Options.Events.RaiseErrorEvents;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        protected virtual bool CanRaiseEvent(Event evt)
+        {
+            return CanRaiseEventType(evt.EventType);
+        }
+
+        protected virtual async Task PrepareEventAsync(Event evt)
+        {
+            evt.ActivityId = Context.HttpContext.TraceIdentifier;
+            evt.TimeStamp = IdentityServerDateTime.UtcNow;
+            evt.ProcessId = Process.GetCurrentProcess().Id;
+
+            if (Context.HttpContext.Connection.LocalIpAddress != null)
+            {
+                evt.LocalIpAddress = Context.HttpContext.Connection.LocalIpAddress.ToString() + ":" + Context.HttpContext.Connection.LocalPort;
+            }
+            else
+            {
+                evt.LocalIpAddress = "unknown";
             }
 
-            return Task.FromResult(0);
+            if (Context.HttpContext.Connection.RemoteIpAddress != null)
+            {
+                evt.RemoteIpAddress = Context.HttpContext.Connection.RemoteIpAddress.ToString();
+            }
+            else
+            {
+                evt.RemoteIpAddress = "unknown";
+            }
+
+            await evt.PrepareAsync();
         }
     }
 }

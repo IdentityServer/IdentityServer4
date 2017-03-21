@@ -16,9 +16,9 @@ namespace IdentityServer4.UnitTests.Common
     {
         Dictionary<Type, object> _events = new Dictionary<Type, object>();
 
-        public Task RaiseAsync<T>(Event<T> evt)
+        public Task RaiseAsync(Event evt)
         {
-            _events.Add(typeof(Event<T>), evt);
+            _events.Add(evt.GetType(), evt);
             return Task.FromResult(0);
         }
 
@@ -27,6 +27,11 @@ namespace IdentityServer4.UnitTests.Common
         {
             _events.ContainsKey(typeof(T)).Should().BeTrue();
             return (T)_events.Where(x => x.Key == typeof(T)).Select(x=>x.Value).First();
+        }
+
+        public bool CanRaiseEventType(EventTypes evtType)
+        {
+            return true;
         }
     }
 }

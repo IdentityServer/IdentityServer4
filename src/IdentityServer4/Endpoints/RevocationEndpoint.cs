@@ -66,7 +66,8 @@ namespace IdentityServer4.Endpoints
             }
             else
             {
-                await _events.RaiseSuccessfulEndpointEventAsync(EventConstants.EndpointNames.Revocation);
+                // TODO: events
+                //await _events.RaiseSuccessfulEndpointEventAsync(EventConstants.EndpointNames.Revocation);
             }
 
             return response;
@@ -187,7 +188,8 @@ namespace IdentityServer4.Endpoints
 
         private async Task RaiseFailureEventAsync(string error)
         {
-            await _events.RaiseFailureEndpointEventAsync(EventConstants.EndpointNames.Revocation, error);
+            // TODO: events
+            //await _events.RaiseFailureEndpointEventAsync(EventConstants.EndpointNames.Revocation, error);
         }
     }
 }

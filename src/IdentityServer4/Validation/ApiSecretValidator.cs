@@ -88,13 +88,15 @@ namespace IdentityServer4.Validation
         private async Task RaiseSuccessEvent(string clientId)
         {
             // TODO: API secret validation (not client)
-            await _events.RaiseSuccessfulClientAuthenticationEventAsync(clientId, EventConstants.ClientTypes.Scope);
+            // TODO: events
+            //await _events.RaiseSuccessfulClientAuthenticationEventAsync(clientId, EventConstants.ClientTypes.Scope);
         }
 
         private async Task RaiseFailureEvent(string clientId, string message)
         {
             // TODO: API secret validation (not client)
-            await _events.RaiseFailureClientAuthenticationEventAsync(message, clientId, EventConstants.ClientTypes.Scope);
+            // TODO: events
+            //await _events.RaiseFailureClientAuthenticationEventAsync(message, clientId, EventConstants.ClientTypes.Scope);
         }
     }
 }

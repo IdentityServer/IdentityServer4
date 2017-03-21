@@ -100,8 +100,6 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddTransient<ExtensionGrantValidator>();
             builder.Services.AddTransient<BearerTokenUsageValidator>();
             
-            // todo: events post-poned to 1.1 
-            builder.Services.AddTransient<EventServiceHelper>();
             builder.Services.AddTransient<ReturnUrlParser>();
             builder.Services.AddTransient<IdentityServerTools>();
 
@@ -142,6 +140,8 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IUserConsentStore, DefaultUserConsentStore>();
             builder.Services.TryAddTransient<IHandleGenerationService, DefaultHandleGenerationService>();
             builder.Services.TryAddTransient<IPersistentGrantSerializer, PersistentGrantSerializer>();
+            builder.Services.TryAddTransient<IEventService, DefaultEventService>();
+            builder.Services.TryAddTransient<IEventSink, DefaultEventSink>();
 
             return builder;
         }

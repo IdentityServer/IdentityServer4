@@ -4,9 +4,11 @@
 
 using IdentityModel;
 using IdentityServer4.Endpoints.Results;
+using IdentityServer4.Events;
 using IdentityServer4.Hosting;
 using IdentityServer4.Models;
 using IdentityServer4.ResponseHandling;
+using IdentityServer4.Services;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -17,16 +19,18 @@ namespace IdentityServer4.Endpoints
 {
     public class TokenEndpoint : IEndpoint
     {
-        private readonly ClientSecretValidator _clientValidator;
-        private readonly ILogger _logger;
         private readonly ITokenRequestValidator _requestValidator;
+        private readonly ClientSecretValidator _clientValidator;
         private readonly ITokenResponseGenerator _responseGenerator;
+        private readonly IEventService _events;
+        private readonly ILogger _logger;
 
-        public TokenEndpoint(ITokenRequestValidator requestValidator, ClientSecretValidator clientValidator, ITokenResponseGenerator responseGenerator, ILogger<TokenEndpoint> logger)
+        public TokenEndpoint(ITokenRequestValidator requestValidator, ClientSecretValidator clientValidator, ITokenResponseGenerator responseGenerator, IEventService events, ILogger<TokenEndpoint> logger)
         {
             _requestValidator = requestValidator;
             _clientValidator = clientValidator;
             _responseGenerator = responseGenerator;
+            _events = events;
             _logger = logger;
         }
 
@@ -68,6 +72,8 @@ namespace IdentityServer4.Endpoints
 
             // create response
             var response = await _responseGenerator.ProcessAsync(requestResult);
+
+            await _events.RaiseAsync(new TokenIssuedSuccessEvent(response, requestResult));
 
             // return result
             _logger.LogDebug("Token request success.");

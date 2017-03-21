@@ -49,6 +49,9 @@ namespace Host
                     options.Authentication.FederatedSignOutPaths.Add("/signout-callback-aad");
                     options.Authentication.FederatedSignOutPaths.Add("/signout-callback-idsrv");
                     options.Authentication.FederatedSignOutPaths.Add("/signout-callback-adfs");
+
+                    options.Events.RaiseSuccessEvents = true;
+                    options.Events.RaiseFailureEvents = true;
                 })
             .AddInMemoryClients(Clients.Get())
             .AddInMemoryIdentityResources(Resources.GetIdentityResources())

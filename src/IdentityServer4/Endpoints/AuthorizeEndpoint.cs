@@ -208,10 +208,24 @@ namespace IdentityServer4.Endpoints
 
             var response = await _authorizeResponseGenerator.CreateResponseAsync(request);
 
-            await RaiseSuccessEventAsync();
+            await RaiseResponseEventAsync(response);
 
             LogResponse(response);
+            
             return new AuthorizeResult(response);
+        }
+
+        private Task RaiseResponseEventAsync(AuthorizeResponse response)
+        {
+            if (!response.IsError)
+            {
+                return _events.RaiseAsync(new TokenIssuedSuccessEvent(response));
+            }
+            else
+            {
+                // TODO: do error here insetad
+                return _events.RaiseAsync(new TokenIssuedSuccessEvent(response));
+            }
         }
 
         private void LogRequest(ValidatedAuthorizeRequest request)
@@ -253,14 +267,10 @@ namespace IdentityServer4.Endpoints
             });
         }
 
-        private async Task RaiseSuccessEventAsync()
-        {
-            await _events.RaiseSuccessfulEndpointEventAsync(EventConstants.EndpointNames.Authorize);
-        }
-
         private async Task RaiseFailureEventAsync(string error)
         {
-            await _events.RaiseFailureEndpointEventAsync(EventConstants.EndpointNames.Authorize, error);
+            // TODO: events
+            //await _events.RaiseFailureEndpointEventAsync(EventConstants.EndpointNames.Authorize, error);
         }
-   }
+    }
 }
