@@ -53,7 +53,7 @@ namespace Host
             .AddInMemoryClients(Clients.Get())
             .AddInMemoryIdentityResources(Resources.GetIdentityResources())
             .AddInMemoryApiResources(Resources.GetApiResources())
-            .AddTemporarySigningCredential()
+            .AddTemporarySigningCredential(persist: true)
             .AddExtensionGrantValidator<Extensions.ExtensionGrantValidator>()
             .AddExtensionGrantValidator<Extensions.NoSubjectExtensionGrantValidator>()
             .AddSecretParser<ClientAssertionSecretParser>()

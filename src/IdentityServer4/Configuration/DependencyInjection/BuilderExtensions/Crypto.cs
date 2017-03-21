@@ -146,7 +146,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 if (File.Exists(filename))
                 {
                     var keyFile = File.ReadAllText(filename);
-                    var tempKey = JsonConvert.DeserializeObject<TemporaryKey>(keyFile);
+                    var tempKey = JsonConvert.DeserializeObject<TemporaryRsaKey>(keyFile);
 
                     return builder.AddSigningCredential(CreateRsaSecurityKey(tempKey.Parameters, tempKey.KeyId));
                 }
@@ -155,7 +155,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     var key = CreateRsaSecurityKey();
                     var parameters = key.Rsa.ExportParameters(includePrivateParameters: true);
 
-                    var tempKey = new TemporaryKey
+                    var tempKey = new TemporaryRsaKey
                     {
                         Parameters = parameters,
                         KeyId = key.KeyId
@@ -171,12 +171,6 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             return builder.AddTemporarySigningCredential();
-        }
-
-        class TemporaryKey
-        {
-            public string KeyId { get; set; }
-            public RSAParameters Parameters { get; set; }
         }
 
         public static RsaSecurityKey CreateRsaSecurityKey(RSAParameters parameters, string id)
@@ -231,6 +225,13 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddSingleton<IValidationKeysStore>(new DefaultValidationKeysStore(keys));
 
             return builder;
+        }
+
+        // used for serialization to temporary RSA key
+        private class TemporaryRsaKey
+        {
+            public string KeyId { get; set; }
+            public RSAParameters Parameters { get; set; }
         }
     }
 

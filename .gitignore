@@ -205,3 +205,4 @@ tools/packages.config.md5sum
 # Visual Studio Code workspace options
 .vscode
 identityserver4_log.txt
+tempkey.rsa
