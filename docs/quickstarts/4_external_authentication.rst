@@ -18,10 +18,10 @@ local IdentityServer by adding the */signin-google* path to your base-address (e
 If you are running on port 5000 - you can simply use the client id/secret from the code snippet
 below, since this is pre-registered by us.
 
-Add the Google and cookie authentication package to your project.json::
+Add the Google and cookie authentication NuGet packages to your project.json:
 
-    "Microsoft.AspNetCore.Authentication.Cookies": "1.0.0",
-    "Microsoft.AspNetCore.Authentication.Google": "1.0.0"
+* `Microsoft.AspNetCore.Authentication.Cookies`
+* `Microsoft.AspNetCore.Authentication.Google`
 
 Next we need to add the middleware to the pipeline.
 Order is important, the additional authentication middleware must run **after**
@@ -54,9 +54,9 @@ Further experiments
 You can add an additional external provider.
 We have a cloud-hosted demo version of IdentityServer4 which you can integrate using OpenID Connect.
 
-First add the OpenID Connect package to project.json::
+First add the `Microsoft.AspNetCore.Authentication.OpenIdConnect` NuGet package to your project.
 
-    "Microsoft.AspNetCore.Authentication.OpenIdConnect": "1.0.0"
+.. image:: images/4_nuget_oidc.png
 
 Next add the middleware::
 
