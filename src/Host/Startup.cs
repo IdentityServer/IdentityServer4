@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
-using Serilog.Events;
 using Microsoft.IdentityModel.Tokens;
 using IdentityServer4;
 using IdentityServer4.Validation;

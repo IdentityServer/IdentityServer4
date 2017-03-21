@@ -3,7 +3,6 @@
 
 
 using IdentityModel;
-using IdentityServer4.Events;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
@@ -223,7 +222,6 @@ namespace IdentityServer4.Services
                 throw new InvalidOperationException("Invalid token type.");
             }
 
-            await Events.RaiseTokenIssuedEventAsync(token, tokenResult);
             return tokenResult;
         }
 

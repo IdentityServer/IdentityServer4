@@ -67,6 +67,7 @@ namespace IdentityServer4.Endpoints
 
             if (requestResult.IsError)
             {
+                await _events.RaiseAsync(new TokenIssuedFailureEvent(requestResult));
                 return Error(requestResult.Error, requestResult.ErrorDescription, requestResult.CustomResponse);
             }
 

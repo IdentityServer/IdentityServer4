@@ -30,12 +30,14 @@ namespace IdentityServer4.Services
         /// </summary>
         /// <param name="evt">The event.</param>
         /// <exception cref="System.ArgumentNullException">evt</exception>
-        public virtual async Task PersistAsync(Event evt)
+        public virtual Task PersistAsync(Event evt)
         {
             if (evt == null) throw new ArgumentNullException(nameof(evt));
 
             var json = LogSerializer.Serialize(evt);
             _logger.LogInformation(json);
+
+            return Task.FromResult(0);
         }
     }
 }

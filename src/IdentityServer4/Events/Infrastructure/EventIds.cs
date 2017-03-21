@@ -23,11 +23,19 @@ namespace IdentityServer4.Events
 
         public const int ClientAuthenticationSuccess = ClientAuthenticationEventsStart + 1;
         public const int ClientAuthenticationFailure = ClientAuthenticationEventsStart + 2;
+        
+        //////////////////////////////////////////////////////
+        /// API Authentication related events
+        //////////////////////////////////////////////////////
+        private const int ApiAuthenticationEventsStart = 3000;
+
+        public const int ApiAuthenticationSuccess = ApiAuthenticationEventsStart + 1;
+        public const int ApiAuthenticationFailure = ApiAuthenticationEventsStart + 2;
 
         //////////////////////////////////////////////////////
         /// Token related events
         //////////////////////////////////////////////////////
-        private const int TokenEventsStart = 3000;
+        private const int TokenEventsStart = 4000;
 
         public const int TokenIssuedSuccess = TokenEventsStart + 1;
         public const int TokenIssuedFailure = TokenEventsStart + 2;

@@ -3,7 +3,6 @@
 
 
 using IdentityModel;
-using IdentityServer4.Events;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
@@ -99,8 +98,6 @@ namespace IdentityServer4.ResponseHandling
             // store id token and access token and return authorization code
             var id = await _authorizationCodeStore.StoreAuthorizationCodeAsync(code);
 
-            await RaiseCodeIssuedEventAsync(id, code);
-
             return id;
         }
 
@@ -160,10 +157,5 @@ namespace IdentityServer4.ResponseHandling
 
             return response;
         }
-
-        private async Task RaiseCodeIssuedEventAsync(string id, AuthorizationCode code)
-        {
-            await _events.RaiseAuthorizationCodeIssuedEventAsync(id, code);
-        }
-    }
+   }
 }
