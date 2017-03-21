@@ -16,7 +16,7 @@ Setup
 ^^^^^
 We personally like `Serilog <https://serilog.net/>`_ a lot. Give it a try.
 
-You want to setup logging as early as possible in your application host, e.g. in the constructor of your startup class::
+You want to setup logging as early as possible in your application host, e.g. in the constructor of your startup class, e.g::
 
     public class Startup
     {
@@ -40,6 +40,5 @@ You want to setup logging as early as possible in your application host, e.g. in
                     { "System", LogLevel.Error },
                 })
                 .AddSerilog(serilog.CreateLogger());
-                
         }
     }
