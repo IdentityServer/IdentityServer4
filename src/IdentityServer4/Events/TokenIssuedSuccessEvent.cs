@@ -102,17 +102,6 @@ namespace IdentityServer4.Events
 
             public string TokenType { get; }
             public string TokenValue { get; }
-
-            private static string ObfuscateToken(string token)
-            {
-                string last4chars = "****";
-                if (token.IsPresent() && token.Length > 4)
-                {
-                    last4chars = token.Substring(token.Length - 4);
-                }
-
-                return "****" + last4chars;
-            }
         }
     }
 }

@@ -11,9 +11,9 @@ using System.Net;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
-using IdentityServer4.Events;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Stores;
+using IdentityServer4.Events;
 
 namespace IdentityServer4.Endpoints
 {
@@ -59,17 +59,6 @@ namespace IdentityServer4.Endpoints
 
             var response = await ProcessRevocationRequestAsync(context);
 
-            if (response is RevocationErrorResult)
-            {
-                var details = response as RevocationErrorResult;
-                await RaiseFailureEventAsync(details.Error);
-            }
-            else
-            {
-                // TODO: events
-                //await _events.RaiseSuccessfulEndpointEventAsync(EventConstants.EndpointNames.Revocation);
-            }
-
             return response;
         }
 
@@ -98,6 +87,7 @@ namespace IdentityServer4.Endpoints
             }
 
             var success = false;
+            
             // revoke tokens
             if (requestResult.TokenTypeHint == Constants.TokenTypeHints.AccessToken)
             {
@@ -118,12 +108,18 @@ namespace IdentityServer4.Endpoints
                 if (!success)
                 {
                     success = await RevokeRefreshTokenAsync(requestResult.Token, client);
+                    requestResult.TokenTypeHint = Constants.TokenTypeHints.RefreshToken;
+                }
+                else
+                {
+                    requestResult.TokenTypeHint = Constants.TokenTypeHints.AccessToken;
                 }
             }
 
             if (success)
             {
                 _logger.LogInformation("Token successfully revoked");
+                await _events.RaiseAsync(new TokenRevokedSuccessEvent(requestResult, client));
             }
             else
             {
@@ -147,10 +143,7 @@ namespace IdentityServer4.Endpoints
                 }
                 else
                 {
-                    var message = string.Format("Client {clientId} tried to revoke an access token belonging to a different client: {clientId}", client.ClientId, token.ClientId);
-
-                    _logger.LogWarning(message);
-                    await RaiseFailureEventAsync(message);
+                    _logger.LogWarning("Client {clientId} tried to revoke an access token belonging to a different client: {clientId}", client.ClientId, token.ClientId);
                 }
 
                 return true;
@@ -174,22 +167,13 @@ namespace IdentityServer4.Endpoints
                 }
                 else
                 {
-                    var message = string.Format("Client {clientId} tried to revoke a refresh token belonging to a different client: {clientId}", client.ClientId, token.ClientId);
-
-                    _logger.LogWarning(message);
-                    await RaiseFailureEventAsync(message);
+                    _logger.LogWarning("Client {clientId} tried to revoke a refresh token belonging to a different client: {clientId}", client.ClientId, token.ClientId);
                 }
 
                 return true;
             }
 
             return false;
-        }
-
-        private async Task RaiseFailureEventAsync(string error)
-        {
-            // TODO: events
-            //await _events.RaiseFailureEndpointEventAsync(EventConstants.EndpointNames.Revocation, error);
         }
     }
 }

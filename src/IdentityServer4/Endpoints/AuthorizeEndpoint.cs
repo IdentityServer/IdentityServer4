@@ -215,19 +215,6 @@ namespace IdentityServer4.Endpoints
             return new AuthorizeResult(response);
         }
 
-        private Task RaiseResponseEventAsync(AuthorizeResponse response)
-        {
-            if (!response.IsError)
-            {
-                return _events.RaiseAsync(new TokenIssuedSuccessEvent(response));
-            }
-            else
-            {
-                // TODO: do error here insetad
-                return _events.RaiseAsync(new TokenIssuedSuccessEvent(response));
-            }
-        }
-
         private void LogRequest(ValidatedAuthorizeRequest request)
         {
             var details = new AuthorizeRequestValidationLog(request);
@@ -258,7 +245,8 @@ namespace IdentityServer4.Endpoints
                 _logger.LogInformation("{validationDetails}", details);
             }
 
-            await RaiseFailureEventAsync(error);
+            // TODO: should we raise a token failure event for all errors to the authorize endpoint?
+            await RaiseFailureEventAsync(request, error, errorDescription);
 
             return new AuthorizeResult(new AuthorizeResponse {
                 Request = request,
@@ -267,10 +255,21 @@ namespace IdentityServer4.Endpoints
             });
         }
 
-        private async Task RaiseFailureEventAsync(string error)
+        private Task RaiseResponseEventAsync(AuthorizeResponse response)
         {
-            // TODO: events
-            //await _events.RaiseFailureEndpointEventAsync(EventConstants.EndpointNames.Authorize, error);
+            if (!response.IsError)
+            {
+                return _events.RaiseAsync(new TokenIssuedSuccessEvent(response));
+            }
+            else
+            {
+                return RaiseFailureEventAsync(response.Request, response.Error, response.ErrorDescription);
+            }
+        }
+
+        private Task RaiseFailureEventAsync(ValidatedAuthorizeRequest request, string error, string errorDescription)
+        {
+            return _events.RaiseAsync(new TokenIssuedFailureEvent(request, error, errorDescription));
         }
     }
 }

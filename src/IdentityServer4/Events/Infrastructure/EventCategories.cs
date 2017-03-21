@@ -8,6 +8,7 @@ namespace IdentityServer4.Events
     {
         public const string UserAuthentication = "User Authentication";
         public const string ClientAuthentication = "Client Authentication";
+        public const string ApiAuthentication = "API Authentication";
         public const string Token = "Token";
     }
 }

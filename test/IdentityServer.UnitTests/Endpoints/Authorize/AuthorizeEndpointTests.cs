@@ -10,7 +10,6 @@ using System.Collections.Specialized;
 using System.Security.Claims;
 using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
-using IdentityServer4.Events;
 using IdentityServer4.Models;
 using IdentityServer4.Endpoints.Results;
 using Microsoft.AspNetCore.Http;

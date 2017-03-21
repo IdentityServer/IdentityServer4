@@ -121,5 +121,16 @@ namespace IdentityServer4.Events
         /// The remote ip address.
         /// </value>
         public string RemoteIpAddress { get; set; }
+
+        protected static string ObfuscateToken(string token)
+        {
+            string last4chars = "****";
+            if (token.IsPresent() && token.Length > 4)
+            {
+                last4chars = token.Substring(token.Length - 4);
+            }
+
+            return "****" + last4chars;
+        }
     }
 }
