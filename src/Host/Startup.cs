@@ -7,39 +7,38 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
-using Serilog.Events;
 using Microsoft.IdentityModel.Tokens;
 using IdentityServer4;
 using IdentityServer4.Validation;
 using Serilog;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Quickstart.UI;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Host
 {
     public class Startup
     {
-        public Startup(ILoggerFactory loggerFactory)
+        public Startup(ILoggerFactory loggerFactory, IHostingEnvironment environment)
         {
-            Func<LogEvent, bool> serilogFilter = (e) =>
-            {
-                var context = e.Properties["SourceContext"].ToString();
-
-                return (context.StartsWith("\"IdentityServer") ||
-                        context.StartsWith("\"IdentityModel") ||
-                        e.Level == LogEventLevel.Error ||
-                        e.Level == LogEventLevel.Fatal);
-            };
-
             var serilog = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
                 .Enrich.FromLogContext()
-                .Filter.ByIncludingOnly(serilogFilter)
-                .WriteTo.LiterateConsole(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message}{NewLine}{Exception}{NewLine}")
-                .WriteTo.File(@"identityserver4_log.txt")
-                .CreateLogger();
+                .WriteTo.File(@"identityserver4_log.txt");
+                
+            if (environment.IsDevelopment())
+            {
+                serilog.WriteTo.LiterateConsole(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message}{NewLine}{Exception}{NewLine}");
+            }
 
-            loggerFactory.AddSerilog(serilog);
+            loggerFactory
+                .WithFilter(new FilterLoggerSettings
+                {
+                    { "IdentityServer", LogLevel.Debug },
+                    { "Microsoft", LogLevel.Information },
+                    { "System", LogLevel.Error },
+                })
+                .AddSerilog(serilog.CreateLogger());
         }
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
@@ -49,11 +48,14 @@ namespace Host
                     options.Authentication.FederatedSignOutPaths.Add("/signout-callback-aad");
                     options.Authentication.FederatedSignOutPaths.Add("/signout-callback-idsrv");
                     options.Authentication.FederatedSignOutPaths.Add("/signout-callback-adfs");
+
+                    options.Events.RaiseSuccessEvents = true;
+                    options.Events.RaiseFailureEvents = true;
                 })
             .AddInMemoryClients(Clients.Get())
             .AddInMemoryIdentityResources(Resources.GetIdentityResources())
             .AddInMemoryApiResources(Resources.GetApiResources())
-            .AddTemporarySigningCredential()
+            .AddDeveloperSigningCredential()
             .AddExtensionGrantValidator<Extensions.ExtensionGrantValidator>()
             .AddExtensionGrantValidator<Extensions.NoSubjectExtensionGrantValidator>()
             .AddSecretParser<ClientAssertionSecretParser>()

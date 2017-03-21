@@ -208,9 +208,10 @@ namespace IdentityServer4.Endpoints
 
             var response = await _authorizeResponseGenerator.CreateResponseAsync(request);
 
-            await RaiseSuccessEventAsync();
+            await RaiseResponseEventAsync(response);
 
             LogResponse(response);
+            
             return new AuthorizeResult(response);
         }
 
@@ -244,7 +245,8 @@ namespace IdentityServer4.Endpoints
                 _logger.LogInformation("{validationDetails}", details);
             }
 
-            await RaiseFailureEventAsync(error);
+            // TODO: should we raise a token failure event for all errors to the authorize endpoint?
+            await RaiseFailureEventAsync(request, error, errorDescription);
 
             return new AuthorizeResult(new AuthorizeResponse {
                 Request = request,
@@ -253,14 +255,21 @@ namespace IdentityServer4.Endpoints
             });
         }
 
-        private async Task RaiseSuccessEventAsync()
+        private Task RaiseResponseEventAsync(AuthorizeResponse response)
         {
-            await _events.RaiseSuccessfulEndpointEventAsync(EventConstants.EndpointNames.Authorize);
+            if (!response.IsError)
+            {
+                return _events.RaiseAsync(new TokenIssuedSuccessEvent(response));
+            }
+            else
+            {
+                return RaiseFailureEventAsync(response.Request, response.Error, response.ErrorDescription);
+            }
         }
 
-        private async Task RaiseFailureEventAsync(string error)
+        private Task RaiseFailureEventAsync(ValidatedAuthorizeRequest request, string error, string errorDescription)
         {
-            await _events.RaiseFailureEndpointEventAsync(EventConstants.EndpointNames.Authorize, error);
+            return _events.RaiseAsync(new TokenIssuedFailureEvent(request, error, errorDescription));
         }
-   }
+    }
 }

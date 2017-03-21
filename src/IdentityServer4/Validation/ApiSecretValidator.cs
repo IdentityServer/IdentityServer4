@@ -75,7 +75,7 @@ namespace IdentityServer4.Validation
                     Resource = api
                 };
 
-                await RaiseSuccessEvent(api.Name);
+                await RaiseSuccessEvent(api.Name, parsedSecret.Type);
                 return success;
             }
 
@@ -85,16 +85,14 @@ namespace IdentityServer4.Validation
             return fail;
         }
 
-        private async Task RaiseSuccessEvent(string clientId)
+        private Task RaiseSuccessEvent(string clientId, string authMethod)
         {
-            // TODO: API secret validation (not client)
-            await _events.RaiseSuccessfulClientAuthenticationEventAsync(clientId, EventConstants.ClientTypes.Scope);
+            return _events.RaiseAsync(new ApiAuthenticationSuccessEvent(clientId, authMethod));
         }
 
-        private async Task RaiseFailureEvent(string clientId, string message)
+        private Task RaiseFailureEvent(string clientId, string message)
         {
-            // TODO: API secret validation (not client)
-            await _events.RaiseFailureClientAuthenticationEventAsync(message, clientId, EventConstants.ClientTypes.Scope);
+            return _events.RaiseAsync(new ApiAuthenticationFailureEvent(clientId, message));
         }
     }
 }

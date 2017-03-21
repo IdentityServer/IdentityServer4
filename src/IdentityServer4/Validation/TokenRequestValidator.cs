@@ -156,19 +156,13 @@ namespace IdentityServer4.Validation
             var code = parameters.Get(OidcConstants.TokenRequest.Code);
             if (code.IsMissing())
             {
-                var error = "Authorization code is missing";
-                LogError(error);
-                await RaiseFailedAuthorizationCodeRedeemedEventAsync(null, error);
-
+                LogError("Authorization code is missing");
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
             if (code.Length > _options.InputLengthRestrictions.AuthorizationCode)
             {
-                var error = "Authorization code is too long";
-                LogError(error);
-                await RaiseFailedAuthorizationCodeRedeemedEventAsync(null, error);
-
+                LogError("Authorization code is too long");
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
@@ -178,8 +172,6 @@ namespace IdentityServer4.Validation
             if (authZcode == null)
             {
                 LogError("Authorization code cannot be found in the store: {code}", code);
-                await RaiseFailedAuthorizationCodeRedeemedEventAsync(code, "Invalid handle");
-
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
@@ -199,8 +191,6 @@ namespace IdentityServer4.Validation
             if (authZcode.ClientId != _validatedRequest.Client.ClientId)
             {
                 LogError("Client {0} is trying to use a code from client {1}", _validatedRequest.Client.ClientId, authZcode.ClientId);
-                await RaiseFailedAuthorizationCodeRedeemedEventAsync(code, "Invalid client binding");
-
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
@@ -209,10 +199,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             if (authZcode.CreationTime.HasExceeded(_validatedRequest.Client.AuthorizationCodeLifetime))
             {
-                var error = "Authorization code is expired";
-                LogError(error);
-                await RaiseFailedAuthorizationCodeRedeemedEventAsync(code, error);
-
+                LogError("Authorization code is expired");
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
@@ -224,19 +211,13 @@ namespace IdentityServer4.Validation
             var redirectUri = parameters.Get(OidcConstants.TokenRequest.RedirectUri);
             if (redirectUri.IsMissing())
             {
-                var error = "Redirect URI is missing";
-                LogError(error);
-                await RaiseFailedAuthorizationCodeRedeemedEventAsync(code, error);
-
+                LogError("Redirect URI is missing");
                 return Invalid(OidcConstants.TokenErrors.UnauthorizedClient);
             }
 
             if (redirectUri.Equals(_validatedRequest.AuthorizationCode.RedirectUri, StringComparison.Ordinal) == false)
             {
                 LogError("Invalid redirect_uri: {redirectUri}", redirectUri);
-                var error = "Invalid redirect_uri: " + redirectUri;
-                await RaiseFailedAuthorizationCodeRedeemedEventAsync(code, error);
-
                 return Invalid(OidcConstants.TokenErrors.UnauthorizedClient);
             }
 
@@ -246,10 +227,7 @@ namespace IdentityServer4.Validation
             if (_validatedRequest.AuthorizationCode.RequestedScopes == null ||
                 !_validatedRequest.AuthorizationCode.RequestedScopes.Any())
             {
-                var error = "Authorization code has no associated scopes";
-                LogError(error);
-                await RaiseFailedAuthorizationCodeRedeemedEventAsync(code, error);
-
+                LogError("Authorization code has no associated scopes");
                 return Invalid(OidcConstants.TokenErrors.InvalidRequest);
             }
 
@@ -287,14 +265,10 @@ namespace IdentityServer4.Validation
             if (isActiveCtx.IsActive == false)
             {
                 LogError("User has been disabled: {subjectId}", _validatedRequest.AuthorizationCode.Subject.GetSubjectId());
-                var error = "User has been disabled: " + _validatedRequest.AuthorizationCode.Subject.GetSubjectId();
-                await RaiseFailedAuthorizationCodeRedeemedEventAsync(code, error);
-
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
             _logger.LogDebug("Validation of authorization code token request success");
-            await RaiseSuccessfulAuthorizationCodeRedeemedEventAsync();
 
             return Valid();
         }
@@ -451,19 +425,13 @@ namespace IdentityServer4.Validation
             var refreshTokenHandle = parameters.Get(OidcConstants.TokenRequest.RefreshToken);
             if (refreshTokenHandle.IsMissing())
             {
-                var error = "Refresh token is missing";
-                LogError(error);
-                await RaiseRefreshTokenRefreshFailureEventAsync(null, error);
-
+                LogError("Refresh token is missing");
                 return Invalid(OidcConstants.TokenErrors.InvalidRequest);
             }
 
             if (refreshTokenHandle.Length > _options.InputLengthRestrictions.RefreshToken)
             {
-                var error = "Refresh token too long";
-                LogError(error);
-                await RaiseRefreshTokenRefreshFailureEventAsync(null, error);
-
+                LogError("Refresh token too long");
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
@@ -476,9 +444,6 @@ namespace IdentityServer4.Validation
             if (refreshToken == null)
             {
                 LogError("Refresh token cannot be found in store: {refreshToken}", refreshTokenHandle);
-                var error = "Refresh token cannot be found in store: " + refreshTokenHandle;
-                await RaiseRefreshTokenRefreshFailureEventAsync(refreshTokenHandle, error);
-
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
@@ -487,9 +452,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             if (refreshToken.CreationTime.HasExceeded(refreshToken.Lifetime))
             {
-                var error = "Refresh token has expired";
-                LogError(error);
-                await RaiseRefreshTokenRefreshFailureEventAsync(refreshTokenHandle, error);
+                LogError("Refresh token has expired");
 
                 await _refreshTokenStore.RemoveRefreshTokenAsync(refreshTokenHandle);
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
@@ -501,8 +464,6 @@ namespace IdentityServer4.Validation
             if (_validatedRequest.Client.ClientId != refreshToken.ClientId)
             {
                 LogError("{0} tries to refresh token belonging to {1}", _validatedRequest.Client.ClientId, refreshToken.ClientId);
-                await RaiseRefreshTokenRefreshFailureEventAsync(refreshTokenHandle, "Invalid client binding");
-
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
@@ -512,9 +473,6 @@ namespace IdentityServer4.Validation
             if (!_validatedRequest.Client.AllowOfflineAccess)
             {
                 LogError("{clientId} does not have access to offline_access scope anymore", _validatedRequest.Client.ClientId);
-                var error = "Client does not have access to offline_access scope anymore";
-                await RaiseRefreshTokenRefreshFailureEventAsync(refreshTokenHandle, error);
-
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
@@ -530,9 +488,6 @@ namespace IdentityServer4.Validation
             if (isActiveCtx.IsActive == false)
             {
                 LogError("{subjectId} has been disabled", _validatedRequest.RefreshToken.SubjectId);
-                var error = "User has been disabled: " + _validatedRequest.RefreshToken.SubjectId;
-                await RaiseRefreshTokenRefreshFailureEventAsync(refreshTokenHandle, error);
-
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
@@ -746,29 +701,14 @@ namespace IdentityServer4.Validation
             _logger.LogInformation("Token request validation success\n{details}", details);
         }
 
-        private async Task RaiseSuccessfulResourceOwnerAuthenticationEventAsync(string userName, string subjectId)
+        private Task RaiseSuccessfulResourceOwnerAuthenticationEventAsync(string userName, string subjectId)
         {
-            await _events.RaiseSuccessfulResourceOwnerPasswordAuthenticationEventAsync(userName, subjectId);
+            return _events.RaiseAsync(new UserLoginSuccessEvent(userName, subjectId, null, false));
         }
 
-        private async Task RaiseFailedResourceOwnerAuthenticationEventAsync(string userName, string error)
+        private Task RaiseFailedResourceOwnerAuthenticationEventAsync(string userName, string error)
         {
-            await _events.RaiseFailedResourceOwnerPasswordAuthenticationEventAsync(userName, error);
-        }
-
-        private async Task RaiseFailedAuthorizationCodeRedeemedEventAsync(string handle, string error)
-        {
-            await _events.RaiseFailedAuthorizationCodeRedeemedEventAsync(_validatedRequest.Client, handle, error);
-        }
-
-        private async Task RaiseSuccessfulAuthorizationCodeRedeemedEventAsync()
-        {
-            await _events.RaiseSuccessAuthorizationCodeRedeemedEventAsync(_validatedRequest.Client, _validatedRequest.AuthorizationCodeHandle);
-        }
-
-        private async Task RaiseRefreshTokenRefreshFailureEventAsync(string handle, string error)
-        {
-            await _events.RaiseFailedRefreshTokenRefreshEventAsync(_validatedRequest.Client, handle, error);
+            return _events.RaiseAsync(new UserLoginFailureEvent(userName, error));
         }
     }
 }

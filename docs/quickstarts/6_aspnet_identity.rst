@@ -34,8 +34,6 @@ Finally, your new project dialog should look something like this. Once it does, 
 
 .. image:: images/6_web_app_template_with_aspnet_identity.png
 
-.. note:: Don't forget to update your project to ASP.NET Core 1.1. You can follow `this guide for updating to ASP.NET Core 1.1 <https://blogs.msdn.microsoft.com/webdev/2016/11/16/announcing-asp-net-core-1-1/>`_.
-
 Modify hosting
 ^^^^^^^^^^^^^^^
 
@@ -45,9 +43,10 @@ This is important so the existing clients and api projects will continue to work
 Add IdentityServer packages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Add the ``IdentityServer4.AspNetIdentity`` package to `project.json`::
+Add the ``IdentityServer4.AspNetIdentity`` NuGet package (at least version "1.0.1").
+This depends on the ``IdentityServer4`` package, so that's automatically added as a transitive dependency.
 
-    "IdentityServer4.AspNetIdentity": "1.0.0"
+.. image:: images/6_nuget.png
 
 
 Scopes and Clients Configuration
@@ -73,7 +72,7 @@ We've not yet copied over the consent code from the prior IdentityServer project
         },
 
         RedirectUris           = { "http://localhost:5002/signin-oidc" },
-        PostLogoutRedirectUris = { "http://localhost:5002" },
+        PostLogoutRedirectUris = { "http://localhost:5002/signout-callback-oidc" },
 
         AllowedScopes =
         {

@@ -113,9 +113,9 @@ The job of that middleware is:
 * validate the incoming token to make sure it is coming from a trusted issuer
 * validate that the token is valid to be used with this api (aka scope)
 
-Add the following package to your project.json::
+Add the `IdentityServer4.AccessTokenValidation` NuGet package to your project.
 
-    "IdentityServer4.AccessTokenValidation": "1.0.1"
+.. image:: images/1_nuget_accesstokenvalidation.png
 
 You also need to add the middleware to your pipeline. 
 It must be added **before** MVC, e.g.::
@@ -150,9 +150,9 @@ The token endpoint at IdentityServer implements the OAuth 2.0 protocol, and you 
 raw HTTP to access it. However, we have a client library called IdentityModel, that
 encapsulates the protocol interaction in an easy to use API.
 
-Add IdentityModel to your project.json::
+Add the `IdentityModel` NuGet package to your application.
 
-    "IdentityModel": "2.0.0"
+.. image:: images/1_nuget_identitymodel.png
 
 IdentityModel includes a client library to use with the discovery endpoint.
 This way you only need to know the base-address of IdentityServer - the actual

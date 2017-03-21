@@ -40,7 +40,7 @@ this allows requesting refresh tokens for long lived API access::
         },
 
         RedirectUris           = { "http://localhost:5002/signin-oidc" },
-        PostLogoutRedirectUris = { "http://localhost:5002" },
+        PostLogoutRedirectUris = { "http://localhost:5002/signout-callback-oidc" },
 
         AllowedScopes = 
         {
