@@ -61,6 +61,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
                 Raw = _params,
                 Subject = _user
             };
+            _stubAuthorizeResponseGenerator.Response.Request = _validatedAuthorizeRequest;
 
             _stubAuthorizeRequestValidator.Result.IsError = false;
             _stubAuthorizeRequestValidator.Result.ValidatedRequest = _validatedAuthorizeRequest;

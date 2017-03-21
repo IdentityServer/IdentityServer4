@@ -748,7 +748,7 @@ namespace IdentityServer4.Validation
 
         private Task RaiseSuccessfulResourceOwnerAuthenticationEventAsync(string userName, string subjectId)
         {
-            return _events.RaiseAsync(new UserLoginSuccessEvent(userName, subjectId));
+            return _events.RaiseAsync(new UserLoginSuccessEvent(userName, subjectId, null, false));
         }
 
         private Task RaiseFailedResourceOwnerAuthenticationEventAsync(string userName, string error)

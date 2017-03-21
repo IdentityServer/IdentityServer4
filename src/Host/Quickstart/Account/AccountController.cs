@@ -91,7 +91,7 @@ namespace IdentityServer4.Quickstart.UI
 
                     // issue authentication cookie with subject ID and username
                     var user = _users.FindByUsername(model.Username);
-                    await _events.RaiseAsync(new UserLoginSuccessEvent(user.Username, user.SubjectId));
+                    await _events.RaiseAsync(new UserLoginSuccessEvent(user.Username, user.SubjectId, user.Username));
                     await HttpContext.Authentication.SignInAsync(user.SubjectId, user.Username, props);
 
                     // make sure the returnUrl is still valid, and if yes - redirect back to authorize endpoint
@@ -161,7 +161,7 @@ namespace IdentityServer4.Quickstart.UI
             var user = await HttpContext.GetIdentityServerUserAsync();
             if (user != null)
             {
-                await _events.RaiseAsync(new UserLogoutSuccessEvent(user.GetSubjectId()));
+                await _events.RaiseAsync(new UserLogoutSuccessEvent(user.GetSubjectId(), user.GetName()));
             }
 
             return View("LoggedOut", vm);
@@ -272,6 +272,7 @@ namespace IdentityServer4.Quickstart.UI
             }
 
             // issue authentication cookie for user
+            await _events.RaiseAsync(new UserLoginSuccessEvent(provider, userId, user.SubjectId, user.Username));
             await HttpContext.Authentication.SignInAsync(user.SubjectId, user.Username, provider, props, additionalClaims.ToArray());
 
             // delete temporary cookie used during external authentication
