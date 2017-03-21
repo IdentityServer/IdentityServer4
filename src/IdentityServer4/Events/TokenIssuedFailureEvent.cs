@@ -37,9 +37,8 @@ namespace IdentityServer4.Events
             {
                 ClientId = result.ValidatedRequest.Client.ClientId;
                 ClientName = result.ValidatedRequest.Client.ClientName;
-                Endpoint = EndpointName.Token.ToString();
                 GrantType = result.ValidatedRequest.GrantType;
-                Scopes = result.ValidatedRequest.ValidatedScopes?.GrantedResources.ToScopeNames().ToSpaceSeparatedString();
+                Scopes = result.ValidatedRequest.Scopes?.ToSpaceSeparatedString();
 
                 if (result.ValidatedRequest.Subject != null && result.ValidatedRequest.Subject.Identity.IsAuthenticated)
                 {
@@ -47,6 +46,7 @@ namespace IdentityServer4.Events
                 }
             }
 
+            Endpoint = EndpointName.Token.ToString();
             Error = result.Error;
             ErrorDescription = result.ErrorDescription;
         }
