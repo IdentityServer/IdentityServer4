@@ -19,12 +19,13 @@ namespace IdentityServer4.Validation
             CustomResponse = customResponse;
         }
 
-        public TokenRequestValidationResult(string error, string errorDescription = null, Dictionary<string, object> customResponse = null)
+        public TokenRequestValidationResult(ValidatedTokenRequest validatedRequest, string error, string errorDescription = null, Dictionary<string, object> customResponse = null)
         {
             IsError = true;
 
             Error = error;
             ErrorDescription = errorDescription;
+            ValidatedRequest = validatedRequest;
             CustomResponse = customResponse;
         }
 
