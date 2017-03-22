@@ -51,6 +51,7 @@ namespace Host
 
                     options.Events.RaiseSuccessEvents = true;
                     options.Events.RaiseFailureEvents = true;
+                    options.Events.RaiseErrorEvents = true;
                 })
             .AddInMemoryClients(Clients.Get())
             .AddInMemoryIdentityResources(Resources.GetIdentityResources())

@@ -4,10 +4,10 @@ namespace IdentityServer4.Events
     public class ApiAuthenticationFailureEvent : Event
     {
         public ApiAuthenticationFailureEvent(string apiName, string message)
-            : base(EventCategories.ApiAuthentication, 
-                  "API Authentication Success",
-                  EventTypes.Success, 
-                  EventIds.ApiAuthenticationSuccess, 
+            : base(EventCategories.Authentication, 
+                  "API Authentication Failure",
+                  EventTypes.Failure, 
+                  EventIds.ApiAuthenticationFailure, 
                   message)
         {
             ApiName = apiName;

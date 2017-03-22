@@ -4,7 +4,7 @@ namespace IdentityServer4.Events
     public class ClientAuthenticationSuccessEvent : Event
     {
         public ClientAuthenticationSuccessEvent(string clientId, string authenticationMethod)
-            : base(EventCategories.ClientAuthentication, 
+            : base(EventCategories.Authentication, 
                   "Client Authentication Success",
                   EventTypes.Success, 
                   EventIds.ClientAuthenticationSuccess)

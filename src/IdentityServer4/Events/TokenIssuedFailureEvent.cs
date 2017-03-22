@@ -17,12 +17,13 @@ namespace IdentityServer4.Events
                 ClientId = request.ClientId;
                 ClientName = request.Client?.ClientName;
                 RedirectUri = request.RedirectUri;
+                Scopes = request.RequestedScopes?.ToSpaceSeparatedString();
+                GrantType = request.GrantType;
+
                 if (request.Subject != null && request.Subject.Identity.IsAuthenticated)
                 {
                     SubjectId = request.Subject?.GetSubjectId();
                 }
-                Scopes = request.RequestedScopes?.ToSpaceSeparatedString();
-                GrantType = request.GrantType;
             }
 
             Endpoint = EndpointName.Authorize.ToString();

@@ -2,6 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using IdentityServer4.Events;
+using IdentityServer4.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
@@ -11,12 +13,14 @@ namespace IdentityServer4.Hosting
 {
     public class IdentityServerMiddleware
     {
-        private readonly ILogger _logger;
+        private readonly IEventService _events;
         private readonly RequestDelegate _next;
+        private readonly ILogger _logger;
 
-        public IdentityServerMiddleware(RequestDelegate next, ILogger<IdentityServerMiddleware> logger)
+        public IdentityServerMiddleware(RequestDelegate next, IEventService events, ILogger<IdentityServerMiddleware> logger)
         {
             _next = next;
+            _events = events;
             _logger = logger;
         }
 
@@ -42,6 +46,7 @@ namespace IdentityServer4.Hosting
             }
             catch (Exception ex)
             {
+                await _events.RaiseAsync(new UnhandledExceptionEvent(ex));
                 _logger.LogCritical("Unhandled exception: {exception}", ex.ToString());
                 throw;
             }

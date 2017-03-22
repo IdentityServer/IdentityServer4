@@ -6,10 +6,7 @@ namespace IdentityServer4.Events
     public class UserLoginSuccessEvent : Event
     {
         public UserLoginSuccessEvent(string provider, string providerUserId, string subjectId, string name)
-            : base(EventCategories.UserAuthentication,
-                  "User Login Success",
-                  EventTypes.Success,
-                  EventIds.UserLoginSuccess)
+            : this()
         {
             Provider = provider;
             ProviderUserId = providerUserId;
@@ -19,10 +16,7 @@ namespace IdentityServer4.Events
         }
 
         public UserLoginSuccessEvent(string username, string subjectId, string name, bool interactive = true)
-            : base(EventCategories.UserAuthentication,
-                  "User Login Success",
-                  EventTypes.Success,
-                  EventIds.UserLoginSuccess)
+            : this()
         {
             Username = username;
             SubjectId = subjectId;
@@ -36,6 +30,14 @@ namespace IdentityServer4.Events
             {
                 Endpoint = EndpointName.Token.ToString();
             }
+        }
+
+        protected UserLoginSuccessEvent()
+            : base(EventCategories.Authentication,
+                  "User Login Success",
+                  EventTypes.Success,
+                  EventIds.UserLoginSuccess)
+        {
         }
 
         public string Username { get; set; }

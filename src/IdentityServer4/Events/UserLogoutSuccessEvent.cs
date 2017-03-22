@@ -4,7 +4,7 @@ namespace IdentityServer4.Events
     public class UserLogoutSuccessEvent : Event
     {
         public UserLogoutSuccessEvent(string subjectId, string name)
-            : base(EventCategories.UserAuthentication, 
+            : base(EventCategories.Authentication, 
                   "User Logout Success",
                   EventTypes.Success, 
                   EventIds.UserLogoutSuccess)

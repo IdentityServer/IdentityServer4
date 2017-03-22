@@ -4,10 +4,10 @@ namespace IdentityServer4.Events
     public class ClientAuthenticationFailureEvent : Event
     {
         public ClientAuthenticationFailureEvent(string clientId, string message)
-            : base(EventCategories.ClientAuthentication, 
-                  "Client Authentication Success",
-                  EventTypes.Success, 
-                  EventIds.ClientAuthenticationSuccess, 
+            : base(EventCategories.Authentication, 
+                  "Client Authentication Failure",
+                  EventTypes.Failure, 
+                  EventIds.ClientAuthenticationFailure, 
                   message)
         {
             ClientId = clientId;
