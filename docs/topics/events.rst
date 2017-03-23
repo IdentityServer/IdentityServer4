@@ -33,6 +33,10 @@ To emit an event use the ``IEventService`` from the DI container and call the ``
         }
     }
 
+Our default event sink will simply serialize the event class to JSON and forward it to the ASP.NET Core logging system.
+If you want to connect to a custom event store, implement the ``IEventSink`` interface and register it with DI.
+
+
 todo: create custom events
 
 todo: events reference
