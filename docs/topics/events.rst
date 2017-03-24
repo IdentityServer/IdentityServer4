@@ -70,36 +70,19 @@ You can create your own events and emit them via our infrastructure.
 You need to derive from our base ``Event`` class which injects contextual information like activity ID, timestamp etc.
 Your derived class can then add arbitrary data fields specific to the event context::
 
-    public class SeqEventSink : IEventSink
+    public class UserLoginFailureEvent : Event
     {
-        private readonly Logger _log;
-
-        public SeqEventSink()
+        public UserLoginFailureEvent(string username, string error)
+            : base(EventCategories.Authentication,
+                    "User Login Failure",
+                    EventTypes.Failure, 
+                    EventIds.UserLoginFailure,
+                    error)
         {
-            _log = new LoggerConfiguration()
-                .WriteTo.Seq("http://localhost:5341")
-                .CreateLogger();
+            Username = username;
         }
-        public Task PersistAsync(Event evt)
-        {
-            if (evt.EventType == EventTypes.Success ||
-                evt.EventType == EventTypes.Information)
-            {
-                _log.Information("{Name} ({Id}), Details: {@details}",
-                    evt.Name,
-                    evt.Id,
-                    evt);
-            }
-            else
-            {
-                _log.Error("{Name} ({Id}), Details: {@details}",
-                    evt.Name,
-                    evt.Id,
-                    evt);
-            }
 
-            return Task.CompletedTask;
-        }
+        public string Username { get; set; }
     }
 
 
