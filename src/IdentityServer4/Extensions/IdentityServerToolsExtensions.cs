@@ -12,7 +12,7 @@ namespace IdentityServer4
 {
     public static class IdentityServerToolsExtensions
     {
-        public static async Task<string> IssueClientJwtAsync(this IdentityServerTools tools, string clientId, int lifetime, IEnumerable<string> scopes = null, IEnumerable<string> audiences = null)
+        public static async Task<string> IssueClientJwtAsync(this IdentityServerTools tools, string clientId, int lifetime, IEnumerable<string> scopes = null, IEnumerable<string> audiences = null, IEnumerable<Claim> additionalClaims = null)
         {
             var claims = new HashSet<Claim>(new ClaimComparer());
             claims.Add(new Claim(JwtClaimTypes.ClientId, clientId));
@@ -31,6 +31,14 @@ namespace IdentityServer4
                 foreach (var audience in audiences)
                 {
                     claims.Add(new Claim(JwtClaimTypes.Audience, audience));
+                }
+            }
+            
+            if (!additionalClaims.IsNullOrEmpty())
+            {
+                foreach (var claim in additionalClaims)
+                {
+                    claims.Add(claim);
                 }
             }
 
