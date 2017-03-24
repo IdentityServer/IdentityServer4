@@ -40,7 +40,7 @@ If you want to connect to a custom event store, implement the ``IEventSink`` int
 
 The following example uses `Seq <https://getseq.net/>`_ to emit events::
 
-    public class SeqEventSink : IEventSink
+     public class SeqEventSink : IEventSink
     {
         private readonly Logger _log;
 
@@ -50,12 +50,24 @@ The following example uses `Seq <https://getseq.net/>`_ to emit events::
                 .WriteTo.Seq("http://localhost:5341")
                 .CreateLogger();
         }
+
         public Task PersistAsync(Event evt)
         {
-            _log.Information("{Name} ({Id}), Details: {@details}",
-                evt.Name,
-                evt.Id,
-                evt);
+            if (evt.EventType == EventTypes.Success ||
+                evt.EventType == EventTypes.Information)
+            {
+                _log.Information("{Name} ({Id}), Details: {@details}",
+                    evt.Name,
+                    evt.Id,
+                    evt);
+            }
+            else
+            {
+                _log.Error("{Name} ({Id}), Details: {@details}",
+                    evt.Name,
+                    evt.Id,
+                    evt);
+            }
 
             return Task.CompletedTask;
         }
