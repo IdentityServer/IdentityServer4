@@ -33,10 +33,58 @@ To emit an event use the ``IEventService`` from the DI container and call the ``
         }
     }
 
+Custom sinks
+^^^^^^^^^^^^
 Our default event sink will simply serialize the event class to JSON and forward it to the ASP.NET Core logging system.
 If you want to connect to a custom event store, implement the ``IEventSink`` interface and register it with DI.
 
+The following example uses `Seq <https://getseq.net/>`_ to emit events::
 
-todo: create custom events
+    public class SeqEventSink : IEventSink
+    {
+        private readonly Logger _log;
+
+        public SeqEventSink()
+        {
+            _log = new LoggerConfiguration()
+                .WriteTo.Seq("http://localhost:5341")
+                .CreateLogger();
+        }
+        public Task PersistAsync(Event evt)
+        {
+            _log.Information("{Name} ({Id}), Details: {@details}",
+                evt.Name,
+                evt.Id,
+                evt);
+
+            return Task.CompletedTask;
+        }
+    }
+
+Add the ``Serilog.Sinks.Seq`` package to your host to make the above code work.
+
+Custom events
+^^^^^^^^^^^^^
+You can create your own events and emit them via our infrastructure.
+
+You need to derive from our base ``Event`` class which injects contextual information like activity ID, timestamp etc.
+Your derived class can then add arbitrary data fields specific to the event context::
+
+    public class UserLoginFailureEvent : Event
+    {
+        public UserLoginFailureEvent(string username, string error)
+            : base(EventCategories.Authentication,
+                    "User Login Failure",
+                    EventTypes.Failure, 
+                    EventIds.UserLoginFailure,
+                    error)
+        {
+            Username = username;
+        }
+
+        public string Username { get; set; }
+    }
+
+
 
 todo: events reference
