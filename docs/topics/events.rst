@@ -80,6 +80,7 @@ Your derived class can then add arbitrary data fields specific to the event cont
                 .WriteTo.Seq("http://localhost:5341")
                 .CreateLogger();
         }
+        
         public Task PersistAsync(Event evt)
         {
             if (evt.EventType == EventTypes.Success ||
