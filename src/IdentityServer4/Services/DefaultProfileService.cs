@@ -18,6 +18,10 @@ namespace IdentityServer4.Services
     {
         private readonly ILogger<DefaultProfileService> _logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultProfileService"/> class.
+        /// </summary>
+        /// <param name="logger">The logger.</param>
         public DefaultProfileService(ILogger<DefaultProfileService> logger)
         {
             _logger = logger;

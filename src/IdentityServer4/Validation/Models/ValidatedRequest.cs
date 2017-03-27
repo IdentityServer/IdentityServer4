@@ -83,6 +83,10 @@ namespace IdentityServer4.Validation
         /// </value>
         public ScopeValidator ValidatedScopes { get; set; }
 
+        /// <summary>
+        /// Sets the client and the appropriate request specific settings.
+        /// </summary>
+        /// <param name="client">The client.</param>
         public void SetClient(Client client)
         {
             Client = client;

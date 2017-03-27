@@ -19,6 +19,10 @@ namespace IdentityServer4.Validation
     {
         private readonly ILogger _logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlainTextSharedSecretValidator"/> class.
+        /// </summary>
+        /// <param name="logger">The logger.</param>
         public PlainTextSharedSecretValidator(ILogger<PlainTextSharedSecretValidator> logger)
         {
             _logger = logger;

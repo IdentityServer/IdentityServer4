@@ -12,15 +12,34 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Validation
 {
+    /// <summary>
+    /// The token revocation request validator
+    /// </summary>
+    /// <seealso cref="IdentityServer4.Validation.ITokenRevocationRequestValidator" />
     public class TokenRevocationRequestValidator : ITokenRevocationRequestValidator
     {
         private readonly ILogger<TokenRevocationRequestValidator> _logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TokenRevocationRequestValidator"/> class.
+        /// </summary>
+        /// <param name="logger">The logger.</param>
         public TokenRevocationRequestValidator(ILogger<TokenRevocationRequestValidator> logger)
         {
             _logger = logger;
         }
 
+        /// <summary>
+        /// Validates the request.
+        /// </summary>
+        /// <param name="parameters">The parameters.</param>
+        /// <param name="client">The client.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// parameters
+        /// or
+        /// client
+        /// </exception>
         public Task<TokenRevocationRequestValidationResult> ValidateRequestAsync(NameValueCollection parameters, Client client)
         {
             _logger.LogTrace("ValidateRequestAsync called");

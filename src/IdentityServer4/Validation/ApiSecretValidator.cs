@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Validation
 {
+    /// <summary>
+    /// Validates API secrets using the registered secret validators and parsers
+    /// </summary>
     public class ApiSecretValidator
     {
         private readonly ILogger _logger;
@@ -19,6 +22,14 @@ namespace IdentityServer4.Validation
         private readonly SecretParser _parser;
         private readonly SecretValidator _validator;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApiSecretValidator"/> class.
+        /// </summary>
+        /// <param name="resources">The resources.</param>
+        /// <param name="parsers">The parsers.</param>
+        /// <param name="validator">The validator.</param>
+        /// <param name="events">The events.</param>
+        /// <param name="logger">The logger.</param>
         public ApiSecretValidator(IResourceStore resources, SecretParser parsers, SecretValidator validator, IEventService events, ILogger<ApiSecretValidator> logger)
         {
             _resources = resources;
@@ -28,6 +39,11 @@ namespace IdentityServer4.Validation
             _logger = logger;
         }
 
+        /// <summary>
+        /// Validates the secret on the current request.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <returns></returns>
         public async Task<ApiSecretValidationResult> ValidateAsync(HttpContext context)
         {
             _logger.LogTrace("Start API validation");

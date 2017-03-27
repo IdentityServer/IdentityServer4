@@ -14,8 +14,10 @@ namespace IdentityServer4.Validation
         /// <summary>
         /// Validates the custom grant request.
         /// </summary>
-        /// <param name="request">The validated token request.</param>
-        /// <returns>A principal</returns>
+        /// <param name="context">The context.</param>
+        /// <returns>
+        /// A principal
+        /// </returns>
         Task ValidateAsync(ExtensionGrantValidationContext context);
 
         /// <summary>

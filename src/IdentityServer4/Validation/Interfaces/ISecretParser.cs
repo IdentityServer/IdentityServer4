@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace IdentityServer4.Validation
 {
     /// <summary>
-    /// A service for parsing secrets found on the environment
+    /// A service for parsing secrets found on the request
     /// </summary>
     public interface ISecretParser
     {

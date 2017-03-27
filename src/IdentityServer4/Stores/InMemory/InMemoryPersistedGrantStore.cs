@@ -17,6 +17,11 @@ namespace IdentityServer4.Stores
     {
         private readonly ConcurrentDictionary<string, PersistedGrant> _repository = new ConcurrentDictionary<string, PersistedGrant>();
 
+        /// <summary>
+        /// Stores the grant.
+        /// </summary>
+        /// <param name="grant">The grant.</param>
+        /// <returns></returns>
         public Task StoreAsync(PersistedGrant grant)
         {
             _repository[grant.Key] = grant;
@@ -24,6 +29,11 @@ namespace IdentityServer4.Stores
             return Task.FromResult(0);
         }
 
+        /// <summary>
+        /// Gets the grant.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
         public Task<PersistedGrant> GetAsync(string key)
         {
             PersistedGrant token;
@@ -35,6 +45,11 @@ namespace IdentityServer4.Stores
             return Task.FromResult<PersistedGrant>(null);
         }
 
+        /// <summary>
+        /// Gets all grants for a given subject id.
+        /// </summary>
+        /// <param name="subjectId">The subject identifier.</param>
+        /// <returns></returns>
         public Task<IEnumerable<PersistedGrant>> GetAllAsync(string subjectId)
         {
             var query =
@@ -46,6 +61,11 @@ namespace IdentityServer4.Stores
             return Task.FromResult(items);
         }
 
+        /// <summary>
+        /// Removes the grant by key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
         public Task RemoveAsync(string key)
         {
             PersistedGrant val;
@@ -54,6 +74,12 @@ namespace IdentityServer4.Stores
             return Task.FromResult(0);
         }
 
+        /// <summary>
+        /// Removes all grants for a given subject id and client id combination.
+        /// </summary>
+        /// <param name="subjectId">The subject identifier.</param>
+        /// <param name="clientId">The client identifier.</param>
+        /// <returns></returns>
         public Task RemoveAllAsync(string subjectId, string clientId)
         {
             var query =
@@ -72,6 +98,13 @@ namespace IdentityServer4.Stores
             return Task.FromResult(0);
         }
 
+        /// <summary>
+        /// Removes all grants of a give type for a given subject id and client id combination.
+        /// </summary>
+        /// <param name="subjectId">The subject identifier.</param>
+        /// <param name="clientId">The client identifier.</param>
+        /// <param name="type">The type.</param>
+        /// <returns></returns>
         public Task RemoveAllAsync(string subjectId, string clientId, string type)
         {
             var query =

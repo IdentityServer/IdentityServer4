@@ -13,6 +13,11 @@ using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.Stores
 {
+    /// <summary>
+    /// Caching decorator for IResourceStore
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <seealso cref="IdentityServer4.Stores.IResourceStore" />
     public class CachingResourceStore<T> : IResourceStore
         where T : IResourceStore
     {
@@ -26,6 +31,16 @@ namespace IdentityServer4.Stores
         private readonly IResourceStore _inner;
         private readonly ILogger<CachingResourceStore<T>> _logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CachingResourceStore{T}"/> class.
+        /// </summary>
+        /// <param name="options">The options.</param>
+        /// <param name="inner">The inner.</param>
+        /// <param name="identityCache">The identity cache.</param>
+        /// <param name="apiByScopeCache">The API by scope cache.</param>
+        /// <param name="apiCache">The API cache.</param>
+        /// <param name="allCache">All cache.</param>
+        /// <param name="logger">The logger.</param>
         public CachingResourceStore(IdentityServerOptions options, T inner, 
             ICache<IEnumerable<IdentityResource>> identityCache, 
             ICache<IEnumerable<ApiResource>> apiByScopeCache,
@@ -48,6 +63,10 @@ namespace IdentityServer4.Stores
             return names.OrderBy(x => x).Aggregate((x, y) => x + "," + y);
         }
 
+        /// <summary>
+        /// Gets all resources.
+        /// </summary>
+        /// <returns></returns>
         public async Task<Resources> GetAllResources()
         {
             var key = AllKey;
@@ -60,6 +79,11 @@ namespace IdentityServer4.Stores
             return all;
         }
 
+        /// <summary>
+        /// Finds the API resource by name.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns></returns>
         public async Task<ApiResource> FindApiResourceAsync(string name)
         {
             var api = await _apiCache.GetAsync(name,
@@ -70,6 +94,11 @@ namespace IdentityServer4.Stores
             return api;
         }
 
+        /// <summary>
+        /// Finds the identity resources by scope.
+        /// </summary>
+        /// <param name="names">The names.</param>
+        /// <returns></returns>
         public async Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeAsync(IEnumerable<string> names)
         {
             var key = GetKey(names);
@@ -82,6 +111,11 @@ namespace IdentityServer4.Stores
             return identities;
         }
 
+        /// <summary>
+        /// Finds the API resources by scope.
+        /// </summary>
+        /// <param name="names">The names.</param>
+        /// <returns></returns>
         public async Task<IEnumerable<ApiResource>> FindApiResourcesByScopeAsync(IEnumerable<string> names)
         {
             var key = GetKey(names);
