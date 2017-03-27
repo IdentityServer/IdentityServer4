@@ -6,6 +6,9 @@ using System;
 
 namespace IdentityServer4.Models
 {
+    /// <summary>
+    /// A model for a persisted grant
+    /// </summary>
     public class PersistedGrant
     {
         /// <summary>

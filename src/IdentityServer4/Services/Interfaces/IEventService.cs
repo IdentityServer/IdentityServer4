@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace IdentityServer4.Services
 {
     /// <summary>
-    /// Models a recipient of notification of events
+    /// Interface for the event service
     /// </summary>
     public interface IEventService
     {

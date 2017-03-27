@@ -12,8 +12,15 @@ namespace IdentityServer4.Models
     /// </summary>
     public static class IdentityResources
     {
+        /// <summary>
+        /// Models the standard openid scope
+        /// </summary>
+        /// <seealso cref="IdentityServer4.Models.IdentityResource" />
         public class OpenId : IdentityResource
         {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="OpenId"/> class.
+            /// </summary>
             public OpenId()
             {
                 Name = IdentityServerConstants.StandardScopes.OpenId;
@@ -23,8 +30,15 @@ namespace IdentityServer4.Models
             }
         }
 
+        /// <summary>
+        /// Models the standard profile scope
+        /// </summary>
+        /// <seealso cref="IdentityServer4.Models.IdentityResource" />
         public class Profile : IdentityResource
         {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Profile"/> class.
+            /// </summary>
             public Profile()
             {
                 Name = IdentityServerConstants.StandardScopes.Profile;
@@ -35,8 +49,15 @@ namespace IdentityServer4.Models
             }
         }
 
+        /// <summary>
+        /// Models the standard email scope
+        /// </summary>
+        /// <seealso cref="IdentityServer4.Models.IdentityResource" />
         public class Email : IdentityResource
         {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Email"/> class.
+            /// </summary>
             public Email()
             {
                 Name = IdentityServerConstants.StandardScopes.Email;
@@ -46,8 +67,15 @@ namespace IdentityServer4.Models
             }
         }
 
+        /// <summary>
+        /// Models the standard phone scope
+        /// </summary>
+        /// <seealso cref="IdentityServer4.Models.IdentityResource" />
         public class Phone : IdentityResource
         {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Phone"/> class.
+            /// </summary>
             public Phone()
             {
                 Name = IdentityServerConstants.StandardScopes.Phone;
@@ -57,8 +85,15 @@ namespace IdentityServer4.Models
             }
         }
 
+        /// <summary>
+        /// Models the standard address scope
+        /// </summary>
+        /// <seealso cref="IdentityServer4.Models.IdentityResource" />
         public class Address : IdentityResource
         {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Address"/> class.
+            /// </summary>
             public Address()
             {
                 Name = IdentityServerConstants.StandardScopes.Address;

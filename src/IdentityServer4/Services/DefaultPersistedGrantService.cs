@@ -22,6 +22,12 @@ namespace IdentityServer4.Services
         private readonly IPersistedGrantStore _store;
         private readonly IPersistentGrantSerializer _serializer;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultPersistedGrantService"/> class.
+        /// </summary>
+        /// <param name="store">The store.</param>
+        /// <param name="serializer">The serializer.</param>
+        /// <param name="logger">The logger.</param>
         public DefaultPersistedGrantService(IPersistedGrantStore store, 
             IPersistentGrantSerializer serializer,
             ILogger<DefaultPersistedGrantService> logger)

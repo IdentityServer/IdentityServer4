@@ -7,6 +7,8 @@ using IdentityServer4.Extensions;
 using System.Text;
 using System.Threading.Tasks;
 
+#pragma warning disable 1591
+
 namespace Microsoft.AspNetCore.Http
 {
     public static class HttpResponseExtensions

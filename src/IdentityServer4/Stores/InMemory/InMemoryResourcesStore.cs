@@ -27,12 +27,21 @@ namespace IdentityServer4.Stores
             _apiResources = apiResources ?? Enumerable.Empty<ApiResource>();
         }
 
+        /// <summary>
+        /// Gets all resources.
+        /// </summary>
+        /// <returns></returns>
         public Task<Resources> GetAllResources()
         {
             var result = new Resources(_identityResources, _apiResources);
             return Task.FromResult(result);
         }
 
+        /// <summary>
+        /// Finds the API resource by name.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns></returns>
         public Task<ApiResource> FindApiResourceAsync(string name)
         {
             var api = from a in _apiResources
@@ -41,6 +50,12 @@ namespace IdentityServer4.Stores
             return Task.FromResult(api.FirstOrDefault());
         }
 
+        /// <summary>
+        /// Finds the identity resources by scope.
+        /// </summary>
+        /// <param name="names">The names.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">names</exception>
         public Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeAsync(IEnumerable<string> names)
         {
             if (names == null) throw new ArgumentNullException(nameof(names));
@@ -52,6 +67,12 @@ namespace IdentityServer4.Stores
             return Task.FromResult(identity);
         }
 
+        /// <summary>
+        /// Finds the API resources by scope.
+        /// </summary>
+        /// <param name="names">The names.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">names</exception>
         public Task<IEnumerable<ApiResource>> FindApiResourcesByScopeAsync(IEnumerable<string> names)
         {
             if (names == null) throw new ArgumentNullException(nameof(names));

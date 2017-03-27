@@ -11,12 +11,21 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Hosting
 {
+    /// <summary>
+    /// IdentityServer middleware
+    /// </summary>
     public class IdentityServerMiddleware
     {
         private readonly IEventService _events;
         private readonly RequestDelegate _next;
         private readonly ILogger _logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IdentityServerMiddleware"/> class.
+        /// </summary>
+        /// <param name="next">The next.</param>
+        /// <param name="events">The events.</param>
+        /// <param name="logger">The logger.</param>
         public IdentityServerMiddleware(RequestDelegate next, IEventService events, ILogger<IdentityServerMiddleware> logger)
         {
             _next = next;
@@ -24,6 +33,12 @@ namespace IdentityServer4.Hosting
             _logger = logger;
         }
 
+        /// <summary>
+        /// Invokes the middleware.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="router">The router.</param>
+        /// <returns></returns>
         public async Task Invoke(HttpContext context, IEndpointRouter router)
         {
             try

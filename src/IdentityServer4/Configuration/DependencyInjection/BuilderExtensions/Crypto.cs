@@ -136,6 +136,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Sets the temporary signing credential.
         /// </summary>
         /// <param name="builder">The builder.</param>
+        /// <param name="filename">The filename.</param>
         /// <returns></returns>
         public static IIdentityServerBuilder AddDeveloperSigningCredential(this IIdentityServerBuilder builder, string filename = null)
         {
@@ -167,6 +168,12 @@ namespace Microsoft.Extensions.DependencyInjection
             }
         }
 
+        /// <summary>
+        /// Creates an RSA security key.
+        /// </summary>
+        /// <param name="parameters">The parameters.</param>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         public static RsaSecurityKey CreateRsaSecurityKey(RSAParameters parameters, string id)
         {
             var key = new RsaSecurityKey(parameters)
@@ -177,6 +184,10 @@ namespace Microsoft.Extensions.DependencyInjection
             return key;
         }
 
+        /// <summary>
+        /// Creates a new RSA security key.
+        /// </summary>
+        /// <returns></returns>
         public static RsaSecurityKey CreateRsaSecurityKey()
         {
             var rsa = RSA.Create();
@@ -229,9 +240,19 @@ namespace Microsoft.Extensions.DependencyInjection
         }
     }
 
+    /// <summary>
+    /// Describes the string so we know what to search for in certificate store
+    /// </summary>
     public enum NameType
     {
+        /// <summary>
+        /// subject distinguished name
+        /// </summary>
         SubjectDistinguishedName,
+
+        /// <summary>
+        /// thumbprint
+        /// </summary>
         Thumbprint
     }
 }

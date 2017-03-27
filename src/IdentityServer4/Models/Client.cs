@@ -242,6 +242,17 @@ namespace IdentityServer4.Models
         /// </value>
         public ICollection<string> AllowedCorsOrigins { get; set; } = new HashSet<string>();
 
+        /// <summary>
+        /// Validates the grant types.
+        /// </summary>
+        /// <param name="grantTypes">The grant types.</param>
+        /// <exception cref="System.InvalidOperationException">
+        /// Grant types list is empty
+        /// or
+        /// Grant types cannot contain spaces
+        /// or
+        /// Grant types list contains duplicate values
+        /// </exception>
         public void ValidateGrantTypes(IEnumerable<string> grantTypes)
         {
             // must set at least one grant type

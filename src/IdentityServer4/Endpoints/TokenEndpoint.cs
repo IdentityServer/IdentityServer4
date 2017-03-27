@@ -18,6 +18,10 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Endpoints
 {
+    /// <summary>
+    /// The token endpoint
+    /// </summary>
+    /// <seealso cref="IdentityServer4.Hosting.IEndpoint" />
     public class TokenEndpoint : IEndpoint
     {
         private readonly ITokenRequestValidator _requestValidator;
@@ -26,6 +30,14 @@ namespace IdentityServer4.Endpoints
         private readonly IEventService _events;
         private readonly ILogger _logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TokenEndpoint"/> class.
+        /// </summary>
+        /// <param name="requestValidator">The request validator.</param>
+        /// <param name="clientValidator">The client validator.</param>
+        /// <param name="responseGenerator">The response generator.</param>
+        /// <param name="events">The events.</param>
+        /// <param name="logger">The logger.</param>
         public TokenEndpoint(ITokenRequestValidator requestValidator, ClientSecretValidator clientValidator, ITokenResponseGenerator responseGenerator, IEventService events, ILogger<TokenEndpoint> logger)
         {
             _requestValidator = requestValidator;
@@ -35,6 +47,11 @@ namespace IdentityServer4.Endpoints
             _logger = logger;
         }
 
+        /// <summary>
+        /// Processes the request.
+        /// </summary>
+        /// <param name="context">The HTTP context.</param>
+        /// <returns></returns>
         public async Task<IEndpointResult> ProcessAsync(HttpContext context)
         {
             _logger.LogTrace("Processing token request.");

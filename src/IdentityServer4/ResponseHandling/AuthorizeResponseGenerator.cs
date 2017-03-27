@@ -15,6 +15,10 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.ResponseHandling
 {
+    /// <summary>
+    /// The authorize response generator
+    /// </summary>
+    /// <seealso cref="IdentityServer4.ResponseHandling.IAuthorizeResponseGenerator" />
     public class AuthorizeResponseGenerator : IAuthorizeResponseGenerator
     {
         private readonly ILogger<AuthorizeResponseGenerator> _logger;
@@ -22,6 +26,13 @@ namespace IdentityServer4.ResponseHandling
         private readonly IAuthorizationCodeStore _authorizationCodeStore;
         private readonly IEventService _events;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthorizeResponseGenerator"/> class.
+        /// </summary>
+        /// <param name="logger">The logger.</param>
+        /// <param name="tokenService">The token service.</param>
+        /// <param name="authorizationCodeStore">The authorization code store.</param>
+        /// <param name="events">The events.</param>
         public AuthorizeResponseGenerator(ILogger<AuthorizeResponseGenerator> logger, ITokenService tokenService, IAuthorizationCodeStore authorizationCodeStore, IEventService events)
         {
             _logger = logger;

@@ -15,12 +15,22 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Endpoints
 {
+    /// <summary>
+    /// The discovery endpoint
+    /// </summary>
+    /// <seealso cref="IdentityServer4.Hosting.IEndpoint" />
     public class DiscoveryEndpoint : IEndpoint
     {
         private readonly ILogger _logger;
         private readonly IdentityServerOptions _options;
         private readonly IDiscoveryResponseGenerator _responseGenerator;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DiscoveryEndpoint"/> class.
+        /// </summary>
+        /// <param name="logger">The logger.</param>
+        /// <param name="options">The options.</param>
+        /// <param name="responseGenerator">The response generator.</param>
         public DiscoveryEndpoint(
             ILogger<DiscoveryEndpoint> logger, 
             IdentityServerOptions options,
@@ -31,6 +41,11 @@ namespace IdentityServer4.Endpoints
             _responseGenerator = responseGenerator;
         }
 
+        /// <summary>
+        /// Processes the request.
+        /// </summary>
+        /// <param name="context">The HTTP context.</param>
+        /// <returns></returns>
         public Task<IEndpointResult> ProcessAsync(HttpContext context)
         {
             _logger.LogTrace("Processing discovery request.");

@@ -15,6 +15,10 @@ using Microsoft.AspNetCore.Http;
 
 namespace IdentityServer4.Endpoints
 {
+    /// <summary>
+    /// The userinfo endpoint
+    /// </summary>
+    /// <seealso cref="IdentityServer4.Hosting.IEndpoint" />
     public class UserInfoEndpoint : IEndpoint
     {
         private readonly ILogger _logger;
@@ -23,6 +27,14 @@ namespace IdentityServer4.Endpoints
         private readonly BearerTokenUsageValidator _tokenUsageValidator;
         private readonly ITokenValidator _tokenValidator;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserInfoEndpoint"/> class.
+        /// </summary>
+        /// <param name="options">The options.</param>
+        /// <param name="tokenValidator">The token validator.</param>
+        /// <param name="generator">The generator.</param>
+        /// <param name="tokenUsageValidator">The token usage validator.</param>
+        /// <param name="logger">The logger.</param>
         public UserInfoEndpoint(IdentityServerOptions options, ITokenValidator tokenValidator, IUserInfoResponseGenerator generator, BearerTokenUsageValidator tokenUsageValidator, ILogger<UserInfoEndpoint> logger)
         {
             _options = options;
@@ -32,6 +44,11 @@ namespace IdentityServer4.Endpoints
             _logger = logger;
         }
 
+        /// <summary>
+        /// Processes the request.
+        /// </summary>
+        /// <param name="context">The HTTP context.</param>
+        /// <returns></returns>
         public async Task<IEndpointResult> ProcessAsync(HttpContext context)
         {
             if (context.Request.Method != "GET" && context.Request.Method != "POST")

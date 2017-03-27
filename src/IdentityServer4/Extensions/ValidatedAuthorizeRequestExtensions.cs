@@ -10,6 +10,8 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
+#pragma warning disable 1591
+
 namespace IdentityServer4.Validation
 {
     public static class ValidatedAuthorizeRequestExtensions
