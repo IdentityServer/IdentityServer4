@@ -24,10 +24,9 @@ namespace IdentityServer4.Events
         /// <exception cref="System.ArgumentNullException">category</exception>
         public Event(string category, string name, EventTypes type, int id, string message = null)
         {
-            if (category.IsMissing()) throw new ArgumentNullException(nameof(category));
-
-            Category = category;
-            Name = name;
+            Category = category ?? throw new ArgumentNullException(nameof(category));
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            
             EventType = type;
             Id = id;
             Message = message;
