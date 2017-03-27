@@ -53,15 +53,15 @@ namespace Host
                     options.Events.RaiseFailureEvents = true;
                     options.Events.RaiseErrorEvents = true;
                 })
-            .AddInMemoryClients(Clients.Get())
-            .AddInMemoryIdentityResources(Resources.GetIdentityResources())
-            .AddInMemoryApiResources(Resources.GetApiResources())
-            .AddDeveloperSigningCredential()
-            .AddExtensionGrantValidator<Extensions.ExtensionGrantValidator>()
-            .AddExtensionGrantValidator<Extensions.NoSubjectExtensionGrantValidator>()
-            .AddSecretParser<ClientAssertionSecretParser>()
-            .AddSecretValidator<PrivateKeyJwtSecretValidator>()
-            .AddTestUsers(TestUsers.Users);
+                .AddInMemoryClients(Clients.Get())
+                .AddInMemoryIdentityResources(Resources.GetIdentityResources())
+                .AddInMemoryApiResources(Resources.GetApiResources())
+                .AddDeveloperSigningCredential()
+                .AddExtensionGrantValidator<Extensions.ExtensionGrantValidator>()
+                .AddExtensionGrantValidator<Extensions.NoSubjectExtensionGrantValidator>()
+                .AddSecretParser<ClientAssertionSecretParser>()
+                .AddSecretValidator<PrivateKeyJwtSecretValidator>()
+                .AddTestUsers(TestUsers.Users);
 
             services.AddMvc();
 
