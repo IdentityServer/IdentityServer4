@@ -16,12 +16,22 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.ResponseHandling
 {
+    /// <summary>
+    /// The userinfo response generator
+    /// </summary>
+    /// <seealso cref="IdentityServer4.ResponseHandling.IUserInfoResponseGenerator" />
     public class UserInfoResponseGenerator : IUserInfoResponseGenerator
     {
         private readonly ILogger _logger;
         private readonly IProfileService _profile;
         private readonly IResourceStore _resourceStore;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserInfoResponseGenerator"/> class.
+        /// </summary>
+        /// <param name="profile">The profile.</param>
+        /// <param name="resourceStore">The resource store.</param>
+        /// <param name="logger">The logger.</param>
         public UserInfoResponseGenerator(IProfileService profile, IResourceStore resourceStore, ILogger<UserInfoResponseGenerator> logger)
         {
             _profile = profile;
@@ -29,6 +39,14 @@ namespace IdentityServer4.ResponseHandling
             _logger = logger;
         }
 
+        /// <summary>
+        /// Processes the response.
+        /// </summary>
+        /// <param name="subject">The subject.</param>
+        /// <param name="scopes">The scopes.</param>
+        /// <param name="client">The client.</param>
+        /// <returns></returns>
+        /// <exception cref="System.InvalidOperationException">Profile service returned incorrect subject value</exception>
         public async Task<Dictionary<string, object>> ProcessAsync(ClaimsPrincipal subject, IEnumerable<string> scopes, Client client)
         {
             _logger.LogTrace("Creating userinfo response");
@@ -72,6 +90,11 @@ namespace IdentityServer4.ResponseHandling
             return results.ToClaimsDictionary();
         }
 
+        /// <summary>
+        /// Gets the requested claim types.
+        /// </summary>
+        /// <param name="scopes">The scopes.</param>
+        /// <returns></returns>
         public async Task<IEnumerable<string>> GetRequestedClaimTypesAsync(IEnumerable<string> scopes)
         {
             if (scopes == null || !scopes.Any())

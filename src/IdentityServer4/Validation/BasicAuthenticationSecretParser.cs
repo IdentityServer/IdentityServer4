@@ -34,6 +34,12 @@ namespace IdentityServer4.Validation
             _logger = logger;
         }
 
+        /// <summary>
+        /// Returns the authentication method name that this parser implements
+        /// </summary>
+        /// <value>
+        /// The authentication method.
+        /// </value>
         public string AuthenticationMethod => OidcConstants.EndpointAuthenticationMethods.BasicAuthentication;
 
         /// <summary>

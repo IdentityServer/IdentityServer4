@@ -11,12 +11,16 @@ using System.Net;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
-using IdentityServer4.Events;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Stores;
+using IdentityServer4.Events;
 
 namespace IdentityServer4.Endpoints
 {
+    /// <summary>
+    /// The revocation endpoint
+    /// </summary>
+    /// <seealso cref="IdentityServer4.Hosting.IEndpoint" />
     public class RevocationEndpoint : IEndpoint
     {
         private readonly ILogger _logger;
@@ -26,6 +30,15 @@ namespace IdentityServer4.Endpoints
         private readonly IRefreshTokenStore _refreshTokenStore;
         private readonly IEventService _events;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RevocationEndpoint"/> class.
+        /// </summary>
+        /// <param name="logger">The logger.</param>
+        /// <param name="clientValidator">The client validator.</param>
+        /// <param name="requestValidator">The request validator.</param>
+        /// <param name="referenceTokenStore">The reference token store.</param>
+        /// <param name="refreshTokenStore">The refresh token store.</param>
+        /// <param name="events">The events.</param>
         public RevocationEndpoint(ILogger<RevocationEndpoint> logger,
             ClientSecretValidator clientValidator,
             ITokenRevocationRequestValidator requestValidator,
@@ -41,6 +54,11 @@ namespace IdentityServer4.Endpoints
             _events = events;
         }
 
+        /// <summary>
+        /// Processes the request.
+        /// </summary>
+        /// <param name="context">The HTTP context.</param>
+        /// <returns></returns>
         public async Task<IEndpointResult> ProcessAsync(HttpContext context)
         {
             _logger.LogTrace("Processing revocation request.");
@@ -58,16 +76,6 @@ namespace IdentityServer4.Endpoints
             }
 
             var response = await ProcessRevocationRequestAsync(context);
-
-            if (response is RevocationErrorResult)
-            {
-                var details = response as RevocationErrorResult;
-                await RaiseFailureEventAsync(details.Error);
-            }
-            else
-            {
-                await _events.RaiseSuccessfulEndpointEventAsync(EventConstants.EndpointNames.Revocation);
-            }
 
             return response;
         }
@@ -97,6 +105,7 @@ namespace IdentityServer4.Endpoints
             }
 
             var success = false;
+            
             // revoke tokens
             if (requestResult.TokenTypeHint == Constants.TokenTypeHints.AccessToken)
             {
@@ -117,12 +126,18 @@ namespace IdentityServer4.Endpoints
                 if (!success)
                 {
                     success = await RevokeRefreshTokenAsync(requestResult.Token, client);
+                    requestResult.TokenTypeHint = Constants.TokenTypeHints.RefreshToken;
+                }
+                else
+                {
+                    requestResult.TokenTypeHint = Constants.TokenTypeHints.AccessToken;
                 }
             }
 
             if (success)
             {
                 _logger.LogInformation("Token successfully revoked");
+                await _events.RaiseAsync(new TokenRevokedSuccessEvent(requestResult, client));
             }
             else
             {
@@ -146,10 +161,7 @@ namespace IdentityServer4.Endpoints
                 }
                 else
                 {
-                    var message = string.Format("Client {clientId} tried to revoke an access token belonging to a different client: {clientId}", client.ClientId, token.ClientId);
-
-                    _logger.LogWarning(message);
-                    await RaiseFailureEventAsync(message);
+                    _logger.LogWarning("Client {clientId} tried to revoke an access token belonging to a different client: {clientId}", client.ClientId, token.ClientId);
                 }
 
                 return true;
@@ -173,21 +185,13 @@ namespace IdentityServer4.Endpoints
                 }
                 else
                 {
-                    var message = string.Format("Client {clientId} tried to revoke a refresh token belonging to a different client: {clientId}", client.ClientId, token.ClientId);
-
-                    _logger.LogWarning(message);
-                    await RaiseFailureEventAsync(message);
+                    _logger.LogWarning("Client {clientId} tried to revoke a refresh token belonging to a different client: {clientId}", client.ClientId, token.ClientId);
                 }
 
                 return true;
             }
 
             return false;
-        }
-
-        private async Task RaiseFailureEventAsync(string error)
-        {
-            await _events.RaiseFailureEndpointEventAsync(EventConstants.EndpointNames.Revocation, error);
         }
     }
 }

@@ -6,6 +6,8 @@ using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 
+#pragma warning disable 1591
+
 namespace IdentityServer4.Hosting
 {
     public class BaseUrlMiddleware

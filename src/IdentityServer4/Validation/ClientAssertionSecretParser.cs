@@ -16,19 +16,30 @@ using Microsoft.Extensions.Logging;
 namespace IdentityServer4.Validation
 {
     /// <summary>
-    /// Parses a POST body for secrets
+    /// Parses a POST body for a client assertion
     /// </summary>
     public class ClientAssertionSecretParser : ISecretParser
     {
         private readonly IdentityServerOptions _options;
         private readonly ILogger _logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ClientAssertionSecretParser"/> class.
+        /// </summary>
+        /// <param name="options">The options.</param>
+        /// <param name="logger">The logger.</param>
         public ClientAssertionSecretParser(IdentityServerOptions options, ILogger<ClientAssertionSecretParser> logger)
         {
             _options = options;
             _logger = logger;
         }
 
+        /// <summary>
+        /// Returns the authentication method name that this parser implements
+        /// </summary>
+        /// <value>
+        /// The authentication method.
+        /// </value>
         public string AuthenticationMethod => OidcConstants.EndpointAuthenticationMethods.PrivateKeyJwt;
 
         /// <summary>

@@ -11,17 +11,30 @@ using IdentityServer4.Extensions;
 
 namespace IdentityServer4.Services
 {
+    /// <summary>
+    /// The default session id service
+    /// </summary>
+    /// <seealso cref="IdentityServer4.Services.ISessionIdService" />
     public class DefaultSessionIdService : ISessionIdService
     {
         private readonly IHttpContextAccessor _context;
         private readonly IdentityServerOptions _options;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultSessionIdService"/> class.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="options">The options.</param>
         public DefaultSessionIdService(IHttpContextAccessor context, IdentityServerOptions options)
         {
             _context = context;
             _options = options;
         }
 
+        /// <summary>
+        /// Creates the session identifier.
+        /// </summary>
+        /// <param name="context">The context.</param>
         public void CreateSessionId(SignInContext context)
         {
             if (!context.Properties.ContainsKey(OidcConstants.EndSessionRequest.Sid))
@@ -32,6 +45,10 @@ namespace IdentityServer4.Services
             IssueSessionIdCookie(context.Properties[OidcConstants.EndSessionRequest.Sid]);
         }
 
+        /// <summary>
+        /// Gets the current session identifier.
+        /// </summary>
+        /// <returns></returns>
         public async Task<string> GetCurrentSessionIdAsync()
         {
             var info = await _context.HttpContext.GetIdentityServerUserInfoAsync();
@@ -43,6 +60,10 @@ namespace IdentityServer4.Services
             return null;
         }
 
+        /// <summary>
+        /// Ensures the session cookie.
+        /// </summary>
+        /// <returns></returns>
         public async Task EnsureSessionCookieAsync()
         {
             var sid = await GetCurrentSessionIdAsync();
@@ -60,16 +81,27 @@ namespace IdentityServer4.Services
             }
         }
 
+        /// <summary>
+        /// Gets the name of the cookie.
+        /// </summary>
+        /// <returns></returns>
         public string GetCookieName()
         {
             return $"{_options.Authentication.EffectiveAuthenticationScheme}.session";
         }
 
+        /// <summary>
+        /// Gets the cookie value.
+        /// </summary>
+        /// <returns></returns>
         public string GetCookieValue()
         {
             return _context.HttpContext.Request.Cookies[GetCookieName()];
         }
 
+        /// <summary>
+        /// Removes the cookie.
+        /// </summary>
         public void RemoveCookie()
         {
             var name = GetCookieName();

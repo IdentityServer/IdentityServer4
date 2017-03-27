@@ -23,6 +23,9 @@ using System.Linq;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
+    /// <summary>
+    /// Builder extension methods for registering core services
+    /// </summary>
     public static class IdentityServerBuilderExtensionsCore
     {
         /// <summary>
@@ -100,8 +103,6 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddTransient<ExtensionGrantValidator>();
             builder.Services.AddTransient<BearerTokenUsageValidator>();
             
-            // todo: events post-poned to 1.1 
-            builder.Services.AddTransient<EventServiceHelper>();
             builder.Services.AddTransient<ReturnUrlParser>();
             builder.Services.AddTransient<IdentityServerTools>();
 
@@ -126,7 +127,6 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.Services.TryAddTransient<IPersistedGrantService, DefaultPersistedGrantService>();
             builder.Services.TryAddTransient<IKeyMaterialService, DefaultKeyMaterialService>();
-            builder.Services.TryAddTransient<IEventService, DefaultEventService>();
             builder.Services.TryAddTransient<ITokenService, DefaultTokenService>();
             builder.Services.TryAddTransient<ITokenCreationService, DefaultTokenCreationService>();
             builder.Services.TryAddTransient<IClaimsService, DefaultClaimsService>();
@@ -142,6 +142,8 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IUserConsentStore, DefaultUserConsentStore>();
             builder.Services.TryAddTransient<IHandleGenerationService, DefaultHandleGenerationService>();
             builder.Services.TryAddTransient<IPersistentGrantSerializer, PersistentGrantSerializer>();
+            builder.Services.TryAddTransient<IEventService, DefaultEventService>();
+            builder.Services.TryAddTransient<IEventSink, DefaultEventSink>();
 
             return builder;
         }

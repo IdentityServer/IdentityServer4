@@ -13,25 +13,49 @@ namespace IdentityServer4.Models
     /// </summary>
     public class Scope
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Scope"/> class.
+        /// </summary>
         public Scope()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Scope"/> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
         public Scope(string name)
             : this(name, name, null)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Scope"/> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="displayName">The display name.</param>
         public Scope(string name, string displayName)
             : this(name, displayName, null)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Scope"/> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="claimTypes">The claim types.</param>
         public Scope(string name, IEnumerable<string> claimTypes)
             : this(name, name, claimTypes)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Scope"/> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="displayName">The display name.</param>
+        /// <param name="claimTypes">The claim types.</param>
+        /// <exception cref="System.ArgumentNullException">name</exception>
         public Scope(string name, string displayName, IEnumerable<string> claimTypes)
         {
             if (name.IsMissing()) throw new ArgumentNullException(nameof(name));

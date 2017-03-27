@@ -12,6 +12,9 @@ using IdentityServer4.Models;
 
 namespace IdentityServer4.Validation
 {
+    /// <summary>
+    /// Validates a client secret using the registered secret validators and parsers
+    /// </summary>
     public class ClientSecretValidator
     {
         private readonly ILogger _logger;
@@ -20,6 +23,14 @@ namespace IdentityServer4.Validation
         private readonly SecretValidator _validator;
         private readonly SecretParser _parser;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ClientSecretValidator"/> class.
+        /// </summary>
+        /// <param name="clients">The clients.</param>
+        /// <param name="parser">The parser.</param>
+        /// <param name="validator">The validator.</param>
+        /// <param name="events">The events.</param>
+        /// <param name="logger">The logger.</param>
         public ClientSecretValidator(IClientStore clients, SecretParser parser, SecretValidator validator, IEventService events, ILogger<ClientSecretValidator> logger)
         {
             _clients = clients;
@@ -29,6 +40,11 @@ namespace IdentityServer4.Validation
             _logger = logger;
         }
 
+        /// <summary>
+        /// Validates the current request.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <returns></returns>
         public async Task<ClientSecretValidationResult> ValidateAsync(HttpContext context)
         {
             _logger.LogDebug("Start client validation");
@@ -81,18 +97,18 @@ namespace IdentityServer4.Validation
                 Client = client
             };
 
-            await RaiseSuccessEvent(client.ClientId);
+            await RaiseSuccessEvent(client.ClientId, parsedSecret.Type);
             return success;
         }
 
-        private async Task RaiseSuccessEvent(string clientId)
+        private Task RaiseSuccessEvent(string clientId, string authMethod)
         {
-            await _events.RaiseSuccessfulClientAuthenticationEventAsync(clientId, EventConstants.ClientTypes.Client);
+            return _events.RaiseAsync(new ClientAuthenticationSuccessEvent(clientId, authMethod));
         }
 
-        private async Task RaiseFailureEvent(string clientId, string message)
+        private Task RaiseFailureEvent(string clientId, string message)
         {
-            await _events.RaiseFailureClientAuthenticationEventAsync(message, clientId, EventConstants.ClientTypes.Client);
+            return _events.RaiseAsync(new ClientAuthenticationFailureEvent(clientId, message));
         }
     }
 }

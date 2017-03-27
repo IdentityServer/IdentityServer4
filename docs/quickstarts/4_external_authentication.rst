@@ -41,6 +41,8 @@ the ``IdentityServerConstants.ExternalCookieAuthenticationScheme`` sign-in schem
         ClientSecret = "3gcoTrEDPPJ0ukn_aYYT6PWo"
     });
 
+.. note:: When using external authentication with ASP.NET Core Identity, the ``SignInScheme`` must be set to ``"Identity.External"`` instead of ``IdentityServerConstants.ExternalCookieAuthenticationScheme``.
+
 Now run the MVC client and try to authenticate - you will see a Google button on the login page:
 
 .. image:: images/4_login_page.png

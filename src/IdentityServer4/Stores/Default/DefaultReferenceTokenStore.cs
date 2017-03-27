@@ -13,10 +13,15 @@ namespace IdentityServer4.Stores
     /// <summary>
     /// Default reference token store.
     /// </summary>
-    /// <seealso cref="IdentityServer4.Stores.DefaultGrantStore{IdentityServer4.Models.Token}" />
-    /// <seealso cref="IdentityServer4.Stores.IReferenceTokenStore" />
     public class DefaultReferenceTokenStore : DefaultGrantStore<Token>, IReferenceTokenStore
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultReferenceTokenStore"/> class.
+        /// </summary>
+        /// <param name="store">The store.</param>
+        /// <param name="serializer">The serializer.</param>
+        /// <param name="handleGenerationService">The handle generation service.</param>
+        /// <param name="logger">The logger.</param>
         public DefaultReferenceTokenStore(
             IPersistedGrantStore store, 
             IPersistentGrantSerializer serializer,

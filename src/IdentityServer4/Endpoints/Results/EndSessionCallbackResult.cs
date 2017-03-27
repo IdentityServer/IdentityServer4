@@ -116,7 +116,7 @@ namespace IdentityServer4.Endpoints.Results
                 }
                 else
                 {
-                    context.Response.Headers.Add("X-Frame-Options", $"ALLOWFROM {logoutPageUrl.GetOrigin()}");
+                    context.Response.Headers.Add("X-Frame-Options", $"ALLOW-FROM {logoutPageUrl.GetOrigin()}");
                 }
             }
         }

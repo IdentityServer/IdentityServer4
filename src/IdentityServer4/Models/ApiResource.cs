@@ -14,25 +14,49 @@ namespace IdentityServer4.Models
     /// </summary>
     public class ApiResource
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApiResource"/> class.
+        /// </summary>
         public ApiResource()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApiResource"/> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
         public ApiResource(string name)
             : this(name, name, null)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApiResource"/> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="displayName">The display name.</param>
         public ApiResource(string name, string displayName)
             : this(name, displayName, null)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApiResource"/> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="claimTypes">The claim types.</param>
         public ApiResource(string name, IEnumerable<string> claimTypes)
             : this(name, name, claimTypes)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApiResource"/> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="displayName">The display name.</param>
+        /// <param name="claimTypes">The claim types.</param>
+        /// <exception cref="System.ArgumentNullException">name</exception>
         public ApiResource(string name, string displayName, IEnumerable<string> claimTypes)
         {
             if (name.IsMissing()) throw new ArgumentNullException(nameof(name));

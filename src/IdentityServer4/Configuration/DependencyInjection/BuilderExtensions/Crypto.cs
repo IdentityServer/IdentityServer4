@@ -5,7 +5,9 @@
 using IdentityModel;
 using IdentityServer4.Stores;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using System;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -13,6 +15,9 @@ using CryptoRandom = IdentityModel.CryptoRandom;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
+    /// <summary>
+    /// Builder extension methods for registering crypto services
+    /// </summary>
     public static class IdentityServerBuilderExtensionsCrypto
     {
         /// <summary>
@@ -26,7 +31,7 @@ namespace Microsoft.Extensions.DependencyInjection
             // todo
             if (!(credential.Key is AsymmetricSecurityKey
                 || (credential.Key is JsonWebKey && ((JsonWebKey)credential.Key).HasPrivateKey)))
-                //&& !credential.Key.IsSupportedAlgorithm(SecurityAlgorithms.RsaSha256Signature))
+            //&& !credential.Key.IsSupportedAlgorithm(SecurityAlgorithms.RsaSha256Signature))
             {
                 throw new InvalidOperationException("Signing key is not asymmetric");
             }
@@ -122,6 +127,69 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IIdentityServerBuilder AddTemporarySigningCredential(this IIdentityServerBuilder builder)
         {
+            var key = CreateRsaSecurityKey();
+
+            return builder.AddSigningCredential(new SigningCredentials(key, "RS256"));
+        }
+
+        /// <summary>
+        /// Sets the temporary signing credential.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="filename">The filename.</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddDeveloperSigningCredential(this IIdentityServerBuilder builder, string filename = null)
+        {
+            if (filename == null)
+            {
+                filename = Path.Combine(Directory.GetCurrentDirectory(), "tempkey.rsa");
+            }
+
+            if (File.Exists(filename))
+            {
+                var keyFile = File.ReadAllText(filename);
+                var tempKey = JsonConvert.DeserializeObject<TemporaryRsaKey>(keyFile);
+
+                return builder.AddSigningCredential(CreateRsaSecurityKey(tempKey.Parameters, tempKey.KeyId));
+            }
+            else
+            {
+                var key = CreateRsaSecurityKey();
+                var parameters = key.Rsa.ExportParameters(includePrivateParameters: true);
+
+                var tempKey = new TemporaryRsaKey
+                {
+                    Parameters = parameters,
+                    KeyId = key.KeyId
+                };
+
+                File.WriteAllText(filename, JsonConvert.SerializeObject(tempKey));
+                return builder.AddSigningCredential(key);
+            }
+        }
+
+        /// <summary>
+        /// Creates an RSA security key.
+        /// </summary>
+        /// <param name="parameters">The parameters.</param>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
+        public static RsaSecurityKey CreateRsaSecurityKey(RSAParameters parameters, string id)
+        {
+            var key = new RsaSecurityKey(parameters)
+            {
+                KeyId = id
+            };
+
+            return key;
+        }
+
+        /// <summary>
+        /// Creates a new RSA security key.
+        /// </summary>
+        /// <returns></returns>
+        public static RsaSecurityKey CreateRsaSecurityKey()
+        {
             var rsa = RSA.Create();
 
 #if NET452
@@ -147,9 +215,8 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             key.KeyId = CryptoRandom.CreateUniqueId(16);
-            
-            var credential = new SigningCredentials(key, "RS256");
-            return builder.AddSigningCredential(credential);
+
+            return key;
         }
 
         /// <summary>
@@ -164,11 +231,28 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return builder;
         }
+
+        // used for serialization to temporary RSA key
+        private class TemporaryRsaKey
+        {
+            public string KeyId { get; set; }
+            public RSAParameters Parameters { get; set; }
+        }
     }
 
+    /// <summary>
+    /// Describes the string so we know what to search for in certificate store
+    /// </summary>
     public enum NameType
     {
+        /// <summary>
+        /// subject distinguished name
+        /// </summary>
         SubjectDistinguishedName,
+
+        /// <summary>
+        /// thumbprint
+        /// </summary>
         Thumbprint
     }
 }

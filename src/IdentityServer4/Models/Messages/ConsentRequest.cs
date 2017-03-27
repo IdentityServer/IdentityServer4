@@ -17,6 +17,11 @@ namespace IdentityServer4.Models
     /// </summary>
     public class ConsentRequest
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConsentRequest"/> class.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <param name="subject">The subject.</param>
         public ConsentRequest(AuthorizationRequest request, string subject)
         {
             ClientId = request.ClientId;
@@ -25,6 +30,11 @@ namespace IdentityServer4.Models
             Subject = subject;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConsentRequest"/> class.
+        /// </summary>
+        /// <param name="parameters">The parameters.</param>
+        /// <param name="subject">The subject.</param>
         public ConsentRequest(NameValueCollection parameters, string subject)
         {
             ClientId = parameters[OidcConstants.AuthorizeRequest.ClientId];
@@ -33,11 +43,44 @@ namespace IdentityServer4.Models
             Subject = subject;
         }
 
+        /// <summary>
+        /// Gets or sets the client identifier.
+        /// </summary>
+        /// <value>
+        /// The client identifier.
+        /// </value>
         public string ClientId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the nonce.
+        /// </summary>
+        /// <value>
+        /// The nonce.
+        /// </value>
         public string Nonce { get; set; }
+
+        /// <summary>
+        /// Gets or sets the scopes requested.
+        /// </summary>
+        /// <value>
+        /// The scopes requested.
+        /// </value>
         public IEnumerable<string> ScopesRequested { get; set; }
+
+        /// <summary>
+        /// Gets or sets the subject.
+        /// </summary>
+        /// <value>
+        /// The subject.
+        /// </value>
         public string Subject { get; set; }
 
+        /// <summary>
+        /// Gets the identifier.
+        /// </summary>
+        /// <value>
+        /// The identifier.
+        /// </value>
         public string Id
         {
             get

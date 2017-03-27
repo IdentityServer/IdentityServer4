@@ -11,6 +11,9 @@ using System.Collections.Generic;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
+    /// <summary>
+    /// Builder extension methods for registering in-memory services
+    /// </summary>
     public static class IdentityServerBuilderExtensionsInMemory
     {
         /// <summary>
@@ -35,7 +38,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IIdentityServerBuilder AddInMemoryIdentityResources(this IIdentityServerBuilder builder, IEnumerable<IdentityResource> identityResources)
         {
             builder.Services.AddSingleton(identityResources);
-            builder.Services.TryAddTransient<IResourceStore, InMemoryResourcesStore>();
+            builder.AddResourceStore<InMemoryResourcesStore>();
 
             return builder;
         }
@@ -49,7 +52,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IIdentityServerBuilder AddInMemoryApiResources(this IIdentityServerBuilder builder, IEnumerable<ApiResource> apiResources)
         {
             builder.Services.AddSingleton(apiResources);
-            builder.Services.TryAddTransient<IResourceStore, InMemoryResourcesStore>();
+            builder.AddResourceStore<InMemoryResourcesStore>();
 
             return builder;
         }
@@ -64,8 +67,8 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.Services.AddSingleton(clients);
 
-            builder.Services.AddTransient<IClientStore, InMemoryClientStore>();
-            builder.Services.AddTransient<ICorsPolicyService, InMemoryCorsPolicyService>();
+            builder.AddClientStore<InMemoryClientStore>();
+            builder.AddCorsPolicyService<InMemoryCorsPolicyService>();
 
             return builder;
         }

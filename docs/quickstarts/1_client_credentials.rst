@@ -59,7 +59,7 @@ Configure IdentityServer
 ^^^^^^^^^^^^^^^^^^^^^^^^
 To configure IdentityServer to use your scopes and client definition, you need to add code
 to the ``ConfigureServices`` method. 
-You can use convenient extensions methods for that - 
+You can use convenient extension methods for that - 
 under the covers these add the relevant stores and data into the DI system::
 
     public void ConfigureServices(IServiceCollection services)

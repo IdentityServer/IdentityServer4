@@ -10,7 +10,6 @@ using System.Collections.Specialized;
 using System.Security.Claims;
 using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
-using IdentityServer4.Events;
 using IdentityServer4.Models;
 using IdentityServer4.Endpoints.Results;
 using Microsoft.AspNetCore.Http;
@@ -61,6 +60,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
                 Raw = _params,
                 Subject = _user
             };
+            _stubAuthorizeResponseGenerator.Response.Request = _validatedAuthorizeRequest;
 
             _stubAuthorizeRequestValidator.Result.IsError = false;
             _stubAuthorizeRequestValidator.Result.ValidatedRequest = _validatedAuthorizeRequest;
@@ -165,22 +165,6 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
             ((AuthorizeResult)result).Response.IsError.Should().BeTrue();
         }
 
-        [Fact(Skip = "bring back events in 1.1")]
-        [Trait("Category", Category)]
-        public async Task authorize_request_validation_produces_error_should_raise_failed_endpoint_event()
-        {
-            _stubAuthorizeRequestValidator.Result.IsError = true;
-            _stubAuthorizeRequestValidator.Result.Error = "some error";
-
-            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
-
-            var evt = _fakeEventService.AssertEventWasRaised<Event<EndpointDetail>>();
-            evt.EventType.Should().Be(EventTypes.Failure);
-            evt.Id.Should().Be(EventConstants.Ids.EndpointFailure);
-            evt.Message.Should().Be("some error");
-            evt.Details.EndpointName.Should().Be(EventConstants.EndpointNames.Authorize);
-        }
-
         [Fact]
         [Trait("Category", Category)]
         public async Task interaction_produces_error_should_show_error_page()
@@ -191,21 +175,6 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
             result.Should().BeOfType<AuthorizeResult>();
             ((AuthorizeResult)result).Response.IsError.Should().BeTrue();
-        }
-
-        [Fact(Skip = "bring back events in 1.1")]
-        [Trait("Category", Category)]
-        public async Task interaction_produces_error_should_raise_failed_endpoint_event()
-        {
-            _stubInteractionGenerator.Response.Error = "some_error";
-
-            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
-
-            var evt = _fakeEventService.AssertEventWasRaised<Event<EndpointDetail>>();
-            evt.EventType.Should().Be(EventTypes.Failure);
-            evt.Id.Should().Be(EventConstants.Ids.EndpointFailure);
-            evt.Message.Should().Be("some_error");
-            evt.Details.EndpointName.Should().Be(EventConstants.EndpointNames.Authorize);
         }
 
         [Fact]

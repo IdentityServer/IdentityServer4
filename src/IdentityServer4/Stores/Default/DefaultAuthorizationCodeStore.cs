@@ -14,15 +14,20 @@ namespace IdentityServer4.Stores
     /// <summary>
     /// Default authorization code store.
     /// </summary>
-    /// <seealso cref="IdentityServer4.Stores.DefaultGrantStore{IdentityServer4.Models.AuthorizationCode}" />
-    /// <seealso cref="IdentityServer4.Stores.IAuthorizationCodeStore" />
     public class DefaultAuthorizationCodeStore : DefaultGrantStore<AuthorizationCode>, IAuthorizationCodeStore
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultAuthorizationCodeStore"/> class.
+        /// </summary>
+        /// <param name="store">The store.</param>
+        /// <param name="serializer">The serializer.</param>
+        /// <param name="handleGenerationService">The handle generation service.</param>
+        /// <param name="logger">The logger.</param>
         public DefaultAuthorizationCodeStore(
             IPersistedGrantStore store,
             IPersistentGrantSerializer serializer,
             IHandleGenerationService handleGenerationService,
-            ILogger<DefaultAuthorizationCodeStore> logger) 
+            ILogger<DefaultAuthorizationCodeStore> logger)
             : base(Constants.PersistedGrantTypes.AuthorizationCode, store, serializer, handleGenerationService, logger)
         {
         }

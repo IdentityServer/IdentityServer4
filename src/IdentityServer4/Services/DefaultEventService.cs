@@ -2,48 +2,131 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityServer4.Events;
-using IdentityServer4.Logging;
-using Microsoft.Extensions.Logging;
 using System;
+using System.Diagnostics;
+using Microsoft.AspNetCore.Http;
+using IdentityServer4.Configuration;
 using System.Threading.Tasks;
+using IdentityServer4.Services;
 
-namespace IdentityServer4.Services
+namespace IdentityServer4.Events
 {
     /// <summary>
-    /// Default implementation of the event service. Write events raised to the log.
+    /// The default event service
     /// </summary>
+    /// <seealso cref="IdentityServer4.Services.IEventService" />
     public class DefaultEventService : IEventService
     {
-        private readonly EventServiceHelper _helper;
+        /// <summary>
+        /// The options
+        /// </summary>
+        protected readonly IdentityServerOptions Options;
 
         /// <summary>
-        /// The logger
+        /// The context
         /// </summary>
-        private readonly ILogger _logger;
+        protected readonly IHttpContextAccessor Context;
 
-        public DefaultEventService(ILogger<DefaultEventService> logger, EventServiceHelper helper)
+        /// <summary>
+        /// The sink
+        /// </summary>
+        protected readonly IEventSink Sink;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultEventService"/> class.
+        /// </summary>
+        /// <param name="options">The options.</param>
+        /// <param name="context">The context.</param>
+        /// <param name="sink">The sink.</param>
+        public DefaultEventService(IdentityServerOptions options, IHttpContextAccessor context, IEventSink sink)
         {
-            _logger = logger;
-            _helper = helper;
+            Options = options;
+            Context = context;
+            Sink = sink;
         }
 
         /// <summary>
         /// Raises the specified event.
         /// </summary>
         /// <param name="evt">The event.</param>
+        /// <returns></returns>
         /// <exception cref="System.ArgumentNullException">evt</exception>
-        public virtual Task RaiseAsync<T>(Event<T> evt)
+        public async Task RaiseAsync(Event evt)
         {
-            if (evt == null) throw new ArgumentNullException(nameof(evt));
+            if (evt == null) throw new ArgumentNullException("evt");
 
-            if (_helper.CanRaiseEvent(evt))
+            if (CanRaiseEvent(evt))
             {
-                var json = LogSerializer.Serialize(_helper.PrepareEvent(evt));
-                _logger.LogInformation(json);
+                await PrepareEventAsync(evt);
+                await Sink.PersistAsync(evt);
+            }
+        }
+
+        /// <summary>
+        /// Indicates if the type of event will be persisted.
+        /// </summary>
+        /// <param name="evtType"></param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentOutOfRangeException"></exception>
+        public bool CanRaiseEventType(EventTypes evtType)
+        {
+            switch (evtType)
+            {
+                case EventTypes.Failure:
+                    return Options.Events.RaiseFailureEvents;
+                case EventTypes.Information:
+                    return Options.Events.RaiseInformationEvents;
+                case EventTypes.Success:
+                    return Options.Events.RaiseSuccessEvents;
+                case EventTypes.Error:
+                    return Options.Events.RaiseErrorEvents;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        /// <summary>
+        /// Determines whether this event would be persisted.
+        /// </summary>
+        /// <param name="evt">The evt.</param>
+        /// <returns>
+        ///   <c>true</c> if this event would be persisted; otherwise, <c>false</c>.
+        /// </returns>
+        protected virtual bool CanRaiseEvent(Event evt)
+        {
+            return CanRaiseEventType(evt.EventType);
+        }
+
+        /// <summary>
+        /// Prepares the event.
+        /// </summary>
+        /// <param name="evt">The evt.</param>
+        /// <returns></returns>
+        protected virtual async Task PrepareEventAsync(Event evt)
+        {
+            evt.ActivityId = Context.HttpContext.TraceIdentifier;
+            evt.TimeStamp = IdentityServerDateTime.UtcNow;
+            evt.ProcessId = Process.GetCurrentProcess().Id;
+
+            if (Context.HttpContext.Connection.LocalIpAddress != null)
+            {
+                evt.LocalIpAddress = Context.HttpContext.Connection.LocalIpAddress.ToString() + ":" + Context.HttpContext.Connection.LocalPort;
+            }
+            else
+            {
+                evt.LocalIpAddress = "unknown";
             }
 
-            return Task.FromResult(0);
+            if (Context.HttpContext.Connection.RemoteIpAddress != null)
+            {
+                evt.RemoteIpAddress = Context.HttpContext.Connection.RemoteIpAddress.ToString();
+            }
+            else
+            {
+                evt.RemoteIpAddress = "unknown";
+            }
+
+            await evt.PrepareAsync();
         }
     }
 }

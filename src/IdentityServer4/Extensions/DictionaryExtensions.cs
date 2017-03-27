@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
+#pragma warning disable 1591
+
 namespace IdentityServer4.Extensions
 {
     public static class DictionaryExtensions

@@ -24,14 +24,51 @@ namespace IdentityServer4.ResponseHandling
     /// <seealso cref="IdentityServer4.ResponseHandling.IDiscoveryResponseGenerator" />
     public class DiscoveryResponseGenerator : IDiscoveryResponseGenerator
     {
+        /// <summary>
+        /// The options
+        /// </summary>
         protected readonly IdentityServerOptions Options;
+
+        /// <summary>
+        /// The extension grants validator
+        /// </summary>
         protected readonly ExtensionGrantValidator ExtensionGrants;
+
+        /// <summary>
+        /// The key material service
+        /// </summary>
         protected readonly IKeyMaterialService Keys;
+
+        /// <summary>
+        /// The resource owner validator
+        /// </summary>
         protected readonly IResourceOwnerPasswordValidator ResourceOwnerValidator;
+
+        /// <summary>
+        /// The resource store
+        /// </summary>
         protected readonly IResourceStore ResourceStore;
+
+        /// <summary>
+        /// The secret parsers
+        /// </summary>
         protected readonly SecretParser SecretParsers;
+
+        /// <summary>
+        /// The logger
+        /// </summary>
         protected readonly ILogger Logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DiscoveryResponseGenerator"/> class.
+        /// </summary>
+        /// <param name="options">The options.</param>
+        /// <param name="resourceStore">The resource store.</param>
+        /// <param name="keys">The keys.</param>
+        /// <param name="extensionGrants">The extension grants.</param>
+        /// <param name="secretParsers">The secret parsers.</param>
+        /// <param name="resourceOwnerValidator">The resource owner validator.</param>
+        /// <param name="logger">The logger.</param>
         public DiscoveryResponseGenerator(
             IdentityServerOptions options, 
             IResourceStore resourceStore,  
@@ -57,10 +94,10 @@ namespace IdentityServer4.ResponseHandling
         /// <param name="issuerUri">The issuer URI.</param>
         public virtual async Task<Dictionary<string, object>> CreateDiscoveryDocumentAsync(string baseUrl, string issuerUri)
         {
-            var entries = new Dictionary<string, object>();
-
-            // issuer
-            entries.Add(OidcConstants.Discovery.Issuer, issuerUri);
+            var entries = new Dictionary<string, object>
+            {
+                { OidcConstants.Discovery.Issuer, issuerUri }
+            };
 
             // jwks
             if (Options.Discovery.ShowKeySet)
@@ -217,8 +254,7 @@ namespace IdentityServer4.ResponseHandling
                     }
                     else
                     {
-                        var customValueString = customEntry.Value as string;
-                        if (customValueString != null)
+                        if (customEntry.Value is string customValueString)
                         {
                             if (customValueString.StartsWith("~/") && Options.Discovery.ExpandRelativePathsInCustomEntries)
                             {
@@ -244,8 +280,7 @@ namespace IdentityServer4.ResponseHandling
 
             foreach (var key in await Keys.GetValidationKeysAsync())
             {
-                var x509Key = key as X509SecurityKey;
-                if (x509Key != null)
+                if (key is X509SecurityKey x509Key)
                 {
                     var cert64 = Convert.ToBase64String(x509Key.Certificate.RawData);
                     var thumbprint = Base64Url.Encode(x509Key.Certificate.GetCertHash());
@@ -270,8 +305,7 @@ namespace IdentityServer4.ResponseHandling
                     continue;
                 }
 
-                var rsaKey = key as RsaSecurityKey;
-                if (rsaKey != null)
+                if (key is RsaSecurityKey rsaKey)
                 {
                     var parameters = rsaKey.Rsa?.ExportParameters(false) ?? rsaKey.Parameters;
                     var exponent = Base64Url.Encode(parameters.Exponent);
