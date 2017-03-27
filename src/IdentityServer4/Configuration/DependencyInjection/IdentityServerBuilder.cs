@@ -7,8 +7,16 @@ using System;
 
 namespace IdentityServer4.Configuration
 {
+    /// <summary>
+    /// IdentityServer helper class for DI configuration
+    /// </summary>
     public class IdentityServerBuilder : IIdentityServerBuilder
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IdentityServerBuilder"/> class.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        /// <exception cref="System.ArgumentNullException">services</exception>
         public IdentityServerBuilder(IServiceCollection services)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
@@ -16,6 +24,12 @@ namespace IdentityServer4.Configuration
             Services = services;
         }
 
+        /// <summary>
+        /// Gets the services.
+        /// </summary>
+        /// <value>
+        /// The services.
+        /// </value>
         public IServiceCollection Services { get; }
     }
 }

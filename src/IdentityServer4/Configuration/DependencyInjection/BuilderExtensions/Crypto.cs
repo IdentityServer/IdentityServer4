@@ -15,6 +15,9 @@ using CryptoRandom = IdentityModel.CryptoRandom;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
+    /// <summary>
+    /// Builder extension methods for registering crypto services
+    /// </summary>
     public static class IdentityServerBuilderExtensionsCrypto
     {
         /// <summary>
