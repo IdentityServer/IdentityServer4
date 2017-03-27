@@ -5,6 +5,7 @@
 using IdentityModel;
 using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Events;
+using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
 using IdentityServer4.Models;
 using IdentityServer4.ResponseHandling;
@@ -74,6 +75,7 @@ namespace IdentityServer4.Endpoints
             var response = await _responseGenerator.ProcessAsync(requestResult);
 
             await _events.RaiseAsync(new TokenIssuedSuccessEvent(response, requestResult));
+            LogTokens(response, requestResult);
 
             // return result
             _logger.LogDebug("Token request success.");
@@ -90,6 +92,25 @@ namespace IdentityServer4.Endpoints
             };
 
             return new TokenErrorResult(response);
+        }
+
+        private void LogTokens(TokenResponse response, TokenRequestValidationResult requestResult)
+        {
+            var clientId = $"{requestResult.ValidatedRequest.Client.ClientId} ({requestResult.ValidatedRequest.Client?.ClientName ?? "no name set"})";
+            var subjectId = requestResult.ValidatedRequest.Subject?.GetSubjectId() ?? "no subject";
+
+            if (response.IdentityToken != null)
+            {
+                _logger.LogTrace("Identity token issued for {clientId} / {subjectId}: {token}", clientId, subjectId, response.IdentityToken);
+            }
+            if (response.RefreshToken != null)
+            {
+                _logger.LogTrace("Refresh token issued for {clientId} / {subjectId}: {token}", clientId, subjectId, response.RefreshToken);
+            }
+            if (response.AccessToken != null)
+            {
+                _logger.LogTrace("Access token issued for {clientId} / {subjectId}: {token}", clientId, subjectId, response.AccessToken);
+            }
         }
     }
 }
