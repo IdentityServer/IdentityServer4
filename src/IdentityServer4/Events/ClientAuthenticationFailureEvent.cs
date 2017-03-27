@@ -4,8 +4,17 @@
 
 namespace IdentityServer4.Events
 {
+    /// <summary>
+    /// Event for failed client authentication
+    /// </summary>
+    /// <seealso cref="IdentityServer4.Events.Event" />
     public class ClientAuthenticationFailureEvent : Event
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ClientAuthenticationFailureEvent"/> class.
+        /// </summary>
+        /// <param name="clientId">The client identifier.</param>
+        /// <param name="message">The message.</param>
         public ClientAuthenticationFailureEvent(string clientId, string message)
             : base(EventCategories.Authentication, 
                   "Client Authentication Failure",
@@ -16,6 +25,12 @@ namespace IdentityServer4.Events
             ClientId = clientId;
         }
 
+        /// <summary>
+        /// Gets or sets the client identifier.
+        /// </summary>
+        /// <value>
+        /// The client identifier.
+        /// </value>
         public string ClientId { get; set; }
     }
 }
