@@ -41,6 +41,12 @@ namespace IdentityServer4.ResponseHandling
             _events = events;
         }
 
+        /// <summary>
+        /// Creates the response
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        /// <exception cref="System.InvalidOperationException">invalid grant type: " + request.GrantType</exception>
         public async Task<AuthorizeResponse> CreateResponseAsync(ValidatedAuthorizeRequest request)
         {
             if (request.GrantType == GrantType.AuthorizationCode)
@@ -71,7 +77,7 @@ namespace IdentityServer4.ResponseHandling
             return response;
         }
 
-        public async Task<AuthorizeResponse> CreateCodeFlowResponseAsync(ValidatedAuthorizeRequest request)
+        private async Task<AuthorizeResponse> CreateCodeFlowResponseAsync(ValidatedAuthorizeRequest request)
         {
             _logger.LogDebug("Creating Authorization Code Flow response.");
 
@@ -112,7 +118,7 @@ namespace IdentityServer4.ResponseHandling
             return id;
         }
 
-        public async Task<AuthorizeResponse> CreateImplicitFlowResponseAsync(ValidatedAuthorizeRequest request, string authorizationCode = null)
+        private async Task<AuthorizeResponse> CreateImplicitFlowResponseAsync(ValidatedAuthorizeRequest request, string authorizationCode = null)
         {
             _logger.LogDebug("Creating Implicit Flow response.");
 

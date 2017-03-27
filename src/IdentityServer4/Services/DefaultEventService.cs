@@ -11,12 +11,33 @@ using IdentityServer4.Services;
 
 namespace IdentityServer4.Events
 {
+    /// <summary>
+    /// The default event service
+    /// </summary>
+    /// <seealso cref="IdentityServer4.Services.IEventService" />
     public class DefaultEventService : IEventService
     {
+        /// <summary>
+        /// The options
+        /// </summary>
         protected readonly IdentityServerOptions Options;
+
+        /// <summary>
+        /// The context
+        /// </summary>
         protected readonly IHttpContextAccessor Context;
+
+        /// <summary>
+        /// The sink
+        /// </summary>
         protected readonly IEventSink Sink;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultEventService"/> class.
+        /// </summary>
+        /// <param name="options">The options.</param>
+        /// <param name="context">The context.</param>
+        /// <param name="sink">The sink.</param>
         public DefaultEventService(IdentityServerOptions options, IHttpContextAccessor context, IEventSink sink)
         {
             Options = options;
@@ -24,6 +45,12 @@ namespace IdentityServer4.Events
             Sink = sink;
         }
 
+        /// <summary>
+        /// Raises the specified event.
+        /// </summary>
+        /// <param name="evt">The event.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">evt</exception>
         public async Task RaiseAsync(Event evt)
         {
             if (evt == null) throw new ArgumentNullException("evt");
@@ -35,6 +62,12 @@ namespace IdentityServer4.Events
             }
         }
 
+        /// <summary>
+        /// Indicates if the type of event will be persisted.
+        /// </summary>
+        /// <param name="evtType"></param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         public bool CanRaiseEventType(EventTypes evtType)
         {
             switch (evtType)
@@ -52,11 +85,23 @@ namespace IdentityServer4.Events
             }
         }
 
+        /// <summary>
+        /// Determines whether this event would be persisted.
+        /// </summary>
+        /// <param name="evt">The evt.</param>
+        /// <returns>
+        ///   <c>true</c> if this event would be persisted; otherwise, <c>false</c>.
+        /// </returns>
         protected virtual bool CanRaiseEvent(Event evt)
         {
             return CanRaiseEventType(evt.EventType);
         }
 
+        /// <summary>
+        /// Prepares the event.
+        /// </summary>
+        /// <param name="evt">The evt.</param>
+        /// <returns></returns>
         protected virtual async Task PrepareEventAsync(Event evt)
         {
             evt.ActivityId = Context.HttpContext.TraceIdentifier;

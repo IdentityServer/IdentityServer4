@@ -54,6 +54,12 @@ namespace IdentityServer4.Models
             Id = CryptoRandom.CreateUniqueId(16);
         }
 
+        /// <summary>
+        /// Gets or sets the identifier.
+        /// </summary>
+        /// <value>
+        /// The identifier.
+        /// </value>
         public string Id { get; set; }
     }
 }

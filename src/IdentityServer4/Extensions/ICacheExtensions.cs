@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Extensions
 {
+    /// <summary>
+    /// Extensions for ICache
+    /// </summary>
     public static class ICacheExtensions
     {
         /// <summary>
