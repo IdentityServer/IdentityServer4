@@ -74,47 +74,26 @@ namespace IdentityServer4.Endpoints
             }
 
             var parameters = (await context.Request.ReadFormAsync()).AsNameValueCollection();
-
             var validationResult = await _requestValidator.ValidateAsync(parameters, apiResult.Resource);
-            var response = await _generator.ProcessAsync(validationResult, apiResult.Resource);
-
-            if (validationResult.IsActive)
-            {
-                LogSuccess(validationResult.Token, "active", apiResult.Resource.Name);
-                return new IntrospectionResult(response);
-            }
-
+            
             if (validationResult.IsError)
             {
-                if (validationResult.FailureReason == IntrospectionRequestValidationFailureReason.MissingToken)
-                {
-                    LogFailure(validationResult.ErrorDescription, validationResult.Token, apiResult.Resource.Name);
-                    return new BadRequestResult("missing_token");
-                }
-
-                if (validationResult.FailureReason == IntrospectionRequestValidationFailureReason.InvalidToken)
-                {
-                    LogSuccess(validationResult.Token, "inactive", apiResult.Resource.Name);
-                    return new IntrospectionResult(response);
-                }
-
-                if (validationResult.FailureReason == IntrospectionRequestValidationFailureReason.InvalidScope)
-                {
-                    LogFailure("API not authorized to introspect token", validationResult.Token, apiResult.Resource.Name);
-                    return new IntrospectionResult(response);
-                }
+                LogFailure(validationResult.Error, apiResult.Resource.Name);
+                return new BadRequestResult(validationResult.Error);
             }
 
-            _logger.LogError("Invalid token introspection outcome");
-            throw new InvalidOperationException("Invalid token introspection outcome");
+            validationResult.Api = apiResult.Resource;
+
+            var response = await _generator.ProcessAsync(validationResult);
+            return new IntrospectionResult(response);
         }
 
-        private void LogSuccess(string token, string tokenStatus, string apiName)
+        private void LogSuccess(string tokenStatus, string apiName)
         {
             _logger.LogInformation("Success token introspection. Token status: {tokenStatus}, for API name: {apiName}", tokenStatus, apiName);
         }
 
-        private void LogFailure(string error, string token, string apiName)
+        private void LogFailure(string error, string apiName)
         {
             _logger.LogError("Failed token introspection: {error}, for API name: {apiName}", error, apiName);
         }

@@ -40,18 +40,18 @@ namespace IdentityServer4.Validation
         public async Task<IntrospectionRequestValidationResult> ValidateAsync(NameValueCollection parameters, ApiResource apiResource)
         {
             _logger.LogDebug("Introspection request validation started.");
-
-            var fail = new IntrospectionRequestValidationResult { IsError = true };
-
+            
             // retrieve required token
             var token = parameters.Get("token");
             if (token == null)
             {
                 _logger.LogError("Token is missing");
 
-                fail.IsActive = false;
-                fail.FailureReason = IntrospectionRequestValidationFailureReason.MissingToken;
-                return fail;
+                return new IntrospectionRequestValidationResult
+                {
+                    IsError = true,
+                    Error = "missing_token"
+                };
             }
 
             // validate token
@@ -62,46 +62,23 @@ namespace IdentityServer4.Validation
             {
                 _logger.LogDebug("Token is invalid.");
 
-                fail.IsActive = false;
-                fail.FailureReason = IntrospectionRequestValidationFailureReason.InvalidToken;
-                fail.Token = token;
-                return fail;
+                return new IntrospectionRequestValidationResult
+                {
+                    IsActive = false,
+                    IsError = false,
+                    Token = token
+                };
             }
 
-            // check expected scopes
-            var supportedScopes = apiResource.Scopes.Select(x => x.Name);
-            var expectedScopes = tokenValidationResult.Claims.Where(
-                c => c.Type == JwtClaimTypes.Scope && supportedScopes.Contains(c.Value));
+            _logger.LogDebug("Introspection request validation successful.");
 
-            // expected scope not present
-            if (!expectedScopes.Any())
-            {
-                _logger.LogError("Expected scope {scopes} is missing in token", supportedScopes);
-
-                fail.IsActive = false;
-                fail.IsError = true;
-                fail.FailureReason = IntrospectionRequestValidationFailureReason.InvalidScope;
-                fail.Token = token;
-                return fail;
-            }
-
-            var claims = tokenValidationResult.Claims;
-
-            // filter out scopes that this API resource does not own
-            claims = claims.Where(x => x.Type != JwtClaimTypes.Scope ||
-                (x.Type == JwtClaimTypes.Scope && supportedScopes.Contains(x.Value)));
-
-            // all is good
-            var success = new IntrospectionRequestValidationResult
+            return new IntrospectionRequestValidationResult
             {
                 IsActive = true,
                 IsError = false,
                 Token = token,
-                Claims = claims
+                Claims = tokenValidationResult.Claims
             };
-
-            _logger.LogDebug("Introspection request validation successful.");
-            return success;
         }
     }
 }

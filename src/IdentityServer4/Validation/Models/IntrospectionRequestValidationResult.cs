@@ -2,7 +2,9 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using IdentityServer4.Models;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Security.Claims;
 
 namespace IdentityServer4.Validation
@@ -13,6 +15,9 @@ namespace IdentityServer4.Validation
     /// <seealso cref="IdentityServer4.Validation.ValidationResult" />
     public class IntrospectionRequestValidationResult : ValidationResult
     {
+        public NameValueCollection Parameters { get; set; }
+        public ApiResource Api { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether the token is active.
         /// </summary>
@@ -20,14 +25,6 @@ namespace IdentityServer4.Validation
         ///   <c>true</c> if the token is active; otherwise, <c>false</c>.
         /// </value>
         public bool IsActive { get; set; }
-
-        /// <summary>
-        /// Gets or sets the failure reason.
-        /// </summary>
-        /// <value>
-        /// The failure reason.
-        /// </value>
-        public IntrospectionRequestValidationFailureReason FailureReason { get; set; }
 
         /// <summary>
         /// Gets or sets the claims.

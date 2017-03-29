@@ -20,6 +20,6 @@ namespace IdentityServer4.ResponseHandling
         /// <param name="validationResult">The validation result.</param>
         /// <param name="apiResource">The API resource.</param>
         /// <returns></returns>
-        Task<Dictionary<string, object>> ProcessAsync(IntrospectionRequestValidationResult validationResult, ApiResource apiResource);
+        Task<Dictionary<string, object>> ProcessAsync(IntrospectionRequestValidationResult validationResult);
     }
 }
