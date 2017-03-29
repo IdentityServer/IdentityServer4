@@ -179,14 +179,23 @@ namespace IdentityServer4.Quickstart.UI
             if (AccountOptions.WindowsAuthenticationSchemes.Contains(provider))
             {
                 // but they don't support the redirect uri, so this URL is re-triggered when we call challenge
-                if (HttpContext.User is WindowsPrincipal)
+                if (HttpContext.User is WindowsPrincipal wp)
                 {
                     var props = new AuthenticationProperties();
                     props.Items.Add("scheme", AccountOptions.WindowsAuthenticationProviderName);
 
                     var id = new ClaimsIdentity(provider);
-                    id.AddClaim(new Claim(ClaimTypes.NameIdentifier, HttpContext.User.Identity.Name));
-                    id.AddClaim(new Claim(ClaimTypes.Name, HttpContext.User.Identity.Name));
+                    id.AddClaim(new Claim(JwtClaimTypes.Subject, HttpContext.User.Identity.Name));
+                    id.AddClaim(new Claim(JwtClaimTypes.Name, HttpContext.User.Identity.Name));
+
+                    // add the groups as claims -- be careful if the number of groups is too large
+                    if (AccountOptions.IncludeWindowsGroups)
+                    {
+                        var wi = wp.Identity as WindowsIdentity;
+                        var groups = wi.Groups.Translate(typeof(NTAccount));
+                        var roles = groups.Select(x => new Claim(JwtClaimTypes.Role, x.Value));
+                        id.AddClaims(roles);
+                    }
 
                     await HttpContext.Authentication.SignInAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme, new ClaimsPrincipal(id), props);
                     return Redirect(returnUrl);

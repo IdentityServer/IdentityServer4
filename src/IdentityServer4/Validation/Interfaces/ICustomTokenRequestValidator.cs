@@ -12,10 +12,12 @@ namespace IdentityServer4.Validation
     public interface ICustomTokenRequestValidator
     {
         /// <summary>
-        /// Custom validation logic for the token request.
+        /// Custom validation logic for a token request.
         /// </summary>
-        /// <param name="validationResult">The validation model.</param>
-        /// <returns>The validation result</returns>
+        /// <param name="context">The context.</param>
+        /// <returns>
+        /// The validation result
+        /// </returns>
         Task ValidateAsync(CustomTokenRequestValidationContext context);
     }
 }

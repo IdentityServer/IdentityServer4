@@ -17,6 +17,10 @@ using IdentityServer4.Events;
 
 namespace IdentityServer4.Endpoints
 {
+    /// <summary>
+    /// The revocation endpoint
+    /// </summary>
+    /// <seealso cref="IdentityServer4.Hosting.IEndpoint" />
     public class RevocationEndpoint : IEndpoint
     {
         private readonly ILogger _logger;
@@ -26,6 +30,15 @@ namespace IdentityServer4.Endpoints
         private readonly IRefreshTokenStore _refreshTokenStore;
         private readonly IEventService _events;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RevocationEndpoint"/> class.
+        /// </summary>
+        /// <param name="logger">The logger.</param>
+        /// <param name="clientValidator">The client validator.</param>
+        /// <param name="requestValidator">The request validator.</param>
+        /// <param name="referenceTokenStore">The reference token store.</param>
+        /// <param name="refreshTokenStore">The refresh token store.</param>
+        /// <param name="events">The events.</param>
         public RevocationEndpoint(ILogger<RevocationEndpoint> logger,
             ClientSecretValidator clientValidator,
             ITokenRevocationRequestValidator requestValidator,
@@ -41,6 +54,11 @@ namespace IdentityServer4.Endpoints
             _events = events;
         }
 
+        /// <summary>
+        /// Processes the request.
+        /// </summary>
+        /// <param name="context">The HTTP context.</param>
+        /// <returns></returns>
         public async Task<IEndpointResult> ProcessAsync(HttpContext context)
         {
             _logger.LogTrace("Processing revocation request.");

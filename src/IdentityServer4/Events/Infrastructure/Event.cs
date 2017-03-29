@@ -24,22 +24,25 @@ namespace IdentityServer4.Events
         /// <exception cref="System.ArgumentNullException">category</exception>
         public Event(string category, string name, EventTypes type, int id, string message = null)
         {
-            if (category.IsMissing()) throw new ArgumentNullException(nameof(category));
+            Category = category ?? throw new ArgumentNullException(nameof(category));
+            Name = name ?? throw new ArgumentNullException(nameof(name));
 
-            Category = category;
-            Name = name;
             EventType = type;
             Id = id;
             Message = message;
         }
 
+        /// <summary>
+        /// Allows implementing custom initialization logic.
+        /// </summary>
+        /// <returns></returns>
         protected internal virtual Task PrepareAsync()
         {
             return Task.FromResult(0);
         }
 
         /// <summary>
-        /// Gets or sets the event category. <see cref="EventConstants.Categories"/> for a list of the defined categories.
+        /// Gets or sets the category.
         /// </summary>
         /// <value>
         /// The category.
@@ -66,7 +69,7 @@ namespace IdentityServer4.Events
         public EventTypes EventType { get; set; }
 
         /// <summary>
-        /// Gets or sets the event identifier. <see cref="EventConstants.Ids"/> for the list of the defined identifiers.
+        /// Gets or sets the identifier.
         /// </summary>
         /// <value>
         /// The identifier.
@@ -122,12 +125,17 @@ namespace IdentityServer4.Events
         /// </value>
         public string RemoteIpAddress { get; set; }
 
-        protected static string ObfuscateToken(string token)
+        /// <summary>
+        /// Obfuscates a token.
+        /// </summary>
+        /// <param name="value">The token.</param>
+        /// <returns></returns>
+        protected static string Obfuscate(string value)
         {
             string last4chars = "****";
-            if (token.IsPresent() && token.Length > 4)
+            if (value.IsPresent() && value.Length > 4)
             {
-                last4chars = token.Substring(token.Length - 4);
+                last4chars = value.Substring(value.Length - 4);
             }
 
             return "****" + last4chars;

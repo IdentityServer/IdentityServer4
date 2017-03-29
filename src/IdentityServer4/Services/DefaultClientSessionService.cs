@@ -16,6 +16,10 @@ using IdentityServer4.Configuration;
 
 namespace IdentityServer4.Services
 {
+    /// <summary>
+    /// The default client session service
+    /// </summary>
+    /// <seealso cref="IdentityServer4.Services.IClientSessionService" />
     public class DefaultClientSessionService : IClientSessionService
     {
         const string ClientListKey = "ClientSessions";
@@ -31,6 +35,13 @@ namespace IdentityServer4.Services
         private readonly IdentityServerOptions _options;
         private readonly ILogger<DefaultClientSessionService> _logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultClientSessionService"/> class.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="sessionId">The session identifier.</param>
+        /// <param name="options">The options.</param>
+        /// <param name="logger">The logger.</param>
         public DefaultClientSessionService(
             IHttpContextAccessor context, 
             ISessionIdService sessionId, 
@@ -48,6 +59,11 @@ namespace IdentityServer4.Services
             return ClientListKey;
         }
 
+        /// <summary>
+        /// Adds a client identifier.
+        /// </summary>
+        /// <param name="clientId">The client identifier.</param>
+        /// <returns></returns>
         public async Task AddClientIdAsync(string clientId)
         {
             var clients = await GetClientListAsync();
@@ -60,6 +76,10 @@ namespace IdentityServer4.Services
             }
         }
 
+        /// <summary>
+        /// Gets the client list.
+        /// </summary>
+        /// <returns></returns>
         public async Task<IEnumerable<string>> GetClientListAsync()
         {
             var value = await GetPropertyValueAsync();
@@ -77,6 +97,11 @@ namespace IdentityServer4.Services
             return Enumerable.Empty<string>();
         }
 
+        /// <summary>
+        /// Decodes the list.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
         public IEnumerable<string> DecodeList(string value)
         {
             if (value.IsPresent())
@@ -89,6 +114,11 @@ namespace IdentityServer4.Services
             return Enumerable.Empty<string>();
         }
 
+        /// <summary>
+        /// Encodes the list.
+        /// </summary>
+        /// <param name="list">The list.</param>
+        /// <returns></returns>
         public string EncodeList(IEnumerable<string> list)
         {
             if (list != null && list.Any())
@@ -150,6 +180,11 @@ namespace IdentityServer4.Services
             await _context.HttpContext.ReIssueSignInCookie(info);
         }
 
+        /// <summary>
+        /// Ensures the client list cookie.
+        /// </summary>
+        /// <param name="sid">The sid.</param>
+        /// <returns></returns>
         public async Task EnsureClientListCookieAsync(string sid)
         {
             if (await _sessionId.GetCurrentSessionIdAsync() == sid)
@@ -159,6 +194,11 @@ namespace IdentityServer4.Services
             }
         }
 
+        /// <summary>
+        /// Gets the client list from the cookie.
+        /// </summary>
+        /// <param name="sid">The sid.</param>
+        /// <returns></returns>
         public IEnumerable<string> GetClientListFromCookie(string sid)
         {
             var value = GetCookie(sid);
@@ -166,6 +206,10 @@ namespace IdentityServer4.Services
             return list;
         }
 
+        /// <summary>
+        /// Removes the cookie.
+        /// </summary>
+        /// <param name="sid">The sid.</param>
         public void RemoveCookie(string sid)
         {
             SetCookie(sid, null);

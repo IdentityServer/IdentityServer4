@@ -6,6 +6,8 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Specialized;
 
+#pragma warning disable 1591
+
 namespace IdentityServer4.Infrastructure
 {
     public class NameValueCollectionConverter : JsonConverter

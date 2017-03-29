@@ -30,7 +30,6 @@ namespace IdentityServer4.Services
         /// Initializes a new instance of the <see cref="DefaultRefreshTokenService" /> class.
         /// </summary>
         /// <param name="refreshTokenStore">The refresh token store</param>
-        /// <param name="events">The events.</param>
         /// <param name="logger">The logger</param>
         public DefaultRefreshTokenService(IRefreshTokenStore refreshTokenStore, ILogger<DefaultRefreshTokenService> logger)
         {

@@ -13,15 +13,31 @@ namespace IdentityServer4.Models
     /// </summary>
     public class IdentityResource
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IdentityResource"/> class.
+        /// </summary>
         public IdentityResource()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IdentityResource"/> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="claimTypes">The claim types.</param>
         public IdentityResource(string name, IEnumerable<string> claimTypes)
             : this(name, name, claimTypes)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IdentityResource"/> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="displayName">The display name.</param>
+        /// <param name="claimTypes">The claim types.</param>
+        /// <exception cref="System.ArgumentNullException">name</exception>
+        /// <exception cref="System.ArgumentException">Must provide at least one claim type - claimTypes</exception>
         public IdentityResource(string name, string displayName, IEnumerable<string> claimTypes)
         {
             if (name.IsMissing()) throw new ArgumentNullException(nameof(name));

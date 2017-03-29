@@ -259,6 +259,7 @@ namespace IdentityServer4.Endpoints
         {
             if (!response.IsError)
             {
+                LogTokens(response);
                 return _events.RaiseAsync(new TokenIssuedSuccessEvent(response));
             }
             else
@@ -270,6 +271,25 @@ namespace IdentityServer4.Endpoints
         private Task RaiseFailureEventAsync(ValidatedAuthorizeRequest request, string error, string errorDescription)
         {
             return _events.RaiseAsync(new TokenIssuedFailureEvent(request, error, errorDescription));
+        }
+
+        private void LogTokens(AuthorizeResponse response)
+        {
+            var clientId = $"{response.Request.ClientId} ({response.Request.Client.ClientName ?? "no name set"})";
+            var subjectId = response.Request.Subject.GetSubjectId();
+
+            if (response.IdentityToken != null)
+            {
+                _logger.LogTrace("Identity token issued for {clientId} / {subjectId}: {token}", clientId, subjectId, response.IdentityToken);
+            }
+            if (response.Code != null)
+            {
+                _logger.LogTrace("Code issued for {clientId} / {subjectId}: {token}", clientId, subjectId, response.Code);
+            }
+            if (response.AccessToken != null)
+            {
+                _logger.LogTrace("Access token issued for {clientId} / {subjectId}: {token}", clientId, subjectId, response.AccessToken);
+            }
         }
     }
 }

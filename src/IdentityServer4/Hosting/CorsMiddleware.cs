@@ -6,6 +6,8 @@ using IdentityServer4.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
+#pragma warning disable 1591
+
 namespace IdentityServer4.Hosting
 {
     public static class CorsMiddlewareExtensions

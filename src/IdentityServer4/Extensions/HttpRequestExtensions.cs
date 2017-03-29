@@ -4,6 +4,8 @@
 
 using System.Linq;
 
+#pragma warning disable 1591
+
 namespace Microsoft.AspNetCore.Http
 {
     public static class HttpRequestExtensions

@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
+#pragma warning disable 1591
+
 namespace IdentityServer4.Hosting
 {
     public static class CookieMiddlewareExtensions

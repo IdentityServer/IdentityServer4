@@ -9,6 +9,12 @@ namespace IdentityServer4.Validation
     /// </summary>
     public class CustomTokenRequestValidationContext
     {
+        /// <summary>
+        /// Gets or sets the result.
+        /// </summary>
+        /// <value>
+        /// The result.
+        /// </value>
         public TokenRequestValidationResult Result { get; set; }
     }
 }

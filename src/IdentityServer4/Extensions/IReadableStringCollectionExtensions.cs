@@ -8,6 +8,8 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 
+#pragma warning disable 1591
+
 namespace Microsoft.AspNetCore.Http
 {
     public static class IReadableStringCollectionExtensions

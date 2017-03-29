@@ -11,6 +11,9 @@ using System.Collections.Generic;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
+    /// <summary>
+    /// Builder extension methods for registering in-memory services
+    /// </summary>
     public static class IdentityServerBuilderExtensionsInMemory
     {
         /// <summary>

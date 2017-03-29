@@ -23,6 +23,9 @@ using System.Linq;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
+    /// <summary>
+    /// Builder extension methods for registering core services
+    /// </summary>
     public static class IdentityServerBuilderExtensionsCore
     {
         /// <summary>

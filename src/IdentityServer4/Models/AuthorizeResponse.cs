@@ -5,6 +5,8 @@
 using IdentityServer4.Extensions;
 using IdentityServer4.Validation;
 
+#pragma warning disable 1591
+
 namespace IdentityServer4.Models
 {
     public class AuthorizeResponse

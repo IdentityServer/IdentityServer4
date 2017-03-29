@@ -13,15 +13,22 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace IdentityServer4.Endpoints.Results
 {
+    /// <summary>
+    /// Result for login page
+    /// </summary>
+    /// <seealso cref="IdentityServer4.Hosting.IEndpointResult" />
     public class LoginPageResult : IEndpointResult
     {
         private readonly ValidatedAuthorizeRequest _request;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoginPageResult"/> class.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <exception cref="System.ArgumentNullException">request</exception>
         public LoginPageResult(ValidatedAuthorizeRequest request)
         {
-            if (request == null) throw new ArgumentNullException(nameof(request));
-
-            _request = request;
+            _request = request ?? throw new ArgumentNullException(nameof(request));
         }
 
         internal LoginPageResult(
@@ -39,6 +46,11 @@ namespace IdentityServer4.Endpoints.Results
             _options = _options ?? context.RequestServices.GetRequiredService<IdentityServerOptions>();
         }
 
+        /// <summary>
+        /// Executes the result.
+        /// </summary>
+        /// <param name="context">The HTTP context.</param>
+        /// <returns></returns>
         public Task ExecuteAsync(HttpContext context)
         {
             Init(context);
