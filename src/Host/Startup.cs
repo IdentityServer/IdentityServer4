@@ -63,6 +63,9 @@ namespace Host
                 .AddSecretValidator<PrivateKeyJwtSecretValidator>()
                 .AddTestUsers(TestUsers.Users);
 
+            // AppAuth enabled redirect URI validator
+            services.AddTransient<IRedirectUriValidator, StrictRedirectUriValidatorAppAuth>();
+
             services.AddMvc();
 
             // only use for development until this bug is fixed
