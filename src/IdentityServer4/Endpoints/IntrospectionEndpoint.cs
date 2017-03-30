@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using IdentityServer4.Hosting;
 using IdentityServer4.Endpoints.Results;
 using Microsoft.AspNetCore.Http;
+using System.Net;
 
 namespace IdentityServer4.Endpoints
 {
@@ -70,12 +71,17 @@ namespace IdentityServer4.Endpoints
             if (apiResult.Resource == null)
             {
                 _logger.LogError("API unauthorized to call introspection endpoint. aborting.");
-                return new StatusCodeResult(401);
+                return new StatusCodeResult(HttpStatusCode.Unauthorized);
             }
 
-            var parameters = (await context.Request.ReadFormAsync()).AsNameValueCollection();
-            var validationResult = await _requestValidator.ValidateAsync(parameters);
-            
+            var body = await context.Request.ReadFormAsync();
+            if (body == null)
+            {
+                _logger.LogError("Malformed request body. aborting.");
+                return new StatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var validationResult = await _requestValidator.ValidateAsync(body.AsNameValueCollection());
             if (validationResult.IsError)
             {
                 LogFailure(validationResult.Error, apiResult.Resource.Name);
