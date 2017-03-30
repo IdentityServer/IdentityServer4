@@ -11,7 +11,7 @@ The details vary, but you typically define the following common settings for a c
 * a network location where identity and/or access token gets sent to (called a redirect URI)
 * a list of scopes (aka resources) the client is allowed to access
 
-.. Note:: At runtime, clients are retrieved via an implementation of the ``IClientStore``. This allows loading them from arbitrary data sources like config files or databases. For this document we gonna use the in-memory version of the client store. You can wire up the in-memory store in ``ConfigureServices`` via the ``AddInMemoryClients`` extensions method.
+.. Note:: At runtime, clients are retrieved via an implementation of the ``IClientStore``. This allows loading them from arbitrary data sources like config files or databases. For this document we will use the in-memory version of the client store. You can wire up the in-memory store in ``ConfigureServices`` via the ``AddInMemoryClients`` extensions method.
 
 Defining a client for server to server communication
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

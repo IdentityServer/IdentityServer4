@@ -71,7 +71,7 @@ under the covers these add the relevant stores and data into the DI system::
             .AddInMemoryClients(Config.GetClients());
     }
 
-That's it - if you run the server and navigate the browers to 
+That's it - if you run the server and navigate the browser to 
 ``http://localhost:5000/.well-known/openid-configuration``, you should see the so-called
 discovery document. 
 This will be used by your clients and APIs to download the necessary configuration data.

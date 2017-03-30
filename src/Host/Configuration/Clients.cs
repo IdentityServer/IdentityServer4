@@ -116,7 +116,7 @@ namespace Host.Configuration
                     AllowedGrantTypes = GrantTypes.Hybrid,
                     RequirePkce = true,
 
-                    RedirectUris = { "http://127.0.0.1:7890/" },
+                    RedirectUris = { "http://127.0.0.1" },
 
                     AllowOfflineAccess = true,
 
