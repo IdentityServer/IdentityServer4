@@ -75,6 +75,25 @@ The following example uses `Seq <https://getseq.net/>`_ to emit events::
 
 Add the ``Serilog.Sinks.Seq`` package to your host to make the above code work.
 
+Built-in events
+^^^^^^^^^^^^^^^
+The following events are defined in IdentityServer:
+
+``ApiAuthenticationFailureEvent`` & ``ApiAuthenticationSuccessEvent``
+    Gets raised for successful/failed API authentication at the introspection endpoint.
+``ClientAuthenticationSuccessEvent`` & ``ClientAuthenticationFailureEvent``
+    Gets raised for successful/failed client authentication at the token endpoint.
+``TokenIssuedSuccessEvent`` & ``TokenIssuedFailureEvent``
+    Gets raised for successful/failed attempts to request identity tokens, access tokens, refresh tokens and authorization codes.
+``TokenRevokedSuccessEvent``
+    Gets raised for successful token revocation requests.
+``UserLoginSuccessEvent`` & ``UserLoginFailureEvent``
+    Gets raised by the quickstart UI for successful/failed user logins.
+``UserLogoutSuccessEvent``
+    Gets raised for successfull logout requests.
+``UnhandledExceptionEvent``
+    Gets raised for unandled excpetions.
+
 Custom events
 ^^^^^^^^^^^^^
 You can create your own events and emit them via our infrastructure.
@@ -96,7 +115,3 @@ Your derived class can then add arbitrary data fields specific to the event cont
 
         public string Username { get; set; }
     }
-
-
-
-todo: events reference
