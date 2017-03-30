@@ -19,6 +19,6 @@ namespace IdentityServer4.Validation
         /// <param name="parameters">The parameters.</param>
         /// <param name="apiResource">The API resource.</param>
         /// <returns></returns>
-        Task<IntrospectionRequestValidationResult> ValidateAsync(NameValueCollection parameters, ApiResource apiResource);
+        Task<IntrospectionRequestValidationResult> ValidateAsync(NameValueCollection parameters);
     }
 }

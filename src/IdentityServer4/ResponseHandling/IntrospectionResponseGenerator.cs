@@ -38,7 +38,7 @@ namespace IdentityServer4.ResponseHandling
         /// </summary>
         /// <param name="validationResult">The validation result.</param>
         /// <returns></returns>
-        public virtual Task<Dictionary<string, object>> ProcessAsync(IntrospectionRequestValidationResult validationResult)
+        public virtual async Task<Dictionary<string, object>> ProcessAsync(IntrospectionRequestValidationResult validationResult)
         {
             Logger.LogTrace("Creating introspection response");
 
@@ -50,33 +50,43 @@ namespace IdentityServer4.ResponseHandling
             if (validationResult.IsActive == false)
             {
                 Logger.LogDebug("Creating introspection response for inactive token.");
-                return Task.FromResult(response);
+                return response;
             }
 
-            // check expected scopes
-            var supportedScopes = validationResult.Api.Scopes.Select(x => x.Name);
-            var expectedScopes = validationResult.Claims.Where(
-                c => c.Type == JwtClaimTypes.Scope && supportedScopes.Contains(c.Value));
-
             // expected scope not present
-            if (!expectedScopes.Any())
+            if (await AreExpectedScopesPresent(validationResult) == false)
             {
-                Logger.LogError("Expected scope {scopes} is missing in token", supportedScopes);
-                return Task.FromResult(response);
+                return response;
             }
 
             Logger.LogDebug("Creating introspection response for active token.");
 
             response = validationResult.Claims.Where(c => c.Type != JwtClaimTypes.Scope).ToClaimsDictionary();
+            response.Add("active", true);
 
             var allowedScopes = validationResult.Api.Scopes.Select(x => x.Name);
             var scopes = validationResult.Claims.Where(c => c.Type == JwtClaimTypes.Scope).Select(x => x.Value);
             scopes = scopes.Where(x => allowedScopes.Contains(x));
             response.Add("scope", scopes.ToSpaceSeparatedString());
+            
+            return response;
+        }
 
-            response.Add("active", true);
+        /// <summary>
+        /// Checks if the API resource is allowed to introspect the scopes.
+        /// </summary>
+        /// <param name="validationResult">The validation result.</param>
+        /// <returns></returns>
+        protected virtual Task<bool> AreExpectedScopesPresent(IntrospectionRequestValidationResult validationResult)
+        {
+            // check expected scopes
+            var supportedScopes = validationResult.Api.Scopes.Select(x => x.Name);
+            var expectedScopes = validationResult.Claims.Where(
+                c => c.Type == JwtClaimTypes.Scope && supportedScopes.Contains(c.Value));
 
-            return Task.FromResult(response);
+            Logger.LogError("Expected scope {scopes} is missing in token", supportedScopes);
+
+            return Task.FromResult(expectedScopes.Any());
         }
     }
 }

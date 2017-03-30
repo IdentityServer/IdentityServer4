@@ -15,7 +15,20 @@ namespace IdentityServer4.Validation
     /// <seealso cref="IdentityServer4.Validation.ValidationResult" />
     public class IntrospectionRequestValidationResult : ValidationResult
     {
+        /// <summary>
+        /// Gets or sets the request parameters.
+        /// </summary>
+        /// <value>
+        /// The parameters.
+        /// </value>
         public NameValueCollection Parameters { get; set; }
+
+        /// <summary>
+        /// Gets or sets the API.
+        /// </summary>
+        /// <value>
+        /// The API.
+        /// </value>
         public ApiResource Api { get; set; }
 
         /// <summary>

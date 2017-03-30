@@ -2,11 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityModel;
-using IdentityServer4.Models;
 using Microsoft.Extensions.Logging;
 using System.Collections.Specialized;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Validation
@@ -35,9 +32,8 @@ namespace IdentityServer4.Validation
         /// Validates the request.
         /// </summary>
         /// <param name="parameters">The parameters.</param>
-        /// <param name="apiResource">The API resource.</param>
         /// <returns></returns>
-        public async Task<IntrospectionRequestValidationResult> ValidateAsync(NameValueCollection parameters, ApiResource apiResource)
+        public async Task<IntrospectionRequestValidationResult> ValidateAsync(NameValueCollection parameters)
         {
             _logger.LogDebug("Introspection request validation started.");
             

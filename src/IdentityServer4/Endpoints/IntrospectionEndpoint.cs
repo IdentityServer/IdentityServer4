@@ -74,7 +74,7 @@ namespace IdentityServer4.Endpoints
             }
 
             var parameters = (await context.Request.ReadFormAsync()).AsNameValueCollection();
-            var validationResult = await _requestValidator.ValidateAsync(parameters, apiResult.Resource);
+            var validationResult = await _requestValidator.ValidateAsync(parameters);
             
             if (validationResult.IsError)
             {
