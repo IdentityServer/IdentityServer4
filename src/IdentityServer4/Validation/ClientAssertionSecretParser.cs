@@ -64,10 +64,9 @@ namespace IdentityServer4.Validation
 
             if (body != null)
             {
-                var clientId = body[OidcConstants.TokenRequest.ClientId].FirstOrDefault();
                 var clientAssertionType = body[OidcConstants.TokenRequest.ClientAssertionType].FirstOrDefault();
                 var clientAssertion = body[OidcConstants.TokenRequest.ClientAssertion].FirstOrDefault();
-                
+
                 if (clientAssertion.IsPresent()
                     && clientAssertionType == OidcConstants.ClientAssertionTypes.JwtBearer)
                 {
@@ -77,16 +76,12 @@ namespace IdentityServer4.Validation
                         return null;
                     }
 
+                    var clientId = GetClientIdFromToken(clientAssertion);
                     if (!clientId.IsPresent())
                     {
-                        // actual "client_id" form field is optional since the value is always present inside the token
-                        clientId = GetClientIdFromToken(clientAssertion);
-                        if (!clientId.IsPresent())
-                        {
-                            return null;
-                        }
+                        return null;
                     }
-                    
+
                     if (clientId.Length > _options.InputLengthRestrictions.ClientId)
                     {
                         _logger.LogError("Client ID exceeds maximum lenght.");
@@ -113,7 +108,7 @@ namespace IdentityServer4.Validation
             try
             {
                 var jwt = new JwtSecurityToken(token);
-                return jwt.Issuer;
+                return jwt.Subject;
             }
             catch (Exception e)
             {
