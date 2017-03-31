@@ -44,7 +44,7 @@ This requires that clients and APIs use the discovery document, and also have a 
 
 Data protection
 ^^^^^^^^^^^^^^^
-We use the ASP.NET Core data protection API. For the most parts this requires no manual configuration - some adjustments might be needed
+We use the ASP.NET Core data protection API. For the most part, this requires no manual configuration - some adjustments might be needed
 depending on your deployment scenario (e.g. self-hosted web farms). 
 See `here <https://docs.asp.net/en/latest/security/data-protection/index.html>`_ for more information.
 
@@ -52,6 +52,6 @@ HTTPS
 ^^^^^
 We don't enforce the use of HTTPS, but for production it is mandatory for every interaction with IdentityServer.
 
-HTTPS is typically provided by the reverse proxy that sits in front of ASP.NET Core's built-in webser,
-`here <https://docs.asp.net/en/latest/publishing/iis.html>`_ are some instructions for using IIS, 
+HTTPS is typically provided by the reverse proxy that sits in front of ASP.NET Core's built-in web server.
+`Here <https://docs.asp.net/en/latest/publishing/iis.html>`_ are some instructions for using IIS, 
 `here <http://tattoocoder.com/using-apache-web-server-as-reverse-proxy-for-aspnetcore/>`_ for Apache.
