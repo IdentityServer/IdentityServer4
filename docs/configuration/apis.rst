@@ -1,3 +1,4 @@
+.. _refProtectingApis:
 Protecting APIs
 ===============
 
