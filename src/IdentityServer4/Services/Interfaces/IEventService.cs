@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace IdentityServer4.Services
 {
     /// <summary>
-    /// Models a recipient of notification of events
+    /// Interface for the event service
     /// </summary>
     public interface IEventService
     {
@@ -16,6 +16,11 @@ namespace IdentityServer4.Services
         /// Raises the specified event.
         /// </summary>
         /// <param name="evt">The event.</param>
-        Task RaiseAsync<T>(Event<T> evt);
+        Task RaiseAsync(Event evt);
+
+        /// <summary>
+        /// Indicates if the type of event will be persisted.
+        /// </summary>
+        bool CanRaiseEventType(EventTypes evtType);
     }
 }

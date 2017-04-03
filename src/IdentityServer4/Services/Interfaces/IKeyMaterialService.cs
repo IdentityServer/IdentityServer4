@@ -8,9 +8,21 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Services
 {
+    /// <summary>
+    /// Interface for the key material service
+    /// </summary>
     public interface IKeyMaterialService
     {
+        /// <summary>
+        /// Gets all validation keys.
+        /// </summary>
+        /// <returns></returns>
         Task<IEnumerable<SecurityKey>> GetValidationKeysAsync();
+
+        /// <summary>
+        /// Gets the signing credentials.
+        /// </summary>
+        /// <returns></returns>
         Task<SigningCredentials> GetSigningCredentialsAsync();
     }
 }

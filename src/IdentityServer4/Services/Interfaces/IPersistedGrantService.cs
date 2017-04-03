@@ -13,7 +13,19 @@ namespace IdentityServer4.Services
     /// </summary>
     public interface IPersistedGrantService
     {
+        /// <summary>
+        /// Gets all grants for a given subject ID.
+        /// </summary>
+        /// <param name="subjectId">The subject identifier.</param>
+        /// <returns></returns>
         Task<IEnumerable<Consent>> GetAllGrantsAsync(string subjectId);
+
+        /// <summary>
+        /// Removes all grants for a given subject id and client id combination.
+        /// </summary>
+        /// <param name="subjectId">The subject identifier.</param>
+        /// <param name="clientId">The client identifier.</param>
+        /// <returns></returns>
         Task RemoveAllGrantsAsync(string subjectId, string clientId);
     }
 }

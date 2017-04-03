@@ -11,17 +11,32 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Validation
 {
+    /// <summary>
+    /// The introspection request validator
+    /// </summary>
+    /// <seealso cref="IdentityServer4.Validation.IIntrospectionRequestValidator" />
     public class IntrospectionRequestValidator : IIntrospectionRequestValidator
     {
         private readonly ILogger<IntrospectionRequestValidator> _logger;
         private readonly ITokenValidator _tokenValidator;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IntrospectionRequestValidator"/> class.
+        /// </summary>
+        /// <param name="tokenValidator">The token validator.</param>
+        /// <param name="logger">The logger.</param>
         public IntrospectionRequestValidator(ITokenValidator tokenValidator, ILogger<IntrospectionRequestValidator> logger)
         {
             _tokenValidator = tokenValidator;
             _logger = logger;
         }
 
+        /// <summary>
+        /// Validates the request.
+        /// </summary>
+        /// <param name="parameters">The parameters.</param>
+        /// <param name="apiResource">The API resource.</param>
+        /// <returns></returns>
         public async Task<IntrospectionRequestValidationResult> ValidateAsync(NameValueCollection parameters, ApiResource apiResource)
         {
             _logger.LogDebug("Introspection request validation started.");

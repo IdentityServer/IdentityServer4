@@ -15,6 +15,10 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.ResponseHandling
 {
+    /// <summary>
+    /// The token response generator
+    /// </summary>
+    /// <seealso cref="IdentityServer4.ResponseHandling.ITokenResponseGenerator" />
     public class TokenResponseGenerator : ITokenResponseGenerator
     {
         private readonly ILogger _logger;
@@ -23,6 +27,14 @@ namespace IdentityServer4.ResponseHandling
         private readonly IResourceStore _resources;
         private readonly IClientStore _clients;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TokenResponseGenerator"/> class.
+        /// </summary>
+        /// <param name="tokenService">The token service.</param>
+        /// <param name="refreshTokenService">The refresh token service.</param>
+        /// <param name="resources">The resources.</param>
+        /// <param name="clients">The clients.</param>
+        /// <param name="loggerFactory">The logger factory.</param>
         public TokenResponseGenerator(ITokenService tokenService, IRefreshTokenService refreshTokenService, IResourceStore resources, IClientStore clients, ILoggerFactory loggerFactory)
         {
             _tokenService = tokenService;
@@ -32,6 +44,11 @@ namespace IdentityServer4.ResponseHandling
             _logger = loggerFactory.CreateLogger<TokenResponseGenerator>();
         }
 
+        /// <summary>
+        /// Processes the response.
+        /// </summary>
+        /// <param name="validationResult">The validation result.</param>
+        /// <returns></returns>
         public async Task<TokenResponse> ProcessAsync(TokenRequestValidationResult validationResult)
         {
             _logger.LogTrace("Creating token response");

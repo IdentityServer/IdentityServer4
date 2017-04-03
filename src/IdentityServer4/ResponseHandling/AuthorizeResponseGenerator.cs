@@ -3,7 +3,6 @@
 
 
 using IdentityModel;
-using IdentityServer4.Events;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
@@ -16,6 +15,10 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.ResponseHandling
 {
+    /// <summary>
+    /// The authorize response generator
+    /// </summary>
+    /// <seealso cref="IdentityServer4.ResponseHandling.IAuthorizeResponseGenerator" />
     public class AuthorizeResponseGenerator : IAuthorizeResponseGenerator
     {
         private readonly ILogger<AuthorizeResponseGenerator> _logger;
@@ -23,6 +26,13 @@ namespace IdentityServer4.ResponseHandling
         private readonly IAuthorizationCodeStore _authorizationCodeStore;
         private readonly IEventService _events;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthorizeResponseGenerator"/> class.
+        /// </summary>
+        /// <param name="logger">The logger.</param>
+        /// <param name="tokenService">The token service.</param>
+        /// <param name="authorizationCodeStore">The authorization code store.</param>
+        /// <param name="events">The events.</param>
         public AuthorizeResponseGenerator(ILogger<AuthorizeResponseGenerator> logger, ITokenService tokenService, IAuthorizationCodeStore authorizationCodeStore, IEventService events)
         {
             _logger = logger;
@@ -31,6 +41,12 @@ namespace IdentityServer4.ResponseHandling
             _events = events;
         }
 
+        /// <summary>
+        /// Creates the response
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        /// <exception cref="System.InvalidOperationException">invalid grant type: " + request.GrantType</exception>
         public async Task<AuthorizeResponse> CreateResponseAsync(ValidatedAuthorizeRequest request)
         {
             if (request.GrantType == GrantType.AuthorizationCode)
@@ -61,7 +77,7 @@ namespace IdentityServer4.ResponseHandling
             return response;
         }
 
-        public async Task<AuthorizeResponse> CreateCodeFlowResponseAsync(ValidatedAuthorizeRequest request)
+        private async Task<AuthorizeResponse> CreateCodeFlowResponseAsync(ValidatedAuthorizeRequest request)
         {
             _logger.LogDebug("Creating Authorization Code Flow response.");
 
@@ -99,12 +115,10 @@ namespace IdentityServer4.ResponseHandling
             // store id token and access token and return authorization code
             var id = await _authorizationCodeStore.StoreAuthorizationCodeAsync(code);
 
-            await RaiseCodeIssuedEventAsync(id, code);
-
             return id;
         }
 
-        public async Task<AuthorizeResponse> CreateImplicitFlowResponseAsync(ValidatedAuthorizeRequest request, string authorizationCode = null)
+        private async Task<AuthorizeResponse> CreateImplicitFlowResponseAsync(ValidatedAuthorizeRequest request, string authorizationCode = null)
         {
             _logger.LogDebug("Creating Implicit Flow response.");
 
@@ -160,10 +174,5 @@ namespace IdentityServer4.ResponseHandling
 
             return response;
         }
-
-        private async Task RaiseCodeIssuedEventAsync(string id, AuthorizationCode code)
-        {
-            await _events.RaiseAuthorizationCodeIssuedEventAsync(id, code);
-        }
-    }
+   }
 }

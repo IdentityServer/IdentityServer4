@@ -59,7 +59,7 @@ Configure IdentityServer
 ^^^^^^^^^^^^^^^^^^^^^^^^
 To configure IdentityServer to use your scopes and client definition, you need to add code
 to the ``ConfigureServices`` method. 
-You can use convenient extensions methods for that - 
+You can use convenient extension methods for that - 
 under the covers these add the relevant stores and data into the DI system::
 
     public void ConfigureServices(IServiceCollection services)
@@ -71,7 +71,7 @@ under the covers these add the relevant stores and data into the DI system::
             .AddInMemoryClients(Config.GetClients());
     }
 
-That's it - if you run the server and navigate the browers to 
+That's it - if you run the server and navigate the browser to 
 ``http://localhost:5000/.well-known/openid-configuration``, you should see the so-called
 discovery document. 
 This will be used by your clients and APIs to download the necessary configuration data.

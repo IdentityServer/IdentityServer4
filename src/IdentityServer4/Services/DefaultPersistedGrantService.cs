@@ -22,6 +22,12 @@ namespace IdentityServer4.Services
         private readonly IPersistedGrantStore _store;
         private readonly IPersistentGrantSerializer _serializer;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultPersistedGrantService"/> class.
+        /// </summary>
+        /// <param name="store">The store.</param>
+        /// <param name="serializer">The serializer.</param>
+        /// <param name="logger">The logger.</param>
         public DefaultPersistedGrantService(IPersistedGrantStore store, 
             IPersistentGrantSerializer serializer,
             ILogger<DefaultPersistedGrantService> logger)
@@ -30,7 +36,12 @@ namespace IdentityServer4.Services
             _serializer = serializer;
             _logger = logger;
         }
-        
+
+        /// <summary>
+        /// Gets all grants for a given subject ID.
+        /// </summary>
+        /// <param name="subjectId">The subject identifier.</param>
+        /// <returns></returns>
         public async Task<IEnumerable<Consent>> GetAllGrantsAsync(string subjectId)
         {
             var grants = (await _store.GetAllAsync(subjectId)).ToArray();
@@ -104,6 +115,12 @@ namespace IdentityServer4.Services
             return query;
         }
 
+        /// <summary>
+        /// Removes all grants for a given subject id and client id combination.
+        /// </summary>
+        /// <param name="subjectId">The subject identifier.</param>
+        /// <param name="clientId">The client identifier.</param>
+        /// <returns></returns>
         public Task RemoveAllGrantsAsync(string subjectId, string clientId)
         {
             return _store.RemoveAllAsync(subjectId, clientId);

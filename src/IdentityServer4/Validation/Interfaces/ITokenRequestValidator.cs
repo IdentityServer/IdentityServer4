@@ -8,8 +8,17 @@ using IdentityServer4.Models;
 
 namespace IdentityServer4.Validation
 {
+    /// <summary>
+    /// Interface for the token request validator
+    /// </summary>
     public interface ITokenRequestValidator
     {
+        /// <summary>
+        /// Validates the request.
+        /// </summary>
+        /// <param name="parameters">The parameters.</param>
+        /// <param name="client">The client.</param>
+        /// <returns></returns>
         Task<TokenRequestValidationResult> ValidateRequestAsync(NameValueCollection parameters, Client client);
     }
 }

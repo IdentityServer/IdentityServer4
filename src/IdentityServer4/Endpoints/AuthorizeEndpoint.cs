@@ -208,9 +208,10 @@ namespace IdentityServer4.Endpoints
 
             var response = await _authorizeResponseGenerator.CreateResponseAsync(request);
 
-            await RaiseSuccessEventAsync();
+            await RaiseResponseEventAsync(response);
 
             LogResponse(response);
+            
             return new AuthorizeResult(response);
         }
 
@@ -244,7 +245,8 @@ namespace IdentityServer4.Endpoints
                 _logger.LogInformation("{validationDetails}", details);
             }
 
-            await RaiseFailureEventAsync(error);
+            // TODO: should we raise a token failure event for all errors to the authorize endpoint?
+            await RaiseFailureEventAsync(request, error, errorDescription);
 
             return new AuthorizeResult(new AuthorizeResponse {
                 Request = request,
@@ -253,14 +255,41 @@ namespace IdentityServer4.Endpoints
             });
         }
 
-        private async Task RaiseSuccessEventAsync()
+        private Task RaiseResponseEventAsync(AuthorizeResponse response)
         {
-            await _events.RaiseSuccessfulEndpointEventAsync(EventConstants.EndpointNames.Authorize);
+            if (!response.IsError)
+            {
+                LogTokens(response);
+                return _events.RaiseAsync(new TokenIssuedSuccessEvent(response));
+            }
+            else
+            {
+                return RaiseFailureEventAsync(response.Request, response.Error, response.ErrorDescription);
+            }
         }
 
-        private async Task RaiseFailureEventAsync(string error)
+        private Task RaiseFailureEventAsync(ValidatedAuthorizeRequest request, string error, string errorDescription)
         {
-            await _events.RaiseFailureEndpointEventAsync(EventConstants.EndpointNames.Authorize, error);
+            return _events.RaiseAsync(new TokenIssuedFailureEvent(request, error, errorDescription));
         }
-   }
+
+        private void LogTokens(AuthorizeResponse response)
+        {
+            var clientId = $"{response.Request.ClientId} ({response.Request.Client.ClientName ?? "no name set"})";
+            var subjectId = response.Request.Subject.GetSubjectId();
+
+            if (response.IdentityToken != null)
+            {
+                _logger.LogTrace("Identity token issued for {clientId} / {subjectId}: {token}", clientId, subjectId, response.IdentityToken);
+            }
+            if (response.Code != null)
+            {
+                _logger.LogTrace("Code issued for {clientId} / {subjectId}: {token}", clientId, subjectId, response.Code);
+            }
+            if (response.AccessToken != null)
+            {
+                _logger.LogTrace("Access token issued for {clientId} / {subjectId}: {token}", clientId, subjectId, response.AccessToken);
+            }
+        }
+    }
 }

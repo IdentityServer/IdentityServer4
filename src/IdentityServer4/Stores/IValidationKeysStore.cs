@@ -8,8 +8,15 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Stores
 {
+    /// <summary>
+    /// Interface for the validation key store
+    /// </summary>
     public interface IValidationKeysStore
     {
+        /// <summary>
+        /// Gets all validation keys.
+        /// </summary>
+        /// <returns></returns>
         Task<IEnumerable<SecurityKey>> GetValidationKeysAsync();
     }
 }

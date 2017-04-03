@@ -9,8 +9,18 @@ using System.Security.Claims;
 
 namespace IdentityServer4.ResponseHandling
 {
+    /// <summary>
+    /// Interface for the userinfo response generator
+    /// </summary>
     public interface IUserInfoResponseGenerator
     {
+        /// <summary>
+        /// Processes the response.
+        /// </summary>
+        /// <param name="subject">The subject.</param>
+        /// <param name="scopes">The scopes.</param>
+        /// <param name="client">The client.</param>
+        /// <returns></returns>
         Task<Dictionary<string, object>> ProcessAsync(ClaimsPrincipal subject, IEnumerable<string> scopes, Client client);
     }
 }

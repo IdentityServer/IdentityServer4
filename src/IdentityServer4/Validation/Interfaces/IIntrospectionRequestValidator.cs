@@ -8,8 +8,17 @@ using IdentityServer4.Models;
 
 namespace IdentityServer4.Validation
 {
+    /// <summary>
+    /// Interface for the introspection request validator
+    /// </summary>
     public interface IIntrospectionRequestValidator
     {
+        /// <summary>
+        /// Validates the request.
+        /// </summary>
+        /// <param name="parameters">The parameters.</param>
+        /// <param name="apiResource">The API resource.</param>
+        /// <returns></returns>
         Task<IntrospectionRequestValidationResult> ValidateAsync(NameValueCollection parameters, ApiResource apiResource);
     }
 }

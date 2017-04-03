@@ -25,6 +25,13 @@ namespace IdentityServer4.ResponseHandling
         private readonly IConsentService _consent;
         private readonly IProfileService _profile;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthorizeInteractionResponseGenerator"/> class.
+        /// </summary>
+        /// <param name="logger">The logger.</param>
+        /// <param name="options">The options.</param>
+        /// <param name="consent">The consent.</param>
+        /// <param name="profile">The profile.</param>
         public AuthorizeInteractionResponseGenerator(
             ILogger<AuthorizeInteractionResponseGenerator> logger, 
             IdentityServerOptions options, 

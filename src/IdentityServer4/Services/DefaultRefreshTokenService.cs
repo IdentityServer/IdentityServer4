@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityServer4.Events;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
@@ -28,21 +27,14 @@ namespace IdentityServer4.Services
         protected readonly IRefreshTokenStore RefreshTokenStore;
 
         /// <summary>
-        /// The _events
-        /// </summary>
-        protected readonly IEventService Events;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="DefaultRefreshTokenService" /> class.
         /// </summary>
         /// <param name="refreshTokenStore">The refresh token store</param>
-        /// <param name="events">The events.</param>
         /// <param name="logger">The logger</param>
-        public DefaultRefreshTokenService(IRefreshTokenStore refreshTokenStore, IEventService events, ILogger<DefaultRefreshTokenService> logger)
+        public DefaultRefreshTokenService(IRefreshTokenStore refreshTokenStore, ILogger<DefaultRefreshTokenService> logger)
         {
             _logger = logger;
             RefreshTokenStore = refreshTokenStore;
-            Events = events;
         }
 
         /// <summary>
@@ -78,8 +70,6 @@ namespace IdentityServer4.Services
             };
 
             var handle = await RefreshTokenStore.StoreRefreshTokenAsync(refreshToken);
-
-            await RaiseRefreshTokenIssuedEventAsync(handle, refreshToken);
             return handle;
         }
 
@@ -149,30 +139,7 @@ namespace IdentityServer4.Services
                 _logger.LogDebug("No updates to refresh token done");
             }
 
-            await RaiseRefreshTokenRefreshedEventAsync(originalHandle, handle, refreshToken);
-
             return handle;
-        }
-
-        /// <summary>
-        /// Raises the refresh token issued event.
-        /// </summary>
-        /// <param name="handle">The handle.</param>
-        /// <param name="token">The token.</param>
-        protected async Task RaiseRefreshTokenIssuedEventAsync(string handle, RefreshToken token)
-        {
-            await Events.RaiseRefreshTokenIssuedEventAsync(handle, token);
-        }
-
-        /// <summary>
-        /// Raises the refresh token refreshed event.
-        /// </summary>
-        /// <param name="oldHandle">The old handle.</param>
-        /// <param name="newHandle">The new handle.</param>
-        /// <param name="token">The token.</param>
-        protected async Task RaiseRefreshTokenRefreshedEventAsync(string oldHandle, string newHandle, RefreshToken token)
-        {
-            await Events.RaiseSuccessfulRefreshTokenRefreshEventAsync(oldHandle, newHandle, token);
         }
     }
 }

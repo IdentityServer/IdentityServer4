@@ -11,10 +11,13 @@ using Microsoft.Extensions.Logging;
 using IdentityServer4.Hosting;
 using IdentityServer4.Endpoints.Results;
 using Microsoft.AspNetCore.Http;
-using IdentityServer4.Events;
 
 namespace IdentityServer4.Endpoints
 {
+    /// <summary>
+    /// Introspection endpoint
+    /// </summary>
+    /// <seealso cref="IdentityServer4.Hosting.IEndpoint" />
     public class IntrospectionEndpoint : IEndpoint
     {
         private readonly IEventService _events;
@@ -23,6 +26,14 @@ namespace IdentityServer4.Endpoints
         private readonly IIntrospectionRequestValidator _requestValidator;
         private readonly ApiSecretValidator _apiSecretValidator;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IntrospectionEndpoint"/> class.
+        /// </summary>
+        /// <param name="apiSecretValidator">The API secret validator.</param>
+        /// <param name="requestValidator">The request validator.</param>
+        /// <param name="generator">The generator.</param>
+        /// <param name="events">The events.</param>
+        /// <param name="logger">The logger.</param>
         public IntrospectionEndpoint(ApiSecretValidator apiSecretValidator, IIntrospectionRequestValidator requestValidator, IIntrospectionResponseGenerator generator, IEventService events, ILogger<IntrospectionEndpoint> logger)
         {
             _apiSecretValidator = apiSecretValidator;
@@ -32,6 +43,11 @@ namespace IdentityServer4.Endpoints
             _logger = logger;
         }
 
+        /// <summary>
+        /// Processes the request.
+        /// </summary>
+        /// <param name="context">The HTTP context.</param>
+        /// <returns></returns>
         public async Task<IEndpointResult> ProcessAsync(HttpContext context)
         {
             _logger.LogTrace("Processing introspection request.");
@@ -64,7 +80,7 @@ namespace IdentityServer4.Endpoints
 
             if (validationResult.IsActive)
             {
-                await RaiseSuccessEventAsync(validationResult.Token, "active", apiResult.Resource.Name);
+                LogSuccess(validationResult.Token, "active", apiResult.Resource.Name);
                 return new IntrospectionResult(response);
             }
 
@@ -72,19 +88,19 @@ namespace IdentityServer4.Endpoints
             {
                 if (validationResult.FailureReason == IntrospectionRequestValidationFailureReason.MissingToken)
                 {
-                    await RaiseFailureEventAsync(validationResult.ErrorDescription, validationResult.Token, apiResult.Resource.Name);
+                    LogFailure(validationResult.ErrorDescription, validationResult.Token, apiResult.Resource.Name);
                     return new BadRequestResult("missing_token");
                 }
 
                 if (validationResult.FailureReason == IntrospectionRequestValidationFailureReason.InvalidToken)
                 {
-                    await RaiseSuccessEventAsync(validationResult.Token, "inactive", apiResult.Resource.Name);
+                    LogSuccess(validationResult.Token, "inactive", apiResult.Resource.Name);
                     return new IntrospectionResult(response);
                 }
 
                 if (validationResult.FailureReason == IntrospectionRequestValidationFailureReason.InvalidScope)
                 {
-                    await RaiseFailureEventAsync("API not authorized to introspect token", validationResult.Token, apiResult.Resource.Name);
+                    LogFailure("API not authorized to introspect token", validationResult.Token, apiResult.Resource.Name);
                     return new IntrospectionResult(response);
                 }
             }
@@ -93,22 +109,14 @@ namespace IdentityServer4.Endpoints
             throw new InvalidOperationException("Invalid token introspection outcome");
         }
 
-        private async Task RaiseSuccessEventAsync(string token, string tokenStatus, string apiName)
+        private void LogSuccess(string token, string tokenStatus, string apiName)
         {
             _logger.LogInformation("Success token introspection. Token status: {tokenStatus}, for API name: {apiName}", tokenStatus, apiName);
-
-            await _events.RaiseSuccessfulIntrospectionEndpointEventAsync(
-                token,
-                tokenStatus,
-                apiName);
         }
 
-        private async Task RaiseFailureEventAsync(string error, string token, string apiName)
+        private void LogFailure(string error, string token, string apiName)
         {
             _logger.LogError("Failed token introspection: {error}, for API name: {apiName}", error, apiName);
-
-            await _events.RaiseFailureIntrospectionEndpointEventAsync(
-                error, token, apiName);
         }
     }
 }

@@ -16,15 +16,22 @@ using IdentityServer4.Services;
 
 namespace IdentityServer4.Endpoints.Results
 {
+    /// <summary>
+    /// Result for endsession
+    /// </summary>
+    /// <seealso cref="IdentityServer4.Hosting.IEndpointResult" />
     public class EndSessionResult : IEndpointResult
     {
         private readonly EndSessionValidationResult _result;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EndSessionResult"/> class.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <exception cref="System.ArgumentNullException">result</exception>
         public EndSessionResult(EndSessionValidationResult result)
         {
-            if (result == null) throw new ArgumentNullException(nameof(result));
-
-            _result = result;
+            _result = result ?? throw new ArgumentNullException(nameof(result));
         }
 
         internal EndSessionResult(
@@ -50,6 +57,11 @@ namespace IdentityServer4.Endpoints.Results
             _logoutMessageStore = _logoutMessageStore ?? context.RequestServices.GetRequiredService<IMessageStore<LogoutMessage>>();
         }
 
+        /// <summary>
+        /// Executes the result.
+        /// </summary>
+        /// <param name="context">The HTTP context.</param>
+        /// <returns></returns>
         public async Task ExecuteAsync(HttpContext context)
         {
             Init(context);

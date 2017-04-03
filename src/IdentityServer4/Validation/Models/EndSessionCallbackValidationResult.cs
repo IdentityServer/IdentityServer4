@@ -12,11 +12,28 @@ namespace IdentityServer4.Validation
     /// <seealso cref="IdentityServer4.Validation.ValidationResult" />
     public class EndSessionCallbackValidationResult : ValidationResult
     {
+        /// <summary>
+        /// Gets the client logout urls.
+        /// </summary>
+        /// <value>
+        /// The client logout urls.
+        /// </value>
         public IEnumerable<string> ClientLogoutUrls { get; internal set; }
 
-        // var logoutId = context.Request.Query[_options.UserInteractionOptions.LogoutIdParameter].FirstOrDefault();
+        /// <summary>
+        /// Gets the logout identifier.
+        /// </summary>
+        /// <value>
+        /// The logout identifier.
+        /// </value>
         public string LogoutId { get; internal set; }
 
+        /// <summary>
+        /// Gets or sets the session identifier.
+        /// </summary>
+        /// <value>
+        /// The session identifier.
+        /// </value>
         public string SessionId { get; set; }
     }
 }

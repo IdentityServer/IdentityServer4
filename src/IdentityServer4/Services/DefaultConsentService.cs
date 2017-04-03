@@ -26,7 +26,7 @@ namespace IdentityServer4.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultConsentService" /> class.
         /// </summary>
-        /// <param name="grants">The grants.</param>
+        /// <param name="userConsentStore">The user consent store.</param>
         /// <exception cref="System.ArgumentNullException">store</exception>
         public DefaultConsentService(IUserConsentStore userConsentStore)
         {

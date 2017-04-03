@@ -83,12 +83,16 @@ namespace IdentityServer4.Validation
         /// </value>
         public ScopeValidator ValidatedScopes { get; set; }
 
+        /// <summary>
+        /// Sets the client and the appropriate request specific settings.
+        /// </summary>
+        /// <param name="client">The client.</param>
         public void SetClient(Client client)
         {
             Client = client;
             AccessTokenLifetime = client.AccessTokenLifetime;
             AccessTokenType = client.AccessTokenType;
-            ClientClaims = client.Claims.Select(c => new Claim(c.Type, c.Value)).ToList();
+            ClientClaims = client.Claims.Select(c => new Claim(c.Type, c.Value, c.ValueType, c.Issuer)).ToList();
         }
     }
 }

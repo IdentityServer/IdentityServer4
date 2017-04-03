@@ -12,6 +12,7 @@ using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Xunit;
+using System.Security.Claims;
 
 namespace IdentityServer4.Tests.Validation.Secrets
 {
@@ -43,25 +44,7 @@ namespace IdentityServer4.Tests.Validation.Secrets
         {
             var context = new DefaultHttpContext();
 
-            var body = "client_id=client&client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&client_assertion=token";
-
-            context.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(body));
-            context.Request.ContentType = "application/x-www-form-urlencoded";
-
-            var secret = await _parser.ParseAsync(context);
-
-            secret.Should().NotBeNull();
-            secret.Type.Should().Be(IdentityServerConstants.ParsedSecretTypes.JwtBearer);
-            secret.Id.Should().Be("client");
-            secret.Credential.Should().Be("token");
-        }
-
-        [Fact]
-        public async void Valid_ClientAssertion_ImplicitClientId()
-        {
-            var context = new DefaultHttpContext();
-
-            var token = new JwtSecurityToken(issuer: "client");
+            var token = new JwtSecurityToken(issuer: "issuer", claims: new[] { new Claim("sub", "client") });
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
             var body = "client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&client_assertion=" + tokenString;
