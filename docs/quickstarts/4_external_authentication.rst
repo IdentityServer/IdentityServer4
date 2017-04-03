@@ -18,14 +18,11 @@ local IdentityServer by adding the */signin-google* path to your base-address (e
 If you are running on port 5000 - you can simply use the client id/secret from the code snippet
 below, since this is pre-registered by us.
 
-Add the Google and cookie authentication NuGet packages to your project.json:
-
-* `Microsoft.AspNetCore.Authentication.Cookies`
-* `Microsoft.AspNetCore.Authentication.Google`
+Start by adding the Google authentication middleware nuget to your project (``Microsoft.AspNetCore.Authentication.Google``).
 
 Next we need to add the middleware to the pipeline.
 Order is important, the additional authentication middleware must run **after**
-IdentityServer and **before** MVC.
+IdentityServer but **before** MVC.
 
 By default, we wire up a cookie middleware behind the scenes, so that the external authentication can
 store its outcome. You simply need to add the external authentication middleware to the pipeline and make it use
