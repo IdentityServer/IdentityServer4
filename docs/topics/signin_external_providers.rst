@@ -1,3 +1,4 @@
+.. _refExternalIdentityProviders:
 External Identity Providers
 ===========================
 
