@@ -7,7 +7,7 @@ Once an API has learned about the key material, it can validate self-contained t
 This makes JWTs hard to revoke. They will stay valid until they expire.
 
 When using reference tokens - IdentityServer will store the contents of the token in a data store and will only issue a unique identifier for this token back to the client.
-The API receiving this reference must then open a back-channel communication to IdentityServert to validate the token.
+The API receiving this reference must then open a back-channel communication to IdentityServer to validate the token.
 
 .. image:: images/reference_tokens.png
 
@@ -15,8 +15,8 @@ You can switch the token type of a client using the following setting::
 
     client.AccessTokenType = AccessTokenTypes.Reference;
 
-IdentityServer provides an implementation of the OAuth 2.0 introspection specification which allows APIs to derefence the tokens.
-You can either use our dedicated `introspection middleware <https://github.com/IdentityModel/IdentityModel.AspNetCore.OAuth2Introspection>`_ 
+IdentityServer provides an implementation of the OAuth 2.0 introspection specification which allows APIs to dereference the tokens.
+You can either use our dedicated `introspection middleware <https://github.com/IdentityModel/IdentityModel.AspNetCore.OAuth2Introspection>`_
 or use the `identity server authentication middleware <https://github.com/IdentityServer/IdentityServer4.AccessTokenValidation>`_ which can validate both JWTs and reference tokens.
 
 The introspection endpoint requires authentication - since the client of an introspection endpoint is an API, you configure the secret on the ``ApiResource``::
