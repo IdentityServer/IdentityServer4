@@ -35,7 +35,7 @@ Authentication
 
 Events
 ^^^^^^
-Not yet implemented in IdentityServer.
+Allows configuring if and which events should be submitted to a registered event sink. See :ref:`here <refEvents>` for more information on events.
 
 InputLengthRestrictions
 ^^^^^^^^^^^^^^^^^^^^^^^
