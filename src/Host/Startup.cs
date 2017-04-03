@@ -34,7 +34,7 @@ namespace Host
             loggerFactory
                 .WithFilter(new FilterLoggerSettings
                 {
-                    { "IdentityServer", LogLevel.Debug },
+                    { "IdentityServer4", LogLevel.Debug },
                     { "Microsoft", LogLevel.Information },
                     { "System", LogLevel.Error },
                 })
