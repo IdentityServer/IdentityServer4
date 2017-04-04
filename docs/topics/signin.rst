@@ -5,7 +5,7 @@ In order for IdentityServer to issue tokens on behalf of a user, that user must 
 
 Cookie authentication
 ^^^^^^^^^^^^^^^^^^^^^
-Authentication is tracked with a cookie managed by the cookie authentication middleware from ASP.NET Core.
+Authentication is tracked with a cookie managed by the `cookie authentication <https://docs.microsoft.com/en-us/aspnet/core/security/authentication/cookie>`_ middleware from ASP.NET Core.
 You can register the cookie middleware yourself, or IdentityServer can automatically register it.
 
 If you wish to use your own cookie authentication middleware (typically to change the default settings), then you must tell IdentityServer by setting the 
