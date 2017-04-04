@@ -81,7 +81,7 @@ namespace IdentityServer4.Endpoints
             var issuerUri = context.GetIdentityServerIssuerUri();
 
             var response = await _responseGenerator.CreateDiscoveryDocumentAsync(baseUrl, issuerUri);
-            return new DiscoveryDocumentResult(response);
+            return new DiscoveryDocumentResult(response, _options.Discovery.ClientCacheInterval);
         }
 
         private async Task<IEndpointResult> ExecuteJwksAsync()
@@ -95,7 +95,7 @@ namespace IdentityServer4.Endpoints
             }
 
             var response = await _responseGenerator.CreateJwkDocumentAsync();
-            return new JsonWebKeysResult(response);
+            return new JsonWebKeysResult(response, _options.Discovery.ClientCacheInterval);
         }
     }
 }

@@ -5,6 +5,7 @@
 using IdentityServer4.Hosting;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -25,12 +26,22 @@ namespace IdentityServer4.Endpoints.Results
         public IEnumerable<JsonWebKey> WebKeys { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="JsonWebKeysResult"/> class.
+        /// Gets the maximum age.
+        /// </summary>
+        /// <value>
+        /// The maximum age.
+        /// </value>
+        public int MaxAge { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JsonWebKeysResult" /> class.
         /// </summary>
         /// <param name="webKeys">The web keys.</param>
-        public JsonWebKeysResult(IEnumerable<JsonWebKey> webKeys)
+        /// <param name="maxAge">The maximum age.</param>
+        public JsonWebKeysResult(IEnumerable<JsonWebKey> webKeys, int maxAge)
         {
-            WebKeys = webKeys;
+            WebKeys = webKeys ?? throw new ArgumentNullException(nameof(webKeys));
+            MaxAge = maxAge;
         }
 
         /// <summary>
@@ -40,6 +51,7 @@ namespace IdentityServer4.Endpoints.Results
         /// <returns></returns>
         public Task ExecuteAsync(HttpContext context)
         {
+            context.Response.SetCache(MaxAge);
             return context.Response.WriteJsonAsync(new { keys = WebKeys });
         }
     }

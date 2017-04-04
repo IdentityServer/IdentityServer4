@@ -25,15 +25,23 @@ namespace IdentityServer4.Endpoints.Results
         public Dictionary<string, object> Entries { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DiscoveryDocumentResult"/> class.
+        /// Gets the maximum age.
+        /// </summary>
+        /// <value>
+        /// The maximum age.
+        /// </value>
+        public int MaxAge { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DiscoveryDocumentResult" /> class.
         /// </summary>
         /// <param name="entries">The entries.</param>
+        /// <param name="maxAge">The maximum age.</param>
         /// <exception cref="System.ArgumentNullException">entries</exception>
-        public DiscoveryDocumentResult(Dictionary<string, object> entries)
+        public DiscoveryDocumentResult(Dictionary<string, object> entries, int maxAge)
         {
-            if (entries == null) throw new ArgumentNullException(nameof(entries));
-
-            Entries = entries;
+            Entries = entries ?? throw new ArgumentNullException(nameof(entries));
+            MaxAge = maxAge;
         }
 
         /// <summary>
@@ -43,8 +51,8 @@ namespace IdentityServer4.Endpoints.Results
         /// <returns></returns>
         public Task ExecuteAsync(HttpContext context)
         {
-            var jobject = ObjectSerializer.ToJObject(Entries);
-            return context.Response.WriteJsonAsync(jobject);
+            context.Response.SetCache(MaxAge);
+            return context.Response.WriteJsonAsync(ObjectSerializer.ToJObject(Entries));
         }
     }
 }

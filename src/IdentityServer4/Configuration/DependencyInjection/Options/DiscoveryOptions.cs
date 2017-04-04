@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System;
 using System.Collections.Generic;
 
 namespace IdentityServer4.Configuration
@@ -65,6 +66,14 @@ namespace IdentityServer4.Configuration
         /// Turns relative paths that start with ~/ into absolute paths
         /// </summary>
         public bool ExpandRelativePathsInCustomEntries { get; set; } = true;
+
+        /// <summary>
+        /// Sets the maxage value of the cache control header (in seconds). This gives clients a hint how often they should refresh their cached copy of the discovery document (defaults to one hour).
+        /// </summary>
+        /// <value>
+        /// The cache interval in seconds.
+        /// </value>
+        public int ClientCacheInterval { get; set; } = 3600;
 
         /// <summary>
         /// Adds custom entries to the discovery document

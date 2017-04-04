@@ -25,6 +25,14 @@ namespace Microsoft.AspNetCore.Http
             await response.WriteAsync(json);
         }
 
+        public static void SetCache(this HttpResponse response, int maxAge)
+        {
+            if (!response.Headers.ContainsKey("Cache-Control"))
+            {
+                response.Headers.Add("Cache-Control", $"max-age={maxAge}");
+            }
+        }
+
         public static void SetNoCache(this HttpResponse response)
         {
             if (!response.Headers.ContainsKey("Cache-Control"))
