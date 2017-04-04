@@ -1,3 +1,4 @@
+.. _refSignIn:
 Sign-in
 =======
 
