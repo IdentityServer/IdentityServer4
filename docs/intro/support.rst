@@ -19,6 +19,12 @@ https://stackoverflow.com/questions/tagged/?tagnames=identityserver4&sort=newest
 
 Please use the ``IdentityServer4`` tag when asking new questions
 
+**Gitter**
+
+You can chat with other IdentityServer4 users in our Gitter chat room:
+
+https://gitter.im/IdentityServer/IdentityServer4
+
 **Reporting a bug**
 
 If you think you have found a bug or unexpected behavior, please open an issue on the Github `issue tracker <https://github.com/IdentityServer/IdentityServer4/issues>`_.

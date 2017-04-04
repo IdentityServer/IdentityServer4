@@ -61,3 +61,15 @@ The two fundamental security concerns, authentication and API access, are combin
 We believe that the combination of OpenID Connect and OAuth 2.0 is the best approach to secure modern
 applications for the foreseeable future. IdentityServer4 is an implementation of these two protocols and is
 highly optimized to solve the typical security problems of today’s mobile, native and web applications.
+
+How IdentityServer4 can help
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+IdentityServer is middleware that adds the spec compliant OpenID Connect and OAuth 2.0 endpoints to an arbitrary ASP.NET Core application.
+
+Typically, you build (or re-use) an application that contains a login and logout page (and maybe consent - depending on your needs),
+and the IdentityServer middleware adds the necessary protocol heads to it, so that client applications can talk to it using those standard protocols.
+
+.. image:: images/middleware.png
+
+The hosting application can be as complex as you want, but we typically recommend to keep the attack surface as small as possible by including
+authentication related UI only.
