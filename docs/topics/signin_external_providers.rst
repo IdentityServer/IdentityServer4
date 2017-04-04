@@ -30,7 +30,7 @@ The signin scheme specifies the name of the cookie middleware that will temporar
 e.g. the claims that got sent by the external provider. This is necessary, since there are typically a couple of redirects involved until you are done with the 
 external authentication process.
 
-If you don't take over control of your cookie configuration by setting your own authentication scheme on the IdentityServer options (see :ref:`quickstart <refSignIn>`),
+If you don't take over control of your cookie configuration by setting your own authentication scheme on the IdentityServer options (see :ref:`here <refSignIn>`),
 we automatically register a cookie middleware called ``idsrv.external``.
 
 You can also register your own like this::
@@ -47,13 +47,13 @@ Triggering the authentication middleware
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 You invoke an external authentication middleware via the ``ChallengeAsync`` method on the ASP.NET Core authentication manager (or using the MVC ``ChallengeResult``).
 
-You typically want to pass in some options to the challenge operation, e.g. the path to your callback page and the name of the provider for book keeping, e.g.::
+You typically want to pass in some options to the challenge operation, e.g. the path to your callback page and the name of the provider for bookkeeping, e.g.::
 
     var callbackUrl = Url.Action("ExternalLoginCallback", new { returnUrl = returnUrl });
     
     var props = new AuthenticationProperties
     {
-        RedirectUri = returnUrl,
+        RedirectUri = callbackUrl,
         Items = { { "scheme", provider } }
     };
     
@@ -65,7 +65,7 @@ On the callback page your typical tasks are:
 
 * inspect the identity returned by the external provider.
 * make a decision how you want to deal with that user. This might be different based on the fact if this is a new user or a returning user.
-* new users might need additional steps and UI before they are "let in".
+* new users might need additional steps and UI before they are allowed in.
 * probably create a new internal user account that is linked to the external provider.
 * store the external claims that you want to keep.
 * delete the temporary cookie
@@ -96,7 +96,7 @@ On the callback page your typical tasks are:
         throw new Exception("Unknown userid");
     }
 
-**Cleanup and sign-in**::
+**Clean-up and sign-in**::
 
     // issue authentication cookie for user
     await HttpContext.Authentication.SignInAsync(user.SubjectId, user.Username, provider, props, additionalClaims.ToArray());
