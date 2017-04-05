@@ -8,9 +8,9 @@ Popular libraries are e.g.:
 
 * `JWT bearer authentication middleware <https://www.nuget.org/packages/Microsoft.AspNetCore.Authentication.JwtBearer/>`_ for ASP.NET Core
 * `JWT bearer authentication middleware <https://www.nuget.org/packages/Microsoft.Owin.Security.Jwt>`_ for Katana
-* `jsonwebtoken <https://www.npmjs.com/package/jsonwebtoken>` for nodejs
+* `jsonwebtoken <https://www.npmjs.com/package/jsonwebtoken>`_ for nodejs
 
-Protecting an MVC Core-based API is only a matter of adding the nuget package (Microsoft.AspNetCore.Authentication.JwtBearer) to your project
+Protecting an MVC Core-based API is only a matter of adding the nuget package *(Microsoft.AspNetCore.Authentication.JwtBearer)* to your project
 and adding the middleware to the ASP.NET Core pipeline::
 
     public class Startup
@@ -35,8 +35,8 @@ and adding the middleware to the ASP.NET Core pipeline::
 
 The IdentityServer authentication middleware
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Our `authentication middleware` serves the same purpose as the above middleware (in fact it uses the Microsoft JWT middleware internally),
-but adds a couple of additional features:
+Our authentication middleware serves the same purpose as the above middleware 
+(in fact it uses the Microsoft JWT middleware internally), but adds a couple of additional features:
 
 * support for both JWTs and reference tokens
 * extensible caching for reference tokens
@@ -101,7 +101,8 @@ Validating scopes
 ^^^^^^^^^^^^^^^^^
 The `ApiName` property checks if the token has a matching audience (or short ``aud``) claim.
 
-In IdentityServer you can also sub-divide APIs into multiple scopes. If you need that granularity and want to check those scopes at the middleware level, you can add the settings::
+In IdentityServer you can also sub-divide APIs into multiple scopes. If you need that granularity and want to check those scopes at the middleware level, 
+you can add the ``AllowedScopes`` property::
 
     app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
     {
