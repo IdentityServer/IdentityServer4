@@ -44,6 +44,7 @@ IdentityServer is officially certified by the OpenID Foundation and part of the 
    :caption: Introduction
 
    intro/big_picture
+   intro/architecture
    intro/terminology
    intro/specs
    intro/packaging
@@ -82,24 +83,23 @@ IdentityServer is officially certified by the OpenID Foundation and part of the 
    :hidden:
    :caption: Topics
 
-   topics/signin
-   topics/signout
-   topics/signout_federated
-   topics/consent
-   topics/signin_external_providers
-   topics/signout_external_providers
-   topics/windows
-   topics/federation_gateway
-   topics/logging
-   topics/events
-   topics/deployment
    topics/grant_types
    topics/secrets
    topics/extension_grants
    topics/resource_owner
    topics/crypto
+   topics/deployment
+   topics/signin
+   topics/signin_external_providers
+   topics/consent
+   topics/signout
+   topics/signout_external_providers
+   topics/signout_federated
+   topics/logging
+   topics/events
    topics/refresh_tokens
    topics/reference_tokens
+   topics/windows
    topics/cors
    topics/discovery
    topics/add_protocols

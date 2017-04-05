@@ -14,7 +14,7 @@ Quickstart UI
 ^^^^^^^^^^^^^
 `github <https://github.com/IdentityServer/IdentityServer4.Quickstart.UI>`_
 
-Contains are simple starter UI including login, logout and consent pages.
+Contains a simple starter UI including login, logout and consent pages.
 
 Access token validation middleware
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
