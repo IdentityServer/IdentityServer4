@@ -119,6 +119,7 @@ IdentityServer is officially certified by the OpenID Foundation and part of the 
    endpoints/userinfo
    endpoints/introspection
    endpoints/revocation
+   endpoints/endsession
 
 .. toctree::
    :maxdepth: 2
