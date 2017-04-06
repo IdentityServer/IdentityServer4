@@ -28,7 +28,7 @@ and the `session management <https://openid.net/specs/openid-connect-session-1_0
 **Server-side clients**
 
 To signout the user from the server-side client applications, the "logged out" page in IdentityServer must render an ``<iframe>`` to notify the clients that the user has signed out.
-IdentityServer tracks which clients the user has signed into, and provides an API called ``GetLogoutContextAsync`` on the ``IIdentityServerInteractionService`` (:doc:`../reference/interactionservice`). 
+IdentityServer tracks which clients the user has signed into, and provides an API called ``GetLogoutContextAsync`` on the ``IIdentityServerInteractionService`` (:ref:`details <refInteractionService>`). 
 This API returns a ``LogoutRequest`` object with a ``SignOutIFrameUrl`` property that your logged out page must render into an ``<iframe>``.
 
 **Browser-based JavaScript clients**
