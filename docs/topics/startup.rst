@@ -1,3 +1,4 @@
+.. _refStartup:
 Startup
 =======
 
@@ -17,6 +18,7 @@ Optionally you can pass in options into this call. See :ref:`here <refOptions>` 
 
 This will return you a builder object that in turn has a number of convenience methods to wire up additional services.
 
+.. _refStartupKeyMaterial:
 **Key material**
 
 * ``AddSigningCredential``
