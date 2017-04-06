@@ -11,7 +11,7 @@ This typically includes:
 
 * resources
 * clients
-* startup configuratio, e.g. key material
+* startup configuration, e.g. key material
 
 All of that configuration data must be shared by all instances running your identity server. For resources and clients you can either implement
 ``IResourceStore`` and ``IClientStore`` from scratch - or you can use our built-in support for `Entity Framework <https://github.com/IdentityServer/IdentityServer4.EntityFramework>`_ based databases.
