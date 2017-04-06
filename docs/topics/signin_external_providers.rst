@@ -1,6 +1,6 @@
 .. _refExternalIdentityProviders:
-External Identity Providers
-===========================
+Sign-in with External Identity Providers
+========================================
 
 ASP.NET Core has a flexible way to deal with external authentication. This involves a couple of steps.
 
