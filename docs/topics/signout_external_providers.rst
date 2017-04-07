@@ -4,6 +4,7 @@ Sign-out of External Identity Providers
 
 When a user is :ref:`signing-out <refSignOut>` of IdentityServer, and they have used an :ref:`external identity provider <refExternalIdentityProviders>` to sign-in then it is likely that they should be redirected to also sign-out of the external provider.
 Not all external providers support sign-out, as it depends on the protocol and features they support.
+
 To detect that a user must be redirected to an external identity provider for sign-out is typically done by using a ``idp`` claim issued into the cookie at IdentityServer.
 The value set into this claim is the ``AuthenticationScheme`` of the corresponding authentication middleware.
 At sign-out time this claim is consulted to know if an external sign-out is required.
