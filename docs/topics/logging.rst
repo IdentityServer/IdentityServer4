@@ -1,3 +1,4 @@
+
 Logging
 =======
 IdentityServer uses the standard logging facilities provided by ASP.NET Core.
@@ -16,6 +17,11 @@ Setup
 ^^^^^
 We personally like `Serilog <https://serilog.net/>`_ a lot. Give it a try.
 
+Install Serilog packages: 
+From Package Manager Console verify that Default Project drop-down has your project selected and run
+    install-package Serilog.Extensions.Logging
+    install-package Serilog.Sinks.File
+    
 You want to setup logging as early as possible in your application host, e.g. in the constructor of your startup class, e.g::
 
     public class Startup
