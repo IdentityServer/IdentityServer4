@@ -68,12 +68,12 @@ namespace IdentityServer4.Configuration
         public bool ExpandRelativePathsInCustomEntries { get; set; } = true;
 
         /// <summary>
-        /// Sets the maxage value of the cache control header (in seconds). This gives clients a hint how often they should refresh their cached copy of the discovery document (defaults to one hour).
+        /// Sets the maxage value of the cache control header (in seconds) of the HTTP response. This gives clients a hint how often they should refresh their cached copy of the discovery document (defaults to one hour).
         /// </summary>
         /// <value>
         /// The cache interval in seconds.
         /// </value>
-        public int ClientCacheInterval { get; set; } = 3600;
+        public int ResponseCacheInterval { get; set; } = 3600;
 
         /// <summary>
         /// Adds custom entries to the discovery document
