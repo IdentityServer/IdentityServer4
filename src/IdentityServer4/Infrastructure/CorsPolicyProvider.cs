@@ -75,15 +75,17 @@ namespace IdentityServer4
 
         private CorsPolicy Allow(string origin)
         {
-            var policyBuilder = new CorsPolicyBuilder();
-
-            var policy = policyBuilder
+            var policyBuilder = new CorsPolicyBuilder()
                 .WithOrigins(origin)
                 .AllowAnyHeader()
-                .AllowAnyMethod()
-                .Build();
+                .AllowAnyMethod();
 
-            return policy;
+            if (_options.Cors.PreflightCacheDuration.HasValue)
+            {
+                policyBuilder.SetPreflightMaxAge(_options.Cors.PreflightCacheDuration.Value);
+            }
+
+            return policyBuilder.Build();
         }
 
         private bool IsPathAllowed(PathString path)

@@ -4,6 +4,7 @@
 
 using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -21,6 +22,11 @@ namespace IdentityServer4.Configuration
         /// The name of the cors policy.
         /// </value>
         public string CorsPolicyName { get; set; } = Constants.IdentityServerName;
+
+        /// <summary>
+        /// The duration that CORS preflight responses are to be cached for.
+        /// </summary>
+        public TimeSpan? PreflightCacheDuration { get; set; }
 
         /// <summary>
         /// Gets or sets the cors paths.
