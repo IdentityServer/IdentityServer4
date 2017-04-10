@@ -199,7 +199,7 @@ namespace IdentityServer4.Validation
             var authZcode = await _authorizationCodeStore.GetAuthorizationCodeAsync(code);
             if (authZcode == null)
             {
-                LogError("Authorization code cannot be found in the store: {code}", code);
+                LogError("Invalid authorization code: {code}", code);
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
@@ -471,7 +471,7 @@ namespace IdentityServer4.Validation
             var refreshToken = await _refreshTokenStore.GetRefreshTokenAsync(refreshTokenHandle);
             if (refreshToken == null)
             {
-                LogError("Refresh token cannot be found in store: {refreshToken}", refreshTokenHandle);
+                LogError("Invalid refresh token: {refreshToken}", refreshTokenHandle);
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 

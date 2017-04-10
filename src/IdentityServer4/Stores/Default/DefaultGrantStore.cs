@@ -67,19 +67,30 @@ namespace IdentityServer4.Stores
         /// <returns></returns>
         protected async Task<T> GetItemAsync(string key)
         {
-            key = GetHashedKey(key);
+            var hashedKey = GetHashedKey(key);
 
-            var grant = await _store.GetAsync(key);
-            if (grant != null && grant.Type == _grantType && !grant.Expiration.HasExpired())
+            var grant = await _store.GetAsync(hashedKey);
+            if (grant != null && grant.Type == _grantType)
             {
-                try
+                if (!grant.Expiration.HasExpired())
                 {
-                    return _serializer.Deserialize<T>(grant.Data);
+                    try
+                    {
+                        return _serializer.Deserialize<T>(grant.Data);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError("Failed to deserailize JSON from grant store. Exception: {0}", ex.Message);
+                    }
                 }
-                catch(Exception ex)
+                else
                 {
-                    _logger.LogError("Failed to deserailize JSON from grant store. Exception: {0}", ex.Message);
+                    _logger.LogDebug("{grantType} grant with value: {key} found in store, but has expired.", _grantType, key);
                 }
+            }
+            else
+            {
+                _logger.LogDebug("{grantType} grant with value: {key} not found in store.", _grantType, key);
             }
 
             return default(T);
