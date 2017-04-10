@@ -24,7 +24,7 @@ namespace IdentityServer4.Configuration
         public string CorsPolicyName { get; set; } = Constants.IdentityServerName;
 
         /// <summary>
-        /// The duration that CORS preflight responses are to be cached for.
+        /// The value to be used in the preflight `Access-Control-Max-Age` response header.
         /// </summary>
         public TimeSpan? PreflightCacheDuration { get; set; }
 
