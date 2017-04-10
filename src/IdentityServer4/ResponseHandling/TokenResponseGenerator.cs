@@ -122,19 +122,19 @@ namespace IdentityServer4.ResponseHandling
             //////////////////////////
             // access token
             /////////////////////////
-            var tokens = await CreateAccessTokenAsync(request.ValidatedRequest);
+            (var accessToken, var refreshToken) = await CreateAccessTokenAsync(request.ValidatedRequest);
             var response = new TokenResponse
             {
-                AccessToken = tokens.AccessTokens,
+                AccessToken = accessToken,
                 AccessTokenLifetime = request.ValidatedRequest.AccessTokenLifetime
             };
 
             //////////////////////////
             // refresh token
             /////////////////////////
-            if (tokens.RefreshToken.IsPresent())
+            if (refreshToken.IsPresent())
             {
-                response.RefreshToken = tokens.RefreshToken;
+                response.RefreshToken = refreshToken;
             }
 
             //////////////////////////
@@ -236,17 +236,17 @@ namespace IdentityServer4.ResponseHandling
         /// <returns></returns>
         protected virtual async Task<TokenResponse> ProcessTokenRequestAsync(TokenRequestValidationResult validationResult)
         {
-            var tokens = await CreateAccessTokenAsync(validationResult.ValidatedRequest);
+            (var accessToken, var refreshToken) = await CreateAccessTokenAsync(validationResult.ValidatedRequest);
             var response = new TokenResponse
             {
-                AccessToken = tokens.AccessTokens,
+                AccessToken = accessToken,
                 AccessTokenLifetime = validationResult.ValidatedRequest.AccessTokenLifetime,
                 Custom = validationResult.CustomResponse
             };
 
-            if (tokens.RefreshToken.IsPresent())
+            if (refreshToken.IsPresent())
             {
-                response.RefreshToken = tokens.RefreshToken;
+                response.RefreshToken = refreshToken;
             }
 
             return response;
@@ -258,11 +258,10 @@ namespace IdentityServer4.ResponseHandling
         /// <param name="request">The request.</param>
         /// <returns></returns>
         /// <exception cref="System.InvalidOperationException">Client does not exist anymore.</exception>
-        protected async Task<Tokens> CreateAccessTokenAsync(ValidatedTokenRequest request)
+        protected async Task<(string accessToken, string refreshToken)> CreateAccessTokenAsync(ValidatedTokenRequest request)
         {
             TokenCreationRequest tokenRequest;
             bool createRefreshToken;
-            var tokens = new Tokens();
 
             if (request.AuthorizationCode != null)
             {
@@ -300,15 +299,16 @@ namespace IdentityServer4.ResponseHandling
                 };
             }
 
-            Token accessToken = await TokenService.CreateAccessTokenAsync(tokenRequest);
-            tokens.AccessTokens = await TokenService.CreateSecurityTokenAsync(accessToken);
+            var at = await TokenService.CreateAccessTokenAsync(tokenRequest);
+            var accessToken = await TokenService.CreateSecurityTokenAsync(at);
 
             if (createRefreshToken)
             {
-                tokens.RefreshToken = await RefreshTokenService.CreateRefreshTokenAsync(tokenRequest.Subject, accessToken, request.Client);
+                var refreshToken = await RefreshTokenService.CreateRefreshTokenAsync(tokenRequest.Subject, at, request.Client);
+                return (accessToken, refreshToken);
             }
 
-            return tokens;
+            return (accessToken, null);
         }
 
         /// <summary>
@@ -336,28 +336,6 @@ namespace IdentityServer4.ResponseHandling
             }
 
             return null;
-        }
-
-        /// <summary>
-        /// Represents an access token/refresh token tuple
-        /// </summary>
-        protected class Tokens
-        {
-            /// <summary>
-            /// Gets or sets the access tokens.
-            /// </summary>
-            /// <value>
-            /// The access tokens.
-            /// </value>
-            public string AccessTokens { get; set; }
-
-            /// <summary>
-            /// Gets or sets the refresh token.
-            /// </summary>
-            /// <value>
-            /// The refresh token.
-            /// </value>
-            public string RefreshToken { get; set; }
         }
     }
 }
