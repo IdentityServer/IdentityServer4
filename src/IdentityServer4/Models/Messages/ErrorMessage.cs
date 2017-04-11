@@ -24,7 +24,7 @@ namespace IdentityServer4.Models
         /// The UI locales.
         /// </value>
         public string UiLocales { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the error code.
         /// </summary>
@@ -32,6 +32,14 @@ namespace IdentityServer4.Models
         /// The error code.
         /// </value>
         public string Error { get; set; }
+
+        /// <summary>
+        /// Gets or sets the error description.
+        /// </summary>
+        /// <value>
+        /// The error description.
+        /// </value>
+        public string ErrorDescription { get; set; }
 
         /// <summary>
         /// The per-request identifier. This can be used to display to the end user and can be used in diagnostics.

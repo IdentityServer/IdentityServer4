@@ -273,7 +273,7 @@ namespace IdentityServer4.Validation
 
             if (token == null)
             {
-                LogError("Token handle not found in token handle store.");
+                LogError("Invalid reference token.");
                 return Invalid(OidcConstants.ProtectedResourceErrors.InvalidToken);
             }
 

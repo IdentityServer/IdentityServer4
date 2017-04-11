@@ -2,7 +2,7 @@
 Identity Resource
 =================
 
-This class model an identity resource.
+This class models an identity resource.
 
 ``Enabled``
     Indicates if this resource is enabled and can be requested. Defaults to true.

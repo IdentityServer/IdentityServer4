@@ -177,7 +177,8 @@ namespace IdentityServer4.Endpoints.Results
             var errorModel = new ErrorMessage
             {
                 RequestId = context.TraceIdentifier,
-                Error = Response.Error
+                Error = Response.Error,
+                ErrorDescription = Response.ErrorDescription
             };
 
             var message = new MessageWithId<ErrorMessage>(errorModel);

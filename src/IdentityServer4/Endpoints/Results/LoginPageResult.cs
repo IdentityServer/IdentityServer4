@@ -55,7 +55,7 @@ namespace IdentityServer4.Endpoints.Results
         {
             Init(context);
 
-            var returnUrl = context.Request.PathBase.ToString().EnsureTrailingSlash() + Constants.ProtocolRoutePaths.AuthorizeAfterLogin;
+            var returnUrl = context.GetIdentityServerBasePath().EnsureTrailingSlash() + Constants.ProtocolRoutePaths.AuthorizeAfterLogin;
             returnUrl = returnUrl.AddQueryString(_request.Raw.ToQueryString());
 
             var loginUrl = _options.UserInteraction.LoginUrl;
@@ -63,7 +63,7 @@ namespace IdentityServer4.Endpoints.Results
             {
                 // this converts the relative redirect path to an absolute one if we're 
                 // redirecting to a different server
-                returnUrl = context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + returnUrl.RemoveLeadingSlash();
+                returnUrl = context.GetIdentityServerOrigin().EnsureTrailingSlash() + returnUrl.RemoveLeadingSlash();
             }
 
             var url = loginUrl.AddQueryString(_options.UserInteraction.LoginReturnUrlParameter, returnUrl);
