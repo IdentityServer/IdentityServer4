@@ -14,6 +14,10 @@ using Microsoft.AspNetCore.Http;
 
 namespace IdentityServer4.Endpoints
 {
+    /// <summary>
+    /// Introspection endpoint
+    /// </summary>
+    /// <seealso cref="IdentityServer4.Hosting.IEndpoint" />
     public class IntrospectionEndpoint : IEndpoint
     {
         private readonly IEventService _events;
@@ -22,6 +26,14 @@ namespace IdentityServer4.Endpoints
         private readonly IIntrospectionRequestValidator _requestValidator;
         private readonly ApiSecretValidator _apiSecretValidator;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IntrospectionEndpoint"/> class.
+        /// </summary>
+        /// <param name="apiSecretValidator">The API secret validator.</param>
+        /// <param name="requestValidator">The request validator.</param>
+        /// <param name="generator">The generator.</param>
+        /// <param name="events">The events.</param>
+        /// <param name="logger">The logger.</param>
         public IntrospectionEndpoint(ApiSecretValidator apiSecretValidator, IIntrospectionRequestValidator requestValidator, IIntrospectionResponseGenerator generator, IEventService events, ILogger<IntrospectionEndpoint> logger)
         {
             _apiSecretValidator = apiSecretValidator;
@@ -31,6 +43,11 @@ namespace IdentityServer4.Endpoints
             _logger = logger;
         }
 
+        /// <summary>
+        /// Processes the request.
+        /// </summary>
+        /// <param name="context">The HTTP context.</param>
+        /// <returns></returns>
         public async Task<IEndpointResult> ProcessAsync(HttpContext context)
         {
             _logger.LogTrace("Processing introspection request.");

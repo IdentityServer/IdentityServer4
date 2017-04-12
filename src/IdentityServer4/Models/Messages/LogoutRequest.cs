@@ -14,10 +14,17 @@ namespace IdentityServer4.Models
     /// </summary>
     public class LogoutMessage
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogoutMessage"/> class.
+        /// </summary>
         public LogoutMessage()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogoutMessage"/> class.
+        /// </summary>
+        /// <param name="request">The request.</param>
         public LogoutMessage(ValidatedEndSessionRequest request)
         {
             if (request != null)
@@ -37,6 +44,10 @@ namespace IdentityServer4.Models
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogoutMessage"/> class.
+        /// </summary>
+        /// <param name="message">The message.</param>
         public LogoutMessage(LogoutMessage message)
         {
             if (message != null)
@@ -94,6 +105,11 @@ namespace IdentityServer4.Models
     /// </summary>
     public class LogoutRequest : LogoutMessage
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogoutRequest"/> class.
+        /// </summary>
+        /// <param name="iframeUrl">The iframe URL.</param>
+        /// <param name="message">The message.</param>
         public LogoutRequest(string iframeUrl, LogoutMessage message)
             : base(message)
         {

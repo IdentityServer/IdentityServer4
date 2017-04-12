@@ -4,11 +4,24 @@
 
 namespace IdentityServer4.Events
 {
+    /// <summary>
+    /// Categories for events
+    /// </summary>
     public static class EventCategories
     {
-        public const string UserAuthentication = "User Authentication";
-        public const string ClientAuthentication = "Client Authentication";
-        public const string ApiAuthentication = "API Authentication";
+        /// <summary>
+        /// Authentication related events
+        /// </summary>
+        public const string Authentication = "Authentication";
+
+        /// <summary>
+        /// Token related events
+        /// </summary>
         public const string Token = "Token";
+
+        /// <summary>
+        /// Error related events
+        /// </summary>
+        public const string Error = "Error";
     }
 }

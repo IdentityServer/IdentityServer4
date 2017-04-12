@@ -4,9 +4,9 @@ We are very open to community contributions, but there are a couple of guideline
 
 How to contribute?
 ^^^^^^^^^^^^^^^^^^
-The easiest ways to contribute is to open an issue and start a discussion. 
+The easiest way to contribute is to open an issue and start a discussion. 
 Then we can decide if and how a feature or a change could be implemented. 
-If you should submit a pull requests with code changes, start with a description, only make the minimal changes to start with and provide tests that cover those changes.
+If you should submit a pull request with code changes, start with a description, only make the minimal changes to start with and provide tests that cover those changes.
 
 Also read this first: `Being a good open source citizen <https://hackernoon.com/being-a-good-open-source-citizen-9060d0ab9732#.x3hocgw85>`_
 
@@ -47,7 +47,7 @@ We generally don't want to take ownership of those contribution libraries, we ar
 
 **Naming conventions**
 
-If you publish nuget packages that contributes to IdentityServer, we would like to ask you to **not** use the IdentityServer4 prefix - rather use a suffix, e.g.
+If you publish nuget packages that contribute to IdentityServer, we would like to ask you to **not** use the IdentityServer4 prefix - rather use a suffix, e.g.
 
 **good** MyProject.MongoDb.IdentityServer4
 

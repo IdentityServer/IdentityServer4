@@ -1,3 +1,4 @@
+.. _refStartup:
 Startup
 =======
 
@@ -17,6 +18,7 @@ Optionally you can pass in options into this call. See :ref:`here <refOptions>` 
 
 This will return you a builder object that in turn has a number of convenience methods to wire up additional services.
 
+.. _refStartupKeyMaterial:
 **Key material**
 
 * ``AddSigningCredential``
@@ -24,6 +26,9 @@ This will return you a builder object that in turn has a number of convenience m
     You can pass in either an ``X509Certificate2``, a ``SigningCredential`` or a reference to a certificate from the certificate store.
 * ``AddTemporarySigningCredential``
     Creates temporary key material at startup time. This is for dev only scenarios when you don't have a certificate to use.
+* ``AddDeveloperSigningCredential``
+    Same purpose as the temporary signing credential. But this version persists the key to the file system so it stays stable
+    between server restarts. This addresses issues when the client/api metadata caches get out of sync during development.
 * ``AddValidationKeys``
     Adds keys for validating tokens. They will be used by the internal token validator and will show up in the discovery document.
     This is useful for key roll-over scenarios.

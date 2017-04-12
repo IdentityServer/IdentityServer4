@@ -13,15 +13,29 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.ResponseHandling
 {
+    /// <summary>
+    /// The introspection response generator
+    /// </summary>
+    /// <seealso cref="IdentityServer4.ResponseHandling.IIntrospectionResponseGenerator" />
     public class IntrospectionResponseGenerator : IIntrospectionResponseGenerator
     {
         private readonly ILogger _logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IntrospectionResponseGenerator"/> class.
+        /// </summary>
+        /// <param name="logger">The logger.</param>
         public IntrospectionResponseGenerator(ILogger<IntrospectionResponseGenerator> logger)
         {
             _logger = logger;
         }
 
+        /// <summary>
+        /// Processes the response.
+        /// </summary>
+        /// <param name="validationResult">The validation result.</param>
+        /// <param name="apiResource">The API resource.</param>
+        /// <returns></returns>
         public Task<Dictionary<string, object>> ProcessAsync(IntrospectionRequestValidationResult validationResult, ApiResource apiResource)
         {
             _logger.LogTrace("Creating introspection response");
@@ -30,8 +44,11 @@ namespace IdentityServer4.ResponseHandling
             {
                 _logger.LogDebug("Creating introspection response for inactive token.");
 
-                var response = new Dictionary<string, object>();
-                response.Add("active", false);
+                var response = new Dictionary<string, object>
+                {
+                    { "active", false }
+                };
+
                 return Task.FromResult(response);
             }
             else

@@ -10,8 +10,20 @@ using IdentityServer4.Extensions;
 
 namespace IdentityServer4
 {
+    /// <summary>
+    /// Extensions for IdentityServerTools
+    /// </summary>
     public static class IdentityServerToolsExtensions
     {
+        /// <summary>
+        /// Issues the client JWT.
+        /// </summary>
+        /// <param name="tools">The tools.</param>
+        /// <param name="clientId">The client identifier.</param>
+        /// <param name="lifetime">The lifetime.</param>
+        /// <param name="scopes">The scopes.</param>
+        /// <param name="audiences">The audiences.</param>
+        /// <returns></returns>
         public static async Task<string> IssueClientJwtAsync(this IdentityServerTools tools, string clientId, int lifetime, IEnumerable<string> scopes = null, IEnumerable<string> audiences = null)
         {
             var claims = new HashSet<Claim>(new ClaimComparer());

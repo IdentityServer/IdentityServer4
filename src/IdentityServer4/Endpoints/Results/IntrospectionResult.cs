@@ -10,17 +10,35 @@ using System;
 
 namespace IdentityServer4.Endpoints.Results
 {
+    /// <summary>
+    /// Result for introspection
+    /// </summary>
+    /// <seealso cref="IdentityServer4.Hosting.IEndpointResult" />
     public class IntrospectionResult : IEndpointResult
     {
+        /// <summary>
+        /// Gets the result.
+        /// </summary>
+        /// <value>
+        /// The result.
+        /// </value>
         public Dictionary<string, object> Result { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IntrospectionResult"/> class.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <exception cref="System.ArgumentNullException">result</exception>
         public IntrospectionResult(Dictionary<string, object> result)
         {
-            if (result == null) throw new ArgumentNullException(nameof(result));
-
-            Result = result;
+            Result = result ?? throw new ArgumentNullException(nameof(result));
         }
-        
+
+        /// <summary>
+        /// Executes the result.
+        /// </summary>
+        /// <param name="context">The HTTP context.</param>
+        /// <returns></returns>
         public Task ExecuteAsync(HttpContext context)
         {
             context.Response.SetNoCache();

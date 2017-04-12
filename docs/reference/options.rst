@@ -35,7 +35,7 @@ Authentication
 
 Events
 ^^^^^^
-Not yet implemented in IdentityServer.
+Allows configuring if and which events should be submitted to a registered event sink. See :ref:`here <refEvents>` for more information on events.
 
 InputLengthRestrictions
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -86,3 +86,7 @@ The underlying CORS implementation is provided from ASP.NET Core, and as such it
 * ``CorsPaths``
     The endpoints within IdentityServer where CORS is supported. 
     Defaults to the discovery, user info, token, and revocation endpoints.
+
+* ``PreflightCacheDuration``
+    `Nullable<TimeSpan>` indicating the value to be used in the preflight `Access-Control-Max-Age` response header.
+    Defaults to `null` indicating no caching header is set on the response.

@@ -165,26 +165,6 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
             ((AuthorizeResult)result).Response.IsError.Should().BeTrue();
         }
 
-        [Fact(Skip = "bring back events in 1.1")]
-        [Trait("Category", Category)]
-        public async Task authorize_request_validation_produces_error_should_raise_failed_endpoint_event()
-        {
-            _stubAuthorizeRequestValidator.Result.IsError = true;
-            _stubAuthorizeRequestValidator.Result.Error = "some error";
-
-            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
-
-            // TODO: events
-            //var evt = _fakeEventService.AssertEventWasRaised<Event<EndpointDetail>>();
-            // TODO: events
-            //evt.EventType.Should().Be(EventTypes.Failure);
-            //evt.Id.Should().Be(EventConstants.Ids.EndpointFailure);
-            // TODO: events
-            //evt.Message.Should().Be("some error");
-            // TODO: events
-            //evt.Details.EndpointName.Should().Be(EventConstants.EndpointNames.Authorize);
-        }
-
         [Fact]
         [Trait("Category", Category)]
         public async Task interaction_produces_error_should_show_error_page()
@@ -195,25 +175,6 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
             result.Should().BeOfType<AuthorizeResult>();
             ((AuthorizeResult)result).Response.IsError.Should().BeTrue();
-        }
-
-        [Fact(Skip = "bring back events in 1.1")]
-        [Trait("Category", Category)]
-        public async Task interaction_produces_error_should_raise_failed_endpoint_event()
-        {
-            _stubInteractionGenerator.Response.Error = "some_error";
-
-            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
-
-            // TODO: events
-            //var evt = _fakeEventService.AssertEventWasRaised<Event<EndpointDetail>>();
-            // TODO: events
-            //evt.EventType.Should().Be(EventTypes.Failure);
-            //evt.Id.Should().Be(EventConstants.Ids.EndpointFailure);
-            // TODO: events
-            //evt.Message.Should().Be("some_error");
-            // TODO: events
-            //evt.Details.EndpointName.Should().Be(EventConstants.EndpointNames.Authorize);
         }
 
         [Fact]

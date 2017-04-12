@@ -5,6 +5,7 @@
 using IdentityModel;
 using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Events;
+using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
 using IdentityServer4.Models;
 using IdentityServer4.ResponseHandling;
@@ -17,6 +18,10 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Endpoints
 {
+    /// <summary>
+    /// The token endpoint
+    /// </summary>
+    /// <seealso cref="IdentityServer4.Hosting.IEndpoint" />
     public class TokenEndpoint : IEndpoint
     {
         private readonly ITokenRequestValidator _requestValidator;
@@ -25,6 +30,14 @@ namespace IdentityServer4.Endpoints
         private readonly IEventService _events;
         private readonly ILogger _logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TokenEndpoint"/> class.
+        /// </summary>
+        /// <param name="requestValidator">The request validator.</param>
+        /// <param name="clientValidator">The client validator.</param>
+        /// <param name="responseGenerator">The response generator.</param>
+        /// <param name="events">The events.</param>
+        /// <param name="logger">The logger.</param>
         public TokenEndpoint(ITokenRequestValidator requestValidator, ClientSecretValidator clientValidator, ITokenResponseGenerator responseGenerator, IEventService events, ILogger<TokenEndpoint> logger)
         {
             _requestValidator = requestValidator;
@@ -34,6 +47,11 @@ namespace IdentityServer4.Endpoints
             _logger = logger;
         }
 
+        /// <summary>
+        /// Processes the request.
+        /// </summary>
+        /// <param name="context">The HTTP context.</param>
+        /// <returns></returns>
         public async Task<IEndpointResult> ProcessAsync(HttpContext context)
         {
             _logger.LogTrace("Processing token request.");
@@ -61,9 +79,8 @@ namespace IdentityServer4.Endpoints
             }
 
             // validate request
-            var requestResult = await _requestValidator.ValidateRequestAsync(
-                (await context.Request.ReadFormAsync()).AsNameValueCollection(),
-                clientResult.Client);
+            var form = (await context.Request.ReadFormAsync()).AsNameValueCollection();
+            var requestResult = await _requestValidator.ValidateRequestAsync(form, clientResult.Client);
 
             if (requestResult.IsError)
             {
@@ -75,6 +92,7 @@ namespace IdentityServer4.Endpoints
             var response = await _responseGenerator.ProcessAsync(requestResult);
 
             await _events.RaiseAsync(new TokenIssuedSuccessEvent(response, requestResult));
+            LogTokens(response, requestResult);
 
             // return result
             _logger.LogDebug("Token request success.");
@@ -91,6 +109,25 @@ namespace IdentityServer4.Endpoints
             };
 
             return new TokenErrorResult(response);
+        }
+
+        private void LogTokens(TokenResponse response, TokenRequestValidationResult requestResult)
+        {
+            var clientId = $"{requestResult.ValidatedRequest.Client.ClientId} ({requestResult.ValidatedRequest.Client?.ClientName ?? "no name set"})";
+            var subjectId = requestResult.ValidatedRequest.Subject?.GetSubjectId() ?? "no subject";
+
+            if (response.IdentityToken != null)
+            {
+                _logger.LogTrace("Identity token issued for {clientId} / {subjectId}: {token}", clientId, subjectId, response.IdentityToken);
+            }
+            if (response.RefreshToken != null)
+            {
+                _logger.LogTrace("Refresh token issued for {clientId} / {subjectId}: {token}", clientId, subjectId, response.RefreshToken);
+            }
+            if (response.AccessToken != null)
+            {
+                _logger.LogTrace("Access token issued for {clientId} / {subjectId}: {token}", clientId, subjectId, response.AccessToken);
+            }
         }
     }
 }

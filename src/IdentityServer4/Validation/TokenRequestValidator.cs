@@ -20,6 +20,10 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Validation
 {
+    /// <summary>
+    /// The token request validator
+    /// </summary>
+    /// <seealso cref="IdentityServer4.Validation.ITokenRequestValidator" />
     public class TokenRequestValidator : ITokenRequestValidator
     {
         private readonly ILogger _logger;
@@ -35,6 +39,19 @@ namespace IdentityServer4.Validation
 
         private ValidatedTokenRequest _validatedRequest;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TokenRequestValidator"/> class.
+        /// </summary>
+        /// <param name="options">The options.</param>
+        /// <param name="authorizationCodeStore">The authorization code store.</param>
+        /// <param name="refreshTokenStore">The refresh token store.</param>
+        /// <param name="resourceOwnerValidator">The resource owner validator.</param>
+        /// <param name="profile">The profile.</param>
+        /// <param name="extensionGrantValidator">The extension grant validator.</param>
+        /// <param name="customRequestValidator">The custom request validator.</param>
+        /// <param name="scopeValidator">The scope validator.</param>
+        /// <param name="events">The events.</param>
+        /// <param name="logger">The logger.</param>
         public TokenRequestValidator(IdentityServerOptions options, IAuthorizationCodeStore authorizationCodeStore, IRefreshTokenStore refreshTokenStore, IResourceOwnerPasswordValidator resourceOwnerValidator, IProfileService profile, ExtensionGrantValidator extensionGrantValidator, ICustomTokenRequestValidator customRequestValidator, ScopeValidator scopeValidator, IEventService events, ILogger<TokenRequestValidator> logger)
         {
             _logger = logger;
@@ -49,6 +66,17 @@ namespace IdentityServer4.Validation
             _events = events;
         }
 
+        /// <summary>
+        /// Validates the request.
+        /// </summary>
+        /// <param name="parameters">The parameters.</param>
+        /// <param name="client">The client.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// parameters
+        /// or
+        /// client
+        /// </exception>
         public async Task<TokenRequestValidationResult> ValidateRequestAsync(NameValueCollection parameters, Client client)
         {
             _logger.LogDebug("Start token request validation");
@@ -171,7 +199,7 @@ namespace IdentityServer4.Validation
             var authZcode = await _authorizationCodeStore.GetAuthorizationCodeAsync(code);
             if (authZcode == null)
             {
-                LogError("Authorization code cannot be found in the store: {code}", code);
+                LogError("Invalid authorization code: {code}", code);
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
@@ -443,7 +471,7 @@ namespace IdentityServer4.Validation
             var refreshToken = await _refreshTokenStore.GetRefreshTokenAsync(refreshTokenHandle);
             if (refreshToken == null)
             {
-                LogError("Refresh token cannot be found in store: {refreshToken}", refreshTokenHandle);
+                LogError("Invalid refresh token: {refreshToken}", refreshTokenHandle);
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
@@ -568,10 +596,10 @@ namespace IdentityServer4.Validation
             if (scopes.IsMissing())
             {
                 _logger.LogTrace("Client provided no scopes - checking allowed scopes list");
-
-                var clientAllowedScopes = _validatedRequest.Client.AllowedScopes;
-                if (!clientAllowedScopes.IsNullOrEmpty())
+                
+                if (!_validatedRequest.Client.AllowedScopes.IsNullOrEmpty())
                 {
+                    var clientAllowedScopes = new List<string>(_validatedRequest.Client.AllowedScopes);
                     if (_validatedRequest.Client.AllowOfflineAccess)
                     {
                         clientAllowedScopes.Add(IdentityServerConstants.StandardScopes.OfflineAccess);
@@ -674,7 +702,7 @@ namespace IdentityServer4.Validation
 
         private TokenRequestValidationResult Invalid(string error, string errorDescription = null, Dictionary<string, object> customResponse = null)
         {
-            return new TokenRequestValidationResult(error, errorDescription, customResponse);
+            return new TokenRequestValidationResult(_validatedRequest, error, errorDescription, customResponse);
         }
 
         private void LogError(string message = null, params object[] values)

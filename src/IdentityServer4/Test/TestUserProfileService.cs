@@ -11,17 +11,38 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Test
 {
+    /// <summary>
+    /// Profile service for test users
+    /// </summary>
+    /// <seealso cref="IdentityServer4.Services.IProfileService" />
     public class TestUserProfileService : IProfileService
     {
+        /// <summary>
+        /// The logger
+        /// </summary>
         protected readonly ILogger Logger;
+        
+        /// <summary>
+        /// The users
+        /// </summary>
         protected readonly TestUserStore Users;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TestUserProfileService"/> class.
+        /// </summary>
+        /// <param name="users">The users.</param>
+        /// <param name="logger">The logger.</param>
         public TestUserProfileService(TestUserStore users, ILogger<TestUserProfileService> logger)
         {
             Users = users;
             Logger = logger;
         }
 
+        /// <summary>
+        /// This method is called whenever claims about the user are requested (e.g. during token creation or via the userinfo endpoint)
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <returns></returns>
         public virtual Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
             Logger.LogDebug("Get profile called for subject {subject} from client {client} with claim types {claimTypes} via {caller}",
@@ -39,6 +60,12 @@ namespace IdentityServer4.Test
             return Task.FromResult(0);
         }
 
+        /// <summary>
+        /// This method gets called whenever identity server needs to determine if the user is valid or active (e.g. if the user's account has been deactivated since they logged in).
+        /// (e.g. during token issuance or validation).
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <returns></returns>
         public virtual Task IsActiveAsync(IsActiveContext context)
         {
             context.IsActive = true;

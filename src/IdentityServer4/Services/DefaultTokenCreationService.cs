@@ -22,9 +22,21 @@ namespace IdentityServer4.Services
     /// </summary>
     public class DefaultTokenCreationService : ITokenCreationService
     {
+        /// <summary>
+        /// The key service
+        /// </summary>
         protected readonly IKeyMaterialService Keys;
+
+        /// <summary>
+        /// The logger
+        /// </summary>
         protected readonly ILogger Logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultTokenCreationService"/> class.
+        /// </summary>
+        /// <param name="keys">The keys.</param>
+        /// <param name="logger">The logger.</param>
         public DefaultTokenCreationService(IKeyMaterialService keys, ILogger<DefaultTokenCreationService> logger)
         {
             Keys = keys;

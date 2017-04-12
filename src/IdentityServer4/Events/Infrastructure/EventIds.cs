@@ -1,45 +1,45 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+#pragma warning disable 1591
 
 namespace IdentityServer4.Events
 {
     public static class EventIds
     {
         //////////////////////////////////////////////////////
-        /// User Authentication related events
+        /// Authentication related events
         //////////////////////////////////////////////////////
-        private const int UserAuthenticationEventsStart = 1000;
+        private const int AuthenticationEventsStart = 1000;
 
-        public const int UserLoginSuccess = UserAuthenticationEventsStart + 1;
-        public const int UserLoginFailure = UserAuthenticationEventsStart + 2;
+        public const int UserLoginSuccess = AuthenticationEventsStart + 0;
+        public const int UserLoginFailure = AuthenticationEventsStart + 1;
+        public const int UserLogoutSuccess = AuthenticationEventsStart + 2;
 
-        public const int UserLogoutSuccess = UserAuthenticationEventsStart + 3;
-
-        //////////////////////////////////////////////////////
-        /// Client Authentication related events
-        //////////////////////////////////////////////////////
-        private const int ClientAuthenticationEventsStart = 2000;
-
-        public const int ClientAuthenticationSuccess = ClientAuthenticationEventsStart + 1;
-        public const int ClientAuthenticationFailure = ClientAuthenticationEventsStart + 2;
+        public const int ClientAuthenticationSuccess = AuthenticationEventsStart + 10;
+        public const int ClientAuthenticationFailure = AuthenticationEventsStart + 11;
         
-        //////////////////////////////////////////////////////
-        /// API Authentication related events
-        //////////////////////////////////////////////////////
-        private const int ApiAuthenticationEventsStart = 3000;
-
-        public const int ApiAuthenticationSuccess = ApiAuthenticationEventsStart + 1;
-        public const int ApiAuthenticationFailure = ApiAuthenticationEventsStart + 2;
+        public const int ApiAuthenticationSuccess = AuthenticationEventsStart + 20;
+        public const int ApiAuthenticationFailure = AuthenticationEventsStart + 21;
 
         //////////////////////////////////////////////////////
         /// Token related events
         //////////////////////////////////////////////////////
-        private const int TokenEventsStart = 4000;
+        private const int TokenEventsStart = 2000;
 
-        public const int TokenIssuedSuccess = TokenEventsStart + 1;
-        public const int TokenIssuedFailure = TokenEventsStart + 2;
+        public const int TokenIssuedSuccess = TokenEventsStart + 0;
+        public const int TokenIssuedFailure = TokenEventsStart + 1;
 
-        public const int TokenRevokedSuccess = TokenEventsStart + 3;
+        public const int TokenRevokedSuccess = TokenEventsStart + 10;
+
+        public const int TokenIntrospectionSuccess = TokenEventsStart + 20;
+        public const int TokenIntrospectionFailure = TokenEventsStart + 21;
+        
+        //////////////////////////////////////////////////////
+        /// Error related events
+        //////////////////////////////////////////////////////
+        private const int ErrorEventsStart = 3000;
+
+        public const int UnhandledException = ErrorEventsStart + 0;
     }
 }

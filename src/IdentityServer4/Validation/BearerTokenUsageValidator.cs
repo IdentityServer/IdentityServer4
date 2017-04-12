@@ -11,15 +11,27 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Validation
 {
+    /// <summary>
+    /// Validates a request that uses a bearer token for authentication
+    /// </summary>
     public class BearerTokenUsageValidator
     {
         private readonly ILogger<BearerTokenUsageValidator> _logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BearerTokenUsageValidator"/> class.
+        /// </summary>
+        /// <param name="logger">The logger.</param>
         public BearerTokenUsageValidator(ILogger<BearerTokenUsageValidator> logger)
         {
             _logger = logger;
         }
 
+        /// <summary>
+        /// Validates the request.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <returns></returns>
         public async Task<BearerTokenUsageValidationResult> ValidateAsync(HttpContext context)
         {
             _logger.LogInformation("ValidateAsync: Locating bearer token");
@@ -45,6 +57,11 @@ namespace IdentityServer4.Validation
             return new BearerTokenUsageValidationResult();
         }
 
+        /// <summary>
+        /// Validates the authorization header.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <returns></returns>
         public BearerTokenUsageValidationResult ValidateAuthorizationHeader(HttpContext context)
         {
             var authorizationHeader = context.Request.Headers["Authorization"].FirstOrDefault();
@@ -73,6 +90,11 @@ namespace IdentityServer4.Validation
             return new BearerTokenUsageValidationResult();
         }
 
+        /// <summary>
+        /// Validates the post body.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <returns></returns>
         public async Task<BearerTokenUsageValidationResult> ValidatePostBodyAsync(HttpContext context)
         {
             var token = (await context.Request.ReadFormAsync())["access_token"].FirstOrDefault();

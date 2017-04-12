@@ -10,6 +10,12 @@ IdentityServer4
 Contains the core IdentityServer object model, services and middleware. 
 Only contains support for in-memory configuration and user stores - but you can plug-in support for other stores via the configuration. This is what the other repos and packages are about.
 
+Quickstart UI
+^^^^^^^^^^^^^
+`github <https://github.com/IdentityServer/IdentityServer4.Quickstart.UI>`_
+
+Contains a simple starter UI including login, logout and consent pages.
+
 Access token validation middleware
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 `nuget <https://www.nuget.org/packages/IdentityServer4.AccessTokenValidation>`_ | `github <https://github.com/IdentityServer/IdentityServer4.AccessTokenValidation>`_

@@ -7,6 +7,8 @@ using IdentityServer4.Extensions;
 using System.Text;
 using System.Threading.Tasks;
 
+#pragma warning disable 1591
+
 namespace Microsoft.AspNetCore.Http
 {
     public static class HttpResponseExtensions
@@ -21,6 +23,17 @@ namespace Microsoft.AspNetCore.Http
         {
             response.ContentType = "application/json";
             await response.WriteAsync(json);
+        }
+
+        public static void SetCache(this HttpResponse response, int maxAge)
+        {
+            if (maxAge > 0)
+            {
+                if (!response.Headers.ContainsKey("Cache-Control"))
+                {
+                    response.Headers.Add("Cache-Control", $"max-age={maxAge}");
+                }
+            }
         }
 
         public static void SetNoCache(this HttpResponse response)

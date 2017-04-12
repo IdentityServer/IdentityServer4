@@ -20,6 +20,10 @@ namespace IdentityServer4.Services
         /// </summary>
         private readonly ILogger _logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultEventSink"/> class.
+        /// </summary>
+        /// <param name="logger">The logger.</param>
         public DefaultEventSink(ILogger<DefaultEventService> logger)
         {
             _logger = logger;

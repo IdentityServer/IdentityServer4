@@ -10,8 +10,16 @@ using System;
 
 namespace Microsoft.AspNetCore.Builder
 {
+    /// <summary>
+    /// Pipeline extension methods for adding IdentityServer
+    /// </summary>
     public static class IdentityServerApplicationBuilderExtensions
     {
+        /// <summary>
+        /// Adds IdentityServer to the pipeline.
+        /// </summary>
+        /// <param name="app">The application.</param>
+        /// <returns></returns>
         public static IApplicationBuilder UseIdentityServer(this IApplicationBuilder app)
         {
             app.Validate();

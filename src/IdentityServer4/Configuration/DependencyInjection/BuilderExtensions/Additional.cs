@@ -9,6 +9,9 @@ using IdentityServer4.Validation;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
+    /// <summary>
+    /// Builder extension methods for registering additional services 
+    /// </summary>
     public static class IdentityServerBuilderExtensionsAdditional
     {
         /// <summary>

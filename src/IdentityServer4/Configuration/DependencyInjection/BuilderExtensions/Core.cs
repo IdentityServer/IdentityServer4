@@ -23,6 +23,9 @@ using System.Linq;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
+    /// <summary>
+    /// Builder extension methods for registering core services
+    /// </summary>
     public static class IdentityServerBuilderExtensionsCore
     {
         /// <summary>
@@ -124,7 +127,6 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.Services.TryAddTransient<IPersistedGrantService, DefaultPersistedGrantService>();
             builder.Services.TryAddTransient<IKeyMaterialService, DefaultKeyMaterialService>();
-            builder.Services.TryAddTransient<IEventService, DefaultEventService>();
             builder.Services.TryAddTransient<ITokenService, DefaultTokenService>();
             builder.Services.TryAddTransient<ITokenCreationService, DefaultTokenCreationService>();
             builder.Services.TryAddTransient<IClaimsService, DefaultClaimsService>();

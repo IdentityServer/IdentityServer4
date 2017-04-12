@@ -14,17 +14,32 @@ using System;
 
 namespace IdentityServer4
 {
+    /// <summary>
+    /// Class for userful helpers for interacting with IdentityServer
+    /// </summary>
     public class IdentityServerTools
     {
         internal readonly IHttpContextAccessor _contextAccessor;
         private readonly ITokenCreationService _tokenCreation;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IdentityServerTools"/> class.
+        /// </summary>
+        /// <param name="contextAccessor">The context accessor.</param>
+        /// <param name="tokenCreation">The token creation service.</param>
         public IdentityServerTools(IHttpContextAccessor contextAccessor, ITokenCreationService tokenCreation)
         {
             _tokenCreation = tokenCreation;
             _contextAccessor = contextAccessor;
         }
 
+        /// <summary>
+        /// Issues a JWT.
+        /// </summary>
+        /// <param name="lifetime">The lifetime.</param>
+        /// <param name="claims">The claims.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">claims</exception>
         public virtual async Task<string> IssueJwtAsync(int lifetime, IEnumerable<Claim> claims)
         {
             if (claims == null) throw new ArgumentNullException(nameof(claims));

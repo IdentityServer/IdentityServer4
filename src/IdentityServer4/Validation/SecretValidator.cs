@@ -11,17 +11,31 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Validation
 {
+    /// <summary>
+    /// Validates secrets using the registered validators
+    /// </summary>
     public class SecretValidator
     {
         private readonly ILogger _logger;
         private readonly IEnumerable<ISecretValidator> _validators;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SecretValidator"/> class.
+        /// </summary>
+        /// <param name="validators">The validators.</param>
+        /// <param name="logger">The logger.</param>
         public SecretValidator(IEnumerable<ISecretValidator> validators, ILogger<SecretValidator> logger)
         {
             _validators = validators;
             _logger = logger;
         }
 
+        /// <summary>
+        /// Validates the secret.
+        /// </summary>
+        /// <param name="parsedSecret">The parsed secret.</param>
+        /// <param name="secrets">The secrets.</param>
+        /// <returns></returns>
         public async Task<SecretValidationResult> ValidateAsync(ParsedSecret parsedSecret, IEnumerable<Secret> secrets)
         {
             var secretsArray = secrets as Secret[] ?? secrets.ToArray();

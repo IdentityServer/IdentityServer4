@@ -24,6 +24,15 @@ namespace IdentityServer4.Stores
         private readonly IPersistentGrantSerializer _serializer;
         private readonly IHandleGenerationService _handleGenerationService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultGrantStore{T}"/> class.
+        /// </summary>
+        /// <param name="grantType">Type of the grant.</param>
+        /// <param name="store">The store.</param>
+        /// <param name="serializer">The serializer.</param>
+        /// <param name="handleGenerationService">The handle generation service.</param>
+        /// <param name="logger">The logger.</param>
+        /// <exception cref="System.ArgumentNullException">grantType</exception>
         protected DefaultGrantStore(string grantType,
             IPersistedGrantStore store,
             IPersistentGrantSerializer serializer,
@@ -41,31 +50,61 @@ namespace IdentityServer4.Stores
 
         const string KeySeparator = ":";
 
+        /// <summary>
+        /// Gets the hashed key.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
         protected string GetHashedKey(string value)
         {
             return (value + KeySeparator + _grantType).Sha256();
         }
 
+        /// <summary>
+        /// Gets the item.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
         protected async Task<T> GetItemAsync(string key)
         {
-            key = GetHashedKey(key);
+            var hashedKey = GetHashedKey(key);
 
-            var grant = await _store.GetAsync(key);
-            if (grant != null && grant.Type == _grantType && !grant.Expiration.HasExpired())
+            var grant = await _store.GetAsync(hashedKey);
+            if (grant != null && grant.Type == _grantType)
             {
-                try
+                if (!grant.Expiration.HasExpired())
                 {
-                    return _serializer.Deserialize<T>(grant.Data);
+                    try
+                    {
+                        return _serializer.Deserialize<T>(grant.Data);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError("Failed to deserailize JSON from grant store. Exception: {0}", ex.Message);
+                    }
                 }
-                catch(Exception ex)
+                else
                 {
-                    _logger.LogError("Failed to deserailize JSON from grant store. Exception: {0}", ex.Message);
+                    _logger.LogDebug("{grantType} grant with value: {key} found in store, but has expired.", _grantType, key);
                 }
+            }
+            else
+            {
+                _logger.LogDebug("{grantType} grant with value: {key} not found in store.", _grantType, key);
             }
 
             return default(T);
         }
 
+        /// <summary>
+        /// Creates the item.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="clientId">The client identifier.</param>
+        /// <param name="subjectId">The subject identifier.</param>
+        /// <param name="created">The created.</param>
+        /// <param name="lifetime">The lifetime.</param>
+        /// <returns></returns>
         protected async Task<string> CreateItemAsync(T item, string clientId, string subjectId, DateTime created, int lifetime)
         {
             var handle = await _handleGenerationService.GenerateAsync();
@@ -73,11 +112,31 @@ namespace IdentityServer4.Stores
             return handle;
         }
 
+        /// <summary>
+        /// Stores the item.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="item">The item.</param>
+        /// <param name="clientId">The client identifier.</param>
+        /// <param name="subjectId">The subject identifier.</param>
+        /// <param name="created">The created.</param>
+        /// <param name="lifetime">The lifetime.</param>
+        /// <returns></returns>
         protected Task StoreItemAsync(string key, T item, string clientId, string subjectId, DateTime created, int lifetime)
         {
             return StoreItemAsync(key, item, clientId, subjectId, created, created.AddSeconds(lifetime));
         }
 
+        /// <summary>
+        /// Stores the item.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="item">The item.</param>
+        /// <param name="clientId">The client identifier.</param>
+        /// <param name="subjectId">The subject identifier.</param>
+        /// <param name="created">The created.</param>
+        /// <param name="expiration">The expiration.</param>
+        /// <returns></returns>
         protected async Task StoreItemAsync(string key, T item, string clientId, string subjectId, DateTime created, DateTime? expiration)
         {
             key = GetHashedKey(key);
@@ -98,12 +157,23 @@ namespace IdentityServer4.Stores
             await _store.StoreAsync(grant);
         }
 
+        /// <summary>
+        /// Removes the item.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
         protected async Task RemoveItemAsync(string key)
         {
             key = GetHashedKey(key);
             await _store.RemoveAsync(key);
         }
 
+        /// <summary>
+        /// Removes all items for a subject id / cliend id combination.
+        /// </summary>
+        /// <param name="subjectId">The subject identifier.</param>
+        /// <param name="clientId">The client identifier.</param>
+        /// <returns></returns>
         protected async Task RemoveAllAsync(string subjectId, string clientId)
         {
             await _store.RemoveAllAsync(subjectId, clientId, _grantType);

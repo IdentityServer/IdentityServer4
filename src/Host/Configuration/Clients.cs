@@ -116,7 +116,7 @@ namespace Host.Configuration
                     AllowedGrantTypes = GrantTypes.Hybrid,
                     RequirePkce = true,
 
-                    RedirectUris = { "http://127.0.0.1:7890/" },
+                    RedirectUris = { "http://127.0.0.1" },
 
                     AllowOfflineAccess = true,
 
@@ -197,6 +197,7 @@ namespace Host.Configuration
                     ClientId = "mvc.hybrid",
                     ClientName = "MVC Hybrid",
                     ClientUri = "http://identityserver.io",
+                    //LogoUri = "https://pbs.twimg.com/profile_images/1612989113/Ki-hanja_400x400.png",
 
                     ClientSecrets = 
                     {
@@ -229,6 +230,7 @@ namespace Host.Configuration
                     ClientId = "js_oauth",
                     ClientName = "JavaScript OAuth 2.0 Client",
                     ClientUri = "http://identityserver.io",
+                    //LogoUri = "https://pbs.twimg.com/profile_images/1612989113/Ki-hanja_400x400.png",
 
                     AllowedGrantTypes = GrantTypes.Implicit,
                     AllowAccessTokensViaBrowser = true,
@@ -245,6 +247,7 @@ namespace Host.Configuration
                     ClientId = "js_oidc",
                     ClientName = "JavaScript OIDC Client",
                     ClientUri = "http://identityserver.io",
+                    //LogoUri = "https://pbs.twimg.com/profile_images/1612989113/Ki-hanja_400x400.png",
 
                     AllowedGrantTypes = GrantTypes.Implicit,
                     AllowAccessTokensViaBrowser = true,

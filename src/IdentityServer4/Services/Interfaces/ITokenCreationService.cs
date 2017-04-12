@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 namespace IdentityServer4.Services
 {
     /// <summary>
-    /// Logic for signing security tokens
+    /// Logic for creating security tokens
     /// </summary>
     public interface ITokenCreationService
     {
         /// <summary>
-        /// Signs the token.
+        /// Creates a token.
         /// </summary>
-        /// <param name="token">The token.</param>
+        /// <param name="token">The token description.</param>
         /// <returns>A protected and serialized security token</returns>
         Task<string> CreateTokenAsync(Token token);
     }

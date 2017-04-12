@@ -13,10 +13,15 @@ namespace IdentityServer4.Stores
     /// <summary>
     /// Default user consent store.
     /// </summary>
-    /// <seealso cref="IdentityServer4.Stores.DefaultGrantStore{IdentityServer4.Models.Consent}" />
-    /// <seealso cref="IdentityServer4.Stores.IUserConsentStore" />
     public class DefaultUserConsentStore : DefaultGrantStore<Consent>, IUserConsentStore
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultUserConsentStore"/> class.
+        /// </summary>
+        /// <param name="store">The store.</param>
+        /// <param name="serializer">The serializer.</param>
+        /// <param name="handleGenerationService">The handle generation service.</param>
+        /// <param name="logger">The logger.</param>
         public DefaultUserConsentStore(
             IPersistedGrantStore store, 
             IPersistentGrantSerializer serializer,

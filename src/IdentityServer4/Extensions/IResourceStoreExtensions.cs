@@ -9,8 +9,17 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Stores
 {
+    /// <summary>
+    /// Extensions for IResourceStore
+    /// </summary>
     public static class IResourceStoreExtensions
     {
+        /// <summary>
+        /// Finds the resources by scope.
+        /// </summary>
+        /// <param name="store">The store.</param>
+        /// <param name="scopeNames">The scope names.</param>
+        /// <returns></returns>
         public static async Task<Resources> FindResourcesByScopeAsync(this IResourceStore store, IEnumerable<string> scopeNames)
         {
             var identity = await store.FindIdentityResourcesByScopeAsync(scopeNames);
@@ -29,17 +38,34 @@ namespace IdentityServer4.Stores
             return resources;
         }
 
+        /// <summary>
+        /// Finds the enabled resources by scope.
+        /// </summary>
+        /// <param name="store">The store.</param>
+        /// <param name="scopeNames">The scope names.</param>
+        /// <returns></returns>
         public async static Task<Resources> FindEnabledResourcesByScopeAsync(this IResourceStore store, IEnumerable<string> scopeNames)
         {
             return (await store.FindResourcesByScopeAsync(scopeNames)).FilterEnabled();
         }
 
+        /// <summary>
+        /// Gets all enabled resources.
+        /// </summary>
+        /// <param name="store">The store.</param>
+        /// <returns></returns>
         public static async Task<Resources> GetAllEnabledResourcesAsync(this IResourceStore store)
         {
             var resources = await store.GetAllResources();
             return resources.FilterEnabled();
         }
 
+        /// <summary>
+        /// Finds the enabled identity resources by scope.
+        /// </summary>
+        /// <param name="store">The store.</param>
+        /// <param name="scopeNames">The scope names.</param>
+        /// <returns></returns>
         public async static Task<IEnumerable<IdentityResource>> FindEnabledIdentityResourcesByScopeAsync(this IResourceStore store, IEnumerable<string> scopeNames)
         {
             return (await store.FindIdentityResourcesByScopeAsync(scopeNames)).Where(x => x.Enabled).ToArray();

@@ -10,21 +10,49 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Endpoints.Results
 {
+    /// <summary>
+    /// Result for a discovery document
+    /// </summary>
+    /// <seealso cref="IdentityServer4.Hosting.IEndpointResult" />
     public class DiscoveryDocumentResult : IEndpointResult
     {
+        /// <summary>
+        /// Gets the entries.
+        /// </summary>
+        /// <value>
+        /// The entries.
+        /// </value>
         public Dictionary<string, object> Entries { get; }
 
-        public DiscoveryDocumentResult(Dictionary<string, object> entries)
-        {
-            if (entries == null) throw new ArgumentNullException(nameof(entries));
+        /// <summary>
+        /// Gets the maximum age.
+        /// </summary>
+        /// <value>
+        /// The maximum age.
+        /// </value>
+        public int MaxAge { get; }
 
-            Entries = entries;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DiscoveryDocumentResult" /> class.
+        /// </summary>
+        /// <param name="entries">The entries.</param>
+        /// <param name="maxAge">The maximum age.</param>
+        /// <exception cref="System.ArgumentNullException">entries</exception>
+        public DiscoveryDocumentResult(Dictionary<string, object> entries, int maxAge)
+        {
+            Entries = entries ?? throw new ArgumentNullException(nameof(entries));
+            MaxAge = maxAge;
         }
-        
+
+        /// <summary>
+        /// Executes the result.
+        /// </summary>
+        /// <param name="context">The HTTP context.</param>
+        /// <returns></returns>
         public Task ExecuteAsync(HttpContext context)
         {
-                var jobject = ObjectSerializer.ToJObject(Entries);
-                return context.Response.WriteJsonAsync(jobject);
+            context.Response.SetCache(MaxAge);
+            return context.Response.WriteJsonAsync(ObjectSerializer.ToJObject(Entries));
         }
     }
 }
