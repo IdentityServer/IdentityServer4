@@ -4,7 +4,6 @@
 
 using System.Collections.Specialized;
 using System.Threading.Tasks;
-using IdentityServer4.Models;
 
 namespace IdentityServer4.Validation
 {
@@ -17,8 +16,7 @@ namespace IdentityServer4.Validation
         /// Validates the request.
         /// </summary>
         /// <param name="parameters">The parameters.</param>
-        /// <param name="apiResource">The API resource.</param>
         /// <returns></returns>
-        Task<IntrospectionRequestValidationResult> ValidateAsync(NameValueCollection parameters, ApiResource apiResource);
+        Task<IntrospectionRequestValidationResult> ValidateAsync(NameValueCollection parameters);
     }
 }

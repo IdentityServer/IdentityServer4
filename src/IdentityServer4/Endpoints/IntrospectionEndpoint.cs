@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using IdentityServer4.Hosting;
 using IdentityServer4.Endpoints.Results;
 using Microsoft.AspNetCore.Http;
+using System.Net;
 
 namespace IdentityServer4.Endpoints
 {
@@ -70,51 +71,35 @@ namespace IdentityServer4.Endpoints
             if (apiResult.Resource == null)
             {
                 _logger.LogError("API unauthorized to call introspection endpoint. aborting.");
-                return new StatusCodeResult(401);
+                return new StatusCodeResult(HttpStatusCode.Unauthorized);
             }
 
-            var parameters = (await context.Request.ReadFormAsync()).AsNameValueCollection();
-
-            var validationResult = await _requestValidator.ValidateAsync(parameters, apiResult.Resource);
-            var response = await _generator.ProcessAsync(validationResult, apiResult.Resource);
-
-            if (validationResult.IsActive)
+            var body = await context.Request.ReadFormAsync();
+            if (body == null)
             {
-                LogSuccess(validationResult.Token, "active", apiResult.Resource.Name);
-                return new IntrospectionResult(response);
+                _logger.LogError("Malformed request body. aborting.");
+                return new StatusCodeResult(HttpStatusCode.BadRequest);
             }
 
+            var validationResult = await _requestValidator.ValidateAsync(body.AsNameValueCollection());
             if (validationResult.IsError)
             {
-                if (validationResult.FailureReason == IntrospectionRequestValidationFailureReason.MissingToken)
-                {
-                    LogFailure(validationResult.ErrorDescription, validationResult.Token, apiResult.Resource.Name);
-                    return new BadRequestResult("missing_token");
-                }
-
-                if (validationResult.FailureReason == IntrospectionRequestValidationFailureReason.InvalidToken)
-                {
-                    LogSuccess(validationResult.Token, "inactive", apiResult.Resource.Name);
-                    return new IntrospectionResult(response);
-                }
-
-                if (validationResult.FailureReason == IntrospectionRequestValidationFailureReason.InvalidScope)
-                {
-                    LogFailure("API not authorized to introspect token", validationResult.Token, apiResult.Resource.Name);
-                    return new IntrospectionResult(response);
-                }
+                LogFailure(validationResult.Error, apiResult.Resource.Name);
+                return new BadRequestResult(validationResult.Error);
             }
 
-            _logger.LogError("Invalid token introspection outcome");
-            throw new InvalidOperationException("Invalid token introspection outcome");
+            validationResult.Api = apiResult.Resource;
+
+            var response = await _generator.ProcessAsync(validationResult);
+            return new IntrospectionResult(response);
         }
 
-        private void LogSuccess(string token, string tokenStatus, string apiName)
+        private void LogSuccess(string tokenStatus, string apiName)
         {
             _logger.LogInformation("Success token introspection. Token status: {tokenStatus}, for API name: {apiName}", tokenStatus, apiName);
         }
 
-        private void LogFailure(string error, string token, string apiName)
+        private void LogFailure(string error, string apiName)
         {
             _logger.LogError("Failed token introspection: {error}, for API name: {apiName}", error, apiName);
         }
