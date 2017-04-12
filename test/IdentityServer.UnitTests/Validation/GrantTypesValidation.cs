@@ -105,5 +105,31 @@ namespace IdentityServer4.UnitTests.Validation
 
             act.ShouldThrow<InvalidOperationException>();
         }
+
+        [Fact]
+        public void adding_invalid_value_to_collection_should_throw()
+        {
+            var client = new Client()
+            {
+                AllowedGrantTypes = { "implicit" }
+            };
+
+            Action act = () => client.AllowedGrantTypes.Add("authorization_code");
+
+            act.ShouldThrow<InvalidOperationException>();
+        }
+
+        [Fact]
+        public void adding_valid_value_to_collection_should_succeed()
+        {
+            var client = new Client()
+            {
+                AllowedGrantTypes = { "implicit" }
+            };
+
+            client.AllowedGrantTypes.Add("custom");
+
+            client.AllowedGrantTypes.Count.Should().Be(2);
+        }
     }
 }
