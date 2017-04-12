@@ -19,8 +19,8 @@ Or you can use the convenience extension method that is provided by IdentityServ
 
 .. Note:: Typically you should prompt the user for signout (meaning require a POST), otherwise an attacker could hotlink to your logout page causing the user to be automatically logged out.
 
-Sign-out of client applications
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Notifying clients that the user has signed-out
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 As part of the signout process you will want to ensure client applications are informed that the user has signed out.
 IdentityServer supports the `front-channel <https://openid.net/specs/openid-connect-frontchannel-1_0.html>`_ specification for server-side clients (e.g. MVC) 

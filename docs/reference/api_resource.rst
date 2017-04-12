@@ -21,7 +21,7 @@ This class model an API resource.
 
 Scopes
 ^^^^^^
-In the simple case an API has exactly one scope. But there a cases where you might want to sub-divide the functionality of an API, 
+In the simple case an API has exactly one scope. But there are cases where you might want to sub-divide the functionality of an API, 
 and give different clients access to different parts.
 
 ``Name``
