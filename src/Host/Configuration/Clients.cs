@@ -59,7 +59,7 @@ namespace Host.Configuration
                         new Secret("secret".Sha256())
                     },
 
-                    AllowedGrantTypes = GrantTypes.List("custom", "custom.nosubject"),
+                    AllowedGrantTypes = { "custom", "custom.nosubject" },
                     AllowedScopes = { "api1", "api2.read_only" }
                 },
 

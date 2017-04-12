@@ -398,7 +398,7 @@ namespace IdentityServer4.UnitTests.Validation
                             new Secret("secret".Sha256())
                         },
 
-                        AllowedGrantTypes = GrantTypes.List("custom_grant"),
+                        AllowedGrantTypes = { "custom_grant" },
                         AllowedScopes = { "openid", "profile", "resource", "resource2" },
                     },
 

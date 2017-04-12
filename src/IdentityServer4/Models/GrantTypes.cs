@@ -36,7 +36,5 @@ namespace IdentityServer4.Models
 
         public static ICollection<string> ResourceOwnerPasswordAndClientCredentials =>
             new[] { GrantType.ResourceOwnerPassword, GrantType.ClientCredentials };
-
-        public static ICollection<string> List(params string[] values) => values;
     }
 }

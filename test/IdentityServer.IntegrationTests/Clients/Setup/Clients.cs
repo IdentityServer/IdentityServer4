@@ -112,7 +112,7 @@ namespace IdentityServer4.IntegrationTests.Clients
                         new Secret("secret".Sha256())
                     },
 
-                    AllowedGrantTypes = GrantTypes.List("custom", "custom.nosubject"),
+                    AllowedGrantTypes = { "custom", "custom.nosubject" },
 
                     AllowedScopes = 
                     {
@@ -127,7 +127,7 @@ namespace IdentityServer4.IntegrationTests.Clients
                         new Secret("secret".Sha256())
                     },
 
-                    AllowedGrantTypes = GrantTypes.List("dynamic"),
+                    AllowedGrantTypes = { "dynamic" },
 
                     AllowedScopes =
                     {
