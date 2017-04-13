@@ -5,7 +5,6 @@
 using FluentAssertions;
 using IdentityServer4.Models;
 using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace IdentityServer4.UnitTests.Validation
