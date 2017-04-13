@@ -14,7 +14,7 @@ namespace IdentityServer4.Validation
     /// <seealso cref="IdentityServer4.Validation.IResourceOwnerPasswordValidator" />
     public class NotSupportedResouceOwnerPasswordValidator : IResourceOwnerPasswordValidator
     {
-        private readonly ILogger<NotSupportedResouceOwnerPasswordValidator> _logger;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotSupportedResouceOwnerPasswordValidator"/> class.

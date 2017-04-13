@@ -22,7 +22,7 @@ namespace IdentityServer4.Stores
         private readonly IdentityServerOptions _options;
         private readonly ICache<Client> _cache;
         private readonly IClientStore _inner;
-        private readonly ILogger<CachingClientStore<T>> _logger;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CachingClientStore{T}"/> class.

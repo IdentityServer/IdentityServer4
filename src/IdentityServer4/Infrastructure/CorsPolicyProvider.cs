@@ -16,7 +16,7 @@ namespace IdentityServer4
 {
     internal class CorsPolicyProvider : ICorsPolicyProvider
     {
-        private readonly ILogger<CorsPolicyProvider> _logger;
+        private readonly ILogger _logger;
         private readonly ICorsPolicyProvider _inner;
         private readonly IdentityServerOptions _options;
         private readonly IHttpContextAccessor _httpContext;

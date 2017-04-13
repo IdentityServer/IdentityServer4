@@ -16,7 +16,7 @@ namespace IdentityServer4.Validation
     public class UserInfoRequestValidator : IUserInfoRequestValidator
     {
         private readonly ITokenValidator _tokenValidator;
-        private readonly ILogger<UserInfoRequestValidator> _logger;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserInfoRequestValidator" /> class.

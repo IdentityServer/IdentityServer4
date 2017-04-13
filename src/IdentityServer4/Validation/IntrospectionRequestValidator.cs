@@ -14,7 +14,7 @@ namespace IdentityServer4.Validation
     /// <seealso cref="IdentityServer4.Validation.IIntrospectionRequestValidator" />
     public class IntrospectionRequestValidator : IIntrospectionRequestValidator
     {
-        private readonly ILogger<IntrospectionRequestValidator> _logger;
+        private readonly ILogger _logger;
         private readonly ITokenValidator _tokenValidator;
 
         /// <summary>

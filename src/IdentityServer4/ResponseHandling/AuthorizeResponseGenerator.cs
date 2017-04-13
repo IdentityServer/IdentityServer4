@@ -21,7 +21,7 @@ namespace IdentityServer4.ResponseHandling
     /// <seealso cref="IdentityServer4.ResponseHandling.IAuthorizeResponseGenerator" />
     public class AuthorizeResponseGenerator : IAuthorizeResponseGenerator
     {
-        private readonly ILogger<AuthorizeResponseGenerator> _logger;
+        private readonly ILogger _logger;
         private readonly ITokenService _tokenService;
         private readonly IAuthorizationCodeStore _authorizationCodeStore;
         private readonly IEventService _events;

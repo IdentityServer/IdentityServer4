@@ -17,7 +17,7 @@ namespace IdentityServer4.Services
     /// </summary>
     public class InMemoryCorsPolicyService : ICorsPolicyService
     {
-        private readonly ILogger<InMemoryCorsPolicyService> _logger;
+        private readonly ILogger _logger;
         private readonly IEnumerable<Client> _clients;
 
         /// <summary>

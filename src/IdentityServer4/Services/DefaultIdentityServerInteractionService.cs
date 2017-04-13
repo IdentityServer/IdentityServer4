@@ -25,7 +25,7 @@ namespace IdentityServer4.Services
         private readonly IPersistedGrantService _grants;
         private readonly IClientSessionService _clientSessionService;
         private readonly ISessionIdService _sessionIdService;
-        private readonly ILogger<DefaultIdentityServerInteractionService> _logger;
+        private readonly ILogger _logger;
         private readonly ReturnUrlParser _returnUrlParser;
 
         public DefaultIdentityServerInteractionService(

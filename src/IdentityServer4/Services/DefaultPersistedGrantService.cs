@@ -18,7 +18,7 @@ namespace IdentityServer4.Services
     /// </summary>
     public class DefaultPersistedGrantService : IPersistedGrantService
     {
-        private readonly ILogger<DefaultPersistedGrantService> _logger;
+        private readonly ILogger _logger;
         private readonly IPersistedGrantStore _store;
         private readonly IPersistentGrantSerializer _serializer;
 

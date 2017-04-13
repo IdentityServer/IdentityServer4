@@ -16,7 +16,7 @@ namespace IdentityServer4.Validation
     /// <seealso cref="IdentityServer4.Validation.StrictRedirectUriValidator" />
     public class StrictRedirectUriValidatorAppAuth : StrictRedirectUriValidator
     {
-        private readonly ILogger<StrictRedirectUriValidatorAppAuth> _logger;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StrictRedirectUriValidatorAppAuth"/> class.

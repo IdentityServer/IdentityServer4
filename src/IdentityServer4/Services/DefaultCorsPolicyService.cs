@@ -15,7 +15,7 @@ namespace IdentityServer4.Services
     /// </summary>
     public class DefaultCorsPolicyService : ICorsPolicyService
     {
-        private readonly ILogger<DefaultCorsPolicyService> _logger;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultCorsPolicyService"/> class.

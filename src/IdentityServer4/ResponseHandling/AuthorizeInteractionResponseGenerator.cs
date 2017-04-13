@@ -21,7 +21,7 @@ namespace IdentityServer4.ResponseHandling
     /// <seealso cref="IdentityServer4.ResponseHandling.IAuthorizeInteractionResponseGenerator" />
     public class AuthorizeInteractionResponseGenerator : IAuthorizeInteractionResponseGenerator
     {
-        private readonly ILogger<AuthorizeInteractionResponseGenerator> _logger;
+        private readonly ILogger _logger;
         private readonly IConsentService _consent;
         private readonly IProfileService _profile;
 

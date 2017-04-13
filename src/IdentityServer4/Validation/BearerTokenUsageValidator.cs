@@ -16,7 +16,7 @@ namespace IdentityServer4.Validation
     /// </summary>
     public class BearerTokenUsageValidator
     {
-        private readonly ILogger<BearerTokenUsageValidator> _logger;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BearerTokenUsageValidator"/> class.

@@ -33,7 +33,7 @@ namespace IdentityServer4.Services
         private readonly IHttpContextAccessor _context;
         private readonly ISessionIdService _sessionId;
         private readonly IdentityServerOptions _options;
-        private readonly ILogger<DefaultClientSessionService> _logger;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultClientSessionService"/> class.

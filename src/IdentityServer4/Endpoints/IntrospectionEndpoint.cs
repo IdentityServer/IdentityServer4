@@ -22,7 +22,7 @@ namespace IdentityServer4.Endpoints
     {
         private readonly IEventService _events;
         private readonly IIntrospectionResponseGenerator _generator;
-        private readonly ILogger<IntrospectionEndpoint> _logger;
+        private readonly ILogger _logger;
         private readonly IIntrospectionRequestValidator _requestValidator;
         private readonly ApiSecretValidator _apiSecretValidator;
 
