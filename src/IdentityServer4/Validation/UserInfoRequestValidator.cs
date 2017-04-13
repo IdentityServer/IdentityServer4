@@ -3,7 +3,7 @@
 
 
 using IdentityModel;
-using System;
+using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,14 +16,17 @@ namespace IdentityServer4.Validation
     public class UserInfoRequestValidator : IUserInfoRequestValidator
     {
         private readonly ITokenValidator _tokenValidator;
+        private readonly ILogger<UserInfoRequestValidator> _logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserInfoRequestValidator"/> class.
+        /// Initializes a new instance of the <see cref="UserInfoRequestValidator" /> class.
         /// </summary>
         /// <param name="tokenValidator">The token validator.</param>
-        public UserInfoRequestValidator(ITokenValidator tokenValidator)
+        /// <param name="logger">The logger.</param>
+        public UserInfoRequestValidator(ITokenValidator tokenValidator, ILogger<UserInfoRequestValidator> logger)
         {
             _tokenValidator = tokenValidator;
+            _logger = logger;
         }
 
         /// <summary>
@@ -41,12 +44,10 @@ namespace IdentityServer4.Validation
 
             if (tokenResult.IsError)
             {
-                //_logger.LogError(tokenResult.Error);
-
                 return new UserInfoRequestValidationResult
                 {
                     IsError = true,
-                    Error = OidcConstants.ProtectedResourceErrors.InsufficientScope
+                    Error = tokenResult.Error
                 };
             }
 
@@ -54,8 +55,7 @@ namespace IdentityServer4.Validation
             var subClaim = tokenResult.Claims.SingleOrDefault(c => c.Type == JwtClaimTypes.Subject);
             if (subClaim == null)
             {
-                //var error = "Token contains no sub claim";
-                //_logger.LogError(error);
+                _logger.LogError("Token contains no sub claim");
 
                 return new UserInfoRequestValidationResult
                 {

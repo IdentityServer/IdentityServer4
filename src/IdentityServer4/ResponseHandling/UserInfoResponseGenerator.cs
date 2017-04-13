@@ -23,9 +23,21 @@ namespace IdentityServer4.ResponseHandling
     /// <seealso cref="IdentityServer4.ResponseHandling.IUserInfoResponseGenerator" />
     public class UserInfoResponseGenerator : IUserInfoResponseGenerator
     {
-        private readonly ILogger _logger;
-        private readonly IProfileService _profile;
-        private readonly IResourceStore _resourceStore;
+        /// <summary>
+        /// The logger
+        /// </summary>
+        protected readonly ILogger Logger;
+
+        /// <summary>
+        /// The profile service
+        /// </summary>
+        private readonly IProfileService Profile;
+
+        /// <summary>
+        /// The resource store
+        /// </summary>
+        protected readonly IResourceStore Resources;
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserInfoResponseGenerator"/> class.
@@ -35,9 +47,9 @@ namespace IdentityServer4.ResponseHandling
         /// <param name="logger">The logger.</param>
         public UserInfoResponseGenerator(IProfileService profile, IResourceStore resourceStore, ILogger<UserInfoResponseGenerator> logger)
         {
-            _profile = profile;
-            _resourceStore = resourceStore;
-            _logger = logger;
+            Profile = profile;
+            Resources = resourceStore;
+            Logger = logger;
         }
 
         /// <summary>
@@ -46,15 +58,15 @@ namespace IdentityServer4.ResponseHandling
         /// <param name="validationResult">The userinfo request validation result.</param>
         /// <returns></returns>
         /// <exception cref="System.InvalidOperationException">Profile service returned incorrect subject value</exception>
-        public async Task<Dictionary<string, object>> ProcessAsync(UserInfoRequestValidationResult validationResult)
+        public virtual async Task<Dictionary<string, object>> ProcessAsync(UserInfoRequestValidationResult validationResult)
         {
-            _logger.LogTrace("Creating userinfo response");
+            Logger.LogTrace("Creating userinfo response");
 
             // extract scopes and turn into requested claim types
             var scopes = validationResult.TokenValidationResult.Claims.Where(c => c.Type == JwtClaimTypes.Scope).Select(c => c.Value);
             var requestedClaimTypes = await GetRequestedClaimTypesAsync(scopes);
 
-            _logger.LogDebug("Requested claim types: {claimTypes}", requestedClaimTypes.ToSpaceSeparatedString());
+            Logger.LogDebug("Requested claim types: {claimTypes}", requestedClaimTypes.ToSpaceSeparatedString());
 
             // call profile service
             var context = new ProfileDataRequestContext(
@@ -63,7 +75,7 @@ namespace IdentityServer4.ResponseHandling
                 IdentityServerConstants.ProfileDataCallers.UserInfoEndpoint,
                 requestedClaimTypes);
 
-            await _profile.GetProfileDataAsync(context);
+            await Profile.GetProfileDataAsync(context);
             var profileClaims = context.IssuedClaims;
 
             // construct outgoing claims
@@ -71,12 +83,12 @@ namespace IdentityServer4.ResponseHandling
 
             if (profileClaims == null)
             {
-                _logger.LogInformation("Profile service returned no claims (null)");
+                Logger.LogInformation("Profile service returned no claims (null)");
             }
             else
             {
                 outgoingClaims.AddRange(profileClaims);
-                _logger.LogInformation("Profile service returned to the following claim types: {types}", profileClaims.Select(c => c.Type).ToSpaceSeparatedString());
+                Logger.LogInformation("Profile service returned to the following claim types: {types}", profileClaims.Select(c => c.Type).ToSpaceSeparatedString());
             }
 
             var subClaim = outgoingClaims.SingleOrDefault(x => x.Type == JwtClaimTypes.Subject);
@@ -86,7 +98,7 @@ namespace IdentityServer4.ResponseHandling
             }
             else if (subClaim.Value != validationResult.Subject.GetSubjectId())
             {
-                _logger.LogError("Profile service returned incorrect subject value: {sub}", subClaim);
+                Logger.LogError("Profile service returned incorrect subject value: {sub}", subClaim);
                 throw new InvalidOperationException("Profile service returned incorrect subject value");
             }
 
@@ -106,9 +118,9 @@ namespace IdentityServer4.ResponseHandling
             }
 
             var scopeString = string.Join(" ", scopes);
-            _logger.LogDebug("Scopes in access token: {scopes}", scopeString);
+            Logger.LogDebug("Scopes in access token: {scopes}", scopeString);
 
-            var identityResources = await _resourceStore.FindEnabledIdentityResourcesByScopeAsync(scopes);
+            var identityResources = await Resources.FindEnabledIdentityResourcesByScopeAsync(scopes);
             var scopeClaims = new List<string>();
 
             foreach (var scope in scopes)
