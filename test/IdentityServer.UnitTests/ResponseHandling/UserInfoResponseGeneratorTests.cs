@@ -80,20 +80,17 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             _identityResources.Add(new IdentityResource("id1", new[] { "foo" }));
             _identityResources.Add(new IdentityResource("id2", new[] { "bar" }));
 
-            var subject = new ClaimsPrincipal(_user);
-            subject.Identities.First().AddClaims(
-                new[]
-                {
-                    new Claim("scope", "id1"),
-                    new Claim("scope", "id2"),
-                    new Claim("scope", "id3")
-                });
-
             var result = new UserInfoRequestValidationResult
             {
-                Subject = subject,
+                Subject = _user,
                 TokenValidationResult = new TokenValidationResult
                 {
+                    Claims = new List<Claim>
+                    {
+                        { new Claim("scope", "id1") },
+                        { new Claim("scope", "id2") },
+                        { new Claim("scope", "id3") }
+                    },
                     Client = _client
                 }
             };
@@ -115,20 +112,17 @@ namespace IdentityServer4.UnitTests.ResponseHandling
                 new Claim("name", "fred jones"),
             };
 
-            var subject = new ClaimsPrincipal(_user);
-            subject.Identities.First().AddClaims(
-                new[]
-                {
-                    new Claim("scope", "id1"),
-                    new Claim("scope", "id2"),
-                    new Claim("scope", "id3")
-                });
-
             var result = new UserInfoRequestValidationResult
             {
-                Subject = subject,
+                Subject = _user,
                 TokenValidationResult = new TokenValidationResult
                 {
+                    Claims = new List<Claim>
+                    {
+                        { new Claim("scope", "id1") },
+                        { new Claim("scope", "id2") },
+                        { new Claim("scope", "id3") }
+                    },
                     Client = _client
                 }
             };
@@ -147,20 +141,17 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             _identityResources.Add(new IdentityResource("id1", new[] { "foo" }));
             _identityResources.Add(new IdentityResource("id2", new[] { "bar" }));
 
-            var subject = new ClaimsPrincipal(_user);
-            subject.Identities.First().AddClaims(
-                new[]
-                {
-                    new Claim("scope", "id1"),
-                    new Claim("scope", "id2"),
-                    new Claim("scope", "id3")
-                });
-
             var result = new UserInfoRequestValidationResult
             {
-                Subject = subject,
+                Subject = _user,
                 TokenValidationResult = new TokenValidationResult
                 {
+                    Claims = new List<Claim>
+                    {
+                        { new Claim("scope", "id1") },
+                        { new Claim("scope", "id2") },
+                        { new Claim("scope", "id3") }
+                    },
                     Client = _client
                 }
             };
@@ -181,20 +172,17 @@ namespace IdentityServer4.UnitTests.ResponseHandling
                 new Claim("sub", "fred"),
             };
 
-            var subject = new ClaimsPrincipal(_user);
-            subject.Identities.First().AddClaims(
-                new[]
-                {
-                    new Claim("scope", "id1"),
-                    new Claim("scope", "id2"),
-                    new Claim("scope", "id3")
-                });
-
             var result = new UserInfoRequestValidationResult
             {
-                Subject = subject,
+                Subject = _user,
                 TokenValidationResult = new TokenValidationResult
                 {
+                    Claims = new List<Claim>
+                    {
+                        { new Claim("scope", "id1") },
+                        { new Claim("scope", "id2") },
+                        { new Claim("scope", "id3") }
+                    },
                     Client = _client
                 }
             };

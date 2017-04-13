@@ -76,8 +76,7 @@ namespace IdentityServer4.Endpoints
 
             if (validationResult.IsError)
             {
-                // todo: improve logging
-                _logger.LogError(validationResult.Error);
+                //_logger.LogError("Error validating  validationResult.Error);
                 return Error(validationResult.Error);
             }
 
