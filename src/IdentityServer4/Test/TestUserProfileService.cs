@@ -54,7 +54,7 @@ namespace IdentityServer4.Test
             if (context.RequestedClaimTypes.Any())
             {
                 var user = Users.FindBySubjectId(context.Subject.GetSubjectId());
-                context.AddFilteredClaims(user.Claims);
+                context.AddClaims(user.Claims);
             }
 
             return Task.FromResult(0);

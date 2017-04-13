@@ -25,11 +25,11 @@ namespace IdentityServer4.Models
         }
 
         /// <summary>
-        /// Adds filtered claims based on the requested claim types.
+        /// Filters the claims based on the requested claim types and then adds them to the IssuedClaims collection.
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="claims">The claims.</param>
-        public static void AddFilteredClaims(this ProfileDataRequestContext context, IEnumerable<Claim> claims)
+        public static void AddClaims(this ProfileDataRequestContext context, IEnumerable<Claim> claims)
         {
             context.IssuedClaims.AddRange(context.FilterClaims(claims));
         }

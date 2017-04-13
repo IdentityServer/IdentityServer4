@@ -42,7 +42,7 @@ namespace IdentityServer4.Services
 
             if (context.RequestedClaimTypes.Any())
             {
-                context.AddFilteredClaims(context.Subject.Claims);
+                context.AddClaims(context.Subject.Claims);
             }
 
             return Task.FromResult(0);
