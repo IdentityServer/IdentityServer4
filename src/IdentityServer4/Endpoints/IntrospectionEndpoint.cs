@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using System;
 using System.Threading.Tasks;
 using IdentityServer4.Validation;
 using IdentityServer4.ResponseHandling;
@@ -67,6 +66,7 @@ namespace IdentityServer4.Endpoints
         {
             _logger.LogDebug("Starting introspection request.");
 
+            // caller validation
             var apiResult = await _apiSecretValidator.ValidateAsync(context);
             if (apiResult.Resource == null)
             {
@@ -81,6 +81,7 @@ namespace IdentityServer4.Endpoints
                 return new StatusCodeResult(HttpStatusCode.BadRequest);
             }
 
+            // request validation
             var validationResult = await _requestValidator.ValidateAsync(body.AsNameValueCollection());
             if (validationResult.IsError)
             {
@@ -90,7 +91,10 @@ namespace IdentityServer4.Endpoints
 
             validationResult.Api = apiResult.Resource;
 
+            // response generation
             var response = await _generator.ProcessAsync(validationResult);
+
+            // render result
             return new IntrospectionResult(response);
         }
 

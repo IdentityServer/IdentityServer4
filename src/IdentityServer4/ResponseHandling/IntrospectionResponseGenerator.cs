@@ -42,11 +42,13 @@ namespace IdentityServer4.ResponseHandling
         {
             Logger.LogTrace("Creating introspection response");
 
+            // standard response
             var response = new Dictionary<string, object>()
             {
                 { "active", false }
             };
 
+            // token is invalid
             if (validationResult.IsActive == false)
             {
                 Logger.LogDebug("Creating introspection response for inactive token.");
@@ -61,9 +63,13 @@ namespace IdentityServer4.ResponseHandling
 
             Logger.LogDebug("Creating introspection response for active token.");
 
+            // get all claims (without scopes)
             response = validationResult.Claims.Where(c => c.Type != JwtClaimTypes.Scope).ToClaimsDictionary();
+
+            // add active flag
             response.Add("active", true);
 
+            // calculate scopes the caller is allowed to see
             var allowedScopes = validationResult.Api.Scopes.Select(x => x.Name);
             var scopes = validationResult.Claims.Where(c => c.Type == JwtClaimTypes.Scope).Select(x => x.Value);
             scopes = scopes.Where(x => allowedScopes.Contains(x));

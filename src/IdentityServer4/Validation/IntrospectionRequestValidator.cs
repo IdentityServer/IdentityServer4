@@ -68,6 +68,7 @@ namespace IdentityServer4.Validation
 
             _logger.LogDebug("Introspection request validation successful.");
 
+            // valid token
             return new IntrospectionRequestValidationResult
             {
                 IsActive = true,
