@@ -7,6 +7,7 @@ using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
+using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -40,31 +41,33 @@ namespace IdentityServer4.ResponseHandling
         }
 
         /// <summary>
-        /// Processes the response.
+        /// Creates the response.
         /// </summary>
-        /// <param name="subject">The subject.</param>
-        /// <param name="scopes">The scopes.</param>
-        /// <param name="client">The client.</param>
+        /// <param name="validationResult">The userinfo request validation result.</param>
         /// <returns></returns>
         /// <exception cref="System.InvalidOperationException">Profile service returned incorrect subject value</exception>
-        public async Task<Dictionary<string, object>> ProcessAsync(ClaimsPrincipal subject, IEnumerable<string> scopes, Client client)
+        public async Task<Dictionary<string, object>> ProcessAsync(UserInfoRequestValidationResult validationResult)
         {
             _logger.LogTrace("Creating userinfo response");
 
+            // extract scopes and turn into requested claim types
+            var scopes = validationResult.Subject.Claims.Where(c => c.Type == JwtClaimTypes.Scope).Select(c => c.Value);
             var requestedClaimTypes = await GetRequestedClaimTypesAsync(scopes);
 
             _logger.LogDebug("Requested claim types: {claimTypes}", requestedClaimTypes.ToSpaceSeparatedString());
 
+            // call profile service
             var context = new ProfileDataRequestContext(
-                subject,
-                client,
+                validationResult.Subject,
+                validationResult.TokenValidationResult.Client,
                 IdentityServerConstants.ProfileDataCallers.UserInfoEndpoint,
                 requestedClaimTypes);
 
             await _profile.GetProfileDataAsync(context);
             var profileClaims = context.IssuedClaims;
 
-            List<Claim> results = new List<Claim>();
+            // construct outgoing claims
+            List<Claim> outgoingClaims = new List<Claim>();
 
             if (profileClaims == null)
             {
@@ -72,22 +75,22 @@ namespace IdentityServer4.ResponseHandling
             }
             else
             {
-                results.AddRange(profileClaims);
+                outgoingClaims.AddRange(profileClaims);
                 _logger.LogInformation("Profile service returned to the following claim types: {types}", profileClaims.Select(c => c.Type).ToSpaceSeparatedString());
             }
 
-            var subClaim = results.SingleOrDefault(x => x.Type == JwtClaimTypes.Subject);
+            var subClaim = outgoingClaims.SingleOrDefault(x => x.Type == JwtClaimTypes.Subject);
             if (subClaim == null)
             {
-                results.Add(new Claim(JwtClaimTypes.Subject, subject.GetSubjectId()));
+                outgoingClaims.Add(new Claim(JwtClaimTypes.Subject, validationResult.Subject.GetSubjectId()));
             }
-            else if (subClaim.Value != subject.GetSubjectId())
+            else if (subClaim.Value != validationResult.Subject.GetSubjectId())
             {
                 _logger.LogError("Profile service returned incorrect subject value: {sub}", subClaim);
                 throw new InvalidOperationException("Profile service returned incorrect subject value");
             }
 
-            return results.ToClaimsDictionary();
+            return outgoingClaims.ToClaimsDictionary();
         }
 
         /// <summary>
