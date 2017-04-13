@@ -17,10 +17,15 @@ namespace IdentityServer4.Validation
     {
         private readonly ITokenValidator _tokenValidator;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserInfoRequestValidator"/> class.
+        /// </summary>
+        /// <param name="tokenValidator">The token validator.</param>
         public UserInfoRequestValidator(ITokenValidator tokenValidator)
         {
             _tokenValidator = tokenValidator;
         }
+
         /// <summary>
         /// Validates a userinfo request.
         /// </summary>
@@ -41,7 +46,7 @@ namespace IdentityServer4.Validation
                 return new UserInfoRequestValidationResult
                 {
                     IsError = true,
-                    Error = OidcConstants.ProtectedResourceErrors.InvalidToken
+                    Error = OidcConstants.ProtectedResourceErrors.InsufficientScope
                 };
             }
 

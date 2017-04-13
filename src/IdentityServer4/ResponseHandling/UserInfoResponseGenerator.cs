@@ -51,7 +51,7 @@ namespace IdentityServer4.ResponseHandling
             _logger.LogTrace("Creating userinfo response");
 
             // extract scopes and turn into requested claim types
-            var scopes = validationResult.Subject.Claims.Where(c => c.Type == JwtClaimTypes.Scope).Select(c => c.Value);
+            var scopes = validationResult.TokenValidationResult.Claims.Where(c => c.Type == JwtClaimTypes.Scope).Select(c => c.Value);
             var requestedClaimTypes = await GetRequestedClaimTypesAsync(scopes);
 
             _logger.LogDebug("Requested claim types: {claimTypes}", requestedClaimTypes.ToSpaceSeparatedString());
