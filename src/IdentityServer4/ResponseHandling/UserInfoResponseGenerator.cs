@@ -60,7 +60,7 @@ namespace IdentityServer4.ResponseHandling
         /// <exception cref="System.InvalidOperationException">Profile service returned incorrect subject value</exception>
         public virtual async Task<Dictionary<string, object>> ProcessAsync(UserInfoRequestValidationResult validationResult)
         {
-            Logger.LogTrace("Creating userinfo response");
+            Logger.LogDebug("Creating userinfo response");
 
             // extract scopes and turn into requested claim types
             var scopes = validationResult.TokenValidationResult.Claims.Where(c => c.Type == JwtClaimTypes.Scope).Select(c => c.Value);
@@ -110,7 +110,7 @@ namespace IdentityServer4.ResponseHandling
         /// </summary>
         /// <param name="scopes">The scopes.</param>
         /// <returns></returns>
-        public async Task<IEnumerable<string>> GetRequestedClaimTypesAsync(IEnumerable<string> scopes)
+        internal async Task<IEnumerable<string>> GetRequestedClaimTypesAsync(IEnumerable<string> scopes)
         {
             if (scopes == null || !scopes.Any())
             {

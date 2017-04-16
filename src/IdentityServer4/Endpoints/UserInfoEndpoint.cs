@@ -21,7 +21,7 @@ namespace IdentityServer4.Endpoints
     {
         private readonly BearerTokenUsageValidator _tokenUsageValidator;
         private readonly IUserInfoRequestValidator _requestValidator;
-        private readonly IUserInfoResponseGenerator _generator;
+        private readonly IUserInfoResponseGenerator _responseGenerator;
         private readonly ILogger _logger;
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace IdentityServer4.Endpoints
         {
             _tokenUsageValidator = tokenUsageValidator;
             _requestValidator = requestValidator;
-            _generator = responseGenerator;
+            _responseGenerator = responseGenerator;
             _logger = logger;
         }
 
@@ -72,6 +72,7 @@ namespace IdentityServer4.Endpoints
             _logger.LogDebug("Token found: {bearerTokenUsageType}", tokenUsageResult.UsageType.ToString());
 
             // validate the request
+            _logger.LogTrace("Calling into userinfo request validator: {type}", _requestValidator.GetType().FullName);
             var validationResult = await _requestValidator.ValidateRequestAsync(tokenUsageResult.Token);
 
             if (validationResult.IsError)
@@ -81,7 +82,8 @@ namespace IdentityServer4.Endpoints
             }
 
             // generate response
-            var response = await _generator.ProcessAsync(validationResult);
+            _logger.LogTrace("Calling into userinfo response generator: {type}", _responseGenerator.GetType().FullName);
+            var response = await _responseGenerator.ProcessAsync(validationResult);
 
             _logger.LogDebug("End userinfo request");
             return new UserInfoResult(response);
