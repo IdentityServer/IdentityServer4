@@ -69,8 +69,6 @@ namespace IdentityServer4.Endpoints
                 return Error(OidcConstants.ProtectedResourceErrors.InvalidToken);
             }
 
-            _logger.LogDebug("Token found: {bearerTokenUsageType}", tokenUsageResult.UsageType.ToString());
-
             // validate the request
             _logger.LogTrace("Calling into userinfo request validator: {type}", _requestValidator.GetType().FullName);
             var validationResult = await _requestValidator.ValidateRequestAsync(tokenUsageResult.Token);
