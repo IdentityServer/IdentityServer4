@@ -24,24 +24,24 @@ namespace IdentityServer4.Endpoints
     /// <seealso cref="IdentityServer4.Hosting.IEndpoint" />
     public class TokenEndpoint : IEndpoint
     {
-        private readonly ITokenRequestValidator _requestValidator;
         private readonly ClientSecretValidator _clientValidator;
+        private readonly ITokenRequestValidator _requestValidator;
         private readonly ITokenResponseGenerator _responseGenerator;
         private readonly IEventService _events;
         private readonly ILogger _logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TokenEndpoint"/> class.
+        /// Initializes a new instance of the <see cref="TokenEndpoint" /> class.
         /// </summary>
-        /// <param name="requestValidator">The request validator.</param>
         /// <param name="clientValidator">The client validator.</param>
+        /// <param name="requestValidator">The request validator.</param>
         /// <param name="responseGenerator">The response generator.</param>
         /// <param name="events">The events.</param>
         /// <param name="logger">The logger.</param>
-        public TokenEndpoint(ITokenRequestValidator requestValidator, ClientSecretValidator clientValidator, ITokenResponseGenerator responseGenerator, IEventService events, ILogger<TokenEndpoint> logger)
+        public TokenEndpoint(ClientSecretValidator clientValidator, ITokenRequestValidator requestValidator, ITokenResponseGenerator responseGenerator, IEventService events, ILogger<TokenEndpoint> logger)
         {
-            _requestValidator = requestValidator;
             _clientValidator = clientValidator;
+            _requestValidator = requestValidator;
             _responseGenerator = responseGenerator;
             _events = events;
             _logger = logger;
@@ -80,6 +80,7 @@ namespace IdentityServer4.Endpoints
 
             // validate request
             var form = (await context.Request.ReadFormAsync()).AsNameValueCollection();
+            _logger.LogTrace("Calling into token request validator: {type}", _requestValidator.GetType().FullName);
             var requestResult = await _requestValidator.ValidateRequestAsync(form, clientResult.Client);
 
             if (requestResult.IsError)
@@ -89,6 +90,7 @@ namespace IdentityServer4.Endpoints
             }
 
             // create response
+            _logger.LogTrace("Calling into token request response generator: {type}", _responseGenerator.GetType().FullName);
             var response = await _responseGenerator.ProcessAsync(requestResult);
 
             await _events.RaiseAsync(new TokenIssuedSuccessEvent(response, requestResult));
