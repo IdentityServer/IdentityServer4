@@ -21,7 +21,7 @@ namespace IdentityServer4.Endpoints
     public class IntrospectionEndpoint : IEndpoint
     {
         private readonly IEventService _events;
-        private readonly IIntrospectionResponseGenerator _generator;
+        private readonly IIntrospectionResponseGenerator _responseGenerator;
         private readonly ILogger _logger;
         private readonly IIntrospectionRequestValidator _requestValidator;
         private readonly ApiSecretValidator _apiSecretValidator;
@@ -31,14 +31,14 @@ namespace IdentityServer4.Endpoints
         /// </summary>
         /// <param name="apiSecretValidator">The API secret validator.</param>
         /// <param name="requestValidator">The request validator.</param>
-        /// <param name="generator">The generator.</param>
+        /// <param name="responseGenerator">The generator.</param>
         /// <param name="events">The events.</param>
         /// <param name="logger">The logger.</param>
-        public IntrospectionEndpoint(ApiSecretValidator apiSecretValidator, IIntrospectionRequestValidator requestValidator, IIntrospectionResponseGenerator generator, IEventService events, ILogger<IntrospectionEndpoint> logger)
+        public IntrospectionEndpoint(ApiSecretValidator apiSecretValidator, IIntrospectionRequestValidator requestValidator, IIntrospectionResponseGenerator responseGenerator, IEventService events, ILogger<IntrospectionEndpoint> logger)
         {
             _apiSecretValidator = apiSecretValidator;
             _requestValidator = requestValidator;
-            _generator = generator;
+            _responseGenerator = responseGenerator;
             _events = events;
             _logger = logger;
         }
@@ -82,6 +82,7 @@ namespace IdentityServer4.Endpoints
             }
 
             // request validation
+            _logger.LogTrace("Calling into introspection request validator: {type}", _requestValidator.GetType().FullName);
             var validationResult = await _requestValidator.ValidateAsync(body.AsNameValueCollection());
             if (validationResult.IsError)
             {
@@ -92,7 +93,8 @@ namespace IdentityServer4.Endpoints
             validationResult.Api = apiResult.Resource;
 
             // response generation
-            var response = await _generator.ProcessAsync(validationResult);
+            _logger.LogTrace("Calling into introspection response generator: {type}", _responseGenerator.GetType().FullName);
+            var response = await _responseGenerator.ProcessAsync(validationResult);
 
             // render result
             return new IntrospectionResult(response);
