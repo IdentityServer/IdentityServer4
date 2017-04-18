@@ -56,7 +56,13 @@ namespace IdentityServer4.Endpoints
             if (context.Request.Method != "POST")
             {
                 _logger.LogWarning("Introspection endpoint only supports POST requests");
-                return new StatusCodeResult(405);
+                return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
+            }
+
+            if (!context.Request.HasFormContentType)
+            {
+                _logger.LogWarning("Invalid media type for introspection endpoint");
+                return new StatusCodeResult(HttpStatusCode.UnsupportedMediaType);
             }
 
             return await ProcessIntrospectionRequestAsync(context);

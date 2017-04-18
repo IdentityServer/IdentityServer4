@@ -10,6 +10,7 @@ using IdentityServer4.Hosting;
 using IdentityServer4.Endpoints.Results;
 using IdentityModel;
 using Microsoft.AspNetCore.Http;
+using System.Net;
 
 namespace IdentityServer4.Endpoints
 {
@@ -49,7 +50,7 @@ namespace IdentityServer4.Endpoints
             if (context.Request.Method != "GET" && context.Request.Method != "POST")
             {
                 _logger.LogWarning("Invalid HTTP method for userinfo endpoint.");
-                return new StatusCodeResult(405);
+                return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
             }
 
             return await ProcessUserInfoRequestAsync(context);
