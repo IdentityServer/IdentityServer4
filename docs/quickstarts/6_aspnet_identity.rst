@@ -91,7 +91,7 @@ As before, IdentityServer needs to be configured in both ``ConfigureServices`` a
 **ConfigureServices**
 
 This shows both the template code generated for ASP.NET Identity, plus the additions needed for IdentityServer (at the end).
-In the previous quickstarts, the ``AddInMemoryUsers`` extension method was used to register the users, but in this situation we replace that extension method with ``AddAspNetIdentity`` to use the ASP.NET Identity users instead.
+In the previous quickstarts, the ``AddTestUsers`` extension method was used to register the users, but in this situation we replace that extension method with ``AddAspNetIdentity`` to use the ASP.NET Identity users instead.
 The ``AddAspNetIdentity`` extension method requires a generic parameter which is your ASP.NET Identity user type (the same one needed in the ``AddIdentity`` method from the template).
 
 ::
