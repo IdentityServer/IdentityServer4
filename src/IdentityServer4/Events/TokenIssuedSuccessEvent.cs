@@ -6,6 +6,7 @@ using IdentityModel;
 using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
 using IdentityServer4.Models;
+using IdentityServer4.ResponseHandling;
 using IdentityServer4.Validation;
 using System.Collections.Generic;
 

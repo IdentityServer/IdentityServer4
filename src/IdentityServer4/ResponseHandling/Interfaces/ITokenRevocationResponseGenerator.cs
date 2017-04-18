@@ -4,7 +4,6 @@
 
 using System.Threading.Tasks;
 using IdentityServer4.Validation;
-using IdentityServer4.Models;
 
 namespace IdentityServer4.ResponseHandling
 {

@@ -2,15 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using IdentityServer4.Validation;
 using IdentityServer4.Stores;
-using IdentityServer4.Models;
 using Microsoft.Extensions.Logging;
-using IdentityServer4.Services;
 
 namespace IdentityServer4.ResponseHandling
 {

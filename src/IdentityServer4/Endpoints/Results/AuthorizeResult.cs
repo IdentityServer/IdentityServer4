@@ -13,6 +13,7 @@ using System;
 using IdentityServer4.Services;
 using IdentityServer4.Configuration;
 using IdentityServer4.Stores;
+using IdentityServer4.ResponseHandling;
 
 namespace IdentityServer4.Endpoints.Results
 {
@@ -22,9 +23,7 @@ namespace IdentityServer4.Endpoints.Results
 
         public AuthorizeResult(AuthorizeResponse response)
         {
-            if (response == null) throw new ArgumentNullException(nameof(response));
-
-            Response = response;
+            Response = response ?? throw new ArgumentNullException(nameof(response));
         }
 
         internal AuthorizeResult(
