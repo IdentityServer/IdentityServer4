@@ -20,17 +20,36 @@ namespace IdentityServer4.ResponseHandling
     /// <seealso cref="IdentityServer4.ResponseHandling.ITokenRevocationResponseGenerator" />
     public class TokenRevocationResponseGenerator : ITokenRevocationResponseGenerator
     {
+        /// <summary>
+        /// Gets the reference token store.
+        /// </summary>
+        /// <value>
+        /// The reference token store.
+        /// </value>
         public IReferenceTokenStore ReferenceTokenStore { get; }
+
+        /// <summary>
+        /// Gets the refresh token store.
+        /// </summary>
+        /// <value>
+        /// The refresh token store.
+        /// </value>
         public IRefreshTokenStore RefreshTokenStore { get; }
+
+        /// <summary>
+        /// Gets the logger.
+        /// </summary>
+        /// <value>
+        /// The logger.
+        /// </value>
         public ILogger Logger { get; }
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenRevocationResponseGenerator" /> class.
         /// </summary>
         /// <param name="referenceTokenStore">The reference token store.</param>
         /// <param name="refreshTokenStore">The refresh token store.</param>
         /// <param name="logger">The logger.</param>
-        /// <param name="events">The events.</param>
         public TokenRevocationResponseGenerator(IReferenceTokenStore referenceTokenStore, IRefreshTokenStore refreshTokenStore, ILogger<TokenRevocationResponseGenerator> logger)
         {
             ReferenceTokenStore = referenceTokenStore;
