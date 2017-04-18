@@ -49,6 +49,7 @@ namespace IdentityServer4.Validation
                 _logger.LogError("no parameters passed");
                 throw new ArgumentNullException(nameof(parameters));
             }
+
             if (client == null)
             {
                 _logger.LogError("no client passed");
@@ -72,7 +73,8 @@ namespace IdentityServer4.Validation
             var result = new TokenRevocationRequestValidationResult
             {
                 IsError = false,
-                Token = token
+                Token = token,
+                Client = client
             };
 
             ////////////////////////////

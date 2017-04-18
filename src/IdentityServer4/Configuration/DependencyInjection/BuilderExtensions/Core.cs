@@ -65,7 +65,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.AddEndpoint<DiscoveryEndpoint>(EndpointName.Discovery);
             builder.AddEndpoint<EndSessionEndpoint>(EndpointName.EndSession);
             builder.AddEndpoint<IntrospectionEndpoint>(EndpointName.Introspection);
-            builder.AddEndpoint<RevocationEndpoint>(EndpointName.Revocation);
+            builder.AddEndpoint<TokenRevocationEndpoint>(EndpointName.Revocation);
             builder.AddEndpoint<TokenEndpoint>(EndpointName.Token);
             builder.AddEndpoint<UserInfoEndpoint>(EndpointName.UserInfo);
 
@@ -187,6 +187,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IAuthorizeInteractionResponseGenerator, AuthorizeInteractionResponseGenerator>();
             builder.Services.TryAddTransient<IAuthorizeResponseGenerator, AuthorizeResponseGenerator>();
             builder.Services.TryAddTransient<IDiscoveryResponseGenerator, DiscoveryResponseGenerator>();
+            builder.Services.TryAddTransient<ITokenRevocationResponseGenerator, TokenRevocationResponseGenerator>();
 
             return builder;
         }
