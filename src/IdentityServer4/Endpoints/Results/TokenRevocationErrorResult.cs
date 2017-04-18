@@ -13,7 +13,7 @@ namespace IdentityServer4.Endpoints.Results
     /// Result for revocation error
     /// </summary>
     /// <seealso cref="IdentityServer4.Hosting.IEndpointResult" />
-    public class RevocationErrorResult : IEndpointResult
+    public class TokenRevocationErrorResult : IEndpointResult
     {
         /// <summary>
         /// Gets or sets the error.
@@ -24,10 +24,10 @@ namespace IdentityServer4.Endpoints.Results
         public string Error { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RevocationErrorResult"/> class.
+        /// Initializes a new instance of the <see cref="TokenRevocationErrorResult"/> class.
         /// </summary>
         /// <param name="error">The error.</param>
-        public RevocationErrorResult(string error)
+        public TokenRevocationErrorResult(string error)
         {
             Error = error;
         }
