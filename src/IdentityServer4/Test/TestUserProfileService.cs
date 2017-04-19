@@ -45,17 +45,15 @@ namespace IdentityServer4.Test
         /// <returns></returns>
         public virtual Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
-            Logger.LogDebug("Get profile called for subject {subject} from client {client} with claim types {claimTypes} via {caller}",
-                context.Subject.GetSubjectId(),
-                context.Client.ClientName ?? context.Client.ClientId,
-                context.RequestedClaimTypes,
-                context.Caller);
+            context.LogProfileRequest(Logger);
 
             if (context.RequestedClaimTypes.Any())
             {
                 var user = Users.FindBySubjectId(context.Subject.GetSubjectId());
-                context.AddClaims(user.Claims);
+                context.AddRequestedClaims(user.Claims);
             }
+
+            context.LogIssuedClaims(Logger);
 
             return Task.FromResult(0);
         }
