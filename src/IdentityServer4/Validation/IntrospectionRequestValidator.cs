@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using IdentityServer4.Models;
 using Microsoft.Extensions.Logging;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
@@ -32,11 +33,12 @@ namespace IdentityServer4.Validation
         /// Validates the request.
         /// </summary>
         /// <param name="parameters">The parameters.</param>
+        /// <param name="api">The API.</param>
         /// <returns></returns>
-        public async Task<IntrospectionRequestValidationResult> ValidateAsync(NameValueCollection parameters)
+        public async Task<IntrospectionRequestValidationResult> ValidateAsync(NameValueCollection parameters, ApiResource api)
         {
             _logger.LogDebug("Introspection request validation started.");
-            
+
             // retrieve required token
             var token = parameters.Get("token");
             if (token == null)
@@ -46,6 +48,7 @@ namespace IdentityServer4.Validation
                 return new IntrospectionRequestValidationResult
                 {
                     IsError = true,
+                    Api = api,
                     Error = "missing_token"
                 };
             }
@@ -62,7 +65,8 @@ namespace IdentityServer4.Validation
                 {
                     IsActive = false,
                     IsError = false,
-                    Token = token
+                    Token = token,
+                    Api = api
                 };
             }
 
@@ -74,7 +78,8 @@ namespace IdentityServer4.Validation
                 IsActive = true,
                 IsError = false,
                 Token = token,
-                Claims = tokenValidationResult.Claims
+                Claims = tokenValidationResult.Claims,
+                Api = api
             };
         }
     }

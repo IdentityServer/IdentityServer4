@@ -89,14 +89,12 @@ namespace IdentityServer4.Endpoints
 
             // request validation
             _logger.LogTrace("Calling into introspection request validator: {type}", _requestValidator.GetType().FullName);
-            var validationResult = await _requestValidator.ValidateAsync(body.AsNameValueCollection());
+            var validationResult = await _requestValidator.ValidateAsync(body.AsNameValueCollection(), apiResult.Resource);
             if (validationResult.IsError)
             {
                 LogFailure(validationResult.Error, apiResult.Resource.Name);
                 return new BadRequestResult(validationResult.Error);
             }
-
-            validationResult.Api = apiResult.Resource;
 
             // response generation
             _logger.LogTrace("Calling into introspection response generator: {type}", _responseGenerator.GetType().FullName);

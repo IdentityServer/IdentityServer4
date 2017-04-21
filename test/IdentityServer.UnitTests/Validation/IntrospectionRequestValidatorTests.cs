@@ -50,7 +50,7 @@ namespace IdentityServer4.UnitTests.Validation
                 { "token", handle}
             };
 
-            var result = await _subject.ValidateAsync(param);
+            var result = await _subject.ValidateAsync(param, null);
 
             result.IsError.Should().Be(false);
             result.IsActive.Should().Be(true);
@@ -64,7 +64,7 @@ namespace IdentityServer4.UnitTests.Validation
         {
             var param = new NameValueCollection();
             
-            var result = await _subject.ValidateAsync(param);
+            var result = await _subject.ValidateAsync(param, null);
 
             result.IsError.Should().Be(true);
             result.Error.Should().Be("missing_token");
@@ -82,7 +82,7 @@ namespace IdentityServer4.UnitTests.Validation
                 { "token", "invalid" }
             };
 
-            var result = await _subject.ValidateAsync(param);
+            var result = await _subject.ValidateAsync(param, null);
 
             result.IsError.Should().Be(false);
             result.IsActive.Should().Be(false);
