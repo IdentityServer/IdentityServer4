@@ -109,7 +109,7 @@ namespace IdentityServer4.ResponseHandling
                 RedirectUri = request.RedirectUri,
                 Nonce = request.Nonce,
 
-                WasConsentShown = request.WasConsentShown,
+                WasConsentShown = request.WasConsentShown
             };
 
             // store id token and access token and return authorization code

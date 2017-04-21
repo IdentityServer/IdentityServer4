@@ -317,7 +317,7 @@ namespace IdentityServer4.ResponseHandling
                         use = "sig",
                         kid = rsaKey.KeyId,
                         e = exponent,
-                        n = modulus,
+                        n = modulus
                     };
 
                     webKeys.Add(webKey);

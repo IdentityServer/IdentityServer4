@@ -192,7 +192,7 @@ namespace IdentityServer4.ResponseHandling
                 {
                     Subject = subject,
                     ValidatedRequest = request.ValidatedRequest,
-                    Resources = await Resources.FindEnabledResourcesByScopeAsync(oldAccessToken.Scopes),
+                    Resources = await Resources.FindEnabledResourcesByScopeAsync(oldAccessToken.Scopes)
                 };
 
                 var newAccessToken = await TokenService.CreateAccessTokenAsync(creationRequest);

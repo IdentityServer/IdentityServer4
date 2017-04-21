@@ -39,7 +39,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
                 new Claim("foo", "foo1"),
                 new Claim("foo", "foo2"),
                 new Claim("bar", "bar1"),
-                new Claim("bar", "bar2"),
+                new Claim("bar", "bar2")
             });
 
             _resourceStore = new InMemoryResourcesStore(_identityResources, _apiResources);
@@ -108,7 +108,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             _mockProfileService.ProfileClaims = new[]
             {
                 new Claim("email", "fred@gmail.com"),
-                new Claim("name", "fred jones"),
+                new Claim("name", "fred jones")
             };
 
             var result = new UserInfoRequestValidationResult
@@ -168,7 +168,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             _identityResources.Add(new IdentityResource("id2", new[] { "bar" }));
             _mockProfileService.ProfileClaims = new[]
             {
-                new Claim("sub", "fred"),
+                new Claim("sub", "fred")
             };
 
             var result = new UserInfoRequestValidationResult

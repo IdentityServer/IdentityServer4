@@ -136,7 +136,7 @@ namespace IdentityServer4.UnitTests.Validation
                         new Secret("foobar", "some description"),
                         new Secret("quux"),
                         new Secret("notexpired", DateTime.UtcNow.AddDays(1)),
-                        new Secret("expired", DateTime.UtcNow.AddDays(-1)),
+                        new Secret("expired", DateTime.UtcNow.AddDays(-1))
                     }
                 },
 
@@ -157,9 +157,9 @@ namespace IdentityServer4.UnitTests.Validation
                         // notexpired
                         new Secret("notexpired".Sha256(), DateTime.UtcNow.AddDays(1)),
                         // expired
-                        new Secret("expired".Sha512(), DateTime.UtcNow.AddDays(-1)),
+                        new Secret("expired".Sha512(), DateTime.UtcNow.AddDays(-1))
                     }
-                },
+                }
             };
         }
     }

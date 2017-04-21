@@ -131,7 +131,7 @@ namespace IdentityServer4.Validation
             }
         }
 
-        async Task<TokenRequestValidationResult> RunValidationAsync(Func<NameValueCollection, Task<TokenRequestValidationResult>> validationFunc, NameValueCollection parameters)
+        private async Task<TokenRequestValidationResult> RunValidationAsync(Func<NameValueCollection, Task<TokenRequestValidationResult>> validationFunc, NameValueCollection parameters)
         {
             // run standard validation
             var result = await validationFunc(parameters);

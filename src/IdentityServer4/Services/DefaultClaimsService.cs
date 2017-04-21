@@ -113,7 +113,7 @@ namespace IdentityServer4.Services
             // add client_id
             var outputClaims = new List<Claim>
             {
-                new Claim(JwtClaimTypes.ClientId, request.Client.ClientId),
+                new Claim(JwtClaimTypes.ClientId, request.Client.ClientId)
             };
 
             // check for client claims
@@ -216,7 +216,7 @@ namespace IdentityServer4.Services
             {
                 new Claim(JwtClaimTypes.Subject, subject.GetSubjectId()),
                 new Claim(JwtClaimTypes.AuthenticationTime, subject.GetAuthenticationTimeEpoch().ToString(), ClaimValueTypes.Integer),
-                new Claim(JwtClaimTypes.IdentityProvider, subject.GetIdentityProvider()),
+                new Claim(JwtClaimTypes.IdentityProvider, subject.GetIdentityProvider())
             };
 
             claims.AddRange(subject.GetAuthenticationMethods());

@@ -69,7 +69,7 @@ namespace IdentityServer4.Validation
 
             var parts = requestedUri.Split(':');
 
-            if (parts.Count() != 3)
+            if (parts.Length != 3)
             {
                 _logger.LogDebug("invalid format - http://127.0.0.1:port is required.");
                 return false;

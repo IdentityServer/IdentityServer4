@@ -88,7 +88,7 @@ namespace IdentityServer4.Services
             {
                 await _clientSessionService.EnsureClientListCookieAsync(sid);
 
-                var msg = new MessageWithId<LogoutMessage>(new LogoutMessage() { SessionId = sid });
+                var msg = new MessageWithId<LogoutMessage>(new LogoutMessage { SessionId = sid });
 
                 var id = msg.Id;
                 await _logoutMessageStore.WriteAsync(id, msg);

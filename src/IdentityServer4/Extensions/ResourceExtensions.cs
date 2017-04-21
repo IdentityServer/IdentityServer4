@@ -25,7 +25,7 @@ namespace IdentityServer4.Models
                          select scope.Name;
             if (resources.OfflineAccess)
             {
-                scopes = scopes.Union(new string[] { IdentityServerConstants.StandardScopes.OfflineAccess });
+                scopes = scopes.Union(new[] { IdentityServerConstants.StandardScopes.OfflineAccess });
             }
             return resources.IdentityResources.Select(x => x.Name).Union(scopes).ToArray();
         }

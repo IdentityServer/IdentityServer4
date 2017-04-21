@@ -26,7 +26,7 @@ namespace Host.Configuration
                     },
 
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    AllowedScopes = { "api1", "api2.read_only" },
+                    AllowedScopes = { "api1", "api2.read_only" }
                 },
 
                 ///////////////////////////////////////////
@@ -125,8 +125,8 @@ namespace Host.Configuration
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Email,
-                        "api1", "api2.read_only",
-                    },
+                        "api1", "api2.read_only"
+                    }
                 },
 
                 ///////////////////////////////////////////
@@ -168,7 +168,7 @@ namespace Host.Configuration
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Email,
                         "api1", "api2.read_only"
-                    },
+                    }
                 },
 
                 ///////////////////////////////////////////
@@ -186,7 +186,7 @@ namespace Host.Configuration
                     LogoutUri = "http://localhost:44077/signout-oidc",
                     PostLogoutRedirectUris = { "http://localhost:44077/" },
 
-                    AllowedScopes = { IdentityServerConstants.StandardScopes.OpenId },
+                    AllowedScopes = { IdentityServerConstants.StandardScopes.OpenId }
                 },
 
                 ///////////////////////////////////////////
@@ -218,8 +218,8 @@ namespace Host.Configuration
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Email,
-                        "api1", "api2.read_only",
-                    },
+                        "api1", "api2.read_only"
+                    }
                 },
 
                 ///////////////////////////////////////////
@@ -236,7 +236,7 @@ namespace Host.Configuration
                     AllowAccessTokensViaBrowser = true,
 
                     RedirectUris = { "http://localhost:28895/index.html" },
-                    AllowedScopes = { "api1", "api2.read_only" },
+                    AllowedScopes = { "api1", "api2.read_only" }
                 },
                 
                 ///////////////////////////////////////////
@@ -259,7 +259,7 @@ namespace Host.Configuration
                         "http://localhost:7017/index.html",
                         "http://localhost:7017/callback.html",
                         "http://localhost:7017/silent.html",
-                        "http://localhost:7017/popup.html",
+                        "http://localhost:7017/popup.html"
                     },
 
                     PostLogoutRedirectUris = { "http://localhost:7017/index.html" },
@@ -271,8 +271,8 @@ namespace Host.Configuration
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Email,
                         "api1", "api2.read_only"
-                    },
-                },
+                    }
+                }
             };
         }
     }

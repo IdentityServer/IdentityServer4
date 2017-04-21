@@ -43,7 +43,7 @@ namespace IdentityServer4.ResponseHandling
             Logger.LogTrace("Creating introspection response");
 
             // standard response
-            var response = new Dictionary<string, object>()
+            var response = new Dictionary<string, object>
             {
                 { "active", false }
             };

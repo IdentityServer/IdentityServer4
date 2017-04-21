@@ -74,7 +74,7 @@ namespace IdentityServer4.IntegrationTests.Clients
                         new Secret("secret".Sha256())
                     },
 
-                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+                    AllowedGrantTypes = GrantTypes.ClientCredentials
                 },
 
                 ///////////////////////////////////////////
@@ -179,7 +179,7 @@ namespace IdentityServer4.IntegrationTests.Clients
                     AllowedScopes = new List<string>
                     {
                         "api1", "api2"
-                    },
+                    }
                 },
 
                 new Client
@@ -193,7 +193,7 @@ namespace IdentityServer4.IntegrationTests.Clients
                     ClientId = "implicit_and_client_creds",
                     AllowedGrantTypes = GrantTypes.ImplicitAndClientCredentials,
                     AllowedScopes = {"api1"}
-                },
+                }
             };
         }
     }

@@ -40,7 +40,7 @@ namespace IdentityServer4.UnitTests.Validation
                 Claims =
                 {
                     new System.Security.Claims.Claim("scope", "a"),
-                    new System.Security.Claims.Claim("scope", "b"),
+                    new System.Security.Claims.Claim("scope", "b")
                 }
             };
             var handle = await _referenceTokenStore.StoreReferenceTokenAsync(token);

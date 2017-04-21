@@ -61,9 +61,9 @@ namespace IdentityServer4.Validation
                 return Invalid("User is anonymous. Ignoring end session parameters");
             }
 
-            var validatedRequest = new ValidatedEndSessionRequest()
+            var validatedRequest = new ValidatedEndSessionRequest
             {
-                Raw = parameters,
+                Raw = parameters
             };
 
             var idTokenHint = parameters.Get(OidcConstants.EndSessionRequest.IdTokenHint);
@@ -118,7 +118,7 @@ namespace IdentityServer4.Validation
 
             LogSuccess(validatedRequest);
 
-            return new EndSessionValidationResult()
+            return new EndSessionValidationResult
             {
                 ValidatedRequest = validatedRequest,
                 IsError = false
@@ -154,7 +154,7 @@ namespace IdentityServer4.Validation
 
         public async Task<EndSessionCallbackValidationResult> ValidateCallbackAsync(NameValueCollection parameters)
         {
-            var result = new EndSessionCallbackValidationResult()
+            var result = new EndSessionCallbackValidationResult
             {
                 IsError = true
             };

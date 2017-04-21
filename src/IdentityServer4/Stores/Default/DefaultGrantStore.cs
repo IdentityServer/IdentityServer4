@@ -143,7 +143,7 @@ namespace IdentityServer4.Stores
 
             var json = _serializer.Serialize(item);
 
-            var grant = new PersistedGrant()
+            var grant = new PersistedGrant
             {
                 Key = key,
                 Type = _grantType,
@@ -151,7 +151,7 @@ namespace IdentityServer4.Stores
                 SubjectId = subjectId,
                 CreationTime = created,
                 Expiration = expiration,
-                Data = json,
+                Data = json
             };
 
             await _store.StoreAsync(grant);

@@ -42,7 +42,7 @@ namespace IdentityServer4.IntegrationTests.Clients
                         new Claim(JwtClaimTypes.WebSite, "http://bob.com"),
                         new Claim(JwtClaimTypes.Address, @"{ 'street_address': 'One Hacker Way', 'locality': 'Heidelberg', 'postal_code': 69118, 'country': 'Germany' }", IdentityServerConstants.ClaimValueTypes.Json)
                     }
-                },
+                }
             };
 
             return users;

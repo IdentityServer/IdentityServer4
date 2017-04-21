@@ -36,7 +36,7 @@ namespace Host
                 {
                     { "IdentityServer4", LogLevel.Debug },
                     { "Microsoft", LogLevel.Information },
-                    { "System", LogLevel.Error },
+                    { "System", LogLevel.Error }
                 })
                 .AddSerilog(serilog.CreateLogger());
         }

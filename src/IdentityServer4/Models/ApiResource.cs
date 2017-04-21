@@ -87,13 +87,13 @@ namespace IdentityServer4.Models
 
         internal ApiResource CloneWithScopes(IEnumerable<Scope> scopes)
         {
-            return new ApiResource()
+            return new ApiResource
             {
                 Enabled = Enabled,
                 Name = Name,
                 ApiSecrets = ApiSecrets,
                 Scopes = new HashSet<Scope>(scopes.ToArray()),
-                UserClaims = UserClaims,
+                UserClaims = UserClaims
             };
         }
     }

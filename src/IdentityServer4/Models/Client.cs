@@ -285,8 +285,6 @@ namespace IdentityServer4.Models
             DisallowGrantTypeCombination(GrantType.Implicit, GrantType.Hybrid, grantTypes);
             
             DisallowGrantTypeCombination(GrantType.AuthorizationCode, GrantType.Hybrid, grantTypes);
-            
-            return;
         }
 
         private static void DisallowGrantTypeCombination(string value1, string value2, IEnumerable<string> grantTypes)
@@ -319,21 +317,9 @@ namespace IdentityServer4.Models
                 return clone;
             }
 
-            public int Count
-            {
-                get
-                {
-                    return _inner.Count;
-                }
-            }
+            public int Count => _inner.Count;
 
-            public bool IsReadOnly
-            {
-                get
-                {
-                    return _inner.IsReadOnly;
-                }
-            }
+            public bool IsReadOnly => _inner.IsReadOnly;
 
             public void Add(string item)
             {

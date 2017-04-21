@@ -414,8 +414,8 @@ namespace IdentityServer4.UnitTests.Stores.Default
                 {
                     new Claim("sub", "123"),
                     new Claim("scope", "bar1"),
-                    new Claim("scope", "bar2"),
-                },
+                    new Claim("scope", "bar2")
+                }
             });
 
             await _refreshTokens.StoreRefreshTokenAsync(new RefreshToken()

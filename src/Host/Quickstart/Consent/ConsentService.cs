@@ -158,7 +158,7 @@ namespace IdentityServer4.Quickstart.UI
                 Description = identity.Description,
                 Emphasize = identity.Emphasize,
                 Required = identity.Required,
-                Checked = check || identity.Required,
+                Checked = check || identity.Required
             };
         }
 
@@ -171,7 +171,7 @@ namespace IdentityServer4.Quickstart.UI
                 Description = scope.Description,
                 Emphasize = scope.Emphasize,
                 Required = scope.Required,
-                Checked = check || scope.Required,
+                Checked = check || scope.Required
             };
         }
 

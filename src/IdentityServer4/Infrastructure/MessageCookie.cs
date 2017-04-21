@@ -22,7 +22,7 @@ namespace IdentityServer4
         static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
         {
             NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore,
+            DefaultValueHandling = DefaultValueHandling.Ignore
         };
 
         static MessageCookie()

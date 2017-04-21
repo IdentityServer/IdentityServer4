@@ -66,7 +66,7 @@ namespace IdentityServer4.Services
             {
                 CreationTime = IdentityServerDateTime.UtcNow,
                 Lifetime = lifetime,
-                AccessToken = accessToken,
+                AccessToken = accessToken
             };
 
             var handle = await RefreshTokenStore.StoreRefreshTokenAsync(refreshToken);
@@ -85,8 +85,6 @@ namespace IdentityServer4.Services
         public virtual async Task<string> UpdateRefreshTokenAsync(string handle, RefreshToken refreshToken, Client client)
         {
             _logger.LogDebug("Updating refresh token");
-
-            var originalHandle = handle;
 
             bool needsCreate = false;
             bool needsUpdate = false;

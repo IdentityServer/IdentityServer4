@@ -88,7 +88,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
             _response.Request = new ValidatedAuthorizeRequest
             {
                 ResponseMode = OidcConstants.ResponseModes.Query,
-                RedirectUri = "http://client/callback",
+                RedirectUri = "http://client/callback"
             };
 
             await _subject.ExecuteAsync(_context);
@@ -106,7 +106,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
             {
                 ClientId = "client",
                 ResponseMode = OidcConstants.ResponseModes.Query,
-                RedirectUri = "http://client/callback",
+                RedirectUri = "http://client/callback"
             };
 
             await _subject.ExecuteAsync(_context);

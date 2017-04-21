@@ -65,7 +65,7 @@ namespace IdentityServer4.UnitTests.Services.InMemory
                 {
                     "http://foo",
                     "http://bar",
-                    "http://baz",
+                    "http://baz"
                 }
             });
             _subject.IsOriginAllowedAsync("http://bar").Result.Should().Be(true);
@@ -81,7 +81,7 @@ namespace IdentityServer4.UnitTests.Services.InMemory
                 {
                     "http://foo",
                     "http://bar",
-                    "http://baz",
+                    "http://baz"
                 }
             });
             _subject.IsOriginAllowedAsync("http://quux").Result.Should().Be(false);
@@ -96,14 +96,14 @@ namespace IdentityServer4.UnitTests.Services.InMemory
                 {
                     AllowedCorsOrigins = new List<string>
                     {
-                        "http://foo",
+                        "http://foo"
                     }
                 },
                 new Client
                 {
                     AllowedCorsOrigins = new List<string>
                     {
-                        "http://foo",
+                        "http://foo"
                     }
                 }
             });

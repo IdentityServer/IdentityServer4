@@ -40,7 +40,7 @@ namespace IdentityServer4.UnitTests.Validation
 
                 RedirectUris = new List<string>
                 {
-                    "https://server/cb",
+                    "https://server/cb"
                 },
 
                 AuthorizationCodeLifetime = 60
@@ -114,7 +114,7 @@ namespace IdentityServer4.UnitTests.Validation
         {
             var parameters = new NameValueCollection
             {
-                { "token", "foo" },
+                { "token", "foo" }
             };
 
             var result = await _validator.ValidateRequestAsync(parameters, _client);

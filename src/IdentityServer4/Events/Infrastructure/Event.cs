@@ -22,7 +22,7 @@ namespace IdentityServer4.Events
         /// <param name="id">The identifier.</param>
         /// <param name="message">The message.</param>
         /// <exception cref="System.ArgumentNullException">category</exception>
-        public Event(string category, string name, EventTypes type, int id, string message = null)
+        protected Event(string category, string name, EventTypes type, int id, string message = null)
         {
             Category = category ?? throw new ArgumentNullException(nameof(category));
             Name = name ?? throw new ArgumentNullException(nameof(name));

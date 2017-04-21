@@ -26,7 +26,6 @@ namespace IdentityServer4.UnitTests.ResponseHandling
         {
             _subject = new AuthorizeInteractionResponseGenerator(
                 TestLogger.Create<AuthorizeInteractionResponseGenerator>(),
-                _options,
                 _mockConsentService,
                 new MockProfileService());
         }
@@ -146,7 +145,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
                 ClientId = "foo",
                 Client = new Client()
                 {
-                    EnableLocalLogin = false,
+                    EnableLocalLogin = false
                 },
                 Subject = IdentityServerPrincipal.Create("123", "dom")
             };
