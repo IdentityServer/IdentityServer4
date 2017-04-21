@@ -13,7 +13,7 @@ Simply add the origin of the client to the collection and the default configurat
 .. Note:: Be sure to use an origin (not a URL) when configuring CORS. For example: ``https://foo:123/`` is a URL, whereas ``https://foo:123`` is an origin.
 
 This default CORS implementation will be in use if you are using either the "in-memory" or EF-based client configuration that we provide.
-If you define your own ``IClientStore``, then you will need to impelment your own custom CORS policy service (see below).
+If you define your own ``IClientStore``, then you will need to implement your own custom CORS policy service (see below).
 
 Custom Cors Policy Service
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
