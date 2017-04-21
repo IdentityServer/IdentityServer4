@@ -23,7 +23,7 @@ IdentityServer allows the hosting application to implement the ``ICorsPolicyServ
 The single method to implement is: ``Task<bool> IsOriginAllowedAsync(string origin)``. 
 Return ``true`` if the `origin` is allowed, ``false`` otherwise.
 
-Once implemented, simply register the implementaion in DI and IdentityServer will then use your custom implementation.
+Once implemented, simply register the implementation in DI and IdentityServer will then use your custom implementation.
 
 **DefaultCorsPolicyService**
 
