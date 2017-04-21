@@ -83,6 +83,8 @@ We will replace them with this code::
                   options.MigrationsAssembly(migrationsAssembly)));
   }
 
+If you followed the other quickstarts, you will notice the ``AddInMemoryUsers`` method. If you have not created this in the `Config.cs` Class, have a look at the quickstart [EntityFrameworkStorage Quickstarts](https://github.com/IdentityServer/IdentityServer4.Samples/blob/dev/Quickstarts/8_EntityFrameworkStorage/src/QuickstartIdentityServer/Config.cs)  after line 100.
+
 The above code is hard-coding a connection string, which you should feel free to change if you wish.
 Also, the calls to ``AddConfigurationStore`` and ``AddOperationalStore`` are registering the EF-backed store implementations.
 
