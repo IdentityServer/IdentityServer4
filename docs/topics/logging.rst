@@ -48,3 +48,7 @@ You want to setup logging as early as possible in your application host, e.g. in
                 .AddSerilog(serilog.CreateLogger());
         }
     }
+
+Further reading
+^^^^^^^^^^^^^^^
+* `ASP.NET Core Logging with Azure App Service and Serilog <https://blogs.msdn.microsoft.com/webdev/2017/04/26/asp-net-core-logging/>`_

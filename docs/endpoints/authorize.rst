@@ -86,7 +86,7 @@ You can programmatically create URLs for the authorize endpoint using the `Ident
 
 ..and parse the response::
 
-    var response = new AuthorizeResponse(url);
+    var response = new AuthorizeResponse(callbackUrl);
 
     var accessToken = response.AccessToken;
     var idToken = response.IdentityToken;
