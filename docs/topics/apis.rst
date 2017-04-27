@@ -25,8 +25,8 @@ and adding the middleware to the ASP.NET Core pipeline::
                 // name of the API resource
                 Audience = "api1",
 
-                options.AutomaticAuthenticate = true,
-                options.AutomaticChallenge = true
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = true
             });
 
             app.UseMvc();
@@ -54,8 +54,8 @@ For the simplest case, our middleware looks very similar to the above snippet::
                 Authority = "https://demo.identityserver.io",
                 ApiName = "api1"
 
-                options.AutomaticAuthenticate = true,
-                options.AutomaticChallenge = true
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = true
             });
 
             app.UseMvc();
@@ -76,8 +76,8 @@ Since the introspection endpoint requires authentication, you need to supply the
         ApiName = "api1",
         ApiSecret = "secret",
 
-        options.AutomaticAuthenticate = true,
-        options.AutomaticChallenge = true
+        AutomaticAuthenticate = true,
+        AutomaticChallenge = true
     });
 
 Typically, you don't want to do a roundtrip to the introspection endpoint for each incoming request. The middleware has a built-in cache that you can enable like this::
@@ -91,8 +91,8 @@ Typically, you don't want to do a roundtrip to the introspection endpoint for ea
         EnableCaching = true,
         CacheDuration = TimeSpan.FromMinutes(10), // that's the default
 
-        options.AutomaticAuthenticate = true,
-        options.AutomaticChallenge = true
+        AutomaticAuthenticate = true,
+        AutomaticChallenge = true
     });
 
 The middleware will use whatever `IDistributedCache` implementation is registered in the DI container (e.g. the standad `IDistributedInMemoryCache`).
@@ -111,8 +111,8 @@ you can add the ``AllowedScopes`` property::
         
         AllowedScopes = { "api1.read", "api1.write" }
 
-        options.AutomaticAuthenticate = true,
-        options.AutomaticChallenge = true
+        AutomaticAuthenticate = true,
+        AutomaticChallenge = true
     });
 
 
