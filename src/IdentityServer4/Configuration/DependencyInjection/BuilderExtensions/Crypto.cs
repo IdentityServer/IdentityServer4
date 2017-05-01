@@ -9,8 +9,10 @@ using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using Newtonsoft.Json.Serialization;
 using CryptoRandom = IdentityModel.CryptoRandom;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -148,14 +150,20 @@ namespace Microsoft.Extensions.DependencyInjection
             if (File.Exists(filename))
             {
                 var keyFile = File.ReadAllText(filename);
-                var tempKey = JsonConvert.DeserializeObject<TemporaryRsaKey>(keyFile);
+                var tempKey = JsonConvert.DeserializeObject<TemporaryRsaKey>(keyFile, new JsonSerializerSettings() { ContractResolver = new RsaKeyContractResolver() });
 
                 return builder.AddSigningCredential(CreateRsaSecurityKey(tempKey.Parameters, tempKey.KeyId));
             }
             else
             {
                 var key = CreateRsaSecurityKey();
-                var parameters = key.Rsa.ExportParameters(includePrivateParameters: true);
+
+                RSAParameters parameters;
+
+                if (key.Rsa != null)
+                    parameters = key.Rsa.ExportParameters(includePrivateParameters: true);
+                else
+                    parameters = key.Parameters;
 
                 var tempKey = new TemporaryRsaKey
                 {
@@ -163,7 +171,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     KeyId = key.KeyId
                 };
 
-                File.WriteAllText(filename, JsonConvert.SerializeObject(tempKey));
+                File.WriteAllText(filename, JsonConvert.SerializeObject(tempKey, new JsonSerializerSettings() { ContractResolver = new RsaKeyContractResolver() }));
                 return builder.AddSigningCredential(key);
             }
         }
@@ -237,6 +245,18 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             public string KeyId { get; set; }
             public RSAParameters Parameters { get; set; }
+        }
+
+        private class RsaKeyContractResolver : DefaultContractResolver
+        {
+            protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
+            {
+                var property = base.CreateProperty(member, memberSerialization);
+
+                property.Ignored = false;
+
+                return property;
+            }
         }
     }
 
