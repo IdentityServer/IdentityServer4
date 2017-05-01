@@ -21,10 +21,25 @@ namespace IdentityServer4.ResponseHandling
     /// <seealso cref="IdentityServer4.ResponseHandling.IAuthorizeResponseGenerator" />
     public class AuthorizeResponseGenerator : IAuthorizeResponseGenerator
     {
-        private readonly ILogger _logger;
-        private readonly ITokenService _tokenService;
-        private readonly IAuthorizationCodeStore _authorizationCodeStore;
-        private readonly IEventService _events;
+        /// <summary>
+        /// The token service
+        /// </summary>
+        protected readonly ITokenService TokenService;
+
+        /// <summary>
+        /// The authorization code store
+        /// </summary>
+        protected readonly IAuthorizationCodeStore AuthorizationCodeStore;
+
+        /// <summary>
+        /// The event service
+        /// </summary>
+        protected readonly IEventService Events;
+
+        /// <summary>
+        /// The logger
+        /// </summary>
+        protected readonly ILogger Logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizeResponseGenerator"/> class.
@@ -33,12 +48,12 @@ namespace IdentityServer4.ResponseHandling
         /// <param name="tokenService">The token service.</param>
         /// <param name="authorizationCodeStore">The authorization code store.</param>
         /// <param name="events">The events.</param>
-        public AuthorizeResponseGenerator(ILogger<AuthorizeResponseGenerator> logger, ITokenService tokenService, IAuthorizationCodeStore authorizationCodeStore, IEventService events)
+        public AuthorizeResponseGenerator(ITokenService tokenService, IAuthorizationCodeStore authorizationCodeStore, ILogger<AuthorizeResponseGenerator> logger, IEventService events)
         {
-            _logger = logger;
-            _tokenService = tokenService;
-            _authorizationCodeStore = authorizationCodeStore;
-            _events = events;
+            TokenService = tokenService;
+            AuthorizationCodeStore = authorizationCodeStore;
+            Events = events;
+            Logger = logger;
         }
 
         /// <summary>
@@ -47,7 +62,7 @@ namespace IdentityServer4.ResponseHandling
         /// <param name="request">The request.</param>
         /// <returns></returns>
         /// <exception cref="System.InvalidOperationException">invalid grant type: " + request.GrantType</exception>
-        public async Task<AuthorizeResponse> CreateResponseAsync(ValidatedAuthorizeRequest request)
+        public virtual async Task<AuthorizeResponse> CreateResponseAsync(ValidatedAuthorizeRequest request)
         {
             if (request.GrantType == GrantType.AuthorizationCode)
             {
@@ -62,13 +77,18 @@ namespace IdentityServer4.ResponseHandling
                 return await CreateHybridFlowResponseAsync(request);
             }
 
-            _logger.LogError("Unsupported grant type: " + request.GrantType);
+            Logger.LogError("Unsupported grant type: " + request.GrantType);
             throw new InvalidOperationException("invalid grant type: " + request.GrantType);
         }
 
-        private async Task<AuthorizeResponse> CreateHybridFlowResponseAsync(ValidatedAuthorizeRequest request)
+        /// <summary>
+        /// Creates the response for a hybrid flow request
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        protected virtual async Task<AuthorizeResponse> CreateHybridFlowResponseAsync(ValidatedAuthorizeRequest request)
         {
-            _logger.LogDebug("Creating Hybrid Flow response.");
+            Logger.LogDebug("Creating Hybrid Flow response.");
 
             var code = await CreateCodeAsync(request);
             var response = await CreateImplicitFlowResponseAsync(request, code);
@@ -77,9 +97,14 @@ namespace IdentityServer4.ResponseHandling
             return response;
         }
 
-        private async Task<AuthorizeResponse> CreateCodeFlowResponseAsync(ValidatedAuthorizeRequest request)
+        /// <summary>
+        /// Creates the response for a code flow request
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        protected virtual async Task<AuthorizeResponse> CreateCodeFlowResponseAsync(ValidatedAuthorizeRequest request)
         {
-            _logger.LogDebug("Creating Authorization Code Flow response.");
+            Logger.LogDebug("Creating Authorization Code Flow response.");
 
             var code = await CreateCodeAsync(request);
 
@@ -93,7 +118,75 @@ namespace IdentityServer4.ResponseHandling
             return response;
         }
 
-        private async Task<string> CreateCodeAsync(ValidatedAuthorizeRequest request)
+        /// <summary>
+        /// Creates the response for a implicit flow request
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="authorizationCode"></param>
+        /// <returns></returns>
+        protected virtual async Task<AuthorizeResponse> CreateImplicitFlowResponseAsync(ValidatedAuthorizeRequest request, string authorizationCode = null)
+        {
+            Logger.LogDebug("Creating Implicit Flow response.");
+
+            string accessTokenValue = null;
+            int accessTokenLifetime = 0;
+
+            var responseTypes = request.ResponseType.FromSpaceSeparatedString();
+
+            if (responseTypes.Contains(OidcConstants.ResponseTypes.Token))
+            {
+                var tokenRequest = new TokenCreationRequest
+                {
+                    Subject = request.Subject,
+                    Resources = request.ValidatedScopes.GrantedResources,
+
+                    ValidatedRequest = request
+                };
+
+                var accessToken = await TokenService.CreateAccessTokenAsync(tokenRequest);
+                accessTokenLifetime = accessToken.Lifetime;
+
+                accessTokenValue = await TokenService.CreateSecurityTokenAsync(accessToken);
+            }
+
+            string jwt = null;
+            if (responseTypes.Contains(OidcConstants.ResponseTypes.IdToken))
+            {
+                var tokenRequest = new TokenCreationRequest
+                {
+                    ValidatedRequest = request,
+                    Subject = request.Subject,
+                    Resources = request.ValidatedScopes.GrantedResources,
+
+                    Nonce = request.Raw.Get(OidcConstants.AuthorizeRequest.Nonce),
+                    // if no access token is requested, then we need to include all the claims in the id token
+                    IncludeAllIdentityClaims = !request.AccessTokenRequested,
+                    AccessTokenToHash = accessTokenValue,
+                    AuthorizationCodeToHash = authorizationCode
+                };
+
+                var idToken = await TokenService.CreateIdentityTokenAsync(tokenRequest);
+                jwt = await TokenService.CreateSecurityTokenAsync(idToken);
+            }
+
+            var response = new AuthorizeResponse
+            {
+                Request = request,
+                AccessToken = accessTokenValue,
+                AccessTokenLifetime = accessTokenLifetime,
+                IdentityToken = jwt,
+                SessionState = request.GenerateSessionStateValue()
+            };
+
+            return response;
+        }
+
+        /// <summary>
+        /// Creates an authorization code
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        protected async Task<string> CreateCodeAsync(ValidatedAuthorizeRequest request)
         {
             var code = new AuthorizationCode
             {
@@ -113,66 +206,9 @@ namespace IdentityServer4.ResponseHandling
             };
 
             // store id token and access token and return authorization code
-            var id = await _authorizationCodeStore.StoreAuthorizationCodeAsync(code);
+            var id = await AuthorizationCodeStore.StoreAuthorizationCodeAsync(code);
 
             return id;
-        }
-
-        private async Task<AuthorizeResponse> CreateImplicitFlowResponseAsync(ValidatedAuthorizeRequest request, string authorizationCode = null)
-        {
-            _logger.LogDebug("Creating Implicit Flow response.");
-
-            string accessTokenValue = null;
-            int accessTokenLifetime = 0;
-
-            var responseTypes = request.ResponseType.FromSpaceSeparatedString();
-
-            if (responseTypes.Contains(OidcConstants.ResponseTypes.Token))
-            {
-                var tokenRequest = new TokenCreationRequest
-                {
-                    Subject = request.Subject,
-                    Resources = request.ValidatedScopes.GrantedResources,
-
-                    ValidatedRequest = request
-                };
-
-                var accessToken = await _tokenService.CreateAccessTokenAsync(tokenRequest);
-                accessTokenLifetime = accessToken.Lifetime;
-
-                accessTokenValue = await _tokenService.CreateSecurityTokenAsync(accessToken);
-            }
-
-            string jwt = null;
-            if (responseTypes.Contains(OidcConstants.ResponseTypes.IdToken))
-            {
-                var tokenRequest = new TokenCreationRequest
-                {
-                    ValidatedRequest = request,
-                    Subject = request.Subject,
-                    Resources = request.ValidatedScopes.GrantedResources,
-
-                    Nonce = request.Raw.Get(OidcConstants.AuthorizeRequest.Nonce),
-                    // if no access token is requested, then we need to include all the claims in the id token
-                    IncludeAllIdentityClaims = !request.AccessTokenRequested,
-                    AccessTokenToHash = accessTokenValue,
-                    AuthorizationCodeToHash = authorizationCode
-                };
-
-                var idToken = await _tokenService.CreateIdentityTokenAsync(tokenRequest);
-                jwt = await _tokenService.CreateSecurityTokenAsync(idToken);
-            }
-
-            var response = new AuthorizeResponse
-            {
-                Request = request,
-                AccessToken = accessTokenValue,
-                AccessTokenLifetime = accessTokenLifetime,
-                IdentityToken = jwt,
-                SessionState = request.GenerateSessionStateValue()
-            };
-
-            return response;
         }
    }
 }
