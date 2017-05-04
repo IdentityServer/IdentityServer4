@@ -100,19 +100,39 @@ namespace IdentityServer4.Services
 
         IEnumerable<Consent> Join(IEnumerable<Consent> first, IEnumerable<Consent> second)
         {
-            var query =
-                from f in first
-                let matches = (from s in second where f.ClientId == s.ClientId from scope in s.Scopes select scope)
-                let scopes = f.Scopes.Union(matches).Distinct()
-                select new Consent
+            var list = first.ToList();
+
+            foreach(var other in second)
+            {
+                var match = list.FirstOrDefault(x => x.ClientId == other.ClientId);
+                if (match != null)
                 {
-                    ClientId = f.ClientId,
-                    SubjectId = f.SubjectId,
-                    Scopes = scopes,
-                    CreationTime = f.CreationTime,
-                    Expiration = f.Expiration
-                };
-            return query;
+                    match.Scopes = match.Scopes.Union(other.Scopes).Distinct();
+
+                    if (match.CreationTime > other.CreationTime)
+                    {
+                        // show the earlier creation time
+                        match.CreationTime = other.CreationTime;
+                    }
+
+                    if (match.Expiration == null || other.Expiration == null)
+                    {
+                        // show that there is no expiration to one of the grants
+                        match.Expiration = null;
+                    }
+                    else if (match.Expiration < other.Expiration)
+                    {
+                        // show the latest expiration
+                        match.Expiration = other.Expiration;
+                    }
+                }
+                else
+                {
+                    list.Add(other);
+                }
+            }
+
+            return list;
         }
 
         /// <summary>
