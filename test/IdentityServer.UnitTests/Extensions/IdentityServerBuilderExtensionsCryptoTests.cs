@@ -6,6 +6,7 @@ using IdentityServer4.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.IO;
 using Xunit;
 
 namespace IdentityServer4.UnitTests.Extensions
@@ -55,6 +56,44 @@ namespace IdentityServer4.UnitTests.Extensions
             JsonWebKey jsonWebKey = new JsonWebKey(json);
             SigningCredentials credentials = new SigningCredentials(jsonWebKey, jsonWebKey.Alg);
             Assert.Throws<InvalidOperationException>(() => identityServerBuilder.AddSigningCredential(credentials));
+        }
+
+        [Fact]
+        public void AddDeveloperSigningCredential_should_succeed()
+        {
+            IServiceCollection services = new ServiceCollection();
+            IIdentityServerBuilder identityServerBuilder = new IdentityServerBuilder(services);
+
+            identityServerBuilder.AddDeveloperSigningCredential();
+
+            //clean up... delete stored rsa key
+            var filename = Path.Combine(Directory.GetCurrentDirectory(), "tempkey.rsa");
+
+            if (File.Exists(filename))
+                File.Delete(filename);
+        }
+
+        [Fact]
+        public void AddDeveloperSigningCredential_should_succeed_when_called_multiple_times()
+        {
+            IServiceCollection services = new ServiceCollection();
+            IIdentityServerBuilder identityServerBuilder = new IdentityServerBuilder(services);
+
+            try
+            {
+                identityServerBuilder.AddDeveloperSigningCredential();
+            
+                //calling a second time will try to load the saved rsa key from disk. An exception will be throw if the private key is not serialized properly.
+                identityServerBuilder.AddDeveloperSigningCredential();
+            }
+            finally
+            {
+                //clean up... delete stored rsa key
+                var filename = Path.Combine(Directory.GetCurrentDirectory(), "tempkey.rsa");
+
+                if (File.Exists(filename))
+                    File.Delete(filename);
+            }
         }
     }
 }
