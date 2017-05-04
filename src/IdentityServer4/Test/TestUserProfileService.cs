@@ -50,7 +50,10 @@ namespace IdentityServer4.Test
             if (context.RequestedClaimTypes.Any())
             {
                 var user = Users.FindBySubjectId(context.Subject.GetSubjectId());
-                context.AddRequestedClaims(user.Claims);
+                if (user != null)
+                {
+                    context.AddRequestedClaims(user.Claims);
+                }
             }
 
             context.LogIssuedClaims(Logger);
@@ -66,7 +69,8 @@ namespace IdentityServer4.Test
         /// <returns></returns>
         public virtual Task IsActiveAsync(IsActiveContext context)
         {
-            context.IsActive = true;
+            var user = Users.FindBySubjectId(context.Subject.GetSubjectId());
+            context.IsActive = user != null;
 
             return Task.FromResult(0);
         }

@@ -72,7 +72,7 @@ namespace IdentityServer4.Configuration
         /// <value>
         /// The cache interval in seconds.
         /// </value>
-        public int ResponseCacheInterval { get; set; } = 3600;
+        public int? ResponseCacheInterval { get; set; } = null;
 
         /// <summary>
         /// Adds custom entries to the discovery document
