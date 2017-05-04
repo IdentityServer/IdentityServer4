@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Description>OpenID Connect and OAuth 2.0 Framework for ASP.NET Core</Description>
-    <VersionPrefix>1.5.0</VersionPrefix>
+    <VersionPrefix>1.5.1</VersionPrefix>
     <Authors>Brock Allen;Dominick Baier</Authors>
     <TargetFrameworks>netstandard1.4;net452</TargetFrameworks>
     <AssemblyName>IdentityServer4</AssemblyName>
