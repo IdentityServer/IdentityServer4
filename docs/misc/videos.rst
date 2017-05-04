@@ -3,9 +3,10 @@ Videos
 
 2017
 ^^^^
-* `IdentityServer4: New and Improved for ASP.NET Core <https://vimeo.com/204141878>`_
-* `Building JavaScript and mobile/native Clients for Token-based Architectures <https://vimeo.com/205451987>`_
-* `IdentityServer4 on DotNetRocks <https://www.dotnetrocks.com/?show=1409>`_
+* `22/02 [NDC Mini Copenhagen] -- IdentityServer4: New & Improved for ASP.NET Core - Dominick Baier <https://vimeo.com/215352044>`_
+* `02/02 [DotNetRocks] -- IdentityServer4 on DotNetRocks <https://www.dotnetrocks.com/?show=1409>`_
+* `16/01 [NDC London] -- IdentityServer4: New and Improved for ASP.NET Core <https://vimeo.com/204141878>`_
+* `16/01 [NDC London] -- Building JavaScript and mobile/native Clients for Token-based Architectures <https://vimeo.com/205451987>`_
 
 2016
 ^^^^
