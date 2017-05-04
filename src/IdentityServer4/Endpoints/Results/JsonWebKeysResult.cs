@@ -31,14 +31,14 @@ namespace IdentityServer4.Endpoints.Results
         /// <value>
         /// The maximum age.
         /// </value>
-        public int MaxAge { get; }
+        public int? MaxAge { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonWebKeysResult" /> class.
         /// </summary>
         /// <param name="webKeys">The web keys.</param>
         /// <param name="maxAge">The maximum age.</param>
-        public JsonWebKeysResult(IEnumerable<JsonWebKey> webKeys, int maxAge)
+        public JsonWebKeysResult(IEnumerable<JsonWebKey> webKeys, int? maxAge)
         {
             WebKeys = webKeys ?? throw new ArgumentNullException(nameof(webKeys));
             MaxAge = maxAge;
@@ -51,7 +51,11 @@ namespace IdentityServer4.Endpoints.Results
         /// <returns></returns>
         public Task ExecuteAsync(HttpContext context)
         {
-            context.Response.SetCache(MaxAge);
+            if (MaxAge.HasValue && MaxAge.Value >= 0)
+            {
+                context.Response.SetCache(MaxAge.Value);
+            }
+
             return context.Response.WriteJsonAsync(new { keys = WebKeys });
         }
     }
