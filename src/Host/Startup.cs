@@ -61,10 +61,8 @@ namespace Host
                 .AddExtensionGrantValidator<Extensions.NoSubjectExtensionGrantValidator>()
                 .AddSecretParser<ClientAssertionSecretParser>()
                 .AddSecretValidator<PrivateKeyJwtSecretValidator>()
+                .AddRedirectUriValidator<StrictRedirectUriValidatorAppAuth>()
                 .AddTestUsers(TestUsers.Users);
-
-            // AppAuth enabled redirect URI validator
-            services.AddTransient<IRedirectUriValidator, StrictRedirectUriValidatorAppAuth>();
 
             services.AddMvc();
 
