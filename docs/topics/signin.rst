@@ -24,7 +24,7 @@ We also have a `quickstart UI <https://github.com/IdentityServer/IdentityServer4
 
 Login Workflow
 ^^^^^^^^^^^^^^
-When IdentityServer recieves a request at the authorization endpoint and the user is not authenticated, the user will be redirected to the configured login page.
+When IdentityServer receives a request at the authorization endpoint and the user is not authenticated, the user will be redirected to the configured login page.
 You must inform IdentityServer of the path to your login page via the ``UserInteraction`` settings on the :ref:`options <refOptions>`.
 A ``returnUrl`` parameter will be passed informing your login page where the user should be redirected once login is complete.
 
