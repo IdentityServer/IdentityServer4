@@ -27,9 +27,12 @@ namespace Microsoft.AspNetCore.Http
 
         public static void SetCache(this HttpResponse response, int maxAge)
         {
-            if (!response.Headers.ContainsKey("Cache-Control"))
+            if (maxAge > 0)
             {
-                response.Headers.Add("Cache-Control", $"max-age={maxAge}");
+                if (!response.Headers.ContainsKey("Cache-Control"))
+                {
+                    response.Headers.Add("Cache-Control", $"max-age={maxAge}");
+                }
             }
         }
 

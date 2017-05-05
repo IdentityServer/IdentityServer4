@@ -199,7 +199,7 @@ namespace IdentityServer4.Validation
             var authZcode = await _authorizationCodeStore.GetAuthorizationCodeAsync(code);
             if (authZcode == null)
             {
-                LogError("Authorization code cannot be found in the store: {code}", code);
+                LogError("Invalid authorization code: {code}", code);
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
@@ -471,7 +471,7 @@ namespace IdentityServer4.Validation
             var refreshToken = await _refreshTokenStore.GetRefreshTokenAsync(refreshTokenHandle);
             if (refreshToken == null)
             {
-                LogError("Refresh token cannot be found in store: {refreshToken}", refreshTokenHandle);
+                LogError("Invalid refresh token: {refreshToken}", refreshTokenHandle);
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
@@ -596,10 +596,10 @@ namespace IdentityServer4.Validation
             if (scopes.IsMissing())
             {
                 _logger.LogTrace("Client provided no scopes - checking allowed scopes list");
-
-                var clientAllowedScopes = _validatedRequest.Client.AllowedScopes;
-                if (!clientAllowedScopes.IsNullOrEmpty())
+                
+                if (!_validatedRequest.Client.AllowedScopes.IsNullOrEmpty())
                 {
+                    var clientAllowedScopes = new List<string>(_validatedRequest.Client.AllowedScopes);
                     if (_validatedRequest.Client.AllowOfflineAccess)
                     {
                         clientAllowedScopes.Add(IdentityServerConstants.StandardScopes.OfflineAccess);

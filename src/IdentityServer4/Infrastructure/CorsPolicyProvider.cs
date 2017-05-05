@@ -10,26 +10,27 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using IdentityServer4.Configuration;
 using IdentityServer4.Configuration.DependencyInjection;
 using IdentityServer4.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace IdentityServer4
 {
     internal class CorsPolicyProvider : ICorsPolicyProvider
     {
-        private readonly ICorsPolicyService _corsPolicyService;
         private readonly ILogger<CorsPolicyProvider> _logger;
         private readonly ICorsPolicyProvider _inner;
         private readonly IdentityServerOptions _options;
+        private readonly IHttpContextAccessor _httpContext;
 
         public CorsPolicyProvider(
             ILogger<CorsPolicyProvider> logger,
             Decorator<ICorsPolicyProvider> inner,
             IdentityServerOptions options,
-            ICorsPolicyService corsPolicyService)
+            IHttpContextAccessor httpContext)
         {
             _logger = logger;
             _inner = inner.Instance;
             _options = options;
-            _corsPolicyService = corsPolicyService;
+            _httpContext = httpContext;
         }
 
         public Task<CorsPolicy> GetPolicyAsync(HttpContext context, string policyName)
@@ -54,7 +55,11 @@ namespace IdentityServer4
                 {
                     _logger.LogDebug("CORS request made for path: {path} from origin: {origin}", path, origin);
 
-                    if (await _corsPolicyService.IsOriginAllowedAsync(origin))
+                    // manually resolving this from DI because this: 
+                    // https://github.com/aspnet/CORS/issues/105
+                    var corsPolicyService = _httpContext.HttpContext.RequestServices.GetRequiredService<ICorsPolicyService>();
+
+                    if (await corsPolicyService.IsOriginAllowedAsync(origin))
                     {
                         _logger.LogDebug("CorsPolicyService allowed origin: {origin}", origin);
                         return Allow(origin);
@@ -75,15 +80,17 @@ namespace IdentityServer4
 
         private CorsPolicy Allow(string origin)
         {
-            var policyBuilder = new CorsPolicyBuilder();
-
-            var policy = policyBuilder
+            var policyBuilder = new CorsPolicyBuilder()
                 .WithOrigins(origin)
                 .AllowAnyHeader()
-                .AllowAnyMethod()
-                .Build();
+                .AllowAnyMethod();
 
-            return policy;
+            if (_options.Cors.PreflightCacheDuration.HasValue)
+            {
+                policyBuilder.SetPreflightMaxAge(_options.Cors.PreflightCacheDuration.Value);
+            }
+
+            return policyBuilder.Build();
         }
 
         private bool IsPathAllowed(PathString path)
