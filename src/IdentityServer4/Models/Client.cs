@@ -166,6 +166,11 @@ namespace IdentityServer4.Models
         public int SlidingRefreshTokenLifetime { get; set; } = 1296000;
 
         /// <summary>
+        /// Lifetime of a user consent in seconds. Defaults to null (no expiration)
+        /// </summary>
+        public int? ConsentLifetime { get; set; } = null;
+
+        /// <summary>
         /// ReUse: the refresh token handle will stay the same when refreshing tokens
         /// OneTime: the refresh token handle will be updated when refreshing tokens
         /// </summary>

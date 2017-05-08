@@ -126,6 +126,12 @@ namespace IdentityServer4.Services
                         ClientId = clientId,
                         Scopes = scopes
                     };
+
+                    if (client.ConsentLifetime.HasValue)
+                    {
+                        consent.Expiration = consent.CreationTime.AddSeconds(client.ConsentLifetime.Value);
+                    }
+
                     await _userConsentStore.StoreUserConsentAsync(consent);
                 }
                 else
