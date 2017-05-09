@@ -74,7 +74,7 @@ namespace IdentityServer4.ResponseHandling
             var scopes = validationResult.Claims.Where(c => c.Type == JwtClaimTypes.Scope).Select(x => x.Value);
             scopes = scopes.Where(x => allowedScopes.Contains(x));
             response.Add("scope", scopes.ToSpaceSeparatedString());
-
+            
             return response;
         }
 
