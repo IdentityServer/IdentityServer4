@@ -74,7 +74,7 @@ namespace IdentityServer4.ResponseHandling
             var scopes = validationResult.Claims.Where(c => c.Type == JwtClaimTypes.Scope).Select(x => x.Value);
             scopes = scopes.Where(x => allowedScopes.Contains(x));
             response.Add("scope", scopes.ToSpaceSeparatedString());
-            
+
             return response;
         }
 
@@ -90,9 +90,11 @@ namespace IdentityServer4.ResponseHandling
             var expectedScopes = validationResult.Claims.Where(
                 c => c.Type == JwtClaimTypes.Scope && supportedScopes.Contains(c.Value));
 
-            Logger.LogError("Expected scope {scopes} is missing in token", supportedScopes);
+            var result = expectedScopes.Any();
+            if (!result)
+                Logger.LogError("Expected scope {scopes} is missing in token", supportedScopes);
 
-            return Task.FromResult(expectedScopes.Any());
+            return Task.FromResult(result);
         }
     }
 }
