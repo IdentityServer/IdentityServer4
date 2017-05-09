@@ -90,11 +90,11 @@ namespace IdentityServer4.ResponseHandling
             var expectedScopes = validationResult.Claims.Where(
                 c => c.Type == JwtClaimTypes.Scope && supportedScopes.Contains(c.Value));
 
-            var result = expectedScopes.Any();
-            if (!result)
-                Logger.LogError("Expected scope {scopes} is missing in token", supportedScopes);
+            var missingScopes = supportedScopes.Except(expectedScopes.Select(c => c.Value));
+            if (missingScopes.Any())
+                Logger.LogError("Expected scope {scopes} is missing in token", missingScopes);
 
-            return Task.FromResult(result);
+            return Task.FromResult(expectedScopes.Any());
         }
     }
 }
