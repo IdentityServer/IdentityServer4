@@ -98,7 +98,7 @@ The client looks very similar to what we did for the client credentials grant.
 The main difference is now that the client would collect the user's password somehow, 
 and send it to the token service during the token request.
 
-Again IdentityModel's ``TokenClient`` can help out here::
+Again IdentityModel's ``TokenClient`` can help out here. In the client console application's Program file, change the GetMetaData method to use the new user information.
 
     // request token
     var tokenClient = new TokenClient(disco.TokenEndpoint, "ro.client", "secret");
