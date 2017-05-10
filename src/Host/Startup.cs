@@ -66,8 +66,6 @@ namespace Host
 
             services.AddMvc();
 
-            // only use for development until this bug is fixed
-            // https://github.com/aspnet/DependencyInjection/pull/470
             return services.BuildServiceProvider(validateScopes: true);
         }
 
