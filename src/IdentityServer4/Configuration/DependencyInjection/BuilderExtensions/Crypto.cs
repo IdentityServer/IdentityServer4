@@ -126,21 +126,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Sets the temporary signing credential.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        /// <returns></returns>
-        public static IIdentityServerBuilder AddTemporarySigningCredential(this IIdentityServerBuilder builder)
-        {
-            var key = CreateRsaSecurityKey();
-
-            return builder.AddSigningCredential(new SigningCredentials(key, "RS256"));
-        }
-
-        /// <summary>
-        /// Sets the temporary signing credential.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
+        /// <param name="persistKey">Specifies if the temporary key should be persisted to disk.</param>
         /// <param name="filename">The filename.</param>
         /// <returns></returns>
-        public static IIdentityServerBuilder AddDeveloperSigningCredential(this IIdentityServerBuilder builder, string filename = null)
+        public static IIdentityServerBuilder AddDeveloperSigningCredential(this IIdentityServerBuilder builder, bool persistKey = true, string filename = null)
         {
             if (filename == null)
             {
@@ -171,7 +160,11 @@ namespace Microsoft.Extensions.DependencyInjection
                     KeyId = key.KeyId
                 };
 
-                File.WriteAllText(filename, JsonConvert.SerializeObject(tempKey, new JsonSerializerSettings() { ContractResolver = new RsaKeyContractResolver() }));
+                if (persistKey)
+                {
+                    File.WriteAllText(filename, JsonConvert.SerializeObject(tempKey, new JsonSerializerSettings() { ContractResolver = new RsaKeyContractResolver() }));
+                }
+                
                 return builder.AddSigningCredential(key);
             }
         }

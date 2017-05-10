@@ -95,7 +95,7 @@ namespace IdentityServer4.IntegrationTests.Common
             .AddInMemoryIdentityResources(IdentityScopes)
             .AddInMemoryApiResources(ApiScopes)
             .AddTestUsers(Users)
-            .AddTemporarySigningCredential();
+            .AddDeveloperSigningCredential(persistKey: false);
         }
 
         public event Action<IApplicationBuilder> OnPreConfigure = x => { };

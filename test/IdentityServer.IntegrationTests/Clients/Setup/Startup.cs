@@ -33,7 +33,7 @@ namespace IdentityServer4.IntegrationTests.Clients
             builder.AddInMemoryApiResources(Scopes.GetApiScopes());
             builder.AddTestUsers(Users.Get());
 
-            builder.AddTemporarySigningCredential();
+            builder.AddDeveloperSigningCredential(persistKey: false);
 
             builder.AddExtensionGrantValidator<ExtensionGrantValidator>();
             builder.AddExtensionGrantValidator<ExtensionGrantValidator2>();
