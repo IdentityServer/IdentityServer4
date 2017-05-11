@@ -21,7 +21,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
             builder.AddInMemoryClients(Clients.Get());
             builder.AddInMemoryApiResources(Scopes.GetApiScopes());
             builder.AddTestUsers(Users.Get());
-            builder.AddTemporarySigningCredential();
+            builder.AddDeveloperSigningCredential(persistKey: false);
         }
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)

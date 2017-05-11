@@ -36,13 +36,13 @@ Informing IdentityServer of the consent result
 The ``GrantConsentAsync`` API on the :ref:`interaction service <refInteractionService>` allows the consent page to inform IdentityServer of the outcome of consent (which might also be to deny the client access).
 
 IdentityServer will temporarily persist the outcome of the consent.
-This persistence uses a cookie by default, as it only needs to last long enough to convery the outcome back to the authorization endpoint.
+This persistence uses a cookie by default, as it only needs to last long enough to convey the outcome back to the authorization endpoint.
 This temporary persistence is different than the persistence used for the "remember my consent" feature (and it is the authorization endpoint which persists the "remember my consent" for the user).
 If you wish to use some other persistence between the consent page and the authorization redirect, then you can implement ``IMessageStore<ConsentResponse>`` and register the implementation in DI.
 
 Returning the user to the authorization endpoint
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Once the consent page has informed IdentityServer ouf the outcome, the user can be redirected back to the `returnUrl`. 
+Once the consent page has informed IdentityServer of the outcome, the user can be redirected back to the `returnUrl`. 
 Your consent page should protect against open redirects by verifying that the `returnUrl` is valid.
 This can be done by calling ``IsValidReturnUrl`` on the :ref:`interaction service <refInteractionService>`.
 Also, if ``GetAuthorizationContextAsync`` returns a non-null result, then you can also trust that the `returnUrl` is valid.
