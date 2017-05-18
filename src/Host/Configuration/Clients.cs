@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+﻿﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -272,6 +272,27 @@ namespace Host.Configuration
                         IdentityServerConstants.StandardScopes.Email,
                         "api1", "api2.read_only"
                     }
+                },
+                new Client{
+                    ClientId = "sdf_code",
+                    ClientSecrets = {
+                        new Secret("secret".Sha256())
+                    },
+                    ClientName ="Simple Develop Farmework"    ,
+                    ClientUri = "http://sdf.evanhao.com",
+
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RedirectUris = {"http://sdf.evanhao.com/logincallback/"},
+                    PostLogoutRedirectUris={"http://sdf.evanhao.com/logout/"},
+                    LogoutUri="http://sdf.evanhao.com/logout/",
+                    LogoutSessionRequired=true,
+                    AllowedScopes={
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
+                        IdentityServerConstants.StandardScopes.OfflineAccess
+                    },
+                    AllowOfflineAccess=true,
                 }
             };
         }
