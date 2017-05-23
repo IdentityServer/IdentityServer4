@@ -103,7 +103,7 @@ namespace IdentityServer4.Models
         public bool ShowInDiscoveryDocument { get; set; } = true;
 
         /// <summary>
-        /// List of user claim types that should be included in the access token.
+        /// List of user-claim types that should be included in the access token.
         /// </summary>
         public ICollection<string> UserClaims { get; set; } = new HashSet<string>();
     }
