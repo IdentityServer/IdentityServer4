@@ -43,7 +43,7 @@ namespace IdentityServer4.Models
         /// Initializes a new instance of the <see cref="Scope"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
-        /// <param name="claimTypes">The claim types.</param>
+        /// <param name="claimTypes">The user-claim types.</param>
         public Scope(string name, IEnumerable<string> claimTypes)
             : this(name, name, claimTypes)
         {
@@ -54,7 +54,7 @@ namespace IdentityServer4.Models
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="displayName">The display name.</param>
-        /// <param name="claimTypes">The claim types.</param>
+        /// <param name="claimTypes">The user-claim types.</param>
         /// <exception cref="System.ArgumentNullException">name</exception>
         public Scope(string name, string displayName, IEnumerable<string> claimTypes)
         {
@@ -103,7 +103,7 @@ namespace IdentityServer4.Models
         public bool ShowInDiscoveryDocument { get; set; } = true;
 
         /// <summary>
-        /// List of user claims that should be included in the access token.
+        /// List of user-claim types that should be included in the access token.
         /// </summary>
         public ICollection<string> UserClaims { get; set; } = new HashSet<string>();
     }
