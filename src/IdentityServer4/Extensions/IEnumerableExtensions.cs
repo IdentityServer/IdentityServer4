@@ -29,7 +29,7 @@ namespace IdentityServer4.Extensions
             return false;
         }
 
-        public static bool HaveDuplicates<T, TProp>(this IEnumerable<T> list, Func<T, TProp> selector)
+        public static bool HasDuplicates<T, TProp>(this IEnumerable<T> list, Func<T, TProp> selector)
         {
             var d = new HashSet<TProp>();
             foreach (var t in list)

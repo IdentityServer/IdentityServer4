@@ -25,12 +25,12 @@ namespace IdentityServer4.Stores
         public InMemoryResourcesStore(IEnumerable<IdentityResource> identityResources = null, IEnumerable<ApiResource> apiResources = null)
         {
 
-            if (identityResources?.HaveDuplicates(m => m.Name) == true)
+            if (identityResources?.HasDuplicates(m => m.Name) == true)
             {
                 throw new ArgumentException("Identity resources must not contain duplicate names");
             }
 
-            if (apiResources?.HaveDuplicates(m => m.Name) == true)
+            if (apiResources?.HasDuplicates(m => m.Name) == true)
             {
                 throw new ArgumentException("Api resources must not contain duplicate names");
             }

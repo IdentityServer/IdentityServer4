@@ -24,7 +24,7 @@ namespace IdentityServer4.Stores
         /// <param name="clients">The clients.</param>
         public InMemoryClientStore(IEnumerable<Client> clients)
         {
-            if (clients.HaveDuplicates(m => m.ClientId))
+            if (clients.HasDuplicates(m => m.ClientId))
             {
                 throw new ArgumentException("Clients must not contain duplicate ids");
             }
