@@ -87,7 +87,7 @@ namespace IdentityServer4.Endpoints.Results
             // the hash matches the embedded style element being used below
             var value = "default-src 'none'; style-src 'unsafe-inline' 'sha256-u+OupXgfekP+x/f6rMdoEAspPCYUtca912isERnoEjY='";
 
-            var origins = _result.ClientLogoutUrls?.Select(x => x.GetOrigin());
+            var origins = _result.FrontChannelLogoutUrls?.Select(x => x.GetOrigin());
             if (origins != null && origins.Any())
             {
                 var list = origins.Aggregate((x, y) => $"{x} {y}");
@@ -125,9 +125,9 @@ namespace IdentityServer4.Endpoints.Results
         {
             string framesHtml = null;
 
-            if (_result.ClientLogoutUrls != null && _result.ClientLogoutUrls.Any())
+            if (_result.FrontChannelLogoutUrls != null && _result.FrontChannelLogoutUrls.Any())
             {
-                var frameUrls = _result.ClientLogoutUrls.Select(url => $"<iframe src='{url}'></iframe>");
+                var frameUrls = _result.FrontChannelLogoutUrls.Select(url => $"<iframe src='{url}'></iframe>");
                 framesHtml = frameUrls.Aggregate((x, y) => x + y);
             }
 

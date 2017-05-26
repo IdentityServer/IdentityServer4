@@ -114,7 +114,7 @@ namespace IdentityServer4.Models
         /// Specifies allowed URIs to redirect to after logout
         /// </summary>
         public ICollection<string> PostLogoutRedirectUris { get; set; } = new HashSet<string>();
-        
+
         /// <summary>
         /// Specifies logout URI at client for HTTP front-channel based logout.
         /// </summary>
@@ -124,6 +124,16 @@ namespace IdentityServer4.Models
         /// Specifies is the user's session id should be sent to the FrontChannelLogoutUri. Defaults to true.
         /// </summary>
         public bool FrontChannelLogoutSessionRequired { get; set; } = true;
+        
+        /// <summary>
+        /// Specifies logout URI at client for HTTP back-channel based logout.
+        /// </summary>
+        public string BackChannelLogoutUri { get; set; }
+
+        /// <summary>
+        /// Specifies is the user's session id should be sent to the BackChannelLogoutUri. Defaults to true.
+        /// </summary>
+        public bool BackChannelLogoutSessionRequired { get; set; } = true;
 
         /// <summary>
         /// Gets or sets a value indicating whether [allow offline access].

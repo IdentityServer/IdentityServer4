@@ -74,7 +74,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
         public async Task success_should_render_html_and_iframes()
         {
             _result.IsError = false;
-            _result.ClientLogoutUrls = new string[] { "http://foo.com", "http://bar.com" };
+            _result.FrontChannelLogoutUrls = new string[] { "http://foo.com", "http://bar.com" };
 
             await _subject.ExecuteAsync(_context);
 

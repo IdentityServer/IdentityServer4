@@ -91,7 +91,7 @@ namespace IdentityServer4.Endpoints
 
             if (result.IsError == false)
             {
-                _logger.LogInformation("Successful signout callback. Client logout iframe urls: {urls}", result.ClientLogoutUrls);
+                _logger.LogInformation("Successful signout callback. Client logout iframe urls: {urls}", result.FrontChannelLogoutUrls);
             }
 
             return new EndSessionCallbackResult(result);

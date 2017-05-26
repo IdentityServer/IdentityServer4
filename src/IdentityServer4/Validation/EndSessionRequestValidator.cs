@@ -149,7 +149,7 @@ namespace IdentityServer4.Validation
         private void LogSuccess(ValidatedEndSessionRequest request)
         {
             var log = new EndSessionRequestValidationLog(request);
-            _logger.LogInformation("End session request validation success" + Environment.NewLine +"{details}", log);
+            _logger.LogInformation("End session request validation success" + Environment.NewLine + "{details}", log);
         }
 
         public async Task<EndSessionCallbackValidationResult> ValidateCallbackAsync(NameValueCollection parameters)
@@ -171,48 +171,81 @@ namespace IdentityServer4.Validation
 
             if (result.SessionId.IsPresent())
             {
-                result.ClientLogoutUrls = await GetClientEndSessionUrlsAsync(result.SessionId);
+                var (frontChannel, backChannel) = await GetClientEndSessionUrlsAsync(result.SessionId);
+                result.FrontChannelLogoutUrls = frontChannel;
+                result.BackChannelLogouts = backChannel;
             }
 
             return result;
         }
 
-        private async Task<IEnumerable<string>> GetClientEndSessionUrlsAsync(string sid)
+        private async Task<(IEnumerable<string> frontChannel, IEnumerable<BackChannelLogoutModel> backChannel)> GetClientEndSessionUrlsAsync(string sid)
         {
             // read client list to get URLs for client logout endpoints
             var clientIds = _clientSession.GetClientListFromCookie(sid);
 
-            var urls = new List<string>();
+            var frontChannelUrls = new List<string>();
+            var backChannelLogouts = new List<BackChannelLogoutModel>();
+
             foreach (var clientId in clientIds)
             {
                 var client = await _clientStore.FindEnabledClientByIdAsync(clientId);
 
-                if (client != null && client.FrontChannelLogoutUri.IsPresent())
+                if (client != null)
                 {
-                    var url = client.FrontChannelLogoutUri;
-
-                    // add session id if required
-                    if (client.FrontChannelLogoutSessionRequired)
+                    if (client.FrontChannelLogoutUri.IsPresent())
                     {
-                        url = url.AddQueryString(OidcConstants.EndSessionRequest.Sid, sid);
-                        url = url.AddQueryString(OidcConstants.EndSessionRequest.Issuer, _context.HttpContext.GetIdentityServerIssuerUri());
+                        var url = client.FrontChannelLogoutUri;
+
+                        // add session id if required
+                        if (client.FrontChannelLogoutSessionRequired)
+                        {
+                            url = url.AddQueryString(OidcConstants.EndSessionRequest.Sid, sid);
+                            url = url.AddQueryString(OidcConstants.EndSessionRequest.Issuer, _context.HttpContext.GetIdentityServerIssuerUri());
+                        }
+
+                        frontChannelUrls.Add(url);
                     }
 
-                    urls.Add(url);
+                    if (client.BackChannelLogoutUri.IsPresent())
+                    {
+                        var back = new BackChannelLogoutModel
+                        {
+                            ClientId = clientId,
+                            LogoutUri = client.BackChannelLogoutUri
+                        };
+
+                        if (client.BackChannelLogoutSessionRequired)
+                        {
+                            back.SessionId = sid;
+                        }
+
+                        backChannelLogouts.Add(back);
+                    }
                 }
             }
 
-            if (urls.Any())
+            if (frontChannelUrls.Any())
             {
-                var msg = urls.Aggregate((x, y) => x + ", " + y);
-                _logger.LogDebug("Client end session iframe URLs: {0}", msg);
+                var msg = frontChannelUrls.Aggregate((x, y) => x + ", " + y);
+                _logger.LogDebug("Client front-channel logout URLs: {0}", msg);
             }
             else
             {
-                _logger.LogDebug("No client end session iframe URLs");
+                _logger.LogDebug("No client front-channel logout URLs");
             }
 
-            return urls;
+            if (backChannelLogouts.Any())
+            {
+                var msg = backChannelLogouts.Select(x => x.LogoutUri).Aggregate((x, y) => x + ", " + y);
+                _logger.LogDebug("Client back-channel logout URLs: {0}", msg);
+            }
+            else
+            {
+                _logger.LogDebug("No client back-channel logout URLs");
+            }
+
+            return (frontChannelUrls, backChannelLogouts);
         }
     }
 }
