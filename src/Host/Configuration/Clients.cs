@@ -1,4 +1,4 @@
-﻿﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -54,7 +54,7 @@ namespace Host.Configuration
                 new Client
                 {
                     ClientId = "client.custom",
-                    ClientSecrets = 
+                    ClientSecrets =
                     {
                         new Secret("secret".Sha256())
                     },
@@ -69,7 +69,7 @@ namespace Host.Configuration
                 new Client
                 {
                     ClientId = "roclient",
-                    ClientSecrets = 
+                    ClientSecrets =
                     {
                         new Secret("secret".Sha256())
                     },
@@ -77,7 +77,7 @@ namespace Host.Configuration
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
                     AllowOfflineAccess = true,
-                    AllowedScopes = 
+                    AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         "custom.profile",
@@ -96,7 +96,7 @@ namespace Host.Configuration
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
                     AllowOfflineAccess = true,
-                    AllowedScopes = 
+                    AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Email,
@@ -135,7 +135,7 @@ namespace Host.Configuration
                 new Client
                 {
                     ClientId = "roclient.reference",
-                    ClientSecrets = 
+                    ClientSecrets =
                     {
                         new Secret("secret".Sha256())
                     },
@@ -199,11 +199,11 @@ namespace Host.Configuration
                     ClientUri = "http://identityserver.io",
                     //LogoUri = "https://pbs.twimg.com/profile_images/1612989113/Ki-hanja_400x400.png",
 
-                    ClientSecrets = 
+                    ClientSecrets =
                     {
                         new Secret("secret".Sha256())
                     },
-                    
+
                     AllowedGrantTypes = GrantTypes.Hybrid,
                     AllowAccessTokensViaBrowser = false,
 
@@ -213,7 +213,7 @@ namespace Host.Configuration
 
                     AllowOfflineAccess = true,
 
-                    AllowedScopes = 
+                    AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
@@ -254,7 +254,7 @@ namespace Host.Configuration
                     RequireClientSecret = false,
                     AccessTokenType = AccessTokenType.Reference,
 
-                    RedirectUris = 
+                    RedirectUris =
                     {
                         "http://localhost:7017/index.html",
                         "http://localhost:7017/callback.html",
@@ -278,15 +278,20 @@ namespace Host.Configuration
                     ClientSecrets = {
                         new Secret("secret".Sha256())
                     },
-                    ClientName ="Simple Develop Farmework"    ,
-                    ClientUri = "http://sdf.evanhao.com",
+                    ClientName ="Simple Develop Farmework",
+                    ClientUri = "http://localhost:44088",
 
-                    AllowedGrantTypes = GrantTypes.Code,
-                    RedirectUris = {"http://sdf.evanhao.com/logincallback/"},
-                    PostLogoutRedirectUris={"http://sdf.evanhao.com/logout/"},
-                    LogoutUri="http://sdf.evanhao.com/logout/",
-                    LogoutSessionRequired=true,
-                    AllowedScopes={
+                    AccessTokenType = AccessTokenType.Jwt,
+                    
+                    RequireConsent = true,
+
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowAccessTokensViaBrowser = true,
+                    RedirectUris = {"http://localhost:44088/signin-oidc"},
+                    PostLogoutRedirectUris = {"http://localhost:44077/signout-callback-oidc"},
+                    LogoutUri = "http://localhost:44077/signout-oidc",
+                    LogoutSessionRequired = true,
+                    AllowedScopes = {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Email,
