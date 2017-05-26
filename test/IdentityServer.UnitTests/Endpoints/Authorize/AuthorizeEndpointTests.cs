@@ -62,8 +62,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
             };
             _stubAuthorizeResponseGenerator.Response.Request = _validatedAuthorizeRequest;
 
-            _stubAuthorizeRequestValidator.Result.IsError = false;
-            _stubAuthorizeRequestValidator.Result.ValidatedRequest = _validatedAuthorizeRequest;
+            _stubAuthorizeRequestValidator.Result = new AuthorizeRequestValidationResult(_validatedAuthorizeRequest);
 
             _subject = new AuthorizeEndpoint(
                 _fakeEventService,

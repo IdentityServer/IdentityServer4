@@ -91,8 +91,13 @@ namespace IdentityServer4.Validation
 
             // custom validator
             _logger.LogDebug("Calling into custom validator: {type}", _customValidator.GetType().FullName);
-            var customResult = await _customValidator.ValidateAsync(request);
+            var context = new CustomAuthorizeRequestValidationContext
+            {
+                Result = new AuthorizeRequestValidationResult(request)
+            };
+            await _customValidator.ValidateAsync(context);
 
+            var customResult = context.Result;
             if (customResult.IsError)
             {
                 LogError("Error in custom validation: " + customResult.Error, request);
@@ -605,25 +610,12 @@ namespace IdentityServer4.Validation
 
         private AuthorizeRequestValidationResult Invalid(ValidatedAuthorizeRequest request, string error = OidcConstants.AuthorizeErrors.InvalidRequest)
         {
-            var result = new AuthorizeRequestValidationResult
-            {
-                IsError = true,
-                Error = error,
-                ValidatedRequest = request
-            };
-
-            return result;
+            return new AuthorizeRequestValidationResult(request, error);
         }
 
         private AuthorizeRequestValidationResult Valid(ValidatedAuthorizeRequest request)
         {
-            var result = new AuthorizeRequestValidationResult
-            {
-                IsError = false,
-                ValidatedRequest = request
-            };
-
-            return result;
+            return new AuthorizeRequestValidationResult(request);
         }
 
         private void LogError(string message, ValidatedAuthorizeRequest request)
