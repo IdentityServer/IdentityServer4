@@ -187,12 +187,12 @@ namespace IdentityServer4.Validation
             {
                 var client = await _clientStore.FindEnabledClientByIdAsync(clientId);
 
-                if (client != null && client.LogoutUri.IsPresent())
+                if (client != null && client.FrontChannelLogoutUri.IsPresent())
                 {
-                    var url = client.LogoutUri;
+                    var url = client.FrontChannelLogoutUri;
 
                     // add session id if required
-                    if (client.LogoutSessionRequired)
+                    if (client.FrontChannelLogoutSessionRequired)
                     {
                         url = url.AddQueryString(OidcConstants.EndSessionRequest.Sid, sid);
                         url = url.AddQueryString(OidcConstants.EndSessionRequest.Issuer, _context.HttpContext.GetIdentityServerIssuerUri());

@@ -33,7 +33,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
                 RequireConsent = false,
                 AllowedScopes = new List<string> { "openid" },
                 RedirectUris = new List<string> { "https://client1/callback" },
-                LogoutUri = "https://client1/signout",
+                FrontChannelLogoutUri = "https://client1/signout",
                 PostLogoutRedirectUris = new List<string> { "https://client1/signout-callback" },
                 AllowAccessTokensViaBrowser = true
             });
@@ -45,7 +45,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
                 RequireConsent = false,
                 AllowedScopes = new List<string> { "openid" },
                 RedirectUris = new List<string> { "https://client2/callback" },
-                LogoutUri = "https://client2/signout",
+                FrontChannelLogoutUri = "https://client2/signout",
                 PostLogoutRedirectUris = new List<string> {
                     "https://client2/signout-callback",
                     "https://client2/signout-callback2"

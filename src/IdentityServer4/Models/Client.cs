@@ -116,14 +116,14 @@ namespace IdentityServer4.Models
         public ICollection<string> PostLogoutRedirectUris { get; set; } = new HashSet<string>();
         
         /// <summary>
-        /// Specifies logout URI at client for HTTP based logout.
+        /// Specifies logout URI at client for HTTP front-channel based logout.
         /// </summary>
-        public string LogoutUri { get; set; }
+        public string FrontChannelLogoutUri { get; set; }
 
         /// <summary>
-        /// Specifies is the user's session id should be sent to the LogoutUri. Defaults to true.
+        /// Specifies is the user's session id should be sent to the FrontChannelLogoutUri. Defaults to true.
         /// </summary>
-        public bool LogoutSessionRequired { get; set; } = true;
+        public bool FrontChannelLogoutSessionRequired { get; set; } = true;
 
         /// <summary>
         /// Gets or sets a value indicating whether [allow offline access].
