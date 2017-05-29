@@ -22,7 +22,7 @@ namespace IdentityServer4.Models
         public DateTime CreationTime { get; set; } = IdentityServerDateTime.UtcNow;
 
         /// <summary>
-        /// Gets or sets the life time.
+        /// Gets or sets the life time in seconds.
         /// </summary>
         /// <value>
         /// The life time.

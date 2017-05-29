@@ -75,7 +75,19 @@ namespace IdentityServer4.Services
             }
             
             var consent = await _userConsentStore.GetUserConsentAsync(subject.GetSubjectId(), client.ClientId);
-            if (consent?.Scopes != null)
+
+            if (consent == null)
+            {
+                return true;
+            }
+
+            if (consent.Expiration.HasExpired())
+            {
+                await _userConsentStore.RemoveUserConsentAsync(consent.SubjectId, consent.ClientId);
+                return true;
+            }
+
+            if (consent.Scopes != null)
             {
                 var intersect = scopes.Intersect(consent.Scopes);
                 return !(scopes.Count() == intersect.Count());

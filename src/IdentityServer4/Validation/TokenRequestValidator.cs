@@ -205,6 +205,12 @@ namespace IdentityServer4.Validation
 
             await _authorizationCodeStore.RemoveAuthorizationCodeAsync(code);
 
+            if (authZcode.CreationTime.HasExceeded(authZcode.Lifetime))
+            {
+                LogError("Authorization code expired: {code}", code);
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+            }
+
             /////////////////////////////////////////////
             // populate session id
             /////////////////////////////////////////////

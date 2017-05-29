@@ -277,7 +277,7 @@ namespace IdentityServer4.Validation
                 return Invalid(OidcConstants.ProtectedResourceErrors.InvalidToken);
             }
 
-            if (IdentityServerDateTime.UtcNow >= token.CreationTime.AddSeconds(token.Lifetime))
+            if (token.CreationTime.HasExceeded(token.Lifetime))
             {
                 LogError("Token expired.");
 
