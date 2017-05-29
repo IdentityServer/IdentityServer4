@@ -8,6 +8,7 @@ using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.UnitTests.Common;
+using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -149,5 +150,22 @@ namespace IdentityServer4.UnitTests.Services.Default
             result.Should().BeTrue();
         }
 
+        [Fact]
+        public async Task RequiresConsentAsync_expired_consent_should_require_consent()
+        {
+            var scopes = new string[] { "foo", "bar" };
+            await _userConsentStore.StoreUserConsentAsync(new Consent()
+            {
+                ClientId = _client.ClientId,
+                SubjectId = _user.GetSubjectId(),
+                Scopes = scopes,
+                CreationTime = DateTime.UtcNow.AddHours(-1),
+                Expiration = DateTime.UtcNow.AddSeconds(-1)
+            });
+
+            var result = await _subject.RequiresConsentAsync(_user, _client, scopes);
+
+            result.Should().BeTrue();
+        }
     }
 }

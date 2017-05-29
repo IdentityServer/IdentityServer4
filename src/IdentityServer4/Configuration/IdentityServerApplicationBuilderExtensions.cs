@@ -49,7 +49,7 @@ namespace Microsoft.AspNetCore.Builder
 
                 TestService(serviceProvider, typeof(IPersistedGrantStore), logger, "No storage mechanism for grants specified. Use the 'AddInMemoryPersistedGrants' extension method to register a development version.");
                 TestService(serviceProvider, typeof(IClientStore), logger, "No storage mechanism for clients specified. Use the 'AddInMemoryClients' extension method to register a development version.");
-                TestService(serviceProvider, typeof(IResourceStore), logger, "No storage mechanism for resources specified. Use the 'AddInMemoryResources' extension method to register a development version.");
+                TestService(serviceProvider, typeof(IResourceStore), logger, "No storage mechanism for resources specified. Use the 'AddInMemoryIdentityResources' or 'AddInMemoryApiResources' extension method to register a development version.");
 
                 var persistedGrants = serviceProvider.GetService(typeof(IPersistedGrantStore));
                 if (persistedGrants.GetType().FullName == typeof(InMemoryPersistedGrantStore).FullName)

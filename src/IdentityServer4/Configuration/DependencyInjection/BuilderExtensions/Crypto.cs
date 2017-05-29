@@ -74,31 +74,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <exception cref="InvalidOperationException">certificate: '{name}'</exception>
         public static IIdentityServerBuilder AddSigningCredential(this IIdentityServerBuilder builder, string name, StoreLocation location = StoreLocation.LocalMachine, NameType nameType = NameType.SubjectDistinguishedName)
         {
-            X509Certificate2 certificate = null;
-
-            if (location == StoreLocation.LocalMachine)
-            {
-                if (nameType == NameType.SubjectDistinguishedName)
-                {
-                    certificate = X509.LocalMachine.My.SubjectDistinguishedName.Find(name, validOnly: false).FirstOrDefault();
-                }
-                else if (nameType == NameType.Thumbprint)
-                {
-                    certificate = X509.LocalMachine.My.Thumbprint.Find(name, validOnly: false).FirstOrDefault();
-                }
-            }
-            else
-            {
-                if (nameType == NameType.SubjectDistinguishedName)
-                {
-                    certificate = X509.CurrentUser.My.SubjectDistinguishedName.Find(name, validOnly: false).FirstOrDefault();
-                }
-                else if (nameType == NameType.Thumbprint)
-                {
-                    certificate = X509.CurrentUser.My.Thumbprint.Find(name, validOnly: false).FirstOrDefault();
-                }
-            }
-
+            var certificate = FindCertificate(name, location, nameType);
             if (certificate == null) throw new InvalidOperationException($"certificate: '{name}' not found in certificate store");
 
             return builder.AddSigningCredential(certificate);
@@ -231,6 +207,66 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddSingleton<IValidationKeysStore>(new DefaultValidationKeysStore(keys));
 
             return builder;
+        }
+
+        /// <summary>
+        /// Adds the validation key.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="certificate">The certificate.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static IIdentityServerBuilder AddValidationKey(this IIdentityServerBuilder builder, X509Certificate2 certificate)
+        {
+            if (certificate == null) throw new ArgumentNullException(nameof(certificate));
+
+            var key = new X509SecurityKey(certificate);
+            return builder.AddValidationKeys(key);
+        }
+
+        /// <summary>
+        /// Adds the validation key from the certificate store.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="name">The name.</param>
+        /// <param name="location">The location.</param>
+        /// <param name="nameType">Name parameter can be either a distinguished name or a thumbprint</param>
+        public static IIdentityServerBuilder AddValidationKey(this IIdentityServerBuilder builder, string name, StoreLocation location = StoreLocation.LocalMachine, NameType nameType = NameType.SubjectDistinguishedName)
+        {
+            var certificate = FindCertificate(name, location, nameType);
+            if (certificate == null) throw new InvalidOperationException($"certificate: '{name}' not found in certificate store");
+
+            return builder.AddValidationKey(certificate);
+        }
+
+        private static X509Certificate2 FindCertificate(string name, StoreLocation location, NameType nameType)
+        {
+            X509Certificate2 certificate = null;
+
+            if (location == StoreLocation.LocalMachine)
+            {
+                if (nameType == NameType.SubjectDistinguishedName)
+                {
+                    certificate = X509.LocalMachine.My.SubjectDistinguishedName.Find(name, validOnly: false).FirstOrDefault();
+                }
+                else if (nameType == NameType.Thumbprint)
+                {
+                    certificate = X509.LocalMachine.My.Thumbprint.Find(name, validOnly: false).FirstOrDefault();
+                }
+            }
+            else
+            {
+                if (nameType == NameType.SubjectDistinguishedName)
+                {
+                    certificate = X509.CurrentUser.My.SubjectDistinguishedName.Find(name, validOnly: false).FirstOrDefault();
+                }
+                else if (nameType == NameType.Thumbprint)
+                {
+                    certificate = X509.CurrentUser.My.Thumbprint.Find(name, validOnly: false).FirstOrDefault();
+                }
+            }
+
+            return certificate;
         }
 
         // used for serialization to temporary RSA key

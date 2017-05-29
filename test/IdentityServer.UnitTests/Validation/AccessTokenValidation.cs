@@ -143,8 +143,8 @@ namespace IdentityServer4.UnitTests.Validation
             var token = TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "valid", 2, "read", "write");
 
             var handle = await store.StoreReferenceTokenAsync(token);
-            
-            now = now.AddMilliseconds(2000);
+
+            now = now.AddSeconds(3);
 
             var result = await validator.ValidateAccessTokenAsync(handle);
 
