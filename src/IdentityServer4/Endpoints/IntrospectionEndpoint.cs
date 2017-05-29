@@ -18,7 +18,7 @@ namespace IdentityServer4.Endpoints
     /// Introspection endpoint
     /// </summary>
     /// <seealso cref="IdentityServer4.Hosting.IEndpoint" />
-    public class IntrospectionEndpoint : IEndpoint
+    class IntrospectionEndpoint : IEndpoint
     {
         private readonly IEventService _events;
         private readonly IIntrospectionResponseGenerator _responseGenerator;

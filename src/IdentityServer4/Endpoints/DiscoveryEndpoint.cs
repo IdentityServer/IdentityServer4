@@ -19,7 +19,7 @@ namespace IdentityServer4.Endpoints
     /// The discovery endpoint
     /// </summary>
     /// <seealso cref="IdentityServer4.Hosting.IEndpoint" />
-    public class DiscoveryEndpoint : IEndpoint
+    class DiscoveryEndpoint : IEndpoint
     {
         private readonly IdentityServerOptions _options;
         private readonly IDiscoveryResponseGenerator _responseGenerator;
