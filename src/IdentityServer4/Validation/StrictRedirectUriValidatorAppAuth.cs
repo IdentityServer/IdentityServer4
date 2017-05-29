@@ -26,6 +26,7 @@ namespace IdentityServer4.Validation
         {
             _logger = logger;
         }
+
         /// <summary>
         /// Determines whether a redirect URI is valid for a client.
         /// </summary>

@@ -16,7 +16,7 @@ namespace IdentityServer4.Validation
     /// The token revocation request validator
     /// </summary>
     /// <seealso cref="IdentityServer4.Validation.ITokenRevocationRequestValidator" />
-    public class TokenRevocationRequestValidator : ITokenRevocationRequestValidator
+    internal class TokenRevocationRequestValidator : ITokenRevocationRequestValidator
     {
         private readonly ILogger _logger;
 

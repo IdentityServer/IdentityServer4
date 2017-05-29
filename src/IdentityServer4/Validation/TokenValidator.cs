@@ -25,7 +25,7 @@ namespace IdentityServer4.Validation
     /// The token validator
     /// </summary>
     /// <seealso cref="IdentityServer4.Validation.ITokenValidator" />
-    public class TokenValidator : ITokenValidator
+    internal class TokenValidator : ITokenValidator
     {
         private readonly ILogger _logger;
         private readonly IdentityServerOptions _options;

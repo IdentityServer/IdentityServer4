@@ -14,7 +14,7 @@ namespace IdentityServer4.Validation
     /// <summary>
     /// Validates secrets using the registered validators
     /// </summary>
-    public class SecretValidator
+    internal class SecretValidator
     {
         private readonly ILogger _logger;
         private readonly IEnumerable<ISecretValidator> _validators;
