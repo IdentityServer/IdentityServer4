@@ -15,7 +15,7 @@ using System;
 namespace IdentityServer4
 {
     /// <summary>
-    /// Class for userful helpers for interacting with IdentityServer
+    /// Class for useful helpers for interacting with IdentityServer
     /// </summary>
     public class IdentityServerTools
     {
