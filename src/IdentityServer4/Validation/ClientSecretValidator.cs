@@ -15,7 +15,7 @@ namespace IdentityServer4.Validation
     /// <summary>
     /// Validates a client secret using the registered secret validators and parsers
     /// </summary>
-    public class ClientSecretValidator
+    internal class ClientSecretValidator
     {
         private readonly ILogger _logger;
         private readonly IClientStore _clients;

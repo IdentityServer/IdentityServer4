@@ -10,7 +10,7 @@ namespace IdentityServer4.Validation
     /// <summary>
     /// Default custom request validator
     /// </summary>
-    public class DefaultCustomAuthorizeRequestValidator : ICustomAuthorizeRequestValidator
+    internal class DefaultCustomAuthorizeRequestValidator : ICustomAuthorizeRequestValidator
     {
         /// <summary>
         /// Custom validation logic for the authorize request.
