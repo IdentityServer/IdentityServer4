@@ -6,6 +6,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System;
 
 namespace IdentityServer4.UnitTests.Common
 {
@@ -30,6 +31,13 @@ namespace IdentityServer4.UnitTests.Common
                 Messages.TryGetValue(id, out val);
             }
             return Task.FromResult(val);
+        }
+
+        public Task<string> WriteAsync(Message<TModel> message)
+        {
+            var id = Guid.NewGuid().ToString();
+            Messages[id] = message;
+            return Task.FromResult(id);
         }
 
         public Task WriteAsync(string id, Message<TModel> message)

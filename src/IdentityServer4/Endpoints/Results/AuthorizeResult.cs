@@ -180,12 +180,12 @@ namespace IdentityServer4.Endpoints.Results
                 ErrorDescription = Response.ErrorDescription
             };
 
-            var message = new MessageWithId<ErrorMessage>(errorModel);
-            await _errorMessageStore.WriteAsync(message.Id, message);
+            var message = new Message<ErrorMessage>(errorModel);
+            var id = await _errorMessageStore.WriteAsync(message);
 
             var errorUrl = _options.UserInteraction.ErrorUrl;
 
-            var url = errorUrl.AddQueryString(_options.UserInteraction.ErrorIdParameter, message.Id);
+            var url = errorUrl.AddQueryString(_options.UserInteraction.ErrorIdParameter, id);
             context.Response.RedirectToAbsoluteUrl(url);
         }
     }

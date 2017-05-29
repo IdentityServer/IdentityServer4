@@ -16,9 +16,15 @@ namespace IdentityServer4.Stores
         /// <summary>
         /// Writes the message.
         /// </summary>
-        /// <param name="id">The identifier.</param>
         /// <param name="message">The message.</param>
-        /// <returns></returns>
+        /// <returns>An identifier for the message</returns>
+        Task<string> WriteAsync(Message<TModel> message);
+
+        /// <summary>
+        /// Writes the message.
+        /// </summary>
+        /// <param name="id">The id for the message.</param>
+        /// <param name="message">The message.</param>
         Task WriteAsync(string id, Message<TModel> message);
 
         /// <summary>

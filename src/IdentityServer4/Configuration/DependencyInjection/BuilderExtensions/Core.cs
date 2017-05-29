@@ -20,6 +20,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
+using IdentityServer4.Models;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -134,7 +135,9 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IConsentService, DefaultConsentService>();
             builder.Services.TryAddTransient<ICorsPolicyService, DefaultCorsPolicyService>();
             builder.Services.TryAddTransient<IProfileService, DefaultProfileService>();
-            builder.Services.TryAddTransient(typeof(IMessageStore<>), typeof(CookieMessageStore<>));
+            builder.Services.TryAddTransient<IMessageStore<ConsentResponse>, CookieMessageStore<ConsentResponse>>();
+            builder.Services.TryAddTransient<IMessageStore<LogoutMessage>, CookieMessageStore<LogoutMessage>>();
+            builder.Services.TryAddTransient<IMessageStore<ErrorMessage>, ProtectedDataMessageStore<ErrorMessage>>();
             builder.Services.TryAddTransient<IIdentityServerInteractionService, DefaultIdentityServerInteractionService>();
             builder.Services.TryAddTransient<IAuthorizationCodeStore, DefaultAuthorizationCodeStore>();
             builder.Services.TryAddTransient<IRefreshTokenStore, DefaultRefreshTokenStore>();

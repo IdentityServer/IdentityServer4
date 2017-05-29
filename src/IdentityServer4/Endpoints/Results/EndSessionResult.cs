@@ -72,10 +72,8 @@ namespace IdentityServer4.Endpoints.Results
 
             if (validatedRequest != null)
             {
-                var msg = new MessageWithId<LogoutMessage>(new LogoutMessage(validatedRequest));
-                id = msg.Id;
-
-                await _logoutMessageStore.WriteAsync(id, msg);
+                var msg = new Message<LogoutMessage>(new LogoutMessage(validatedRequest));
+                id = await _logoutMessageStore.WriteAsync(msg);
                 await _clientSessionService.EnsureClientListCookieAsync(validatedRequest.SessionId);
             }
 
