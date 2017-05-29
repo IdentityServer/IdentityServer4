@@ -36,7 +36,7 @@ namespace IdentityServer4.Extensions
         [DebuggerStepThrough]
         public static bool HasExpired(this DateTime expirationTime)
         {
-            if (expirationTime < IdentityServerDateTime.UtcNow)
+            if (IdentityServerDateTime.UtcNow > expirationTime)
             {
                 return true;
             }
