@@ -15,16 +15,19 @@ namespace IdentityServer4.Services
     internal class OidcReturnUrlParser : IReturnUrlParser
     {
         private readonly IHttpContextAccessor _context;
-        private readonly ILogger _logger;
         private readonly IAuthorizeRequestValidator _validator;
+        private readonly IUserSession _userSession;
+        private readonly ILogger _logger;
 
         public OidcReturnUrlParser(
             IHttpContextAccessor httpContext, 
             IAuthorizeRequestValidator validator,
+            IUserSession userSession,
             ILogger<OidcReturnUrlParser> logger)
         {
             _context = httpContext;
             _validator = validator;
+            _userSession = userSession;
             _logger = logger;
         }
 
@@ -33,7 +36,7 @@ namespace IdentityServer4.Services
             if (IsValidReturnUrl(returnUrl))
             {
                 var parameters = returnUrl.ReadQueryStringAsNameValueCollection();
-                var user = await _context.HttpContext.GetIdentityServerUserAsync();
+                var user = await _userSession.GetIdentityServerUserAsync();
                 var result = await _validator.ValidateAsync(parameters, user);
                 if (!result.IsError)
                 {

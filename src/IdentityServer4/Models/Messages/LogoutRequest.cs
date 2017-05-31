@@ -29,7 +29,16 @@ namespace IdentityServer4.Models
         {
             if (request != null)
             {
-                Parameters = request.Raw;
+                if (request.Raw != null)
+                {
+                    Parameters = request.Raw;
+                }
+
+                // optimize params sent to logout page, since we'd like to send them in URL (not as cookie)
+                Parameters.Remove(OidcConstants.EndSessionRequest.IdTokenHint);
+                Parameters.Remove(OidcConstants.EndSessionRequest.PostLogoutRedirectUri);
+                Parameters.Remove(OidcConstants.EndSessionRequest.State);
+
                 ClientId = request.Client?.ClientId;
                 SessionId = request.SessionId;
 
@@ -98,6 +107,8 @@ namespace IdentityServer4.Models
         ///   <c>true</c> if the signout prompt should be shown; otherwise, <c>false</c>.
         /// </value>
         public bool ShowSignoutPrompt => ClientId.IsMissing();
+
+        internal bool ContainsPayload => ClientId.IsPresent();
     }
 
     /// <summary>

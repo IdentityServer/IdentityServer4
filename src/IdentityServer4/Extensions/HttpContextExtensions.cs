@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using IdentityServer4.Models;
+using IdentityServer4.Stores;
 
 #pragma warning disable 1591
 
@@ -111,42 +113,36 @@ namespace IdentityServer4.Extensions
             return user;
         }
 
-        /// <summary>
-        /// Gets the identity server user information asynchronous.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <returns></returns>
-        internal static async Task<AuthenticateInfo> GetIdentityServerUserInfoAsync(this HttpContext context)
-        {
-            var options = context.RequestServices.GetRequiredService<IdentityServerOptions>();
-            var info = await context.Authentication.GetAuthenticateInfoAsync(options.Authentication.EffectiveAuthenticationScheme);
-            return info;
-        }
-
-        internal static async Task ReIssueSignInCookie(this HttpContext context, AuthenticateInfo info)
-        {
-            var options = context.RequestServices.GetRequiredService<IdentityServerOptions>();
-            await context.Authentication.SignInAsync(options.Authentication.EffectiveAuthenticationScheme, info.Principal, info.Properties);
-        }
-
         internal static async Task<string> GetIdentityServerSignoutFrameCallbackUrlAsync(this HttpContext context, string sid = null)
         {
+            var userSession = context.RequestServices.GetRequiredService<IUserSession>();
+            var currentSessionId = await userSession.GetCurrentSessionIdAsync();
+
             if (sid == null)
             {
-                // no explicit sid, so see if we have a logged in user
-                var sessionId = context.RequestServices.GetRequiredService<ISessionIdService>();
-                sid = await sessionId.GetCurrentSessionIdAsync();
+                // no explicit sid, so use current session id
+                sid = currentSessionId;
             }
 
-            if (sid != null)
+            if (sid != null && sid == currentSessionId)
             {
+                var user = await userSession.GetIdentityServerUserAsync();
+
+                // we check that the sid is the same as the current user, since we 
+                // are putting the SLO info in the message back to the end session callback page
+                var endSessionMessageStore = context.RequestServices.GetRequiredService<IMessageStore<EndSession>>();
+
+                var endSessionMsg = new EndSession()
+                {
+                    SubjectId = user.GetSubjectId(),
+                    SessionId = sid,
+                    ClientIds = await userSession.GetClientListAsync(),
+                };
+                var msg = new Message<EndSession>(endSessionMsg);
+                var id = await endSessionMessageStore.WriteAsync(msg);
+
                 var signoutIframeUrl = context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.ProtocolRoutePaths.EndSessionCallback;
-                signoutIframeUrl = signoutIframeUrl.AddQueryString(OidcConstants.EndSessionRequest.Sid, sid);
-
-                // if they are rendering the callback frame, we need to ensure the client cookie is written
-                var clientSession = context.RequestServices.GetRequiredService<IClientSessionService>();
-                await clientSession.EnsureClientListCookieAsync(sid);
-
+                signoutIframeUrl = signoutIframeUrl.AddQueryString(Constants.UIConstants.DefaultRoutePathParams.EndSessionCallback, id);
                 return signoutIframeUrl;
             }
 

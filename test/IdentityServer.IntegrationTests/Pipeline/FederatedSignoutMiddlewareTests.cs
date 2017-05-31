@@ -16,6 +16,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
+using System.Text.Encodings.Web;
 
 namespace IdentityServer4.IntegrationTests.Pipeline
 {
@@ -25,9 +26,6 @@ namespace IdentityServer4.IntegrationTests.Pipeline
 
         MockIdSvrUiPipeline _pipeline = new MockIdSvrUiPipeline();
         ClaimsPrincipal _user;
-
-        string _idSvrSid;
-        string _idSvrIFrameUrl;
 
         public FederatedSignoutMiddlewareTests()
         {
@@ -46,12 +44,6 @@ namespace IdentityServer4.IntegrationTests.Pipeline
                }
             });
 
-            _pipeline.FederatedSignOut = async ctx =>
-            {
-                _idSvrIFrameUrl = await ctx.GetIdentityServerSignoutFrameCallbackUrlAsync();
-                ISessionIdService sessionId = ctx.RequestServices.GetRequiredService<ISessionIdService>();
-                _idSvrSid = await sessionId.GetCurrentSessionIdAsync();
-            };
             _pipeline.Initialize();
             _pipeline.Options.Authentication.FederatedSignOutPaths.Add(MockIdSvrUiPipeline.FederatedSignOutPath);
         }
@@ -66,7 +58,7 @@ namespace IdentityServer4.IntegrationTests.Pipeline
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             response.Content.Headers.ContentType.MediaType.Should().Be("text/html");
             var html = await response.Content.ReadAsStringAsync();
-            html.Should().Contain(_idSvrIFrameUrl);
+            html.Should().Contain("https://server/connect/endsession/callback?endSessionId=");
         }
 
         [Fact]
@@ -79,7 +71,7 @@ namespace IdentityServer4.IntegrationTests.Pipeline
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             response.Content.Headers.ContentType.MediaType.Should().Be("text/html");
             var html = await response.Content.ReadAsStringAsync();
-            html.Should().Contain(_idSvrIFrameUrl);
+            html.Should().Contain("https://server/connect/endsession/callback?endSessionId=");
         }
 
         [Fact]
@@ -91,7 +83,8 @@ namespace IdentityServer4.IntegrationTests.Pipeline
 
             _pipeline.FederatedSignOut = async ctx =>
             {
-                var user = await ctx.GetIdentityServerUserAsync();
+                var userSession = ctx.RequestServices.GetRequiredService<IUserSession>();
+                var user = await userSession.GetIdentityServerUserAsync();
                 user.Should().BeNull();
             };
             await _pipeline.BrowserClient.GetAsync(MockIdSvrUiPipeline.FederatedSignOutUrl);

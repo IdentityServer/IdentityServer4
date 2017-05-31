@@ -13,25 +13,25 @@ using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.Hosting
 {
-    public class AuthenticationHandler : IAuthenticationHandler
+    class AuthenticationHandler : IAuthenticationHandler
     {
         private readonly IdentityServerOptions _options;
         private readonly IHttpContextAccessor _context;
         private IAuthenticationHandler _handler;
-        private readonly ISessionIdService _sessionId;
+        private readonly IUserSession _userSession;
         private readonly ILogger _logger;
         private readonly IEventService _events;
 
         public AuthenticationHandler(
             IHttpContextAccessor context, 
-            IdentityServerOptions options, 
-            ISessionIdService sessionId,
+            IdentityServerOptions options,
+            IUserSession userSession,
             IEventService events,
             ILogger<AuthenticationHandler> logger)
         {
             _context = context;
             _options = options;
-            _sessionId = sessionId;
+            _userSession = userSession;
             _events = events;
             _logger = logger;
         }
@@ -67,15 +67,16 @@ namespace IdentityServer4.Hosting
             context.Principal.AssertRequiredClaims();
             context.Principal.AugmentMissingClaims();
 
-            _sessionId.CreateSessionId(context);
+            _userSession.CreateSessionId(context);
         }
 
         public async Task SignOutAsync(SignOutContext context)
         {
             if (context.AuthenticationScheme == _options.Authentication.EffectiveAuthenticationScheme)
             {
-                _sessionId.RemoveCookie();
+                _userSession.RemoveSessionIdCookie();
             }
+
             await _handler.SignOutAsync(context);
         }
 
@@ -85,7 +86,7 @@ namespace IdentityServer4.Hosting
             _handler = auth.Handler;
             auth.Handler = this;
 
-            await _sessionId.EnsureSessionCookieAsync();
+            await _userSession.EnsureSessionIdCookieAsync();
         }
 
         internal void Cleanup()

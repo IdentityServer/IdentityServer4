@@ -22,9 +22,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
         EndSessionCallbackResult _subject;
 
         EndSessionCallbackValidationResult _result = new EndSessionCallbackValidationResult();
-        MockSessionIdService _mockSessionId = new MockSessionIdService();
-        MockClientSessionService _mockClientSession = new MockClientSessionService();
-        MockMessageStore<LogoutMessage> _mockLogoutMessageStore = new MockMessageStore<LogoutMessage>();
+        MockUserSession _mockUserSession = new MockUserSession();
         IdentityServerOptions _options = TestIdentityServerOptions.Create();
 
         DefaultHttpContext _context = new DefaultHttpContext();
@@ -35,18 +33,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
             _context.SetIdentityServerBasePath("/");
             _context.Response.Body = new MemoryStream();
 
-            _subject = new EndSessionCallbackResult(_result, _mockClientSession, _mockLogoutMessageStore, _options);
-        }
-
-        [Fact]
-        public async Task logout_message_should_be_removed()
-        {
-            _mockLogoutMessageStore.Messages.Add("1", new Message<LogoutMessage>(new LogoutMessage()));
-            _result.LogoutId = "1";
-
-            await _subject.ExecuteAsync(_context);
-
-            _mockLogoutMessageStore.Messages.Count.Should().Be(0);
+            _subject = new EndSessionCallbackResult(_result, _options);
         }
 
         [Fact]
@@ -57,17 +44,6 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
             await _subject.ExecuteAsync(_context);
 
             _context.Response.StatusCode.Should().Be(400);
-        }
-
-        [Fact]
-        public async Task success_should_clear_cookies()
-        {
-            _result.IsError = false;
-            _result.SessionId = "5";
-
-            await _subject.ExecuteAsync(_context);
-
-            _mockClientSession.RemoveCookieWasCalled.Should().BeTrue();
         }
 
         [Fact]

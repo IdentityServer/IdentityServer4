@@ -108,8 +108,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddTransient<IdentityServerTools>();
 
             builder.Services.AddTransient<IReturnUrlParser, OidcReturnUrlParser>();
-            builder.Services.AddTransient<ISessionIdService, DefaultSessionIdService>();
-            builder.Services.AddTransient<IClientSessionService, DefaultClientSessionService>();
+            builder.Services.AddTransient<IUserSession, CookieAuthenticationUserSession>();
             builder.Services.AddTransient(typeof(MessageCookie<>));
             builder.Services.AddScoped<AuthenticationHandler>();
 
@@ -136,7 +135,8 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<ICorsPolicyService, DefaultCorsPolicyService>();
             builder.Services.TryAddTransient<IProfileService, DefaultProfileService>();
             builder.Services.TryAddTransient<IMessageStore<ConsentResponse>, CookieMessageStore<ConsentResponse>>();
-            builder.Services.TryAddTransient<IMessageStore<LogoutMessage>, CookieMessageStore<LogoutMessage>>();
+            builder.Services.TryAddTransient<IMessageStore<LogoutMessage>, ProtectedDataMessageStore<LogoutMessage>>();
+            builder.Services.TryAddTransient<IMessageStore<EndSession>, ProtectedDataMessageStore<EndSession>>();
             builder.Services.TryAddTransient<IMessageStore<ErrorMessage>, ProtectedDataMessageStore<ErrorMessage>>();
             builder.Services.TryAddTransient<IIdentityServerInteractionService, DefaultIdentityServerInteractionService>();
             builder.Services.TryAddTransient<IAuthorizationCodeStore, DefaultAuthorizationCodeStore>();

@@ -148,7 +148,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
             var parts = _mockPipeline.LogoutRequest.SignOutIFrameUrl.Split('?');
             parts[0].Should().Be(MockIdSvrUiPipeline.EndSessionCallbackEndpoint);
             var iframeUrl = QueryHelpers.ParseNullableQuery(parts[1]);
-            iframeUrl["sid"].FirstOrDefault().Should().NotBeNull();
+            iframeUrl["endSessionId"].FirstOrDefault().Should().NotBeNull();
         }
 
         [Fact]
@@ -215,7 +215,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
             var parts = _mockPipeline.LogoutRequest.SignOutIFrameUrl.Split('?');
             parts[0].Should().Be(MockIdSvrUiPipeline.EndSessionCallbackEndpoint);
             var iframeUrl = QueryHelpers.ParseNullableQuery(parts[1]);
-            iframeUrl["sid"].FirstOrDefault().Should().NotBeNull();
+            iframeUrl["endSessionId"].FirstOrDefault().Should().NotBeNull();
         }
 
         [Fact]
@@ -327,6 +327,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
         public async Task valid_signout_callback_should_render_iframes_for_all_clients()
         {
             await _mockPipeline.LoginAsync(IdentityServerPrincipal.Create("bob", "Bob Loblaw"));
+            var sid = _mockPipeline.GetSessionCookie().Value;
 
             _mockPipeline.BrowserClient.AllowAutoRedirect = false;
             var url = _mockPipeline.CreateAuthorizeUrl(
@@ -351,8 +352,6 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
             response = await _mockPipeline.BrowserClient.GetAsync(MockIdSvrUiPipeline.EndSessionEndpoint);
 
             var signoutFrameUrl = _mockPipeline.LogoutRequest.SignOutIFrameUrl;
-            var sid = signoutFrameUrl.Substring(signoutFrameUrl.LastIndexOf("sid=") + 4);
-            if (sid.Contains("&")) sid = sid.Substring(0, sid.IndexOf("&"));
 
             response = await _mockPipeline.BrowserClient.GetAsync(signoutFrameUrl);
             var html = await response.Content.ReadAsStringAsync();

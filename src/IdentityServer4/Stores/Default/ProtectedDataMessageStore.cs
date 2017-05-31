@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.DataProtection;
 using IdentityModel;
 using System.Text;
 using System;
-using System.IO;
 using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.Stores
@@ -31,15 +30,16 @@ namespace IdentityServer4.Stores
             return Task.FromResult(0);
         }
 
-        public Task<Message<TModel>> ReadAsync(string id)
+        public Task<Message<TModel>> ReadAsync(string value)
         {
             Message<TModel> result = null;
 
-            if (!String.IsNullOrWhiteSpace(id))
+            if (!String.IsNullOrWhiteSpace(value))
             {
                 try
                 {
-                    var bytes = Base64Url.Decode(id);
+                    var bytes = Base64Url.Decode(value);
+                    bytes = _protector.Unprotect(bytes);
                     var json = Encoding.UTF8.GetString(bytes);
                     result = ObjectSerializer.FromString<Message<TModel>>(json);
                 }
@@ -60,6 +60,7 @@ namespace IdentityServer4.Stores
             {
                 var json = ObjectSerializer.ToString(message);
                 var bytes = Encoding.UTF8.GetBytes(json);
+                bytes = _protector.Protect(bytes);
                 value = Base64Url.Encode(bytes);
             }
             catch(Exception ex)

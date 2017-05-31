@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Builder;
 using FluentAssertions;
 using System.Net;
 using IdentityServer4.Configuration;
+using Microsoft.AspNetCore.Http.Authentication;
 
 namespace IdentityServer4.IntegrationTests.Common
 {
@@ -111,7 +112,8 @@ namespace IdentityServer4.IntegrationTests.Common
         {
             if (CookieAuthenticationScheme != null && Subject != null)
             {
-                await ctx.Authentication.SignInAsync(CookieAuthenticationScheme, Subject);
+                var props = new AuthenticationProperties();
+                await ctx.Authentication.SignInAsync(CookieAuthenticationScheme, Subject, props);
                 Subject = null;
                 var url = ctx.Request.Query[this.Options.UserInteraction.LoginReturnUrlParameter].FirstOrDefault();
                 if (url != null)

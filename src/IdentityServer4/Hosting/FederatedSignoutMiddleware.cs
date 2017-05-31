@@ -11,23 +11,30 @@ using System;
 using IdentityServer4.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http.Authentication;
+using IdentityServer4.Services;
 
 #pragma warning disable 1591
 
 namespace IdentityServer4.Hosting
 {
-    public class FederatedSignOutMiddleware
+    internal class FederatedSignOutMiddleware
     {
         const string DocumentHtml = "<!DOCTYPE html><html><body>{0}</body></html>";
         const string IframeHtml = "<iframe style='display:none' width='0' height='0' src='{0}'></iframe>";
 
         private readonly RequestDelegate _next;
+        private readonly IUserSession _userSession;
         private readonly IdentityServerOptions _options;
         private readonly ILogger _logger;
 
-        public FederatedSignOutMiddleware(RequestDelegate next, IdentityServerOptions options, ILogger<FederatedSignOutMiddleware> logger)
+        public FederatedSignOutMiddleware(
+            RequestDelegate next, 
+            IUserSession userSession,
+            IdentityServerOptions options, 
+            ILogger<FederatedSignOutMiddleware> logger)
         {
             _next = next;
+            _userSession = userSession;
             _options = options;
             _logger = logger;
         }
@@ -47,7 +54,7 @@ namespace IdentityServer4.Hosting
         {
             _logger.LogDebug("Federated signout path requested");
 
-            var user = await context.GetIdentityServerUserAsync();
+            var user = await _userSession.GetIdentityServerUserAsync();
             if (user != null)
             {
                 var upstreamSid = user.FindFirst(OidcConstants.EndSessionRequest.Sid)?.Value;

@@ -12,7 +12,6 @@ using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using IdentityServer4.Extensions;
 using System;
-using IdentityServer4.Services;
 
 namespace IdentityServer4.Endpoints.Results
 {
@@ -37,23 +36,19 @@ namespace IdentityServer4.Endpoints.Results
         internal EndSessionResult(
             EndSessionValidationResult result,
             IdentityServerOptions options,
-            IClientSessionService clientSessionService,
             IMessageStore<LogoutMessage> logoutMessageStore)
             : this(result)
         {
             _options = options;
-            _clientSessionService = clientSessionService;
             _logoutMessageStore = logoutMessageStore;
         }
 
         private IdentityServerOptions _options;
         private IMessageStore<LogoutMessage> _logoutMessageStore;
-        private IClientSessionService _clientSessionService;
 
         void Init(HttpContext context)
         {
             _options = _options ?? context.RequestServices.GetRequiredService<IdentityServerOptions>();
-            _clientSessionService = _clientSessionService ?? context.RequestServices.GetRequiredService<IClientSessionService>();
             _logoutMessageStore = _logoutMessageStore ?? context.RequestServices.GetRequiredService<IMessageStore<LogoutMessage>>();
         }
 
@@ -72,9 +67,13 @@ namespace IdentityServer4.Endpoints.Results
 
             if (validatedRequest != null)
             {
-                var msg = new Message<LogoutMessage>(new LogoutMessage(validatedRequest));
-                id = await _logoutMessageStore.WriteAsync(msg);
-                await _clientSessionService.EnsureClientListCookieAsync(validatedRequest.SessionId);
+                var logoutMessage = new LogoutMessage(validatedRequest);
+                // TODO:brock unit test for this if check
+                if (logoutMessage.ContainsPayload)
+                {
+                    var msg = new Message<LogoutMessage>(logoutMessage);
+                    id = await _logoutMessageStore.WriteAsync(msg);
+                }
             }
 
             var redirect = _options.UserInteraction.LogoutUrl;
