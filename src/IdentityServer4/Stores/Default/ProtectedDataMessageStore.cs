@@ -25,11 +25,6 @@ namespace IdentityServer4.Stores
             _logger = logger;
         }
 
-        public Task DeleteAsync(string id)
-        {
-            return Task.FromResult(0);
-        }
-
         public Task<Message<TModel>> ReadAsync(string value)
         {
             Message<TModel> result = null;

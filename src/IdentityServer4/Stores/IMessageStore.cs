@@ -26,12 +26,5 @@ namespace IdentityServer4.Stores
         /// <param name="id">The identifier.</param>
         /// <returns></returns>
         Task<Message<TModel>> ReadAsync(string id);
-
-        /// <summary>
-        /// Deletes the message.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
-        Task DeleteAsync(string id);
     }
 }

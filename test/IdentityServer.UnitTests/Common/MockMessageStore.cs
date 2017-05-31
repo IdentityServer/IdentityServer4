@@ -14,15 +14,6 @@ namespace IdentityServer4.UnitTests.Common
     {
         public Dictionary<string, Message<TModel>> Messages { get; set; } = new Dictionary<string, Message<TModel>>();
 
-        public Task DeleteAsync(string id)
-        {
-            if (id != null && Messages.ContainsKey(id))
-            {
-                Messages.Remove(id);
-            }
-            return Task.FromResult(0);
-        }
-
         public Task<Message<TModel>> ReadAsync(string id)
         {
             Message<TModel> val = null;
@@ -38,12 +29,6 @@ namespace IdentityServer4.UnitTests.Common
             var id = Guid.NewGuid().ToString();
             Messages[id] = message;
             return Task.FromResult(id);
-        }
-
-        public Task WriteAsync(string id, Message<TModel> message)
-        {
-            Messages[id] = message;
-            return Task.FromResult(0);
         }
     }
 }
