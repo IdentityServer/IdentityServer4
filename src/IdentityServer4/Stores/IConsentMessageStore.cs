@@ -8,27 +8,26 @@ using System.Threading.Tasks;
 namespace IdentityServer4.Stores
 {
     /// <summary>
-    /// Interface for a message store
+    /// Interface for consent messages that are sent from the consent UI to the authorization endpoint.
     /// </summary>
-    /// <typeparam name="TModel">The type of the model.</typeparam>
-    public interface IMessageStore<TModel>
+    public interface IConsentMessageStore
     {
         /// <summary>
-        /// Writes the message.
+        /// Writes the consent response message.
         /// </summary>
+        /// <param name="id">The id for the message.</param>
         /// <param name="message">The message.</param>
-        /// <returns>An identifier for the message</returns>
-        Task<string> WriteAsync(Message<TModel> message);
+        Task WriteAsync(string id, Message<ConsentResponse> message);
 
         /// <summary>
-        /// Reads the message.
+        /// Reads the consent response message.
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <returns></returns>
-        Task<Message<TModel>> ReadAsync(string id);
+        Task<Message<ConsentResponse>> ReadAsync(string id);
 
         /// <summary>
-        /// Deletes the message.
+        /// Deletes the consent response message.
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <returns></returns>

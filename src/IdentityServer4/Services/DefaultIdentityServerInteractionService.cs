@@ -21,7 +21,7 @@ namespace IdentityServer4.Services
         private readonly IHttpContextAccessor _context;
         private readonly IMessageStore<LogoutMessage> _logoutMessageStore;
         private readonly IMessageStore<ErrorMessage> _errorMessageStore;
-        private readonly IMessageStore<ConsentResponse> _consentMessageStore;
+        private readonly IConsentMessageStore _consentMessageStore;
         private readonly IPersistedGrantService _grants;
         private readonly IUserSession _userSession;
         private readonly ILogger _logger;
@@ -32,7 +32,7 @@ namespace IdentityServer4.Services
             IHttpContextAccessor context,
             IMessageStore<LogoutMessage> logoutMessageStore,
             IMessageStore<ErrorMessage> errorMessageStore,
-            IMessageStore<ConsentResponse> consentMessageStore,
+            IConsentMessageStore consentMessageStore,
             IPersistedGrantService grants,
             IUserSession userSession,
             ReturnUrlParser returnUrlParser,

@@ -23,7 +23,7 @@ namespace IdentityServer4.UnitTests.Services.Default
         MockMessageStore<EndSession> _mockEndSessionStore = new MockMessageStore<EndSession>();
         MockMessageStore<LogoutMessage> _mockLogoutMessageStore = new MockMessageStore<LogoutMessage>();
         MockMessageStore<Models.ErrorMessage> _mockErrorMessageStore = new MockMessageStore<Models.ErrorMessage>();
-        MockMessageStore<ConsentResponse> _mockConsentStore = new MockMessageStore<ConsentResponse>();
+        MockConsentMessageStore _mockConsentStore = new MockConsentMessageStore();
         MockPersistedGrantService _mockPersistedGrantService = new MockPersistedGrantService();
         MockUserSession _mockUserSession = new MockUserSession();
         MockReturnUrlParser _mockReturnUrlParser = new MockReturnUrlParser();

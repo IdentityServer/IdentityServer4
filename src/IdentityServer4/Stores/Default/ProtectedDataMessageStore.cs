@@ -70,10 +70,5 @@ namespace IdentityServer4.Stores
 
             return Task.FromResult(value);
         }
-
-        public Task WriteAsync(string id, Message<TModel> message)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

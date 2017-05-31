@@ -34,7 +34,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
         ILogger<AuthorizeEndpoint> _fakeLogger = TestLogger.Create<AuthorizeEndpoint>();
         StubAuthorizeRequestValidator _stubAuthorizeRequestValidator = new StubAuthorizeRequestValidator();
         StubAuthorizeInteractionResponseGenerator _stubInteractionGenerator = new StubAuthorizeInteractionResponseGenerator();
-        MockMessageStore<ConsentResponse> _mockUserConsentResponseMessageStore = new MockMessageStore<ConsentResponse>();
+        MockConsentMessageStore _mockUserConsentResponseMessageStore = new MockConsentMessageStore();
         StubAuthorizeResponseGenerator _stubAuthorizeResponseGenerator = new StubAuthorizeResponseGenerator();
         MockUserSession _mockUserSession = new MockUserSession();
 

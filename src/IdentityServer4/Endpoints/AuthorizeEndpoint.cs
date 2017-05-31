@@ -29,7 +29,7 @@ namespace IdentityServer4.Endpoints
         private readonly ILogger _logger;
         private readonly IAuthorizeRequestValidator _validator;
         private readonly IAuthorizeInteractionResponseGenerator _interactionGenerator;
-        private readonly IMessageStore<ConsentResponse> _consentResponseStore;
+        private readonly IConsentMessageStore _consentResponseStore;
         private readonly IAuthorizeResponseGenerator _authorizeResponseGenerator;
         private readonly IUserSession _userSession;
 
@@ -38,7 +38,7 @@ namespace IdentityServer4.Endpoints
             ILogger<AuthorizeEndpoint> logger,
             IAuthorizeRequestValidator validator,
             IAuthorizeInteractionResponseGenerator interactionGenerator,
-            IMessageStore<ConsentResponse> consentResponseStore,
+            IConsentMessageStore consentResponseStore,
             IAuthorizeResponseGenerator authorizeResponseGenerator,
             IUserSession userSession)
         {

@@ -4,15 +4,14 @@
 
 using IdentityServer4.Models;
 using System.Threading.Tasks;
-using IdentityModel;
 
 namespace IdentityServer4.Stores
 {
-    internal class CookieMessageStore<TModel> : IMessageStore<TModel>
+    internal class ConsentMessageStore : IConsentMessageStore
     {
-        protected readonly MessageCookie<TModel> _cookie;
+        protected readonly MessageCookie<ConsentResponse> _cookie;
 
-        public CookieMessageStore(MessageCookie<TModel> cookie)
+        public ConsentMessageStore(MessageCookie<ConsentResponse> cookie)
         {
             _cookie = cookie;
         }
@@ -23,19 +22,12 @@ namespace IdentityServer4.Stores
             return Task.FromResult(0);
         }
 
-        public virtual Task<Message<TModel>> ReadAsync(string id)
+        public virtual Task<Message<ConsentResponse>> ReadAsync(string id)
         {
             return Task.FromResult(_cookie.Read(id));
         }
 
-        public virtual Task<string> WriteAsync(Message<TModel> message)
-        {
-            var id = CryptoRandom.CreateUniqueId(16);
-            _cookie.Write(id, message);
-            return Task.FromResult(id);
-        }
-
-        public virtual Task WriteAsync(string id, Message<TModel> message)
+        public virtual Task WriteAsync(string id, Message<ConsentResponse> message)
         {
             _cookie.Write(id, message);
             return Task.FromResult(0);
