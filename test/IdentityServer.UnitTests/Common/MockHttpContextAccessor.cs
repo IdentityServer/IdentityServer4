@@ -16,7 +16,7 @@ namespace IdentityServer4.UnitTests.Common
         HttpContext _context = new DefaultHttpContext();
 
         public MockHttpContextAccessor(
-            IdentityServerOptions options = null, 
+            IdentityServerOptions options = null,
             IUserSession userSession = null,
             IMessageStore<EndSession> endSessionStore = null)
         {
@@ -26,7 +26,7 @@ namespace IdentityServer4.UnitTests.Common
             services.AddSingleton(options);
             if (userSession == null)
             {
-                services.AddTransient<IUserSession, CookieAuthenticationUserSession>();
+                services.AddTransient<IUserSession, DefaultUserSession>();
             }
             else
             {

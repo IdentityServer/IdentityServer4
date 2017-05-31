@@ -4,7 +4,6 @@
 
 using FluentAssertions;
 using IdentityModel;
-using IdentityServer4.Extensions;
 using IdentityServer4.IntegrationTests.Common;
 using IdentityServer4.Test;
 using IdentityServer4.Services;
@@ -16,7 +15,6 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
-using System.Text.Encodings.Web;
 
 namespace IdentityServer4.IntegrationTests.Pipeline
 {

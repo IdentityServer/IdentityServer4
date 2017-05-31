@@ -8,8 +8,6 @@ using System.Threading.Tasks;
 using IdentityServer4.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using IdentityServer4.Stores;
-using IdentityServer4.Models;
 using System.Net;
 using System;
 using IdentityServer4.Extensions;

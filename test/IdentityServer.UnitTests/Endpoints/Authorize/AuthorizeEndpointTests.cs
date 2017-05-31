@@ -324,7 +324,6 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
             _mockUserConsentResponseMessageStore.Messages.Add(request.Id, new Message<ConsentResponse>(new ConsentResponse() { ScopesConsented = new string[] { "api1", "api2" } }));
 
             _mockUserSession.User = _user;
-            //_context.SetUser(_user);
 
             _context.Request.Method = "GET";
             _context.Request.Path = new PathString("/connect/authorize/consent");
