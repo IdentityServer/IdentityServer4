@@ -108,8 +108,8 @@ namespace IdentityServer4.Extensions
         /// <returns></returns>
         public static async Task<ClaimsPrincipal> GetIdentityServerUserAsync(this HttpContext context)
         {
-            var options = context.RequestServices.GetRequiredService<IdentityServerOptions>();
-            var user = await context.Authentication.AuthenticateAsync(options.Authentication.EffectiveAuthenticationScheme);
+            var userSession = context.RequestServices.GetRequiredService<IUserSession>();
+            var user = await userSession.GetIdentityServerUserAsync();
             return user;
         }
 
@@ -124,14 +124,11 @@ namespace IdentityServer4.Extensions
                 sid = currentSessionId;
             }
 
+            // we check that the sid is the same as the current user, since we 
+            // are putting the SLO info in the message back to the end session callback page
             if (sid != null && sid == currentSessionId)
             {
                 var user = await userSession.GetIdentityServerUserAsync();
-
-                // we check that the sid is the same as the current user, since we 
-                // are putting the SLO info in the message back to the end session callback page
-                var endSessionMessageStore = context.RequestServices.GetRequiredService<IMessageStore<EndSession>>();
-
                 var endSessionMsg = new EndSession()
                 {
                     SubjectId = user.GetSubjectId(),
@@ -139,10 +136,13 @@ namespace IdentityServer4.Extensions
                     ClientIds = await userSession.GetClientListAsync(),
                 };
                 var msg = new Message<EndSession>(endSessionMsg);
+
+                var endSessionMessageStore = context.RequestServices.GetRequiredService<IMessageStore<EndSession>>();
                 var id = await endSessionMessageStore.WriteAsync(msg);
 
                 var signoutIframeUrl = context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.ProtocolRoutePaths.EndSessionCallback;
                 signoutIframeUrl = signoutIframeUrl.AddQueryString(Constants.UIConstants.DefaultRoutePathParams.EndSessionCallback, id);
+
                 return signoutIframeUrl;
             }
 
