@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Validation
@@ -9,21 +10,15 @@ namespace IdentityServer4.Validation
     /// <summary>
     /// Default custom request validator
     /// </summary>
-    public class DefaultCustomAuthorizeRequestValidator : ICustomAuthorizeRequestValidator
+    internal class DefaultCustomAuthorizeRequestValidator : ICustomAuthorizeRequestValidator
     {
         /// <summary>
         /// Custom validation logic for the authorize request.
         /// </summary>
-        /// <param name="request">The validated request.</param>
-        /// <returns>
-        /// The validation result
-        /// </returns>
-        public Task<AuthorizeRequestValidationResult> ValidateAsync(ValidatedAuthorizeRequest request)
+        /// <param name="context">The context.</param>
+        public Task ValidateAsync(CustomAuthorizeRequestValidationContext context)
         {
-            return Task.FromResult(new AuthorizeRequestValidationResult
-            {
-                IsError = false
-            });
+            return Task.FromResult(0);
         }
     }
 }

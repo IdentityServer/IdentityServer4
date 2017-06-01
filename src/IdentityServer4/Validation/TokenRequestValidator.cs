@@ -24,7 +24,7 @@ namespace IdentityServer4.Validation
     /// The token request validator
     /// </summary>
     /// <seealso cref="IdentityServer4.Validation.ITokenRequestValidator" />
-    public class TokenRequestValidator : ITokenRequestValidator
+    internal class TokenRequestValidator : ITokenRequestValidator
     {
         private readonly ILogger _logger;
         private readonly IdentityServerOptions _options;
@@ -204,6 +204,12 @@ namespace IdentityServer4.Validation
             }
 
             await _authorizationCodeStore.RemoveAuthorizationCodeAsync(code);
+
+            if (authZcode.CreationTime.HasExceeded(authZcode.Lifetime))
+            {
+                LogError("Authorization code expired: {code}", code);
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+            }
 
             /////////////////////////////////////////////
             // populate session id

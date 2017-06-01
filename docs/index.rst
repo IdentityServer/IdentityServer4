@@ -66,6 +66,7 @@ IdentityServer is officially certified by the OpenID Foundation and part of the 
    quickstarts/6_aspnet_identity
    quickstarts/7_javascript_client
    quickstarts/8_entity_framework
+   quickstarts/community
 
 .. toctree::
    :maxdepth: 2
@@ -107,6 +108,7 @@ IdentityServer is officially certified by the OpenID Foundation and part of the 
    topics/cors
    topics/discovery
    topics/add_protocols
+   topics/tools
 
 .. toctree::
    :maxdepth: 2

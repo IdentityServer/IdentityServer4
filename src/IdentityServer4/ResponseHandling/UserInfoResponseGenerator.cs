@@ -110,7 +110,7 @@ namespace IdentityServer4.ResponseHandling
         /// </summary>
         /// <param name="scopes">The scopes.</param>
         /// <returns></returns>
-        internal async Task<IEnumerable<string>> GetRequestedClaimTypesAsync(IEnumerable<string> scopes)
+        internal protected virtual async Task<IEnumerable<string>> GetRequestedClaimTypesAsync(IEnumerable<string> scopes)
         {
             if (scopes == null || !scopes.Any())
             {

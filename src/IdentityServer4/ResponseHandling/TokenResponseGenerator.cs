@@ -177,7 +177,7 @@ namespace IdentityServer4.ResponseHandling
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
-        private async Task<TokenResponse> ProcessRefreshTokenRequestAsync(TokenRequestValidationResult request)
+        protected virtual async Task<TokenResponse> ProcessRefreshTokenRequestAsync(TokenRequestValidationResult request)
         {
             Logger.LogTrace("Creating response for refresh token request");
 
@@ -258,7 +258,7 @@ namespace IdentityServer4.ResponseHandling
         /// <param name="request">The request.</param>
         /// <returns></returns>
         /// <exception cref="System.InvalidOperationException">Client does not exist anymore.</exception>
-        protected async Task<(string accessToken, string refreshToken)> CreateAccessTokenAsync(ValidatedTokenRequest request)
+        protected virtual async Task<(string accessToken, string refreshToken)> CreateAccessTokenAsync(ValidatedTokenRequest request)
         {
             TokenCreationRequest tokenRequest;
             bool createRefreshToken;
@@ -317,7 +317,7 @@ namespace IdentityServer4.ResponseHandling
         /// <param name="request">The request.</param>
         /// <param name="newAccessToken">The new access token.</param>
         /// <returns></returns>
-        protected async Task<string> CreateIdTokenFromRefreshTokenRequestAsync(ValidatedTokenRequest request, string newAccessToken)
+        protected virtual async Task<string> CreateIdTokenFromRefreshTokenRequestAsync(ValidatedTokenRequest request, string newAccessToken)
         {
             var resources = await Resources.FindResourcesByScopeAsync(request.RefreshToken.Scopes);
             if (resources.IdentityResources.Any())
