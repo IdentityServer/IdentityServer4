@@ -4,7 +4,7 @@
     <Description>OpenID Connect and OAuth 2.0 Framework for ASP.NET Core</Description>
     <VersionPrefix>2.0.0</VersionPrefix>
     <Authors>Brock Allen;Dominick Baier</Authors>
-    <TargetFrameworks>netstandard1.4;net452</TargetFrameworks>
+    <TargetFramework>netstandard1.7</TargetFramework>
     <AssemblyName>IdentityServer4</AssemblyName>
     <PackageId>IdentityServer4</PackageId>
     <PackageTags>OAuth2;OAuth 2.0;OpenID Connect;Security;Identity;IdentityServer</PackageTags>
@@ -16,12 +16,12 @@
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard1.4|AnyCPU'">
-    <DocumentationFile>bin\Release\netstandard1.4\IdentityServer4.xml</DocumentationFile>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard1.7|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard1.7\IdentityServer4.xml</DocumentationFile>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard1.4|AnyCPU'">
-    <DocumentationFile>bin\Debug\netstandard1.4\IdentityServer4.xml</DocumentationFile>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard1.7|AnyCPU'">
+    <DocumentationFile>bin\Debug\netstandard1.7\IdentityServer4.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net452|AnyCPU'">
@@ -46,7 +46,7 @@
     <PackageReference Include="System.ValueTuple" Version="4.3.1" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.4' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.7' ">
     <PackageReference Include="System.Collections.Specialized" Version="4.3.0" />
     <PackageReference Include="System.Diagnostics.Process" Version="4.3.0" />
   </ItemGroup>
