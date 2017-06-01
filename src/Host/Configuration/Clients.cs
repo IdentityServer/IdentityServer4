@@ -279,17 +279,17 @@ namespace Host.Configuration
                         new Secret("secret".Sha256())
                     },
                     ClientName ="Simple Develop Farmework",
-                    ClientUri = "http://localhost:44088",
+                    ClientUri = "http://www.evanhao.com",
 
                     AccessTokenType = AccessTokenType.Jwt,
                     
                     RequireConsent = true,
 
-                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowedGrantTypes = GrantTypes.Code,
                     AllowAccessTokensViaBrowser = true,
-                    RedirectUris = {"http://localhost:44088/signin-oidc"},
-                    PostLogoutRedirectUris = {"http://localhost:44077/signout-callback-oidc"},
-                    LogoutUri = "http://localhost:44077/signout-oidc",
+                    RedirectUris = {"http://www.evanhao.com/plugins/externalauthSDFOAuth/logincallback/"},
+                    PostLogoutRedirectUris = {"http://www.evanhao.com/logout"},
+                    LogoutUri = "http://www.evanhao.com/logout",
                     LogoutSessionRequired = true,
                     AllowedScopes = {
                         IdentityServerConstants.StandardScopes.OpenId,

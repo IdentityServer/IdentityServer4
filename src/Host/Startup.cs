@@ -14,6 +14,7 @@ using Serilog;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Quickstart.UI;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Authentication.OAuth;
 
 namespace Host
 {
@@ -25,7 +26,7 @@ namespace Host
                 .MinimumLevel.Verbose()
                 .Enrich.FromLogContext()
                 .WriteTo.File(@"identityserver4_log.txt");
-                
+
             if (environment.IsDevelopment())
             {
                 serilog.WriteTo.LiterateConsole(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message}{NewLine}{Exception}{NewLine}");
@@ -77,12 +78,21 @@ namespace Host
 
             app.UseIdentityServer();
 
+            //Google简单开发框架
             app.UseGoogleAuthentication(new GoogleOptions
             {
                 AuthenticationScheme = "Google",
                 SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
-                ClientId = "708996912208-9m4dkjb5hscn7cjrn5u0r4tbgkbj1fko.apps.googleusercontent.com",
-                ClientSecret = "wdfPY6t8H8cecgjlxud__4Gh"
+                ClientId = "826677679029-31bi1q2u69k9ounnorgqi6j7mlp0rk57.apps.googleusercontent.com",
+                ClientSecret = "s31uY-vFN3e-5dijl0qv195R"
+            });
+
+            app.UseGitHubAuthentication(options =>
+            {
+                options.AuthenticationScheme = "Github";
+                options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                options.ClientId = "6e8f81dfbf8d03070d7f";
+                options.ClientSecret = "a01140a56b5a16b820b57ec53b66ad2dcd1d3977";
             });
 
             app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
@@ -106,49 +116,7 @@ namespace Host
                     RoleClaimType = "role"
                 }
             });
-
-            app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
-            {
-                AuthenticationScheme = "aad",
-                SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
-                SignOutScheme = IdentityServerConstants.SignoutScheme,
-                AutomaticChallenge = false,
-                DisplayName = "AAD",
-                Authority = "https://login.windows.net/4ca9cb4c-5e5f-4be9-b700-c532992a3705",
-                ClientId = "96e3c53e-01cb-4244-b658-a42164cb67a9",
-                ResponseType = "id_token",
-                Scope = { "openid profile" },
-                CallbackPath = new PathString("/signin-aad"),
-                SignedOutCallbackPath = new PathString("/signout-callback-aad"),
-                RemoteSignOutPath = new PathString("/signout-aad"),
-                TokenValidationParameters = new TokenValidationParameters
-                {
-                    NameClaimType = "name",
-                    RoleClaimType = "role"
-                }
-            });
-
-            app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
-            {
-                AuthenticationScheme = "adfs",
-                SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
-                SignOutScheme = IdentityServerConstants.SignoutScheme,
-                AutomaticChallenge = false,
-                DisplayName = "ADFS",
-                Authority = "https://adfs.leastprivilege.vm/adfs",
-                ClientId = "c0ea8d99-f1e7-43b0-a100-7dee3f2e5c3c",
-                ResponseType = "id_token",
-                Scope = { "openid profile" },
-                CallbackPath = new PathString("/signin-adfs"),
-                SignedOutCallbackPath = new PathString("/signout-callback-adfs"),
-                RemoteSignOutPath = new PathString("/signout-adfs"),
-                TokenValidationParameters = new TokenValidationParameters
-                {
-                    NameClaimType = "name",
-                    RoleClaimType = "role"
-                }
-            });
-
+                        
             app.UseStaticFiles();
             app.UseMvcWithDefaultRoute();
         }
