@@ -43,14 +43,14 @@ namespace IdentityServer4.IntegrationTests.Pipeline
                 {
                     new Claim("name", "Bob Loblaw"),
                     new Claim("email", "bob@loblaw.com"),
-                    new Claim("role", "Attorney"),
+                    new Claim("role", "Attorney")
                 }
             });
 
             _pipeline.IdentityScopes.AddRange(new IdentityResource[] {
                 new IdentityResources.OpenId(),
                 new IdentityResources.Profile(),
-                new IdentityResources.Email(),
+                new IdentityResources.Email()
             });
             _pipeline.ApiScopes.AddRange(new ApiResource[] {
                 new ApiResource
@@ -60,11 +60,11 @@ namespace IdentityServer4.IntegrationTests.Pipeline
                     {
                         new Scope
                         {
-                            Name = "api1",
+                            Name = "api1"
                         },
                         new Scope
                         {
-                            Name = "api2",
+                            Name = "api2"
                         }
                     }
                 }

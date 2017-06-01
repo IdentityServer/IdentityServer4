@@ -22,7 +22,7 @@ namespace IdentityServer4
         static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
         {
             NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore,
+            DefaultValueHandling = DefaultValueHandling.Ignore
         };
 
         static MessageCookie()
@@ -30,7 +30,7 @@ namespace IdentityServer4
             Settings.Converters.Add(new NameValueCollectionConverter());
         }
 
-        private readonly ILogger<MessageCookie<TModel>> _logger;
+        private readonly ILogger _logger;
         private readonly IdentityServerOptions _options;
         private readonly IHttpContextAccessor _context;
         private readonly IDataProtector _protector;

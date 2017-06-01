@@ -134,7 +134,7 @@ namespace IdentityServer4.Test
             var name = filtered.FirstOrDefault(c => c.Type == JwtClaimTypes.Name)?.Value ?? sub;
 
             // create new user
-            var user = new TestUser()
+            var user = new TestUser
             {
                 SubjectId = sub,
                 Username = name,

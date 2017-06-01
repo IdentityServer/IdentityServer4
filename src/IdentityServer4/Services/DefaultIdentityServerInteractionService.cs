@@ -25,7 +25,7 @@ namespace IdentityServer4.Services
         private readonly IPersistedGrantService _grants;
         private readonly IClientSessionService _clientSessionService;
         private readonly ISessionIdService _sessionIdService;
-        private readonly ILogger<DefaultIdentityServerInteractionService> _logger;
+        private readonly ILogger _logger;
         private readonly ReturnUrlParser _returnUrlParser;
 
         public DefaultIdentityServerInteractionService(
@@ -88,7 +88,7 @@ namespace IdentityServer4.Services
             {
                 await _clientSessionService.EnsureClientListCookieAsync(sid);
 
-                var msg = new MessageWithId<LogoutMessage>(new LogoutMessage() { SessionId = sid });
+                var msg = new MessageWithId<LogoutMessage>(new LogoutMessage { SessionId = sid });
 
                 var id = msg.Id;
                 await _logoutMessageStore.WriteAsync(id, msg);

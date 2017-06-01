@@ -10,33 +10,31 @@ namespace IdentityServer4.Models
 {
     public class GrantTypes
     {
-        public static IEnumerable<string> Implicit =>
+        public static ICollection<string> Implicit =>
             new[] { GrantType.Implicit };
 
-        public static IEnumerable<string> ImplicitAndClientCredentials =>
+        public static ICollection<string> ImplicitAndClientCredentials =>
             new[]  { GrantType.Implicit, GrantType.ClientCredentials };
 
-        public static IEnumerable<string> Code =>
+        public static ICollection<string> Code =>
             new[] { GrantType.AuthorizationCode };
 
-        public static IEnumerable<string> CodeAndClientCredentials =>
+        public static ICollection<string> CodeAndClientCredentials =>
             new[] { GrantType.AuthorizationCode, GrantType.ClientCredentials };
 
-        public static IEnumerable<string> Hybrid =>
+        public static ICollection<string> Hybrid =>
             new[] { GrantType.Hybrid };
 
-        public static IEnumerable<string> HybridAndClientCredentials =>
+        public static ICollection<string> HybridAndClientCredentials =>
             new[] { GrantType.Hybrid, GrantType.ClientCredentials };
 
-        public static IEnumerable<string> ClientCredentials =>
+        public static ICollection<string> ClientCredentials =>
             new[] { GrantType.ClientCredentials };
 
-        public static IEnumerable<string> ResourceOwnerPassword =>
+        public static ICollection<string> ResourceOwnerPassword =>
             new[] { GrantType.ResourceOwnerPassword };
 
-        public static IEnumerable<string> ResourceOwnerPasswordAndClientCredentials =>
+        public static ICollection<string> ResourceOwnerPasswordAndClientCredentials =>
             new[] { GrantType.ResourceOwnerPassword, GrantType.ClientCredentials };
-
-        public static IEnumerable<string> List(params string[] values) => values;
     }
 }

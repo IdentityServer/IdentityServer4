@@ -84,8 +84,8 @@ namespace IdentityServer4.UnitTests.Services.Default
                 {
                     new Claim("sub", "123"),
                     new Claim("scope", "bar1"),
-                    new Claim("scope", "bar2"),
-                },
+                    new Claim("scope", "bar2")
+                }
             });
 
             var handle2 = await _referenceTokens.StoreReferenceTokenAsync(new Token()
@@ -97,8 +97,8 @@ namespace IdentityServer4.UnitTests.Services.Default
                 Claims = new List<Claim>
                 {
                     new Claim("sub", "123"),
-                    new Claim("scope", "bar3"),
-                },
+                    new Claim("scope", "bar3")
+                }
             });
 
             var handle3 = await _referenceTokens.StoreReferenceTokenAsync(new Token()
@@ -110,8 +110,8 @@ namespace IdentityServer4.UnitTests.Services.Default
                 Claims = new List<Claim>
                 {
                     new Claim("sub", "456"),
-                    new Claim("scope", "bar3"),
-                },
+                    new Claim("scope", "bar3")
+                }
             });
 
             var handle4 = await _refreshTokens.StoreRefreshTokenAsync(new RefreshToken()
@@ -146,7 +146,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                     Claims = new List<Claim>
                     {
                         new Claim("sub", "456"),
-                        new Claim("scope", "baz3"),
+                        new Claim("scope", "baz3")
                     }
                 },
                 Version = 1
@@ -164,7 +164,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                     Claims = new List<Claim>
                     {
                         new Claim("sub", "123"),
-                        new Claim("scope", "baz3"),
+                        new Claim("scope", "baz3")
                     }
                 },
                 Version = 1
@@ -253,8 +253,8 @@ namespace IdentityServer4.UnitTests.Services.Default
                 {
                     new Claim("sub", "123"),
                     new Claim("scope", "bar1"),
-                    new Claim("scope", "bar2"),
-                },
+                    new Claim("scope", "bar2")
+                }
             });
 
             var handle2 = await _referenceTokens.StoreReferenceTokenAsync(new Token()
@@ -267,8 +267,8 @@ namespace IdentityServer4.UnitTests.Services.Default
                 Claims = new List<Claim>
                 {
                     new Claim("sub", "123"),
-                    new Claim("scope", "bar3"),
-                },
+                    new Claim("scope", "bar3")
+                }
             });
 
             var handle3 = await _referenceTokens.StoreReferenceTokenAsync(new Token()
@@ -281,8 +281,8 @@ namespace IdentityServer4.UnitTests.Services.Default
                 Claims = new List<Claim>
                 {
                     new Claim("sub", "456"),
-                    new Claim("scope", "bar3"),
-                },
+                    new Claim("scope", "bar3")
+                }
             });
 
             var handle4 = await _refreshTokens.StoreRefreshTokenAsync(new RefreshToken()
@@ -317,7 +317,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                     Claims = new List<Claim>
                     {
                         new Claim("sub", "456"),
-                        new Claim("scope", "baz3"),
+                        new Claim("scope", "baz3")
                     }
                 },
                 Version = 1
@@ -335,7 +335,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                     Claims = new List<Claim>
                     {
                         new Claim("sub", "123"),
-                        new Claim("scope", "baz3"),
+                        new Claim("scope", "baz3")
                     }
                 },
                 Version = 1

@@ -35,15 +35,15 @@ namespace IdentityServer4.IntegrationTests.Clients
                     {
                         new Scope
                         {
-                            Name = "api1",
+                            Name = "api1"
                         },
                         new Scope
                         {
-                            Name = "api2",
+                            Name = "api2"
                         },
                         new Scope
                         {
-                            Name = "api3",
+                            Name = "api3"
                         },
                         new Scope
                         {

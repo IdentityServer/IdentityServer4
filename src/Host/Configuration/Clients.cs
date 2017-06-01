@@ -26,7 +26,7 @@ namespace Host.Configuration
                     },
 
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    AllowedScopes = { "api1", "api2.read_only" },
+                    AllowedScopes = { "api1", "api2.read_only" }
                 },
 
                 ///////////////////////////////////////////
@@ -54,12 +54,12 @@ namespace Host.Configuration
                 new Client
                 {
                     ClientId = "client.custom",
-                    ClientSecrets = 
+                    ClientSecrets =
                     {
                         new Secret("secret".Sha256())
                     },
 
-                    AllowedGrantTypes = GrantTypes.List("custom", "custom.nosubject"),
+                    AllowedGrantTypes = { "custom", "custom.nosubject" },
                     AllowedScopes = { "api1", "api2.read_only" }
                 },
 
@@ -69,7 +69,7 @@ namespace Host.Configuration
                 new Client
                 {
                     ClientId = "roclient",
-                    ClientSecrets = 
+                    ClientSecrets =
                     {
                         new Secret("secret".Sha256())
                     },
@@ -77,7 +77,7 @@ namespace Host.Configuration
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
                     AllowOfflineAccess = true,
-                    AllowedScopes = 
+                    AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         "custom.profile",
@@ -96,7 +96,7 @@ namespace Host.Configuration
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
                     AllowOfflineAccess = true,
-                    AllowedScopes = 
+                    AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Email,
@@ -125,8 +125,8 @@ namespace Host.Configuration
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Email,
-                        "api1", "api2.read_only",
-                    },
+                        "api1", "api2.read_only"
+                    }
                 },
 
                 ///////////////////////////////////////////
@@ -135,7 +135,7 @@ namespace Host.Configuration
                 new Client
                 {
                     ClientId = "roclient.reference",
-                    ClientSecrets = 
+                    ClientSecrets =
                     {
                         new Secret("secret".Sha256())
                     },
@@ -168,7 +168,7 @@ namespace Host.Configuration
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Email,
                         "api1", "api2.read_only"
-                    },
+                    }
                 },
 
                 ///////////////////////////////////////////
@@ -186,7 +186,7 @@ namespace Host.Configuration
                     LogoutUri = "http://localhost:44077/signout-oidc",
                     PostLogoutRedirectUris = { "http://localhost:44077/" },
 
-                    AllowedScopes = { IdentityServerConstants.StandardScopes.OpenId },
+                    AllowedScopes = { IdentityServerConstants.StandardScopes.OpenId }
                 },
 
                 ///////////////////////////////////////////
@@ -199,11 +199,11 @@ namespace Host.Configuration
                     ClientUri = "http://identityserver.io",
                     //LogoUri = "https://pbs.twimg.com/profile_images/1612989113/Ki-hanja_400x400.png",
 
-                    ClientSecrets = 
+                    ClientSecrets =
                     {
                         new Secret("secret".Sha256())
                     },
-                    
+
                     AllowedGrantTypes = GrantTypes.Hybrid,
                     AllowAccessTokensViaBrowser = false,
 
@@ -213,13 +213,13 @@ namespace Host.Configuration
 
                     AllowOfflineAccess = true,
 
-                    AllowedScopes = 
+                    AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Email,
-                        "api1", "api2.read_only",
-                    },
+                        "api1", "api2.read_only"
+                    }
                 },
 
                 ///////////////////////////////////////////
@@ -236,7 +236,7 @@ namespace Host.Configuration
                     AllowAccessTokensViaBrowser = true,
 
                     RedirectUris = { "http://localhost:28895/index.html" },
-                    AllowedScopes = { "api1", "api2.read_only" },
+                    AllowedScopes = { "api1", "api2.read_only" }
                 },
                 
                 ///////////////////////////////////////////
@@ -254,12 +254,12 @@ namespace Host.Configuration
                     RequireClientSecret = false,
                     AccessTokenType = AccessTokenType.Reference,
 
-                    RedirectUris = 
+                    RedirectUris =
                     {
                         "http://localhost:7017/index.html",
                         "http://localhost:7017/callback.html",
                         "http://localhost:7017/silent.html",
-                        "http://localhost:7017/popup.html",
+                        "http://localhost:7017/popup.html"
                     },
 
                     PostLogoutRedirectUris = { "http://localhost:7017/index.html" },
@@ -271,8 +271,34 @@ namespace Host.Configuration
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Email,
                         "api1", "api2.read_only"
-                    },
+                    }
                 },
+                new Client{
+                    ClientId = "sdf_code",
+                    ClientSecrets = {
+                        new Secret("secret".Sha256())
+                    },
+                    ClientName ="Simple Develop Farmework",
+                    ClientUri = "http://www.evanhao.com",
+
+                    AccessTokenType = AccessTokenType.Jwt,
+                    
+                    RequireConsent = true,
+
+                    AllowedGrantTypes = GrantTypes.Code,
+                    AllowAccessTokensViaBrowser = true,
+                    RedirectUris = {"http://www.evanhao.com/plugins/externalauthSDFOAuth/logincallback/"},
+                    PostLogoutRedirectUris = {"http://www.evanhao.com/logout"},
+                    LogoutUri = "http://www.evanhao.com/logout",
+                    LogoutSessionRequired = true,
+                    AllowedScopes = {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
+                        IdentityServerConstants.StandardScopes.OfflineAccess
+                    },
+                    AllowOfflineAccess=true,
+                }
             };
         }
     }

@@ -27,13 +27,13 @@ namespace IdentityServer4.Services
         static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
         {
             NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore,
+            DefaultValueHandling = DefaultValueHandling.Ignore
         };
 
         private readonly IHttpContextAccessor _context;
         private readonly ISessionIdService _sessionId;
         private readonly IdentityServerOptions _options;
-        private readonly ILogger<DefaultClientSessionService> _logger;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultClientSessionService"/> class.

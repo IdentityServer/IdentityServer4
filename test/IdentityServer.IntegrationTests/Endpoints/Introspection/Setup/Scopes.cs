@@ -24,8 +24,8 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
                     {
                         new Scope
                         {
-                            Name = "api1",
-                        },
+                            Name = "api1"
+                        }
                     }
                 },
                 new ApiResource
@@ -39,8 +39,8 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
                     {
                         new Scope
                         {
-                            Name = "api2",
-                        },
+                            Name = "api2"
+                        }
                     }
                 },
                  new ApiResource
@@ -54,12 +54,12 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
                     {
                         new Scope
                         {
-                            Name = "api3-a",
+                            Name = "api3-a"
                         },
                         new Scope
                         {
-                            Name = "api3-b",
-                        },
+                            Name = "api3-b"
+                        }
                     }
                 }
             };

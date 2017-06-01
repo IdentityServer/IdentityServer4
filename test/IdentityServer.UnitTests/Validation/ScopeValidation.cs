@@ -25,8 +25,8 @@ namespace IdentityServer4.UnitTests.Validation
             },
             new IdentityResource
             {
-                Name = "email",
-            },
+                Name = "email"
+            }
         };
 
         List<ApiResource> _apiResources = new List<ApiResource>
@@ -43,8 +43,8 @@ namespace IdentityServer4.UnitTests.Validation
                     },
                     new Scope
                     {
-                        Name = "resource2",
-                    },
+                        Name = "resource2"
+                    }
                 }
             },
             new ApiResource
@@ -55,8 +55,8 @@ namespace IdentityServer4.UnitTests.Validation
                 {
                     new Scope
                     {
-                        Name = "disabled",
-                    },
+                        Name = "disabled"
+                    }
                 }
             }
         };

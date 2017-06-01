@@ -29,7 +29,7 @@ Basics
     By default a client has no access to any resources - specify the allowed resources by adding the corresponding scopes names
 ``AllowOfflineAccess``
     Specifies whether this client can request refresh tokens (be requesting the ``offline_access`` scope)
-``AllowAccessTokenViaBrowser``
+``AllowAccessTokensViaBrowser``
     Specifies whether this client is allowed to receive access tokens via the browser. 
     This is useful to harden flows that allow multiple response types 
     (e.g. by disallowing a hybrid flow client that is supposed to use `code id_token` to add the `token` response type 

@@ -29,7 +29,7 @@ namespace IdentityServer4.Stores
         private readonly ICache<ApiResource> _apiCache;
         private readonly ICache<Resources> _allCache;
         private readonly IResourceStore _inner;
-        private readonly ILogger<CachingResourceStore<T>> _logger;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CachingResourceStore{T}"/> class.

@@ -9,13 +9,13 @@ namespace IdentityServer4
 {
     internal static class ObjectSerializer
     {
-        private readonly static JsonSerializerSettings settings = new JsonSerializerSettings
+        private static readonly JsonSerializerSettings settings = new JsonSerializerSettings
         {
             DefaultValueHandling = DefaultValueHandling.Ignore,
             NullValueHandling = NullValueHandling.Ignore
         };
 
-        private readonly static JsonSerializer serializer = new JsonSerializer
+        private static readonly JsonSerializer serializer = new JsonSerializer
         {
             DefaultValueHandling = DefaultValueHandling.Ignore,
             NullValueHandling = NullValueHandling.Ignore

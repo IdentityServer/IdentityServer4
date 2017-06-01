@@ -116,7 +116,6 @@ namespace IdentityServer4.Services
 
             claims.AddRange(await ClaimsProvider.GetIdentityTokenClaimsAsync(
                 request.Subject,
-                request.ValidatedRequest.Client,
                 request.Resources,
                 request.IncludeAllIdentityClaims,
                 request.ValidatedRequest));
@@ -151,7 +150,6 @@ namespace IdentityServer4.Services
             var claims = new List<Claim>();
             claims.AddRange(await ClaimsProvider.GetAccessTokenClaimsAsync(
                 request.Subject,
-                request.ValidatedRequest.Client,
                 request.Resources,
                 request.ValidatedRequest));
 

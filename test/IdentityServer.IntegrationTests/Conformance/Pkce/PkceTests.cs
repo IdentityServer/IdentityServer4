@@ -41,7 +41,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
                 {
                         new Claim("name", "Bob Loblaw"),
                         new Claim("email", "bob@loblaw.com"),
-                        new Claim("role", "Attorney"),
+                        new Claim("role", "Attorney")
                 }
             });
             _pipeline.IdentityScopes.Add(new IdentityResources.OpenId());

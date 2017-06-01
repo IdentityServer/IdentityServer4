@@ -19,7 +19,10 @@ namespace IdentityServer4.ResponseHandling
     /// <seealso cref="IdentityServer4.ResponseHandling.IIntrospectionResponseGenerator" />
     public class IntrospectionResponseGenerator : IIntrospectionResponseGenerator
     {
-        private readonly ILogger _logger;
+        /// <summary>
+        /// The logger
+        /// </summary>
+        protected readonly ILogger Logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IntrospectionResponseGenerator"/> class.
@@ -27,45 +30,69 @@ namespace IdentityServer4.ResponseHandling
         /// <param name="logger">The logger.</param>
         public IntrospectionResponseGenerator(ILogger<IntrospectionResponseGenerator> logger)
         {
-            _logger = logger;
+            Logger = logger;
         }
 
         /// <summary>
         /// Processes the response.
         /// </summary>
         /// <param name="validationResult">The validation result.</param>
-        /// <param name="apiResource">The API resource.</param>
         /// <returns></returns>
-        public Task<Dictionary<string, object>> ProcessAsync(IntrospectionRequestValidationResult validationResult, ApiResource apiResource)
+        public virtual async Task<Dictionary<string, object>> ProcessAsync(IntrospectionRequestValidationResult validationResult)
         {
-            _logger.LogTrace("Creating introspection response");
+            Logger.LogTrace("Creating introspection response");
 
+            // standard response
+            var response = new Dictionary<string, object>
+            {
+                { "active", false }
+            };
+
+            // token is invalid
             if (validationResult.IsActive == false)
             {
-                _logger.LogDebug("Creating introspection response for inactive token.");
-
-                var response = new Dictionary<string, object>
-                {
-                    { "active", false }
-                };
-
-                return Task.FromResult(response);
+                Logger.LogDebug("Creating introspection response for inactive token.");
+                return response;
             }
-            else
-            { 
-                _logger.LogDebug("Creating introspection response for active token.");
 
-                var response = validationResult.Claims.Where(c => c.Type != JwtClaimTypes.Scope).ToClaimsDictionary();
-
-                var allowedScopes = apiResource.Scopes.Select(x => x.Name);
-                var scopes = validationResult.Claims.Where(c => c.Type == JwtClaimTypes.Scope).Select(x => x.Value);
-                scopes = scopes.Where(x => allowedScopes.Contains(x));
-                response.Add("scope", scopes.ToSpaceSeparatedString());
-
-                response.Add("active", true);
-
-                return Task.FromResult(response);
+            // expected scope not present
+            if (await AreExpectedScopesPresent(validationResult) == false)
+            {
+                return response;
             }
+
+            Logger.LogDebug("Creating introspection response for active token.");
+
+            // get all claims (without scopes)
+            response = validationResult.Claims.Where(c => c.Type != JwtClaimTypes.Scope).ToClaimsDictionary();
+
+            // add active flag
+            response.Add("active", true);
+
+            // calculate scopes the caller is allowed to see
+            var allowedScopes = validationResult.Api.Scopes.Select(x => x.Name);
+            var scopes = validationResult.Claims.Where(c => c.Type == JwtClaimTypes.Scope).Select(x => x.Value);
+            scopes = scopes.Where(x => allowedScopes.Contains(x));
+            response.Add("scope", scopes.ToSpaceSeparatedString());
+            
+            return response;
+        }
+
+        /// <summary>
+        /// Checks if the API resource is allowed to introspect the scopes.
+        /// </summary>
+        /// <param name="validationResult">The validation result.</param>
+        /// <returns></returns>
+        protected virtual Task<bool> AreExpectedScopesPresent(IntrospectionRequestValidationResult validationResult)
+        {
+            // check expected scopes
+            var supportedScopes = validationResult.Api.Scopes.Select(x => x.Name);
+            var expectedScopes = validationResult.Claims.Where(
+                c => c.Type == JwtClaimTypes.Scope && supportedScopes.Contains(c.Value));
+
+            Logger.LogError("Expected scope {scopes} is missing in token", supportedScopes);
+
+            return Task.FromResult(expectedScopes.Any());
         }
     }
 }

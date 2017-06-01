@@ -17,7 +17,7 @@ namespace IdentityServer4.Endpoints
     class EndSessionEndpoint : IEndpoint
     {
         private readonly IEndSessionRequestValidator _endSessionRequestValidator;
-        private readonly ILogger<EndSessionEndpoint> _logger;
+        private readonly ILogger _logger;
 
         public EndSessionEndpoint(IEndSessionRequestValidator endSessionRequestValidator, ILogger<EndSessionEndpoint> logger)
         {

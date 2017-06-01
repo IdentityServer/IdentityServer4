@@ -19,7 +19,7 @@ namespace IdentityServer4.Hosting
         private readonly IHttpContextAccessor _context;
         private IAuthenticationHandler _handler;
         private readonly ISessionIdService _sessionId;
-        private readonly ILogger<AuthenticationHandler> _logger;
+        private readonly ILogger _logger;
         private readonly IEventService _events;
 
         public AuthenticationHandler(

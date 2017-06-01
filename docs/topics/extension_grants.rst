@@ -111,7 +111,7 @@ You need a client registration in IdentityServer that allows a client to use thi
             new Secret("secret".Sha256())
         },
         
-        AllowedGrantTypes = GrantTypes.List("delegation"),
+        AllowedGrantTypes = { "delegation" },
 
         AllowedScopes = new List<string>
         {

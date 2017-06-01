@@ -12,7 +12,7 @@ namespace IdentityServer4.Models
         {
             return client != null &&
                 client.AllowedGrantTypes != null &&
-                client.AllowedGrantTypes.Count() == 1 &&
+                client.AllowedGrantTypes.Count == 1 &&
                 client.AllowedGrantTypes.First() == GrantType.Implicit;
         }
     }

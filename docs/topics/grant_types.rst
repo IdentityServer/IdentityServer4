@@ -21,10 +21,10 @@ The ``GrantTypes`` class can be used to pick from typical grant type combination
 
 You can also specify the grant types list manually::
 
-    Client.AllowedGrantTypes = GrantTypes.List(
-        GrantTypes.Hybrid, 
+    Client.AllowedGrantTypes = new[] {
+        GrantType.Hybrid, 
         GrantType.ClientCredentials,
-        "my_custom_grant_type");
+        "my_custom_grant_type" };
 
 If you want to transmit access tokens via the browser channel, you also need to allow that explicitly on the client configuration::
 

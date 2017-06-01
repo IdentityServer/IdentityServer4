@@ -104,7 +104,7 @@ namespace IdentityServer4.Validation
             return Valid(request);
         }
 
-        async Task<AuthorizeRequestValidationResult> ValidateClientAsync(ValidatedAuthorizeRequest request)
+        private async Task<AuthorizeRequestValidationResult> ValidateClientAsync(ValidatedAuthorizeRequest request)
         {
             //////////////////////////////////////////////////////////
             // client_id must be present
@@ -130,7 +130,7 @@ namespace IdentityServer4.Validation
                 return Invalid(request);
             }
 
-            if (!Uri.TryCreate(redirectUri, UriKind.Absolute, out var uri))
+            if (!Uri.TryCreate(redirectUri, UriKind.Absolute, out var _))
             {
                 LogError("malformed redirect_uri: " + redirectUri, request);
                 return Invalid(request);

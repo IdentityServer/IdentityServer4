@@ -67,7 +67,7 @@ namespace IdentityServer4.UnitTests.Hosting.Cors
                 "/foo",
                 "/bar/",
                 "/baz/quux",
-                "/baz/quux/",
+                "/baz/quux/"
             });
             Init();
 
@@ -139,7 +139,7 @@ namespace IdentityServer4.UnitTests.Hosting.Cors
         public async Task origin_same_as_server_should_not_call_policy()
         {
             _allowedPaths.AddRange(new string[] {
-                "/foo",
+                "/foo"
             });
             Init();
 
@@ -162,7 +162,7 @@ namespace IdentityServer4.UnitTests.Hosting.Cors
         public async Task origin_not_same_as_server_should_call_policy(string origin)
         {
             _allowedPaths.AddRange(new string[] {
-                "/foo",
+                "/foo"
             });
             Init();
 

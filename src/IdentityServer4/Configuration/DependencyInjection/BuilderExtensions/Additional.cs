@@ -29,6 +29,20 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
+        /// Adds a redirect URI validator.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddRedirectUriValidator<T>(this IIdentityServerBuilder builder)
+            where T : class, IRedirectUriValidator
+        {
+            builder.Services.AddTransient<IRedirectUriValidator, T>();
+
+            return builder;
+        }
+
+        /// <summary>
         /// Adds the resource owner validator.
         /// </summary>
         /// <typeparam name="T"></typeparam>

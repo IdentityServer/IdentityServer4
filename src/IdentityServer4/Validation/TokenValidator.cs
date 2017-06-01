@@ -229,7 +229,7 @@ namespace IdentityServer4.Validation
 
             try
             {
-                var id = handler.ValidateToken(jwt, parameters, out var jwtToken);
+                var id = handler.ValidateToken(jwt, parameters, out var _);
 
                 // if access token contains an ID, log it
                 var jwtId = id.FindFirst(JwtClaimTypes.JwtId);

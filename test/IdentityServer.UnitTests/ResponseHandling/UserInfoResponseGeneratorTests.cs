@@ -7,6 +7,7 @@ using IdentityServer4.Models;
 using IdentityServer4.ResponseHandling;
 using IdentityServer4.Stores;
 using IdentityServer4.UnitTests.Common;
+using IdentityServer4.Validation;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -38,7 +39,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
                 new Claim("foo", "foo1"),
                 new Claim("foo", "foo2"),
                 new Claim("bar", "bar1"),
-                new Claim("bar", "bar2"),
+                new Claim("bar", "bar2")
             });
 
             _resourceStore = new InMemoryResourcesStore(_identityResources, _apiResources);
@@ -78,7 +79,22 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             _identityResources.Add(new IdentityResource("id1", new[] { "foo" }));
             _identityResources.Add(new IdentityResource("id2", new[] { "bar" }));
 
-            var claims = await _subject.ProcessAsync(_user, new[] { "id1", "id2", "id3" }, _client);
+            var result = new UserInfoRequestValidationResult
+            {
+                Subject = _user,
+                TokenValidationResult = new TokenValidationResult
+                {
+                    Claims = new List<Claim>
+                    {
+                        { new Claim("scope", "id1") },
+                        { new Claim("scope", "id2") },
+                        { new Claim("scope", "id3") }
+                    },
+                    Client = _client
+                }
+            };
+
+            var claims = await _subject.ProcessAsync(result);
 
             _mockProfileService.GetProfileWasCalled.Should().BeTrue();
             _mockProfileService.ProfileContext.RequestedClaimTypes.Should().BeEquivalentTo(new[] { "foo", "bar" });
@@ -92,10 +108,25 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             _mockProfileService.ProfileClaims = new[]
             {
                 new Claim("email", "fred@gmail.com"),
-                new Claim("name", "fred jones"),
+                new Claim("name", "fred jones")
             };
 
-            var claims = await _subject.ProcessAsync(_user, new[] { "id1", "id2", "id3" }, _client);
+            var result = new UserInfoRequestValidationResult
+            {
+                Subject = _user,
+                TokenValidationResult = new TokenValidationResult
+                {
+                    Claims = new List<Claim>
+                    {
+                        { new Claim("scope", "id1") },
+                        { new Claim("scope", "id2") },
+                        { new Claim("scope", "id3") }
+                    },
+                    Client = _client
+                }
+            };
+
+            var claims = await _subject.ProcessAsync(result);
 
             claims.Should().ContainKey("email");
             claims["email"].Should().Be("fred@gmail.com");
@@ -109,7 +140,22 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             _identityResources.Add(new IdentityResource("id1", new[] { "foo" }));
             _identityResources.Add(new IdentityResource("id2", new[] { "bar" }));
 
-            var claims = await _subject.ProcessAsync(_user, new[] { "id1", "id2", "id3" }, _client);
+            var result = new UserInfoRequestValidationResult
+            {
+                Subject = _user,
+                TokenValidationResult = new TokenValidationResult
+                {
+                    Claims = new List<Claim>
+                    {
+                        { new Claim("scope", "id1") },
+                        { new Claim("scope", "id2") },
+                        { new Claim("scope", "id3") }
+                    },
+                    Client = _client
+                }
+            };
+
+            var claims = await _subject.ProcessAsync(result);
 
             claims.Should().ContainKey("sub");
             claims["sub"].Should().Be("bob");
@@ -122,10 +168,25 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             _identityResources.Add(new IdentityResource("id2", new[] { "bar" }));
             _mockProfileService.ProfileClaims = new[]
             {
-                new Claim("sub", "fred"),
+                new Claim("sub", "fred")
             };
 
-            Func<Task> act = () => _subject.ProcessAsync(_user, new[] { "id1", "id2", "id3" }, _client);
+            var result = new UserInfoRequestValidationResult
+            {
+                Subject = _user,
+                TokenValidationResult = new TokenValidationResult
+                {
+                    Claims = new List<Claim>
+                    {
+                        { new Claim("scope", "id1") },
+                        { new Claim("scope", "id2") },
+                        { new Claim("scope", "id3") }
+                    },
+                    Client = _client
+                }
+            };
+
+            Func<Task> act = () => _subject.ProcessAsync(result);
 
             act.ShouldThrow<InvalidOperationException>()
                 .And.Message.Should().Contain("subject");

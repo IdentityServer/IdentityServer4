@@ -65,7 +65,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.AddEndpoint<DiscoveryEndpoint>(EndpointName.Discovery);
             builder.AddEndpoint<EndSessionEndpoint>(EndpointName.EndSession);
             builder.AddEndpoint<IntrospectionEndpoint>(EndpointName.Introspection);
-            builder.AddEndpoint<RevocationEndpoint>(EndpointName.Revocation);
+            builder.AddEndpoint<TokenRevocationEndpoint>(EndpointName.Revocation);
             builder.AddEndpoint<TokenEndpoint>(EndpointName.Token);
             builder.AddEndpoint<UserInfoEndpoint>(EndpointName.UserInfo);
 
@@ -155,6 +155,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IIdentityServerBuilder AddValidators(this IIdentityServerBuilder builder)
         {
+            // core
             builder.Services.TryAddTransient<IEndSessionRequestValidator, EndSessionRequestValidator>();
             builder.Services.TryAddTransient<ITokenRevocationRequestValidator, TokenRevocationRequestValidator>();
             builder.Services.TryAddTransient<IAuthorizeRequestValidator, AuthorizeRequestValidator>();
@@ -163,10 +164,13 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<ITokenValidator, TokenValidator>();
             builder.Services.TryAddTransient<IIntrospectionRequestValidator, IntrospectionRequestValidator>();
             builder.Services.TryAddTransient<IResourceOwnerPasswordValidator, NotSupportedResouceOwnerPasswordValidator>();
+            builder.Services.TryAddTransient<ICustomTokenRequestValidator, DefaultCustomTokenRequestValidator>();
+            builder.Services.TryAddTransient<IUserInfoRequestValidator, UserInfoRequestValidator>();
+
+            // optional
             builder.Services.TryAddTransient<ICustomTokenValidator, DefaultCustomTokenValidator>();
             builder.Services.TryAddTransient<ICustomAuthorizeRequestValidator, DefaultCustomAuthorizeRequestValidator>();
-            builder.Services.TryAddTransient<ICustomTokenRequestValidator, DefaultCustomTokenRequestValidator>();
-
+            
             return builder;
         }
 
@@ -183,6 +187,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IAuthorizeInteractionResponseGenerator, AuthorizeInteractionResponseGenerator>();
             builder.Services.TryAddTransient<IAuthorizeResponseGenerator, AuthorizeResponseGenerator>();
             builder.Services.TryAddTransient<IDiscoveryResponseGenerator, DiscoveryResponseGenerator>();
+            builder.Services.TryAddTransient<ITokenRevocationResponseGenerator, TokenRevocationResponseGenerator>();
 
             return builder;
         }

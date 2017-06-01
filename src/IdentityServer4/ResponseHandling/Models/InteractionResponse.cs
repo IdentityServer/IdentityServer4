@@ -4,7 +4,7 @@
 
 using IdentityServer4.Extensions;
 
-namespace IdentityServer4.Models
+namespace IdentityServer4.ResponseHandling
 {
     /// <summary>
     /// Indicates interaction outcome for user on authorization endpoint.

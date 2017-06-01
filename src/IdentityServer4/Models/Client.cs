@@ -8,6 +8,7 @@ using System.Linq;
 using System;
 using IdentityServer4.Extensions;
 using IdentityModel;
+using System.Collections;
 
 namespace IdentityServer4.Models
 {
@@ -17,7 +18,7 @@ namespace IdentityServer4.Models
     public class Client
     {
         // setting grant types should be atomic
-        private IEnumerable<string> _allowedGrantTypes = GrantTypes.Implicit;
+        private ICollection<string> _allowedGrantTypes = new GrantTypeValidatingHashSet(GrantTypes.Implicit);
 
         /// <summary>
         /// Specifies if client is enabled (defaults to true)
@@ -75,13 +76,13 @@ namespace IdentityServer4.Models
         /// <summary>
         /// Specifies the allowed grant types (legal combinations of AuthorizationCode, Implicit, Hybrid, ResourceOwner, ClientCredentials). Defaults to Implicit.
         /// </summary>
-        public IEnumerable<string> AllowedGrantTypes
+        public ICollection<string> AllowedGrantTypes
         {
             get { return _allowedGrantTypes; }
             set
             {
                 ValidateGrantTypes(value);
-                _allowedGrantTypes = value.ToArray();
+                _allowedGrantTypes = new GrantTypeValidatingHashSet(value);
             }
         }
 
@@ -253,7 +254,7 @@ namespace IdentityServer4.Models
         /// or
         /// Grant types list contains duplicate values
         /// </exception>
-        public void ValidateGrantTypes(IEnumerable<string> grantTypes)
+        public static void ValidateGrantTypes(IEnumerable<string> grantTypes)
         {
             // must set at least one grant type
             if (grantTypes.IsNullOrEmpty())
@@ -284,16 +285,76 @@ namespace IdentityServer4.Models
             DisallowGrantTypeCombination(GrantType.Implicit, GrantType.Hybrid, grantTypes);
             
             DisallowGrantTypeCombination(GrantType.AuthorizationCode, GrantType.Hybrid, grantTypes);
-            
-            return;
         }
 
-        private void DisallowGrantTypeCombination(string value1, string value2, IEnumerable<string> grantTypes)
+        private static void DisallowGrantTypeCombination(string value1, string value2, IEnumerable<string> grantTypes)
         {
             if (grantTypes.Contains(value1, StringComparer.Ordinal) &&
                 grantTypes.Contains(value2, StringComparer.Ordinal))
             {
                 throw new InvalidOperationException($"Grant types list cannot contain both {value1} and {value2}");
+            }
+        }
+
+        internal class GrantTypeValidatingHashSet : ICollection<string>
+        {
+            private readonly ICollection<string> _inner;
+
+            public GrantTypeValidatingHashSet(IEnumerable<string> values)
+            {
+                _inner = new HashSet<string>(values);
+            }
+
+            ICollection<string> Clone()
+            {
+                return new HashSet<string>(this);
+            }
+
+            ICollection<string> CloneWith(params string[] values)
+            {
+                var clone = Clone();
+                foreach (var item in values) clone.Add(item);
+                return clone;
+            }
+
+            public int Count => _inner.Count;
+
+            public bool IsReadOnly => _inner.IsReadOnly;
+
+            public void Add(string item)
+            {
+                Client.ValidateGrantTypes(CloneWith(item));
+                _inner.Add(item);
+            }
+
+            public void Clear()
+            {
+                _inner.Clear();
+            }
+
+            public bool Contains(string item)
+            {
+                return _inner.Contains(item);
+            }
+
+            public void CopyTo(string[] array, int arrayIndex)
+            {
+                _inner.CopyTo(array, arrayIndex);
+            }
+
+            public IEnumerator<string> GetEnumerator()
+            {
+                return _inner.GetEnumerator();
+            }
+
+            public bool Remove(string item)
+            {
+                return _inner.Remove(item);
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return _inner.GetEnumerator();
             }
         }
     }

@@ -31,7 +31,7 @@ namespace IdentityServer4.UnitTests.Validation
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task test()
+        public async Task valid_token_should_successfully_validate()
         {
             var token = new Token {
                 Issuer = "http://op",
@@ -40,22 +40,54 @@ namespace IdentityServer4.UnitTests.Validation
                 Claims =
                 {
                     new System.Security.Claims.Claim("scope", "a"),
-                    new System.Security.Claims.Claim("scope", "b"),
+                    new System.Security.Claims.Claim("scope", "b")
                 }
             };
             var handle = await _referenceTokenStore.StoreReferenceTokenAsync(token);
             
             var param = new NameValueCollection()
             {
-                {"token", handle}
+                { "token", handle}
             };
 
-            var api = new ApiResource("a");
-            var result = await _subject.ValidateAsync(param, api);
+            var result = await _subject.ValidateAsync(param, null);
 
-            var scopes = result.Claims.Where(x => x.Type == "scope");
-            scopes.Count().Should().Be(1);
-            scopes.First().Value.Should().Be("a");
+            result.IsError.Should().Be(false);
+            result.IsActive.Should().Be(true);
+            result.Claims.Count().Should().Be(5);
+            result.Token.Should().Be(handle);
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task missing_token_should_error()
+        {
+            var param = new NameValueCollection();
+            
+            var result = await _subject.ValidateAsync(param, null);
+
+            result.IsError.Should().Be(true);
+            result.Error.Should().Be("missing_token");
+            result.IsActive.Should().Be(false);
+            result.Claims.Should().BeNull();
+            result.Token.Should().BeNull();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task invalid_token_should_return_inactive()
+        {
+            var param = new NameValueCollection()
+            {
+                { "token", "invalid" }
+            };
+
+            var result = await _subject.ValidateAsync(param, null);
+
+            result.IsError.Should().Be(false);
+            result.IsActive.Should().Be(false);
+            result.Claims.Should().BeNull();
+            result.Token.Should().Be("invalid");
         }
     }
 }

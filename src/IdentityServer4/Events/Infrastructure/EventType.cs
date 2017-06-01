@@ -27,6 +27,6 @@ namespace IdentityServer4.Events
         /// <summary>
         /// Error event
         /// </summary>
-        Error = 4,
+        Error = 4
     }
 }

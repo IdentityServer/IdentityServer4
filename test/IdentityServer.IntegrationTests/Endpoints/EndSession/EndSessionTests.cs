@@ -48,7 +48,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
                 LogoutUri = "https://client2/signout",
                 PostLogoutRedirectUris = new List<string> {
                     "https://client2/signout-callback",
-                    "https://client2/signout-callback2",
+                    "https://client2/signout-callback2"
                 },
                 AllowAccessTokensViaBrowser = true
             });
@@ -61,7 +61,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
                 {
                     new Claim("name", "Bob Loblaw"),
                     new Claim("email", "bob@loblaw.com"),
-                    new Claim("role", "Attorney"),
+                    new Claim("role", "Attorney")
                 }
             });
 

@@ -54,7 +54,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Basic
                     {
                         new Claim("name", "Bob Loblaw"),
                         new Claim("email", "bob@loblaw.com"),
-                        new Claim("role", "Attorney"),
+                        new Claim("role", "Attorney")
                     }
             });
         }
