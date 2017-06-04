@@ -10,6 +10,11 @@ namespace IdentityServer4.Models
     /// </summary>
     internal class EndSession
     {
+        public IEnumerable<Session> Sessions { get; set; }
+    }
+
+    internal class Session
+    {
         public string SubjectId { get; set; }
         public string SessionId { get; set; }
         public IEnumerable<string> ClientIds { get; set; }

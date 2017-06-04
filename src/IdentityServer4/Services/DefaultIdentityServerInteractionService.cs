@@ -68,18 +68,28 @@ namespace IdentityServer4.Services
         public async Task<LogoutRequest> GetLogoutContextAsync(string logoutId)
         {
             var msg = await _logoutMessageStore.ReadAsync(logoutId);
-            var iframeUrl = await _context.HttpContext.GetIdentityServerSignoutFrameCallbackUrlAsync(msg?.Data?.SessionId);
+            var iframeUrl = await _context.HttpContext.GetIdentityServerSignoutFrameCallbackUrlAsync(msg?.Data);
             return new LogoutRequest(iframeUrl, msg?.Data);
         }
 
         public async Task<string> CreateLogoutContextAsync()
         {
-            var sid = await _userSession.GetCurrentSessionIdAsync();
-            if (sid != null)
+            var user = await _userSession.GetIdentityServerUserAsync();
+            if (user != null)
             {
-                var msg = new Message<LogoutMessage>(new LogoutMessage { SessionId = sid });
-                var id = await _logoutMessageStore.WriteAsync(msg);
-                return id;
+                var clientIds = await _userSession.GetClientListAsync();
+                if (clientIds.Any())
+                {
+                    var sid = await _userSession.GetCurrentSessionIdAsync();
+                    var msg = new Message<LogoutMessage>(new LogoutMessage
+                    {
+                        SubjectId = user?.GetSubjectId(),
+                        SessionId = sid,
+                        ClientIds = clientIds
+                    });
+                    var id = await _logoutMessageStore.WriteAsync(msg);
+                    return id;
+                }
             }
 
             return null;

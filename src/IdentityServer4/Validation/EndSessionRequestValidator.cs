@@ -64,7 +64,7 @@ namespace IdentityServer4.Validation
 
             var validatedRequest = new ValidatedEndSessionRequest
             {
-                Raw = parameters
+                Raw = parameters,
             };
 
             var idTokenHint = parameters.Get(OidcConstants.EndSessionRequest.IdTokenHint);
@@ -90,6 +90,7 @@ namespace IdentityServer4.Validation
 
                     validatedRequest.Subject = subject;
                     validatedRequest.SessionId = await _userSession.GetCurrentSessionIdAsync();
+                    validatedRequest.ClientIds = await _userSession.GetClientListAsync();
                 }
 
                 var redirectUri = parameters.Get(OidcConstants.EndSessionRequest.PostLogoutRedirectUri);
@@ -115,6 +116,13 @@ namespace IdentityServer4.Validation
                         validatedRequest.State = state;
                     }
                 }
+            }
+            else
+            {
+                // no id_token to authenticate the client, but we do have a user and a user session
+                validatedRequest.Subject = subject;
+                validatedRequest.SessionId = await _userSession.GetCurrentSessionIdAsync();
+                validatedRequest.ClientIds = await _userSession.GetClientListAsync();
             }
 
             LogSuccess(validatedRequest);
@@ -162,67 +170,59 @@ namespace IdentityServer4.Validation
 
             var endSessionId = parameters[Constants.UIConstants.DefaultRoutePathParams.EndSessionCallback];
             var endSessionMessage = await _endSessionMessageStore.ReadAsync(endSessionId);
-            if (endSessionMessage?.Data != null)
+            if (endSessionMessage?.Data != null && endSessionMessage?.Data.Sessions.Any() == true)
             {
-                result.SessionId = endSessionMessage.Data.SessionId;
-                result.SubjectId = endSessionMessage.Data.SubjectId;
-
-                // TODO:brock think about this check here
-                if (result.SessionId == null && result.SubjectId == null)
-                {
-                    return result;
-                }
-
                 result.IsError = false;
 
-                if (result.SessionId.IsPresent())
-                {
-                    var (frontChannel, backChannel) = await GetClientEndSessionUrlsAsync(endSessionMessage.Data);
-                    result.FrontChannelLogoutUrls = frontChannel;
-                    result.BackChannelLogouts = backChannel;
-                }
+                var (frontChannel, backChannel) = await GetClientEndSessionUrlsAsync(endSessionMessage.Data);
+                result.FrontChannelLogoutUrls = frontChannel;
+                result.BackChannelLogouts = backChannel;
             }
 
             return result;
         }
 
-        private async Task<(IEnumerable<string> frontChannel, IEnumerable<BackChannelLogoutModel> backChannel)> GetClientEndSessionUrlsAsync(EndSession session)
+        private async Task<(IEnumerable<string> frontChannel, IEnumerable<BackChannelLogoutModel> backChannel)> GetClientEndSessionUrlsAsync(EndSession endSession)
         {
             var frontChannelUrls = new List<string>();
             var backChannelLogouts = new List<BackChannelLogoutModel>();
-
-            if (session?.ClientIds?.Any() == true)
+            foreach (var session in endSession.Sessions)
             {
-                foreach (var clientId in session.ClientIds)
+                if (session.ClientIds?.Any() == true)
                 {
-                    var client = await _clientStore.FindEnabledClientByIdAsync(clientId);
-
-                    if (client != null)
+                    foreach (var clientId in session.ClientIds)
                     {
-                        if (client.FrontChannelLogoutUri.IsPresent())
-                        {
-                            var url = client.FrontChannelLogoutUri;
+                        var client = await _clientStore.FindEnabledClientByIdAsync(clientId);
 
-                            // add session id if required
-                            if (client.FrontChannelLogoutSessionRequired)
+                        if (client != null)
+                        {
+                            if (client.FrontChannelLogoutUri.IsPresent())
                             {
-                                url = url.AddQueryString(OidcConstants.EndSessionRequest.Sid, session.SessionId);
-                                url = url.AddQueryString(OidcConstants.EndSessionRequest.Issuer, _context.HttpContext.GetIdentityServerIssuerUri());
+                                var url = client.FrontChannelLogoutUri;
+
+                                // add session id if required
+                                if (client.FrontChannelLogoutSessionRequired)
+                                {
+                                    url = url.AddQueryString(OidcConstants.EndSessionRequest.Sid, session.SessionId);
+                                    url = url.AddQueryString(OidcConstants.EndSessionRequest.Issuer, _context.HttpContext.GetIdentityServerIssuerUri());
+                                }
+
+                                frontChannelUrls.Add(url);
                             }
 
-                            frontChannelUrls.Add(url);
-                        }
-
-                        if (client.BackChannelLogoutUri.IsPresent())
-                        {
-                            var back = new BackChannelLogoutModel
+                            if (client.BackChannelLogoutUri.IsPresent())
                             {
-                                ClientId = clientId,
-                                LogoutUri = client.BackChannelLogoutUri,
-                                SessionIdRequired = client.BackChannelLogoutSessionRequired
-                            };
+                                var back = new BackChannelLogoutModel
+                                {
+                                    ClientId = clientId,
+                                    LogoutUri = client.BackChannelLogoutUri,
+                                    SubjectId = session.SubjectId,
+                                    SessionId = session.SessionId,
+                                    SessionIdRequired = client.BackChannelLogoutSessionRequired
+                                };
 
-                            backChannelLogouts.Add(back);
+                                backChannelLogouts.Add(back);
+                            }
                         }
                     }
                 }

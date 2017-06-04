@@ -11,6 +11,8 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
+using System.Linq;
+using System.Collections.Generic;
 
 #pragma warning disable 1591
 
@@ -111,27 +113,58 @@ namespace IdentityServer4.Extensions
             return user;
         }
 
-        internal static async Task<string> GetIdentityServerSignoutFrameCallbackUrlAsync(this HttpContext context, string sid = null)
+        internal static async Task<string> GetIdentityServerSignoutFrameCallbackUrlAsync(this HttpContext context, LogoutMessage logoutMessage = null)
         {
             var userSession = context.RequestServices.GetRequiredService<IUserSession>();
-            var currentSessionId = await userSession.GetCurrentSessionIdAsync();
 
-            if (sid == null)
+            var user = await userSession.GetIdentityServerUserAsync();
+            var currentSubId = user?.GetSubjectId();
+            
+            var sessions = new List<Session>();
+            
+            // we check that the sub is the same as the current user, since we 
+            // are putting the SLO info in the message back to the end session callback page
+            if (currentSubId != null)
             {
-                // no explicit sid, so use current session id
-                sid = currentSessionId;
+                var clientIds = await userSession.GetClientListAsync();
+                if (currentSubId == logoutMessage?.SubjectId)
+                {
+                    // merge the two, since the current list might have changed since end session 
+                    // endpoint, meaning the user logged into new clients (albeit unlikely)
+                    clientIds = clientIds ?? logoutMessage?.ClientIds;
+                    clientIds = clientIds.Distinct();
+                }
+
+                if (clientIds.Any())
+                {
+                    sessions.Add(new Session {
+                        SubjectId = currentSubId,
+                        SessionId = await userSession.GetCurrentSessionIdAsync(),
+                        ClientIds = clientIds,
+                    });
+                }
             }
 
-            // we check that the sid is the same as the current user, since we 
-            // are putting the SLO info in the message back to the end session callback page
-            if (sid != null && sid == currentSessionId)
+            // check if we have signout session info, irrespective to the current user
+            if (logoutMessage?.SubjectId != null && logoutMessage?.SubjectId != currentSubId)
             {
-                var user = await userSession.GetIdentityServerUserAsync();
+                if (logoutMessage.ClientIds?.Any() == true)
+                {
+                    // we have a logout message in the context of a different user, so add it too
+                    sessions.Add(new Session
+                    {
+                        SubjectId = logoutMessage.SubjectId,
+                        SessionId = logoutMessage.SessionId,
+                        ClientIds = logoutMessage.ClientIds,
+                    });
+                }
+            }
+
+            if (sessions.Any())
+            {
                 var endSessionMsg = new EndSession()
                 {
-                    SubjectId = user.GetSubjectId(),
-                    SessionId = sid,
-                    ClientIds = await userSession.GetClientListAsync(),
+                    Sessions = sessions
                 };
                 var msg = new Message<EndSession>(endSessionMsg);
 
@@ -144,7 +177,7 @@ namespace IdentityServer4.Extensions
                 return signoutIframeUrl;
             }
 
-            // no sid, so nothing to cleanup
+            // no sessions, so nothing to cleanup
             return null;
         }
     }

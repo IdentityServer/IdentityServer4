@@ -21,16 +21,6 @@ namespace IdentityServer4.Validation
         /// Gets the client back-channel logouts.
         /// </summary>
         public IEnumerable<BackChannelLogoutModel> BackChannelLogouts { get; internal set; }
-
-        /// <summary>
-        /// Gets the subject identifier.
-        /// </summary>
-        public string SubjectId { get; internal set; }
-
-        /// <summary>
-        /// Gets or sets the session identifier.
-        /// </summary>
-        public string SessionId { get; set; }
     }
 
     /// <summary>
@@ -42,6 +32,16 @@ namespace IdentityServer4.Validation
         /// Gets or sets the client identifier.
         /// </summary>
         public string ClientId { get; set; }
+
+        /// <summary>
+        /// Gets the subject identifier.
+        /// </summary>
+        public string SubjectId { get; internal set; }
+
+        /// <summary>
+        /// Gets or sets the session identifier.
+        /// </summary>
+        public string SessionId { get; set; }
 
         /// <summary>
         /// Gets or sets the back channel logout URI.
