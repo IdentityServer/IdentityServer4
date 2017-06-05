@@ -11,6 +11,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using System.Security.Claims;
 
 namespace IdentityServer4.UnitTests.Services.Default
 {
@@ -56,11 +57,13 @@ namespace IdentityServer4.UnitTests.Services.Default
             context.SignOutIFrameUrl.Should().BeNull();
         }
 
-        [Fact(Skip = "reworking end session")]
+        [Fact]
         public async Task GetLogoutContextAsync_valid_session_no_logout_id_should_provide_iframe()
         {
+            _mockUserSession.Clients.Add("foo");
             _mockUserSession.SessionId = "session";
             _mockUserSession.User = IdentityServerPrincipal.Create("123", "bob");
+
             var context = await _subject.GetLogoutContextAsync(null);
 
             context.SignOutIFrameUrl.Should().NotBeNull();
@@ -80,8 +83,6 @@ namespace IdentityServer4.UnitTests.Services.Default
         [Fact]
         public async Task CreateLogoutContextAsync_without_session_should_not_create_session()
         {
-            _mockUserSession.SessionId = null;
-
             var context = await _subject.CreateLogoutContextAsync();
 
             context.Should().BeNull();
@@ -91,6 +92,8 @@ namespace IdentityServer4.UnitTests.Services.Default
         [Fact]
         public async Task CreateLogoutContextAsync_with_session_should_create_session()
         {
+            _mockUserSession.Clients.Add("foo");
+            _mockUserSession.User = IdentityServerPrincipal.Create("123", "bob");
             _mockUserSession.SessionId = "session";
 
             var context = await _subject.CreateLogoutContextAsync();
