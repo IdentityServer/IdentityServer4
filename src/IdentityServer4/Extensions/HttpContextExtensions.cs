@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using System.Linq;
-using System.Collections.Generic;
 
 #pragma warning disable 1591
 
@@ -116,56 +115,47 @@ namespace IdentityServer4.Extensions
         internal static async Task<string> GetIdentityServerSignoutFrameCallbackUrlAsync(this HttpContext context, LogoutMessage logoutMessage = null)
         {
             var userSession = context.RequestServices.GetRequiredService<IUserSession>();
-
             var user = await userSession.GetIdentityServerUserAsync();
             var currentSubId = user?.GetSubjectId();
-            
-            var sessions = new List<Session>();
-            
-            // we check that the sub is the same as the current user, since we 
-            // are putting the SLO info in the message back to the end session callback page
-            if (currentSubId != null)
+
+            EndSession endSessionMsg = null;
+
+            // if we have a logout message, then that take precedence over the current user
+            if (logoutMessage?.ClientIds?.Any() == true)
             {
-                var clientIds = await userSession.GetClientListAsync();
+                var clientIds = logoutMessage?.ClientIds;
+
+                // check if current user is same, since we migth have new clients (albeit unlikely)
                 if (currentSubId == logoutMessage?.SubjectId)
                 {
-                    // merge the two, since the current list might have changed since end session 
-                    // endpoint, meaning the user logged into new clients (albeit unlikely)
-                    clientIds = clientIds ?? logoutMessage?.ClientIds;
+                    clientIds = clientIds.Union(await userSession.GetClientListAsync());
                     clientIds = clientIds.Distinct();
                 }
 
+                endSessionMsg = new EndSession
+                {
+                    SubjectId = logoutMessage.SubjectId,
+                    SessionId = logoutMessage.SessionId,
+                    ClientIds = clientIds
+                };
+            }
+            else if (currentSubId != null)
+            {
+                // see if current user has any clients they need to signout of 
+                var clientIds = await userSession.GetClientListAsync();
                 if (clientIds.Any())
                 {
-                    sessions.Add(new Session {
+                    endSessionMsg = new EndSession
+                    {
                         SubjectId = currentSubId,
                         SessionId = await userSession.GetCurrentSessionIdAsync(),
-                        ClientIds = clientIds,
-                    });
+                        ClientIds = clientIds
+                    };
                 }
             }
 
-            // check if we have signout session info, irrespective to the current user
-            if (logoutMessage?.SubjectId != null && logoutMessage?.SubjectId != currentSubId)
+            if (endSessionMsg != null)
             {
-                if (logoutMessage.ClientIds?.Any() == true)
-                {
-                    // we have a logout message in the context of a different user, so add it too
-                    sessions.Add(new Session
-                    {
-                        SubjectId = logoutMessage.SubjectId,
-                        SessionId = logoutMessage.SessionId,
-                        ClientIds = logoutMessage.ClientIds,
-                    });
-                }
-            }
-
-            if (sessions.Any())
-            {
-                var endSessionMsg = new EndSession()
-                {
-                    Sessions = sessions
-                };
                 var msg = new Message<EndSession>(endSessionMsg);
 
                 var endSessionMessageStore = context.RequestServices.GetRequiredService<IMessageStore<EndSession>>();

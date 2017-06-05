@@ -170,7 +170,7 @@ namespace IdentityServer4.Validation
 
             var endSessionId = parameters[Constants.UIConstants.DefaultRoutePathParams.EndSessionCallback];
             var endSessionMessage = await _endSessionMessageStore.ReadAsync(endSessionId);
-            if (endSessionMessage?.Data != null && endSessionMessage?.Data.Sessions.Any() == true)
+            if (endSessionMessage?.Data?.ClientIds?.Any() == true)
             {
                 result.IsError = false;
 
@@ -186,44 +186,37 @@ namespace IdentityServer4.Validation
         {
             var frontChannelUrls = new List<string>();
             var backChannelLogouts = new List<BackChannelLogoutModel>();
-            foreach (var session in endSession.Sessions)
+            foreach (var clientId in endSession.ClientIds)
             {
-                if (session.ClientIds?.Any() == true)
+                var client = await _clientStore.FindEnabledClientByIdAsync(clientId);
+                if (client != null)
                 {
-                    foreach (var clientId in session.ClientIds)
+                    if (client.FrontChannelLogoutUri.IsPresent())
                     {
-                        var client = await _clientStore.FindEnabledClientByIdAsync(clientId);
+                        var url = client.FrontChannelLogoutUri;
 
-                        if (client != null)
+                        // add session id if required
+                        if (client.FrontChannelLogoutSessionRequired)
                         {
-                            if (client.FrontChannelLogoutUri.IsPresent())
-                            {
-                                var url = client.FrontChannelLogoutUri;
-
-                                // add session id if required
-                                if (client.FrontChannelLogoutSessionRequired)
-                                {
-                                    url = url.AddQueryString(OidcConstants.EndSessionRequest.Sid, session.SessionId);
-                                    url = url.AddQueryString(OidcConstants.EndSessionRequest.Issuer, _context.HttpContext.GetIdentityServerIssuerUri());
-                                }
-
-                                frontChannelUrls.Add(url);
-                            }
-
-                            if (client.BackChannelLogoutUri.IsPresent())
-                            {
-                                var back = new BackChannelLogoutModel
-                                {
-                                    ClientId = clientId,
-                                    LogoutUri = client.BackChannelLogoutUri,
-                                    SubjectId = session.SubjectId,
-                                    SessionId = session.SessionId,
-                                    SessionIdRequired = client.BackChannelLogoutSessionRequired
-                                };
-
-                                backChannelLogouts.Add(back);
-                            }
+                            url = url.AddQueryString(OidcConstants.EndSessionRequest.Sid, endSession.SessionId);
+                            url = url.AddQueryString(OidcConstants.EndSessionRequest.Issuer, _context.HttpContext.GetIdentityServerIssuerUri());
                         }
+
+                        frontChannelUrls.Add(url);
+                    }
+
+                    if (client.BackChannelLogoutUri.IsPresent())
+                    {
+                        var back = new BackChannelLogoutModel
+                        {
+                            ClientId = clientId,
+                            LogoutUri = client.BackChannelLogoutUri,
+                            SubjectId = endSession.SubjectId,
+                            SessionId = endSession.SessionId,
+                            SessionIdRequired = client.BackChannelLogoutSessionRequired
+                        };
+
+                        backChannelLogouts.Add(back);
                     }
                 }
             }
