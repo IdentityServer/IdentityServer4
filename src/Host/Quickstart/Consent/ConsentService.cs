@@ -78,7 +78,7 @@ namespace IdentityServer4.Quickstart.UI
                 // communicate outcome of consent back to identityserver
                 await _interaction.GrantConsentAsync(request, grantedConsent);
 
-                // indiate that's it ok to redirect back to authorization endpoint
+                // indicate that's it ok to redirect back to authorization endpoint
                 result.RedirectUri = model.ReturnUrl;
             }
             else
