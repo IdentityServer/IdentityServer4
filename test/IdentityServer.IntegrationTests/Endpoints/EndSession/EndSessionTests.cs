@@ -404,5 +404,37 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
 
             _mockPipeline.LogoutRequest.PostLogoutRedirectUri.Should().BeNull();
         }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task logout_with_clients_should_render_signout_callback_iframe()
+        {
+            await _mockPipeline.LoginAsync("bob");
+
+            var response = await _mockPipeline.RequestAuthorizationEndpointAsync(
+                clientId: "client2",
+                responseType: "id_token",
+                scope: "openid",
+                redirectUri: "https://client2/callback",
+                state: "123_state",
+                nonce: "123_nonce");
+            response.Should().NotBeNull();
+
+            await _mockPipeline.BrowserClient.GetAsync(MockIdSvrUiPipeline.EndSessionEndpoint);
+
+            _mockPipeline.LogoutWasCalled.Should().BeTrue();
+            _mockPipeline.LogoutRequest.SignOutIFrameUrl.Should().NotBeNull();
+        }
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task logout_without_clients_should_not_render_signout_callback_iframe()
+        {
+            await _mockPipeline.LoginAsync("bob");
+
+            await _mockPipeline.BrowserClient.GetAsync(MockIdSvrUiPipeline.EndSessionEndpoint);
+
+            _mockPipeline.LogoutWasCalled.Should().BeTrue();
+            _mockPipeline.LogoutRequest.SignOutIFrameUrl.Should().BeNull();
+        }
     }
 }

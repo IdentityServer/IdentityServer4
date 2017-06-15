@@ -68,7 +68,6 @@ namespace IdentityServer4.Endpoints.Results
             if (validatedRequest != null)
             {
                 var logoutMessage = new LogoutMessage(validatedRequest);
-                // TODO:brock unit test for this if check
                 if (logoutMessage.ContainsPayload)
                 {
                     var msg = new Message<LogoutMessage>(logoutMessage);
