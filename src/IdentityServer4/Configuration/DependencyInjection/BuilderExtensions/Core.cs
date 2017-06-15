@@ -21,6 +21,8 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
 using IdentityServer4.Models;
+using IdentityServer4.Infrastructure;
+using System.Net.Http;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -103,6 +105,8 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddTransient<ScopeValidator>();
             builder.Services.AddTransient<ExtensionGrantValidator>();
             builder.Services.AddTransient<BearerTokenUsageValidator>();
+            builder.Services.AddTransient<BackChannelLogoutClient>();
+            builder.Services.AddTransient<HttpClient>();
             
             builder.Services.AddTransient<ReturnUrlParser>();
             builder.Services.AddTransient<IdentityServerTools>();

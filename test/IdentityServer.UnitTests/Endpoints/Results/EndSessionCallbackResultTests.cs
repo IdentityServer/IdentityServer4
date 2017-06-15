@@ -23,6 +23,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
         EndSessionCallbackValidationResult _result = new EndSessionCallbackValidationResult();
         MockUserSession _mockUserSession = new MockUserSession();
         IdentityServerOptions _options = TestIdentityServerOptions.Create();
+        StubBackChannelLogoutClient _stubBackChannelLogoutClient = new StubBackChannelLogoutClient();
 
         DefaultHttpContext _context = new DefaultHttpContext();
 
@@ -32,7 +33,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
             _context.SetIdentityServerBasePath("/");
             _context.Response.Body = new MemoryStream();
 
-            _subject = new EndSessionCallbackResult(_result, _options);
+            _subject = new EndSessionCallbackResult(_result, _options, _stubBackChannelLogoutClient);
         }
 
         [Fact]
@@ -64,6 +65,27 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
                 html.Should().Contain("<iframe src='http://foo.com'></iframe>");
                 html.Should().Contain("<iframe src='http://bar.com'></iframe>");
             }
+        }
+
+        [Fact]
+        public async Task success_should_invoke_back_channel_clients()
+        {
+            _result.IsError = false;
+            _result.BackChannelLogouts = new BackChannelLogoutModel[]
+            {
+                new BackChannelLogoutModel
+                {
+                    ClientId = "test",
+                    LogoutUri = "http://test",
+                    SessionId = "999",
+                    SessionIdRequired = true,
+                    SubjectId = "123"
+                }
+            };
+
+            await _subject.ExecuteAsync(_context);
+
+            _stubBackChannelLogoutClient.SendLogoutsWasCalled.Should().BeTrue();
         }
     }
 }

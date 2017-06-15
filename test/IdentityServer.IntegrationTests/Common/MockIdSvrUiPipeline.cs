@@ -16,6 +16,9 @@ using FluentAssertions;
 using System.Net;
 using IdentityServer4.Configuration;
 using Microsoft.AspNetCore.Http.Authentication;
+using System.Net.Http;
+using System;
+using System.Threading;
 
 namespace IdentityServer4.IntegrationTests.Common
 {
@@ -30,6 +33,8 @@ namespace IdentityServer4.IntegrationTests.Common
         public RequestDelegate Error { get; set; }
         public RequestDelegate FederatedSignOut { get; set; }
 
+        public BackChannelMessageHandler BackChannelMessageHandler { get; set; } = new BackChannelMessageHandler();
+
         public MockIdSvrUiPipeline()
         {
             Login = OnLogin;
@@ -38,13 +43,19 @@ namespace IdentityServer4.IntegrationTests.Common
             Error = OnError;
             FederatedSignOut = OnFederatedSignOut;
 
-            this.OnConfigureServices += MockAuthorizationPipeline_OnConfigureServices;
+            this.OnPreConfigureServices += MockAuthorizationPipeline_OnPreConfigureServices;
+            this.OnPostConfigureServices += MockAuthorizationPipeline_OnPostConfigureServices;
             this.OnPreConfigure += MockAuthorizationPipeline_OnPreConfigure;
             this.OnPostConfigure += MockAuthorizationPipeline_OnPostConfigure;
         }
 
-        private void MockAuthorizationPipeline_OnConfigureServices(IServiceCollection obj)
+        private void MockAuthorizationPipeline_OnPreConfigureServices(IServiceCollection services)
         {
+        }
+
+        private void MockAuthorizationPipeline_OnPostConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton(new HttpClient(BackChannelMessageHandler));
         }
 
         private void MockAuthorizationPipeline_OnPreConfigure(IApplicationBuilder app)
@@ -292,6 +303,21 @@ namespace IdentityServer4.IntegrationTests.Common
             }
 
             return new IdentityModel.Client.AuthorizeResponse(redirect);
+        }
+    }
+
+    public class BackChannelMessageHandler : HttpMessageHandler
+    {
+        public Func<HttpRequestMessage, Task> OnInvoke { get; set; }
+        public HttpResponseMessage Response { get; set; } = new HttpResponseMessage(HttpStatusCode.OK);
+
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            if (OnInvoke != null)
+            {
+                await OnInvoke.Invoke(request);
+            }
+            return Response;
         }
     }
 }

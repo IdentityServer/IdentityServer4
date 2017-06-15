@@ -11,7 +11,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
-using System.Security.Claims;
 
 namespace IdentityServer4.UnitTests.Services.Default
 {
