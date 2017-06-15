@@ -260,7 +260,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
             _mockPipeline.LogoutRequest.PostLogoutRedirectUri.Should().BeNull();
         }
 
-        [Fact(Skip = "reworking end session")]
+        [Fact]
         [Trait("Category", Category)]
         public async Task signout_callback_with_mismatched_id_token_hint_should_not_pass_along_logout_message()
         {
@@ -286,10 +286,6 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
             response = await _mockPipeline.BrowserClient.GetAsync(MockIdSvrUiPipeline.EndSessionEndpoint +
                 "?id_token_hint=" + id_token +
                 "&post_logout_redirect_uri=https://client1/signout-callback");
-
-            var signoutFrameUrl = _mockPipeline.LogoutRequest.SignOutIFrameUrl;
-
-            response = await _mockPipeline.BrowserClient.GetAsync(signoutFrameUrl);
 
             _mockPipeline.LogoutRequest.ClientId.Should().BeNull();
             _mockPipeline.LogoutRequest.PostLogoutRedirectUri.Should().BeNull();

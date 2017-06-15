@@ -15,6 +15,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
+using IdentityServer4.Models;
 
 namespace IdentityServer4.IntegrationTests.Pipeline
 {
@@ -29,6 +30,22 @@ namespace IdentityServer4.IntegrationTests.Pipeline
         {
             _user = IdentityServerPrincipal.Create("bob", "bob", new Claim(JwtClaimTypes.SessionId, "123"));
             _pipeline = new MockIdSvrUiPipeline();
+
+            _pipeline.IdentityScopes.AddRange(new IdentityResource[] {
+                new IdentityResources.OpenId()
+            });
+
+            _pipeline.Clients.Add(new Client
+            {
+                ClientId = "client1",
+                AllowedGrantTypes = GrantTypes.Implicit,
+                RequireConsent = false,
+                AllowedScopes = new List<string> { "openid" },
+                RedirectUris = new List<string> { "https://client1/callback" },
+                FrontChannelLogoutUri = "https://client1/signout",
+                PostLogoutRedirectUris = new List<string> { "https://client1/signout-callback" },
+                AllowAccessTokensViaBrowser = true
+            });
 
             _pipeline.Users.Add(new TestUser
             {
@@ -46,10 +63,18 @@ namespace IdentityServer4.IntegrationTests.Pipeline
             _pipeline.Options.Authentication.FederatedSignOutPaths.Add(MockIdSvrUiPipeline.FederatedSignOutPath);
         }
 
-        [Fact(Skip = "reworking end session")]
+        [Fact]
         public async Task valid_request_to_federated_signout_endpoint_should_render_page_with_iframe()
         {
             await _pipeline.LoginAsync(_user);
+
+            await _pipeline.RequestAuthorizationEndpointAsync(
+                clientId: "client1",
+                responseType: "id_token",
+                scope: "openid",
+                redirectUri: "https://client1/callback",
+                state: "123_state",
+                nonce: "123_nonce");
 
             var response = await _pipeline.BrowserClient.GetAsync(MockIdSvrUiPipeline.FederatedSignOutUrl + "?sid=123");
 
@@ -59,10 +84,18 @@ namespace IdentityServer4.IntegrationTests.Pipeline
             html.Should().Contain("https://server/connect/endsession/callback?endSessionId=");
         }
 
-        [Fact(Skip = "reworking end session")]
+        [Fact]
         public async Task valid_POST_request_to_federated_signout_endpoint_should_render_page_with_iframe()
         {
             await _pipeline.LoginAsync(_user);
+
+            await _pipeline.RequestAuthorizationEndpointAsync(
+                clientId: "client1",
+                responseType: "id_token",
+                scope: "openid",
+                redirectUri: "https://client1/callback",
+                state: "123_state",
+                nonce: "123_nonce");
 
             var response = await _pipeline.BrowserClient.PostAsync(MockIdSvrUiPipeline.FederatedSignOutUrl, new FormUrlEncodedContent(new Dictionary<string, string> { { "sid", "123" } }));
 
@@ -72,7 +105,7 @@ namespace IdentityServer4.IntegrationTests.Pipeline
             html.Should().Contain("https://server/connect/endsession/callback?endSessionId=");
         }
 
-        [Fact(Skip = "reworking end session")]
+        [Fact]
         public async Task valid_request_to_federated_signout_endpoint_should_sign_user_out()
         {
             await _pipeline.LoginAsync(_user);
