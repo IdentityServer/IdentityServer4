@@ -33,6 +33,12 @@ namespace IdentityServer4.Quickstart.UI
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
             if (context?.IdP != null)
             {
+                // this allows an acr_values of "Windows" and then the first actual windows-based provider to be used
+                if (AccountOptions.WindowsAuthenticationEnabled && context.IdP == AccountOptions.WindowsAuthenticationProviderName)
+                {
+                    context.IdP = AccountOptions.WindowsAuthenticationSchemes.First();
+                }
+
                 // this is meant to short circuit the UI and only trigger the one external IdP
                 return new LoginViewModel
                 {
