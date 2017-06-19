@@ -98,7 +98,7 @@ For example on your claims view::
     <dt>refresh token</dt>
     <dd>@await ViewContext.HttpContext.Authentication.GetTokenAsync("refresh_token")</dd>
 
-For accessing the API using the user token, all you need to do is retrieve the token, 
+For accessing the API using the access token, all you need to do is retrieve the token, 
 and set it on your *HttpClient*::
 
     public async Task<IActionResult> CallApiUsingUserAccessToken()
