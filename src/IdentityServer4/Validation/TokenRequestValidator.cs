@@ -269,7 +269,7 @@ namespace IdentityServer4.Validation
             // validate PKCE parameters
             /////////////////////////////////////////////
             var codeVerifier = parameters.Get(OidcConstants.TokenRequest.CodeVerifier);
-            if (_validatedRequest.Client.RequirePkce)
+            if (_validatedRequest.Client.RequirePkce || _validatedRequest.AuthorizationCode.CodeChallenge.IsPresent())
             {
                 _logger.LogDebug("Client required a proof key for code exchange. Starting PKCE validation");
 
