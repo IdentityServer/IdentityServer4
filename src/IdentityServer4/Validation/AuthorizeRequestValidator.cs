@@ -241,14 +241,17 @@ namespace IdentityServer4.Validation
             //////////////////////////////////////////////////////////
             if (request.GrantType == GrantType.AuthorizationCode || request.GrantType == GrantType.Hybrid)
             {
+                _logger.LogDebug("Checking for PKCE parameters");
+                
+                /////////////////////////////////////////////////////////////////////////////
+                // validate code_challenge and code_challenge_method
+                /////////////////////////////////////////////////////////////////////////////
+                var proofKeyResult = ValidatePkceParameters(request);
+                
                 if (request.Client.RequirePkce)
                 {
-                    _logger.LogDebug("Client requires a proof key for code exchange. Starting PKCE validation");
+                    _logger.LogDebug("Client requires PKCE");
 
-                    /////////////////////////////////////////////////////////////////////////////
-                    // validate code_challenge and code_challenge_method
-                    /////////////////////////////////////////////////////////////////////////////
-                    var proofKeyResult = ValidatePkceParameters(request);
                     if (proofKeyResult.IsError)
                     {
                         return proofKeyResult;
@@ -317,8 +320,16 @@ namespace IdentityServer4.Validation
             var codeChallenge = request.Raw.Get(OidcConstants.AuthorizeRequest.CodeChallenge);
             if (codeChallenge.IsMissing())
             {
-                LogError("code_challenge is missing", request);
-                fail.ErrorDescription = "code challenge required";
+                if (request.Client.RequirePkce)
+                {
+                    LogError("code_challenge is missing", request);
+                    fail.ErrorDescription = "code challenge required";
+                }
+                else
+                {
+                    _logger.LogDebug("No PKCE used.");
+                }
+                
                 return fail;
             }
 
