@@ -248,14 +248,9 @@ namespace IdentityServer4.Validation
                 /////////////////////////////////////////////////////////////////////////////
                 var proofKeyResult = ValidatePkceParameters(request);
                 
-                if (request.Client.RequirePkce)
+                if (proofKeyResult.IsError)
                 {
-                    _logger.LogDebug("Client requires PKCE");
-
-                    if (proofKeyResult.IsError)
-                    {
-                        return proofKeyResult;
-                    }
+                    return proofKeyResult;
                 }
             }
 
@@ -328,6 +323,7 @@ namespace IdentityServer4.Validation
                 else
                 {
                     _logger.LogDebug("No PKCE used.");
+                    return Valid(request);
                 }
                 
                 return fail;

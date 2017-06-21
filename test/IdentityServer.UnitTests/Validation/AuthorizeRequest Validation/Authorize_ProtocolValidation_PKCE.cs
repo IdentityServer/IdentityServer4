@@ -20,10 +20,28 @@ namespace IdentityServer4.UnitTests.Validation.AuthorizeRequest
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task valid_openid_code_request_with_challenge_and_plain_method_should_be_allowed_if_plain_is_allowed()
+        public async Task valid_openid_code_request_with_challenge_should_be_allowed_even_if_require_is_not_set()
         {
             var parameters = new NameValueCollection();
-            parameters.Add(OidcConstants.AuthorizeRequest.ClientId, "codeclient.pkce.plain");
+            parameters.Add(OidcConstants.AuthorizeRequest.ClientId, "codeclient");
+            parameters.Add(OidcConstants.AuthorizeRequest.Scope, "openid");
+            parameters.Add(OidcConstants.AuthorizeRequest.CodeChallenge, "x".Repeat(lengths.CodeChallengeMinLength));
+            parameters.Add(OidcConstants.AuthorizeRequest.CodeChallengeMethod, OidcConstants.CodeChallengeMethods.Sha256);
+            parameters.Add(OidcConstants.AuthorizeRequest.RedirectUri, "https://server/cb");
+            parameters.Add(OidcConstants.AuthorizeRequest.ResponseType, OidcConstants.ResponseTypes.Code);
+
+            var validator = Factory.CreateAuthorizeRequestValidator();
+            var result = await validator.ValidateAsync(parameters);
+
+            result.IsError.Should().Be(false);
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task openid_code_request_with_challenge_and_plain_method_should_fail_if_plain_not_allowed_even_for_optional_pkce()
+        {
+            var parameters = new NameValueCollection();
+            parameters.Add(OidcConstants.AuthorizeRequest.ClientId, "codeclient");
             parameters.Add(OidcConstants.AuthorizeRequest.Scope, "openid");
             parameters.Add(OidcConstants.AuthorizeRequest.CodeChallenge, "x".Repeat(lengths.CodeChallengeMinLength));
             parameters.Add(OidcConstants.AuthorizeRequest.CodeChallengeMethod, OidcConstants.CodeChallengeMethods.Plain);
@@ -33,7 +51,7 @@ namespace IdentityServer4.UnitTests.Validation.AuthorizeRequest
             var validator = Factory.CreateAuthorizeRequestValidator();
             var result = await validator.ValidateAsync(parameters);
 
-            result.IsError.Should().Be(false);
+            result.IsError.Should().Be(true);
         }
 
         [Fact]
