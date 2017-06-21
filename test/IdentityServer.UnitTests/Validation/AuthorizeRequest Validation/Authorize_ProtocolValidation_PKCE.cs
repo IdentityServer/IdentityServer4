@@ -18,48 +18,14 @@ namespace IdentityServer4.UnitTests.Validation.AuthorizeRequest
 
         InputLengthRestrictions lengths = new InputLengthRestrictions();
 
-        [Fact]
+        [Theory]
+        [InlineData("codeclient.pkce")]
+        [InlineData("codeclient")]
         [Trait("Category", Category)]
-        public async Task valid_openid_code_request_with_challenge_should_be_allowed_even_if_require_is_not_set()
+        public async Task valid_openid_code_request_with_challenge_and_plain_method_should_be_forbidden_if_plain_is_forbidden(string clientId)
         {
             var parameters = new NameValueCollection();
-            parameters.Add(OidcConstants.AuthorizeRequest.ClientId, "codeclient");
-            parameters.Add(OidcConstants.AuthorizeRequest.Scope, "openid");
-            parameters.Add(OidcConstants.AuthorizeRequest.CodeChallenge, "x".Repeat(lengths.CodeChallengeMinLength));
-            parameters.Add(OidcConstants.AuthorizeRequest.CodeChallengeMethod, OidcConstants.CodeChallengeMethods.Sha256);
-            parameters.Add(OidcConstants.AuthorizeRequest.RedirectUri, "https://server/cb");
-            parameters.Add(OidcConstants.AuthorizeRequest.ResponseType, OidcConstants.ResponseTypes.Code);
-
-            var validator = Factory.CreateAuthorizeRequestValidator();
-            var result = await validator.ValidateAsync(parameters);
-
-            result.IsError.Should().Be(false);
-        }
-
-        [Fact]
-        [Trait("Category", Category)]
-        public async Task openid_code_request_with_challenge_and_plain_method_should_fail_if_plain_not_allowed_even_for_optional_pkce()
-        {
-            var parameters = new NameValueCollection();
-            parameters.Add(OidcConstants.AuthorizeRequest.ClientId, "codeclient");
-            parameters.Add(OidcConstants.AuthorizeRequest.Scope, "openid");
-            parameters.Add(OidcConstants.AuthorizeRequest.CodeChallenge, "x".Repeat(lengths.CodeChallengeMinLength));
-            parameters.Add(OidcConstants.AuthorizeRequest.CodeChallengeMethod, OidcConstants.CodeChallengeMethods.Plain);
-            parameters.Add(OidcConstants.AuthorizeRequest.RedirectUri, "https://server/cb");
-            parameters.Add(OidcConstants.AuthorizeRequest.ResponseType, OidcConstants.ResponseTypes.Code);
-
-            var validator = Factory.CreateAuthorizeRequestValidator();
-            var result = await validator.ValidateAsync(parameters);
-
-            result.IsError.Should().Be(true);
-        }
-
-        [Fact]
-        [Trait("Category", Category)]
-        public async Task valid_openid_code_request_with_challenge_and_plain_method_should_be_forbidden_if_plain_is_forbidden()
-        {
-            var parameters = new NameValueCollection();
-            parameters.Add(OidcConstants.AuthorizeRequest.ClientId, "codeclient.pkce");
+            parameters.Add(OidcConstants.AuthorizeRequest.ClientId, clientId);
             parameters.Add(OidcConstants.AuthorizeRequest.Scope, "openid");
             parameters.Add(OidcConstants.AuthorizeRequest.CodeChallenge, "x".Repeat(lengths.CodeChallengeMinLength));
             parameters.Add(OidcConstants.AuthorizeRequest.CodeChallengeMethod, OidcConstants.CodeChallengeMethods.Plain);
@@ -73,12 +39,14 @@ namespace IdentityServer4.UnitTests.Validation.AuthorizeRequest
             result.ErrorDescription.Should().Be("transform algorithm not supported");
         }
 
-        [Fact]
+        [Theory]
+        [InlineData("codeclient.pkce")]
+        [InlineData("codeclient")]
         [Trait("Category", Category)]
-        public async Task valid_openid_code_request_with_challenge_and_sh256_method_should_be_allowed()
+        public async Task valid_openid_code_request_with_challenge_and_sh256_method_should_be_allowed(string clientId)
         {
             var parameters = new NameValueCollection();
-            parameters.Add(OidcConstants.AuthorizeRequest.ClientId, "codeclient.pkce");
+            parameters.Add(OidcConstants.AuthorizeRequest.ClientId, clientId);
             parameters.Add(OidcConstants.AuthorizeRequest.Scope, "openid");
             parameters.Add(OidcConstants.AuthorizeRequest.CodeChallenge, "x".Repeat(lengths.CodeChallengeMinLength));
             parameters.Add(OidcConstants.AuthorizeRequest.CodeChallengeMethod, OidcConstants.CodeChallengeMethods.Sha256);
@@ -91,12 +59,14 @@ namespace IdentityServer4.UnitTests.Validation.AuthorizeRequest
             result.IsError.Should().Be(false);
         }
 
-        [Fact]
+        [Theory]
+        [InlineData("codeclient.pkce.plain")]
+        [InlineData("codeclient.plain")]
         [Trait("Category", Category)]
-        public async Task valid_openid_code_request_with_challenge_and_missing_method_should_be_allowed_if_plain_is_allowed()
+        public async Task valid_openid_code_request_with_challenge_and_missing_method_should_be_allowed_if_plain_is_allowed(string clientId)
         {
             var parameters = new NameValueCollection();
-            parameters.Add(OidcConstants.AuthorizeRequest.ClientId, "codeclient.pkce.plain");
+            parameters.Add(OidcConstants.AuthorizeRequest.ClientId, clientId);
             parameters.Add(OidcConstants.AuthorizeRequest.Scope, "openid");
             parameters.Add(OidcConstants.AuthorizeRequest.CodeChallenge, "x".Repeat(lengths.CodeChallengeMinLength));
             parameters.Add(OidcConstants.AuthorizeRequest.RedirectUri, "https://server/cb");
@@ -108,12 +78,14 @@ namespace IdentityServer4.UnitTests.Validation.AuthorizeRequest
             result.IsError.Should().Be(false);
         }
 
-        [Fact]
+        [Theory]
+        [InlineData("codeclient.pkce")]
+        [InlineData("codeclient")]
         [Trait("Category", Category)]
-        public async Task valid_openid_code_request_with_challenge_and_missing_method_should_be_forbidden_if_plain_is_forbidden()
+        public async Task valid_openid_code_request_with_challenge_and_missing_method_should_be_forbidden_if_plain_is_forbidden(string clientId)
         {
             var parameters = new NameValueCollection();
-            parameters.Add(OidcConstants.AuthorizeRequest.ClientId, "codeclient.pkce");
+            parameters.Add(OidcConstants.AuthorizeRequest.ClientId, clientId);
             parameters.Add(OidcConstants.AuthorizeRequest.Scope, "openid");
             parameters.Add(OidcConstants.AuthorizeRequest.CodeChallenge, "x".Repeat(lengths.CodeChallengeMinLength));
             parameters.Add(OidcConstants.AuthorizeRequest.RedirectUri, "https://server/cb");
@@ -163,12 +135,16 @@ namespace IdentityServer4.UnitTests.Validation.AuthorizeRequest
             result.ErrorDescription.Should().Be("code challenge required");
         }
 
-        [Fact]
+        [Theory]
+        [InlineData("codeclient.pkce")]
+        [InlineData("codeclient.pkce.plain")]
+        [InlineData("codeclient")]
+        [InlineData("codeclient.plain")]
         [Trait("Category", Category)]
-        public async Task openid_code_request_with_challenge_and_invalid_method_should_be_rejected()
+        public async Task openid_code_request_with_challenge_and_invalid_method_should_be_rejected(string clientId)
         {
             var parameters = new NameValueCollection();
-            parameters.Add(OidcConstants.AuthorizeRequest.ClientId, "codeclient.pkce");
+            parameters.Add(OidcConstants.AuthorizeRequest.ClientId, clientId);
             parameters.Add(OidcConstants.AuthorizeRequest.Scope, "openid");
             parameters.Add(OidcConstants.AuthorizeRequest.CodeChallenge, "x".Repeat(lengths.CodeChallengeMinLength));
             parameters.Add(OidcConstants.AuthorizeRequest.CodeChallengeMethod, "invalid");
@@ -183,12 +159,16 @@ namespace IdentityServer4.UnitTests.Validation.AuthorizeRequest
             result.ErrorDescription.Should().Be("transform algorithm not supported");
         }
 
-        [Fact]
+        [Theory]
+        [InlineData("codeclient.pkce")]
+        [InlineData("codeclient.pkce.plain")]
+        [InlineData("codeclient")]
+        [InlineData("codeclient.plain")]
         [Trait("Category", Category)]
-        public async Task openid_code_request_with_too_short_challenge_should_be_rejected()
+        public async Task openid_code_request_with_too_short_challenge_should_be_rejected(string clientId)
         {
             var parameters = new NameValueCollection();
-            parameters.Add(OidcConstants.AuthorizeRequest.ClientId, "codeclient.pkce");
+            parameters.Add(OidcConstants.AuthorizeRequest.ClientId, clientId);
             parameters.Add(OidcConstants.AuthorizeRequest.Scope, "openid");
             parameters.Add(OidcConstants.AuthorizeRequest.CodeChallenge, "x".Repeat(lengths.CodeChallengeMinLength - 1));
             parameters.Add(OidcConstants.AuthorizeRequest.CodeChallengeMethod, OidcConstants.CodeChallengeMethods.Plain);
@@ -202,12 +182,16 @@ namespace IdentityServer4.UnitTests.Validation.AuthorizeRequest
             result.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
         }
 
-        [Fact]
+        [Theory]
+        [InlineData("codeclient.pkce")]
+        [InlineData("codeclient.pkce.plain")]
+        [InlineData("codeclient")]
+        [InlineData("codeclient.plain")]
         [Trait("Category", Category)]
-        public async Task openid_code_request_with_too_long_challenge_should_be_rejected()
+        public async Task openid_code_request_with_too_long_challenge_should_be_rejected(string clientId)
         {
             var parameters = new NameValueCollection();
-            parameters.Add(OidcConstants.AuthorizeRequest.ClientId, "codeclient.pkce");
+            parameters.Add(OidcConstants.AuthorizeRequest.ClientId, clientId);
             parameters.Add(OidcConstants.AuthorizeRequest.Scope, "openid");
             parameters.Add(OidcConstants.AuthorizeRequest.CodeChallenge, "x".Repeat(lengths.CodeChallengeMaxLength + 1));
             parameters.Add(OidcConstants.AuthorizeRequest.CodeChallengeMethod, OidcConstants.CodeChallengeMethods.Plain);
