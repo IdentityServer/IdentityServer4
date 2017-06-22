@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System.Collections.Generic;
 
 namespace IdentityServer4.Validation
 {
@@ -33,5 +34,10 @@ namespace IdentityServer4.Validation
         /// The state.
         /// </value>
         public string State { get; set; }
+
+        /// <summary>
+        ///  Ids of clients known to have an authentication session for user at end session time
+        /// </summary>
+        public IEnumerable<string> ClientIds { get; set; }
     }
 }

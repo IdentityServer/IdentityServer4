@@ -29,16 +29,18 @@ namespace IdentityServer4.Endpoints
         private readonly ILogger _logger;
         private readonly IAuthorizeRequestValidator _validator;
         private readonly IAuthorizeInteractionResponseGenerator _interactionGenerator;
-        private readonly IMessageStore<ConsentResponse> _consentResponseStore;
+        private readonly IConsentMessageStore _consentResponseStore;
         private readonly IAuthorizeResponseGenerator _authorizeResponseGenerator;
+        private readonly IUserSession _userSession;
 
         public AuthorizeEndpoint(
             IEventService events, 
             ILogger<AuthorizeEndpoint> logger,
             IAuthorizeRequestValidator validator,
             IAuthorizeInteractionResponseGenerator interactionGenerator,
-            IMessageStore<ConsentResponse> consentResponseStore,
-            IAuthorizeResponseGenerator authorizeResponseGenerator)
+            IConsentMessageStore consentResponseStore,
+            IAuthorizeResponseGenerator authorizeResponseGenerator,
+            IUserSession userSession)
         {
             _events = events;
             _logger = logger;
@@ -46,6 +48,7 @@ namespace IdentityServer4.Endpoints
             _interactionGenerator = interactionGenerator;
             _consentResponseStore = consentResponseStore;
             _authorizeResponseGenerator = authorizeResponseGenerator;
+            _userSession = userSession;
         }
 
         public async Task<IEndpointResult> ProcessAsync(HttpContext context)
@@ -98,7 +101,7 @@ namespace IdentityServer4.Endpoints
                 return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
             }
 
-            var user = await context.GetIdentityServerUserAsync();
+            var user = await _userSession.GetIdentityServerUserAsync();
             var result = await ProcessAuthorizeRequestAsync(values, user, null);
 
             _logger.LogTrace("End authorize request. result type: {0}", result?.GetType().ToString() ?? "-none-");
@@ -110,7 +113,7 @@ namespace IdentityServer4.Endpoints
         {
             _logger.LogDebug("Start authorize request (after login)");
 
-            var user = await context.GetIdentityServerUserAsync();
+            var user = await _userSession.GetIdentityServerUserAsync();
             if (user == null)
             {
                 return await CreateErrorResultAsync("User is not authenticated");
@@ -128,7 +131,7 @@ namespace IdentityServer4.Endpoints
         {
             _logger.LogDebug("Start authorize request (after consent)");
 
-            var user = await context.GetIdentityServerUserAsync();
+            var user = await _userSession.GetIdentityServerUserAsync();
             if (user == null)
             {
                 return await CreateErrorResultAsync("User is not authenticated");

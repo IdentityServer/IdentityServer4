@@ -144,7 +144,7 @@ namespace IdentityServer4.UnitTests.Validation
                 scopeValidator = new ScopeValidator(resourceStore, new LoggerFactory().CreateLogger<ScopeValidator>());
             }
 
-            var sessionId = new MockSessionIdService();
+            var userSession = new MockUserSession();
 
             return new AuthorizeRequestValidator(
                 options,
@@ -152,7 +152,7 @@ namespace IdentityServer4.UnitTests.Validation
                 customValidator,
                 uriValidator,
                 scopeValidator,
-                sessionId,
+                userSession,
                 TestLogger.Create<AuthorizeRequestValidator>());
         }
 

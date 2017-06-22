@@ -20,6 +20,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
+using IdentityServer4.Models;
+using IdentityServer4.Infrastructure;
+using System.Net.Http;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -102,13 +105,14 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddTransient<ScopeValidator>();
             builder.Services.AddTransient<ExtensionGrantValidator>();
             builder.Services.AddTransient<BearerTokenUsageValidator>();
+            builder.Services.AddTransient<BackChannelLogoutClient>();
+            builder.Services.AddTransient<HttpClient>();
             
             builder.Services.AddTransient<ReturnUrlParser>();
             builder.Services.AddTransient<IdentityServerTools>();
 
             builder.Services.AddTransient<IReturnUrlParser, OidcReturnUrlParser>();
-            builder.Services.AddTransient<ISessionIdService, DefaultSessionIdService>();
-            builder.Services.AddTransient<IClientSessionService, DefaultClientSessionService>();
+            builder.Services.AddTransient<IUserSession, DefaultUserSession>();
             builder.Services.AddTransient(typeof(MessageCookie<>));
             builder.Services.AddScoped<AuthenticationHandler>();
 
@@ -134,7 +138,10 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IConsentService, DefaultConsentService>();
             builder.Services.TryAddTransient<ICorsPolicyService, DefaultCorsPolicyService>();
             builder.Services.TryAddTransient<IProfileService, DefaultProfileService>();
-            builder.Services.TryAddTransient(typeof(IMessageStore<>), typeof(CookieMessageStore<>));
+            builder.Services.TryAddTransient<IConsentMessageStore, ConsentMessageStore>();
+            builder.Services.TryAddTransient<IMessageStore<LogoutMessage>, ProtectedDataMessageStore<LogoutMessage>>();
+            builder.Services.TryAddTransient<IMessageStore<EndSession>, ProtectedDataMessageStore<EndSession>>();
+            builder.Services.TryAddTransient<IMessageStore<ErrorMessage>, ProtectedDataMessageStore<ErrorMessage>>();
             builder.Services.TryAddTransient<IIdentityServerInteractionService, DefaultIdentityServerInteractionService>();
             builder.Services.TryAddTransient<IAuthorizationCodeStore, DefaultAuthorizationCodeStore>();
             builder.Services.TryAddTransient<IRefreshTokenStore, DefaultRefreshTokenStore>();

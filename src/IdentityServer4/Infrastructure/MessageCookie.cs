@@ -4,12 +4,10 @@
 
 using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
-using IdentityServer4.Infrastructure;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,17 +17,6 @@ namespace IdentityServer4
 {
     internal class MessageCookie<TModel>
     {
-        static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
-        {
-            NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore
-        };
-
-        static MessageCookie()
-        {
-            Settings.Converters.Add(new NameValueCollectionConverter());
-        }
-
         private readonly ILogger _logger;
         private readonly IdentityServerOptions _options;
         private readonly IHttpContextAccessor _context;
@@ -51,7 +38,7 @@ namespace IdentityServer4
 
         string Protect(Message<TModel> message)
         {
-            var json = JsonConvert.SerializeObject(message, Settings);
+            var json = ObjectSerializer.ToString(message);
             _logger.LogTrace("Protecting message: {0}", json);
 
             return _protector.Protect(json);
@@ -60,7 +47,7 @@ namespace IdentityServer4
         Message<TModel> Unprotect(string data)
         {
             var json = _protector.Unprotect(data);
-            var message = JsonConvert.DeserializeObject<Message<TModel>>(json, Settings);
+            var message = ObjectSerializer.FromString<Message<TModel>>(json);
             return message;
         }
 

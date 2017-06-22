@@ -29,23 +29,23 @@ namespace IdentityServer4.Endpoints.Results
         internal AuthorizeResult(
             AuthorizeResponse response,
             IdentityServerOptions options,
-            IClientSessionService clientSession,
+            IUserSession userSession,
             IMessageStore<ErrorMessage> errorMessageStore)
             : this(response)
         {
             _options = options;
-            _clientSession = clientSession;
+            _userSession = userSession;
             _errorMessageStore = errorMessageStore;
         }
 
         private IdentityServerOptions _options;
-        private IClientSessionService _clientSession;
+        private IUserSession _userSession;
         private IMessageStore<ErrorMessage> _errorMessageStore;
 
         void Init(HttpContext context)
         {
             _options = _options ?? context.RequestServices.GetRequiredService<IdentityServerOptions>();
-            _clientSession = _clientSession ?? context.RequestServices.GetRequiredService<IClientSessionService>();
+            _userSession = _userSession ?? context.RequestServices.GetRequiredService<IUserSession>();
             _errorMessageStore = _errorMessageStore ?? context.RequestServices.GetRequiredService<IMessageStore<ErrorMessage>>();
         }
 
@@ -92,7 +92,7 @@ namespace IdentityServer4.Endpoints.Results
             {
                 // success response -- track client authorization for sign-out
                 //_logger.LogDebug("Adding client {0} to client list cookie for subject {1}", request.ClientId, request.Subject.GetSubjectId());
-                await _clientSession.AddClientIdAsync(Response.Request.ClientId);
+                await _userSession.AddClientIdAsync(Response.Request.ClientId);
             }
 
             await RenderAuthorizeResponseAsync(context);
@@ -180,12 +180,12 @@ namespace IdentityServer4.Endpoints.Results
                 ErrorDescription = Response.ErrorDescription
             };
 
-            var message = new MessageWithId<ErrorMessage>(errorModel);
-            await _errorMessageStore.WriteAsync(message.Id, message);
+            var message = new Message<ErrorMessage>(errorModel);
+            var id = await _errorMessageStore.WriteAsync(message);
 
             var errorUrl = _options.UserInteraction.ErrorUrl;
 
-            var url = errorUrl.AddQueryString(_options.UserInteraction.ErrorIdParameter, message.Id);
+            var url = errorUrl.AddQueryString(_options.UserInteraction.ErrorIdParameter, id);
             context.Response.RedirectToAbsoluteUrl(url);
         }
     }

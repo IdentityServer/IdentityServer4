@@ -25,7 +25,7 @@ namespace IdentityServer4.Validation
         private readonly ICustomAuthorizeRequestValidator _customValidator;
         private readonly IRedirectUriValidator _uriValidator;
         private readonly ScopeValidator _scopeValidator;
-        private readonly ISessionIdService _sessionId;
+        private readonly IUserSession _userSession;
         private readonly ILogger _logger;
 
         private readonly ResponseTypeEqualityComparer
@@ -37,7 +37,7 @@ namespace IdentityServer4.Validation
             ICustomAuthorizeRequestValidator customValidator, 
             IRedirectUriValidator uriValidator, 
             ScopeValidator scopeValidator,
-            ISessionIdService sessionId,
+            IUserSession userSession,
             ILogger<AuthorizeRequestValidator> logger)
         {
             _options = options;
@@ -45,7 +45,7 @@ namespace IdentityServer4.Validation
             _customValidator = customValidator;
             _uriValidator = uriValidator;
             _scopeValidator = scopeValidator;
-            _sessionId = sessionId;
+            _userSession = userSession;
             _logger = logger;
         }
 
@@ -594,7 +594,7 @@ namespace IdentityServer4.Validation
             if (_options.Endpoints.EnableCheckSessionEndpoint && 
                 request.Subject.IsAuthenticated())
             {
-                var sessionId = await _sessionId.GetCurrentSessionIdAsync();
+                var sessionId = await _userSession.GetCurrentSessionIdAsync();
                 if (sessionId.IsPresent())
                 {
                     request.SessionId = sessionId;

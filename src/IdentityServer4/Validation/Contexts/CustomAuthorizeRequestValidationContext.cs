@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace IdentityServer4.Validation
+﻿namespace IdentityServer4.Validation
 {
     /// <summary>
     /// Context for custom authorize request validation.

@@ -152,6 +152,8 @@ namespace IdentityServer4.ResponseHandling
             {
                 entries.Add(OidcConstants.Discovery.FrontChannelLogoutSupported, true);
                 entries.Add(OidcConstants.Discovery.FrontChannelLogoutSessionSupported, true);
+                entries.Add(OidcConstants.Discovery.BackChannelLogoutSupported, true);
+                entries.Add(OidcConstants.Discovery.BackChannelLogoutSessionSupported, true);
             }
 
             // scopes and claims

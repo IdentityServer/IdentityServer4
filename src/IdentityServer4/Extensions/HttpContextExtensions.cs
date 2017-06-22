@@ -2,15 +2,16 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityModel;
 using IdentityServer4.Configuration;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using IdentityServer4.Models;
+using IdentityServer4.Stores;
+using System.Linq;
 
 #pragma warning disable 1591
 
@@ -106,51 +107,67 @@ namespace IdentityServer4.Extensions
         /// <returns></returns>
         public static async Task<ClaimsPrincipal> GetIdentityServerUserAsync(this HttpContext context)
         {
-            var options = context.RequestServices.GetRequiredService<IdentityServerOptions>();
-            var user = await context.Authentication.AuthenticateAsync(options.Authentication.EffectiveAuthenticationScheme);
+            var userSession = context.RequestServices.GetRequiredService<IUserSession>();
+            var user = await userSession.GetIdentityServerUserAsync();
             return user;
         }
 
-        /// <summary>
-        /// Gets the identity server user information asynchronous.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <returns></returns>
-        internal static async Task<AuthenticateInfo> GetIdentityServerUserInfoAsync(this HttpContext context)
+        internal static async Task<string> GetIdentityServerSignoutFrameCallbackUrlAsync(this HttpContext context, LogoutMessage logoutMessage = null)
         {
-            var options = context.RequestServices.GetRequiredService<IdentityServerOptions>();
-            var info = await context.Authentication.GetAuthenticateInfoAsync(options.Authentication.EffectiveAuthenticationScheme);
-            return info;
-        }
+            var userSession = context.RequestServices.GetRequiredService<IUserSession>();
+            var user = await userSession.GetIdentityServerUserAsync();
+            var currentSubId = user?.GetSubjectId();
 
-        internal static async Task ReIssueSignInCookie(this HttpContext context, AuthenticateInfo info)
-        {
-            var options = context.RequestServices.GetRequiredService<IdentityServerOptions>();
-            await context.Authentication.SignInAsync(options.Authentication.EffectiveAuthenticationScheme, info.Principal, info.Properties);
-        }
+            EndSession endSessionMsg = null;
 
-        internal static async Task<string> GetIdentityServerSignoutFrameCallbackUrlAsync(this HttpContext context, string sid = null)
-        {
-            if (sid == null)
+            // if we have a logout message, then that take precedence over the current user
+            if (logoutMessage?.ClientIds?.Any() == true)
             {
-                // no explicit sid, so see if we have a logged in user
-                var sessionId = context.RequestServices.GetRequiredService<ISessionIdService>();
-                sid = await sessionId.GetCurrentSessionIdAsync();
+                var clientIds = logoutMessage?.ClientIds;
+
+                // check if current user is same, since we migth have new clients (albeit unlikely)
+                if (currentSubId == logoutMessage?.SubjectId)
+                {
+                    clientIds = clientIds.Union(await userSession.GetClientListAsync());
+                    clientIds = clientIds.Distinct();
+                }
+
+                endSessionMsg = new EndSession
+                {
+                    SubjectId = logoutMessage.SubjectId,
+                    SessionId = logoutMessage.SessionId,
+                    ClientIds = clientIds
+                };
+            }
+            else if (currentSubId != null)
+            {
+                // see if current user has any clients they need to signout of 
+                var clientIds = await userSession.GetClientListAsync();
+                if (clientIds.Any())
+                {
+                    endSessionMsg = new EndSession
+                    {
+                        SubjectId = currentSubId,
+                        SessionId = await userSession.GetCurrentSessionIdAsync(),
+                        ClientIds = clientIds
+                    };
+                }
             }
 
-            if (sid != null)
+            if (endSessionMsg != null)
             {
-                var signoutIframeUrl = context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.ProtocolRoutePaths.EndSessionCallback;
-                signoutIframeUrl = signoutIframeUrl.AddQueryString(OidcConstants.EndSessionRequest.Sid, sid);
+                var msg = new Message<EndSession>(endSessionMsg);
 
-                // if they are rendering the callback frame, we need to ensure the client cookie is written
-                var clientSession = context.RequestServices.GetRequiredService<IClientSessionService>();
-                await clientSession.EnsureClientListCookieAsync(sid);
+                var endSessionMessageStore = context.RequestServices.GetRequiredService<IMessageStore<EndSession>>();
+                var id = await endSessionMessageStore.WriteAsync(msg);
+
+                var signoutIframeUrl = context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + Constants.ProtocolRoutePaths.EndSessionCallback;
+                signoutIframeUrl = signoutIframeUrl.AddQueryString(Constants.UIConstants.DefaultRoutePathParams.EndSessionCallback, id);
 
                 return signoutIframeUrl;
             }
 
-            // no sid, so nothing to cleanup
+            // no sessions, so nothing to cleanup
             return null;
         }
     }

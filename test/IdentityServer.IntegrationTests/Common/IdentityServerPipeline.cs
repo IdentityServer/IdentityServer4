@@ -66,16 +66,17 @@ namespace IdentityServer4.IntegrationTests.Common
 
             Server = new TestServer(builder);
             Handler = Server.CreateHandler();
-
+            
             BrowserClient = new BrowserClient(new BrowserHandler(Handler));
             Client = new HttpClient(Handler);
         }
 
-        public event Action<IServiceCollection> OnConfigureServices = x => { };
+        public event Action<IServiceCollection> OnPreConfigureServices = x => { };
+        public event Action<IServiceCollection> OnPostConfigureServices = x => { };
 
         public void ConfigureServices(IServiceCollection services)
         {
-            OnConfigureServices(services);
+            OnPreConfigureServices(services);
 
             services.AddDataProtection();
 
@@ -96,6 +97,8 @@ namespace IdentityServer4.IntegrationTests.Common
             .AddInMemoryApiResources(ApiScopes)
             .AddTestUsers(Users)
             .AddDeveloperSigningCredential(persistKey: false);
+
+            OnPostConfigureServices(services);
         }
 
         public event Action<IApplicationBuilder> OnPreConfigure = x => { };

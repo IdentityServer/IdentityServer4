@@ -6,43 +6,46 @@ using IdentityServer4.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using IdentityServer4.Services;
+using IdentityServer4.Stores;
+using IdentityServer4.Models;
 
 namespace IdentityServer4.UnitTests.Common
 {
-    public class MockHttpContextAccessor : IHttpContextAccessor
+    class MockHttpContextAccessor : IHttpContextAccessor
     {
         HttpContext _context = new DefaultHttpContext();
 
-        public MockHttpContextAccessor(IdentityServerOptions options = null, 
-            ISessionIdService sessionIdService = null,
-            IClientSessionService clientSessionService = null)
+        public MockHttpContextAccessor(
+            IdentityServerOptions options = null,
+            IUserSession userSession = null,
+            IMessageStore<EndSession> endSessionStore = null)
         {
             options = options ?? TestIdentityServerOptions.Create();
 
             var services = new ServiceCollection();
             services.AddSingleton(options);
-            if (sessionIdService == null)
+            if (userSession == null)
             {
-                services.AddTransient<ISessionIdService, DefaultSessionIdService>();
+                services.AddTransient<IUserSession, DefaultUserSession>();
             }
             else
             {
-                services.AddSingleton(sessionIdService);
+                services.AddSingleton(userSession);
             }
 
-            if (clientSessionService == null)
+            if (endSessionStore == null)
             {
-                services.AddTransient<IClientSessionService, DefaultClientSessionService>();
+                services.AddTransient<IMessageStore<EndSession>, ProtectedDataMessageStore<EndSession>>();
             }
             else
             {
-                services.AddSingleton(clientSessionService);
+                services.AddSingleton(endSessionStore);
             }
 
             _context.RequestServices = services.BuildServiceProvider();
 
             // setups the authN middleware feature
-            _context.SetUser(null);
+            //_context.SetUser(null);
         }
 
         public HttpContext HttpContext
