@@ -89,10 +89,10 @@ namespace IdentityServer4.Stores
         {
             if (names == null) throw new ArgumentNullException(nameof(names));
 
-            var api = from a in _apiResources
+            var api = (from a in _apiResources
                       from s in a.Scopes
                       where names.Contains(s.Name)
-                      select a;
+                      select a).Distinct();
 
             return Task.FromResult(api);
         }
