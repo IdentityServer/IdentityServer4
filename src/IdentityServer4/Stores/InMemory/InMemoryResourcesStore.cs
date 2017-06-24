@@ -43,7 +43,7 @@ namespace IdentityServer4.Stores
         /// Gets all resources.
         /// </summary>
         /// <returns></returns>
-        public Task<Resources> GetAllResources()
+        public Task<Resources> GetAllResourcesAsync()
         {
             var result = new Resources(_identityResources, _apiResources);
             return Task.FromResult(result);

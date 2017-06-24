@@ -56,7 +56,7 @@ namespace IdentityServer4.ResponseHandling
             }
 
             // expected scope not present
-            if (await AreExpectedScopesPresent(validationResult) == false)
+            if (await AreExpectedScopesPresentAsync(validationResult) == false)
             {
                 return response;
             }
@@ -83,7 +83,7 @@ namespace IdentityServer4.ResponseHandling
         /// </summary>
         /// <param name="validationResult">The validation result.</param>
         /// <returns></returns>
-        protected virtual Task<bool> AreExpectedScopesPresent(IntrospectionRequestValidationResult validationResult)
+        protected virtual Task<bool> AreExpectedScopesPresentAsync(IntrospectionRequestValidationResult validationResult)
         {
             var apiScopes = validationResult.Api.Scopes.Select(x => x.Name);
             var tokenScopesThatMatchApi = validationResult.Claims.Where(

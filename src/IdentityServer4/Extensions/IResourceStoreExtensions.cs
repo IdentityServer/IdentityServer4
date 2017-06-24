@@ -56,7 +56,7 @@ namespace IdentityServer4.Stores
         /// <returns></returns>
         public static async Task<Resources> GetAllEnabledResourcesAsync(this IResourceStore store)
         {
-            var resources = await store.GetAllResources();
+            var resources = await store.GetAllResourcesAsync();
             return resources.FilterEnabled();
         }
 
