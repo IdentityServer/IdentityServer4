@@ -15,6 +15,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using IdentityServer4.Configuration;
 
 namespace IdentityServer4.Services
 {
@@ -54,16 +55,23 @@ namespace IdentityServer4.Services
         protected readonly IEventService Events;
 
         /// <summary>
+        /// The IdentityServerOptions
+        /// </summary>
+        protected readonly IdentityServerOptions Options;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="DefaultTokenService" /> class. This overloaded constructor is deprecated and will be removed in 3.0.0.
         /// </summary>
+        /// <param name="options">The options.</param>
         /// <param name="context">The context.</param>
         /// <param name="claimsProvider">The claims provider.</param>
         /// <param name="referenceTokenStore">The reference token store.</param>
         /// <param name="creationService">The signing service.</param>
         /// <param name="events">The events service.</param>
         /// <param name="logger">The logger.</param>
-        public DefaultTokenService(IHttpContextAccessor context, IClaimsService claimsProvider, IReferenceTokenStore referenceTokenStore, ITokenCreationService creationService, IEventService events, ILogger<DefaultTokenService> logger)
+        public DefaultTokenService(IdentityServerOptions options, IHttpContextAccessor context, IClaimsService claimsProvider, IReferenceTokenStore referenceTokenStore, ITokenCreationService creationService, IEventService events, ILogger<DefaultTokenService> logger)
         {
+            Options = options;
             Logger = logger;
             Context = context;
             ClaimsProvider = claimsProvider;
@@ -94,7 +102,7 @@ namespace IdentityServer4.Services
             }
 
             // add iat claim
-            claims.Add(new Claim(JwtClaimTypes.IssuedAt, IdentityServerDateTime.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer));
+            claims.Add(new Claim(JwtClaimTypes.IssuedAt, Options.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer));
 
             // add at_hash claim
             if (request.AccessTokenToHash.IsPresent())
@@ -124,6 +132,7 @@ namespace IdentityServer4.Services
 
             var token = new Token(OidcConstants.TokenTypes.IdentityToken)
             {
+                CreationTime = Options.UtcNow,
                 Audiences = { request.ValidatedRequest.Client.ClientId },
                 Issuer = issuer,
                 Lifetime = request.ValidatedRequest.Client.IdentityTokenLifetime,
@@ -161,6 +170,7 @@ namespace IdentityServer4.Services
             var issuer = Context.HttpContext.GetIdentityServerIssuerUri();
             var token = new Token(OidcConstants.TokenTypes.AccessToken)
             {
+                CreationTime = Options.UtcNow,
                 Audiences = { string.Format(Constants.AccessTokenAudience, issuer.EnsureTrailingSlash()) },
                 Issuer = issuer,
                 Lifetime = request.ValidatedRequest.AccessTokenLifetime,

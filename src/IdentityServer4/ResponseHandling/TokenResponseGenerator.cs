@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using IdentityServer4.Configuration;
 
 namespace IdentityServer4.ResponseHandling
 {
@@ -47,15 +48,22 @@ namespace IdentityServer4.ResponseHandling
         protected readonly IClientStore Clients;
 
         /// <summary>
+        ///  The IdentityServerOptions
+        /// </summary>
+        protected readonly IdentityServerOptions Options;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="TokenResponseGenerator" /> class.
         /// </summary>
+        /// <param name="options">The options.</param>
         /// <param name="tokenService">The token service.</param>
         /// <param name="refreshTokenService">The refresh token service.</param>
         /// <param name="resources">The resources.</param>
         /// <param name="clients">The clients.</param>
         /// <param name="logger">The logger.</param>
-        public TokenResponseGenerator(ITokenService tokenService, IRefreshTokenService refreshTokenService, IResourceStore resources, IClientStore clients, ILogger<TokenResponseGenerator> logger)
+        public TokenResponseGenerator(IdentityServerOptions options, ITokenService tokenService, IRefreshTokenService refreshTokenService, IResourceStore resources, IClientStore clients, ILogger<TokenResponseGenerator> logger)
         {
+            Options = options;
             TokenService = tokenService;
             RefreshTokenService = refreshTokenService;
             Resources = resources;
@@ -200,7 +208,7 @@ namespace IdentityServer4.ResponseHandling
             }
             else
             {
-                oldAccessToken.CreationTime = IdentityServerDateTime.UtcNow;
+                oldAccessToken.CreationTime = Options.UtcNow;
                 oldAccessToken.Lifetime = request.ValidatedRequest.AccessTokenLifetime;
 
                 accessTokenString = await TokenService.CreateSecurityTokenAsync(oldAccessToken);

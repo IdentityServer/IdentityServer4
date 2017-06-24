@@ -180,7 +180,7 @@ namespace IdentityServer4.Endpoints.Results
                 ErrorDescription = Response.ErrorDescription
             };
 
-            var message = new Message<ErrorMessage>(errorModel);
+            var message = new Message<ErrorMessage>(errorModel, _options.UtcNow);
             var id = await _errorMessageStore.WriteAsync(message);
 
             var errorUrl = _options.UserInteraction.ErrorUrl;

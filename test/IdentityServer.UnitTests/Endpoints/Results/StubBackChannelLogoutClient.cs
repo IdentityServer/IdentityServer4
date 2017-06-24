@@ -7,7 +7,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
 {
     class StubBackChannelLogoutClient : BackChannelLogoutClient
     {
-        public StubBackChannelLogoutClient() : base(null, null, null)
+        public StubBackChannelLogoutClient() : base(null, null, null, null)
         {
         }
 

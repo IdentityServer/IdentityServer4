@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityModel;
+using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http;
@@ -17,17 +18,20 @@ namespace IdentityServer4.Infrastructure
         const int LogoutTokenLifetime = 5 * 60;
 
         //private readonly IHttpContextAccessor _httpContext;
+        private readonly IdentityServerOptions _options;
         private readonly IdentityServerTools _tools;
         private readonly HttpClient _backChannelClient;
         private readonly ILogger<BackChannelLogoutClient> _logger;
 
         public BackChannelLogoutClient(
             //IHttpContextAccessor httpContext,
+            IdentityServerOptions options,
             IdentityServerTools tools,
             HttpClient backChannelClient,
             ILogger<BackChannelLogoutClient> logger)
         {
             //_httpContext = httpContext;
+            _options = options;
             _tools = tools;
             _backChannelClient = backChannelClient;
             _logger = logger;
@@ -70,7 +74,7 @@ namespace IdentityServer4.Infrastructure
                 //new Claim(JwtClaimTypes.Issuer, _httpContext.HttpContext.GetIdentityServerIssuerUri()),
                 new Claim(JwtClaimTypes.Subject, client.SubjectId),
                 new Claim(JwtClaimTypes.Audience, client.ClientId),
-                new Claim(JwtClaimTypes.IssuedAt, IdentityServerDateTime.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer),
+                new Claim(JwtClaimTypes.IssuedAt, _options.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer),
                 new Claim(JwtClaimTypes.JwtId, CryptoRandom.CreateUniqueId(16)),
                 new Claim(JwtClaimTypes.Events, json, IdentityServerConstants.ClaimValueTypes.Json),
             };

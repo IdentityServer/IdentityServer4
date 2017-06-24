@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System;
 
 namespace Microsoft.AspNetCore.Http.Authentication
 {
@@ -27,8 +28,9 @@ namespace Microsoft.AspNetCore.Http.Authentication
         public static async Task SignInAsync(this AuthenticationManager manager, string subject, string name, params Claim[] claims)
         {
             var scheme = manager.GetIdentityServerAuthenticationScheme();
+            var options = manager.HttpContext.RequestServices.GetRequiredService<IdentityServerOptions>();
 
-            var principal = IdentityServerPrincipal.Create(subject, name, claims);
+            var principal = IdentityServerPrincipal.Create(subject, name, options.UtcNow, claims);
             await manager.SignInAsync(scheme, principal);
         }
 
@@ -44,8 +46,9 @@ namespace Microsoft.AspNetCore.Http.Authentication
         public static async Task SignInAsync(this AuthenticationManager manager, string subject, string name, AuthenticationProperties properties, params Claim[] claims)
         {
             var scheme = manager.GetIdentityServerAuthenticationScheme();
+            var options = manager.HttpContext.RequestServices.GetRequiredService<IdentityServerOptions>();
 
-            var principal = IdentityServerPrincipal.Create(subject, name, claims);
+            var principal = IdentityServerPrincipal.Create(subject, name, options.UtcNow, claims);
             await manager.SignInAsync(scheme, principal, properties);
         }
 
@@ -61,8 +64,9 @@ namespace Microsoft.AspNetCore.Http.Authentication
         public static async Task SignInAsync(this AuthenticationManager manager, string subject, string name, string identityProvider, params Claim[] claims)
         {
             var scheme = manager.GetIdentityServerAuthenticationScheme();
+            var options = manager.HttpContext.RequestServices.GetRequiredService<IdentityServerOptions>();
 
-            var principal = IdentityServerPrincipal.Create(subject, name, identityProvider, claims);
+            var principal = IdentityServerPrincipal.Create(subject, name, identityProvider, options.UtcNow, claims);
             await manager.SignInAsync(scheme, principal);
         }
 
@@ -79,8 +83,9 @@ namespace Microsoft.AspNetCore.Http.Authentication
         public static async Task SignInAsync(this AuthenticationManager manager, string subject, string name, string identityProvider, AuthenticationProperties properties, params Claim[] claims)
         {
             var scheme = manager.GetIdentityServerAuthenticationScheme();
+            var options = manager.HttpContext.RequestServices.GetRequiredService<IdentityServerOptions>();
 
-            var principal = IdentityServerPrincipal.Create(subject, name, identityProvider, claims);
+            var principal = IdentityServerPrincipal.Create(subject, name, identityProvider, options.UtcNow, claims);
             await manager.SignInAsync(scheme, principal, properties);
         }
 
@@ -96,8 +101,9 @@ namespace Microsoft.AspNetCore.Http.Authentication
         public static async Task SignInAsync(this AuthenticationManager manager, string subject, string name, IEnumerable<string> authenticationMethods, params Claim[] claims)
         {
             var scheme = manager.GetIdentityServerAuthenticationScheme();
+            var options = manager.HttpContext.RequestServices.GetRequiredService<IdentityServerOptions>();
 
-            var principal = IdentityServerPrincipal.Create(subject, name, authenticationMethods, claims);
+            var principal = IdentityServerPrincipal.Create(subject, name, authenticationMethods, options.UtcNow, claims);
             await manager.SignInAsync(scheme, principal);
         }
 
@@ -114,8 +120,9 @@ namespace Microsoft.AspNetCore.Http.Authentication
         public static async Task SignInAsync(this AuthenticationManager manager, string subject, string name, IEnumerable<string> authenticationMethods, AuthenticationProperties properties, params Claim[] claims)
         {
             var scheme = manager.GetIdentityServerAuthenticationScheme();
+            var options = manager.HttpContext.RequestServices.GetRequiredService<IdentityServerOptions>();
 
-            var principal = IdentityServerPrincipal.Create(subject, name, authenticationMethods, claims);
+            var principal = IdentityServerPrincipal.Create(subject, name, authenticationMethods, options.UtcNow, claims);
             await manager.SignInAsync(scheme, principal, properties);
         }
 
@@ -132,8 +139,9 @@ namespace Microsoft.AspNetCore.Http.Authentication
         public static async Task SignInAsync(this AuthenticationManager manager, string sub, string name, string identityProvider, IEnumerable<string> authenticationMethods, params Claim[] claims)
         {
             var scheme = manager.GetIdentityServerAuthenticationScheme();
+            var options = manager.HttpContext.RequestServices.GetRequiredService<IdentityServerOptions>();
 
-            var principal = IdentityServerPrincipal.Create(sub, name, identityProvider, authenticationMethods ,claims);
+            var principal = IdentityServerPrincipal.Create(sub, name, identityProvider, authenticationMethods, options.UtcNow, claims);
             await manager.SignInAsync(scheme, principal);
         }
 
@@ -151,8 +159,9 @@ namespace Microsoft.AspNetCore.Http.Authentication
         public static async Task SignInAsync(this AuthenticationManager manager, string sub, string name, string identityProvider, IEnumerable<string> authenticationMethods, AuthenticationProperties properties, params Claim[] claims)
         {
             var scheme = manager.GetIdentityServerAuthenticationScheme();
+            var options = manager.HttpContext.RequestServices.GetRequiredService<IdentityServerOptions>();
 
-            var principal = IdentityServerPrincipal.Create(sub, name, identityProvider, authenticationMethods, claims);
+            var principal = IdentityServerPrincipal.Create(sub, name, identityProvider, authenticationMethods, options.UtcNow, claims);
             await manager.SignInAsync(scheme, principal, properties);
         }
 

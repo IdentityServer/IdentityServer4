@@ -86,7 +86,7 @@ namespace IdentityServer4.Services
                         SubjectId = user?.GetSubjectId(),
                         SessionId = sid,
                         ClientIds = clientIds
-                    });
+                    }, _options.UtcNow);
                     var id = await _logoutMessageStore.WriteAsync(msg);
                     return id;
                 }
@@ -128,7 +128,7 @@ namespace IdentityServer4.Services
             if (subject == null) throw new ArgumentNullException(nameof(subject), "User is not currently authenticated, and no subject id passed");
 
             var consentRequest = new ConsentRequest(request, subject);
-            await _consentMessageStore.WriteAsync(consentRequest.Id, new Message<ConsentResponse>(consent));
+            await _consentMessageStore.WriteAsync(consentRequest.Id, new Message<ConsentResponse>(consent, _options.UtcNow));
         }
 
         public bool IsValidReturnUrl(string returnUrl)
