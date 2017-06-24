@@ -28,7 +28,7 @@ namespace IdentityServer4.Stores
             IPersistentGrantSerializer serializer,
             IHandleGenerationService handleGenerationService,
             ILogger<DefaultAuthorizationCodeStore> logger)
-            : base(Constants.PersistedGrantTypes.AuthorizationCode, store, serializer, handleGenerationService, logger)
+            : base(IdentityServerConstants.PersistedGrantTypes.AuthorizationCode, store, serializer, handleGenerationService, logger)
         {
         }
 
