@@ -42,7 +42,7 @@ namespace IdentityServer4.Stores
         {
             var query =
                 from client in _clients
-                where client.ClientId == clientId && client.Enabled
+                where client.ClientId == clientId
                 select client;
             
             return Task.FromResult(query.SingleOrDefault());
