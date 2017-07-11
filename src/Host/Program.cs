@@ -6,6 +6,7 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using System;
 using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace Host
 {
@@ -15,13 +16,31 @@ namespace Host
         {
             Console.Title = "IdentityServer4";
 
+            // todo
+            //var serilog = new LoggerConfiguration()
+            //    .MinimumLevel.Verbose()
+            //    .Enrich.FromLogContext()
+            //    .WriteTo.File(@"identityserver4_log.txt")
+            //    .WriteTo.LiterateConsole(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message}{NewLine}{Exception}{NewLine}");
+
+            // todo
+            //loggerFactory
+            //    //.WithFilter(new FilterLoggerSettings
+            //    //{
+            //    //    { "IdentityServer4", LogLevel.Debug },
+            //    //    { "Microsoft", LogLevel.Information },
+            //    //    { "System", LogLevel.Error }
+            //    //})
+            //    //.AddSerilog(serilog.CreateLogger());
+
+
             var host = new WebHostBuilder()
                 //.UseWebListener(options =>
                 //{
                 //    options.ListenerSettings.Authentication.Schemes = AuthenticationSchemes.Negotiate | AuthenticationSchemes.NTLM;
                 //    options.ListenerSettings.Authentication.AllowAnonymous = true;
                 //})
-                .ConfigureLogging(b => b.AddConsole())
+                .ConfigureLogging(builder => builder.AddConsole())
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()

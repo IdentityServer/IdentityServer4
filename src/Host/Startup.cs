@@ -19,26 +19,11 @@ namespace Host
 {
     public class Startup
     {
-        public Startup(ILoggerFactory loggerFactory, IHostingEnvironment environment)
-        {
-            //var serilog = new LoggerConfiguration()
-            //    .MinimumLevel.Verbose()
-            //    .Enrich.FromLogContext()
-            //    .WriteTo.File(@"identityserver4_log.txt");
-                
-            //if (environment.IsDevelopment())
-            //{
-            //    serilog.WriteTo.LiterateConsole(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message}{NewLine}{Exception}{NewLine}");
-            //}
+        public IHostingEnvironment Environment { get; }
 
-            //loggerFactory
-            //    //.WithFilter(new FilterLoggerSettings
-            //    //{
-            //    //    { "IdentityServer4", LogLevel.Debug },
-            //    //    { "Microsoft", LogLevel.Information },
-            //    //    { "System", LogLevel.Error }
-            //    //})
-            //    //.AddSerilog(serilog.CreateLogger());
+        public Startup(IHostingEnvironment environment)
+        {
+            Environment = environment;
         }
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
@@ -69,7 +54,6 @@ namespace Host
             // todo: move to AddIdentityServer()
             services.AddCookieAuthentication(IdentityServerConstants.DefaultCookieAuthenticationScheme);
             services.AddCookieAuthentication(IdentityServerConstants.ExternalCookieAuthenticationScheme);
-
             services.AddExternalIdentityProviders();
 
             return services.BuildServiceProvider(validateScopes: true);
@@ -80,32 +64,8 @@ namespace Host
             app.UseDeveloperExceptionPage();
 
             app.UseIdentityServer();
-            
-
-            
-            //app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
-            //{
-            //    AuthenticationScheme = "adfs",
-            //    SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
-            //    SignOutScheme = IdentityServerConstants.SignoutScheme,
-            //    AutomaticChallenge = false,
-            //    DisplayName = "ADFS",
-            //    Authority = "https://adfs.leastprivilege.vm/adfs",
-            //    ClientId = "c0ea8d99-f1e7-43b0-a100-7dee3f2e5c3c",
-            //    ResponseType = "id_token",
-            //    Scope = { "openid profile" },
-            //    CallbackPath = new PathString("/signin-adfs"),
-            //    SignedOutCallbackPath = new PathString("/signout-callback-adfs"),
-            //    RemoteSignOutPath = new PathString("/signout-adfs"),
-            //    TokenValidationParameters = new TokenValidationParameters
-            //    {
-            //        NameClaimType = "name",
-            //        RoleClaimType = "role"
-            //    }
-            //});
-
+        
             app.UseAuthentication();
-
             app.UseStaticFiles();
             app.UseMvcWithDefaultRoute();
         }
