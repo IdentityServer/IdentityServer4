@@ -15,10 +15,11 @@ using Microsoft.AspNetCore.Builder;
 using FluentAssertions;
 using System.Net;
 using IdentityServer4.Configuration;
-using Microsoft.AspNetCore.Http.Authentication;
 using System.Net.Http;
 using System;
 using System.Threading;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace IdentityServer4.IntegrationTests.Common
 {
@@ -64,10 +65,12 @@ namespace IdentityServer4.IntegrationTests.Common
             {
                 var idSvrOptions = app.ApplicationServices.GetRequiredService<IdentityServerOptions>();
                 idSvrOptions.Authentication.AuthenticationScheme = CookieAuthenticationScheme;
-                app.UseCookieAuthentication(new CookieAuthenticationOptions
-                {
-                    AuthenticationScheme = CookieAuthenticationScheme
-                });
+
+                throw new Exception("needs re-work for aspnetcore2");
+                //app.UseCookieAuthentication(new CookieAuthenticationOptions
+                //{
+                //    AuthenticationScheme = CookieAuthenticationScheme
+                //});
             }
         }
 
@@ -124,7 +127,7 @@ namespace IdentityServer4.IntegrationTests.Common
             if (CookieAuthenticationScheme != null && Subject != null)
             {
                 var props = new AuthenticationProperties();
-                await ctx.Authentication.SignInAsync(CookieAuthenticationScheme, Subject, props);
+                await ctx.SignInAsync(CookieAuthenticationScheme, Subject, props);
                 Subject = null;
                 var url = ctx.Request.Query[this.Options.UserInteraction.LoginReturnUrlParameter].FirstOrDefault();
                 if (url != null)
