@@ -214,7 +214,7 @@ namespace IdentityServer4.Extensions
             if (url != null)
             {
                 var uri = new Uri(url);
-                if (uri.Scheme == "http" || uri.Scheme = "https")
+                if (uri.Scheme == "http" || uri.Scheme == "https")
                 {
                     return $"{uri.Scheme}://{uri.Authority}";
                 }
