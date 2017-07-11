@@ -10,6 +10,7 @@ using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features.Authentication;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.Services
 {
@@ -48,7 +49,7 @@ namespace IdentityServer4.Services
 
         public async Task<string> GetCurrentSessionIdAsync()
         {
-            var info = await HttpContext.Authentication.GetAuthenticateInfoAsync(AuthenticationScheme);
+            var info = await HttpContext.AuthenticateAsync(AuthenticationScheme);
             if (info != null)
             {
                 if (info.Properties.Items.ContainsKey(SessionIdKey))
@@ -89,9 +90,9 @@ namespace IdentityServer4.Services
             }
         }
 
-        public Task<ClaimsPrincipal> GetIdentityServerUserAsync()
+        public async Task<ClaimsPrincipal> GetIdentityServerUserAsync()
         {
-            return HttpContext.Authentication.AuthenticateAsync(AuthenticationScheme);
+            return (await HttpContext.AuthenticateAsync(AuthenticationScheme)).Principal;
         }
 
         public async Task AddClientIdAsync(string clientId)
@@ -126,7 +127,7 @@ namespace IdentityServer4.Services
         // client list helpers
         async Task<string> GetClientListPropertyValueAsync()
         {
-            var info = await HttpContext.Authentication.GetAuthenticateInfoAsync(AuthenticationScheme);
+            var info = await HttpContext.AuthenticateAsync(AuthenticationScheme);
             if (info == null)
             {
                 _logger.LogWarning("No authenticated user");
@@ -150,7 +151,7 @@ namespace IdentityServer4.Services
 
         async Task SetClientListPropertyValueAsync(string value)
         {
-            var info = await HttpContext.Authentication.GetAuthenticateInfoAsync(AuthenticationScheme);
+            var info = await HttpContext.AuthenticateAsync(AuthenticationScheme);
             if (info == null || info.Principal == null)
             {
                 _logger.LogError("No authenticated user");
@@ -166,7 +167,7 @@ namespace IdentityServer4.Services
                 info.Properties.Items[ClientListKey] = value;
             }
 
-            await HttpContext.Authentication.SignInAsync(AuthenticationScheme, info.Principal, info.Properties);
+            await HttpContext.SignInAsync(AuthenticationScheme, info.Principal, info.Properties);
         }
 
         public IEnumerable<string> DecodeList(string value)

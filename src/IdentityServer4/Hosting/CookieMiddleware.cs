@@ -25,25 +25,29 @@ namespace IdentityServer4.Hosting
                 if (options.Authentication.AuthenticationScheme.IsMissing())
                 {
                     logger.LogDebug("Using built-in CookieAuthentication middleware with scheme: {authenticationScheme}", options.Authentication.EffectiveAuthenticationScheme);
-                    app.UseCookieAuthentication(new CookieAuthenticationOptions
-                    {
-                        AuthenticationScheme = options.Authentication.EffectiveAuthenticationScheme,
-                        AutomaticAuthenticate = true,
-                        SlidingExpiration = options.Authentication.CookieSlidingExpiration,
-                        ExpireTimeSpan = options.Authentication.CookieLifetime,
-                        CookieName = IdentityServerConstants.DefaultCookieAuthenticationScheme,
-                        LoginPath = ExtractLocalUrl(options.UserInteraction.LoginUrl),
-                        LogoutPath = ExtractLocalUrl(options.UserInteraction.LogoutUrl),
-                        ReturnUrlParameter = options.UserInteraction.LoginReturnUrlParameter
-                    });
+
+                    // todo: must be done in DI
+                    //app.UseCookieAuthentication(new CookieAuthenticationOptions
+                    //{
+                    //    AuthenticationScheme = options.Authentication.EffectiveAuthenticationScheme,
+                    //    AutomaticAuthenticate = true,
+                    //    SlidingExpiration = options.Authentication.CookieSlidingExpiration,
+                    //    ExpireTimeSpan = options.Authentication.CookieLifetime,
+                    //    CookieName = IdentityServerConstants.DefaultCookieAuthenticationScheme,
+                    //    LoginPath = ExtractLocalUrl(options.UserInteraction.LoginUrl),
+                    //    LogoutPath = ExtractLocalUrl(options.UserInteraction.LogoutUrl),
+                    //    ReturnUrlParameter = options.UserInteraction.LoginReturnUrlParameter
+                    //});
 
                     logger.LogDebug("Adding CookieAuthentication middleware for external authentication with scheme: {authenticationScheme}", IdentityServerConstants.ExternalCookieAuthenticationScheme);
-                    app.UseCookieAuthentication(new CookieAuthenticationOptions
-                    {
-                        AuthenticationScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
-                        AutomaticAuthenticate = false,
-                        AutomaticChallenge = false
-                    });
+
+                    // todo: must be done in DI
+                    //app.UseCookieAuthentication(new CookieAuthenticationOptions
+                    //{
+                    //    AuthenticationScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
+                    //    AutomaticAuthenticate = false,
+                    //    AutomaticChallenge = false
+                    //});
                 }
                 else
                 {
