@@ -5,6 +5,7 @@
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using System;
+using Microsoft.Extensions.Logging;
 
 namespace Host
 {
@@ -20,6 +21,7 @@ namespace Host
                 //    options.ListenerSettings.Authentication.Schemes = AuthenticationSchemes.Negotiate | AuthenticationSchemes.NTLM;
                 //    options.ListenerSettings.Authentication.AllowAnonymous = true;
                 //})
+                .ConfigureLogging(b => b.AddConsole())
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()

@@ -50,7 +50,7 @@ namespace IdentityServer4.Services
         public async Task<string> GetCurrentSessionIdAsync()
         {
             var info = await HttpContext.AuthenticateAsync(AuthenticationScheme);
-            if (info != null)
+            if (info != null && info.Properties != null)
             {
                 if (info.Properties.Items.ContainsKey(SessionIdKey))
                 {

@@ -38,7 +38,8 @@ namespace Host
                 //    { "Microsoft", LogLevel.Information },
                 //    { "System", LogLevel.Error }
                 //})
-                .AddSerilog(serilog.CreateLogger());
+                //.AddSerilog(serilog.CreateLogger());
+                .AddConsole(LogLevel.Debug);
         }
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
@@ -65,6 +66,9 @@ namespace Host
                 .AddTestUsers(TestUsers.Users);
 
             services.AddMvc();
+
+            services.AddCookieAuthentication(IdentityServerConstants.DefaultCookieAuthenticationScheme);
+            services.AddCookieAuthentication(IdentityServerConstants.ExternalCookieAuthenticationScheme);
 
             return services.BuildServiceProvider(validateScopes: true);
         }
