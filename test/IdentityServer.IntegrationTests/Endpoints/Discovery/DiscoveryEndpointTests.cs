@@ -29,5 +29,29 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Discovery
 
             issuer.Should().Be("https://server/root");
         }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task jwks_entries_should_contain_alg()
+        {
+            MockIdSvrUiPipeline pipeline = new MockIdSvrUiPipeline();
+            pipeline.Initialize("/ROOT");
+
+            var result = await pipeline.Client.GetAsync("https://server/root/.well-known/openid-configuration/jwks");
+
+            var json = await result.Content.ReadAsStringAsync();
+            var data = JObject.Parse(json);
+
+            var keys = data["keys"];
+            keys.Should().NotBeNull();
+
+            var key = keys[0];
+            key.Should().NotBeNull();
+
+            var alg = key["alg"];
+            alg.Should().NotBeNull();
+
+            alg.Value<string>().Should().Be(Constants.SigningAlgorithms.RSA_SHA_256);
+        }
     }
 }
