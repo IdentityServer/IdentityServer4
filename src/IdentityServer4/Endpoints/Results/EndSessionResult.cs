@@ -70,7 +70,7 @@ namespace IdentityServer4.Endpoints.Results
                 var logoutMessage = new LogoutMessage(validatedRequest);
                 if (logoutMessage.ContainsPayload)
                 {
-                    var msg = new Message<LogoutMessage>(logoutMessage);
+                    var msg = new Message<LogoutMessage>(logoutMessage, _options.UtcNow);
                     id = await _logoutMessageStore.WriteAsync(msg);
                 }
             }

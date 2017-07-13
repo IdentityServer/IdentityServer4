@@ -30,6 +30,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
 
             var code = new AuthorizationCode
             {
+                CreationTime = DateTime.UtcNow,
                 Subject = IdentityServerPrincipal.Create("123", "bob"),
                 ClientId = client.ClientId,
                 Lifetime = client.AuthorizationCodeLifetime,
@@ -64,6 +65,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
 
             var code = new AuthorizationCode
             {
+                CreationTime = DateTime.UtcNow,
                 ClientId = client.ClientId,
                 Lifetime = client.AuthorizationCodeLifetime,
                 Subject = IdentityServerPrincipal.Create("123", "bob"),

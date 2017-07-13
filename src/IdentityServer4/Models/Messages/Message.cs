@@ -3,6 +3,8 @@
 
 
 
+using System;
+
 namespace IdentityServer4.Models
 {
     /// <summary>
@@ -11,12 +13,21 @@ namespace IdentityServer4.Models
     public class Message<TModel>
     {
         /// <summary>
+        /// Should only be used from unit tests
+        /// </summary>
+        /// <param name="data"></param>
+        internal Message(TModel data) : this(data, DateTime.UtcNow)
+        {
+        }
+        
+        /// <summary>
         /// Initializes a new instance of the <see cref="Message{TModel}"/> class.
         /// </summary>
         /// <param name="data">The data.</param>
-        public Message(TModel data)
+        /// <param name="now">The current UTC date/time.</param>
+        public Message(TModel data, DateTime now)
         {
-            Created = IdentityServerDateTime.UtcNow.Ticks;
+            Created = now.Ticks;
             Data = data;
         }
 

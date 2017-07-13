@@ -65,7 +65,7 @@ namespace IdentityServer4.Hosting
             _logger.LogDebug("Augmenting SignInContext");
 
             context.Principal.AssertRequiredClaims();
-            context.Principal.AugmentMissingClaims();
+            context.Principal.AugmentMissingClaims(_options.UtcNow);
 
             _userSession.CreateSessionId(context);
         }

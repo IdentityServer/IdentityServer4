@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using Xunit;
+using IdentityServer4.Configuration;
 
 namespace IdentityServer4.UnitTests.Validation.Secrets
 {
@@ -20,13 +21,14 @@ namespace IdentityServer4.UnitTests.Validation.Secrets
         ISecretValidator _hashedSecretValidator = new HashedSharedSecretValidator(new Logger<HashedSharedSecretValidator>(new LoggerFactory()));
         IClientStore _clients = new InMemoryClientStore(ClientValidationTestClients.Get());
         SecretValidator _validator;
+        IdentityServerOptions _options = new IdentityServerOptions();
 
         public SecretValidation()
         {
-            _validator = new SecretValidator(new[]
-            {
-                _hashedSecretValidator
-            }, new Logger<SecretValidator>(new LoggerFactory()));
+            _validator = new SecretValidator(
+                _options,
+                new[] { _hashedSecretValidator }, 
+                new Logger<SecretValidator>(new LoggerFactory()));
         }
 
         [Fact]

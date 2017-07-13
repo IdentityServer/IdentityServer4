@@ -280,6 +280,7 @@ namespace IdentityServer4.UnitTests.Stores.Default
         {
             var consent1 = new Consent()
             {
+                CreationTime = DateTime.UtcNow,
                 ClientId = "client",
                 SubjectId = "123",
                 Scopes = new string[] { "foo", "bar" }
@@ -298,6 +299,7 @@ namespace IdentityServer4.UnitTests.Stores.Default
         {
             var consent1 = new Consent()
             {
+                CreationTime = DateTime.UtcNow,
                 ClientId = "client",
                 SubjectId = "123",
                 Scopes = new string[] { "foo", "bar" }

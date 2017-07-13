@@ -5,6 +5,7 @@
 using IdentityModel;
 using IdentityServer4.Validation;
 using System.Threading.Tasks;
+using IdentityServer4.Configuration;
 
 namespace IdentityServer4.Test
 {
@@ -14,14 +15,17 @@ namespace IdentityServer4.Test
     /// <seealso cref="IdentityServer4.Validation.IResourceOwnerPasswordValidator" />
     public class TestUserResourceOwnerPasswordValidator : IResourceOwnerPasswordValidator
     {
+        private readonly IdentityServerOptions _options;
         private readonly TestUserStore _users;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestUserResourceOwnerPasswordValidator"/> class.
         /// </summary>
+        /// <param name="options">The options.</param>
         /// <param name="users">The users.</param>
-        public TestUserResourceOwnerPasswordValidator(TestUserStore users)
+        public TestUserResourceOwnerPasswordValidator(IdentityServerOptions options, TestUserStore users)
         {
+            _options = options;
             _users = users;
         }
 
@@ -35,7 +39,7 @@ namespace IdentityServer4.Test
             if (_users.ValidateCredentials(context.UserName, context.Password))
             {
                 var user = _users.FindByUsername(context.UserName);
-                context.Result = new GrantValidationResult(user.SubjectId, OidcConstants.AuthenticationMethods.Password, user.Claims);
+                context.Result = new GrantValidationResult(user.SubjectId, OidcConstants.AuthenticationMethods.Password, _options.UtcNow, user.Claims);
             }
 
             return Task.FromResult(0);
