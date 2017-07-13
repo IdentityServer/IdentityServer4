@@ -280,6 +280,7 @@ namespace IdentityServer4.ResponseHandling
         {
             var webKeys = new List<Models.JsonWebKey>();
             var signingCredentials = await Keys.GetSigningCredentialsAsync();
+            var algorithm = signingCredentials?.Algorithm ?? Constants.SigningAlgorithms.RSA_SHA_256;
 
             foreach (var key in await Keys.GetValidationKeysAsync())
             {
@@ -302,7 +303,7 @@ namespace IdentityServer4.ResponseHandling
                         e = exponent,
                         n = modulus,
                         x5c = new[] { cert64 },
-                        alg = signingCredentials?.Algorithm ?? Constants.SigningAlgorithms.RSA_SHA_256
+                        alg = algorithm
                     };
 
                     webKeys.Add(webKey);
@@ -322,7 +323,7 @@ namespace IdentityServer4.ResponseHandling
                         kid = rsaKey.KeyId,
                         e = exponent,
                         n = modulus,
-                        alg = signingCredentials?.Algorithm ?? Constants.SigningAlgorithms.RSA_SHA_256
+                        alg = algorithm
                     };
 
                     webKeys.Add(webKey);
