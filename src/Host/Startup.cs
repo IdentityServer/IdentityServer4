@@ -14,6 +14,7 @@ using Serilog;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Quickstart.UI;
 using Microsoft.AspNetCore.Hosting;
+using Serilog.Sinks.SystemConsole.Themes;
 
 namespace Host
 {
@@ -28,7 +29,7 @@ namespace Host
                 
             if (environment.IsDevelopment())
             {
-                serilog.WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message}{NewLine}{Exception}{NewLine}");
+                serilog.WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message}{NewLine}{Exception}{NewLine}", theme: AnsiConsoleTheme.Literate);
             }
 
             loggerFactory
