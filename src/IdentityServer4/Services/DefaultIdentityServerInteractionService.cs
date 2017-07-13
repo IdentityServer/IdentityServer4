@@ -21,10 +21,9 @@ namespace IdentityServer4.Services
         private readonly IHttpContextAccessor _context;
         private readonly IMessageStore<LogoutMessage> _logoutMessageStore;
         private readonly IMessageStore<ErrorMessage> _errorMessageStore;
-        private readonly IMessageStore<ConsentResponse> _consentMessageStore;
+        private readonly IConsentMessageStore _consentMessageStore;
         private readonly IPersistedGrantService _grants;
-        private readonly IClientSessionService _clientSessionService;
-        private readonly ISessionIdService _sessionIdService;
+        private readonly IUserSession _userSession;
         private readonly ILogger _logger;
         private readonly ReturnUrlParser _returnUrlParser;
 
@@ -33,10 +32,9 @@ namespace IdentityServer4.Services
             IHttpContextAccessor context,
             IMessageStore<LogoutMessage> logoutMessageStore,
             IMessageStore<ErrorMessage> errorMessageStore,
-            IMessageStore<ConsentResponse> consentMessageStore,
-            IPersistedGrantService grants, 
-            IClientSessionService clientSessionService,
-            ISessionIdService sessionIdService,
+            IConsentMessageStore consentMessageStore,
+            IPersistedGrantService grants,
+            IUserSession userSession,
             ReturnUrlParser returnUrlParser,
             ILogger<DefaultIdentityServerInteractionService> logger)
         {
@@ -46,8 +44,7 @@ namespace IdentityServer4.Services
             _errorMessageStore = errorMessageStore;
             _consentMessageStore = consentMessageStore;
             _grants = grants;
-            _clientSessionService = clientSessionService;
-            _sessionIdService = sessionIdService;
+            _userSession = userSession;
             _returnUrlParser = returnUrlParser;
             _logger = logger;
         }
@@ -71,29 +68,28 @@ namespace IdentityServer4.Services
         public async Task<LogoutRequest> GetLogoutContextAsync(string logoutId)
         {
             var msg = await _logoutMessageStore.ReadAsync(logoutId);
-            var iframeUrl = await _context.HttpContext.GetIdentityServerSignoutFrameCallbackUrlAsync(msg?.Data?.SessionId);
-
-            if (iframeUrl != null && logoutId != null)
-            {
-                iframeUrl = iframeUrl.AddQueryString(_options.UserInteraction.LogoutIdParameter, logoutId);
-            }
-
+            var iframeUrl = await _context.HttpContext.GetIdentityServerSignoutFrameCallbackUrlAsync(msg?.Data);
             return new LogoutRequest(iframeUrl, msg?.Data);
         }
 
         public async Task<string> CreateLogoutContextAsync()
         {
-            var sid = await _sessionIdService.GetCurrentSessionIdAsync();
-            if (sid != null)
+            var user = await _userSession.GetIdentityServerUserAsync();
+            if (user != null)
             {
-                await _clientSessionService.EnsureClientListCookieAsync(sid);
-
-                var msg = new MessageWithId<LogoutMessage>(new LogoutMessage { SessionId = sid });
-
-                var id = msg.Id;
-                await _logoutMessageStore.WriteAsync(id, msg);
-
-                return id;
+                var clientIds = await _userSession.GetClientListAsync();
+                if (clientIds.Any())
+                {
+                    var sid = await _userSession.GetCurrentSessionIdAsync();
+                    var msg = new Message<LogoutMessage>(new LogoutMessage
+                    {
+                        SubjectId = user?.GetSubjectId(),
+                        SessionId = sid,
+                        ClientIds = clientIds
+                    });
+                    var id = await _logoutMessageStore.WriteAsync(msg);
+                    return id;
+                }
             }
 
             return null;
@@ -125,7 +121,7 @@ namespace IdentityServer4.Services
         {
             if (subject == null)
             {
-                var user = await _context.HttpContext.GetIdentityServerUserAsync();
+                var user = await _userSession.GetIdentityServerUserAsync();
                 subject = user?.GetSubjectId();
             }
 
@@ -153,7 +149,7 @@ namespace IdentityServer4.Services
 
         public async Task<IEnumerable<Consent>> GetAllUserConsentsAsync()
         {
-            var user = await _context.HttpContext.GetIdentityServerUserAsync();
+            var user = await _userSession.GetIdentityServerUserAsync();
             if (user != null)
             {
                 var subject = user.GetSubjectId();
@@ -165,7 +161,7 @@ namespace IdentityServer4.Services
 
         public async Task RevokeUserConsentAsync(string clientId)
         {
-            var user = await _context.HttpContext.GetIdentityServerUserAsync();
+            var user = await _userSession.GetIdentityServerUserAsync();
             if (user != null)
             {
                 var subject = user.GetSubjectId();
@@ -175,11 +171,11 @@ namespace IdentityServer4.Services
 
         public async Task RevokeTokensForCurrentSessionAsync()
         {
-            var user = await _context.HttpContext.GetIdentityServerUserAsync();
+            var user = await _userSession.GetIdentityServerUserAsync();
             if (user != null)
             {
                 var subject = user.GetSubjectId();
-                var clients = await _clientSessionService.GetClientListAsync();
+                var clients = await _userSession.GetClientListAsync();
                 foreach (var client in clients)
                 {
                     await _grants.RemoveAllGrantsAsync(subject, client);

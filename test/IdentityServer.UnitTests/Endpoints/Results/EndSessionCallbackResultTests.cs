@@ -6,7 +6,6 @@ using FluentAssertions;
 using IdentityServer4.Configuration;
 using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Extensions;
-using IdentityServer4.Models;
 using IdentityServer4.UnitTests.Common;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http;
@@ -22,10 +21,9 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
         EndSessionCallbackResult _subject;
 
         EndSessionCallbackValidationResult _result = new EndSessionCallbackValidationResult();
-        MockSessionIdService _mockSessionId = new MockSessionIdService();
-        MockClientSessionService _mockClientSession = new MockClientSessionService();
-        MockMessageStore<LogoutMessage> _mockLogoutMessageStore = new MockMessageStore<LogoutMessage>();
+        MockUserSession _mockUserSession = new MockUserSession();
         IdentityServerOptions _options = TestIdentityServerOptions.Create();
+        StubBackChannelLogoutClient _stubBackChannelLogoutClient = new StubBackChannelLogoutClient();
 
         DefaultHttpContext _context = new DefaultHttpContext();
 
@@ -35,18 +33,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
             _context.SetIdentityServerBasePath("/");
             _context.Response.Body = new MemoryStream();
 
-            _subject = new EndSessionCallbackResult(_result, _mockClientSession, _mockLogoutMessageStore, _options);
-        }
-
-        [Fact]
-        public async Task logout_message_should_be_removed()
-        {
-            _mockLogoutMessageStore.Messages.Add("1", new Message<LogoutMessage>(new LogoutMessage()));
-            _result.LogoutId = "1";
-
-            await _subject.ExecuteAsync(_context);
-
-            _mockLogoutMessageStore.Messages.Count.Should().Be(0);
+            _subject = new EndSessionCallbackResult(_result, _options, _stubBackChannelLogoutClient);
         }
 
         [Fact]
@@ -60,21 +47,10 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
         }
 
         [Fact]
-        public async Task success_should_clear_cookies()
-        {
-            _result.IsError = false;
-            _result.SessionId = "5";
-
-            await _subject.ExecuteAsync(_context);
-
-            _mockClientSession.RemoveCookieWasCalled.Should().BeTrue();
-        }
-
-        [Fact]
         public async Task success_should_render_html_and_iframes()
         {
             _result.IsError = false;
-            _result.ClientLogoutUrls = new string[] { "http://foo.com", "http://bar.com" };
+            _result.FrontChannelLogoutUrls = new string[] { "http://foo.com", "http://bar.com" };
 
             await _subject.ExecuteAsync(_context);
 
@@ -89,6 +65,27 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
                 html.Should().Contain("<iframe src='http://foo.com'></iframe>");
                 html.Should().Contain("<iframe src='http://bar.com'></iframe>");
             }
+        }
+
+        [Fact]
+        public async Task success_should_invoke_back_channel_clients()
+        {
+            _result.IsError = false;
+            _result.BackChannelLogouts = new BackChannelLogoutModel[]
+            {
+                new BackChannelLogoutModel
+                {
+                    ClientId = "test",
+                    LogoutUri = "http://test",
+                    SessionId = "999",
+                    SessionIdRequired = true,
+                    SubjectId = "123"
+                }
+            };
+
+            await _subject.ExecuteAsync(_context);
+
+            _stubBackChannelLogoutClient.SendLogoutsWasCalled.Should().BeTrue();
         }
     }
 }

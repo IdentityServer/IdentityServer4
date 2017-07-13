@@ -34,8 +34,9 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
         ILogger<AuthorizeEndpoint> _fakeLogger = TestLogger.Create<AuthorizeEndpoint>();
         StubAuthorizeRequestValidator _stubAuthorizeRequestValidator = new StubAuthorizeRequestValidator();
         StubAuthorizeInteractionResponseGenerator _stubInteractionGenerator = new StubAuthorizeInteractionResponseGenerator();
-        MockMessageStore<ConsentResponse> _mockUserConsentResponseMessageStore = new MockMessageStore<ConsentResponse>();
+        MockConsentMessageStore _mockUserConsentResponseMessageStore = new MockConsentMessageStore();
         StubAuthorizeResponseGenerator _stubAuthorizeResponseGenerator = new StubAuthorizeResponseGenerator();
+        MockUserSession _mockUserSession = new MockUserSession();
 
         public AuthorizeEndpointTests()
         {
@@ -70,7 +71,8 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
                 _stubAuthorizeRequestValidator,
                 _stubInteractionGenerator,
                 _mockUserConsentResponseMessageStore,
-                _stubAuthorizeResponseGenerator);
+                _stubAuthorizeResponseGenerator, 
+                _mockUserSession);
         }
 
         [Fact]
@@ -106,7 +108,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
         {
             _context.Request.Method = "GET";
             _context.Request.Path = new PathString("/connect/authorize");
-            _context.SetUser(_user);
+            _mockUserSession.User = _user;
 
             var result = await _subject.ProcessAsync(_context);
 
@@ -119,7 +121,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
         {
             _context.Request.Method = "GET";
             _context.Request.Path = new PathString("/connect/authorize/login");
-            _context.SetUser(_user);
+            _mockUserSession.User = _user;
 
             var result = await _subject.ProcessAsync(_context);
 
@@ -139,7 +141,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
             var request = new ConsentRequest(parameters, _user.GetSubjectId());
             _mockUserConsentResponseMessageStore.Messages.Add(request.Id, new Message<ConsentResponse>(new ConsentResponse()));
 
-            _context.SetUser(_user);
+            _mockUserSession.User = _user;
 
             _context.Request.Method = "GET";
             _context.Request.Path = new PathString("/connect/authorize/consent");
@@ -212,7 +214,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task ProcessAuthorizeAfterLoginAsync_no_user_should_return_error_page()
         {
-            _context.SetUser(null);
+            _mockUserSession.User = null;
 
             var result = await _subject.ProcessAuthorizeAfterLoginAsync(_context);
 
@@ -226,7 +228,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task ProcessAuthorizeWithConsentAsync_no_user_should_return_error_page()
         {
-            _context.SetUser(null);
+            _mockUserSession.User = null;
 
             var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
 
@@ -247,7 +249,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
             var request = new ConsentRequest(parameters, _user.GetSubjectId());
             _mockUserConsentResponseMessageStore.Messages.Add(request.Id, null);
 
-            _context.SetUser(_user);
+            _mockUserSession.User = _user;
 
             _context.Request.Method = "GET";
             _context.Request.Path = new PathString("/connect/authorize/consent");
@@ -272,7 +274,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
             var request = new ConsentRequest(parameters, _user.GetSubjectId());
             _mockUserConsentResponseMessageStore.Messages.Add(request.Id, new Message<ConsentResponse>(null));
 
-            _context.SetUser(_user);
+            _mockUserSession.User = _user;
 
             _context.Request.Method = "GET";
             _context.Request.Path = new PathString("/connect/authorize/consent");
@@ -297,7 +299,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
             var request = new ConsentRequest(parameters, _user.GetSubjectId());
             _mockUserConsentResponseMessageStore.Messages.Add(request.Id, new Message<ConsentResponse>(new ConsentResponse() {ScopesConsented = new string[] { "api1", "api2" } }));
 
-            _context.SetUser(_user);
+            _mockUserSession.User = _user;
 
             _context.Request.Method = "GET";
             _context.Request.Path = new PathString("/connect/authorize/consent");
@@ -321,7 +323,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
             var request = new ConsentRequest(parameters, _user.GetSubjectId());
             _mockUserConsentResponseMessageStore.Messages.Add(request.Id, new Message<ConsentResponse>(new ConsentResponse() { ScopesConsented = new string[] { "api1", "api2" } }));
 
-            _context.SetUser(_user);
+            _mockUserSession.User = _user;
 
             _context.Request.Method = "GET";
             _context.Request.Path = new PathString("/connect/authorize/consent");
@@ -336,7 +338,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task ProcessAuthorizeRequestAsync_custom_interaction_redirect_result_should_issue_redirect()
         {
-            _context.SetUser(_user);
+            _mockUserSession.User = _user;
             _stubInteractionGenerator.Response.RedirectUrl = "http://foo.com";
 
             var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);

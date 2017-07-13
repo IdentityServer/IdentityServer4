@@ -67,13 +67,13 @@ namespace IdentityServer4.Stores
         /// Gets all resources.
         /// </summary>
         /// <returns></returns>
-        public async Task<Resources> GetAllResources()
+        public async Task<Resources> GetAllResourcesAsync()
         {
             var key = AllKey;
 
             var all = await _allCache.GetAsync(key,
                 _options.Caching.ResourceStoreExpiration,
-                () => _inner.GetAllResources(),
+                () => _inner.GetAllResourcesAsync(),
                 _logger);
 
             return all;

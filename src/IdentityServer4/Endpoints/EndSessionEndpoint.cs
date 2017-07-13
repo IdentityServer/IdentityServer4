@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Collections.Specialized;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http;
+using IdentityServer4.Services;
 
 namespace IdentityServer4.Endpoints
 {
@@ -18,10 +19,15 @@ namespace IdentityServer4.Endpoints
     {
         private readonly IEndSessionRequestValidator _endSessionRequestValidator;
         private readonly ILogger _logger;
+        private readonly IUserSession _userSession;
 
-        public EndSessionEndpoint(IEndSessionRequestValidator endSessionRequestValidator, ILogger<EndSessionEndpoint> logger)
+        public EndSessionEndpoint(
+            IEndSessionRequestValidator endSessionRequestValidator,
+            IUserSession userSession,
+            ILogger<EndSessionEndpoint> logger)
         {
             _endSessionRequestValidator = endSessionRequestValidator;
+            _userSession = userSession;
             _logger = logger;
         }
 
@@ -58,7 +64,7 @@ namespace IdentityServer4.Endpoints
                 return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
             }
 
-            var user = await context.GetIdentityServerUserAsync();
+            var user = await _userSession.GetIdentityServerUserAsync();
 
             _logger.LogDebug("Processing signout request for {subjectId}", user?.GetSubjectId() ?? "anonymous");
 
@@ -91,7 +97,7 @@ namespace IdentityServer4.Endpoints
 
             if (result.IsError == false)
             {
-                _logger.LogInformation("Successful signout callback. Client logout iframe urls: {urls}", result.ClientLogoutUrls);
+                _logger.LogInformation("Successful signout callback. Client logout iframe urls: {urls}", result.FrontChannelLogoutUrls);
             }
 
             return new EndSessionCallbackResult(result);

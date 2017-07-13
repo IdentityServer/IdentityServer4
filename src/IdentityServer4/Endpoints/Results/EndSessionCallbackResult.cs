@@ -7,14 +7,12 @@ using IdentityServer4.Validation;
 using System.Threading.Tasks;
 using IdentityServer4.Hosting;
 using Microsoft.AspNetCore.Http;
-using IdentityServer4.Services;
 using Microsoft.Extensions.DependencyInjection;
-using IdentityServer4.Stores;
-using IdentityServer4.Models;
 using System.Net;
 using System;
 using IdentityServer4.Extensions;
 using IdentityServer4.Configuration;
+using IdentityServer4.Infrastructure;
 
 namespace IdentityServer4.Endpoints.Results
 {
@@ -24,47 +22,31 @@ namespace IdentityServer4.Endpoints.Results
 
         public EndSessionCallbackResult(EndSessionCallbackValidationResult result)
         {
-            if (result == null) throw new ArgumentNullException(nameof(result));
-
-            _result = result;
+            _result = result ?? throw new ArgumentNullException(nameof(result));
         }
 
         internal EndSessionCallbackResult(
             EndSessionCallbackValidationResult result,
-            IClientSessionService clientList,
-            IMessageStore<LogoutMessage> logoutMessageStore,
-            IdentityServerOptions options)
+            IdentityServerOptions options,
+            BackChannelLogoutClient backChannelClient)
             : this(result)
         {
-            _clientList = clientList;
-            _logoutMessageStore = logoutMessageStore;
             _options = options;
+            _backChannelClient = backChannelClient;
         }
 
-        private IClientSessionService _clientList;
-        private IMessageStore<LogoutMessage> _logoutMessageStore;
         private IdentityServerOptions _options;
+        private BackChannelLogoutClient _backChannelClient;
 
         void Init(HttpContext context)
         {
-            _clientList = _clientList ?? context.RequestServices.GetRequiredService<IClientSessionService>();
-            _logoutMessageStore = _logoutMessageStore ?? context.RequestServices.GetRequiredService<IMessageStore<LogoutMessage>>();
             _options = _options ?? context.RequestServices.GetRequiredService<IdentityServerOptions>();
+            _backChannelClient = _backChannelClient ?? context.RequestServices.GetRequiredService<BackChannelLogoutClient>();
         }
 
         public async Task ExecuteAsync(HttpContext context)
         {
             Init(context);
-
-            if (_result.SessionId != null)
-            {
-                _clientList.RemoveCookie(_result.SessionId);
-            }
-
-            if (_result.LogoutId != null)
-            {
-                await _logoutMessageStore.DeleteAsync(_result.LogoutId);
-            }
 
             if (_result.IsError)
             {
@@ -78,6 +60,11 @@ namespace IdentityServer4.Endpoints.Results
 
                 var html = GetHtml();
                 await context.Response.WriteHtmlAsync(html);
+                await context.Response.Body.FlushAsync();
+
+                // todo: discuss if we should do this before rendering/flushing
+                // or even from a forked task
+                await _backChannelClient.SendLogoutsAsync(_result.BackChannelLogouts);
             }
         }
 
@@ -87,7 +74,7 @@ namespace IdentityServer4.Endpoints.Results
             // the hash matches the embedded style element being used below
             var value = "default-src 'none'; style-src 'unsafe-inline' 'sha256-u+OupXgfekP+x/f6rMdoEAspPCYUtca912isERnoEjY='";
 
-            var origins = _result.ClientLogoutUrls?.Select(x => x.GetOrigin());
+            var origins = _result.FrontChannelLogoutUrls?.Select(x => x.GetOrigin());
             if (origins != null && origins.Any())
             {
                 var list = origins.Aggregate((x, y) => $"{x} {y}");
@@ -125,9 +112,9 @@ namespace IdentityServer4.Endpoints.Results
         {
             string framesHtml = null;
 
-            if (_result.ClientLogoutUrls != null && _result.ClientLogoutUrls.Any())
+            if (_result.FrontChannelLogoutUrls != null && _result.FrontChannelLogoutUrls.Any())
             {
-                var frameUrls = _result.ClientLogoutUrls.Select(url => $"<iframe src='{url}'></iframe>");
+                var frameUrls = _result.FrontChannelLogoutUrls.Select(url => $"<iframe src='{url}'></iframe>");
                 framesHtml = frameUrls.Aggregate((x, y) => x + y);
             }
 

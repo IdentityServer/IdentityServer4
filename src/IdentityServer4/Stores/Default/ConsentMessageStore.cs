@@ -7,27 +7,27 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Stores
 {
-    internal class CookieMessageStore<TModel> : IMessageStore<TModel>
+    internal class ConsentMessageStore : IConsentMessageStore
     {
-        private readonly MessageCookie<TModel> _cookie;
+        protected readonly MessageCookie<ConsentResponse> _cookie;
 
-        public CookieMessageStore(MessageCookie<TModel> cookie)
+        public ConsentMessageStore(MessageCookie<ConsentResponse> cookie)
         {
             _cookie = cookie;
         }
 
-        public Task DeleteAsync(string id)
+        public virtual Task DeleteAsync(string id)
         {
             _cookie.Clear(id);
             return Task.FromResult(0);
         }
 
-        public Task<Message<TModel>> ReadAsync(string id)
+        public virtual Task<Message<ConsentResponse>> ReadAsync(string id)
         {
             return Task.FromResult(_cookie.Read(id));
         }
 
-        public Task WriteAsync(string id, Message<TModel> message)
+        public virtual Task WriteAsync(string id, Message<ConsentResponse> message)
         {
             _cookie.Write(id, message);
             return Task.FromResult(0);

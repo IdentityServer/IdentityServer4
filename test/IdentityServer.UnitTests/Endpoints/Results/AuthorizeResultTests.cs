@@ -26,7 +26,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
 
         AuthorizeResponse _response = new AuthorizeResponse();
         IdentityServerOptions _options = new IdentityServerOptions();
-        MockClientSessionService _mockClientSession = new MockClientSessionService();
+        MockUserSession _mockUserSession = new MockUserSession();
         MockMessageStore<Models.ErrorMessage> _mockErrorMessageStore = new MockMessageStore<Models.ErrorMessage>();
 
         DefaultHttpContext _context = new DefaultHttpContext();
@@ -40,7 +40,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
             _options.UserInteraction.ErrorUrl = "~/error";
             _options.UserInteraction.ErrorIdParameter = "errorId";
 
-            _subject = new AuthorizeResult(_response, _options, _mockClientSession, _mockErrorMessageStore);
+            _subject = new AuthorizeResult(_response, _options, _mockUserSession, _mockErrorMessageStore);
         }
 
         [Fact]
@@ -75,7 +75,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
 
             await _subject.ExecuteAsync(_context);
 
-            _mockClientSession.Clients.Count.Should().Be(0);
+            _mockUserSession.Clients.Count.Should().Be(0);
             _context.Response.StatusCode.Should().Be(302);
             var location = _context.Response.Headers["Location"].First();
             location.Should().StartWith("http://client/callback");
@@ -93,7 +93,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
 
             await _subject.ExecuteAsync(_context);
 
-            _mockClientSession.Clients.Count.Should().Be(0);
+            _mockUserSession.Clients.Count.Should().Be(0);
             _context.Response.StatusCode.Should().Be(302);
             var location = _context.Response.Headers["Location"].First();
             location.Should().StartWith("http://client/callback");
@@ -111,7 +111,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
 
             await _subject.ExecuteAsync(_context);
 
-            _mockClientSession.Clients.Should().Contain("client");
+            _mockUserSession.Clients.Should().Contain("client");
         }
 
         [Fact]

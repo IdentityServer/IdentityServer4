@@ -78,5 +78,13 @@ namespace IdentityServer4
             /// <summary>This scope value MUST NOT be used with the OpenID Connect Implicit Client Implementer's Guide 1.0. See the OpenID Connect Basic Client Implementer's Guide 1.0 (http://openid.net/specs/openid-connect-implicit-1_0.html#OpenID.Basic) for its usage in that subset of OpenID Connect.</summary>
             public const string OfflineAccess = "offline_access";
         }
+
+        public static class PersistedGrantTypes
+        {
+            public const string AuthorizationCode = "authorization_code";
+            public const string ReferenceToken = "reference_token";
+            public const string RefreshToken = "refresh_token";
+            public const string UserConsent = "user_consent";
+        }
     }
 }

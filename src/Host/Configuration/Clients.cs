@@ -159,7 +159,7 @@ namespace Host.Configuration
                     AllowAccessTokensViaBrowser = true,
 
                     RedirectUris =  { "http://localhost:44077/signin-oidc" },
-                    LogoutUri = "http://localhost:44077/signout-oidc",
+                    FrontChannelLogoutUri = "http://localhost:44077/signout-oidc",
                     PostLogoutRedirectUris = { "http://localhost:44077/signout-callback-oidc" },
 
                     AllowedScopes =
@@ -183,7 +183,7 @@ namespace Host.Configuration
                     AllowedGrantTypes = GrantTypes.Implicit,
 
                     RedirectUris = { "http://localhost:44077/home/callback" },
-                    LogoutUri = "http://localhost:44077/signout-oidc",
+                    FrontChannelLogoutUri = "http://localhost:44077/signout-oidc",
                     PostLogoutRedirectUris = { "http://localhost:44077/" },
 
                     AllowedScopes = { IdentityServerConstants.StandardScopes.OpenId }
@@ -208,7 +208,7 @@ namespace Host.Configuration
                     AllowAccessTokensViaBrowser = false,
 
                     RedirectUris = { "http://localhost:21402/signin-oidc" },
-                    LogoutUri = "http://localhost:21402/signout-oidc",
+                    FrontChannelLogoutUri = "http://localhost:21402/signout-oidc",
                     PostLogoutRedirectUris = { "http://localhost:21402/signout-callback-oidc" },
 
                     AllowOfflineAccess = true,
@@ -252,7 +252,7 @@ namespace Host.Configuration
                     AllowedGrantTypes = GrantTypes.Implicit,
                     AllowAccessTokensViaBrowser = true,
                     RequireClientSecret = false,
-                    AccessTokenType = AccessTokenType.Reference,
+                    AccessTokenType = AccessTokenType.Jwt,
 
                     RedirectUris = 
                     {
@@ -270,7 +270,7 @@ namespace Host.Configuration
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Email,
-                        "api1", "api2.read_only"
+                        "api1", "api2.read_only", "api2.full_access"
                     }
                 }
             };

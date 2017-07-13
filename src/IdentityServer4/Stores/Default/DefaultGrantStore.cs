@@ -18,11 +18,30 @@ namespace IdentityServer4.Stores
     /// <typeparam name="T"></typeparam>
     public class DefaultGrantStore<T>
     {
-        private readonly string _grantType;
-        private readonly ILogger _logger;
-        private readonly IPersistedGrantStore _store;
-        private readonly IPersistentGrantSerializer _serializer;
-        private readonly IHandleGenerationService _handleGenerationService;
+        /// <summary>
+        /// The grant type being stored.
+        /// </summary>
+        protected string GrantType { get; }
+
+        /// <summary>
+        /// The logger.
+        /// </summary>
+        protected ILogger Logger { get; }
+
+        /// <summary>
+        /// The PersistedGrantStore.
+        /// </summary>
+        protected IPersistedGrantStore Store { get; }
+
+        /// <summary>
+        /// The PersistentGrantSerializer;
+        /// </summary>
+        protected IPersistentGrantSerializer Serializer { get; }
+
+        /// <summary>
+        /// The HandleGenerationService.
+        /// </summary>
+        protected IHandleGenerationService HandleGenerationService { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultGrantStore{T}"/> class.
@@ -41,11 +60,11 @@ namespace IdentityServer4.Stores
         {
             if (grantType.IsMissing()) throw new ArgumentNullException(nameof(grantType));
 
-            _grantType = grantType;
-            _store = store;
-            _serializer = serializer;
-            _handleGenerationService = handleGenerationService;
-            _logger = logger;
+            GrantType = grantType;
+            Store = store;
+            Serializer = serializer;
+            HandleGenerationService = handleGenerationService;
+            Logger = logger;
         }
 
         const string KeySeparator = ":";
@@ -55,9 +74,9 @@ namespace IdentityServer4.Stores
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        protected string GetHashedKey(string value)
+        protected virtual string GetHashedKey(string value)
         {
-            return (value + KeySeparator + _grantType).Sha256();
+            return (value + KeySeparator + GrantType).Sha256();
         }
 
         /// <summary>
@@ -65,25 +84,25 @@ namespace IdentityServer4.Stores
         /// </summary>
         /// <param name="key">The key.</param>
         /// <returns></returns>
-        protected async Task<T> GetItemAsync(string key)
+        protected virtual async Task<T> GetItemAsync(string key)
         {
             var hashedKey = GetHashedKey(key);
 
-            var grant = await _store.GetAsync(hashedKey);
-            if (grant != null && grant.Type == _grantType)
+            var grant = await Store.GetAsync(hashedKey);
+            if (grant != null && grant.Type == GrantType)
             {
                 try
                 {
-                    return _serializer.Deserialize<T>(grant.Data);
+                    return Serializer.Deserialize<T>(grant.Data);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError("Failed to deserailize JSON from grant store. Exception: {0}", ex.Message);
+                    Logger.LogError("Failed to deserailize JSON from grant store. Exception: {0}", ex.Message);
                 }
             }
             else
             {
-                _logger.LogDebug("{grantType} grant with value: {key} not found in store.", _grantType, key);
+                Logger.LogDebug("{grantType} grant with value: {key} not found in store.", GrantType, key);
             }
 
             return default(T);
@@ -98,9 +117,9 @@ namespace IdentityServer4.Stores
         /// <param name="created">The created.</param>
         /// <param name="lifetime">The lifetime.</param>
         /// <returns></returns>
-        protected async Task<string> CreateItemAsync(T item, string clientId, string subjectId, DateTime created, int lifetime)
+        protected virtual async Task<string> CreateItemAsync(T item, string clientId, string subjectId, DateTime created, int lifetime)
         {
-            var handle = await _handleGenerationService.GenerateAsync();
+            var handle = await HandleGenerationService.GenerateAsync();
             await StoreItemAsync(handle, item, clientId, subjectId, created, created.AddSeconds(lifetime));
             return handle;
         }
@@ -115,7 +134,7 @@ namespace IdentityServer4.Stores
         /// <param name="created">The created.</param>
         /// <param name="lifetime">The lifetime.</param>
         /// <returns></returns>
-        protected Task StoreItemAsync(string key, T item, string clientId, string subjectId, DateTime created, int lifetime)
+        protected virtual Task StoreItemAsync(string key, T item, string clientId, string subjectId, DateTime created, int lifetime)
         {
             return StoreItemAsync(key, item, clientId, subjectId, created, created.AddSeconds(lifetime));
         }
@@ -130,16 +149,16 @@ namespace IdentityServer4.Stores
         /// <param name="created">The created.</param>
         /// <param name="expiration">The expiration.</param>
         /// <returns></returns>
-        protected async Task StoreItemAsync(string key, T item, string clientId, string subjectId, DateTime created, DateTime? expiration)
+        protected virtual async Task StoreItemAsync(string key, T item, string clientId, string subjectId, DateTime created, DateTime? expiration)
         {
             key = GetHashedKey(key);
 
-            var json = _serializer.Serialize(item);
+            var json = Serializer.Serialize(item);
 
             var grant = new PersistedGrant
             {
                 Key = key,
-                Type = _grantType,
+                Type = GrantType,
                 ClientId = clientId,
                 SubjectId = subjectId,
                 CreationTime = created,
@@ -147,7 +166,7 @@ namespace IdentityServer4.Stores
                 Data = json
             };
 
-            await _store.StoreAsync(grant);
+            await Store.StoreAsync(grant);
         }
 
         /// <summary>
@@ -155,10 +174,10 @@ namespace IdentityServer4.Stores
         /// </summary>
         /// <param name="key">The key.</param>
         /// <returns></returns>
-        protected async Task RemoveItemAsync(string key)
+        protected virtual async Task RemoveItemAsync(string key)
         {
             key = GetHashedKey(key);
-            await _store.RemoveAsync(key);
+            await Store.RemoveAsync(key);
         }
 
         /// <summary>
@@ -167,9 +186,9 @@ namespace IdentityServer4.Stores
         /// <param name="subjectId">The subject identifier.</param>
         /// <param name="clientId">The client identifier.</param>
         /// <returns></returns>
-        protected async Task RemoveAllAsync(string subjectId, string clientId)
+        protected virtual async Task RemoveAllAsync(string subjectId, string clientId)
         {
-            await _store.RemoveAllAsync(subjectId, clientId, _grantType);
+            await Store.RemoveAllAsync(subjectId, clientId, GrantType);
         }
     }
 }

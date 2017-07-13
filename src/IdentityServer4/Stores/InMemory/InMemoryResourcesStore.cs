@@ -43,7 +43,7 @@ namespace IdentityServer4.Stores
         /// Gets all resources.
         /// </summary>
         /// <returns></returns>
-        public Task<Resources> GetAllResources()
+        public Task<Resources> GetAllResourcesAsync()
         {
             var result = new Resources(_identityResources, _apiResources);
             return Task.FromResult(result);
@@ -90,8 +90,8 @@ namespace IdentityServer4.Stores
             if (names == null) throw new ArgumentNullException(nameof(names));
 
             var api = from a in _apiResources
-                      from s in a.Scopes
-                      where names.Contains(s.Name)
+                      let scopes = (from s in a.Scopes where names.Contains(s.Name) select s)
+                      where scopes.Any()
                       select a;
 
             return Task.FromResult(api);

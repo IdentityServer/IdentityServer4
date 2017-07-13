@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Hosting
 {
-    public class AuthenticationMiddleware
+    class AuthenticationMiddleware
     {
         private readonly RequestDelegate _next;
 
