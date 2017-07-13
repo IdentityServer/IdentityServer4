@@ -99,9 +99,12 @@ namespace IdentityServer4.UnitTests.Validation
                 TestLogger.Create<TokenRequestValidator>());
         }
 
-        internal static ITokenCreationService CreateDefaultTokenCreator()
+        internal static ITokenCreationService CreateDefaultTokenCreator(IdentityServerOptions options = null)
         {
+            options = options ?? new IdentityServerOptions();
+
             return new DefaultTokenCreationService(
+                options,
                 new DefaultKeyMaterialService(new IValidationKeysStore[] { }, new DefaultSigningCredentialsStore(TestCert.LoadSigningCredentials())), TestLogger.Create<DefaultTokenCreationService>());
         }
 
@@ -156,8 +159,13 @@ namespace IdentityServer4.UnitTests.Validation
                 TestLogger.Create<AuthorizeRequestValidator>());
         }
 
-        public static TokenValidator CreateTokenValidator(IReferenceTokenStore store = null, IProfileService profile = null)
+        public static TokenValidator CreateTokenValidator(IReferenceTokenStore store = null, IProfileService profile = null, IdentityServerOptions options = null)
         {
+            if (options == null)
+            {
+                options = TestIdentityServerOptions.Create();
+            }
+
             if (profile == null)
             {
                 profile = new TestProfileService();
@@ -169,7 +177,6 @@ namespace IdentityServer4.UnitTests.Validation
             }
 
             var clients = CreateClientStore();
-            var options = TestIdentityServerOptions.Create();
             var context = new MockHttpContextAccessor(options);
             var logger = TestLogger.Create<TokenValidator>();
 
@@ -188,9 +195,10 @@ namespace IdentityServer4.UnitTests.Validation
             return validator;
         }
 
-        public static ClientSecretValidator CreateClientSecretValidator(IClientStore clients = null, SecretParser parser = null, SecretValidator validator = null)
+        public static ClientSecretValidator CreateClientSecretValidator(IClientStore clients = null, SecretParser parser = null, SecretValidator validator = null, IdentityServerOptions options = null)
         {
-            var options = TestIdentityServerOptions.Create();
+            options = options ?? TestIdentityServerOptions.Create();
+
             if (clients == null) clients = new InMemoryClientStore(TestClients.Get());
 
             if (parser == null)
@@ -212,7 +220,7 @@ namespace IdentityServer4.UnitTests.Validation
                     new PlainTextSharedSecretValidator(TestLogger.Create<PlainTextSharedSecretValidator>())
                 };
 
-                validator = new SecretValidator(validators, TestLogger.Create<SecretValidator>());
+                validator = new SecretValidator(options, validators, TestLogger.Create<SecretValidator>());
             }
 
             return new ClientSecretValidator(clients, parser, validator, new TestEventService(), TestLogger.Create<ClientSecretValidator>());

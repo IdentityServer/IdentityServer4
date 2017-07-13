@@ -13,10 +13,11 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
+using IdentityServer4.Configuration;
 
 namespace IdentityServer4.UnitTests.Services.Default
 {
-    public class DefaultConsentServiceTests : IDisposable
+    public class DefaultConsentServiceTests
     {
         DefaultConsentService _subject;
         MockProfileService _mockMockProfileService = new MockProfileService();
@@ -24,12 +25,14 @@ namespace IdentityServer4.UnitTests.Services.Default
         ClaimsPrincipal _user;
         Client _client;
         TestUserConsentStore _userConsentStore = new TestUserConsentStore();
+        IdentityServerOptions _options = new IdentityServerOptions();
 
-        Func<DateTime> originalNowFunc;
         DateTime now;
 
         public DefaultConsentServiceTests()
         {
+            _options.UtcNowFunc = () => UtcNow;
+
             _client = new Client
             {
                 ClientId = "client"
@@ -43,10 +46,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                 new Claim(JwtClaimTypes.AuthenticationContextClassReference, "acr1")
             });
 
-            _subject = new DefaultConsentService(_userConsentStore);
-
-            originalNowFunc = IdentityServerDateTime.UtcNowFunc;
-            IdentityServerDateTime.UtcNowFunc = () => UtcNow;
+            _subject = new DefaultConsentService(_options, _userConsentStore);
         }
 
         public DateTime UtcNow
@@ -55,14 +55,6 @@ namespace IdentityServer4.UnitTests.Services.Default
             {
                 if (now > DateTime.MinValue) return now;
                 return DateTime.UtcNow;
-            }
-        }
-
-        public void Dispose()
-        {
-            if (originalNowFunc != null)
-            {
-                IdentityServerDateTime.UtcNowFunc = originalNowFunc;
             }
         }
 

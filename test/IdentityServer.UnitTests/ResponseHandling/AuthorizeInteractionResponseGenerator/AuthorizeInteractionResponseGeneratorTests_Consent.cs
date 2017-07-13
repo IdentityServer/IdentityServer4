@@ -91,6 +91,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
         public AuthorizeInteractionResponseGeneratorTests_Consent()
         {
             _subject = new AuthorizeInteractionResponseGenerator(
+                _options,
                 TestLogger.Create<AuthorizeInteractionResponseGenerator>(),
                 _mockConsent,
                 _fakeUserService);

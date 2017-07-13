@@ -205,7 +205,7 @@ namespace IdentityServer4.Validation
 
             await _authorizationCodeStore.RemoveAuthorizationCodeAsync(code);
 
-            if (authZcode.CreationTime.HasExceeded(authZcode.Lifetime))
+            if (authZcode.CreationTime.HasExceeded(authZcode.Lifetime, _options.UtcNow))
             {
                 LogError("Authorization code expired: {code}", code);
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
@@ -231,7 +231,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // validate code expiration
             /////////////////////////////////////////////
-            if (authZcode.CreationTime.HasExceeded(_validatedRequest.Client.AuthorizationCodeLifetime))
+            if (authZcode.CreationTime.HasExceeded(_validatedRequest.Client.AuthorizationCodeLifetime, _options.UtcNow))
             {
                 LogError("Authorization code is expired");
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
@@ -484,7 +484,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // check if refresh token has expired
             /////////////////////////////////////////////
-            if (refreshToken.CreationTime.HasExceeded(refreshToken.Lifetime))
+            if (refreshToken.CreationTime.HasExceeded(refreshToken.Lifetime, _options.UtcNow))
             {
                 LogError("Refresh token has expired");
 

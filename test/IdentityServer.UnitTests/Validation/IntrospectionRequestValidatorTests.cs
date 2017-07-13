@@ -11,6 +11,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using System;
 
 namespace IdentityServer4.UnitTests.Validation
 {
@@ -34,6 +35,7 @@ namespace IdentityServer4.UnitTests.Validation
         public async Task valid_token_should_successfully_validate()
         {
             var token = new Token {
+                CreationTime = DateTime.UtcNow,
                 Issuer = "http://op",
                 ClientId = "codeclient",
                 Lifetime = 1000,

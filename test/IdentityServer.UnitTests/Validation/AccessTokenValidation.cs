@@ -16,11 +16,12 @@ using Xunit;
 
 namespace IdentityServer4.UnitTests.Validation
 {
-    public class AccessTokenValidation : IDisposable
+    public class AccessTokenValidation
     {
         const string Category = "Access token validation";
 
         IClientStore _clients = Factory.CreateClientStore();
+        IdentityServerOptions _options = new IdentityServerOptions();
 
         static AccessTokenValidation()
         {
@@ -37,22 +38,10 @@ namespace IdentityServer4.UnitTests.Validation
             }
         }
 
-        Func<DateTime> originalNowFunc;
-        
         public AccessTokenValidation()
         {
-            originalNowFunc = IdentityServerDateTime.UtcNowFunc;
-            IdentityServerDateTime.UtcNowFunc = () => UtcNow;
+            _options.UtcNowFunc = () => UtcNow;
         }
-
-        public void Dispose()
-        {
-            if (originalNowFunc != null)
-            {
-                IdentityServerDateTime.UtcNowFunc = originalNowFunc;
-            }
-        }
-
 
         [Fact]
         [Trait("Category", Category)]
@@ -138,9 +127,10 @@ namespace IdentityServer4.UnitTests.Validation
             now = DateTime.UtcNow;
 
             var store = Factory.CreateReferenceTokenStore();
-            var validator = Factory.CreateTokenValidator(store);
+            var validator = Factory.CreateTokenValidator(store, options:_options);
 
             var token = TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "valid", 2, "read", "write");
+            token.CreationTime = now;
 
             var handle = await store.StoreReferenceTokenAsync(token);
 

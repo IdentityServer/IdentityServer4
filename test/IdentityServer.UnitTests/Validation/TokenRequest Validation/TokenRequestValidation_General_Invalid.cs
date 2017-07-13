@@ -57,6 +57,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
 
             var code = new AuthorizationCode
             {
+                CreationTime = DateTime.UtcNow,
                 ClientId = client.ClientId,
                 Lifetime = client.AuthorizationCodeLifetime,
                 IsOpenId = true,
@@ -108,6 +109,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
 
             var code = new AuthorizationCode
             {
+                CreationTime = DateTime.UtcNow,
                 ClientId = client.ClientId,
                 Lifetime = client.AuthorizationCodeLifetime,
                 IsOpenId = true,

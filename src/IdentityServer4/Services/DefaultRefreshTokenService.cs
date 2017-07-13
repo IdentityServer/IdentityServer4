@@ -8,6 +8,7 @@ using IdentityServer4.Stores;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using IdentityServer4.Configuration;
 
 namespace IdentityServer4.Services
 {
@@ -27,12 +28,19 @@ namespace IdentityServer4.Services
         protected readonly IRefreshTokenStore RefreshTokenStore;
 
         /// <summary>
+        /// The IdentityServerOptions
+        /// </summary>
+        protected readonly IdentityServerOptions Options;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="DefaultRefreshTokenService" /> class.
         /// </summary>
+        /// <param name="options">The options</param>
         /// <param name="refreshTokenStore">The refresh token store</param>
         /// <param name="logger">The logger</param>
-        public DefaultRefreshTokenService(IRefreshTokenStore refreshTokenStore, ILogger<DefaultRefreshTokenService> logger)
+        public DefaultRefreshTokenService(IdentityServerOptions options, IRefreshTokenStore refreshTokenStore, ILogger<DefaultRefreshTokenService> logger)
         {
+            Options = options;
             _logger = logger;
             RefreshTokenStore = refreshTokenStore;
         }
@@ -64,7 +72,7 @@ namespace IdentityServer4.Services
 
             var refreshToken = new RefreshToken
             {
-                CreationTime = IdentityServerDateTime.UtcNow,
+                CreationTime = Options.UtcNow,
                 Lifetime = lifetime,
                 AccessToken = accessToken
             };
@@ -106,7 +114,7 @@ namespace IdentityServer4.Services
 
                 // make sure we don't exceed absolute exp
                 // cap it at absolute exp
-                var currentLifetime = refreshToken.CreationTime.GetLifetimeInSeconds();
+                var currentLifetime = refreshToken.CreationTime.GetLifetimeInSeconds(Options.UtcNow);
                 _logger.LogDebug("Current lifetime: " + currentLifetime.ToString());
 
                 var newLifetime = currentLifetime + client.SlidingRefreshTokenLifetime;

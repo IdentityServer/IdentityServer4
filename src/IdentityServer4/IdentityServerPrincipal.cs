@@ -28,7 +28,24 @@ namespace IdentityServer4
             string name,
             params Claim[] claims)
         {
-            return Create(subject, name, IdentityServerConstants.LocalIdentityProvider, new[] { OidcConstants.AuthenticationMethods.Password }, claims);
+            return Create(subject, name, DateTime.UtcNow, claims);
+        }
+
+        /// <summary>
+        /// Creates a principal.
+        /// </summary>
+        /// <param name="subject">The subject.</param>
+        /// <param name="name">The name.</param>
+        /// <param name="authTime">The UTC date/time of authentication.</param>
+        /// <param name="claims">The claims.</param>
+        /// <returns></returns>
+        public static ClaimsPrincipal Create(
+            string subject,
+            string name,
+            DateTime authTime,
+            params Claim[] claims)
+        {
+            return Create(subject, name, IdentityServerConstants.LocalIdentityProvider, new[] { OidcConstants.AuthenticationMethods.Password }, authTime, claims);
         }
 
         /// <summary>
@@ -37,15 +54,17 @@ namespace IdentityServer4
         /// <param name="subject">The subject.</param>
         /// <param name="name">The name.</param>
         /// <param name="identityProvider">The identity provider.</param>
+        /// <param name="authTime">The UTC date/time of authentication.</param>
         /// <param name="claims">The claims.</param>
         /// <returns></returns>
         public static ClaimsPrincipal Create(
             string subject,
             string name,
             string identityProvider,
+            DateTime authTime,
             params Claim[] claims)
         {
-            return Create(subject, name, identityProvider, new[] { Constants.ExternalAuthenticationMethod }, claims);
+            return Create(subject, name, identityProvider, new[] { Constants.ExternalAuthenticationMethod }, authTime, claims);
         }
 
         /// <summary>
@@ -54,15 +73,17 @@ namespace IdentityServer4
         /// <param name="subject">The subject.</param>
         /// <param name="name">The name.</param>
         /// <param name="authenticationMethods">The authentication methods.</param>
+        /// <param name="authTime">The UTC date/time of authentication.</param>
         /// <param name="claims">The claims.</param>
         /// <returns></returns>
         public static ClaimsPrincipal Create(
             string subject,
             string name,
             IEnumerable<string> authenticationMethods,
+            DateTime authTime,
             params Claim[] claims)
         {
-            return Create(subject, name, IdentityServerConstants.LocalIdentityProvider, authenticationMethods, claims);
+            return Create(subject, name, IdentityServerConstants.LocalIdentityProvider, authenticationMethods, authTime, claims);
         }
 
         /// <summary>
@@ -72,6 +93,7 @@ namespace IdentityServer4
         /// <param name="name">The name.</param>
         /// <param name="identityProvider">The identity provider.</param>
         /// <param name="authenticationMethods">The authentication methods.</param>
+        /// <param name="authTime">The UTC date/time of authentication.</param>
         /// <param name="claims">The claims.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException">
@@ -88,6 +110,7 @@ namespace IdentityServer4
             string name,
             string identityProvider,
             IEnumerable<string> authenticationMethods,
+            DateTime authTime,
             params Claim[] claims)
         {
             if (subject.IsMissing()) throw new ArgumentNullException(nameof(subject));
@@ -100,7 +123,7 @@ namespace IdentityServer4
                 new Claim(JwtClaimTypes.Subject, subject),
                 new Claim(JwtClaimTypes.Name, name),
                 new Claim(JwtClaimTypes.IdentityProvider, identityProvider),
-                new Claim(JwtClaimTypes.AuthenticationTime, IdentityServerDateTime.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer)
+                new Claim(JwtClaimTypes.AuthenticationTime, authTime.ToEpochTime().ToString(), ClaimValueTypes.Integer)
             };
 
             foreach (var amr in authenticationMethods)
@@ -125,7 +148,7 @@ namespace IdentityServer4
             if (principal.FindFirst(JwtClaimTypes.Name) == null) throw new InvalidOperationException("name claim is missing");
         }
 
-        internal static void AugmentMissingClaims(this ClaimsPrincipal principal)
+        internal static void AugmentMissingClaims(this ClaimsPrincipal principal, DateTime authTime)
         {
             var identity = principal.Identities.First();
 
@@ -155,7 +178,7 @@ namespace IdentityServer4
 
             if (identity.FindFirst(JwtClaimTypes.AuthenticationTime) == null)
             {
-                identity.AddClaim(new Claim(JwtClaimTypes.AuthenticationTime, IdentityServerDateTime.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer));
+                identity.AddClaim(new Claim(JwtClaimTypes.AuthenticationTime, authTime.ToEpochTime().ToString(), ClaimValueTypes.Integer));
             }
         }
 

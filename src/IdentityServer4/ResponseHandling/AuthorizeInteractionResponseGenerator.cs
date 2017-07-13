@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using IdentityServer4.Configuration;
 
 namespace IdentityServer4.ResponseHandling
 {
@@ -36,16 +37,24 @@ namespace IdentityServer4.ResponseHandling
         protected readonly IProfileService Profile;
 
         /// <summary>
+        /// The IdentityServerOptions.
+        /// </summary>
+        protected readonly IdentityServerOptions Options;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizeInteractionResponseGenerator"/> class.
         /// </summary>
+        /// <param name="options">The options.</param>
         /// <param name="logger">The logger.</param>
         /// <param name="consent">The consent.</param>
         /// <param name="profile">The profile.</param>
         public AuthorizeInteractionResponseGenerator(
+            IdentityServerOptions options,
             ILogger<AuthorizeInteractionResponseGenerator> logger,
             IConsentService consent, 
             IProfileService profile)
         {
+            Options = options;
             Logger = logger;
             Consent = consent;
             Profile = profile;
@@ -153,7 +162,7 @@ namespace IdentityServer4.ResponseHandling
             if (request.MaxAge.HasValue)
             {
                 var authTime = request.Subject.GetAuthenticationTime();
-                if (IdentityServerDateTime.UtcNow > authTime.AddSeconds(request.MaxAge.Value))
+                if (Options.UtcNow > authTime.AddSeconds(request.MaxAge.Value))
                 {
                     Logger.LogInformation("Showing login: Requested MaxAge exceeded.");
 

@@ -11,6 +11,8 @@ using System.Security.Claims;
 using IdentityServer4.Services;
 using IdentityModel;
 using System;
+using Microsoft.Extensions.DependencyInjection;
+using IdentityServer4.Configuration;
 
 namespace IdentityServer4
 {
@@ -45,9 +47,11 @@ namespace IdentityServer4
             if (claims == null) throw new ArgumentNullException(nameof(claims));
 
             var issuer = _contextAccessor.HttpContext.GetIdentityServerIssuerUri();
+            var options = _contextAccessor.HttpContext.RequestServices.GetRequiredService<IdentityServerOptions>();
 
             var token = new Token
             {
+                CreationTime = options.UtcNow,
                 Issuer = issuer,
                 Lifetime = lifetime,
 

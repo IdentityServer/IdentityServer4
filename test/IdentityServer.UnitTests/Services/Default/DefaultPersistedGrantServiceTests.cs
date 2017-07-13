@@ -57,18 +57,21 @@ namespace IdentityServer4.UnitTests.Services.Default
         {
             await _userConsent.StoreUserConsentAsync(new Consent()
             {
+                CreationTime = DateTime.UtcNow,
                 ClientId = "client1",
                 SubjectId = "123",
                 Scopes = new string[] { "foo1", "foo2" }
             });
             await _userConsent.StoreUserConsentAsync(new Consent()
             {
+                CreationTime = DateTime.UtcNow,
                 ClientId = "client2",
                 SubjectId = "123",
                 Scopes = new string[] { "foo3" }
             });
             await _userConsent.StoreUserConsentAsync(new Consent()
             {
+                CreationTime = DateTime.UtcNow,
                 ClientId = "client1",
                 SubjectId = "456",
                 Scopes = new string[] { "foo3" }

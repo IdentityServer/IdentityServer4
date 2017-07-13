@@ -14,6 +14,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using Microsoft.Extensions.Logging;
+using IdentityServer4.Configuration;
 
 namespace IdentityServer4.Services
 {
@@ -33,12 +34,19 @@ namespace IdentityServer4.Services
         protected readonly ILogger Logger;
 
         /// <summary>
+        ///  The IdentityServerOptions;
+        /// </summary>
+        protected readonly IdentityServerOptions Options;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="DefaultTokenCreationService"/> class.
         /// </summary>
+        /// <param name="options">The options.</param>
         /// <param name="keys">The keys.</param>
         /// <param name="logger">The logger.</param>
-        public DefaultTokenCreationService(IKeyMaterialService keys, ILogger<DefaultTokenCreationService> logger)
+        public DefaultTokenCreationService(IdentityServerOptions options, IKeyMaterialService keys, ILogger<DefaultTokenCreationService> logger)
         {
+            Options = options;
             Keys = keys;
             Logger = logger;
         }
@@ -78,7 +86,7 @@ namespace IdentityServer4.Services
             if (credential.Key is X509SecurityKey x509key)
             {
                 var cert = x509key.Certificate;
-                if (IdentityServerDateTime.UtcNow > cert.NotAfter)
+                if (Options.UtcNow > cert.NotAfter)
                 {
                     Logger.LogWarning("Certificate {subjectName} has expired on {expiration}", cert.Subject, cert.NotAfter.ToString());
                 }
@@ -100,8 +108,8 @@ namespace IdentityServer4.Services
                 token.Issuer,
                 null,
                 null,
-                IdentityServerDateTime.UtcNow,
-                IdentityServerDateTime.UtcNow.AddSeconds(token.Lifetime));
+                Options.UtcNow,
+                Options.UtcNow.AddSeconds(token.Lifetime));
 
             foreach (var aud in token.Audiences)
             {

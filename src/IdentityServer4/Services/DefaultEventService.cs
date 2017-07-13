@@ -105,7 +105,7 @@ namespace IdentityServer4.Events
         protected virtual async Task PrepareEventAsync(Event evt)
         {
             evt.ActivityId = Context.HttpContext.TraceIdentifier;
-            evt.TimeStamp = IdentityServerDateTime.UtcNow;
+            evt.TimeStamp = Options.UtcNow;
             evt.ProcessId = Process.GetCurrentProcess().Id;
 
             if (Context.HttpContext.Connection.LocalIpAddress != null)

@@ -156,7 +156,8 @@ namespace IdentityServer4.Extensions
 
             if (endSessionMsg != null)
             {
-                var msg = new Message<EndSession>(endSessionMsg);
+                var options = context.RequestServices.GetRequiredService<IdentityServerOptions>();
+                var msg = new Message<EndSession>(endSessionMsg, options.UtcNow);
 
                 var endSessionMessageStore = context.RequestServices.GetRequiredService<IMessageStore<EndSession>>();
                 var id = await endSessionMessageStore.WriteAsync(msg);
