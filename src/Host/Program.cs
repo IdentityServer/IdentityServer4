@@ -8,7 +8,7 @@ using System;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
+using Serilog.Sinks.SystemConsole.Themes;
 
 namespace Host
 {
@@ -17,13 +17,28 @@ namespace Host
         public static void Main(string[] args)
         {
             Console.Title = "IdentityServer4";
-            
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Verbose()
+                .Enrich.FromLogContext()
+                .WriteTo.File(@"identityserver4_log.txt")
+                .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message}{NewLine}{Exception}{NewLine}", theme: AnsiConsoleTheme.Literate)
+                .CreateLogger();
+
             var host = new WebHostBuilder()
                 //.UseWebListener(options =>
                 //{
                 //    options.ListenerSettings.Authentication.Schemes = AuthenticationSchemes.Negotiate | AuthenticationSchemes.NTLM;
                 //    options.ListenerSettings.Authentication.AllowAnonymous = true;
                 //})
+                .ConfigureLogging(builder =>
+                {
+                    builder.AddProvider(new SerilogLoggerProvider());
+
+                    builder.AddFilter("IdentityServer4", LogLevel.Debug);
+                    builder.AddFilter("System", LogLevel.Information);
+                    builder.AddFilter("Microsoft", LogLevel.Information);
+                })
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()

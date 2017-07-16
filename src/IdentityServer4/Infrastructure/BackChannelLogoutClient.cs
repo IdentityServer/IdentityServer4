@@ -6,9 +6,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityModel;
 using IdentityServer4.Configuration;
-using IdentityServer4.Extensions;
 using IdentityServer4.Validation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.Infrastructure

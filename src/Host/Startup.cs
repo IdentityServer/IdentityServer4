@@ -5,37 +5,17 @@
 using Host.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using System;
 using Microsoft.IdentityModel.Tokens;
 using IdentityServer4;
 using IdentityServer4.Validation;
-using Serilog;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Quickstart.UI;
-using Microsoft.AspNetCore.Hosting;
-using Serilog.Sinks.SystemConsole.Themes;
 
 namespace Host
 {
     public class Startup
     {
-        public IHostingEnvironment Environment { get; }
-
-        public Startup(IHostingEnvironment environment, ILoggerFactory loggerFactory)
-        {
-            Environment = environment;
-
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Verbose()
-                .Enrich.FromLogContext()
-                .WriteTo.File(@"identityserver4_log.txt")
-                .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message}{NewLine}{Exception}{NewLine}", theme: AnsiConsoleTheme.Literate)
-                .CreateLogger();
-            
-            loggerFactory.AddSerilog();
-        }
-
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddIdentityServer(options =>

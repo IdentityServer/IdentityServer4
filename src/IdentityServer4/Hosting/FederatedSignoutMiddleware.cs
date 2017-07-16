@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using System;
 using IdentityServer4.Extensions;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Http.Authentication;
 using IdentityServer4.Services;
 
 #pragma warning disable 1591

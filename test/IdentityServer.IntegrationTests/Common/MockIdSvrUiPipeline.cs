@@ -19,7 +19,6 @@ using System.Net.Http;
 using System;
 using System.Threading;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace IdentityServer4.IntegrationTests.Common
 {
