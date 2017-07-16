@@ -14,6 +14,7 @@ using Serilog;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Quickstart.UI;
 using Microsoft.AspNetCore.Hosting;
+using Serilog.Sinks.SystemConsole.Themes;
 
 namespace Host
 {
@@ -21,9 +22,18 @@ namespace Host
     {
         public IHostingEnvironment Environment { get; }
 
-        public Startup(IHostingEnvironment environment)
+        public Startup(IHostingEnvironment environment, ILoggerFactory loggerFactory)
         {
             Environment = environment;
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Verbose()
+                .Enrich.FromLogContext()
+                .WriteTo.File(@"identityserver4_log.txt")
+                .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message}{NewLine}{Exception}{NewLine}", theme: AnsiConsoleTheme.Literate)
+                .CreateLogger();
+            
+            loggerFactory.AddSerilog();
         }
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
@@ -63,9 +73,9 @@ namespace Host
         {
             app.UseDeveloperExceptionPage();
 
-            app.UseIdentityServer();
-        
             app.UseAuthentication();
+            app.UseIdentityServer();
+            
             app.UseStaticFiles();
             app.UseMvcWithDefaultRoute();
         }
