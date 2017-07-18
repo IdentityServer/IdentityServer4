@@ -18,6 +18,8 @@ namespace Host
     {
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc();
+
             services.AddIdentityServer(options =>
                 {
                     options.Authentication.FederatedSignOutPaths.Add("/signout-callback-aad");
@@ -39,11 +41,6 @@ namespace Host
                 .AddRedirectUriValidator<StrictRedirectUriValidatorAppAuth>()
                 .AddTestUsers(TestUsers.Users);
 
-            services.AddMvc();
-
-            // todo: move to AddIdentityServer()
-            services.AddCookieAuthentication(IdentityServerConstants.DefaultCookieAuthenticationScheme);
-            services.AddCookieAuthentication(IdentityServerConstants.ExternalCookieAuthenticationScheme);
             services.AddExternalIdentityProviders();
 
             return services.BuildServiceProvider(validateScopes: true);
@@ -53,7 +50,6 @@ namespace Host
         {
             app.UseDeveloperExceptionPage();
 
-            app.UseAuthentication();
             app.UseIdentityServer();
             
             app.UseStaticFiles();

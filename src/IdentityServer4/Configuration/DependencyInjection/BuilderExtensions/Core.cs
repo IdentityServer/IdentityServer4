@@ -23,6 +23,7 @@ using System.Linq;
 using IdentityServer4.Models;
 using IdentityServer4.Infrastructure;
 using System.Net.Http;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -38,13 +39,32 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IIdentityServerBuilder AddRequiredPlatformServices(this IIdentityServerBuilder builder)
         {
-            builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            builder.Services.AddAuthentication();
+            builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();            
             builder.Services.AddOptions();
-
             builder.Services.AddSingleton(
                 resolver => resolver.GetRequiredService<IOptions<IdentityServerOptions>>().Value);
 
+            return builder;
+        }
+
+        public static IIdentityServerBuilder AddCookieAuthentication(this IIdentityServerBuilder builder)
+        {
+            builder.Services.AddCookieAuthentication(IdentityServerConstants.DefaultCookieAuthenticationScheme);
+            builder.Services.AddCookieAuthentication(IdentityServerConstants.ExternalCookieAuthenticationScheme, options =>
+            {
+                options.CookieName = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+            });
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = IdentityServerConstants.DefaultCookieAuthenticationScheme;
+                options.DefaultChallengeScheme = IdentityServerConstants.DefaultCookieAuthenticationScheme;
+                options.DefaultSignInScheme = IdentityServerConstants.DefaultCookieAuthenticationScheme;
+            });
+
+            builder.Services.AddSingleton<IConfigureOptions<CookieAuthenticationOptions>, ConfigureInternalCookieOptions>();
+            
+            
             return builder;
         }
 

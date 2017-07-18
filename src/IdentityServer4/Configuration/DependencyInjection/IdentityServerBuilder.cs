@@ -19,9 +19,7 @@ namespace IdentityServer4.Configuration
         /// <exception cref="System.ArgumentNullException">services</exception>
         public IdentityServerBuilder(IServiceCollection services)
         {
-            if (services == null) throw new ArgumentNullException(nameof(services));
-
-            Services = services;
+            Services = services ?? throw new ArgumentNullException(nameof(services));
         }
 
         /// <summary>
