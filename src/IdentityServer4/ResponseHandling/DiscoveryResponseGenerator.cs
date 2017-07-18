@@ -182,7 +182,7 @@ namespace IdentityServer4.ResponseHandling
 
                 if (scopes.Any())
                 {
-                    entries.Add(OidcConstants.Discovery.ScopesSupported, scopes.ToArray());
+                    entries.Add(OidcConstants.Discovery.ScopesSupported, scopes.Distinct().ToArray());
                 }
 
                 // claims
