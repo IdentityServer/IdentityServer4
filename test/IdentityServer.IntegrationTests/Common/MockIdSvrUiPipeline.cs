@@ -60,17 +60,17 @@ namespace IdentityServer4.IntegrationTests.Common
 
         private void MockAuthorizationPipeline_OnPreConfigure(IApplicationBuilder app)
         {
-            if (CookieAuthenticationScheme != null)
-            {
-                var idSvrOptions = app.ApplicationServices.GetRequiredService<IdentityServerOptions>();
-                idSvrOptions.Authentication.AuthenticationScheme = CookieAuthenticationScheme;
+            //if (CookieAuthenticationScheme != null)
+            //{
+            //    var idSvrOptions = app.ApplicationServices.GetRequiredService<IdentityServerOptions>();
+            //    idSvrOptions.Authentication.AuthenticationScheme = CookieAuthenticationScheme;
 
-                throw new Exception("needs re-work for aspnetcore2");
+                //throw new Exception("needs re-work for aspnetcore2");
                 //app.UseCookieAuthentication(new CookieAuthenticationOptions
                 //{
                 //    AuthenticationScheme = CookieAuthenticationScheme
                 //});
-            }
+            //}
         }
 
         private void MockAuthorizationPipeline_OnPostConfigure(IApplicationBuilder app)
@@ -101,7 +101,7 @@ namespace IdentityServer4.IntegrationTests.Common
             });
         }
 
-        public string CookieAuthenticationScheme { get; set; } = "cookie_authn";
+        public string CookieAuthenticationScheme { get; set; } = IdentityServerConstants.DefaultCookieAuthenticationScheme;
 
         public bool LoginWasCalled { get; set; }
         public AuthorizationRequest LoginRequest { get; set; }

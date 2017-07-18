@@ -28,10 +28,6 @@ namespace IdentityServer4.IntegrationTests.Clients
                 };
             });
 
-            // todo: needs re-work for aspnetcore2
-            services.AddCookieAuthentication(IdentityServerConstants.DefaultCookieAuthenticationScheme);
-            services.AddCookieAuthentication(IdentityServerConstants.ExternalCookieAuthenticationScheme);
-
             builder.AddInMemoryClients(Clients.Get());
             builder.AddInMemoryIdentityResources(Scopes.GetIdentityScopes());
             builder.AddInMemoryApiResources(Scopes.GetApiScopes());

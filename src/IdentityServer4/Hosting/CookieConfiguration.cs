@@ -28,7 +28,6 @@ namespace IdentityServer4.Hosting
             {
                 logger.LogDebug("Using hosting application's CookieAuthentication middleware with scheme: {authenticationScheme}", options.Authentication.EffectiveAuthenticationScheme);
 
-                // todo: is that needed?
                 var authOptions = app.ApplicationServices.GetRequiredService<IOptions<Microsoft.AspNetCore.Authentication.AuthenticationOptions>>();
                 authOptions.Value.DefaultAuthenticateScheme = options.Authentication.EffectiveAuthenticationScheme;
                 authOptions.Value.DefaultChallengeScheme = options.Authentication.EffectiveAuthenticationScheme;

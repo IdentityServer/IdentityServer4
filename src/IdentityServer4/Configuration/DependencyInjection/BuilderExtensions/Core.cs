@@ -64,7 +64,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
             builder.Services.AddSingleton<IConfigureOptions<CookieAuthenticationOptions>, ConfigureInternalCookieOptions>();
             
-            
             return builder;
         }
 
