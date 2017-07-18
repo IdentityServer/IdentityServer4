@@ -27,3 +27,7 @@ Community posts
 * `Full Server Logout with IdentityServer4 and OpenID Connect Implicit Flow <https://damienbod.com/2016/09/16/full-server-logout-with-identityserver4-and-openid-connect-implicit-flow/>`_
 * `IdentityServer4, ASP.NET Identity, Web API and Angular in a single Project <https://damienbod.com/2016/10/01/identityserver4-webapi-and-angular2-in-a-single-asp-net-core-project/>`_
 * `Secure your .NETCore web applications using IdentityServer 4 <https://social.technet.microsoft.com/wiki/contents/articles/37169.secure-your-netcore-web-applications-using-identityserver-4.aspx>`_
+* `ASP.NET Core IdentityServer4 Resource Owner Password Flow with custom UserRepository <https://damienbod.com/2017/04/14/asp-net-core-identityserver4-resource-owner-password-flow-with-custom-userrepository/>`_
+* `Secure ASP.NET Core MVC with Angular using IdentityServer4 OpenID Connect Hybrid Flow <https://damienbod.com/2017/05/06/secure-asp-net-core-mvc-with-angular-using-identityserver4-openid-connect-hybrid-flow//>`_
+* `Adding an external Microsoft login to IdentityServer4 <https://damienbod.com/2017/07/11/adding-an-external-microsoft-login-to-identityserver4/>`_
+* `Implementing Two-factor authentication with IdentityServer4 and Twilio <https://damienbod.com/2017/07/14/implementing-two-factor-authentication-with-identityserver4-and-twilio/>`_
