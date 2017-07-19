@@ -8,12 +8,12 @@ using IdentityModel;
 using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.Services
 {
+    // todo: review
     internal class DefaultUserSession : IUserSession
     {
         internal const string SessionIdKey = "session_id";
@@ -37,14 +37,14 @@ namespace IdentityServer4.Services
             _logger = logger;
         }
 
-        public void CreateSessionId(SignInContext context)
+        public void CreateSessionId(AuthenticationProperties properties)
         {
-            if (!context.Properties.ContainsKey(SessionIdKey))
+            if (properties != null && !properties.Items.ContainsKey(SessionIdKey))
             {
-                context.Properties[SessionIdKey] = CryptoRandom.CreateUniqueId(16);
+                properties.Items[SessionIdKey] = CryptoRandom.CreateUniqueId(16);
             }
 
-            IssueSessionIdCookie(context.Properties[SessionIdKey]);
+            IssueSessionIdCookie(properties.Items[SessionIdKey]);
         }
 
         public async Task<string> GetCurrentSessionIdAsync()

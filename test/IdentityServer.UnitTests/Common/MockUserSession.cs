@@ -5,9 +5,9 @@
 using IdentityServer4.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http.Features.Authentication;
 using System;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.UnitTests.Common
 {
@@ -28,7 +28,7 @@ namespace IdentityServer4.UnitTests.Common
             return Task.FromResult(0);
         }
 
-        public void CreateSessionId(SignInContext context)
+        public void CreateSessionId(AuthenticationProperties properties)
         {
             CreateSessionIdWasCalled = true;
             SessionId = Guid.NewGuid().ToString();

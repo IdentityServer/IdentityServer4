@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
 using FluentAssertions;
 using System.Net;
-using IdentityServer4.Configuration;
 using System.Net.Http;
 using System;
 using System.Threading;

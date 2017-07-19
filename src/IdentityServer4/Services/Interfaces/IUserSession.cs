@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Authentication;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http.Features.Authentication;
 
 namespace IdentityServer4.Services
 {
@@ -13,7 +13,7 @@ namespace IdentityServer4.Services
         /// <summary>
         /// Creates a session identifier for the signin context and issues the session id cookie.
         /// </summary>
-        void CreateSessionId(SignInContext context);
+        void CreateSessionId(AuthenticationProperties properties);
         
         /// <summary>
         /// Gets the current session identifier.

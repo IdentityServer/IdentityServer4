@@ -24,6 +24,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Infrastructure;
 using System.Net.Http;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -133,7 +134,10 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddTransient<IReturnUrlParser, OidcReturnUrlParser>();
             builder.Services.AddTransient<IUserSession, DefaultUserSession>();
             builder.Services.AddTransient(typeof(MessageCookie<>));
-            builder.Services.AddScoped<AuthenticationHandler>();
+
+            // todo
+            //builder.Services.AddScoped<AuthenticationHandler>();
+            builder.Services.AddTransient<IAuthenticationService, IdentityServerAuthenticationService>();
 
             builder.Services.AddCors();
             builder.Services.AddTransientDecorator<ICorsPolicyProvider, CorsPolicyProvider>();

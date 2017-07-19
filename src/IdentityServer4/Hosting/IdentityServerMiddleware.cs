@@ -39,8 +39,11 @@ namespace IdentityServer4.Hosting
         /// <param name="context">The context.</param>
         /// <param name="router">The router.</param>
         /// <returns></returns>
-        public async Task Invoke(HttpContext context, IEndpointRouter router)
+        public async Task Invoke(HttpContext context, IEndpointRouter router, IUserSession session)
         {
+            // todo: review: right place to call this?
+            await session.EnsureSessionIdCookieAsync();
+
             try
             {
                 var endpoint = router.Find(context);
