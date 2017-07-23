@@ -29,7 +29,7 @@ Start by creating a new ASP.NET Core project.
 
 .. image:: images/0_new_web_project.png
 
-Then select the "Empty Web" option.
+Then select the "Empty" option.
 
 .. image:: images/0_empty_web.png
 
@@ -49,26 +49,30 @@ In ``Configure`` the middleware is added to the HTTP pipeline.
 
 Modify your ``Startup.cs`` file to look like this::
 
-    public class Startup
+  public class Startup
+  {
+    public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddIdentityServer()
-                .AddTemporarySigningCredential();
-        }
+      loggerFactory.AddConsole();
 
-        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
-        {
-            loggerFactory.AddConsole(LogLevel.Debug);
-            app.UseDeveloperExceptionPage();
+      if (env.IsDevelopment())
+      {
+        app.UseDeveloperExceptionPage();
+      }
 
-            app.UseIdentityServer();
-        }
+      app.UseIdentityServer();
     }
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+      services.AddIdentityServer()
+        .AddTemporarySigningCredential();
+    }
+  }
 
 ``AddIdentityServer`` registers the IdentityServer services in DI. It also registers an in-memory store for runtime state.
 This is useful for development scenarios. For production scenarios you need a persistent or shared store like a database or cache for that.
-See the :ref:`EntityFramework <refEntityFrameworkQuickstart>` quickstart for more information.
+See the :ref:`refEntityFrameworkQuickstart` quickstart for more information.
 
 The ``AddTemporarySigningCredential`` extension creates temporary key material for signing tokens on every start.
 Again this might be useful to get started, but needs to be replaced by some persistent key material for production scenarios.
