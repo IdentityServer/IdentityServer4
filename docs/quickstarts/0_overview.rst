@@ -1,7 +1,3 @@
-.. _EntityFrameworkQuickstart: 8_entity_framework.rst
-
-__ EntityFrameworkQuickstart_
-
 Setup and Overview
 ==================
 
@@ -76,19 +72,19 @@ Modify your ``Startup.cs`` file to look like this::
 
 ``AddIdentityServer`` registers the IdentityServer services in DI. It also registers an in-memory store for runtime state.
 This is useful for development scenarios. For production scenarios you need a persistent or shared store like a database or cache for that.
-See the `Entity Framework Quick Start`__ quickstart for more information.
+See the :ref:`EntityFramework <refEntityFrameworkQuickstart> for more information.
 
 The ``AddTemporarySigningCredential`` extension creates temporary key material for signing tokens on every start.
 Again this might be useful to get started, but needs to be replaced by some persistent key material for production scenarios.
 See the :ref:`cryptography docs <refCrypto>` for more information.
 
-.. Note:: IdentityServer is not yet ready to be launched. In fact, when you try it, you should see an exception at startup time stating that services are missing. We will add those services in the following quickstarts.
+.. Note:: IdentityServer is not yet ready to be launched. We will add the required services in the following quickstarts.
 
 Modify hosting
 ^^^^^^^^^^^^^^^
 
 By default Visual Studio uses IIS Express to host your web project. This is totally fine,
-beside that you won't be able to see the real time log output to the console.
+except that you won't be able to see the real time log output to the console.
 
 IdentityServer makes extensive use of logging whereas the "visible" error message in the UI
 or returned to clients are deliberately vague.
@@ -115,6 +111,7 @@ we use the following configuration for the IdentityServer host in the quickstart
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()
+                .UseApplicationInsights()
                 .Build();
 
             host.Run();
