@@ -1,3 +1,4 @@
+.. _refEntityFrameworkQuickstart: 8_entity_framework.rst
 Setup and Overview
 ==================
 
