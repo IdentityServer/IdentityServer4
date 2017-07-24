@@ -73,8 +73,11 @@ Modify your ``Startup.cs`` file to look like this::
 
 
 `Entity Framework Quick start`__
+
 .. _refEntityFrameworkQuickstart: 8_entity_framework.rst
+
 __ refEntityFrameworkQuickstart_
+
 
 ``AddIdentityServer`` registers the IdentityServer services in DI. It also registers an in-memory store for runtime state.
 This is useful for development scenarios. For production scenarios you need a persistent or shared store like a database or cache for that.
