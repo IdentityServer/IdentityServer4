@@ -1,4 +1,3 @@
-.. _refEntityFrameworkQuickstart: 8_entity_framework.rst
 Setup and Overview
 ==================
 
@@ -71,9 +70,17 @@ Modify your ``Startup.cs`` file to look like this::
     }
   }
 
+
+
+`Entity Framework Quick start`__
+.. _refEntityFrameworkQuickstart: 8_entity_framework.rst
+__ refEntityFrameworkQuickstart_
+
 ``AddIdentityServer`` registers the IdentityServer services in DI. It also registers an in-memory store for runtime state.
 This is useful for development scenarios. For production scenarios you need a persistent or shared store like a database or cache for that.
-See the :ref:`refEntityFrameworkQuickstart`_. quickstart for more information.
+See the `refEntityFrameworkQuickstart` quickstart for more information.
+
+
 
 The ``AddTemporarySigningCredential`` extension creates temporary key material for signing tokens on every start.
 Again this might be useful to get started, but needs to be replaced by some persistent key material for production scenarios.
