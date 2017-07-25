@@ -17,13 +17,13 @@ Setup
 ^^^^^
 We personally like `Serilog <https://serilog.net/>`_ a lot. Give it a try.
 
-Install Serilog packages: 
+Install Serilog packages:
 From Package Manager Console verify that Default Project drop-down has your project selected and run
 
-```
-install-package Serilog.Extensions.Logging
-install-package Serilog.Sinks.File
-```
+    install-package Microsoft.Extensions.Logging.Filter
+    install-package Serilog.Extensions.Logging
+    install-package Serilog.Sinks.File
+    install-package Serilog.Sinks.Literate
 
 You want to setup logging as early as possible in your application host, e.g. in the constructor of your startup class, e.g::
 
@@ -35,7 +35,7 @@ You want to setup logging as early as possible in your application host, e.g. in
                 .MinimumLevel.Verbose()
                 .Enrich.FromLogContext()
                 .WriteTo.File(@"identityserver4_log.txt");
-                
+
             if (environment.IsDevelopment())
             {
                 serilog.WriteTo.LiterateConsole(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message}{NewLine}{Exception}{NewLine}");
