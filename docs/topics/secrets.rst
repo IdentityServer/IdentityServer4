@@ -77,17 +77,17 @@ IdentityServer includes support for private key JWT client secrets (see `RFC 752
 Secret extensibility typically consists of three things:
 
 * a secret definition
-* a secret parser that knows how extract the secret from the incoming request
-* a secret validator that knows how validate the parsed secret based on the definition
+* a secret parser that knows how to extract the secret from the incoming request
+* a secret validator that knows how to validate the parsed secret based on the definition
 
-Secret parsers and validators are implementatios of the `ISecretParser` and `ISecretValidator` interfaces. 
+Secret parsers and validators are implementatios of the ``ISecretParser`` and ``ISecretValidator`` interfaces. 
 To make them available to IdentityServer, you need to register them with the DI container, e.g.::
 
     builder.AddSecretParser<ClientAssertionSecretParser>()
     builder.AddSecretValidator<PrivateKeyJwtSecretValidator>()
 
 Our default private key JWT secret validator expects the full (leaf) certificate as base64 on the secret definition.
-This certificate will then be used to validate the signatur on the self-signed JWT, e.g.::
+This certificate will then be used to validate the signature on the self-signed JWT, e.g.::
 
     var client = new Client
     {
