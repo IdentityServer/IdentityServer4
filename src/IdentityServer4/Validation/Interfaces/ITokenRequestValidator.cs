@@ -17,8 +17,8 @@ namespace IdentityServer4.Validation
         /// Validates the request.
         /// </summary>
         /// <param name="parameters">The parameters.</param>
-        /// <param name="client">The client.</param>
+        /// <param name="clientValidationResult">The client validation result.</param>
         /// <returns></returns>
-        Task<TokenRequestValidationResult> ValidateRequestAsync(NameValueCollection parameters, Client client);
+        Task<TokenRequestValidationResult> ValidateRequestAsync(NameValueCollection parameters, ClientSecretValidationResult clientValidationResult);
     }
 }

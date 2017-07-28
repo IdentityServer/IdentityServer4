@@ -51,7 +51,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.Code, handle);
             parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server/cb");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeFalse();
         }
@@ -87,7 +87,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.Code, handle);
             parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server/cb");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeFalse();
         }
@@ -104,7 +104,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.ClientCredentials);
             parameters.Add(OidcConstants.TokenRequest.Scope, "resource");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeFalse();
         }
@@ -121,7 +121,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.ClientCredentials);
             
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeFalse();
         }
@@ -138,7 +138,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.ClientCredentials);
             parameters.Add(OidcConstants.TokenRequest.Scope, "resource");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeFalse();
         }
@@ -155,7 +155,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.ClientCredentials);
             parameters.Add(OidcConstants.TokenRequest.Scope, "resource");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeFalse();
         }
@@ -174,7 +174,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.Password, "bob");
             parameters.Add(OidcConstants.TokenRequest.Scope, "resource");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeFalse();
         }
@@ -193,7 +193,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.Password, "bob");
             parameters.Add(OidcConstants.TokenRequest.Scope, "resource offline_access");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeFalse();
         }
@@ -212,7 +212,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.Password, "bob");
             parameters.Add(OidcConstants.TokenRequest.Scope, "resource");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeFalse();
         }
@@ -229,7 +229,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.GrantType, "custom_grant");
             parameters.Add(OidcConstants.TokenRequest.Scope, "resource");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeFalse();
         }
@@ -263,7 +263,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.GrantType, "refresh_token");
             parameters.Add(OidcConstants.TokenRequest.RefreshToken, handle);
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeFalse();
         }
@@ -298,7 +298,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.GrantType, "refresh_token");
             parameters.Add(OidcConstants.TokenRequest.RefreshToken, handle);
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeFalse();
         }

@@ -50,7 +50,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.AuthorizationCode);
             parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server/cb");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
@@ -83,7 +83,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.Code, "invalid");
             parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server/cb");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
@@ -118,7 +118,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.Code, longCode);
             parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server/cb");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
@@ -151,7 +151,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.Code, handle);
             parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server/cb");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             OidcConstants.TokenErrors.InvalidRequest.Should().Be(result.Error);
@@ -184,7 +184,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.Code, handle);
             parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server/cb");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.UnauthorizedClient);
@@ -218,7 +218,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.Code, handle);
             parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server/cb");
 
-            var result = await validator.ValidateRequestAsync(parameters, client2);
+            var result = await validator.ValidateRequestAsync(parameters, client2.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
@@ -250,7 +250,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.AuthorizationCode);
             parameters.Add(OidcConstants.TokenRequest.Code, handle);
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.UnauthorizedClient);
@@ -283,7 +283,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.Code, handle);
             parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server2/cb");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.UnauthorizedClient);
@@ -316,7 +316,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.Code, handle);
             parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server/cb");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
@@ -354,7 +354,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server/cb");
 
             // request first time
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeFalse();
 
@@ -362,7 +362,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             validator = Factory.CreateTokenRequestValidator(
                 authorizationCodeStore: store);
             
-            result = await validator.ValidateRequestAsync(parameters, client);
+            result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
@@ -399,7 +399,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.Code, handle);
             parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server/cb");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);

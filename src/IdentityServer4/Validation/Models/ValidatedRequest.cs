@@ -9,6 +9,7 @@ using System.Collections.Specialized;
 using System.Security.Claims;
 using IdentityModel;
 using System.Linq;
+using System;
 
 namespace IdentityServer4.Validation
 {
@@ -32,6 +33,14 @@ namespace IdentityServer4.Validation
         /// The client.
         /// </value>
         public Client Client { get; set; }
+
+        /// <summary>
+        /// Gets or sets the secret used to authenticate the client.
+        /// </summary>
+        /// <value>
+        /// The parsed secret.
+        /// </value>
+        public ParsedSecret Secret { get; set; }
 
         /// <summary>
         /// Gets or sets the effective access token lifetime for the current request.
@@ -87,9 +96,12 @@ namespace IdentityServer4.Validation
         /// Sets the client and the appropriate request specific settings.
         /// </summary>
         /// <param name="client">The client.</param>
-        public void SetClient(Client client)
+        /// <param name="secret">The client secret (optional).</param>
+        public void SetClient(Client client, ParsedSecret secret = null)
         {
-            Client = client;
+            Client = client ?? throw new ArgumentNullException(nameof(client));
+            Secret = secret;
+
             AccessTokenLifetime = client.AccessTokenLifetime;
             AccessTokenType = client.AccessTokenType;
             ClientClaims = client.Claims.Select(c => new Claim(c.Type, c.Value, c.ValueType, c.Issuer)).ToList();
