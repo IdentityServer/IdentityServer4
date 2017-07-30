@@ -50,6 +50,6 @@ If you are looking for production support in North America - `write us an email 
 
 If you are looking for production support please visit http://identityserver.com
 
-**Admin UI and appliance**
+**Admin UI, Identity Express and SAML2p support**
 
-if you are interested in commercial products using IdentityServer - e.g. the new Admin API/UI or an appliance - check https://www.identityserver.com/upcoming-products.
+if you are interested in commercial products using IdentityServer, check https://www.identityserver.com/upcoming-products.
