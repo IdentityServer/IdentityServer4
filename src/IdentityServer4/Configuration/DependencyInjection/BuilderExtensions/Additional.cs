@@ -6,6 +6,7 @@ using IdentityServer4.ResponseHandling;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using IdentityServer4.Validation;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -149,6 +150,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IIdentityServerBuilder AddClientStoreCache<T>(this IIdentityServerBuilder builder)
             where T : IClientStore
         {
+            builder.Services.TryAddTransient(typeof(T));
             builder.Services.AddTransient<IClientStore, CachingClientStore<T>>();
             return builder;
         }
@@ -162,6 +164,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IIdentityServerBuilder AddResourceStoreCache<T>(this IIdentityServerBuilder builder)
             where T : IResourceStore
         {
+            builder.Services.TryAddTransient(typeof(T));
             builder.Services.AddTransient<IResourceStore, CachingResourceStore<T>>();
             return builder;
         }
