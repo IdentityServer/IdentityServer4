@@ -133,7 +133,7 @@ namespace IdentityServer4.ResponseHandling
                 if (token.ClientId == validationResult.Client.ClientId)
                 {
                     Logger.LogDebug("Refresh token revoked");
-                    await RefreshTokenStore.RemoveRefreshTokensAsync(token.SubjectId, token.ClientId);
+                    await RefreshTokenStore.RemoveRefreshTokenAsync(validationResult.Token);
                     await ReferenceTokenStore.RemoveReferenceTokensAsync(token.SubjectId, token.ClientId);
                 }
                 else
