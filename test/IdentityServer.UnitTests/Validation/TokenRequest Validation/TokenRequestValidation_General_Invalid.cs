@@ -75,7 +75,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.Code, handle);
             parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server/cb");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.UnsupportedGrantType);
@@ -94,7 +94,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, "client_credentials");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.InvalidClient);
@@ -126,7 +126,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.Code, handle);
             parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server/cb");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.UnsupportedGrantType);

@@ -70,14 +70,14 @@ namespace IdentityServer4.Validation
         /// Validates the request.
         /// </summary>
         /// <param name="parameters">The parameters.</param>
-        /// <param name="client">The client.</param>
+        /// <param name="clientValidationResult">The client validation result.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException">
         /// parameters
         /// or
         /// client
         /// </exception>
-        public async Task<TokenRequestValidationResult> ValidateRequestAsync(NameValueCollection parameters, Client client)
+        public async Task<TokenRequestValidationResult> ValidateRequestAsync(NameValueCollection parameters, ClientSecretValidationResult clientValidationResult)
         {
             _logger.LogDebug("Start token request validation");
 
@@ -87,14 +87,16 @@ namespace IdentityServer4.Validation
                 Options = _options
             };
 
-            _validatedRequest.SetClient(client ?? throw new ArgumentNullException(nameof(client)));
+            if (clientValidationResult == null) throw new ArgumentNullException(nameof(clientValidationResult));
+
+            _validatedRequest.SetClient(clientValidationResult.Client, clientValidationResult.Secret);
 
             /////////////////////////////////////////////
             // check client protocol type
             /////////////////////////////////////////////
-            if (client.ProtocolType != IdentityServerConstants.ProtocolTypes.OpenIdConnect)
+            if (_validatedRequest.Client.ProtocolType != IdentityServerConstants.ProtocolTypes.OpenIdConnect)
             {
-                LogError("Client {clientId} has invalid protocol type for token endpoint: {protocolType}", client.ClientId, client.ProtocolType);
+                LogError("Client {clientId} has invalid protocol type for token endpoint: {protocolType}", _validatedRequest.Client.ClientId, _validatedRequest.Client.ProtocolType);
                 return Invalid(OidcConstants.TokenErrors.InvalidClient);
             }
 
