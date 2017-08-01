@@ -94,7 +94,8 @@ namespace IdentityServer4.Validation
             var success = new ClientSecretValidationResult
             {
                 IsError = false,
-                Client = client
+                Client = client,
+                Secret = parsedSecret
             };
 
             await RaiseSuccessEventAsync(client.ClientId, parsedSecret.Type);

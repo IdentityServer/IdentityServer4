@@ -80,7 +80,7 @@ namespace IdentityServer4.Endpoints
             // validate request
             var form = (await context.Request.ReadFormAsync()).AsNameValueCollection();
             _logger.LogTrace("Calling into token request validator: {type}", _requestValidator.GetType().FullName);
-            var requestResult = await _requestValidator.ValidateRequestAsync(form, clientResult.Client);
+            var requestResult = await _requestValidator.ValidateRequestAsync(form, clientResult);
 
             if (requestResult.IsError)
             {

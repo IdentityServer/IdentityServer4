@@ -18,5 +18,13 @@ namespace IdentityServer4.Validation
         /// The client.
         /// </value>
         public Client Client { get; set; }
+
+        /// <summary>
+        /// Gets or sets the secret used to authenticate the client.
+        /// </summary>
+        /// <value>
+        /// The secret.
+        /// </value>
+        public ParsedSecret Secret { get; set; }
     }
 }
