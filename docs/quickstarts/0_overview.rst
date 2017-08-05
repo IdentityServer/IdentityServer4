@@ -111,7 +111,6 @@ we use the following configuration for the IdentityServer host in the quickstart
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()
-                .UseApplicationInsights()
                 .Build();
 
             host.Run();
