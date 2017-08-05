@@ -4,33 +4,35 @@
 
 using IdentityServer4.Configuration;
 using IdentityServer4.Hosting;
+using static IdentityServer4.Constants;
 
 namespace IdentityServer4.Extensions
 {
     internal static class EndpointOptionsExtensions
     {
-        public static bool IsEndpointEnabled(this EndpointsOptions options, EndpointName endpointName)
+        public static bool IsEndpointEnabled(this EndpointsOptions options, Endpoint endpoint)
         {
-            switch (endpointName)
+            switch (endpoint?.Name)
             {
-                case EndpointName.Authorize:
+                case EndpointNames.Authorize:
                     return options.EnableAuthorizeEndpoint;
-                case EndpointName.CheckSession:
+                case EndpointNames.CheckSession:
                     return options.EnableCheckSessionEndpoint;
-                case EndpointName.Discovery:
+                case EndpointNames.Discovery:
                     return options.EnableDiscoveryEndpoint;
-                case EndpointName.EndSession:
+                case EndpointNames.EndSession:
                     return options.EnableEndSessionEndpoint;
-                case EndpointName.Introspection:
+                case EndpointNames.Introspection:
                     return options.EnableIntrospectionEndpoint;
-                case EndpointName.Revocation:
+                case EndpointNames.Revocation:
                     return options.EnableTokenRevocationEndpoint;
-                case EndpointName.Token:
+                case EndpointNames.Token:
                     return options.EnableTokenEndpoint;
-                case EndpointName.UserInfo:
+                case EndpointNames.UserInfo:
                     return options.EnableUserInfoEndpoint;
                 default:
-                    return false;
+                    // fall thru to true to allow custom endpoints
+                    return true;
             }
         }
     }

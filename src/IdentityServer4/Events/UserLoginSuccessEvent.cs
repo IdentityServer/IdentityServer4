@@ -3,6 +3,7 @@
 
 
 using IdentityServer4.Hosting;
+using static IdentityServer4.Constants;
 
 namespace IdentityServer4.Events
 {
@@ -49,7 +50,7 @@ namespace IdentityServer4.Events
             }
             else
             {
-                Endpoint = EndpointName.Token.ToString();
+                Endpoint = EndpointNames.Token;
             }
         }
 

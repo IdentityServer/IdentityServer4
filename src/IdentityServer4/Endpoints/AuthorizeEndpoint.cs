@@ -23,7 +23,7 @@ using System;
 
 namespace IdentityServer4.Endpoints
 {
-    class AuthorizeEndpoint : IEndpoint
+    class AuthorizeEndpoint : IEndpointHandler
     {
         private readonly IEventService _events;
         private readonly ILogger _logger;
