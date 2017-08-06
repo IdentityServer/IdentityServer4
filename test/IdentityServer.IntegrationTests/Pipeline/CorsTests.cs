@@ -12,6 +12,10 @@ using System.Security.Claims;
 using System.Net.Http;
 using IdentityServer4.IntegrationTests.Common;
 using IdentityServer4.Test;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Cors.Infrastructure;
+using IdentityServer4.Services;
+using System;
 
 namespace IdentityServer4.IntegrationTests.Pipeline
 {
@@ -109,6 +113,38 @@ namespace IdentityServer4.IntegrationTests.Pipeline
             var response = await _pipeline.Client.SendAsync(message);
 
             response.Headers.Contains("Access-Control-Allow-Origin").Should().BeFalse();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task custom_cors_policy_provider_should_be_used()
+        {
+            var policy = new StubCorePolicyProvider();
+            _pipeline.OnPreConfigureServices += services =>
+            {
+                services.AddSingleton<ICorsPolicyService>(policy);
+            };
+            _pipeline.Initialize();
+
+            _pipeline.Client.DefaultRequestHeaders.Add("Origin", "https://client");
+            _pipeline.Client.DefaultRequestHeaders.Add("Access-Control-Request-Method", "GET");
+
+            var message = new HttpRequestMessage(HttpMethod.Options, MockIdSvrUiPipeline.DiscoveryEndpoint);
+            var response = await _pipeline.Client.SendAsync(message);
+
+            policy.WasCalled.Should().BeTrue();
+        }
+    }
+
+    public class StubCorePolicyProvider : ICorsPolicyService
+    {
+        public bool Result;
+        public bool WasCalled;
+
+        public Task<bool> IsOriginAllowedAsync(string origin)
+        {
+            WasCalled = true;
+            return Task.FromResult(Result);
         }
     }
 }

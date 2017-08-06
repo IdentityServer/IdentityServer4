@@ -8,6 +8,7 @@ using IdentityServer4.Stores;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -68,7 +69,16 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddSingleton(clients);
 
             builder.AddClientStore<InMemoryClientStore>();
-            builder.AddCorsPolicyService<InMemoryCorsPolicyService>();
+
+            var existingCors = builder.Services.Where(x => x.ServiceType == typeof(ICorsPolicyService)).LastOrDefault();
+            if (existingCors != null && 
+                existingCors.ImplementationType == typeof(DefaultCorsPolicyService) && 
+                existingCors.Lifetime == ServiceLifetime.Transient)
+            {
+                // if our default is registered, then overwrite with the InMemoryCorsPolicyService
+                // otherwise don't overwrite with the InMemoryCorsPolicyService, which uses the custom one registered by the host
+                builder.Services.AddTransient<ICorsPolicyService, InMemoryCorsPolicyService>();
+            }
 
             return builder;
         }
