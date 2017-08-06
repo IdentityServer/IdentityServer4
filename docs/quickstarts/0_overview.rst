@@ -29,7 +29,7 @@ Start by creating a new ASP.NET Core project.
 
 .. image:: images/0_new_web_project.png
 
-Then select the "Empty Web" option.
+Then select the "Empty" option.
 
 .. image:: images/0_empty_web.png
 
@@ -49,22 +49,26 @@ In ``Configure`` the middleware is added to the HTTP pipeline.
 
 Modify your ``Startup.cs`` file to look like this::
 
-    public class Startup
+  public class Startup
+  {
+    public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddIdentityServer()
-                .AddTemporarySigningCredential();
-        }
+      loggerFactory.AddConsole();
 
-        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
-        {
-            loggerFactory.AddConsole(LogLevel.Debug);
-            app.UseDeveloperExceptionPage();
+      if (env.IsDevelopment())
+      {
+        app.UseDeveloperExceptionPage();
+      }
 
-            app.UseIdentityServer();
-        }
+      app.UseIdentityServer();
     }
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+      services.AddIdentityServer()
+        .AddTemporarySigningCredential();
+    }
+  }
 
 ``AddIdentityServer`` registers the IdentityServer services in DI. It also registers an in-memory store for runtime state.
 This is useful for development scenarios. For production scenarios you need a persistent or shared store like a database or cache for that.
@@ -74,13 +78,13 @@ The ``AddTemporarySigningCredential`` extension creates temporary key material f
 Again this might be useful to get started, but needs to be replaced by some persistent key material for production scenarios.
 See the :ref:`cryptography docs <refCrypto>` for more information.
 
-.. Note:: IdentityServer is not yet ready to be launched. In fact, when you try it, you should see an exception at startup time stating that services are missing. We will add those services in the following quickstarts.
+.. Note:: IdentityServer is not yet ready to be launched. We will add the required services in the following quickstarts.
 
 Modify hosting
 ^^^^^^^^^^^^^^^
 
 By default Visual Studio uses IIS Express to host your web project. This is totally fine,
-beside that you won't be able to see the real time log output to the console.
+except that you won't be able to see the real time log output to the console.
 
 IdentityServer makes extensive use of logging whereas the "visible" error message in the UI
 or returned to clients are deliberately vague.
