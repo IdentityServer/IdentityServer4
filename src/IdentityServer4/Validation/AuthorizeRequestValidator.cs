@@ -101,7 +101,7 @@ namespace IdentityServer4.Validation
             if (customResult.IsError)
             {
                 LogError("Error in custom validation: " + customResult.Error, request);
-                return Invalid(request, customResult.Error);
+                return Invalid(request, customResult.Error, customResult.ErrorDescription);
             }
 
             _logger.LogTrace("Authorize request protocol validation successful");
