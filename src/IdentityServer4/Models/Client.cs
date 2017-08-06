@@ -87,7 +87,7 @@ namespace IdentityServer4.Models
         }
 
         /// <summary>
-        /// Specifies whether a proof key is required for authorization code based token requests
+        /// Specifies whether a proof key is required for authorization code based token requests (defaults to false).
         /// </summary>
         public bool RequirePkce { get; set; } = false;
 
