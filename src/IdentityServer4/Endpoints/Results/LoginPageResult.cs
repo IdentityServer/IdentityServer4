@@ -55,7 +55,7 @@ namespace IdentityServer4.Endpoints.Results
         {
             Init(context);
 
-            var returnUrl = context.GetIdentityServerBasePath().EnsureTrailingSlash() + Constants.ProtocolRoutePaths.AuthorizeAfterLogin;
+            var returnUrl = context.GetIdentityServerBasePath().EnsureTrailingSlash() + Constants.ProtocolRoutePaths.AuthorizeCallback;
             returnUrl = returnUrl.AddQueryString(_request.Raw.ToQueryString());
 
             var loginUrl = _options.UserInteraction.LoginUrl;
