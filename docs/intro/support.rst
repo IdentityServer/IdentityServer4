@@ -34,12 +34,12 @@ Also check the `contribution <https://github.com/IdentityServer/IdentityServer4/
 
 Commercial support
 ^^^^^^^^^^^^^^^^^^
-Both Brock and I do consulting around identity & access control architecture in general, and IdentityServer in particular.
+We are doing consulting around identity & access control architecture in general, and IdentityServer in particular.
 Please `get in touch <mailto:identity@leastprivilege.com>`_ with us to discuss possible options.
 
 **Training**
 
-Brock and Dominick are regularly doing workshops around identity & acess control for modern applications.
+We are regularly doing workshops around identity & acess control for modern applications.
 Check the agenda and upcoming dates  `here <https://identityserver.io/training>`_.
 
 **Production support in North America**
@@ -50,6 +50,6 @@ If you are looking for production support in North America - `write us an email 
 
 If you are looking for production support please visit http://identityserver.com
 
-**Admin UI and appliance**
+**Admin UI, Identity Express and SAML2p support**
 
-if you are interested in commercial products using IdentityServer - e.g. the new Admin API/UI or an appliance - check https://www.identityserver.com/upcoming-products.
+if you are interested in commercial products using IdentityServer, check https://www.identityserver.com/upcoming-products.

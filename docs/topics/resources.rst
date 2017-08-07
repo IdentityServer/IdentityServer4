@@ -34,7 +34,7 @@ If you want to support them all, you can add them to your list of supported iden
             new IdentityResources.OpenId(), 
             new IdentityResources.Email(),
             new IdentityResources.Profile(),
-            new IdentityResources.Telephone(),
+            new IdentityResources.Phone(),
             new IdentityResources.Address()
         };
     }
