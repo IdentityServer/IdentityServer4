@@ -120,6 +120,7 @@ namespace Host
                 CallbackPath = new PathString("/signin-aad"),
                 SignedOutCallbackPath = new PathString("/signout-callback-aad"),
                 RemoteSignOutPath = new PathString("/signout-aad"),
+                StateDataFormat = app.CreateStateDataFormater("aad"),
                 TokenValidationParameters = new TokenValidationParameters
                 {
                     NameClaimType = "name",

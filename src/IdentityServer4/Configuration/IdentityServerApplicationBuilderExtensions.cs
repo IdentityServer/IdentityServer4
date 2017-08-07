@@ -7,6 +7,9 @@ using IdentityServer4.Stores;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Authentication;
 
 namespace Microsoft.AspNetCore.Builder
 {
@@ -32,6 +35,17 @@ namespace Microsoft.AspNetCore.Builder
             app.UseMiddleware<IdentityServerMiddleware>();
 
             return app;
+        }
+
+        /// <summary>
+        /// Creates a data formatter that can be used to cache the AuthenticationProperties used in the OIDC state parameter.
+        /// </summary>
+        /// <param name="app">The application.</param>
+        /// <param name="scheme">The authentication middleware scheme for which the data formatter is being created.</param>
+        /// <returns></returns>
+        public static ISecureDataFormat<AuthenticationProperties> CreateStateDataFormater(this IApplicationBuilder app, string scheme)
+        {
+            return new DistributedCacheSecureDataFormat(app.ApplicationServices.GetRequiredService<IHttpContextAccessor>(), scheme);
         }
 
         internal static void Validate(this IApplicationBuilder app)
