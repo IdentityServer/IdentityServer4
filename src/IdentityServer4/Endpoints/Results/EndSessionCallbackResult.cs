@@ -55,7 +55,6 @@ namespace IdentityServer4.Endpoints.Results
             else
             {
                 context.Response.SetNoCache();
-                AddXfoHeaders(context);
                 AddCspHeaders(context);
 
                 var html = GetHtml();
@@ -89,22 +88,6 @@ namespace IdentityServer4.Endpoints.Results
             if (!context.Response.Headers.ContainsKey("X-Content-Security-Policy"))
             {
                 context.Response.Headers.Add("X-Content-Security-Policy", value);
-            }
-        }
-
-        private void AddXfoHeaders(HttpContext context)
-        {
-            if (!context.Response.Headers.ContainsKey("X-Frame-Options"))
-            {
-                var logoutPageUrl = _options.UserInteraction.LogoutUrl;
-                if (logoutPageUrl.IsLocalUrl())
-                {
-                    context.Response.Headers.Add("X-Frame-Options", "SAMEORIGIN");
-                }
-                else
-                {
-                    context.Response.Headers.Add("X-Frame-Options", $"ALLOW-FROM {logoutPageUrl.GetOrigin()}");
-                }
             }
         }
 
