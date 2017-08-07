@@ -36,8 +36,9 @@ namespace Host
                     builder.AddProvider(new SerilogLoggerProvider());
 
                     builder.AddFilter("IdentityServer4", LogLevel.Debug);
-                    builder.AddFilter("System", LogLevel.Information);
-                    builder.AddFilter("Microsoft", LogLevel.Information);
+                    builder.AddFilter("System", LogLevel.Warning);
+                    builder.AddFilter("Microsoft", LogLevel.Warning);
+                    builder.AddFilter("Microsoft.AspNetCore.Authentication", LogLevel.Information);
                 })
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
