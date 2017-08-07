@@ -14,11 +14,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
 using FluentAssertions;
 using System.Net;
-using IdentityServer4.Configuration;
-using Microsoft.AspNetCore.Http.Authentication;
 using System.Net.Http;
 using System;
 using System.Threading;
+using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.IntegrationTests.Common
 {
@@ -60,15 +59,17 @@ namespace IdentityServer4.IntegrationTests.Common
 
         private void MockAuthorizationPipeline_OnPreConfigure(IApplicationBuilder app)
         {
-            if (CookieAuthenticationScheme != null)
-            {
-                var idSvrOptions = app.ApplicationServices.GetRequiredService<IdentityServerOptions>();
-                idSvrOptions.Authentication.AuthenticationScheme = CookieAuthenticationScheme;
-                app.UseCookieAuthentication(new CookieAuthenticationOptions
-                {
-                    AuthenticationScheme = CookieAuthenticationScheme
-                });
-            }
+            //if (CookieAuthenticationScheme != null)
+            //{
+            //    var idSvrOptions = app.ApplicationServices.GetRequiredService<IdentityServerOptions>();
+            //    idSvrOptions.Authentication.AuthenticationScheme = CookieAuthenticationScheme;
+
+                //throw new Exception("needs re-work for aspnetcore2");
+                //app.UseCookieAuthentication(new CookieAuthenticationOptions
+                //{
+                //    AuthenticationScheme = CookieAuthenticationScheme
+                //});
+            //}
         }
 
         private void MockAuthorizationPipeline_OnPostConfigure(IApplicationBuilder app)
@@ -99,7 +100,7 @@ namespace IdentityServer4.IntegrationTests.Common
             });
         }
 
-        public string CookieAuthenticationScheme { get; set; } = "cookie_authn";
+        public string CookieAuthenticationScheme { get; set; } = IdentityServerConstants.DefaultCookieAuthenticationScheme;
 
         public bool LoginWasCalled { get; set; }
         public AuthorizationRequest LoginRequest { get; set; }
@@ -124,7 +125,7 @@ namespace IdentityServer4.IntegrationTests.Common
             if (CookieAuthenticationScheme != null && Subject != null)
             {
                 var props = new AuthenticationProperties();
-                await ctx.Authentication.SignInAsync(CookieAuthenticationScheme, Subject, props);
+                await ctx.SignInAsync(CookieAuthenticationScheme, Subject, props);
                 Subject = null;
                 var url = ctx.Request.Query[this.Options.UserInteraction.LoginReturnUrlParameter].FirstOrDefault();
                 if (url != null)

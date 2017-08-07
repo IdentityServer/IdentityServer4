@@ -7,7 +7,6 @@ using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using IdentityServer4.Test;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -39,6 +38,7 @@ namespace IdentityServer4.Quickstart.UI
             IIdentityServerInteractionService interaction,
             IClientStore clientStore,
             IHttpContextAccessor httpContextAccessor,
+            IAuthenticationSchemeProvider schemeProvider,
             IEventService events,
             TestUserStore users = null)
         {
@@ -46,7 +46,7 @@ namespace IdentityServer4.Quickstart.UI
             _users = users ?? new TestUserStore(TestUsers.Users);
             _interaction = interaction;
             _events = events;
-            _account = new AccountService(interaction, httpContextAccessor, clientStore);
+            _account = new AccountService(interaction, httpContextAccessor, schemeProvider, clientStore);
         }
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace IdentityServer4.Quickstart.UI
                     // issue authentication cookie with subject ID and username
                     var user = _users.FindByUsername(model.Username);
                     await _events.RaiseAsync(new UserLoginSuccessEvent(user.Username, user.SubjectId, user.Username));
-                    await HttpContext.Authentication.SignInAsync(user.SubjectId, user.Username, props);
+                    await HttpContext.SignInAsync(user.SubjectId, user.Username, props);
 
                     // make sure the returnUrl is still valid, and if yes - redirect back to authorize endpoint or a local page
                     if (_interaction.IsValidReturnUrl(model.ReturnUrl) || Url.IsLocalUrl(model.ReturnUrl))
@@ -158,7 +158,7 @@ namespace IdentityServer4.Quickstart.UI
                         id.AddClaims(roles);
                     }
 
-                    await HttpContext.Authentication.SignInAsync(IdentityServer4.IdentityServerConstants.ExternalCookieAuthenticationScheme, new ClaimsPrincipal(id), props);
+                    await HttpContext.SignInAsync(IdentityServer4.IdentityServerConstants.ExternalCookieAuthenticationScheme, new ClaimsPrincipal(id), props);
                     return Redirect(returnUrl);
                 }
                 else
@@ -186,7 +186,7 @@ namespace IdentityServer4.Quickstart.UI
         public async Task<IActionResult> ExternalLoginCallback(string returnUrl)
         {
             // read external identity from the temporary cookie
-            var info = await HttpContext.Authentication.GetAuthenticateInfoAsync(IdentityServer4.IdentityServerConstants.ExternalCookieAuthenticationScheme);
+            var info = await HttpContext.AuthenticateAsync(IdentityServer4.IdentityServerConstants.ExternalCookieAuthenticationScheme);
             var tempUser = info?.Principal;
             if (tempUser == null)
             {
@@ -243,10 +243,10 @@ namespace IdentityServer4.Quickstart.UI
 
             // issue authentication cookie for user
             await _events.RaiseAsync(new UserLoginSuccessEvent(provider, userId, user.SubjectId, user.Username));
-            await HttpContext.Authentication.SignInAsync(user.SubjectId, user.Username, provider, props, additionalClaims.ToArray());
+            await HttpContext.SignInAsync(user.SubjectId, user.Username, provider, props, additionalClaims.ToArray());
 
             // delete temporary cookie used during external authentication
-            await HttpContext.Authentication.SignOutAsync(IdentityServer4.IdentityServerConstants.ExternalCookieAuthenticationScheme);
+            await HttpContext.SignOutAsync(IdentityServer4.IdentityServerConstants.ExternalCookieAuthenticationScheme);
 
             // validate return URL and redirect back to authorization endpoint or a local page
             if (_interaction.IsValidReturnUrl(returnUrl) || Url.IsLocalUrl(returnUrl))
@@ -288,7 +288,7 @@ namespace IdentityServer4.Quickstart.UI
                 try
                 {
                     // hack: try/catch to handle social providers that throw
-                    await HttpContext.Authentication.SignOutAsync(vm.ExternalAuthenticationScheme,
+                    await HttpContext.SignOutAsync(vm.ExternalAuthenticationScheme,
                         new AuthenticationProperties { RedirectUri = url });
                 }
                 catch (NotSupportedException) // this is for the external providers that don't have signout
@@ -300,7 +300,7 @@ namespace IdentityServer4.Quickstart.UI
             }
 
             // delete local authentication cookie
-            await HttpContext.Authentication.SignOutAsync();
+            await HttpContext.SignOutAsync();
 
             var user = await HttpContext.GetIdentityServerUserAsync();
             if (user != null)

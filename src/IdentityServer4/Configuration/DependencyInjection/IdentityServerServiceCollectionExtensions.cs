@@ -32,16 +32,16 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var builder = services.AddIdentityServerBuilder();
 
-            builder.AddRequiredPlatformServices();
-
-            builder.AddCoreServices();
-            builder.AddDefaultEndpoints();
-            builder.AddPluggableServices();
-            builder.AddValidators();
-            builder.AddResponseGenerators();
-
-            builder.AddDefaultSecretParsers();
-            builder.AddDefaultSecretValidators();
+            builder
+                .AddRequiredPlatformServices()
+                .AddCookieAuthentication()
+                .AddCoreServices()
+                .AddDefaultEndpoints()
+                .AddPluggableServices()
+                .AddValidators()
+                .AddResponseGenerators()
+                .AddDefaultSecretParsers()
+                .AddDefaultSecretValidators();
 
             // provide default in-memory implementation, not suitable for most production scenarios
             builder.AddInMemoryPersistedGrants();

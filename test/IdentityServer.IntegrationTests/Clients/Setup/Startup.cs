@@ -47,6 +47,7 @@ namespace IdentityServer4.IntegrationTests.Clients
         public void Configure(IApplicationBuilder app)
         {
             app.UseIdentityServer();
+            app.UseAuthentication();
         }
     }
 }
