@@ -125,7 +125,10 @@ namespace IdentityServer4.Services
                 subject = user?.GetSubjectId();
             }
 
-            if (subject == null) throw new ArgumentNullException(nameof(subject), "User is not currently authenticated, and no subject id passed");
+            if (subject == null && consent.Granted)
+            {
+                throw new ArgumentNullException(nameof(subject), "User is not currently authenticated, and no subject id passed");
+            }
 
             var consentRequest = new ConsentRequest(request, subject);
             await _consentMessageStore.WriteAsync(consentRequest.Id, new Message<ConsentResponse>(consent, _options.UtcNow));

@@ -55,7 +55,7 @@ namespace IdentityServer4.Endpoints.Results
         {
             Init(context);
 
-            var returnUrl = context.Request.PathBase.ToString().EnsureTrailingSlash() + Constants.ProtocolRoutePaths.AuthorizeAfterConsent;
+            var returnUrl = context.Request.PathBase.ToString().EnsureTrailingSlash() + Constants.ProtocolRoutePaths.AuthorizeCallback;
             returnUrl = returnUrl.AddQueryString(_request.Raw.ToQueryString());
 
             var consentUrl = _options.UserInteraction.ConsentUrl;

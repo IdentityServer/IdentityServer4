@@ -120,7 +120,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
         public async Task ProcessAsync_authorize_after_login_path_should_return_authorization_result()
         {
             _context.Request.Method = "GET";
-            _context.Request.Path = new PathString("/connect/authorize/login");
+            _context.Request.Path = new PathString("/connect/authorize/callback");
             _mockUserSession.User = _user;
 
             var result = await _subject.ProcessAsync(_context);
@@ -144,7 +144,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
             _mockUserSession.User = _user;
 
             _context.Request.Method = "GET";
-            _context.Request.Path = new PathString("/connect/authorize/consent");
+            _context.Request.Path = new PathString("/connect/authorize/callback");
             _context.Request.QueryString = new QueryString("?" + parameters.ToQueryString());
 
             var result = await _subject.ProcessAsync(_context);
@@ -212,34 +212,22 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
         // after login
         [Fact]
         [Trait("Category", Category)]
-        public async Task ProcessAuthorizeAfterLoginAsync_no_user_should_return_error_page()
+        public async Task ProcessAuthorizeAfterLoginAsync_no_user_should_trigger_login()
         {
+            _stubInteractionGenerator.Response.IsLogin = true;
             _mockUserSession.User = null;
 
-            var result = await _subject.ProcessAuthorizeAfterLoginAsync(_context);
+            var result = await _subject.ProcessAuthorizeCallbackAsync(_context);
 
-            result.Should().BeOfType<AuthorizeResult>();
-            ((AuthorizeResult)result).Response.IsError.Should().BeTrue();
-        }
-
-
-        // after consent
-        [Fact]
-        [Trait("Category", Category)]
-        public async Task ProcessAuthorizeWithConsentAsync_no_user_should_return_error_page()
-        {
-            _mockUserSession.User = null;
-
-            var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
-
-            result.Should().BeOfType<AuthorizeResult>();
-            ((AuthorizeResult)result).Response.IsError.Should().BeTrue();
+            result.Should().BeOfType<LoginPageResult>();
         }
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task ProcessAuthorizeWithConsentAsync_no_consent_message_should_return_error_page()
+        public async Task ProcessAuthorizeWithConsentAsync_no_consent_message_should_return_redirect_for_consent()
         {
+            _stubInteractionGenerator.Response.IsConsent = true;
+
             var parameters = new NameValueCollection()
             {
                 { "client_id", "client" },
@@ -252,13 +240,12 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
             _mockUserSession.User = _user;
 
             _context.Request.Method = "GET";
-            _context.Request.Path = new PathString("/connect/authorize/consent");
+            _context.Request.Path = new PathString("/connect/authorize/callback");
             _context.Request.QueryString = new QueryString("?" + parameters.ToQueryString());
 
-            var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
+            var result = await _subject.ProcessAuthorizeCallbackAsync(_context);
 
-            result.Should().BeOfType<AuthorizeResult>();
-            ((AuthorizeResult)result).Response.IsError.Should().BeTrue();
+            result.Should().BeOfType<ConsentPageResult>();
         }
 
         [Fact]
@@ -277,10 +264,10 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
             _mockUserSession.User = _user;
 
             _context.Request.Method = "GET";
-            _context.Request.Path = new PathString("/connect/authorize/consent");
+            _context.Request.Path = new PathString("/connect/authorize/callback");
             _context.Request.QueryString = new QueryString("?" + parameters.ToQueryString());
 
-            var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
+            var result = await _subject.ProcessAuthorizeCallbackAsync(_context);
 
             result.Should().BeOfType<AuthorizeResult>();
             ((AuthorizeResult)result).Response.IsError.Should().BeTrue();
@@ -302,10 +289,10 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
             _mockUserSession.User = _user;
 
             _context.Request.Method = "GET";
-            _context.Request.Path = new PathString("/connect/authorize/consent");
+            _context.Request.Path = new PathString("/connect/authorize/callback");
             _context.Request.QueryString = new QueryString("?" + parameters.ToQueryString());
 
-            var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
+            var result = await _subject.ProcessAuthorizeCallbackAsync(_context);
 
             result.Should().BeOfType<AuthorizeResult>();
         }
@@ -326,10 +313,10 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
             _mockUserSession.User = _user;
 
             _context.Request.Method = "GET";
-            _context.Request.Path = new PathString("/connect/authorize/consent");
+            _context.Request.Path = new PathString("/connect/authorize/callback");
             _context.Request.QueryString = new QueryString("?" + parameters.ToQueryString());
 
-            var result = await _subject.ProcessAuthorizeAfterConsentAsync(_context);
+            var result = await _subject.ProcessAuthorizeCallbackAsync(_context);
 
             _mockUserConsentResponseMessageStore.Messages.Count.Should().Be(0);
         }

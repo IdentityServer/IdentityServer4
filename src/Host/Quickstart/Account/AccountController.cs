@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;
+using IdentityServer4.Models;
 
 namespace IdentityServer4.Quickstart.UI
 {
@@ -70,8 +71,22 @@ namespace IdentityServer4.Quickstart.UI
         /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginInputModel model)
+        public async Task<IActionResult> Login(LoginInputModel model, string button)
         {
+            if (button == "cancel")
+            {
+                var req = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl);
+                if (req != null)
+                {
+                    await _interaction.GrantConsentAsync(req, ConsentResponse.Denied);
+                    return Redirect(model.ReturnUrl);
+                }
+                else
+                {
+                    return Redirect("~/");
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 // validate username/password against in-memory store

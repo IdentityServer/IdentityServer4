@@ -209,8 +209,7 @@ namespace IdentityServer4
         public static class ProtocolRoutePaths
         {
             public const string Authorize              = "connect/authorize";
-            public const string AuthorizeAfterConsent  = Authorize + "/consent";
-            public const string AuthorizeAfterLogin    = Authorize + "/login";
+            public const string AuthorizeCallback      = Authorize + "/callback";
             public const string DiscoveryConfiguration = ".well-known/openid-configuration";
             public const string DiscoveryWebKeys       = DiscoveryConfiguration + "/jwks";
             public const string Token                  = "connect/token";
