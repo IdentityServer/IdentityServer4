@@ -2,18 +2,18 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using System.Threading.Tasks;
-using IdentityServer4.Models;
+using IdentityModel;
+using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
-using IdentityModel;
+using IdentityServer4.Models;
+using IdentityServer4.ResponseHandling;
+using IdentityServer4.Services;
+using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using IdentityServer4.Services;
-using IdentityServer4.Configuration;
-using IdentityServer4.Stores;
-using IdentityServer4.ResponseHandling;
+using System.Threading.Tasks;
 
 namespace IdentityServer4.Endpoints.Results
 {
@@ -82,7 +82,18 @@ namespace IdentityServer4.Endpoints.Results
             else
             {
                 // we now know we must show error page
-                await RedirectToErrorPageAsync(context);
+                // check if uilocales was provided in the request
+                var uilocales = Response.Request?.Raw?.Get((OidcConstants.AuthorizeRequest.UiLocales));
+                if (uilocales.IsPresent() && uilocales.Length < _options.InputLengthRestrictions.UiLocale)
+                {
+                    // redirect to error page with uilocales hint
+                    await RedirectToLocalizedErrorPageAsync(context, uilocales);
+                }
+                else
+                {
+                    // redirect to error page without uilocales hint
+                    await RedirectToErrorPageAsync(context);
+                }
             }
         }
 
@@ -186,6 +197,24 @@ namespace IdentityServer4.Endpoints.Results
             var errorUrl = _options.UserInteraction.ErrorUrl;
 
             var url = errorUrl.AddQueryString(_options.UserInteraction.ErrorIdParameter, id);
+            context.Response.RedirectToAbsoluteUrl(url);
+        }
+
+        async Task RedirectToLocalizedErrorPageAsync(HttpContext context, string uilocales)
+        {
+            var errorModel = new ErrorMessage
+            {
+                RequestId = context.TraceIdentifier,
+                Error = Response.Error,
+                ErrorDescription = Response.ErrorDescription
+            };
+
+            var message = new Message<ErrorMessage>(errorModel);
+            var id = await _errorMessageStore.WriteAsync(message);
+
+            var errorUrl = _options.UserInteraction.ErrorUrl;
+
+            var url = errorUrl.AddQueryString(_options.UserInteraction.ErrorIdParameter, id).AddQueryString(OidcConstants.AuthorizeRequest.UiLocales, uilocales);
             context.Response.RedirectToAbsoluteUrl(url);
         }
     }

@@ -2,16 +2,17 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using System.Threading.Tasks;
-using IdentityServer4.Validation;
-using IdentityServer4.Hosting;
-using Microsoft.AspNetCore.Http;
+using IdentityModel;
 using IdentityServer4.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+using IdentityServer4.Extensions;
+using IdentityServer4.Hosting;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
-using IdentityServer4.Extensions;
+using IdentityServer4.Validation;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Threading.Tasks;
 
 namespace IdentityServer4.Endpoints.Results
 {
@@ -64,6 +65,7 @@ namespace IdentityServer4.Endpoints.Results
             var validatedRequest = _result.IsError ? null : _result.ValidatedRequest;
 
             string id = null;
+            string uilocales = null;
 
             if (validatedRequest != null)
             {
@@ -73,6 +75,8 @@ namespace IdentityServer4.Endpoints.Results
                     var msg = new Message<LogoutMessage>(logoutMessage, _options.UtcNow);
                     id = await _logoutMessageStore.WriteAsync(msg);
                 }
+
+                uilocales = validatedRequest.Raw?.Get(OidcConstants.EndSessionRequest.UiLocales);
             }
 
             var redirect = _options.UserInteraction.LogoutUrl;
@@ -85,6 +89,12 @@ namespace IdentityServer4.Endpoints.Results
             if (id != null)
             {
                 redirect = redirect.AddQueryString(_options.UserInteraction.LogoutIdParameter, id);
+            }
+
+            // add uilocales to the query string if it is available
+            if (uilocales.IsPresent() && uilocales.Length < _options.InputLengthRestrictions.UiLocale)
+            {
+                redirect = redirect.AddQueryString(OidcConstants.EndSessionRequest.UiLocales, uilocales);
             }
 
             context.Response.Redirect(redirect);
