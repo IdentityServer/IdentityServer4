@@ -16,6 +16,6 @@ namespace IdentityServer4.Hosting
         /// </summary>
         /// <param name="context">The HTTP context.</param>
         /// <returns></returns>
-        IEndpoint Find(HttpContext context);
+        IEndpointHandler Find(HttpContext context);
     }
 }
