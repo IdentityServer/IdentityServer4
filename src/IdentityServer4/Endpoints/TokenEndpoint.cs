@@ -20,8 +20,8 @@ namespace IdentityServer4.Endpoints
     /// <summary>
     /// The token endpoint
     /// </summary>
-    /// <seealso cref="IdentityServer4.Hosting.IEndpoint" />
-    class TokenEndpoint : IEndpoint
+    /// <seealso cref="IdentityServer4.Hosting.IEndpointHandler" />
+    class TokenEndpoint : IEndpointHandler
     {
         private readonly ClientSecretValidator _clientValidator;
         private readonly ITokenRequestValidator _requestValidator;

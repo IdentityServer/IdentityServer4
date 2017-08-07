@@ -10,7 +10,7 @@ namespace IdentityServer4.Hosting
     /// <summary>
     /// Endpoint handler
     /// </summary>
-    public interface IEndpoint
+    public interface IEndpointHandler
     {
         /// <summary>
         /// Processes the request.

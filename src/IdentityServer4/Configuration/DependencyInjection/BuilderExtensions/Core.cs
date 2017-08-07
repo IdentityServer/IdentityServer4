@@ -25,6 +25,8 @@ using IdentityServer4.Infrastructure;
 using System.Net.Http;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
+using static IdentityServer4.Constants;
+using IdentityServer4.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -75,22 +77,16 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IIdentityServerBuilder AddDefaultEndpoints(this IIdentityServerBuilder builder)
         {
-            builder.Services.AddSingleton<IEndpointRouter>(resolver =>
-            {
-                return new EndpointRouter(Constants.EndpointPathToNameMap,
-                    resolver.GetRequiredService<IdentityServerOptions>(),
-                    resolver.GetServices<EndpointMapping>(),
-                    resolver.GetRequiredService<ILogger<EndpointRouter>>());
-            });
+            builder.Services.AddTransient<IEndpointRouter, EndpointRouter>();
 
-            builder.AddEndpoint<AuthorizeEndpoint>(EndpointName.Authorize);
-            builder.AddEndpoint<CheckSessionEndpoint>(EndpointName.CheckSession);
-            builder.AddEndpoint<DiscoveryEndpoint>(EndpointName.Discovery);
-            builder.AddEndpoint<EndSessionEndpoint>(EndpointName.EndSession);
-            builder.AddEndpoint<IntrospectionEndpoint>(EndpointName.Introspection);
-            builder.AddEndpoint<TokenRevocationEndpoint>(EndpointName.Revocation);
-            builder.AddEndpoint<TokenEndpoint>(EndpointName.Token);
-            builder.AddEndpoint<UserInfoEndpoint>(EndpointName.UserInfo);
+            builder.AddEndpoint<AuthorizeEndpoint>(EndpointNames.Authorize, ProtocolRoutePaths.Authorize.EnsureLeadingSlash());
+            builder.AddEndpoint<CheckSessionEndpoint>(EndpointNames.CheckSession, ProtocolRoutePaths.CheckSession.EnsureLeadingSlash());
+            builder.AddEndpoint<DiscoveryEndpoint>(EndpointNames.Discovery, ProtocolRoutePaths.DiscoveryConfiguration.EnsureLeadingSlash());
+            builder.AddEndpoint<EndSessionEndpoint>(EndpointNames.EndSession, ProtocolRoutePaths.EndSession.EnsureLeadingSlash());
+            builder.AddEndpoint<IntrospectionEndpoint>(EndpointNames.Introspection, ProtocolRoutePaths.Introspection.EnsureLeadingSlash());
+            builder.AddEndpoint<TokenRevocationEndpoint>(EndpointNames.Revocation, ProtocolRoutePaths.Revocation.EnsureLeadingSlash());
+            builder.AddEndpoint<TokenEndpoint>(EndpointNames.Token, ProtocolRoutePaths.Token.EnsureLeadingSlash());
+            builder.AddEndpoint<UserInfoEndpoint>(EndpointNames.UserInfo, ProtocolRoutePaths.UserInfo.EnsureLeadingSlash());
 
             return builder;
         }
@@ -100,13 +96,14 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="builder">The builder.</param>
-        /// <param name="endpoint">The endpoint.</param>
+        /// <param name="name">The name.</param>
+        /// <param name="path">The path.</param>
         /// <returns></returns>
-        public static IIdentityServerBuilder AddEndpoint<T>(this IIdentityServerBuilder builder, EndpointName endpoint)
-            where T : class, IEndpoint
+        public static IIdentityServerBuilder AddEndpoint<T>(this IIdentityServerBuilder builder, string name, PathString path)
+            where T : class, IEndpointHandler
         {
             builder.Services.AddTransient<T>();
-            builder.Services.AddSingleton(new EndpointMapping { Endpoint = endpoint, Handler = typeof(T) });
+            builder.Services.AddSingleton(new Endpoint(name, path, typeof(T)));
 
             return builder;
         }

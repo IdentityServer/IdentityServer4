@@ -23,7 +23,7 @@ using System;
 
 namespace IdentityServer4.Endpoints
 {
-    class AuthorizeEndpoint : IEndpoint
+    class AuthorizeEndpoint : IEndpointHandler
     {
         private readonly IEventService _events;
         private readonly ILogger _logger;
@@ -64,14 +64,9 @@ namespace IdentityServer4.Endpoints
                 return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
             }
 
-            if (context.Request.Path == Constants.ProtocolRoutePaths.AuthorizeAfterLogin.EnsureLeadingSlash())
+            if (context.Request.Path == Constants.ProtocolRoutePaths.AuthorizeCallback.EnsureLeadingSlash())
             {
-                return await ProcessAuthorizeAfterLoginAsync(context);
-            }
-
-            if (context.Request.Path == Constants.ProtocolRoutePaths.AuthorizeAfterConsent.EnsureLeadingSlash())
-            {
-                return await ProcessAuthorizeAfterConsentAsync(context);
+                return await ProcessAuthorizeCallbackAsync(context);
             }
 
             return new StatusCodeResult(HttpStatusCode.NotFound);
@@ -109,51 +104,24 @@ namespace IdentityServer4.Endpoints
             return result;
         }
 
-        internal async Task<IEndpointResult> ProcessAuthorizeAfterLoginAsync(HttpContext context)
+        internal async Task<IEndpointResult> ProcessAuthorizeCallbackAsync(HttpContext context)
         {
-            _logger.LogDebug("Start authorize request (after login)");
-
-            var user = await _userSession.GetIdentityServerUserAsync();
-            if (user == null)
-            {
-                return await CreateErrorResultAsync("User is not authenticated");
-            }
+            _logger.LogDebug("Start authorize callback request");
 
             var parameters = context.Request.Query.AsNameValueCollection();
-            var result = await ProcessAuthorizeRequestAsync(parameters, user, null);
-
-            _logger.LogTrace("End Authorize Request. Result type: {0}", result?.GetType().ToString() ?? "-none-");
-
-            return result;
-        }
-
-        internal async Task<IEndpointResult> ProcessAuthorizeAfterConsentAsync(HttpContext context)
-        {
-            _logger.LogDebug("Start authorize request (after consent)");
 
             var user = await _userSession.GetIdentityServerUserAsync();
-            if (user == null)
-            {
-                return await CreateErrorResultAsync("User is not authenticated");
-            }
-
-            var parameters = context.Request.Query.AsNameValueCollection();
-            var consentRequest = new ConsentRequest(parameters, user.GetSubjectId());
-
+            var consentRequest = new ConsentRequest(parameters, user?.GetSubjectId());
             var consent = await _consentResponseStore.ReadAsync(consentRequest.Id);
-            if (consent == null)
+
+            if (consent != null && consent.Data == null)
             {
-                return await CreateErrorResultAsync("consent message is missing");
+                return await CreateErrorResultAsync("consent message is missing data");
             }
 
             try
-            { 
-                if (consent.Data == null)
-                {
-                    return await CreateErrorResultAsync("consent message is missing data");
-                }
-
-                var result = await ProcessAuthorizeRequestAsync(parameters, user, consent.Data);
+            {
+                var result = await ProcessAuthorizeRequestAsync(parameters, user, consent?.Data);
 
                 _logger.LogTrace("End Authorize Request. Result type: {0}", result?.GetType().ToString() ?? "-none-");
 
@@ -161,10 +129,13 @@ namespace IdentityServer4.Endpoints
             }
             finally
             {
-                await _consentResponseStore.DeleteAsync(consentRequest.Id);
+                if (consent != null)
+                {
+                    await _consentResponseStore.DeleteAsync(consentRequest.Id);
+                }
             }
         }
-
+        
         internal async Task<IEndpointResult> ProcessAuthorizeRequestAsync(NameValueCollection parameters, ClaimsPrincipal user, ConsentResponse consent)
         {
             if (user != null)

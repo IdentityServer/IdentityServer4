@@ -70,6 +70,16 @@ namespace IdentityServer4.ResponseHandling
         {
             Logger.LogTrace("ProcessInteractionAsync");
 
+            if (consent != null && consent.Granted == false && request.Subject.IsAuthenticated() == false)
+            {
+                // special case when anonymous user has issued a deny prior to authenticating
+                Logger.LogInformation("Error: User denied consent");
+                return new InteractionResponse
+                {
+                    Error = OidcConstants.AuthorizeErrors.AccessDenied,
+                };
+            }
+
             var result = await ProcessLoginAsync(request);
             if (result.IsLogin || result.IsError)
             {
