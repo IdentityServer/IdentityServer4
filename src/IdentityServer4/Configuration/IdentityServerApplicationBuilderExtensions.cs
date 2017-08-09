@@ -29,6 +29,8 @@ namespace Microsoft.AspNetCore.Builder
             app.ConfigureCors();
             app.ConfigureCookies();
 
+            app.UseAuthentication();
+            app.UseMiddleware<FederatedSignOutMiddleware>();
             app.UseMiddleware<IdentityServerMiddleware>();
 
             return app;

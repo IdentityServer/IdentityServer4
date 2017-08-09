@@ -52,12 +52,17 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IIdentityServerBuilder AddCookieAuthentication(this IIdentityServerBuilder builder)
         {
-            builder.Services.AddCookieAuthentication(IdentityServerConstants.DefaultCookieAuthenticationScheme);
+            builder.Services.AddCookieAuthentication(IdentityServerConstants.DefaultCookieAuthenticationScheme, options =>
+            {
+                options.CookieName = IdentityServerConstants.DefaultCookieAuthenticationScheme;
+            });
+
             builder.Services.AddCookieAuthentication(IdentityServerConstants.ExternalCookieAuthenticationScheme, options =>
             {
                 options.CookieName = IdentityServerConstants.ExternalCookieAuthenticationScheme;
             });
 
+            // todo: is not really needed for IS...?!
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = IdentityServerConstants.DefaultCookieAuthenticationScheme;

@@ -8,6 +8,7 @@ namespace IdentityServer4.Configuration
     {
         private readonly IdentityServerOptions _idsrv;
 
+        // todo: look at 2nd param and overall plumbing
         public ConfigureInternalCookieOptions(IdentityServerOptions idsrv)
             :base(IdentityServerConstants.DefaultCookieAuthenticationScheme, null)
         {

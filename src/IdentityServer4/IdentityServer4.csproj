@@ -11,9 +11,6 @@
     <PackageIconUrl>https://raw.githubusercontent.com/IdentityServer/Artwork/master/Logos/IDserver_icon128.jpg</PackageIconUrl>
     <PackageProjectUrl>https://github.com/IdentityServer/IdentityServer4</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/IdentityServer/IdentityServer4/blob/release/LICENSE</PackageLicenseUrl>
-    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
 
   <ItemGroup>

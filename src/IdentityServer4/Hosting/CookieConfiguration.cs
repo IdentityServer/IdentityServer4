@@ -28,17 +28,12 @@ namespace IdentityServer4.Hosting
             {
                 logger.LogDebug("Using hosting application's CookieAuthentication middleware with scheme: {authenticationScheme}", options.Authentication.EffectiveAuthenticationScheme);
 
+                // todo: right place for this config code?
                 var authOptions = app.ApplicationServices.GetRequiredService<IOptions<Microsoft.AspNetCore.Authentication.AuthenticationOptions>>();
                 authOptions.Value.DefaultAuthenticateScheme = options.Authentication.EffectiveAuthenticationScheme;
                 authOptions.Value.DefaultChallengeScheme = options.Authentication.EffectiveAuthenticationScheme;
                 authOptions.Value.DefaultSignInScheme = options.Authentication.EffectiveAuthenticationScheme;
-            }
-
-            app.UseAuthentication();
-
-            // todo
-            //app.UseMiddleware<AuthenticationMiddleware>();
-            app.UseMiddleware<FederatedSignOutMiddleware>();
+            }            
         }
     }
 }
