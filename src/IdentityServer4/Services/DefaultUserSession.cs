@@ -221,7 +221,8 @@ namespace IdentityServer4.Services
             {
                 HttpOnly = false,
                 Secure = secure,
-                Path = path
+                Path = path,
+                SameSite = SameSiteMode.None
             };
 
             return options;
