@@ -208,7 +208,7 @@ namespace IdentityServer4.ResponseHandling
                     OidcConstants.GrantTypes.Implicit
                 };
 
-                if (!(ResourceOwnerValidator is NotSupportedResouceOwnerPasswordValidator))
+                if (!(ResourceOwnerValidator is NotSupportedResourceOwnerPasswordValidator))
                 {
                     standardGrantTypes.Add(OidcConstants.GrantTypes.Password);
                 }

@@ -195,7 +195,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IRedirectUriValidator, StrictRedirectUriValidator>();
             builder.Services.TryAddTransient<ITokenValidator, TokenValidator>();
             builder.Services.TryAddTransient<IIntrospectionRequestValidator, IntrospectionRequestValidator>();
-            builder.Services.TryAddTransient<IResourceOwnerPasswordValidator, NotSupportedResouceOwnerPasswordValidator>();
+            builder.Services.TryAddTransient<IResourceOwnerPasswordValidator, NotSupportedResourceOwnerPasswordValidator>();
             builder.Services.TryAddTransient<ICustomTokenRequestValidator, DefaultCustomTokenRequestValidator>();
             builder.Services.TryAddTransient<IUserInfoRequestValidator, UserInfoRequestValidator>();
 

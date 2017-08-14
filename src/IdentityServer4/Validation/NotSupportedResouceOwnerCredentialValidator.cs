@@ -12,15 +12,15 @@ namespace IdentityServer4.Validation
     /// Default resource owner password validator (not implementation == not supported)
     /// </summary>
     /// <seealso cref="IdentityServer4.Validation.IResourceOwnerPasswordValidator" />
-    internal class NotSupportedResouceOwnerPasswordValidator : IResourceOwnerPasswordValidator
+    internal class NotSupportedResourceOwnerPasswordValidator : IResourceOwnerPasswordValidator
     {
         private readonly ILogger _logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NotSupportedResouceOwnerPasswordValidator"/> class.
+        /// Initializes a new instance of the <see cref="NotSupportedResourceOwnerPasswordValidator"/> class.
         /// </summary>
         /// <param name="logger">The logger.</param>
-        public NotSupportedResouceOwnerPasswordValidator(ILogger<NotSupportedResouceOwnerPasswordValidator> logger)
+        public NotSupportedResourceOwnerPasswordValidator(ILogger<NotSupportedResourceOwnerPasswordValidator> logger)
         {
             _logger = logger;
         }

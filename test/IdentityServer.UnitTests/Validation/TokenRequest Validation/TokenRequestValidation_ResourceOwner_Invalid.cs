@@ -191,7 +191,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         public async Task Password_GrantType_Not_Supported()
         {
             var client = await _clients.FindEnabledClientByIdAsync("roclient");
-            var validator = Factory.CreateTokenRequestValidator(resourceOwnerValidator: new NotSupportedResouceOwnerPasswordValidator(TestLogger.Create<NotSupportedResouceOwnerPasswordValidator>()));
+            var validator = Factory.CreateTokenRequestValidator(resourceOwnerValidator: new NotSupportedResourceOwnerPasswordValidator(TestLogger.Create<NotSupportedResourceOwnerPasswordValidator>()));
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.Password);
