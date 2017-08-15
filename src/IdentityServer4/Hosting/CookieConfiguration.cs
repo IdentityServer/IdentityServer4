@@ -30,6 +30,7 @@ namespace IdentityServer4.Hosting
 
                 // todo: right place for this config code?
                 var authOptions = app.ApplicationServices.GetRequiredService<IOptions<Microsoft.AspNetCore.Authentication.AuthenticationOptions>>();
+
                 authOptions.Value.DefaultAuthenticateScheme = options.Authentication.EffectiveAuthenticationScheme;
                 authOptions.Value.DefaultChallengeScheme = options.Authentication.EffectiveAuthenticationScheme;
                 authOptions.Value.DefaultSignInScheme = options.Authentication.EffectiveAuthenticationScheme;
