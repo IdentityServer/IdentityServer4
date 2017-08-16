@@ -64,7 +64,7 @@ namespace IdentityServer4.Hosting
                     {
                         _logger.LogDebug("sid parameter matches external idp sid claim for current user");
 
-                        await context.SignOutAsync();
+                        await context.SignOut2Async();
 
                         var iframeUrl = await context.GetIdentityServerSignoutFrameCallbackUrlAsync();
                         if (iframeUrl != null)

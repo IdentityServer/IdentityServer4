@@ -61,14 +61,15 @@ namespace Host
     {
         public static IServiceCollection AddExternalIdentityProviders(this IServiceCollection services)
         {
-            services.AddGoogleAuthentication("Google", options =>
+            services.AddAuthentication().
+                AddGoogle("Google", options =>
             {
                 options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
                 options.ClientId = "708996912208-9m4dkjb5hscn7cjrn5u0r4tbgkbj1fko.apps.googleusercontent.com";
                 options.ClientSecret = "wdfPY6t8H8cecgjlxud__4Gh";
-            });
-
-            services.AddOpenIdConnectAuthentication("demoidsrv", options =>
+            })
+            
+            .AddOpenIdConnect("demoidsrv", options =>
             {
                 options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
                 options.SignOutScheme = IdentityServerConstants.SignoutScheme;
@@ -88,9 +89,9 @@ namespace Host
                     NameClaimType = "name",
                     RoleClaimType = "role"
                 };
-            });
-
-            services.AddOpenIdConnectAuthentication("aad", options =>
+            })
+            
+            .AddOpenIdConnect("aad", options =>
             {
                 options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
                 options.SignOutScheme = IdentityServerConstants.SignoutScheme;
@@ -108,9 +109,9 @@ namespace Host
                     NameClaimType = "name",
                     RoleClaimType = "role"
                 };
-            });
-
-            services.AddOpenIdConnectAuthentication("adfs", options =>
+            })
+            
+            .AddOpenIdConnect("adfs", options =>
             {
                 options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
                 options.SignOutScheme = IdentityServerConstants.SignoutScheme;

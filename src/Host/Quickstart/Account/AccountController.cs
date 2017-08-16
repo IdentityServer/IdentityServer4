@@ -300,7 +300,7 @@ namespace IdentityServer4.Quickstart.UI
             }
 
             // delete local authentication cookie
-            await HttpContext.SignOutAsync();
+            await HttpContext.SignOut2Async();
 
             var user = await HttpContext.GetIdentityServerUserAsync();
             if (user != null)
