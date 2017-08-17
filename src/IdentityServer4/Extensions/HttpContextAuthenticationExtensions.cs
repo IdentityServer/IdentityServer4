@@ -171,11 +171,11 @@ namespace Microsoft.AspNetCore.Http
         /// </summary>
         /// <param name="context">The manager.</param>
         /// <returns></returns>
-        public static async Task SignOutAsync2(this HttpContext context)
-        {
-            var scheme = context.GetIdentityServerAuthenticationScheme();
-            await context.SignOutAsync(scheme);
-        }
+        //public static async Task SignOutAsync(this HttpContext context)
+        //{
+        //    var scheme = context.GetIdentityServerAuthenticationScheme();
+        //    await context.SignOutAsync(scheme);
+        //}
 
         /// <summary>
         /// Gets the IdentityServer authentication scheme.

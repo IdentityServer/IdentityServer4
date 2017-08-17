@@ -66,7 +66,7 @@ namespace IdentityServer4.Hosting
                         _logger.LogDebug("sid parameter matches external idp sid claim for current user");
 
                         // todo - default method does not pick up our auhtN scheme
-                        await context.SignOutAsync2();
+                        await context.SignOutAsync();
 
                         var iframeUrl = await context.GetIdentityServerSignoutFrameCallbackUrlAsync();
                         if (iframeUrl != null)

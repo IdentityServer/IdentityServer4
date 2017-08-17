@@ -58,6 +58,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 options.DefaultAuthenticateScheme = IdentityServerConstants.DefaultCookieAuthenticationScheme;
                 options.DefaultChallengeScheme = IdentityServerConstants.DefaultCookieAuthenticationScheme;
                 options.DefaultSignInScheme = IdentityServerConstants.DefaultCookieAuthenticationScheme;
+                options.DefaultSignOutScheme = IdentityServerConstants.DefaultCookieAuthenticationScheme;
             })
             .AddCookie(IdentityServerConstants.DefaultCookieAuthenticationScheme, options =>
             {

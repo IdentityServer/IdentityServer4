@@ -300,8 +300,7 @@ namespace IdentityServer4.Quickstart.UI
             }
 
             // delete local authentication cookie
-            // todo - default method does not pick up our auhtN scheme
-            await HttpContext.SignOutAsync2();
+            await HttpContext.SignOutAsync();
 
             var user = await HttpContext.GetIdentityServerUserAsync();
             if (user != null)

@@ -52,7 +52,7 @@ namespace IdentityServer4.Hosting
 
         public override Task SignOutAsync(HttpContext context, string scheme, AuthenticationProperties properties)
         {
-            if (scheme == _options.Authentication.EffectiveAuthenticationScheme)
+            if (scheme == null || scheme == _options.Authentication.EffectiveAuthenticationScheme)
             {
                 _session.RemoveSessionIdCookie();
             }
