@@ -61,74 +61,73 @@ namespace Host
     {
         public static IServiceCollection AddExternalIdentityProviders(this IServiceCollection services)
         {
-            services.AddGoogleAuthentication("Google", options =>
+            services.AddAuthentication(options =>
             {
-                options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-                options.ClientId = "708996912208-9m4dkjb5hscn7cjrn5u0r4tbgkbj1fko.apps.googleusercontent.com";
-                options.ClientSecret = "wdfPY6t8H8cecgjlxud__4Gh";
-            });
-
-            services.AddOpenIdConnectAuthentication("demoidsrv", options =>
-            {
-                options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-                options.SignOutScheme = IdentityServerConstants.SignoutScheme;
-
-                //options.DisplayName = "IdentityServer",
-
-                options.Authority = "https://demo.identityserver.io/";
-                options.ClientId = "implicit";
-                options.ResponseType = "id_token";
-                options.SaveTokens = true;
-                options.CallbackPath = new PathString("/signin-idsrv");
-                options.SignedOutCallbackPath = new PathString("/signout-callback-idsrv");
-                options.RemoteSignOutPath = new PathString("/signout-idsrv");
-
-                options.TokenValidationParameters = new TokenValidationParameters
+                // todo: how do we deal with that properly
+                //options.DefaultAuthenticateScheme = IdentityServerConstants.DefaultCookieAuthenticationScheme;
+                //options.DefaultChallengeScheme = IdentityServerConstants.DefaultCookieAuthenticationScheme;
+                //options.DefaultSignInScheme = IdentityServerConstants.DefaultCookieAuthenticationScheme;
+            })
+                .AddGoogle("Google", options =>
                 {
-                    NameClaimType = "name",
-                    RoleClaimType = "role"
-                };
-            });
+                    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                    options.ClientId = "708996912208-9m4dkjb5hscn7cjrn5u0r4tbgkbj1fko.apps.googleusercontent.com";
+                    options.ClientSecret = "wdfPY6t8H8cecgjlxud__4Gh";
+                })
+                .AddOpenIdConnect("demoidsrv", "IdentityServer", options =>
+                {
+                    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                    options.SignOutScheme = IdentityServerConstants.SignoutScheme;
 
-            services.AddOpenIdConnectAuthentication("aad", options =>
-            {
-                options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-                options.SignOutScheme = IdentityServerConstants.SignoutScheme;
+                    options.Authority = "https://demo.identityserver.io/";
+                    options.ClientId = "implicit";
+                    options.ResponseType = "id_token";
+                    options.SaveTokens = true;
+                    options.CallbackPath = new PathString("/signin-idsrv");
+                    options.SignedOutCallbackPath = new PathString("/signout-callback-idsrv");
+                    options.RemoteSignOutPath = new PathString("/signout-idsrv");
+
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        NameClaimType = "name",
+                        RoleClaimType = "role"
+                    };
+                })
+                .AddOpenIdConnect("aad", "Azure AD", options =>
+                {
+                    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                    options.SignOutScheme = IdentityServerConstants.SignoutScheme;
                 
-                //options.DisplayName = "AAD",
-                
-                options.Authority = "https://login.windows.net/4ca9cb4c-5e5f-4be9-b700-c532992a3705";
-                options.ClientId = "96e3c53e-01cb-4244-b658-a42164cb67a9";
-                options.ResponseType = "id_token";
-                options.CallbackPath = new PathString("/signin-aad");
-                options.SignedOutCallbackPath = new PathString("/signout-callback-aad");
-                options.RemoteSignOutPath = new PathString("/signout-aad");
-                options.TokenValidationParameters = new TokenValidationParameters
+                    options.Authority = "https://login.windows.net/4ca9cb4c-5e5f-4be9-b700-c532992a3705";
+                    options.ClientId = "96e3c53e-01cb-4244-b658-a42164cb67a9";
+                    options.ResponseType = "id_token";
+                    options.CallbackPath = new PathString("/signin-aad");
+                    options.SignedOutCallbackPath = new PathString("/signout-callback-aad");
+                    options.RemoteSignOutPath = new PathString("/signout-aad");
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        NameClaimType = "name",
+                        RoleClaimType = "role"
+                    };
+                })
+                .AddOpenIdConnect("adfs", "ADFS", options =>
                 {
-                    NameClaimType = "name",
-                    RoleClaimType = "role"
-                };
-            });
+                    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                    options.SignOutScheme = IdentityServerConstants.SignoutScheme;
 
-            services.AddOpenIdConnectAuthentication("adfs", options =>
-            {
-                options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-                options.SignOutScheme = IdentityServerConstants.SignoutScheme;
+                    options.Authority = "https://adfs.leastprivilege.vm/adfs";
+                    options.ClientId = "c0ea8d99-f1e7-43b0-a100-7dee3f2e5c3c";
+                    options.ResponseType = "id_token";
 
-                //options.DisplayName = "ADFS",
-                options.Authority = "https://adfs.leastprivilege.vm/adfs";
-                options.ClientId = "c0ea8d99-f1e7-43b0-a100-7dee3f2e5c3c";
-                options.ResponseType = "id_token";
-
-                options.CallbackPath = new PathString("/signin-adfs");
-                options.SignedOutCallbackPath = new PathString("/signout-callback-adfs");
-                options.RemoteSignOutPath = new PathString("/signout-adfs");
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    NameClaimType = "name",
-                    RoleClaimType = "role"
-                };
-            });
+                    options.CallbackPath = new PathString("/signin-adfs");
+                    options.SignedOutCallbackPath = new PathString("/signout-callback-adfs");
+                    options.RemoteSignOutPath = new PathString("/signout-adfs");
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        NameClaimType = "name",
+                        RoleClaimType = "role"
+                    };
+                });
 
             return services;
         }

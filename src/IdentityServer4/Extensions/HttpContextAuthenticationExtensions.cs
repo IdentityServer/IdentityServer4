@@ -165,12 +165,13 @@ namespace Microsoft.AspNetCore.Http
             await context.SignInAsync(scheme, principal, properties);
         }
 
+        // todo: can we use the standard SignOut method?
         /// <summary>
         /// Signs the user out.
         /// </summary>
         /// <param name="context">The manager.</param>
         /// <returns></returns>
-        public static async Task SignOutAsync(this HttpContext context)
+        public static async Task SignOutAsync2(this HttpContext context)
         {
             var scheme = context.GetIdentityServerAuthenticationScheme();
             await context.SignOutAsync(scheme);
