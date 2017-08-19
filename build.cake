@@ -8,10 +8,6 @@ var packPath            = Directory("./src/IdentityServer4");
 var buildArtifacts      = Directory("./artifacts/packages");
 
 var isAppVeyor          = AppVeyor.IsRunningOnAppVeyor;
-var isWindows           = IsRunningOnWindows();
-var netcore             = "netcoreapp1.1";
-var netstandard         = "netstandard1.4";
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // Clean
@@ -23,30 +19,10 @@ Task("Clean")
 });
 
 ///////////////////////////////////////////////////////////////////////////////
-// Restore
-///////////////////////////////////////////////////////////////////////////////
-Task("Restore")
-    .Does(() =>
-{
-    var settings = new DotNetCoreRestoreSettings
-    {
-        Sources = new [] { "https://api.nuget.org/v3/index.json" }
-    };
-
-	var projects = GetFiles("./**/*.csproj");
-
-	foreach(var project in projects)
-	{
-	    DotNetCoreRestore(project.GetDirectory().FullPath, settings);
-    }
-});
-
-///////////////////////////////////////////////////////////////////////////////
 // Build
 ///////////////////////////////////////////////////////////////////////////////
 Task("Build")
     .IsDependentOn("Clean")
-    .IsDependentOn("Restore")
     .Does(() =>
 {
     var settings = new DotNetCoreBuildSettings 
@@ -54,30 +30,11 @@ Task("Build")
         Configuration = configuration
     };
 
-    // main build (Windows local and Appveyor)
-    // build for all targets
-    if (isWindows)
-    {
-        DotNetCoreBuild(Directory("./src/IdentityServer4"), settings);
-        DotNetCoreBuild(Directory("./test/IdentityServer.IntegrationTests"), settings);
-        DotNetCoreBuild(Directory("./test/IdentityServer.UnitTests"), settings);
+    var projects = GetFiles("./**/*.csproj");
 
-        if (!isAppVeyor)
-        {
-            DotNetCoreBuild(Directory("./src/Host"), settings);     
-        }
-    }
-    // local mac / travis
-    // don't build for .net framework
-    else
-    {
-        settings.Framework = netstandard;
-        DotNetCoreBuild(Directory("./src/IdentityServer4"), settings);
-        
-        settings.Framework = netcore;
-        DotNetCoreBuild(Directory("./src/Host"), settings);     
-        DotNetCoreBuild(Directory("./test/IdentityServer.IntegrationTests"), settings);
-        DotNetCoreBuild(Directory("./test/IdentityServer.UnitTests"), settings);
+    foreach(var project in projects)
+	{
+	    DotNetCoreBuild(project.GetDirectory().FullPath, settings);
     }
 });
 
@@ -85,20 +42,14 @@ Task("Build")
 // Test
 ///////////////////////////////////////////////////////////////////////////////
 Task("Test")
-    .IsDependentOn("Restore")
     .IsDependentOn("Clean")
+    .IsDependentOn("Build")
     .Does(() =>
 {
     var settings = new DotNetCoreTestSettings
     {
         Configuration = configuration
     };
-
-    if (!isWindows)
-    {
-        Information("Not running on Windows - skipping tests for full .NET Framework");
-        settings.Framework = "netcoreapp1.1";
-    }
 
     var projects = GetFiles("./test/**/*.csproj");
     foreach(var project in projects)
@@ -111,16 +62,10 @@ Task("Test")
 // Pack
 ///////////////////////////////////////////////////////////////////////////////
 Task("Pack")
-    .IsDependentOn("Restore")
     .IsDependentOn("Clean")
+    .IsDependentOn("Build")
     .Does(() =>
 {
-    if (!isWindows)
-    {
-        Information("Not running on Windows - skipping pack");
-        return;
-    }
-
     var settings = new DotNetCorePackSettings
     {
         Configuration = configuration,
