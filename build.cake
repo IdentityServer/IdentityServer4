@@ -8,6 +8,7 @@ var packPath            = Directory("./src/IdentityServer4");
 var buildArtifacts      = Directory("./artifacts/packages");
 
 var isAppVeyor          = AppVeyor.IsRunningOnAppVeyor;
+var isWindows           = IsRunningOnWindows();
 
 ///////////////////////////////////////////////////////////////////////////////
 // Clean
@@ -30,7 +31,7 @@ Task("Build")
         Configuration = configuration
     };
 
-    var projects = GetFiles("./**/*.csproj");
+    var projects = GetFiles("./src/**/*.csproj");
 
     foreach(var project in projects)
 	{
@@ -50,6 +51,12 @@ Task("Test")
     {
         Configuration = configuration
     };
+
+    if (!isWindows)
+    {
+        Information("Not running on Windows - skipping tests for .NET Framework");
+        settings.Framework = "netcoreapp2.0";
+    }
 
     var projects = GetFiles("./test/**/*.csproj");
     foreach(var project in projects)
