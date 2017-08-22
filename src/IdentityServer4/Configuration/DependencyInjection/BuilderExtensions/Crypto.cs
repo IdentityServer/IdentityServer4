@@ -169,7 +169,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var rsa = RSA.Create();
 
-#if NET452
+#if NET461
             if (rsa.KeySize < 2048)
             {
                 rsa.Dispose();
@@ -177,7 +177,7 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 #endif
             RsaSecurityKey key = null;
-#if NET452
+#if NET461
             if (rsa is RSACryptoServiceProvider) 
             {
                 var parameters = rsa.ExportParameters(includePrivateParameters: true);
