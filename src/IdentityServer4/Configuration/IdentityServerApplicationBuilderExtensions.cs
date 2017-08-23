@@ -25,10 +25,9 @@ namespace Microsoft.AspNetCore.Builder
             app.Validate();
 
             app.UseMiddleware<BaseUrlMiddleware>();
-
             app.ConfigureCors();
-            app.ConfigureCookies();
-
+            
+            // todo: should we call that? what happens when added twice?
             app.UseAuthentication();
             app.UseMiddleware<FederatedSignOutMiddleware>();
             app.UseMiddleware<IdentityServerMiddleware>();
@@ -58,6 +57,13 @@ namespace Microsoft.AspNetCore.Builder
                 {
                     logger.LogInformation("You are using the in-memory version of the persisted grant store. This will store consent decisions, authorization codes, refresh and reference tokens in memory only. If you are using any of those features in production, you want to switch to a different store implementation.");
                 }
+
+                // todo: cookie diagnostics
+                //var logger = app.ApplicationServices.GetRequiredService<ILoggerFactory>().CreateLogger(typeof(CookieConfiguration).FullName);
+                //var schemes = app.ApplicationServices.GetRequiredService<IAuthenticationSchemeProvider>();
+
+                //var defaultScheme = schemes.GetDefaultSignInSchemeAsync();
+                //logger.LogDebug("Using {scheme} for sign-in", defaultScheme.)
             }
         }
 

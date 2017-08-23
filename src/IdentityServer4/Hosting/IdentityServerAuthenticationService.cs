@@ -29,9 +29,11 @@ namespace IdentityServer4.Hosting
             _logger = logger;
         }
 
-        public override Task SignInAsync(HttpContext context, string scheme, ClaimsPrincipal principal, AuthenticationProperties properties)
+        public override async Task SignInAsync(HttpContext context, string scheme, ClaimsPrincipal principal, AuthenticationProperties properties)
         {
-            if (scheme == _options.Authentication.EffectiveAuthenticationScheme)
+            var defaultScheme = await Schemes.GetDefaultSignInSchemeAsync();
+
+            if (scheme == null || scheme == defaultScheme.Name)
             {
                 AugmentPrincipal(principal);
             }
@@ -39,7 +41,7 @@ namespace IdentityServer4.Hosting
             if (properties == null) properties = new AuthenticationProperties();
             _session.CreateSessionId(properties);
 
-            return base.SignInAsync(context, scheme, principal, properties);
+            await base.SignInAsync(context, scheme, principal, properties);
         }
 
         private void AugmentPrincipal(ClaimsPrincipal principal)
@@ -50,14 +52,16 @@ namespace IdentityServer4.Hosting
             principal.AugmentMissingClaims(_options.UtcNow);
         }
 
-        public override Task SignOutAsync(HttpContext context, string scheme, AuthenticationProperties properties)
+        public override async Task SignOutAsync(HttpContext context, string scheme, AuthenticationProperties properties)
         {
-            if (scheme == null || scheme == _options.Authentication.EffectiveAuthenticationScheme)
+            var defaultScheme = await Schemes.GetDefaultSignOutSchemeAsync();
+
+            if (scheme == null || scheme == defaultScheme.Name)
             {
                 _session.RemoveSessionIdCookie();
             }
 
-            return base.SignOutAsync(context, scheme, properties);
+            await base.SignOutAsync(context, scheme, properties);
         }
     }
 }
