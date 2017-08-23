@@ -4,7 +4,6 @@
 
 using System.Collections.Specialized;
 using System.Threading.Tasks;
-using IdentityServer4.Models;
 
 namespace IdentityServer4.Validation
 {

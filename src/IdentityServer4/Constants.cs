@@ -3,7 +3,6 @@
 
 
 using IdentityModel;
-using IdentityServer4.Hosting;
 using IdentityServer4.Models;
 using System;
 using System.Collections.Generic;

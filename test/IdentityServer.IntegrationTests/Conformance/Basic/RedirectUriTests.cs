@@ -10,7 +10,6 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
-using System.Net.Http;
 using IdentityServer4.IntegrationTests.Common;
 using IdentityServer4.Test;
 

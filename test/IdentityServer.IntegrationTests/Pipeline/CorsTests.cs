@@ -13,9 +13,7 @@ using System.Net.Http;
 using IdentityServer4.IntegrationTests.Common;
 using IdentityServer4.Test;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using IdentityServer4.Services;
-using System;
 
 namespace IdentityServer4.IntegrationTests.Pipeline
 {
