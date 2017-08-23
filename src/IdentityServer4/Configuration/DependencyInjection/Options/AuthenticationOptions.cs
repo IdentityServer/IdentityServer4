@@ -14,20 +14,6 @@ namespace IdentityServer4.Configuration
     public class AuthenticationOptions
     {
         /// <summary>
-        /// Calculates the effective authentication scheme - either none is set, and we default to our constant
-        /// or it is set to the scheme of the cookie authentication middleware we should use for maintaing the authentication session
-        /// </summary>
-        internal string EffectiveAuthenticationScheme => AuthenticationScheme ?? IdentityServerConstants.DefaultCookieAuthenticationScheme;
-
-        /// <summary>
-        /// Gets or sets the authentication scheme if you have registered a custom cookie authentication middleware.
-        /// </summary>
-        /// <value>
-        /// The authentication scheme.
-        /// </value>
-        public string AuthenticationScheme { get; set; }
-
-        /// <summary>
         /// Sets the cookie lifetime (only effective if the built-in cookie middleware is used)
         /// </summary>
         public TimeSpan CookieLifetime { get; set; } = Constants.DefaultCookieTimeSpan;
@@ -59,7 +45,7 @@ namespace IdentityServer4.Configuration
         /// </summary>
         public string CheckSessionCookieName
         {
-            get => _checkSessionCookieName ?? EffectiveAuthenticationScheme + ".session";
+            get => "idsrv.session";
             set => _checkSessionCookieName = value;
         }
     }

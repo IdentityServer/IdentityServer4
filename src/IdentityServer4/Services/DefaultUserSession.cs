@@ -25,7 +25,6 @@ namespace IdentityServer4.Services
 
         private HttpContext HttpContext => _httpContextAccessor.HttpContext;
         private string CheckSessionCookieName => _options.Authentication.CheckSessionCookieName;
-        private string AuthenticationScheme => _options.Authentication.EffectiveAuthenticationScheme;
 
         public DefaultUserSession(
             IHttpContextAccessor httpContextAccessor, 
@@ -49,7 +48,7 @@ namespace IdentityServer4.Services
 
         public async Task<string> GetCurrentSessionIdAsync()
         {
-            var info = await HttpContext.AuthenticateAsync(AuthenticationScheme);
+            var info = await HttpContext.AuthenticateAsync();
             if (info != null && info.Properties != null)
             {
                 if (info.Properties.Items.ContainsKey(SessionIdKey))
@@ -92,7 +91,7 @@ namespace IdentityServer4.Services
 
         public async Task<ClaimsPrincipal> GetIdentityServerUserAsync()
         {
-            return (await HttpContext.AuthenticateAsync(AuthenticationScheme)).Principal;
+            return (await HttpContext.AuthenticateAsync()).Principal;
         }
 
         public async Task AddClientIdAsync(string clientId)
@@ -127,7 +126,7 @@ namespace IdentityServer4.Services
         // client list helpers
         async Task<string> GetClientListPropertyValueAsync()
         {
-            var info = await HttpContext.AuthenticateAsync(AuthenticationScheme);
+            var info = await HttpContext.AuthenticateAsync();
             if (info == null)
             {
                 _logger.LogWarning("No authenticated user");
@@ -151,7 +150,7 @@ namespace IdentityServer4.Services
 
         async Task SetClientListPropertyValueAsync(string value)
         {
-            var info = await HttpContext.AuthenticateAsync(AuthenticationScheme);
+            var info = await HttpContext.AuthenticateAsync();
             if (info == null || info.Principal == null)
             {
                 _logger.LogError("No authenticated user");
@@ -167,7 +166,7 @@ namespace IdentityServer4.Services
                 info.Properties.Items[ClientListKey] = value;
             }
 
-            await HttpContext.SignInAsync(AuthenticationScheme, info.Principal, info.Properties);
+            await HttpContext.SignInAsync(info.Principal, info.Properties);
         }
 
         public IEnumerable<string> DecodeList(string value)
