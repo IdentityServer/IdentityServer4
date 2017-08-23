@@ -61,17 +61,11 @@ namespace Host
     {
         public static IServiceCollection AddExternalIdentityProviders(this IServiceCollection services)
         {
-            services.AddAuthentication(options =>
-            {
-                // todo: how do we deal with that properly
-                //options.DefaultAuthenticateScheme = IdentityServerConstants.DefaultCookieAuthenticationScheme;
-                //options.DefaultChallengeScheme = IdentityServerConstants.DefaultCookieAuthenticationScheme;
-                //options.DefaultSignInScheme = IdentityServerConstants.DefaultCookieAuthenticationScheme;
-                //options.DefaultSignOutScheme = IdentityServerConstants.DefaultCookieAuthenticationScheme;
-            })
+            services.AddAuthentication()
                 .AddGoogle("Google", options =>
                 {
                     options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+
                     options.ClientId = "708996912208-9m4dkjb5hscn7cjrn5u0r4tbgkbj1fko.apps.googleusercontent.com";
                     options.ClientSecret = "wdfPY6t8H8cecgjlxud__4Gh";
                 })

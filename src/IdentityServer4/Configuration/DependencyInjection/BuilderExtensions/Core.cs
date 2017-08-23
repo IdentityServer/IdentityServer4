@@ -16,7 +16,6 @@ using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
@@ -52,22 +51,17 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IIdentityServerBuilder AddCookieAuthentication(this IIdentityServerBuilder builder)
         {
-            // todo: is not really needed for IS...?!
-            builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = IdentityServerConstants.DefaultCookieAuthenticationScheme;
-                options.DefaultChallengeScheme = IdentityServerConstants.DefaultCookieAuthenticationScheme;
-                options.DefaultSignInScheme = IdentityServerConstants.DefaultCookieAuthenticationScheme;
-                options.DefaultSignOutScheme = IdentityServerConstants.DefaultCookieAuthenticationScheme;
-            })
-            .AddCookie(IdentityServerConstants.DefaultCookieAuthenticationScheme, options =>
-            {
-                options.Cookie.Name = IdentityServerConstants.DefaultCookieAuthenticationScheme;
-            })
-            .AddCookie(IdentityServerConstants.ExternalCookieAuthenticationScheme, options =>
-            {
-                options.Cookie.Name = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-            });
+            // todo: review
+            // by default we use our internal cookie handlers
+            builder.Services.AddAuthentication(IdentityServerConstants.DefaultCookieAuthenticationScheme)
+                .AddCookie(IdentityServerConstants.DefaultCookieAuthenticationScheme, options =>
+                {
+                    options.Cookie.Name = IdentityServerConstants.DefaultCookieAuthenticationScheme;
+                })
+                .AddCookie(IdentityServerConstants.ExternalCookieAuthenticationScheme, options =>
+                {
+                    options.Cookie.Name = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                });
 
             builder.Services.AddSingleton<IConfigureOptions<CookieAuthenticationOptions>, ConfigureInternalCookieOptions>();
             
