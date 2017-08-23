@@ -128,7 +128,7 @@ namespace IdentityServer4.Services
         async Task<string> GetClientListPropertyValueAsync()
         {
             var info = await HttpContext.AuthenticateAsync(AuthenticationScheme);
-            if (info == null)
+            if (info == null || !info.Succeeded)
             {
                 _logger.LogWarning("No authenticated user");
                 return null;
