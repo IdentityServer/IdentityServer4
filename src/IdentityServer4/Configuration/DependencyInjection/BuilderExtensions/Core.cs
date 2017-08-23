@@ -52,7 +52,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IIdentityServerBuilder AddCookieAuthentication(this IIdentityServerBuilder builder)
         {
             // todo: review
-            // by default we use our internal cookie handlers
+            // by default we use our internal cookie handlers - this can be overridden by calling AddAuthentication after this code and set a different default scheme
             builder.Services.AddAuthentication(IdentityServerConstants.DefaultCookieAuthenticationScheme)
                 .AddCookie(IdentityServerConstants.DefaultCookieAuthenticationScheme, options =>
                 {
