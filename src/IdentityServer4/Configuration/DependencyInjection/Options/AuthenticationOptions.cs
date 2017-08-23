@@ -39,14 +39,9 @@ namespace IdentityServer4.Configuration
         /// </value>
         public ICollection<PathString> FederatedSignOutPaths { get; set; } = new List<PathString>();
 
-        private string _checkSessionCookieName = null;
         /// <summary>
         /// Gets or sets the name of the cookie used for the check session endpoint.
         /// </summary>
-        public string CheckSessionCookieName
-        {
-            get => "idsrv.session";
-            set => _checkSessionCookieName = value;
-        }
+        public string CheckSessionCookieName { get; set; } = IdentityServerConstants.DefaultCheckSessionCookieName;
     }
 }
