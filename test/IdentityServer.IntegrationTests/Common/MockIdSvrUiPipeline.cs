@@ -18,6 +18,7 @@ using System.Net.Http;
 using System;
 using System.Threading;
 using Microsoft.AspNetCore.Authentication;
+using IdentityServer4.Infrastructure;
 
 namespace IdentityServer4.IntegrationTests.Common
 {
@@ -54,7 +55,7 @@ namespace IdentityServer4.IntegrationTests.Common
 
         private void MockAuthorizationPipeline_OnPostConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(new HttpClient(BackChannelMessageHandler));
+            services.AddSingleton(new BackChannelHttpClient(BackChannelMessageHandler));
         }
 
         private void MockAuthorizationPipeline_OnPreConfigure(IApplicationBuilder app)

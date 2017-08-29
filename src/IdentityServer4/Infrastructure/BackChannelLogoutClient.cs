@@ -18,14 +18,14 @@ namespace IdentityServer4.Infrastructure
         //private readonly IHttpContextAccessor _httpContext;
         private readonly IdentityServerOptions _options;
         private readonly IdentityServerTools _tools;
-        private readonly HttpClient _backChannelClient;
+        private readonly BackChannelHttpClient _backChannelClient;
         private readonly ILogger<BackChannelLogoutClient> _logger;
 
         public BackChannelLogoutClient(
             //IHttpContextAccessor httpContext,
             IdentityServerOptions options,
             IdentityServerTools tools,
-            HttpClient backChannelClient,
+            BackChannelHttpClient backChannelClient,
             ILogger<BackChannelLogoutClient> logger)
         {
             //_httpContext = httpContext;

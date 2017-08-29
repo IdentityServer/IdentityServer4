@@ -121,7 +121,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddTransient<ExtensionGrantValidator>();
             builder.Services.AddTransient<BearerTokenUsageValidator>();
             builder.Services.AddTransient<BackChannelLogoutClient>();
-            builder.Services.AddTransient<HttpClient>();
+            builder.Services.AddTransient<BackChannelHttpClient>();
             
             builder.Services.AddTransient<ReturnUrlParser>();
             builder.Services.AddTransient<IdentityServerTools>();
