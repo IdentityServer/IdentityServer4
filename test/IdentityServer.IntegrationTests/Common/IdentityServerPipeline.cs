@@ -78,8 +78,6 @@ namespace IdentityServer4.IntegrationTests.Common
         {
             OnPreConfigureServices(services);
 
-            services.AddDataProtection();
-
             services.AddIdentityServer(options =>
             {
                 Options = options;
@@ -103,11 +101,13 @@ namespace IdentityServer4.IntegrationTests.Common
 
         public event Action<IApplicationBuilder> OnPreConfigure = x => { };
         public event Action<IApplicationBuilder> OnPostConfigure = x => { };
-         
+
         public void ConfigureApp(IApplicationBuilder app)
         {
             OnPreConfigure(app);
+
             app.UseIdentityServer();
+
             OnPostConfigure(app);
         }
     }
