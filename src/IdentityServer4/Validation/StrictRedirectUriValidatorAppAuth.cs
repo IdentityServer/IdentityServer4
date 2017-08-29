@@ -39,6 +39,7 @@ namespace IdentityServer4.Validation
             var isAllowed = await base.IsRedirectUriValidAsync(requestedUri, client);
             if (isAllowed) return isAllowed;
 
+            // todo: perhaps also check Client for RequirePkce?
             if (client.RedirectUris.Contains("http://127.0.0.1")) return IsLoopback(requestedUri);
 
             return false;

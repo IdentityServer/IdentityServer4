@@ -36,8 +36,10 @@ namespace Host
                 .AddDeveloperSigningCredential()
                 .AddExtensionGrantValidator<Extensions.ExtensionGrantValidator>()
                 .AddExtensionGrantValidator<Extensions.NoSubjectExtensionGrantValidator>()
+                // todo: consider a helper extension method for these two?
                 .AddSecretParser<ClientAssertionSecretParser>()
                 .AddSecretValidator<PrivateKeyJwtSecretValidator>()
+                // todo: consider a helper extension method for this?
                 .AddRedirectUriValidator<StrictRedirectUriValidatorAppAuth>()
                 .AddTestUsers(TestUsers.Users);
 
