@@ -39,7 +39,7 @@ namespace IdentityServer4.Hosting
             }
 
             if (properties == null) properties = new AuthenticationProperties();
-            _session.CreateSessionId(properties);
+            await _session.CreateSessionIdAsync(principal, properties);
 
             await base.SignInAsync(context, scheme, principal, properties);
         }

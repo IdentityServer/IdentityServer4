@@ -36,9 +36,15 @@ namespace IdentityServer4.Services
             _logger = logger;
         }
 
-        public void CreateSessionId(AuthenticationProperties properties)
+        public async Task CreateSessionIdAsync(ClaimsPrincipal principal, AuthenticationProperties properties)
         {
-            if (properties != null && !properties.Items.ContainsKey(SessionIdKey))
+            if (principal == null) throw new ArgumentNullException(nameof(principal));
+            if (properties == null) throw new ArgumentNullException(nameof(properties));
+
+            var currentSubjectId = (await GetIdentityServerUserAsync())?.GetSubjectId();
+            var newSubjectId = principal.GetSubjectId();
+
+            if (currentSubjectId == null || currentSubjectId != newSubjectId)
             {
                 properties.Items[SessionIdKey] = CryptoRandom.CreateUniqueId(16);
             }
@@ -48,12 +54,12 @@ namespace IdentityServer4.Services
 
         public async Task<string> GetCurrentSessionIdAsync()
         {
-            var info = await HttpContext.AuthenticateAsync();
-            if (info != null && info.Properties != null)
+            var result = await HttpContext.AuthenticateAsync();
+            if (result?.Succeeded == true)
             {
-                if (info.Properties.Items.ContainsKey(SessionIdKey))
+                if (result.Properties.Items.ContainsKey(SessionIdKey))
                 {
-                    return info.Properties.Items[SessionIdKey];
+                    return result.Properties.Items[SessionIdKey];
                 }
             }
 
@@ -91,11 +97,13 @@ namespace IdentityServer4.Services
 
         public async Task<ClaimsPrincipal> GetIdentityServerUserAsync()
         {
-            return (await HttpContext.AuthenticateAsync()).Principal;
+            return (await HttpContext.AuthenticateAsync())?.Principal;
         }
 
         public async Task AddClientIdAsync(string clientId)
         {
+            if (clientId == null) throw new ArgumentNullException(nameof(clientId));
+
             var clients = await GetClientListAsync();
             if (!clients.Contains(clientId))
             {
@@ -126,16 +134,16 @@ namespace IdentityServer4.Services
         // client list helpers
         async Task<string> GetClientListPropertyValueAsync()
         {
-            var info = await HttpContext.AuthenticateAsync();
-            if (info == null)
+            var result = await HttpContext.AuthenticateAsync();
+            if (result?.Succeeded != true)
             {
                 _logger.LogWarning("No authenticated user");
                 return null;
             }
 
-            if (info.Properties.Items.ContainsKey(ClientListKey))
+            if (result.Properties.Items.ContainsKey(ClientListKey))
             {
-                var value = info.Properties.Items[ClientListKey];
+                var value = result.Properties.Items[ClientListKey];
                 return value;
             }
 
@@ -150,8 +158,8 @@ namespace IdentityServer4.Services
 
         async Task SetClientListPropertyValueAsync(string value)
         {
-            var info = await HttpContext.AuthenticateAsync();
-            if (info == null || info.Principal == null)
+            var result = await HttpContext.AuthenticateAsync();
+            if (result?.Succeeded != true)
             {
                 _logger.LogError("No authenticated user");
                 throw new InvalidOperationException("No authenticated user");
@@ -159,17 +167,17 @@ namespace IdentityServer4.Services
 
             if (value == null)
             {
-                info.Properties.Items.Remove(ClientListKey);
+                result.Properties.Items.Remove(ClientListKey);
             }
             else
             {
-                info.Properties.Items[ClientListKey] = value;
+                result.Properties.Items[ClientListKey] = value;
             }
 
-            await HttpContext.SignInAsync(info.Principal, info.Properties);
+            await HttpContext.SignInAsync(result.Principal, result.Properties);
         }
 
-        public IEnumerable<string> DecodeList(string value)
+        IEnumerable<string> DecodeList(string value)
         {
             if (value.IsPresent())
             {
@@ -181,7 +189,7 @@ namespace IdentityServer4.Services
             return Enumerable.Empty<string>();
         }
 
-        public string EncodeList(IEnumerable<string> list)
+        string EncodeList(IEnumerable<string> list)
         {
             if (list != null && list.Any())
             {

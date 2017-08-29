@@ -28,10 +28,11 @@ namespace IdentityServer4.UnitTests.Common
             return Task.FromResult(0);
         }
 
-        public void CreateSessionId(AuthenticationProperties properties)
+        public Task CreateSessionIdAsync(ClaimsPrincipal user, AuthenticationProperties properties)
         {
             CreateSessionIdWasCalled = true;
             SessionId = Guid.NewGuid().ToString();
+            return Task.FromResult(0);
         }
 
         public Task EnsureSessionIdCookieAsync()

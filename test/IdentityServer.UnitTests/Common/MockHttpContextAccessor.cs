@@ -8,12 +8,14 @@ using Microsoft.Extensions.DependencyInjection;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using IdentityServer4.Models;
+using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.UnitTests.Common
 {
     class MockHttpContextAccessor : IHttpContextAccessor
     {
         HttpContext _context = new DefaultHttpContext();
+        public MockAuthenticationService AuthenticationService { get; set; } = new MockAuthenticationService();
 
         public MockHttpContextAccessor(
             IdentityServerOptions options = null,
@@ -24,6 +26,13 @@ namespace IdentityServer4.UnitTests.Common
 
             var services = new ServiceCollection();
             services.AddSingleton(options);
+
+            services.AddSingleton<IAuthenticationService>(AuthenticationService);
+            services.AddAuthentication(auth =>
+            {
+                auth.DefaultAuthenticateScheme = "foo";
+            });
+
             if (userSession == null)
             {
                 services.AddTransient<IUserSession, DefaultUserSession>();
@@ -43,9 +52,6 @@ namespace IdentityServer4.UnitTests.Common
             }
 
             _context.RequestServices = services.BuildServiceProvider();
-
-            // setups the authN middleware feature
-            //_context.SetUser(null);
         }
 
         public HttpContext HttpContext
