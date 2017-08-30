@@ -5,18 +5,20 @@ using Microsoft.Extensions.Options;
 
 namespace IdentityServer4.Configuration
 {
-    public class ConfigureInternalCookieOptions : ConfigureNamedOptions<CookieAuthenticationOptions>
+    public class ConfigureInternalCookieOptions : IConfigureNamedOptions<CookieAuthenticationOptions>
     {
         private readonly IdentityServerOptions _idsrv;
 
-        // todo: look at 2nd param and overall plumbing
         public ConfigureInternalCookieOptions(IdentityServerOptions idsrv)
-            :base(IdentityServerConstants.DefaultCookieAuthenticationScheme, null)
         {
             _idsrv = idsrv;
         }
 
-        public override void Configure(string name, CookieAuthenticationOptions options)
+        public void Configure(CookieAuthenticationOptions options)
+        {
+        }
+
+        public void Configure(string name, CookieAuthenticationOptions options)
         {
             if (name == IdentityServerConstants.DefaultCookieAuthenticationScheme)
             {
@@ -27,6 +29,11 @@ namespace IdentityServer4.Configuration
                 options.LoginPath = ExtractLocalUrl(_idsrv.UserInteraction.LoginUrl);
                 options.LogoutPath = ExtractLocalUrl(_idsrv.UserInteraction.LogoutUrl);
                 options.ReturnUrlParameter = _idsrv.UserInteraction.LoginReturnUrlParameter;
+            }
+
+            if (name == IdentityServerConstants.ExternalCookieAuthenticationScheme)
+            {
+                options.Cookie.Name = IdentityServerConstants.ExternalCookieAuthenticationScheme;
             }
         }
 
