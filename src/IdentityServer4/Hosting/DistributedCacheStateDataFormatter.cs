@@ -3,15 +3,86 @@
 
 
 using System;
+using IdentityServer4.Hosting;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+
+namespace Microsoft.Extensions.DependencyInjection
+{
+    public static class DistributedCacheStateDataFormatterExtensions
+    {
+        public static ISecureDataFormat<AuthenticationProperties> CreateDistributedCacheStateDataFormatter<TOptions>(this IServiceCollection services, string name)
+            where TOptions : class
+        {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (String.IsNullOrWhiteSpace(name)) throw new ArgumentNullException(nameof(name));
+
+            services.AddSingleton<IPostConfigureOptions<TOptions>, DistributedCacheStateDataFormatterInitializer<TOptions>>();
+            return new DistributedCacheStateDataFormatterMarker(name);
+        }
+    }
+}
 
 namespace IdentityServer4.Hosting
 {
-    class DistributedCacheStateDataFormatter : ISecureDataFormat<AuthenticationProperties>
+    class DistributedCacheStateDataFormatterInitializer<TOptions> : IPostConfigureOptions<TOptions>
+        where TOptions : class
+    {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public DistributedCacheStateDataFormatterInitializer(IHttpContextAccessor httpContextAccessor)
+        {
+            _httpContextAccessor = httpContextAccessor;
+        }
+
+        public void PostConfigure(string name, TOptions options)
+        {
+            dynamic opts = options;
+            if (opts.StateDataFormat is DistributedCacheStateDataFormatterMarker marker)
+            {
+                if (marker.Name == name)
+                {
+                    opts.StateDataFormat = new DistributedCacheStateDataFormatter(_httpContextAccessor, marker.Name);
+                }
+            }
+        }
+    }
+
+    class DistributedCacheStateDataFormatterMarker : ISecureDataFormat<AuthenticationProperties>
+    {
+        public string Name { get; set; }
+
+        public DistributedCacheStateDataFormatterMarker(string name)
+        {
+            Name = name;
+        }
+
+        public string Protect(AuthenticationProperties data)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string Protect(AuthenticationProperties data, string purpose)
+        {
+            throw new NotImplementedException();
+        }
+
+        public AuthenticationProperties Unprotect(string protectedText)
+        {
+            throw new NotImplementedException();
+        }
+
+        public AuthenticationProperties Unprotect(string protectedText, string purpose)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class DistributedCacheStateDataFormatter : ISecureDataFormat<AuthenticationProperties>
     {
         private readonly IHttpContextAccessor _httpContext;
         private readonly string _name;

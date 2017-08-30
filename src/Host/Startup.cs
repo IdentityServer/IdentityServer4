@@ -11,6 +11,7 @@ using IdentityServer4;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Quickstart.UI;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace Host
 {
@@ -63,6 +64,8 @@ namespace Host
     {
         public static IServiceCollection AddExternalIdentityProviders(this IServiceCollection services)
         {
+            var formatter = services.CreateDistributedCacheStateDataFormatter<OpenIdConnectOptions>("aad");
+
             services.AddAuthentication()
                 .AddGoogle("Google", options =>
                 {
@@ -92,6 +95,8 @@ namespace Host
                 })
                 .AddOpenIdConnect("aad", "Azure AD", options =>
                 {
+                    options.StateDataFormat = formatter;
+
                     options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
                     options.SignOutScheme = IdentityServerConstants.SignoutScheme;
                 
