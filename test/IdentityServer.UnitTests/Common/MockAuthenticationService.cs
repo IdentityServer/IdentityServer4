@@ -12,11 +12,6 @@ namespace IdentityServer4.UnitTests.Common
     {
         public AuthenticateResult Result { get; set; }
 
-        public void SetUser(ClaimsPrincipal user, AuthenticationProperties properties = null)
-        {
-            Result = AuthenticateResult.Success(new AuthenticationTicket(user, properties, "scheme"));
-        }
-
         public Task<AuthenticateResult> AuthenticateAsync(HttpContext context, string scheme)
         {
             return Task.FromResult(Result);

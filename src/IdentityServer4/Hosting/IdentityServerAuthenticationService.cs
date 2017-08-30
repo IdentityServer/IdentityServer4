@@ -5,33 +5,38 @@ using System.Threading.Tasks;
 using IdentityServer4.Configuration;
 using IdentityServer4.Services;
 using Microsoft.Extensions.Logging;
+using IdentityServer4.Configuration.DependencyInjection;
 
 namespace IdentityServer4.Hosting
 {
     // todo: review
-    public class IdentityServerAuthenticationService : AuthenticationService
+    class IdentityServerAuthenticationService : IAuthenticationService
     {
+        private IAuthenticationService _inner;
+        private IAuthenticationSchemeProvider _schemes;
         private readonly IdentityServerOptions _options;
         private readonly IUserSession _session;
         private ILogger<IdentityServerAuthenticationService> _logger;
 
         public IdentityServerAuthenticationService(
-            IAuthenticationSchemeProvider schemes, 
-            IAuthenticationHandlerProvider handlers, 
+            Decorator<IAuthenticationService> decorator,
+            IAuthenticationSchemeProvider schemes,
+            IAuthenticationHandlerProvider handlers,
             IClaimsTransformation transform,
             IdentityServerOptions options,
             IUserSession session,
             ILogger<IdentityServerAuthenticationService> logger)
-            : base(schemes, handlers, transform)
         {
+            _inner = decorator.Instance;
+            _schemes = schemes;
             _options = options;
             _session = session;
             _logger = logger;
         }
 
-        public override async Task SignInAsync(HttpContext context, string scheme, ClaimsPrincipal principal, AuthenticationProperties properties)
+        public async Task SignInAsync(HttpContext context, string scheme, ClaimsPrincipal principal, AuthenticationProperties properties)
         {
-            var defaultScheme = await Schemes.GetDefaultSignInSchemeAsync();
+            var defaultScheme = await _schemes.GetDefaultSignInSchemeAsync();
 
             if (scheme == null || scheme == defaultScheme.Name)
             {
@@ -41,7 +46,7 @@ namespace IdentityServer4.Hosting
                 await _session.CreateSessionIdAsync(principal, properties);
             }
 
-            await base.SignInAsync(context, scheme, principal, properties);
+            await _inner.SignInAsync(context, scheme, principal, properties);
         }
 
         private void AugmentPrincipal(ClaimsPrincipal principal)
@@ -52,16 +57,31 @@ namespace IdentityServer4.Hosting
             principal.AugmentMissingClaims(_options.UtcNow);
         }
 
-        public override async Task SignOutAsync(HttpContext context, string scheme, AuthenticationProperties properties)
+        public async Task SignOutAsync(HttpContext context, string scheme, AuthenticationProperties properties)
         {
-            var defaultScheme = await Schemes.GetDefaultSignOutSchemeAsync();
+            var defaultScheme = await _schemes.GetDefaultSignOutSchemeAsync();
 
             if (scheme == null || scheme == defaultScheme.Name)
             {
                 _session.RemoveSessionIdCookie();
             }
 
-            await base.SignOutAsync(context, scheme, properties);
+            await _inner.SignOutAsync(context, scheme, properties);
+        }
+
+        public Task<AuthenticateResult> AuthenticateAsync(HttpContext context, string scheme)
+        {
+            return _inner.AuthenticateAsync(context, scheme);
+        }
+
+        public Task ChallengeAsync(HttpContext context, string scheme, AuthenticationProperties properties)
+        {
+            return _inner.ChallengeAsync(context, scheme, properties);
+        }
+
+        public Task ForbidAsync(HttpContext context, string scheme, AuthenticationProperties properties)
+        {
+            return _inner.ForbidAsync(context, scheme, properties);
         }
     }
 }

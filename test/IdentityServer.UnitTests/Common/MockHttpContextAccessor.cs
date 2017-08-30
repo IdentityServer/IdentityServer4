@@ -9,6 +9,8 @@ using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Authentication;
+using System;
+using System.Security.Claims;
 
 namespace IdentityServer4.UnitTests.Common
 {
@@ -52,6 +54,12 @@ namespace IdentityServer4.UnitTests.Common
             }
 
             _context.RequestServices = services.BuildServiceProvider();
+        }
+
+        public void SetUser(ClaimsPrincipal user, AuthenticationProperties properties = null)
+        {
+            AuthenticationService.Result = AuthenticateResult.Success(new AuthenticationTicket(user, properties, "scheme"));
+            HttpContext.User = user;
         }
 
         public HttpContext HttpContext

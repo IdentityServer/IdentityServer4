@@ -130,9 +130,8 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddTransient<IUserSession, DefaultUserSession>();
             builder.Services.AddTransient(typeof(MessageCookie<>));
 
-            // todo
-            //builder.Services.AddScoped<AuthenticationHandler>();
-            builder.Services.AddTransient<IAuthenticationService, IdentityServerAuthenticationService>();
+            // requires our AddCookieAuthentication to have been called prior
+            builder.Services.AddTransientDecorator<IAuthenticationService, IdentityServerAuthenticationService>();
 
             builder.Services.AddCors();
             builder.Services.AddTransientDecorator<ICorsPolicyProvider, CorsPolicyProvider>();

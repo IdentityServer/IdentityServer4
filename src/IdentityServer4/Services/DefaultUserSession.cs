@@ -54,6 +54,7 @@ namespace IdentityServer4.Services
 
         public async Task<string> GetCurrentSessionIdAsync()
         {
+            // todo: consider using handler provider and scheme provider directly to avoid claims transformation
             var result = await HttpContext.AuthenticateAsync();
             if (result?.Succeeded == true)
             {
@@ -95,9 +96,15 @@ namespace IdentityServer4.Services
             }
         }
 
-        public async Task<ClaimsPrincipal> GetIdentityServerUserAsync()
+        public Task<ClaimsPrincipal> GetIdentityServerUserAsync()
         {
-            return (await HttpContext.AuthenticateAsync())?.Principal;
+            var user = HttpContext.User;
+            if (user?.Identity.IsAuthenticated != true)
+            {
+                // we model anonymous users as null
+                user = null;
+            }
+            return Task.FromResult(user);
         }
 
         public async Task AddClientIdAsync(string clientId)
