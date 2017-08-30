@@ -115,8 +115,8 @@ namespace IdentityServer4.Quickstart.UI
         {
             var vm = new LogoutViewModel { LogoutId = logoutId, ShowLogoutPrompt = AccountOptions.ShowLogoutPrompt };
 
-            var user = await _httpContextAccessor.HttpContext.GetIdentityServerUserAsync();
-            if (user == null || user.Identity.IsAuthenticated == false)
+            var user = _httpContextAccessor.HttpContext.User;
+            if (user?.Identity.IsAuthenticated != true)
             {
                 // if the user is not authenticated, then just show logged out page
                 vm.ShowLogoutPrompt = false;
@@ -150,21 +150,25 @@ namespace IdentityServer4.Quickstart.UI
                 LogoutId = logoutId
             };
 
-            var user = await _httpContextAccessor.HttpContext.GetIdentityServerUserAsync();
-            if (user != null)
+            var user = _httpContextAccessor.HttpContext.User;
+            if (user?.Identity.IsAuthenticated == true)
             {
                 var idp = user.FindFirst(JwtClaimTypes.IdentityProvider)?.Value;
                 if (idp != null && idp != IdentityServer4.IdentityServerConstants.LocalIdentityProvider)
                 {
-                    if (vm.LogoutId == null)
+                    var providerSupportsSignout = await _httpContextAccessor.HttpContext.GetSchemeSupportsSignOutAsync(idp);
+                    if (providerSupportsSignout)
                     {
-                        // if there's no current logout context, we need to create one
-                        // this captures necessary info from the current logged in user
-                        // before we signout and redirect away to the external IdP for signout
-                        vm.LogoutId = await _interaction.CreateLogoutContextAsync();
-                    }
+                        if (vm.LogoutId == null)
+                        {
+                            // if there's no current logout context, we need to create one
+                            // this captures necessary info from the current logged in user
+                            // before we signout and redirect away to the external IdP for signout
+                            vm.LogoutId = await _interaction.CreateLogoutContextAsync();
+                        }
 
-                    vm.ExternalAuthenticationScheme = idp;
+                        vm.ExternalAuthenticationScheme = idp;
+                    }
                 }
             }
 

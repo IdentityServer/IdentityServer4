@@ -35,6 +35,7 @@ namespace Microsoft.AspNetCore.Builder
             // will run twice, since that's not cached (whereas the authN handler result is)
             // todo: maybe we don't do this at all? maybe we become an authN MW?
             // we could handle our protocol endpoints with IAuthenticationHandlerProvider
+            // related: https://github.com/aspnet/Security/issues/1399
             app.UseAuthentication();
 
             // todo: this needs to be moved in front of UseAuthentication to handle the new callback

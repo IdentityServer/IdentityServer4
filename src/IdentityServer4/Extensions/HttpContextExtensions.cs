@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using System.Linq;
+using Microsoft.AspNetCore.Authentication;
 
 #pragma warning disable 1591
 
@@ -19,6 +20,13 @@ namespace IdentityServer4.Extensions
 {
     public static class HttpContextExtensions
     {
+        public static async Task<bool> GetSchemeSupportsSignOutAsync(this HttpContext context, string scheme)
+        {
+            var provider = context.RequestServices.GetRequiredService<IAuthenticationHandlerProvider>();
+            var handler = await provider.GetHandlerAsync(context, scheme);
+            return (handler != null && handler is IAuthenticationSignOutHandler);
+        }
+
         public static void SetIdentityServerOrigin(this HttpContext context, string value)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
@@ -98,18 +106,6 @@ namespace IdentityServer4.Extensions
             }
 
             return uri;
-        }
-
-        /// <summary>
-        /// Gets the identity server user asynchronous.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <returns></returns>
-        public static async Task<ClaimsPrincipal> GetIdentityServerUserAsync(this HttpContext context)
-        {
-            var userSession = context.RequestServices.GetRequiredService<IUserSession>();
-            var user = await userSession.GetIdentityServerUserAsync();
-            return user;
         }
 
         internal static async Task<string> GetIdentityServerSignoutFrameCallbackUrlAsync(this HttpContext context, LogoutMessage logoutMessage = null)

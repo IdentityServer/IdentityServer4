@@ -36,10 +36,10 @@ namespace IdentityServer4.Hosting
             if (scheme == null || scheme == defaultScheme.Name)
             {
                 AugmentPrincipal(principal);
-            }
 
-            if (properties == null) properties = new AuthenticationProperties();
-            await _session.CreateSessionIdAsync(principal, properties);
+                if (properties == null) properties = new AuthenticationProperties();
+                await _session.CreateSessionIdAsync(principal, properties);
+            }
 
             await base.SignInAsync(context, scheme, principal, properties);
         }

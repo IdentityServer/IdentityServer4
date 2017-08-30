@@ -36,6 +36,7 @@ namespace IdentityServer4.Services
         /// Gets the current authenticated user.
         /// </summary>
         Task<ClaimsPrincipal> GetIdentityServerUserAsync();
+        // todo: consider removing in favor of just HttpContext.User
 
         /// <summary>
         /// Adds a client to the list of clients the user has signed into during their session.
