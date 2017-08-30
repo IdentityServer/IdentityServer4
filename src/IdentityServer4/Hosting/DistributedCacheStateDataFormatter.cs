@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
+    // todo: review all of this mess
     public static class DistributedCacheStateDataFormatterExtensions
     {
         public static ISecureDataFormat<AuthenticationProperties> CreateDistributedCacheStateDataFormatter<TOptions>(this IServiceCollection services, string name)
@@ -24,11 +25,37 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IPostConfigureOptions<TOptions>, DistributedCacheStateDataFormatterInitializer<TOptions>>();
             return new DistributedCacheStateDataFormatterMarker(name);
         }
+
+        public static void AddDistributedCacheStateDataFormatterForOidc(this IServiceCollection services)
+        {
+            var typeName = "Microsoft.AspNetCore.Authentication.OpenIdConnect.OpenIdConnectOptions, Microsoft.AspNetCore.Authentication.OpenIdConnect";
+            var optionsType = Type.GetType(typeName);
+            var serviceType = typeof(IPostConfigureOptions<>).MakeGenericType(optionsType);
+            var implType = typeof(DistributedCacheStateDataFormatterInitializerForAll<>).MakeGenericType(optionsType);
+            services.AddSingleton(serviceType, implType);
+        }
     }
 }
 
 namespace IdentityServer4.Hosting
 {
+    class DistributedCacheStateDataFormatterInitializerForAll<TOptions> : IPostConfigureOptions<TOptions>
+         where TOptions : class
+    {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public DistributedCacheStateDataFormatterInitializerForAll(IHttpContextAccessor httpContextAccessor)
+        {
+            _httpContextAccessor = httpContextAccessor;
+        }
+
+        public void PostConfigure(string name, TOptions options)
+        {
+            dynamic opts = options;
+            opts.StateDataFormat = new DistributedCacheStateDataFormatter(_httpContextAccessor, name);
+        }
+    }
+
     class DistributedCacheStateDataFormatterInitializer<TOptions> : IPostConfigureOptions<TOptions>
         where TOptions : class
     {

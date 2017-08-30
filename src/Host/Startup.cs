@@ -64,8 +64,10 @@ namespace Host
     {
         public static IServiceCollection AddExternalIdentityProviders(this IServiceCollection services)
         {
-            var aadFormatter = services.CreateDistributedCacheStateDataFormatter<OpenIdConnectOptions>("aad");
-            var demoidsrvFormatter = services.CreateDistributedCacheStateDataFormatter<OpenIdConnectOptions>("demoidsrv");
+            //var aadFormatter = services.CreateDistributedCacheStateDataFormatter<OpenIdConnectOptions>("aad");
+            //var demoidsrvFormatter = services.CreateDistributedCacheStateDataFormatter<OpenIdConnectOptions>("demoidsrv");
+
+            services.AddDistributedCacheStateDataFormatterForOidc();
 
             services.AddAuthentication()
                 .AddGoogle("Google", options =>
@@ -77,7 +79,7 @@ namespace Host
                 })
                 .AddOpenIdConnect("demoidsrv", "IdentityServer", options =>
                 {
-                    options.StateDataFormat = demoidsrvFormatter;
+                    //options.StateDataFormat = demoidsrvFormatter;
 
                     options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
                     options.SignOutScheme = IdentityServerConstants.SignoutScheme;
@@ -98,7 +100,7 @@ namespace Host
                 })
                 .AddOpenIdConnect("aad", "Azure AD", options =>
                 {
-                    options.StateDataFormat = aadFormatter;
+                    //options.StateDataFormat = aadFormatter;
 
                     options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
                     options.SignOutScheme = IdentityServerConstants.SignoutScheme;
