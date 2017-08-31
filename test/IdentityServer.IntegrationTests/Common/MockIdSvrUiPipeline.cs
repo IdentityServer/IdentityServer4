@@ -19,6 +19,9 @@ using System;
 using System.Threading;
 using Microsoft.AspNetCore.Authentication;
 using IdentityServer4.Infrastructure;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System.Text.Encodings.Web;
 
 namespace IdentityServer4.IntegrationTests.Common
 {
@@ -56,6 +59,9 @@ namespace IdentityServer4.IntegrationTests.Common
                 {
                     cookies.Cookie.Name = "cookie_authn";
                 });
+            // todo: fix when fix skipped FML tests
+            //    .AddScheme<MockExternalProviderOptions, MockExternalProvider>("external", "External", options=> { });
+            //services.AddTransient<MockExternalProvider>();
         }
 
         private void MockAuthorizationPipeline_OnPostConfigureServices(IServiceCollection services)
@@ -87,11 +93,6 @@ namespace IdentityServer4.IntegrationTests.Common
             app.Map(Constants.UIConstants.DefaultRoutePaths.Error.EnsureLeadingSlash(), path =>
             {
                 path.Run(ctx => Error(ctx));
-            });
-
-            app.Map(FederatedSignOutPath, path =>
-            {
-                path.Run(ctx => FederatedSignOut(ctx));
             });
         }
 
@@ -193,6 +194,9 @@ namespace IdentityServer4.IntegrationTests.Common
 
         Task OnFederatedSignOut(HttpContext ctx)
         {
+            // simulate an external authentication handler signing out
+            ctx.SignOutAsync();
+
             return Task.FromResult(0);
         }
 
@@ -312,6 +316,52 @@ namespace IdentityServer4.IntegrationTests.Common
                 await OnInvoke.Invoke(request);
             }
             return Response;
+        }
+    }
+
+    public class MockExternalProviderOptions : AuthenticationSchemeOptions { }
+
+    public class MockExternalProvider : AuthenticationHandler<MockExternalProviderOptions>, 
+        IAuthenticationSignInHandler, 
+        IAuthenticationRequestHandler
+    {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        protected MockExternalProvider(
+            IHttpContextAccessor httpContextAccessor,
+            IOptionsMonitor<MockExternalProviderOptions> options,
+            ILoggerFactory logger, 
+            UrlEncoder encoder, 
+            ISystemClock clock) 
+            : base(options, logger, encoder, clock)
+        {
+            _httpContextAccessor = httpContextAccessor;
+        }
+
+        public async Task<bool> HandleRequestAsync()
+        {
+            if (_httpContextAccessor.HttpContext.Request.Path == MockIdSvrUiPipeline.FederatedSignOutPath)
+            {
+                await _httpContextAccessor.HttpContext.SignOutAsync();
+                return true;
+            }
+
+            return false;
+        }
+
+        public Task SignInAsync(ClaimsPrincipal user, AuthenticationProperties properties)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task SignOutAsync(AuthenticationProperties properties)
+        {
+            return Task.CompletedTask;
+        }
+
+        protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+        {
+            throw new NotImplementedException();
         }
     }
 }

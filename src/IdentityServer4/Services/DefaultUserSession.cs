@@ -96,15 +96,21 @@ namespace IdentityServer4.Services
             }
         }
 
-        public Task<ClaimsPrincipal> GetIdentityServerUserAsync()
+        public async Task<ClaimsPrincipal> GetIdentityServerUserAsync()
         {
             var user = HttpContext.User;
             if (user?.Identity.IsAuthenticated != true)
             {
                 // we model anonymous users as null
                 user = null;
+
+                var result = await HttpContext.AuthenticateAsync();
+                if (result?.Succeeded == true)
+                {
+                    user = result.Principal;
+                }
             }
-            return Task.FromResult(user);
+            return user;
         }
 
         public async Task AddClientIdAsync(string clientId)
