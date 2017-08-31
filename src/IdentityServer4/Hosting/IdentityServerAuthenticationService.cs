@@ -6,6 +6,7 @@ using IdentityServer4.Configuration;
 using IdentityServer4.Services;
 using Microsoft.Extensions.Logging;
 using IdentityServer4.Configuration.DependencyInjection;
+using IdentityServer4.Extensions;
 
 namespace IdentityServer4.Hosting
 {
@@ -63,6 +64,7 @@ namespace IdentityServer4.Hosting
 
             if (scheme == null || scheme == defaultScheme.Name)
             {
+                context.SetSignOutCalled();
                 _session.RemoveSessionIdCookie();
             }
 

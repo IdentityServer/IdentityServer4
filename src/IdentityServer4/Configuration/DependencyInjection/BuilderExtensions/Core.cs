@@ -56,7 +56,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddCookie(IdentityServerConstants.ExternalCookieAuthenticationScheme);
 
             builder.Services.AddSingleton<IConfigureOptions<CookieAuthenticationOptions>, ConfigureInternalCookieOptions>();
-            
+            builder.Services.AddTransientDecorator<IAuthenticationService, IdentityServerAuthenticationService>();
+            builder.Services.AddTransientDecorator<IAuthenticationHandlerProvider, IdentityServerAuthenticationHandlerProvider>();
+
             return builder;
         }
 
@@ -121,9 +123,6 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddTransient<IReturnUrlParser, OidcReturnUrlParser>();
             builder.Services.AddTransient<IUserSession, DefaultUserSession>();
             builder.Services.AddTransient(typeof(MessageCookie<>));
-
-            // requires our AddCookieAuthentication to have been called prior
-            builder.Services.AddTransientDecorator<IAuthenticationService, IdentityServerAuthenticationService>();
 
             builder.Services.AddCors();
             builder.Services.AddTransientDecorator<ICorsPolicyProvider, CorsPolicyProvider>();

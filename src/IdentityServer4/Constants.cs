@@ -232,7 +232,8 @@ namespace IdentityServer4
         public static class EnvironmentKeys
         {
             public const string IdentityServerBasePath = "idsvr:IdentityServerBasePath";
-            public const string IdentityServerOrigin   = "idsvr:IdentityServerOrigin";
+            public const string IdentityServerOrigin = "idsvr:IdentityServerOrigin";
+            public const string SignOutCalled = "idsvr:IdentityServerSignOutCalled";
         }
 
         public static class TokenTypeHints

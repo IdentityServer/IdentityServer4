@@ -23,10 +23,6 @@ namespace Host
 
             services.AddIdentityServer(options =>
                 {
-                    options.Authentication.FederatedSignOutPaths.Add("/signout-callback-aad");
-                    options.Authentication.FederatedSignOutPaths.Add("/signout-callback-idsrv");
-                    options.Authentication.FederatedSignOutPaths.Add("/signout-callback-adfs");
-
                     options.Events.RaiseSuccessEvents = true;
                     options.Events.RaiseFailureEvents = true;
                     options.Events.RaiseErrorEvents = true;

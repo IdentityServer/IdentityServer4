@@ -13,6 +13,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using System.Linq;
 using Microsoft.AspNetCore.Authentication;
+using IdentityServer4.Hosting;
 
 #pragma warning disable 1591
 
@@ -44,6 +45,17 @@ namespace IdentityServer4.Extensions
         public static string GetIdentityServerOrigin(this HttpContext context)
         {
             return context.Items[Constants.EnvironmentKeys.IdentityServerOrigin] as string;
+        }
+
+        internal static void SetSignOutCalled(this HttpContext context)
+        {
+            if (context == null) throw new ArgumentNullException(nameof(context));
+            context.Items[Constants.EnvironmentKeys.SignOutCalled] = "true";
+        }
+
+        internal static bool GetSignOutCalled(this HttpContext context)
+        {
+            return context.Items.ContainsKey(Constants.EnvironmentKeys.SignOutCalled);
         }
 
         /// <summary>

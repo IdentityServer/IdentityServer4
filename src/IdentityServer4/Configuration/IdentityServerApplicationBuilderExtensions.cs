@@ -38,12 +38,6 @@ namespace Microsoft.AspNetCore.Builder
             // related: https://github.com/aspnet/Security/issues/1399
             app.UseAuthentication();
 
-            // todo: this needs to be moved in front of UseAuthentication to handle the new callback
-            // mechanism for front-channel signout
-            // todo: consider a decorator on the authN service to handle this instead of requiring 
-            // config for all the signout callback paths. this would require dependencies on ws-fed and oidc MWs
-            app.UseMiddleware<FederatedSignOutMiddleware>();
-
             app.UseMiddleware<IdentityServerMiddleware>();
 
             return app;
