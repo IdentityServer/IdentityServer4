@@ -21,7 +21,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
     {
         const string Category = "PKCE";
 
-        MockIdSvrUiPipeline _pipeline = new MockIdSvrUiPipeline();
+        IdentityServerPipeline _pipeline = new IdentityServerPipeline();
 
         Client client;
 
@@ -183,7 +183,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
 
             var code = authorizeResponse.Code;
 
-            var tokenClient = new TokenClient(MockIdSvrUiPipeline.TokenEndpoint, clientId, client_secret, _pipeline.Handler);
+            var tokenClient = new TokenClient(IdentityServerPipeline.TokenEndpoint, clientId, client_secret, _pipeline.Handler);
             var tokenResponse = await tokenClient.RequestAuthorizationCodeAsync(code, redirect_uri, code_verifier);
 
             tokenResponse.IsError.Should().BeFalse();
@@ -215,7 +215,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
 
             var code = authorizeResponse.Code;
 
-            var tokenClient = new TokenClient(MockIdSvrUiPipeline.TokenEndpoint, clientId, client_secret, _pipeline.Handler);
+            var tokenClient = new TokenClient(IdentityServerPipeline.TokenEndpoint, clientId, client_secret, _pipeline.Handler);
             var tokenResponse = await tokenClient.RequestAuthorizationCodeAsync(code, redirect_uri, code_verifier);
 
             tokenResponse.IsError.Should().BeFalse();
@@ -336,7 +336,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
 
             var code = authorizeResponse.Code;
 
-            var tokenClient = new TokenClient(MockIdSvrUiPipeline.TokenEndpoint, clientId, client_secret, _pipeline.Handler);
+            var tokenClient = new TokenClient(IdentityServerPipeline.TokenEndpoint, clientId, client_secret, _pipeline.Handler);
             var tokenResponse = await tokenClient.RequestAuthorizationCodeAsync(code, redirect_uri);
 
             tokenResponse.IsError.Should().BeTrue();
@@ -365,7 +365,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
 
             var code = authorizeResponse.Code;
 
-            var tokenClient = new TokenClient(MockIdSvrUiPipeline.TokenEndpoint, clientId, client_secret, _pipeline.Handler);
+            var tokenClient = new TokenClient(IdentityServerPipeline.TokenEndpoint, clientId, client_secret, _pipeline.Handler);
             var tokenResponse = await tokenClient.RequestAuthorizationCodeAsync(code, redirect_uri,
                 "a");
 
@@ -395,7 +395,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
 
             var code = authorizeResponse.Code;
 
-            var tokenClient = new TokenClient(MockIdSvrUiPipeline.TokenEndpoint, clientId, client_secret, _pipeline.Handler);
+            var tokenClient = new TokenClient(IdentityServerPipeline.TokenEndpoint, clientId, client_secret, _pipeline.Handler);
             var tokenResponse = await tokenClient.RequestAuthorizationCodeAsync(code, redirect_uri,
                 new string('a', _pipeline.Options.InputLengthRestrictions.CodeVerifierMaxLength + 1));
 
@@ -425,7 +425,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
 
             var code = authorizeResponse.Code;
 
-            var tokenClient = new TokenClient(MockIdSvrUiPipeline.TokenEndpoint, clientId, client_secret, _pipeline.Handler);
+            var tokenClient = new TokenClient(IdentityServerPipeline.TokenEndpoint, clientId, client_secret, _pipeline.Handler);
             var tokenResponse = await tokenClient.RequestAuthorizationCodeAsync(code, redirect_uri,
                 "mismatched_code_verifier");
 

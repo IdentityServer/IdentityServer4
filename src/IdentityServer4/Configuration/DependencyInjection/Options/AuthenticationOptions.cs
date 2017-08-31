@@ -3,8 +3,6 @@
 
 
 using System;
-using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
 
 namespace IdentityServer4.Configuration
 {

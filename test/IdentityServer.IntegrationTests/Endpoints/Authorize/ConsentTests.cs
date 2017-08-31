@@ -18,7 +18,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
     {
         const string Category = "Authorize and consent tests";
 
-        MockIdSvrUiPipeline _mockPipeline = new MockIdSvrUiPipeline();
+        IdentityServerPipeline _mockPipeline = new IdentityServerPipeline();
 
         public ConsentTests()
         {

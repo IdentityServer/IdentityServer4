@@ -11,7 +11,6 @@ using IdentityServer4;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Quickstart.UI;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace Host
 {

@@ -9,7 +9,6 @@ using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Authentication;
-using System;
 using System.Security.Claims;
 
 namespace IdentityServer4.UnitTests.Common

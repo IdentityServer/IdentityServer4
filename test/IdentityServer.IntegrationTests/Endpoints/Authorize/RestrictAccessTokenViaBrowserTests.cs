@@ -18,7 +18,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
     {
         const string Category = "RestrictAccessTokenViaBrowserTests";
 
-        MockIdSvrUiPipeline _mockPipeline = new MockIdSvrUiPipeline();
+        IdentityServerPipeline _mockPipeline = new IdentityServerPipeline();
 
         ClaimsPrincipal _user = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
 

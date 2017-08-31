@@ -27,7 +27,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
         string scope_name = "api";
         string scope_secret = "api_secret";
 
-        MockIdSvrUiPipeline _mockPipeline = new MockIdSvrUiPipeline();
+        IdentityServerPipeline _mockPipeline = new IdentityServerPipeline();
 
         public RevocationTests()
         {
@@ -124,7 +124,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
             authorizationResponse.IsError.Should().BeFalse();
             authorizationResponse.Code.Should().NotBeNull();
 
-            var tokenClient = new TokenClient(MockIdSvrUiPipeline.TokenEndpoint, client_id, client_secret, _mockPipeline.Handler);
+            var tokenClient = new TokenClient(IdentityServerPipeline.TokenEndpoint, client_id, client_secret, _mockPipeline.Handler);
             var tokenResponse = await tokenClient.RequestAuthorizationCodeAsync(authorizationResponse.Code, redirect_uri);
 
             tokenResponse.IsError.Should().BeFalse();
@@ -157,7 +157,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
 
         async Task<bool> IsAccessTokenValidAsync(string token)
         {
-            var introspectionClient = new IntrospectionClient(MockIdSvrUiPipeline.IntrospectionEndpoint, scope_name, scope_secret, _mockPipeline.Handler);
+            var introspectionClient = new IntrospectionClient(IdentityServerPipeline.IntrospectionEndpoint, scope_name, scope_secret, _mockPipeline.Handler);
             var response = await introspectionClient.SendAsync(new IntrospectionRequest
             {
                 Token = token,
@@ -168,7 +168,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
 
         async Task<bool> UseRefreshTokenAsync(Tokens tokens)
         {
-            var tokenClient = new TokenClient(MockIdSvrUiPipeline.TokenEndpoint, client_id, client_secret, _mockPipeline.Handler);
+            var tokenClient = new TokenClient(IdentityServerPipeline.TokenEndpoint, client_id, client_secret, _mockPipeline.Handler);
             var response = await tokenClient.RequestRefreshTokenAsync(tokens.RefreshToken);
             if (response.IsError)
             {
@@ -182,7 +182,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
         [Trait("Category", Category)]
         public async Task get_request_should_return_405()
         {
-            var response = await _mockPipeline.Client.GetAsync(MockIdSvrUiPipeline.RevocationEndpoint);
+            var response = await _mockPipeline.Client.GetAsync(IdentityServerPipeline.RevocationEndpoint);
 
             response.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
         }
@@ -191,7 +191,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
         [Trait("Category", Category)]
         public async Task post_without_form_urlencoded_should_return_415()
         {
-            var response = await _mockPipeline.Client.PostAsync(MockIdSvrUiPipeline.RevocationEndpoint, null);
+            var response = await _mockPipeline.Client.PostAsync(IdentityServerPipeline.RevocationEndpoint, null);
 
             response.StatusCode.Should().Be(HttpStatusCode.UnsupportedMediaType);
         }
@@ -203,7 +203,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
             var tokens = await GetTokensAsync();
             (await IsAccessTokenValidAsync(tokens)).Should().BeTrue();
 
-            var revocationClient = new TokenRevocationClient(MockIdSvrUiPipeline.RevocationEndpoint, client_id, client_secret, _mockPipeline.Handler);
+            var revocationClient = new TokenRevocationClient(IdentityServerPipeline.RevocationEndpoint, client_id, client_secret, _mockPipeline.Handler);
             var result = await revocationClient.RevokeAccessTokenAsync(tokens.AccessToken);
             result.IsError.Should().BeFalse();
 
@@ -217,7 +217,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
             var tokens = await GetTokensAsync();
             (await UseRefreshTokenAsync(tokens)).Should().BeTrue();
 
-            var revocationClient = new TokenRevocationClient(MockIdSvrUiPipeline.RevocationEndpoint, client_id, client_secret, _mockPipeline.Handler);
+            var revocationClient = new TokenRevocationClient(IdentityServerPipeline.RevocationEndpoint, client_id, client_secret, _mockPipeline.Handler);
             var result = await revocationClient.RevokeRefreshTokenAsync(tokens.RefreshToken);
             result.IsError.Should().BeFalse();
 
@@ -231,7 +231,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
             var tokens = await GetTokensAsync();
             (await IsAccessTokenValidAsync(tokens)).Should().BeTrue();
 
-            var revocationClient = new TokenRevocationClient(MockIdSvrUiPipeline.RevocationEndpoint, client_id, client_secret, _mockPipeline.Handler);
+            var revocationClient = new TokenRevocationClient(IdentityServerPipeline.RevocationEndpoint, client_id, client_secret, _mockPipeline.Handler);
             var result = await revocationClient.RevokeAccessTokenAsync(tokens.AccessToken);
             result.IsError.Should().BeFalse();
 
@@ -248,7 +248,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
             var tokens = await GetTokensAsync();
             (await UseRefreshTokenAsync(tokens)).Should().BeTrue();
 
-            var revocationClient = new TokenRevocationClient(MockIdSvrUiPipeline.RevocationEndpoint, client_id, client_secret, _mockPipeline.Handler);
+            var revocationClient = new TokenRevocationClient(IdentityServerPipeline.RevocationEndpoint, client_id, client_secret, _mockPipeline.Handler);
             var result = await revocationClient.RevokeRefreshTokenAsync(tokens.RefreshToken);
             result.IsError.Should().BeFalse();
 
@@ -265,7 +265,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
             var tokens = await GetTokensAsync();
             (await IsAccessTokenValidAsync(tokens)).Should().BeTrue();
 
-            var revocationClient = new TokenRevocationClient(MockIdSvrUiPipeline.RevocationEndpoint, "not_valid", client_secret, _mockPipeline.Handler);
+            var revocationClient = new TokenRevocationClient(IdentityServerPipeline.RevocationEndpoint, "not_valid", client_secret, _mockPipeline.Handler);
             var result = await revocationClient.RevokeAccessTokenAsync(tokens.AccessToken);
             result.IsError.Should().BeTrue();
             result.Error.Should().Be("invalid_client");
@@ -278,7 +278,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
             var tokens = await GetTokensAsync();
             (await IsAccessTokenValidAsync(tokens)).Should().BeTrue();
 
-            var revocationClient = new TokenRevocationClient(MockIdSvrUiPipeline.RevocationEndpoint, client_id, "not_valid", _mockPipeline.Handler);
+            var revocationClient = new TokenRevocationClient(IdentityServerPipeline.RevocationEndpoint, client_id, "not_valid", _mockPipeline.Handler);
             var result = await revocationClient.RevokeAccessTokenAsync(tokens.AccessToken);
             result.IsError.Should().BeTrue();
             result.Error.Should().Be("invalid_client");
@@ -294,7 +294,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
                 { "client_secret", client_secret }
             };
 
-            var response = await _mockPipeline.Client.PostAsync(MockIdSvrUiPipeline.RevocationEndpoint, new FormUrlEncodedContent(data));
+            var response = await _mockPipeline.Client.PostAsync(IdentityServerPipeline.RevocationEndpoint, new FormUrlEncodedContent(data));
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
             var result = new TokenRevocationResponse(await response.Content.ReadAsStringAsync());
@@ -317,7 +317,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
                 { "token_type_hint", "not_valid" }
             };
 
-            var response = await _mockPipeline.Client.PostAsync(MockIdSvrUiPipeline.RevocationEndpoint, new FormUrlEncodedContent(data));
+            var response = await _mockPipeline.Client.PostAsync(IdentityServerPipeline.RevocationEndpoint, new FormUrlEncodedContent(data));
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
             var result = new TokenRevocationResponse(await response.Content.ReadAsStringAsync());
@@ -339,7 +339,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
                 { "token", tokens.AccessToken }
             };
 
-            var response = await _mockPipeline.Client.PostAsync(MockIdSvrUiPipeline.RevocationEndpoint, new FormUrlEncodedContent(data));
+            var response = await _mockPipeline.Client.PostAsync(IdentityServerPipeline.RevocationEndpoint, new FormUrlEncodedContent(data));
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             (await IsAccessTokenValidAsync(tokens)).Should().BeFalse();
@@ -359,7 +359,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
                 { "token", tokens.RefreshToken }
             };
 
-            var response = await _mockPipeline.Client.PostAsync(MockIdSvrUiPipeline.RevocationEndpoint, new FormUrlEncodedContent(data));
+            var response = await _mockPipeline.Client.PostAsync(IdentityServerPipeline.RevocationEndpoint, new FormUrlEncodedContent(data));
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             (await UseRefreshTokenAsync(tokens)).Should().BeFalse();
@@ -379,7 +379,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
 
             (await IsAccessTokenValidAsync(token)).Should().BeTrue();
 
-            var response = await _mockPipeline.Client.PostAsync(MockIdSvrUiPipeline.RevocationEndpoint, new FormUrlEncodedContent(data));
+            var response = await _mockPipeline.Client.PostAsync(IdentityServerPipeline.RevocationEndpoint, new FormUrlEncodedContent(data));
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             (await IsAccessTokenValidAsync(token)).Should().BeFalse();
         }
@@ -398,7 +398,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
 
             (await IsAccessTokenValidAsync(token)).Should().BeTrue();
 
-            var response = await _mockPipeline.Client.PostAsync(MockIdSvrUiPipeline.RevocationEndpoint, new FormUrlEncodedContent(data));
+            var response = await _mockPipeline.Client.PostAsync(IdentityServerPipeline.RevocationEndpoint, new FormUrlEncodedContent(data));
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             (await IsAccessTokenValidAsync(token)).Should().BeTrue();
         }

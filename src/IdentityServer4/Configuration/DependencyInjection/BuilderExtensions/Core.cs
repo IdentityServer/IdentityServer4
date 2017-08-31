@@ -21,7 +21,6 @@ using System;
 using System.Linq;
 using IdentityServer4.Models;
 using IdentityServer4.Infrastructure;
-using System.Net.Http;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using static IdentityServer4.Constants;

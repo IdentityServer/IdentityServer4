@@ -18,7 +18,7 @@ namespace IdentityServer4.IntegrationTests.Pipeline
     {
         const string Category = "Subpath endpoint";
 
-        MockIdSvrUiPipeline _mockPipeline = new MockIdSvrUiPipeline();
+        IdentityServerPipeline _mockPipeline = new IdentityServerPipeline();
 
         Client _client1;
 

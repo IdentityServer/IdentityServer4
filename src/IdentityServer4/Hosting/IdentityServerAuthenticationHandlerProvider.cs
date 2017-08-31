@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using IdentityServer4.Configuration.DependencyInjection;
 using IdentityServer4.Extensions;

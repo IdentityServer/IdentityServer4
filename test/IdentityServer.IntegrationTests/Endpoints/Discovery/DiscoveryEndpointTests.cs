@@ -18,7 +18,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Discovery
         [Trait("Category", Category)]
         public async Task issuer_uri_should_be_lowercase()
         {
-            MockIdSvrUiPipeline pipeline = new MockIdSvrUiPipeline();
+            IdentityServerPipeline pipeline = new IdentityServerPipeline();
             pipeline.Initialize("/ROOT");
 
             var result = await pipeline.Client.GetAsync("HTTPS://SERVER/ROOT/.WELL-KNOWN/OPENID-CONFIGURATION");
@@ -34,7 +34,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Discovery
         [Trait("Category", Category)]
         public async Task jwks_entries_should_contain_alg()
         {
-            MockIdSvrUiPipeline pipeline = new MockIdSvrUiPipeline();
+            IdentityServerPipeline pipeline = new IdentityServerPipeline();
             pipeline.Initialize("/ROOT");
 
             var result = await pipeline.Client.GetAsync("https://server/root/.well-known/openid-configuration/jwks");
