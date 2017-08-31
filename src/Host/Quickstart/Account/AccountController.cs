@@ -144,14 +144,14 @@ namespace IdentityServer4.Quickstart.UI
         {
             returnUrl = Url.Action("ExternalLoginCallback", new { returnUrl = returnUrl });
 
-            // windows authentication is modeled as external in the asp.net core authentication manager, so we need special handling
-            if (AccountOptions.WindowsAuthenticationSchemes.Contains(provider))
+            // windows authentication is modeled as external, so we need special handling
+            if (AccountOptions.WindowsAuthenticationSchemeName == provider)
             {
                 // but they don't support the redirect uri, so this URL is re-triggered when we call challenge
                 if (HttpContext.User is WindowsPrincipal wp)
                 {
                     var props = new AuthenticationProperties();
-                    props.Items.Add("scheme", AccountOptions.WindowsAuthenticationProviderName);
+                    props.Items.Add("scheme", AccountOptions.WindowsAuthenticationSchemeName);
 
                     var id = new ClaimsIdentity(provider);
                     id.AddClaim(new Claim(JwtClaimTypes.Subject, HttpContext.User.Identity.Name));
@@ -166,13 +166,13 @@ namespace IdentityServer4.Quickstart.UI
                         id.AddClaims(roles);
                     }
 
-                    await HttpContext.SignInAsync(IdentityServer4.IdentityServerConstants.ExternalCookieAuthenticationScheme, new ClaimsPrincipal(id), props);
+                    await HttpContext.SignInAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme, new ClaimsPrincipal(id), props);
                     return Redirect(returnUrl);
                 }
                 else
                 {
                     // this triggers all of the windows auth schemes we're supporting so the browser can use what it supports
-                    return new ChallengeResult(AccountOptions.WindowsAuthenticationSchemes);
+                    return new ChallengeResult(AccountOptions.WindowsAuthenticationSchemeName);
                 }
             }
             else
