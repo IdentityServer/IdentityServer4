@@ -38,13 +38,12 @@ namespace IdentityServer4.Hosting
         public async Task SignInAsync(HttpContext context, string scheme, ClaimsPrincipal principal, AuthenticationProperties properties)
         {
             var defaultScheme = await _schemes.GetDefaultSignInSchemeAsync();
-
             if (scheme == null || scheme == defaultScheme.Name)
             {
                 AugmentPrincipal(principal);
 
                 if (properties == null) properties = new AuthenticationProperties();
-                await _session.CreateSessionIdAsync(principal, properties);
+                _session.CreateSessionId(principal, properties);
             }
 
             await _inner.SignInAsync(context, scheme, principal, properties);
@@ -61,7 +60,6 @@ namespace IdentityServer4.Hosting
         public async Task SignOutAsync(HttpContext context, string scheme, AuthenticationProperties properties)
         {
             var defaultScheme = await _schemes.GetDefaultSignOutSchemeAsync();
-
             if (scheme == null || scheme == defaultScheme.Name)
             {
                 context.SetSignOutCalled();
@@ -71,9 +69,20 @@ namespace IdentityServer4.Hosting
             await _inner.SignOutAsync(context, scheme, properties);
         }
 
-        public Task<AuthenticateResult> AuthenticateAsync(HttpContext context, string scheme)
+        public async Task<AuthenticateResult> AuthenticateAsync(HttpContext context, string scheme)
         {
-            return _inner.AuthenticateAsync(context, scheme);
+            var result = await _inner.AuthenticateAsync(context, scheme);
+
+            var defaultScheme = await _schemes.GetDefaultSignOutSchemeAsync();
+            if (scheme == null || scheme == defaultScheme.Name)
+            {
+                if (result?.Succeeded == true)
+                {
+                    _session.SetCurrentUser(result.Principal, result.Properties);
+                }
+            }
+
+            return result;
         }
 
         public Task ChallengeAsync(HttpContext context, string scheme, AuthenticationProperties properties)

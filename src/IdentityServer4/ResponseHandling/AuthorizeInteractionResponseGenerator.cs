@@ -12,6 +12,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Configuration;
+using Microsoft.AspNetCore.Http;
 
 namespace IdentityServer4.ResponseHandling
 {
@@ -86,7 +87,9 @@ namespace IdentityServer4.ResponseHandling
                 return result;
             }
 
-            return await ProcessConsentAsync(request, consent);
+            result = await ProcessConsentAsync(request, consent);
+
+            return result;
         }
 
         /// <summary>

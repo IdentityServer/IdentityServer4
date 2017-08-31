@@ -36,7 +36,7 @@ namespace IdentityServer4.Services
             if (IsValidReturnUrl(returnUrl))
             {
                 var parameters = returnUrl.ReadQueryStringAsNameValueCollection();
-                var user = await _userSession.GetIdentityServerUserAsync();
+                var user = _userSession.User;
                 var result = await _validator.ValidateAsync(parameters, user);
                 if (!result.IsError)
                 {

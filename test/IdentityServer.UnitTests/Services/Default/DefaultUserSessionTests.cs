@@ -32,44 +32,44 @@ namespace IdentityServer4.UnitTests.Services.Default
         }
 
         [Fact]
-        public async Task CreateSessionId_when_user_is_anonymous_should_generate_new_sid()
+        public void CreateSessionId_when_user_is_anonymous_should_generate_new_sid()
         {
-            await _subject.CreateSessionIdAsync(_user, _props);
+            _subject.CreateSessionId(_user, _props);
 
             _props.Items[DefaultUserSession.SessionIdKey].Should().NotBeNull();
         }
 
         [Fact]
-        public async Task CreateSessionId_when_user_is_authenticated_should_not_generate_new_sid()
+        public void CreateSessionId_when_user_is_authenticated_should_not_generate_new_sid()
         {
             // this test is needed to allow same session id when cookie is slid
             // IOW, if UI layer passes in same properties dictionary, then we assume it's the same user
 
             _props.Items.Add(DefaultUserSession.SessionIdKey, "999");
-            _mockHttpContext.SetUser(_user, _props);
+            _subject.SetCurrentUser(_user, _props);
 
-            await _subject.CreateSessionIdAsync(_user, _props);
+            _subject.CreateSessionId(_user, _props);
 
             _props.Items[DefaultUserSession.SessionIdKey].Should().NotBeNull();
             _props.Items[DefaultUserSession.SessionIdKey].Should().Be("999");
         }
 
         [Fact]
-        public async Task CreateSessionId_when_user_is_authenticated_but_different_sub_should_create_new_sid()
+        public void CreateSessionId_when_user_is_authenticated_but_different_sub_should_create_new_sid()
         {
             _props.Items.Add(DefaultUserSession.SessionIdKey, "999");
-            _mockHttpContext.SetUser(_user, _props);
+            _subject.SetCurrentUser(_user, _props);
 
-            await _subject.CreateSessionIdAsync(IdentityServerPrincipal.Create("alice", "alice"), _props);
+            _subject.CreateSessionId(IdentityServerPrincipal.Create("alice", "alice"), _props);
 
             _props.Items[DefaultUserSession.SessionIdKey].Should().NotBeNull();
             _props.Items[DefaultUserSession.SessionIdKey].Should().NotBe("999");
         }
 
         [Fact]
-        public async Task CreateSessionId_should_issue_session_id_cookie()
+        public void CreateSessionId_should_issue_session_id_cookie()
         {
-            await _subject.CreateSessionIdAsync(_user, _props);
+            _subject.CreateSessionId(_user, _props);
 
             var cookieContainer = new CookieContainer();
             var cookies = _mockHttpContext.HttpContext.Response.Headers.Where(x => x.Key.Equals("Set-Cookie", StringComparison.OrdinalIgnoreCase)).Select(x => x.Value);
@@ -81,12 +81,12 @@ namespace IdentityServer4.UnitTests.Services.Default
         }
 
         [Fact]
-        public async Task EnsureSessionIdCookieAsync_should_add_cookie()
+        public void EnsureSessionIdCookieAsync_should_add_cookie()
         {
             _props.Items.Add(DefaultUserSession.SessionIdKey, "999");
-            _mockHttpContext.SetUser(_user, _props);
+            _subject.SetCurrentUser(_user, _props);
 
-            await _subject.EnsureSessionIdCookieAsync();
+            _subject.EnsureSessionIdCookie();
 
             var cookieContainer = new CookieContainer();
             var cookies = _mockHttpContext.HttpContext.Response.Headers.Where(x => x.Key.Equals("Set-Cookie", StringComparison.OrdinalIgnoreCase)).Select(x => x.Value);
@@ -98,9 +98,9 @@ namespace IdentityServer4.UnitTests.Services.Default
         }
 
         [Fact]
-        public async Task EnsureSessionIdCookieAsync_should_not_add_cookie_if_no_sid()
+        public void EnsureSessionIdCookieAsync_should_not_add_cookie_if_no_sid()
         {
-            await _subject.EnsureSessionIdCookieAsync();
+            _subject.EnsureSessionIdCookie();
 
             var cookieContainer = new CookieContainer();
             var cookies = _mockHttpContext.HttpContext.Response.Headers.Where(x => x.Key.Equals("Set-Cookie", StringComparison.OrdinalIgnoreCase)).Select(x => x.Value);
@@ -112,12 +112,12 @@ namespace IdentityServer4.UnitTests.Services.Default
         }
 
         [Fact]
-        public async Task RemoveSessionIdCookie_should_remove_cookie()
+        public void RemoveSessionIdCookie_should_remove_cookie()
         {
             _props.Items.Add(DefaultUserSession.SessionIdKey, "999");
-            _mockHttpContext.SetUser(_user, _props);
+            _subject.SetCurrentUser(_user, _props);
 
-            await _subject.EnsureSessionIdCookieAsync();
+            _subject.EnsureSessionIdCookie();
 
             var cookieContainer = new CookieContainer();
             var cookies = _mockHttpContext.HttpContext.Response.Headers.Where(x => x.Key.Equals("Set-Cookie", StringComparison.OrdinalIgnoreCase)).Select(x => x.Value);
@@ -137,26 +137,26 @@ namespace IdentityServer4.UnitTests.Services.Default
         }
 
         [Fact]
-        public async Task GetCurrentSessionIdAsync_when_user_is_authenticated_should_return_sid()
+        public void GetCurrentSessionIdAsync_when_user_is_authenticated_should_return_sid()
         {
             _props.Items.Add(DefaultUserSession.SessionIdKey, "999");
-            _mockHttpContext.SetUser(_user, _props);
+            _subject.SetCurrentUser(_user, _props);
 
-            var sid = await _subject.GetCurrentSessionIdAsync();
+            var sid = _subject.SessionId;
             sid.Should().Be("999");
         }
 
         [Fact]
-        public async Task GetCurrentSessionIdAsync_when_user_is_anonymous_should_return_null()
+        public void GetCurrentSessionIdAsync_when_user_is_anonymous_should_return_null()
         {
-            var sid = await _subject.GetCurrentSessionIdAsync();
+            var sid = _subject.SessionId;
             sid.Should().BeNull();
         }
 
         [Fact]
         public async Task adding_client_should_set_item_in_cookie_properties()
         {
-            _mockHttpContext.SetUser(_user, _props);
+            _subject.SetCurrentUser(_user, _props);
 
             _props.Items.Count.Should().Be(0);
             await _subject.AddClientIdAsync("client");
@@ -164,28 +164,28 @@ namespace IdentityServer4.UnitTests.Services.Default
         }
 
         [Fact]
-        public async Task when_authenticated_GetIdentityServerUserAsync_should_should_return_authenticated_user()
+        public void when_authenticated_GetIdentityServerUserAsync_should_should_return_authenticated_user()
         {
-            _mockHttpContext.SetUser(_user, _props);
+            _subject.SetCurrentUser(_user, _props);
 
-            var user = await _subject.GetIdentityServerUserAsync();
+            var user = _subject.User;
             user.GetSubjectId().Should().Be("123");
         }
 
         [Fact]
-        public async Task when_anonymous_GetIdentityServerUserAsync_should_should_return_null()
+        public void when_anonymous_GetIdentityServerUserAsync_should_should_return_null()
         {
-            var user = await _subject.GetIdentityServerUserAsync();
+            var user = _subject.User;
             user.Should().BeNull();
         }
 
         [Fact]
         public async Task corrupt_properties_entry_should_clear_entry()
         {
-            _mockHttpContext.SetUser(_user, _props);
+            _subject.SetCurrentUser(_user, _props);
 
             await _subject.AddClientIdAsync("client");
-            var item = _mockHttpContext.AuthenticationService.Result.Properties.Items.First();
+            var item = _props.Items.First();
             _props.Items[item.Key] = "junk";
 
             var clients = await _subject.GetClientListAsync();
@@ -196,7 +196,7 @@ namespace IdentityServer4.UnitTests.Services.Default
         [Fact]
         public async Task adding_client_should_be_able_to_read_client()
         {
-            _mockHttpContext.SetUser(_user, _props);
+            _subject.SetCurrentUser(_user, _props);
 
             await _subject.AddClientIdAsync("client");
             var clients = await _subject.GetClientListAsync();
@@ -206,7 +206,7 @@ namespace IdentityServer4.UnitTests.Services.Default
         [Fact]
         public async Task adding_clients_should_be_able_to_read_clients()
         {
-            _mockHttpContext.SetUser(_user, _props);
+            _subject.SetCurrentUser(_user, _props);
 
             await _subject.AddClientIdAsync("client1");
             await _subject.AddClientIdAsync("client2");

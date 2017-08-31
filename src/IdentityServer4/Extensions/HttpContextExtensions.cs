@@ -121,7 +121,7 @@ namespace IdentityServer4.Extensions
         internal static async Task<string> GetIdentityServerSignoutFrameCallbackUrlAsync(this HttpContext context, LogoutMessage logoutMessage = null)
         {
             var userSession = context.RequestServices.GetRequiredService<IUserSession>();
-            var user = await userSession.GetIdentityServerUserAsync();
+            var user = userSession.User;
             var currentSubId = user?.GetSubjectId();
 
             EndSession endSessionMsg = null;
@@ -154,7 +154,7 @@ namespace IdentityServer4.Extensions
                     endSessionMsg = new EndSession
                     {
                         SubjectId = currentSubId,
-                        SessionId = await userSession.GetCurrentSessionIdAsync(),
+                        SessionId = userSession.SessionId,
                         ClientIds = clientIds
                     };
                 }

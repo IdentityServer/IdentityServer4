@@ -15,30 +15,29 @@ namespace IdentityServer4.UnitTests.Common
     {
         public List<string> Clients = new List<string>();
 
-        public ClaimsPrincipal User { get; set; }
-        public string SessionId { get; set; }
-
         public bool EnsureSessionIdCookieWasCalled { get; set; }
         public bool RemoveSessionIdCookieWasCalled { get; set; }
         public bool CreateSessionIdWasCalled { get; set; }
 
+        public ClaimsPrincipal User { get; set; }
+        public AuthenticationProperties Properties { get; set; }
+        public string SessionId { get; set; }
+
         public Task AddClientIdAsync(string clientId)
         {
             Clients.Add(clientId);
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
-        public Task CreateSessionIdAsync(ClaimsPrincipal user, AuthenticationProperties properties)
+        public void CreateSessionId(ClaimsPrincipal principal, AuthenticationProperties properties)
         {
             CreateSessionIdWasCalled = true;
             SessionId = Guid.NewGuid().ToString();
-            return Task.FromResult(0);
         }
 
-        public Task EnsureSessionIdCookieAsync()
+        public void EnsureSessionIdCookie()
         {
             EnsureSessionIdCookieWasCalled = true;
-            return Task.FromResult(0);
         }
 
         public Task<IEnumerable<string>> GetClientListAsync()
@@ -46,19 +45,15 @@ namespace IdentityServer4.UnitTests.Common
             return Task.FromResult<IEnumerable<string>>(Clients);
         }
 
-        public Task<string> GetCurrentSessionIdAsync()
-        {
-            return Task.FromResult(SessionId);
-        }
-
-        public Task<ClaimsPrincipal> GetIdentityServerUserAsync()
-        {
-            return Task.FromResult(User);
-        }
-
         public void RemoveSessionIdCookie()
         {
             RemoveSessionIdCookieWasCalled = true;
+        }
+
+        public void SetCurrentUser(ClaimsPrincipal principal, AuthenticationProperties properties)
+        {
+            User = principal;
+            Properties = properties;
         }
     }
 }

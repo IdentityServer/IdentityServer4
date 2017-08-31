@@ -89,7 +89,7 @@ namespace IdentityServer4.Validation
                     }
 
                     validatedRequest.Subject = subject;
-                    validatedRequest.SessionId = await _userSession.GetCurrentSessionIdAsync();
+                    validatedRequest.SessionId = _userSession.SessionId;
                     validatedRequest.ClientIds = await _userSession.GetClientListAsync();
                 }
 
@@ -121,7 +121,7 @@ namespace IdentityServer4.Validation
             {
                 // no id_token to authenticate the client, but we do have a user and a user session
                 validatedRequest.Subject = subject;
-                validatedRequest.SessionId = await _userSession.GetCurrentSessionIdAsync();
+                validatedRequest.SessionId = _userSession.SessionId;
                 validatedRequest.ClientIds = await _userSession.GetClientListAsync();
             }
 

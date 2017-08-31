@@ -36,7 +36,7 @@ namespace IdentityServer4.UnitTests.Common
 
             if (userSession == null)
             {
-                services.AddTransient<IUserSession, DefaultUserSession>();
+                services.AddScoped<IUserSession, DefaultUserSession>();
             }
             else
             {
@@ -55,11 +55,12 @@ namespace IdentityServer4.UnitTests.Common
             _context.RequestServices = services.BuildServiceProvider();
         }
 
-        public void SetUser(ClaimsPrincipal user, AuthenticationProperties properties = null)
-        {
-            AuthenticationService.Result = AuthenticateResult.Success(new AuthenticationTicket(user, properties, "scheme"));
-            HttpContext.User = user;
-        }
+        // todo: remove
+        //public void SetUser(ClaimsPrincipal user, AuthenticationProperties properties = null)
+        //{
+        //    AuthenticationService.Result = AuthenticateResult.Success(new AuthenticationTicket(user, properties, "scheme"));
+        //    HttpContext.User = user;
+        //}
 
         public HttpContext HttpContext
         {
