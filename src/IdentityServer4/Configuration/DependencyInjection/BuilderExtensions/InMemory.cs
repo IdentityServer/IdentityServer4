@@ -9,6 +9,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -45,6 +46,20 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
+        /// Adds the in memory identity resources.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="section">The configuration section containing the configuration data.</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddInMemoryIdentityResources(this IIdentityServerBuilder builder, IConfigurationSection section)
+        {
+            var resources = new List<IdentityResource>();
+            section.Bind(resources);
+
+            return builder.AddInMemoryIdentityResources(resources);
+        }
+
+        /// <summary>
         /// Adds the in memory API resources.
         /// </summary>
         /// <param name="builder">The builder.</param>
@@ -56,6 +71,20 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.AddResourceStore<InMemoryResourcesStore>();
 
             return builder;
+        }
+
+        /// <summary>
+        /// Adds the in memory API resources.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="section">The configuration section containing the configuration data.</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddInMemoryApiResources(this IIdentityServerBuilder builder, IConfigurationSection section)
+        {
+            var resources = new List<ApiResource>();
+            section.Bind(resources);
+
+            return builder.AddInMemoryApiResources(resources);
         }
 
         /// <summary>
@@ -82,6 +111,22 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return builder;
         }
+
+
+        /// <summary>
+        /// Adds the in memory clients.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="section">The configuration section containing the configuration data.</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddInMemoryClients(this IIdentityServerBuilder builder, IConfigurationSection section)
+        {
+            var clients = new List<Client>();
+            section.Bind(clients);
+
+            return builder.AddInMemoryClients(clients);
+        }
+
 
         /// <summary>
         /// Adds the in memory stores.
