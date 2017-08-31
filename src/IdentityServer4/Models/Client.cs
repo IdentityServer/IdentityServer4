@@ -18,7 +18,7 @@ namespace IdentityServer4.Models
     public class Client
     {
         // setting grant types should be atomic
-        private ICollection<string> _allowedGrantTypes = new GrantTypeValidatingHashSet(GrantTypes.Implicit);
+        private ICollection<string> _allowedGrantTypes = new GrantTypeValidatingHashSet();
 
         /// <summary>
         /// Specifies if client is enabled (defaults to <c>true</c>)
@@ -317,6 +317,11 @@ namespace IdentityServer4.Models
         internal class GrantTypeValidatingHashSet : ICollection<string>
         {
             private readonly ICollection<string> _inner;
+
+            public GrantTypeValidatingHashSet()
+            {
+                _inner = new HashSet<string>();
+            }
 
             public GrantTypeValidatingHashSet(IEnumerable<string> values)
             {
