@@ -19,9 +19,8 @@ namespace IdentityServer4.Quickstart.UI
         // windows auth enabled.
         public static bool WindowsAuthenticationEnabled = true;
         public static bool IncludeWindowsGroups = false;
-        // specify the Windows authentication schemes you want to use for authentication
-        public static readonly string[] WindowsAuthenticationSchemes = new string[] { "Negotiate", "NTLM" };
-        public static readonly string WindowsAuthenticationProviderName = "Windows";
+        // specify the Windows authentication scheme and display name
+        public static readonly string WindowsAuthenticationSchemeName = "Windows";
         public static readonly string WindowsAuthenticationDisplayName = "Windows";
 
         public static string InvalidCredentialsErrorMessage = "Invalid username or password";

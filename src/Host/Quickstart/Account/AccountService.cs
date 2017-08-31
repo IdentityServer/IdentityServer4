@@ -37,12 +37,6 @@ namespace IdentityServer4.Quickstart.UI
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
             if (context?.IdP != null)
             {
-                // this allows an acr_values of "Windows" and then the first actual windows-based provider to be used
-                if (AccountOptions.WindowsAuthenticationEnabled && context.IdP == AccountOptions.WindowsAuthenticationProviderName)
-                {
-                    context.IdP = AccountOptions.WindowsAuthenticationSchemes.First();
-                }
-
                 // this is meant to short circuit the UI and only trigger the one external IdP
                 return new LoginViewModel
                 {
@@ -53,11 +47,10 @@ namespace IdentityServer4.Quickstart.UI
                 };
             }
 
-            //var schemes = _httpContextAccessor.HttpContext.Authentication.GetAuthenticationSchemes();
             var schemes = await _schemeProvider.GetRequestHandlerSchemesAsync();
 
             var providers = schemes
-                .Where(x => x.DisplayName != null && !AccountOptions.WindowsAuthenticationSchemes.Contains(x.Name))
+                .Where(x => x.DisplayName != null)
                 .Select(x => new ExternalProvider
                 {
                     DisplayName = x.DisplayName,
@@ -66,13 +59,13 @@ namespace IdentityServer4.Quickstart.UI
 
             if (AccountOptions.WindowsAuthenticationEnabled)
             {
-                // this is needed to handle windows auth schemes
-                var windowsSchemes = schemes.Where(s => AccountOptions.WindowsAuthenticationSchemes.Contains(s.Name));
-                if (windowsSchemes.Any())
+                var windows = (await _schemeProvider.GetAllSchemesAsync())
+                    .FirstOrDefault(x => x.Name == AccountOptions.WindowsAuthenticationSchemeName);
+                if (windows != null)
                 {
                     providers.Add(new ExternalProvider
                     {
-                        AuthenticationScheme = AccountOptions.WindowsAuthenticationSchemes.First(),
+                        AuthenticationScheme = AccountOptions.WindowsAuthenticationSchemeName,
                         DisplayName = AccountOptions.WindowsAuthenticationDisplayName
                     });
                 }

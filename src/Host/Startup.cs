@@ -34,8 +34,8 @@ namespace Host
                     options.Events.RaiseFailureEvents = true;
                     options.Events.RaiseErrorEvents = true;
                 })
-                //.AddInMemoryClients(Clients.Get())
-                .AddInMemoryClients(_config.GetSection("Clients"))
+                .AddInMemoryClients(Clients.Get())
+                //.AddInMemoryClients(_config.GetSection("Clients"))
                 .AddInMemoryIdentityResources(Resources.GetIdentityResources())
                 .AddInMemoryApiResources(Resources.GetApiResources())
                 .AddDeveloperSigningCredential()
