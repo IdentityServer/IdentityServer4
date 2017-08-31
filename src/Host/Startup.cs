@@ -11,11 +11,19 @@ using IdentityServer4;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Quickstart.UI;
+using Microsoft.Extensions.Configuration;
 
 namespace Host
 {
     public class Startup
     {
+        private readonly IConfiguration _config;
+
+        public Startup(IConfiguration config)
+        {
+            _config = config;
+        }
+
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
@@ -26,7 +34,8 @@ namespace Host
                     options.Events.RaiseFailureEvents = true;
                     options.Events.RaiseErrorEvents = true;
                 })
-                .AddInMemoryClients(Clients.Get())
+                //.AddInMemoryClients(Clients.Get())
+                .AddInMemoryClients(_config.GetSection("Clients"))
                 .AddInMemoryIdentityResources(Resources.GetIdentityResources())
                 .AddInMemoryApiResources(Resources.GetApiResources())
                 .AddDeveloperSigningCredential()
