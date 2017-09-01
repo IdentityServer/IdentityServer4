@@ -144,18 +144,21 @@ namespace IdentityServer4.Quickstart.UI
         {
             returnUrl = Url.Action("ExternalLoginCallback", new { returnUrl = returnUrl });
 
-            // windows authentication is modeled as external, so we need special handling
+            // windows authentication needs special handling
+            // since they don't support the redirect uri, 
+            // so this URL is re-triggered when we call challenge
             if (AccountOptions.WindowsAuthenticationSchemeName == provider)
             {
-                // but they don't support the redirect uri, so this URL is re-triggered when we call challenge
-                if (HttpContext.User is WindowsPrincipal wp)
+                // see if windows auth has already been requested and succeeded
+                var result = await HttpContext.AuthenticateAsync(AccountOptions.WindowsAuthenticationSchemeName);
+                if (result?.Principal is WindowsPrincipal wp)
                 {
                     var props = new AuthenticationProperties();
                     props.Items.Add("scheme", AccountOptions.WindowsAuthenticationSchemeName);
 
                     var id = new ClaimsIdentity(provider);
-                    id.AddClaim(new Claim(JwtClaimTypes.Subject, HttpContext.User.Identity.Name));
-                    id.AddClaim(new Claim(JwtClaimTypes.Name, HttpContext.User.Identity.Name));
+                    id.AddClaim(new Claim(JwtClaimTypes.Subject, wp.Identity.Name));
+                    id.AddClaim(new Claim(JwtClaimTypes.Name, wp.Identity.Name));
 
                     // add the groups as claims -- be careful if the number of groups is too large
                     if (AccountOptions.IncludeWindowsGroups)
@@ -171,7 +174,7 @@ namespace IdentityServer4.Quickstart.UI
                 }
                 else
                 {
-                    // this triggers all of the windows auth schemes we're supporting so the browser can use what it supports
+                    // challenge/trigger windows auth
                     return new ChallengeResult(AccountOptions.WindowsAuthenticationSchemeName);
                 }
             }
