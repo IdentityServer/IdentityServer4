@@ -22,7 +22,7 @@ namespace IdentityServer4.UnitTests.Services.Default
         MockHttpContextAccessor _mockMockHttpContextAccessor;
         MockMessageStore<EndSession> _mockEndSessionStore = new MockMessageStore<EndSession>();
         MockMessageStore<LogoutMessage> _mockLogoutMessageStore = new MockMessageStore<LogoutMessage>();
-        MockMessageStore<Models.ErrorMessage> _mockErrorMessageStore = new MockMessageStore<Models.ErrorMessage>();
+        MockMessageStore<ErrorMessage> _mockErrorMessageStore = new MockMessageStore<ErrorMessage>();
         MockConsentMessageStore _mockConsentStore = new MockConsentMessageStore();
         MockPersistedGrantService _mockPersistedGrantService = new MockPersistedGrantService();
         MockUserSession _mockUserSession = new MockUserSession();
@@ -123,7 +123,6 @@ namespace IdentityServer4.UnitTests.Services.Default
         public async Task GrantConsentAsync_should_use_current_subject_and_create_message()
         {
             _mockUserSession.User = IdentityServerPrincipal.Create("bob", "bob");
-            //_mockMockHttpContextAccessor.HttpContext.SetUser(user);
 
             var req = new AuthorizationRequest() { ClientId = "client" };
             await _subject.GrantConsentAsync(req, new ConsentResponse(), null);

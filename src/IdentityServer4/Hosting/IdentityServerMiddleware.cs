@@ -41,7 +41,8 @@ namespace IdentityServer4.Hosting
         /// <returns></returns>
         public async Task Invoke(HttpContext context, IEndpointRouter router, IUserSession session)
         {
-            // todo: review: right place to call this?
+            // this will check the authentication session and from it emit the check session
+            // cookie needed from JS-based signout clients.
             await session.EnsureSessionIdCookieAsync();
 
             try

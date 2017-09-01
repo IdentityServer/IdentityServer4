@@ -74,13 +74,13 @@ namespace IdentityServer4.Services
 
         public async Task<string> CreateLogoutContextAsync()
         {
-            var user = await _userSession.GetIdentityServerUserAsync();
+            var user = await _userSession.GetUserAsync();
             if (user != null)
             {
                 var clientIds = await _userSession.GetClientListAsync();
                 if (clientIds.Any())
                 {
-                    var sid = await _userSession.GetCurrentSessionIdAsync();
+                    var sid = await _userSession.GetSessionIdAsync();
                     var msg = new Message<LogoutMessage>(new LogoutMessage
                     {
                         SubjectId = user?.GetSubjectId(),
@@ -121,7 +121,7 @@ namespace IdentityServer4.Services
         {
             if (subject == null)
             {
-                var user = await _userSession.GetIdentityServerUserAsync();
+                var user = await _userSession.GetUserAsync();
                 subject = user?.GetSubjectId();
             }
 
@@ -152,7 +152,7 @@ namespace IdentityServer4.Services
 
         public async Task<IEnumerable<Consent>> GetAllUserConsentsAsync()
         {
-            var user = await _userSession.GetIdentityServerUserAsync();
+            var user = await _userSession.GetUserAsync();
             if (user != null)
             {
                 var subject = user.GetSubjectId();
@@ -164,7 +164,7 @@ namespace IdentityServer4.Services
 
         public async Task RevokeUserConsentAsync(string clientId)
         {
-            var user = await _userSession.GetIdentityServerUserAsync();
+            var user = await _userSession.GetUserAsync();
             if (user != null)
             {
                 var subject = user.GetSubjectId();
@@ -174,7 +174,7 @@ namespace IdentityServer4.Services
 
         public async Task RevokeTokensForCurrentSessionAsync()
         {
-            var user = await _userSession.GetIdentityServerUserAsync();
+            var user = await _userSession.GetUserAsync();
             if (user != null)
             {
                 var subject = user.GetSubjectId();

@@ -601,7 +601,7 @@ namespace IdentityServer4.Validation
             if (_options.Endpoints.EnableCheckSessionEndpoint && 
                 request.Subject.IsAuthenticated())
             {
-                var sessionId = await _userSession.GetCurrentSessionIdAsync();
+                var sessionId = await _userSession.GetSessionIdAsync();
                 if (sessionId.IsPresent())
                 {
                     request.SessionId = sessionId;

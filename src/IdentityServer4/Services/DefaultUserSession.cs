@@ -13,27 +13,69 @@ using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.Services
 {
-    // todo: review
     internal class DefaultUserSession : IUserSession
     {
         internal const string SessionIdKey = "session_id";
         internal const string ClientListKey = "client_list";
 
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private IAuthenticationSchemeProvider _schemes;
+        private IAuthenticationHandlerProvider _handlers;
         private readonly IdentityServerOptions _options;
         private readonly ILogger _logger;
 
         private HttpContext HttpContext => _httpContextAccessor.HttpContext;
         private string CheckSessionCookieName => _options.Authentication.CheckSessionCookieName;
 
+        private ClaimsPrincipal _principal;
+        private AuthenticationProperties _properties;
+
         public DefaultUserSession(
-            IHttpContextAccessor httpContextAccessor, 
+            IHttpContextAccessor httpContextAccessor,
+            IAuthenticationSchemeProvider schemes,
+            IAuthenticationHandlerProvider handlers,
             IdentityServerOptions options,
             ILogger<IUserSession> logger)
         {
             _httpContextAccessor = httpContextAccessor;
+            _schemes = schemes;
+            _handlers = handlers;
             _options = options;
             _logger = logger;
+        }
+
+        // we need this helper (and can't call HttpContext.AuthenticateAsync) so we don't run 
+        // claims transformation when we get the principal. this also ensures that we don't
+        // re-issue a cookie that includes the claims from claims transformation.
+        // 
+        // also, by caching the _principal/_properties it allows someone to issue a new
+        // cookie (via HttpContext.SignInAsync) and we'll use those new values, rather than
+        // just reading the incoming cookie
+        async Task AuthenticateAsync()
+        {
+            if (_principal == null || _properties == null)
+            {
+                var defaultScheme = (await _schemes.GetDefaultAuthenticateSchemeAsync());
+                if (defaultScheme == null)
+                {
+                    throw new InvalidOperationException("No DefaultAuthenticateScheme found.");
+                }
+
+                var scheme = defaultScheme.Name;
+
+                var handler = await _handlers.GetHandlerAsync(HttpContext, scheme);
+                if (handler == null)
+                {
+                    throw new InvalidOperationException($"No authentication handler is configured to authenticate for the scheme: {scheme}");
+                }
+
+                var result = await handler.AuthenticateAsync();
+                if (result != null && result.Succeeded)
+                {
+                    _principal = result.Principal;
+                    _properties = result.Properties;
+                }
+            }
         }
 
         public async Task CreateSessionIdAsync(ClaimsPrincipal principal, AuthenticationProperties properties)
@@ -41,7 +83,7 @@ namespace IdentityServer4.Services
             if (principal == null) throw new ArgumentNullException(nameof(principal));
             if (properties == null) throw new ArgumentNullException(nameof(properties));
 
-            var currentSubjectId = (await GetIdentityServerUserAsync())?.GetSubjectId();
+            var currentSubjectId = (await GetUserAsync())?.GetSubjectId();
             var newSubjectId = principal.GetSubjectId();
 
             if (currentSubjectId == null || currentSubjectId != newSubjectId)
@@ -50,18 +92,25 @@ namespace IdentityServer4.Services
             }
 
             IssueSessionIdCookie(properties.Items[SessionIdKey]);
+
+            _principal = principal;
+            _properties = properties;
         }
 
-        public async Task<string> GetCurrentSessionIdAsync()
+        public async Task<ClaimsPrincipal> GetUserAsync()
         {
-            // todo: consider using handler provider and scheme provider directly to avoid claims transformation
-            var result = await HttpContext.AuthenticateAsync();
-            if (result?.Succeeded == true)
+            await AuthenticateAsync();
+
+            return _principal;
+        }
+
+        public async Task<string> GetSessionIdAsync()
+        {
+            await AuthenticateAsync();
+
+            if (_properties?.Items.ContainsKey(SessionIdKey) == true)
             {
-                if (result.Properties.Items.ContainsKey(SessionIdKey))
-                {
-                    return result.Properties.Items[SessionIdKey];
-                }
+                return _properties.Items[SessionIdKey];
             }
 
             return null;
@@ -69,13 +118,16 @@ namespace IdentityServer4.Services
 
         public async Task EnsureSessionIdCookieAsync()
         {
-            var sid = await GetCurrentSessionIdAsync();
+            var sid = await GetSessionIdAsync();
             if (sid != null)
             {
                 IssueSessionIdCookie(sid);
             }
             else
             {
+                // todo: validate if this is still true since we now pass a 
+                // seralized message as param to end sesison callback
+                //
                 // we don't want to delete the session id cookie if the user is
                 // no longer authenticated since we might be waiting for the 
                 // signout iframe to render -- it's a timing issue between the 
@@ -84,7 +136,7 @@ namespace IdentityServer4.Services
             }
         }
 
-        public void RemoveSessionIdCookie()
+        public Task RemoveSessionIdCookieAsync()
         {
             if (HttpContext.Request.Cookies.ContainsKey(CheckSessionCookieName))
             {
@@ -94,23 +146,8 @@ namespace IdentityServer4.Services
 
                 HttpContext.Response.Cookies.Append(CheckSessionCookieName, ".", options);
             }
-        }
 
-        public async Task<ClaimsPrincipal> GetIdentityServerUserAsync()
-        {
-            var user = HttpContext.User;
-            if (user?.Identity.IsAuthenticated != true)
-            {
-                // we model anonymous users as null
-                user = null;
-
-                var result = await HttpContext.AuthenticateAsync();
-                if (result?.Succeeded == true)
-                {
-                    user = result.Principal;
-                }
-            }
-            return user;
+            return Task.CompletedTask;
         }
 
         public async Task AddClientIdAsync(string clientId)
@@ -147,17 +184,11 @@ namespace IdentityServer4.Services
         // client list helpers
         async Task<string> GetClientListPropertyValueAsync()
         {
-            var result = await HttpContext.AuthenticateAsync();
-            if (result?.Succeeded != true)
-            {
-                _logger.LogWarning("No authenticated user");
-                return null;
-            }
+            await AuthenticateAsync();
 
-            if (result.Properties.Items.ContainsKey(ClientListKey))
+            if (_properties?.Items.ContainsKey(ClientListKey) == true)
             {
-                var value = result.Properties.Items[ClientListKey];
-                return value;
+                return _properties.Items[ClientListKey];
             }
 
             return null;
@@ -171,23 +202,20 @@ namespace IdentityServer4.Services
 
         async Task SetClientListPropertyValueAsync(string value)
         {
-            var result = await HttpContext.AuthenticateAsync();
-            if (result?.Succeeded != true)
-            {
-                _logger.LogError("No authenticated user");
-                throw new InvalidOperationException("No authenticated user");
-            }
+            await AuthenticateAsync();
+
+            if (_principal == null || _properties == null) throw new InvalidOperationException("User is not currently authenticated");
 
             if (value == null)
             {
-                result.Properties.Items.Remove(ClientListKey);
+                _properties.Items.Remove(ClientListKey);
             }
             else
             {
-                result.Properties.Items[ClientListKey] = value;
+                _properties.Items[ClientListKey] = value;
             }
 
-            await HttpContext.SignInAsync(result.Principal, result.Properties);
+            await HttpContext.SignInAsync(_principal, _properties);
         }
 
         IEnumerable<string> DecodeList(string value)

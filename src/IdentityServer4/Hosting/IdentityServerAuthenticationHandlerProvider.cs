@@ -74,6 +74,12 @@ namespace IdentityServer4.Hosting
 
             if (result && _context.GetSignOutCalled() && _context.Response.StatusCode == 200)
             {
+                // given that this runs prior to the authentication middleware running
+                // we need to explicitly trigger authentication so we can have our 
+                // session service populated with the current user info
+                await _context.AuthenticateAsync();
+
+                // now we can do our processing to render the iframe (if needed)
                 await ProcessFederatedSignOutRequestAsync();
             }
 

@@ -38,7 +38,6 @@ namespace IdentityServer4.Hosting
         public async Task SignInAsync(HttpContext context, string scheme, ClaimsPrincipal principal, AuthenticationProperties properties)
         {
             var defaultScheme = await _schemes.GetDefaultSignInSchemeAsync();
-
             if (scheme == null || scheme == defaultScheme.Name)
             {
                 AugmentPrincipal(principal);
@@ -61,11 +60,10 @@ namespace IdentityServer4.Hosting
         public async Task SignOutAsync(HttpContext context, string scheme, AuthenticationProperties properties)
         {
             var defaultScheme = await _schemes.GetDefaultSignOutSchemeAsync();
-
             if (scheme == null || scheme == defaultScheme.Name)
             {
                 context.SetSignOutCalled();
-                _session.RemoveSessionIdCookie();
+                await _session.RemoveSessionIdCookieAsync();
             }
 
             await _inner.SignOutAsync(context, scheme, properties);

@@ -120,7 +120,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddTransient<IdentityServerTools>();
 
             builder.Services.AddTransient<IReturnUrlParser, OidcReturnUrlParser>();
-            builder.Services.AddTransient<IUserSession, DefaultUserSession>();
+            builder.Services.AddScoped<IUserSession, DefaultUserSession>();
             builder.Services.AddTransient(typeof(MessageCookie<>));
 
             builder.Services.AddCors();

@@ -64,7 +64,7 @@ namespace IdentityServer4.Endpoints
                 return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
             }
 
-            var user = await _userSession.GetIdentityServerUserAsync();
+            var user = await _userSession.GetUserAsync();
 
             _logger.LogDebug("Processing signout request for {subjectId}", user?.GetSubjectId() ?? "anonymous");
 

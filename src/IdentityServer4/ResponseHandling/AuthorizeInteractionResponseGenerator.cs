@@ -86,7 +86,9 @@ namespace IdentityServer4.ResponseHandling
                 return result;
             }
 
-            return await ProcessConsentAsync(request, consent);
+            result = await ProcessConsentAsync(request, consent);
+
+            return result;
         }
 
         /// <summary>

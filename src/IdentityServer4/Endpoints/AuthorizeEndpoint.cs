@@ -96,7 +96,7 @@ namespace IdentityServer4.Endpoints
                 return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
             }
 
-            var user = await _userSession.GetIdentityServerUserAsync();
+            var user = await _userSession.GetUserAsync();
             var result = await ProcessAuthorizeRequestAsync(values, user, null);
 
             _logger.LogTrace("End authorize request. result type: {0}", result?.GetType().ToString() ?? "-none-");
@@ -110,7 +110,7 @@ namespace IdentityServer4.Endpoints
 
             var parameters = context.Request.Query.AsNameValueCollection();
 
-            var user = await _userSession.GetIdentityServerUserAsync();
+            var user = await _userSession.GetUserAsync();
             var consentRequest = new ConsentRequest(parameters, user?.GetSubjectId());
             var consent = await _consentResponseStore.ReadAsync(consentRequest.Id);
 
