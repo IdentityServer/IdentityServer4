@@ -59,7 +59,7 @@ namespace IdentityServer4.Services
         {
             key = GetKey(key);
             _cache.Set(key, item, expiration);
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

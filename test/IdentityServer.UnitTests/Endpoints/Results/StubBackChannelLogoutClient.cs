@@ -16,7 +16,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
         public override Task SendLogoutsAsync(IEnumerable<BackChannelLogoutModel> clients)
         {
             SendLogoutsWasCalled = true;
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

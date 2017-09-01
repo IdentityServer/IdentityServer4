@@ -58,7 +58,7 @@ namespace IdentityServer4.Test
 
             context.LogIssuedClaims(Logger);
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace IdentityServer4.Test
             var user = Users.FindBySubjectId(context.Subject.GetSubjectId());
             context.IsActive = user != null;
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

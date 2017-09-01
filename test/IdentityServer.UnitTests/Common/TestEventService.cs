@@ -19,7 +19,7 @@ namespace IdentityServer4.UnitTests.Common
         public Task RaiseAsync(Event evt)
         {
             _events.Add(evt.GetType(), evt);
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         public T AssertEventWasRaised<T>()

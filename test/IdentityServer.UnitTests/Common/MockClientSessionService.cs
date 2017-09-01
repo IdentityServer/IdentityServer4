@@ -14,12 +14,12 @@ namespace IdentityServer4.UnitTests.Common
     //    public Task AddClientIdAsync(string clientId)
     //    {
     //        Clients.Add(clientId);
-    //        return Task.FromResult(0);
+    //        return Task.CompletedTask;
     //    }
 
     //    public Task EnsureClientListCookieAsync(string sid)
     //    {
-    //        return Task.FromResult(0);
+    //        return Task.CompletedTask;
     //    }
 
     //    public Task<IEnumerable<string>> GetClientListAsync()

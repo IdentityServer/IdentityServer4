@@ -16,7 +16,7 @@ namespace IdentityServer4.UnitTests.Common
 
     //    public Task EnsureSessionCookieAsync()
     //    {
-    //        return Task.FromResult(0);
+    //        return Task.CompletedTask;
     //    }
 
     //    public string GetCookieName()

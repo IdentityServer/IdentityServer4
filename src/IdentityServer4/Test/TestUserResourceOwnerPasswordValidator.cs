@@ -42,7 +42,7 @@ namespace IdentityServer4.Test
                 context.Result = new GrantValidationResult(user.SubjectId, OidcConstants.AuthenticationMethods.Password, _options.UtcNow, user.Claims);
             }
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

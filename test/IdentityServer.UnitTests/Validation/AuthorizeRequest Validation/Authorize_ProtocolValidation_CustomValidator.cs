@@ -70,7 +70,7 @@ namespace IdentityServer4.UnitTests.Validation.AuthorizeRequest
         {
             WasCalled = true;
             Callback?.Invoke(context);
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

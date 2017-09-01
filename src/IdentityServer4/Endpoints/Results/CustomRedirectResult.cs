@@ -79,7 +79,7 @@ namespace IdentityServer4.Endpoints.Results
             var url = _url.AddQueryString(_options.UserInteraction.CustomRedirectReturnUrlParameter, returnUrl);
             context.Response.RedirectToAbsoluteUrl(url);
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

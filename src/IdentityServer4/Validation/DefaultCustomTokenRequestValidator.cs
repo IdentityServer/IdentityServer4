@@ -20,7 +20,7 @@ namespace IdentityServer4.Validation
         /// </returns>
         public Task ValidateAsync(CustomTokenRequestValidationContext context)
         {
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

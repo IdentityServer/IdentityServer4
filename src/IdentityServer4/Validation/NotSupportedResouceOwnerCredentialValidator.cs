@@ -35,7 +35,7 @@ namespace IdentityServer4.Validation
             context.Result = new GrantValidationResult(TokenRequestErrors.UnsupportedGrantType);
 
             _logger.LogWarning("Resource owner password credential type not supported. Configure an IResourceOwnerPasswordValidator.");
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

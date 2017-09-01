@@ -69,7 +69,7 @@ namespace IdentityServer4.Endpoints.Results
             var url = loginUrl.AddQueryString(_options.UserInteraction.LoginReturnUrlParameter, returnUrl);
             context.Response.RedirectToAbsoluteUrl(url);
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

@@ -49,7 +49,7 @@ namespace IdentityServer4.IntegrationTests.Clients
                 context.Result = new GrantValidationResult();
             }
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         public string GrantType => "dynamic";

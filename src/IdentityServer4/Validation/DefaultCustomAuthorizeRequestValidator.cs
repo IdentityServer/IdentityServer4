@@ -17,7 +17,7 @@ namespace IdentityServer4.Validation
         /// <param name="context">The context.</param>
         public Task ValidateAsync(CustomAuthorizeRequestValidationContext context)
         {
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

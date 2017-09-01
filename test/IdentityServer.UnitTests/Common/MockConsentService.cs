@@ -29,7 +29,7 @@ namespace IdentityServer4.UnitTests.Common
             ConsentClient = client;
             ConsentScopes = scopes;
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

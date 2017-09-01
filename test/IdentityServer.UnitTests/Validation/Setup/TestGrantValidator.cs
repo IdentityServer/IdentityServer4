@@ -40,7 +40,7 @@ namespace IdentityServer4.UnitTests.Validation
                 context.Result = new GrantValidationResult("bob", "CustomGrant");
             }
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         public string GrantType

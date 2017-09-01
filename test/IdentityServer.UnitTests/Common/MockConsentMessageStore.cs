@@ -19,7 +19,7 @@ namespace IdentityServer4.UnitTests.Common
             {
                 Messages.Remove(id);
             }
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         public Task<Message<ConsentResponse>> ReadAsync(string id)
@@ -35,7 +35,7 @@ namespace IdentityServer4.UnitTests.Common
         public Task WriteAsync(string id, Message<ConsentResponse> message)
         {
             Messages[id] = message;
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

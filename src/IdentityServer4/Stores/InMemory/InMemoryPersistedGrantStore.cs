@@ -26,7 +26,7 @@ namespace IdentityServer4.Stores
         {
             _repository[grant.Key] = grant;
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace IdentityServer4.Stores
             PersistedGrant val;
             _repository.TryRemove(key, out val);
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace IdentityServer4.Stores
                 _repository.TryRemove(key, out grant);
             }
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace IdentityServer4.Stores
                 _repository.TryRemove(key, out grant);
             }
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

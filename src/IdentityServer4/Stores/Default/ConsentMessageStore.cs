@@ -19,7 +19,7 @@ namespace IdentityServer4.Stores
         public virtual Task DeleteAsync(string id)
         {
             _cookie.Clear(id);
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         public virtual Task<Message<ConsentResponse>> ReadAsync(string id)
@@ -30,7 +30,7 @@ namespace IdentityServer4.Stores
         public virtual Task WriteAsync(string id, Message<ConsentResponse> message)
         {
             _cookie.Write(id, message);
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

@@ -38,7 +38,7 @@ namespace IdentityServer4.Events
         /// <returns></returns>
         protected internal virtual Task PrepareAsync()
         {
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         /// <summary>

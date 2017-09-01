@@ -16,22 +16,22 @@ namespace IdentityServer4.UnitTests.Common
 
         public Task ChallengeAsync(HttpContext context, string scheme, AuthenticationProperties properties)
         {
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         public Task ForbidAsync(HttpContext context, string scheme, AuthenticationProperties properties)
         {
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         public Task SignInAsync(HttpContext context, string scheme, ClaimsPrincipal principal, AuthenticationProperties properties)
         {
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         public Task SignOutAsync(HttpContext context, string scheme, AuthenticationProperties properties)
         {
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }
