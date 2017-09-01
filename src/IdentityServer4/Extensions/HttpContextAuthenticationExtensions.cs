@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System;
+using IdentityServer4.Extensions;
 
 namespace Microsoft.AspNetCore.Http
 {
@@ -17,6 +19,17 @@ namespace Microsoft.AspNetCore.Http
     /// </summary>
     public static class AuthenticationManagerExtensions
     {
+        internal static async Task<string> GetCookieAuthenticationSchemeAsync(this HttpContext context)
+        {
+            var schemes = context.RequestServices.GetRequiredService<IAuthenticationSchemeProvider>();
+            var scheme = await schemes.GetDefaultAuthenticateSchemeAsync();
+            if (scheme == null)
+            {
+                throw new InvalidOperationException($"No DefaultAuthenticateScheme found.");
+            }
+            return scheme.Name;
+        }
+
         /// <summary>
         /// Signs the user in.
         /// </summary>
@@ -30,7 +43,7 @@ namespace Microsoft.AspNetCore.Http
             var options = context.RequestServices.GetRequiredService<IdentityServerOptions>();
 
             var principal = IdentityServerPrincipal.Create(subject, name, options.UtcNow, claims);
-            await context.SignInAsync(principal);
+            await context.SignInAsync(await context.GetCookieAuthenticationSchemeAsync(), principal);
         }
 
         /// <summary>
@@ -47,7 +60,7 @@ namespace Microsoft.AspNetCore.Http
             var options = context.RequestServices.GetRequiredService<IdentityServerOptions>();
 
             var principal = IdentityServerPrincipal.Create(subject, name, options.UtcNow, claims);
-            await context.SignInAsync(principal, properties);
+            await context.SignInAsync(await context.GetCookieAuthenticationSchemeAsync(), principal, properties);
         }
 
         /// <summary>
@@ -64,7 +77,7 @@ namespace Microsoft.AspNetCore.Http
             var options = context.RequestServices.GetRequiredService<IdentityServerOptions>();
 
             var principal = IdentityServerPrincipal.Create(subject, name, identityProvider, options.UtcNow, claims);
-            await context.SignInAsync(principal);
+            await context.SignInAsync(await context.GetCookieAuthenticationSchemeAsync(), principal);
         }
 
         /// <summary>
@@ -82,7 +95,7 @@ namespace Microsoft.AspNetCore.Http
             var options = context.RequestServices.GetRequiredService<IdentityServerOptions>();
 
             var principal = IdentityServerPrincipal.Create(subject, name, identityProvider, options.UtcNow, claims);
-            await context.SignInAsync(principal, properties);
+            await context.SignInAsync(await context.GetCookieAuthenticationSchemeAsync(), principal, properties);
         }
 
         /// <summary>
@@ -99,7 +112,7 @@ namespace Microsoft.AspNetCore.Http
             var options = context.RequestServices.GetRequiredService<IdentityServerOptions>();
 
             var principal = IdentityServerPrincipal.Create(subject, name, authenticationMethods, options.UtcNow, claims);
-            await context.SignInAsync(principal);
+            await context.SignInAsync(await context.GetCookieAuthenticationSchemeAsync(), principal);
         }
 
         /// <summary>
@@ -117,7 +130,7 @@ namespace Microsoft.AspNetCore.Http
             var options = context.RequestServices.GetRequiredService<IdentityServerOptions>();
 
             var principal = IdentityServerPrincipal.Create(subject, name, authenticationMethods, options.UtcNow, claims);
-            await context.SignInAsync(principal, properties);
+            await context.SignInAsync(await context.GetCookieAuthenticationSchemeAsync(), principal, properties);
         }
 
         /// <summary>
@@ -135,7 +148,7 @@ namespace Microsoft.AspNetCore.Http
             var options = context.RequestServices.GetRequiredService<IdentityServerOptions>();
 
             var principal = IdentityServerPrincipal.Create(sub, name, identityProvider, authenticationMethods, options.UtcNow, claims);
-            await context.SignInAsync(principal);
+            await context.SignInAsync(await context.GetCookieAuthenticationSchemeAsync(), principal);
         }
 
         /// <summary>
@@ -154,7 +167,7 @@ namespace Microsoft.AspNetCore.Http
             var options = context.RequestServices.GetRequiredService<IdentityServerOptions>();
 
             var principal = IdentityServerPrincipal.Create(sub, name, identityProvider, authenticationMethods, options.UtcNow, claims);
-            await context.SignInAsync(principal, properties);
+            await context.SignInAsync(await context.GetCookieAuthenticationSchemeAsync(), principal, properties);
         }
     }
 }

@@ -7,6 +7,7 @@ using IdentityServer4.Services;
 using Microsoft.Extensions.Logging;
 using IdentityServer4.Configuration.DependencyInjection;
 using IdentityServer4.Extensions;
+using System;
 
 namespace IdentityServer4.Hosting
 {
@@ -42,10 +43,22 @@ namespace IdentityServer4.Hosting
             _logger = logger;
         }
 
+        async Task<string> GetCookieAuthenticationSchemeAsync()
+        {
+            var scheme = await _schemes.GetDefaultAuthenticateSchemeAsync();
+            if (scheme == null)
+            {
+                throw new InvalidOperationException($"No DefaultAuthenticateScheme found.");
+            }
+            return scheme.Name;
+        }
+
         public async Task SignInAsync(HttpContext context, string scheme, ClaimsPrincipal principal, AuthenticationProperties properties)
         {
             var defaultScheme = await _schemes.GetDefaultSignInSchemeAsync();
-            if (scheme == null || scheme == defaultScheme.Name)
+            var cookieScheme = await GetCookieAuthenticationSchemeAsync();
+
+            if ((scheme == null && defaultScheme?.Name == cookieScheme) || scheme == cookieScheme)
             {
                 AugmentPrincipal(principal);
 
@@ -67,7 +80,9 @@ namespace IdentityServer4.Hosting
         public async Task SignOutAsync(HttpContext context, string scheme, AuthenticationProperties properties)
         {
             var defaultScheme = await _schemes.GetDefaultSignOutSchemeAsync();
-            if (scheme == null || scheme == defaultScheme.Name)
+            var cookieScheme = await GetCookieAuthenticationSchemeAsync();
+
+            if ((scheme == null && defaultScheme?.Name == cookieScheme) || scheme == cookieScheme)
             {
                 context.SetSignOutCalled();
                 await _session.RemoveSessionIdCookieAsync();

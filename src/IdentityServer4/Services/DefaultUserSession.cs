@@ -44,6 +44,17 @@ namespace IdentityServer4.Services
             _logger = logger;
         }
 
+        async Task<string> GetCookieSchemeAsync()
+        {
+            var defaultScheme = (await _schemes.GetDefaultAuthenticateSchemeAsync());
+            if (defaultScheme == null)
+            {
+                throw new InvalidOperationException("No DefaultAuthenticateScheme found.");
+            }
+
+            return defaultScheme.Name;
+        }
+
         // we need this helper (and can't call HttpContext.AuthenticateAsync) so we don't run 
         // claims transformation when we get the principal. this also ensures that we don't
         // re-issue a cookie that includes the claims from claims transformation.
@@ -57,13 +68,7 @@ namespace IdentityServer4.Services
         {
             if (_principal == null || _properties == null)
             {
-                var defaultScheme = (await _schemes.GetDefaultAuthenticateSchemeAsync());
-                if (defaultScheme == null)
-                {
-                    throw new InvalidOperationException("No DefaultAuthenticateScheme found.");
-                }
-
-                var scheme = defaultScheme.Name;
+                var scheme = await GetCookieSchemeAsync();
 
                 var handler = await _handlers.GetHandlerAsync(HttpContext, scheme);
                 if (handler == null)
@@ -217,7 +222,8 @@ namespace IdentityServer4.Services
                 _properties.Items[ClientListKey] = value;
             }
 
-            await HttpContext.SignInAsync(_principal, _properties);
+            var scheme = await GetCookieSchemeAsync();
+            await HttpContext.SignInAsync(scheme, _principal, _properties);
         }
 
         IEnumerable<string> DecodeList(string value)
