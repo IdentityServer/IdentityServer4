@@ -83,7 +83,7 @@ namespace IdentityServer4.Validation
             }
 
             // nonce, prompt, acr_values, login_hint etc.
-            var optionalResult = ValidateOptionalParameters(request);
+            var optionalResult = await ValidateOptionalParametersAsync(request);
             if (optionalResult.IsError)
             {
                 return optionalResult;
@@ -447,7 +447,7 @@ namespace IdentityServer4.Validation
             return Valid(request);
         }
 
-        private AuthorizeRequestValidationResult ValidateOptionalParameters(ValidatedAuthorizeRequest request)
+        private async Task<AuthorizeRequestValidationResult> ValidateOptionalParametersAsync(ValidatedAuthorizeRequest request)
         {
             //////////////////////////////////////////////////////////
             // check nonce
@@ -601,7 +601,7 @@ namespace IdentityServer4.Validation
             if (_options.Endpoints.EnableCheckSessionEndpoint && 
                 request.Subject.IsAuthenticated())
             {
-                var sessionId = _userSession.SessionId;
+                var sessionId = await _userSession.GetSessionIdAsync();
                 if (sessionId.IsPresent())
                 {
                     request.SessionId = sessionId;

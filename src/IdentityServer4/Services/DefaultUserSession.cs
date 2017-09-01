@@ -13,15 +13,14 @@ using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.Services
 {
-    // todo: review
-    // 
-    // needs to be scoped in DI since the design is to hold current user as state
     internal class DefaultUserSession : IUserSession
     {
         internal const string SessionIdKey = "session_id";
         internal const string ClientListKey = "client_list";
 
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private IAuthenticationSchemeProvider _schemes;
+        private IAuthenticationHandlerProvider _handlers;
         private readonly IdentityServerOptions _options;
         private readonly ILogger _logger;
 
@@ -33,20 +32,58 @@ namespace IdentityServer4.Services
 
         public DefaultUserSession(
             IHttpContextAccessor httpContextAccessor,
+            IAuthenticationSchemeProvider schemes,
+            IAuthenticationHandlerProvider handlers,
             IdentityServerOptions options,
             ILogger<IUserSession> logger)
         {
             _httpContextAccessor = httpContextAccessor;
+            _schemes = schemes;
+            _handlers = handlers;
             _options = options;
             _logger = logger;
         }
 
-        public void CreateSessionId(ClaimsPrincipal principal, AuthenticationProperties properties)
+        // we need this helper (and can't call HttpContext.AuthenticateAsync) so we don't run 
+        // claims transformation when we get the principal. this also ensures that we don't
+        // re-issue a cookie that includes the claims from claims transformation.
+        // 
+        // also, by caching the _principal/_properties it allows someone to issue a new
+        // cookie (via HttpContext.SignInAsync) and we'll use those new values, rather than
+        // just reading the incoming cookie
+        async Task AuthenticateAsync()
+        {
+            if (_principal == null || _properties == null)
+            {
+                var defaultScheme = (await _schemes.GetDefaultAuthenticateSchemeAsync());
+                if (defaultScheme == null)
+                {
+                    throw new InvalidOperationException("No DefaultAuthenticateScheme found.");
+                }
+
+                var scheme = defaultScheme.Name;
+
+                var handler = await _handlers.GetHandlerAsync(HttpContext, scheme);
+                if (handler == null)
+                {
+                    throw new InvalidOperationException($"No authentication handler is configured to authenticate for the scheme: {scheme}");
+                }
+
+                var result = await handler.AuthenticateAsync();
+                if (result != null && result.Succeeded)
+                {
+                    _principal = result.Principal;
+                    _properties = result.Properties;
+                }
+            }
+        }
+
+        public async Task CreateSessionIdAsync(ClaimsPrincipal principal, AuthenticationProperties properties)
         {
             if (principal == null) throw new ArgumentNullException(nameof(principal));
             if (properties == null) throw new ArgumentNullException(nameof(properties));
 
-            var currentSubjectId = _principal?.GetSubjectId();
+            var currentSubjectId = (await GetUserAsync())?.GetSubjectId();
             var newSubjectId = principal.GetSubjectId();
 
             if (currentSubjectId == null || currentSubjectId != newSubjectId)
@@ -56,32 +93,32 @@ namespace IdentityServer4.Services
 
             IssueSessionIdCookie(properties.Items[SessionIdKey]);
 
-            SetCurrentUser(principal, properties);
+            _principal = principal;
+            _properties = properties;
         }
 
-        public void SetCurrentUser(ClaimsPrincipal principal, AuthenticationProperties properties)
+        public async Task<ClaimsPrincipal> GetUserAsync()
         {
-            _principal = principal ?? throw new ArgumentNullException(nameof(principal));
-            _properties = properties ?? throw new ArgumentNullException(nameof(properties));
+            await AuthenticateAsync();
+
+            return _principal;
         }
 
-        public ClaimsPrincipal User => _principal;
-        public string SessionId
+        public async Task<string> GetSessionIdAsync()
         {
-            get
+            await AuthenticateAsync();
+
+            if (_properties?.Items.ContainsKey(SessionIdKey) == true)
             {
-                if (_properties?.Items.ContainsKey(SessionIdKey) == true)
-                {
-                    return _properties.Items[SessionIdKey];
-                }
-
-                return null;
+                return _properties.Items[SessionIdKey];
             }
+
+            return null;
         }
 
-        public void EnsureSessionIdCookie()
+        public async Task EnsureSessionIdCookieAsync()
         {
-            var sid = SessionId;
+            var sid = await GetSessionIdAsync();
             if (sid != null)
             {
                 IssueSessionIdCookie(sid);
@@ -99,7 +136,7 @@ namespace IdentityServer4.Services
             }
         }
 
-        public void RemoveSessionIdCookie()
+        public Task RemoveSessionIdCookieAsync()
         {
             if (HttpContext.Request.Cookies.ContainsKey(CheckSessionCookieName))
             {
@@ -109,6 +146,8 @@ namespace IdentityServer4.Services
 
                 HttpContext.Response.Cookies.Append(CheckSessionCookieName, ".", options);
             }
+
+            return Task.CompletedTask;
         }
 
         public async Task AddClientIdAsync(string clientId)
@@ -127,7 +166,7 @@ namespace IdentityServer4.Services
 
         public async Task<IEnumerable<string>> GetClientListAsync()
         {
-            var value = GetClientListPropertyValue();
+            var value = await GetClientListPropertyValueAsync();
             try
             {
                 return DecodeList(value);
@@ -143,8 +182,10 @@ namespace IdentityServer4.Services
         }
 
         // client list helpers
-        string GetClientListPropertyValue()
+        async Task<string> GetClientListPropertyValueAsync()
         {
+            await AuthenticateAsync();
+
             if (_properties?.Items.ContainsKey(ClientListKey) == true)
             {
                 return _properties.Items[ClientListKey];
@@ -161,6 +202,8 @@ namespace IdentityServer4.Services
 
         async Task SetClientListPropertyValueAsync(string value)
         {
+            await AuthenticateAsync();
+
             if (_principal == null || _properties == null) throw new InvalidOperationException("User is not currently authenticated");
 
             if (value == null)

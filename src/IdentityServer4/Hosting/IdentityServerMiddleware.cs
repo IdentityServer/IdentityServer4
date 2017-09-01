@@ -43,7 +43,7 @@ namespace IdentityServer4.Hosting
         {
             // this will check the authentication session and from it emit the check session
             // cookie needed from JS-based signout clients.
-            session.EnsureSessionIdCookie();
+            await session.EnsureSessionIdCookieAsync();
 
             try
             {

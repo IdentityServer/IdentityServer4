@@ -43,7 +43,7 @@ namespace IdentityServer4.Hosting
                 AugmentPrincipal(principal);
 
                 if (properties == null) properties = new AuthenticationProperties();
-                _session.CreateSessionId(principal, properties);
+                await _session.CreateSessionIdAsync(principal, properties);
             }
 
             await _inner.SignInAsync(context, scheme, principal, properties);
@@ -63,26 +63,15 @@ namespace IdentityServer4.Hosting
             if (scheme == null || scheme == defaultScheme.Name)
             {
                 context.SetSignOutCalled();
-                _session.RemoveSessionIdCookie();
+                await _session.RemoveSessionIdCookieAsync();
             }
 
             await _inner.SignOutAsync(context, scheme, properties);
         }
 
-        public async Task<AuthenticateResult> AuthenticateAsync(HttpContext context, string scheme)
+        public Task<AuthenticateResult> AuthenticateAsync(HttpContext context, string scheme)
         {
-            var result = await _inner.AuthenticateAsync(context, scheme);
-
-            var defaultScheme = await _schemes.GetDefaultSignOutSchemeAsync();
-            if (scheme == null || scheme == defaultScheme.Name)
-            {
-                if (result?.Succeeded == true)
-                {
-                    _session.SetCurrentUser(result.Principal, result.Properties);
-                }
-            }
-
-            return result;
+            return _inner.AuthenticateAsync(context, scheme);
         }
 
         public Task ChallengeAsync(HttpContext context, string scheme, AuthenticationProperties properties)

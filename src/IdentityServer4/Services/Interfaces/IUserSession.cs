@@ -13,35 +13,29 @@ namespace IdentityServer4.Services
         /// <summary>
         /// Creates a session identifier for the signin context and issues the session id cookie.
         /// </summary>
-        void CreateSessionId(ClaimsPrincipal principal, AuthenticationProperties properties);
-
-        /// <summary>
-        /// Sets the current user and properties.
-        /// </summary>
-        /// <returns></returns>
-        void SetCurrentUser(ClaimsPrincipal principal, AuthenticationProperties properties);
+        Task CreateSessionIdAsync(ClaimsPrincipal principal, AuthenticationProperties properties);
 
         /// <summary>
         /// Gets the current authenticated user.
         /// </summary>
-        ClaimsPrincipal User { get; }
-        
+        Task<ClaimsPrincipal> GetUserAsync();
+
         /// <summary>
         /// Gets the current session identifier.
         /// </summary>
         /// <returns></returns>
-        string SessionId { get; }
+        Task<string> GetSessionIdAsync();
 
         /// <summary>
         /// Ensures the session identifier cookie asynchronous.
         /// </summary>
         /// <returns></returns>
-        void EnsureSessionIdCookie();
+        Task EnsureSessionIdCookieAsync();
 
         /// <summary>
         /// Removes the session identifier cookie.
         /// </summary>
-        void RemoveSessionIdCookie();
+        Task RemoveSessionIdCookieAsync();
 
         /// <summary>
         /// Adds a client to the list of clients the user has signed into during their session.
