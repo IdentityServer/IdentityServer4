@@ -56,7 +56,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             builder.Services.AddSingleton<IConfigureOptions<CookieAuthenticationOptions>, ConfigureInternalCookieOptions>();
             builder.Services.AddTransientDecorator<IAuthenticationService, IdentityServerAuthenticationService>();
-            builder.Services.AddTransientDecorator<IAuthenticationHandlerProvider, IdentityServerAuthenticationHandlerProvider>();
+            builder.Services.AddTransientDecorator<IAuthenticationHandlerProvider, FederatedSignoutAuthenticationHandlerProvider>();
 
             return builder;
         }

@@ -10,12 +10,18 @@ using Microsoft.Extensions.Logging;
 namespace IdentityServer4.Hosting
 {
     // todo: FML
-    class IdentityServerAuthenticationHandlerProvider : IAuthenticationHandlerProvider
+    // this intercepts IAuthenticationRequestHandler authentication handlers
+    // to detect when they are handling federated signout. when they are invoked,
+    // call signout on the default authentication scheme, and return 200 then 
+    // we assume they are handling the federated signout in an iframe. 
+    // based on this assumption, we then render our federated signout iframes 
+    // to any current clients.
+    class FederatedSignoutAuthenticationHandlerProvider : IAuthenticationHandlerProvider
     {
         private readonly IAuthenticationHandlerProvider _provider;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public IdentityServerAuthenticationHandlerProvider(
+        public FederatedSignoutAuthenticationHandlerProvider(
             Decorator<IAuthenticationHandlerProvider> decorator, 
             IHttpContextAccessor httpContextAccessor)
         {

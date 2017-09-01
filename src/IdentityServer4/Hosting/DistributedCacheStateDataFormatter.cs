@@ -13,7 +13,7 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    // todo: review all of this mess
+    // todo: review all of this mess and maybe move to infrastructure?
     public static class DistributedCacheStateDataFormatterExtensions
     {
         public static ISecureDataFormat<AuthenticationProperties> CreateDistributedCacheStateDataFormatter<TOptions>(this IServiceCollection services, string name)

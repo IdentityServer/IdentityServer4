@@ -51,6 +51,8 @@ namespace IdentityServer4.Services
         // also, by caching the _principal/_properties it allows someone to issue a new
         // cookie (via HttpContext.SignInAsync) and we'll use those new values, rather than
         // just reading the incoming cookie
+        // 
+        // this design requires this to be in DI as scoped
         async Task AuthenticateAsync()
         {
             if (_principal == null || _properties == null)

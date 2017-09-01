@@ -11,6 +11,13 @@ using IdentityServer4.Extensions;
 namespace IdentityServer4.Hosting
 {
     // todo: review
+    // this decorates the real authentication service to detect when the 
+    // user is being signed in. this allows us to ensure the user has
+    // the claims needed for identity server to do its job. it also allows
+    // us to track signin/signout so we can issue/remove the session id
+    // cookie used for check session iframe for session management spec.
+    // finally, we track if signout is called to collaborate with the 
+    // FederatedSignoutAuthenticationHandlerProvider for federated signout.
     class IdentityServerAuthenticationService : IAuthenticationService
     {
         private IAuthenticationService _inner;
