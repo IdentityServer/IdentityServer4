@@ -47,7 +47,7 @@ namespace IdentityServer4.Quickstart.UI
                 };
             }
 
-            var schemes = await _schemeProvider.GetRequestHandlerSchemesAsync();
+            var schemes = await _schemeProvider.GetAllSchemesAsync();
 
             var providers = schemes
                 .Where(x => x.DisplayName != null)
@@ -56,20 +56,6 @@ namespace IdentityServer4.Quickstart.UI
                     DisplayName = x.DisplayName,
                     AuthenticationScheme = x.Name
                 }).ToList();
-
-            if (AccountOptions.WindowsAuthenticationEnabled)
-            {
-                var windows = (await _schemeProvider.GetAllSchemesAsync())
-                    .FirstOrDefault(x => x.Name == AccountOptions.WindowsAuthenticationSchemeName);
-                if (windows != null)
-                {
-                    providers.Add(new ExternalProvider
-                    {
-                        AuthenticationScheme = AccountOptions.WindowsAuthenticationSchemeName,
-                        DisplayName = AccountOptions.WindowsAuthenticationDisplayName
-                    });
-                }
-            }
 
             var allowLocal = true;
             if (context?.ClientId != null)

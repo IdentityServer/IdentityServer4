@@ -12,7 +12,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Configuration;
-using Microsoft.AspNetCore.Http;
 
 namespace IdentityServer4.ResponseHandling
 {

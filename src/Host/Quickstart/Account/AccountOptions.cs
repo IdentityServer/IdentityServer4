@@ -21,7 +21,6 @@ namespace IdentityServer4.Quickstart.UI
         public static bool IncludeWindowsGroups = false;
         // specify the Windows authentication scheme and display name
         public static readonly string WindowsAuthenticationSchemeName = "Windows";
-        public static readonly string WindowsAuthenticationDisplayName = "Windows";
 
         public static string InvalidCredentialsErrorMessage = "Invalid username or password";
     }
