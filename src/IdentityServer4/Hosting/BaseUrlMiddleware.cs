@@ -5,6 +5,7 @@
 using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
+using IdentityServer4.Configuration;
 
 #pragma warning disable 1591
 
@@ -13,17 +14,19 @@ namespace IdentityServer4.Hosting
     public class BaseUrlMiddleware
     {
         private readonly RequestDelegate _next;
-        
-        public BaseUrlMiddleware(RequestDelegate next)
+        private readonly IdentityServerOptions _options;
+
+        public BaseUrlMiddleware(RequestDelegate next, IdentityServerOptions options)
         {
             _next = next;
+            _options = options;
         }
 
         public async Task Invoke(HttpContext context)
         {
             var request = context.Request;
 
-            var origin = request.Scheme + "://" + request.Host.Value;
+            var origin = _options.PublicOrigin ?? request.Scheme + "://" + request.Host.Value;
             context.SetIdentityServerOrigin(origin);
             context.SetIdentityServerBasePath(request.PathBase.Value.RemoveTrailingSlash());
 
