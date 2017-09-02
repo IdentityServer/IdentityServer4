@@ -44,6 +44,17 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
+        /// Adds a an "AppAuth" (OAuth 2.0 for Native Apps) compliant redirect URI validator (does strict validation but also allows http://127.0.0.1 with random port)
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddAppAuthRedirectUriValidator(this IIdentityServerBuilder builder)
+        {
+            return builder.AddRedirectUriValidator<StrictRedirectUriValidatorAppAuth>();
+        }
+
+        /// <summary>
         /// Adds the resource owner validator.
         /// </summary>
         /// <typeparam name="T"></typeparam>
