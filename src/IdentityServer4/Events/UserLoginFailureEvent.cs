@@ -2,6 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using static IdentityServer4.Constants;
+
 namespace IdentityServer4.Events
 {
     /// <summary>
@@ -15,7 +17,7 @@ namespace IdentityServer4.Events
         /// </summary>
         /// <param name="username">The username.</param>
         /// <param name="error">The error.</param>
-        public UserLoginFailureEvent(string username, string error)
+        public UserLoginFailureEvent(string username, string error, bool interactive = true)
             : base(EventCategories.Authentication,
                   "User Login Failure",
                   EventTypes.Failure, 
@@ -23,6 +25,15 @@ namespace IdentityServer4.Events
                   error)
         {
             Username = username;
+
+            if (interactive)
+            {
+                Endpoint = "UI";
+            }
+            else
+            {
+                Endpoint = EndpointNames.Token;
+            }
         }
 
         /// <summary>
@@ -32,5 +43,13 @@ namespace IdentityServer4.Events
         /// The username.
         /// </value>
         public string Username { get; set; }
+
+        /// <summary>
+        /// Gets or sets the endpoint.
+        /// </summary>
+        /// <value>
+        /// The endpoint.
+        /// </value>
+        public string Endpoint { get; set; }
     }
 }
