@@ -27,11 +27,6 @@ namespace Host
                 .CreateLogger();
 
             var host = new WebHostBuilder()
-                //.UseWebListener(options =>
-                //{
-                //    options.ListenerSettings.Authentication.Schemes = AuthenticationSchemes.Negotiate | AuthenticationSchemes.NTLM;
-                //    options.ListenerSettings.Authentication.AllowAnonymous = true;
-                //})
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
                     var env = hostingContext.HostingEnvironment;
