@@ -274,10 +274,9 @@ namespace IdentityServer4.Models
         /// </exception>
         public static void ValidateGrantTypes(IEnumerable<string> grantTypes)
         {
-            // must set at least one grant type
-            if (grantTypes.IsNullOrEmpty())
+            if (grantTypes == null)
             {
-                throw new InvalidOperationException("Grant types list is empty");
+                throw new ArgumentNullException(nameof(grantTypes));
             }
 
             // spaces are not allowed in grant types
