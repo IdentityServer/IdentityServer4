@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System;
-using IdentityServer4.Extensions;
 
 namespace Microsoft.AspNetCore.Http
 {
