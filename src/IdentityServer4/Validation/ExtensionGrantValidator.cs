@@ -8,6 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using IdentityModel;
+using IdentityServer4.Extensions;
 
 namespace IdentityServer4.Validation
 {
@@ -70,7 +72,10 @@ namespace IdentityServer4.Validation
                 {
                     Request = request
                 };
-            
+
+                // attempt to populate the username property if it is present in the raw request
+                context.Request.UserName = request.Raw.Get(OidcConstants.TokenRequest.UserName);
+
                 await validator.ValidateAsync(context);
                 return context.Result;
             }
