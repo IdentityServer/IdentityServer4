@@ -28,7 +28,8 @@ namespace Host
         {
             services.AddMvc();
 
-            services.Configure<IISOptions>(iis => {
+            services.Configure<IISOptions>(iis => 
+            {
                 iis.AuthenticationDisplayName = "Windows";
                 iis.AutomaticAuthentication = false;
             });
