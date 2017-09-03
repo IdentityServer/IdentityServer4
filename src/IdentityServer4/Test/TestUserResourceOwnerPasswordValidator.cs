@@ -6,6 +6,7 @@ using IdentityModel;
 using IdentityServer4.Validation;
 using System.Threading.Tasks;
 using IdentityServer4.Configuration;
+using System;
 
 namespace IdentityServer4.Test
 {
@@ -39,7 +40,10 @@ namespace IdentityServer4.Test
             if (_users.ValidateCredentials(context.UserName, context.Password))
             {
                 var user = _users.FindByUsername(context.UserName);
-                context.Result = new GrantValidationResult(user.SubjectId, OidcConstants.AuthenticationMethods.Password, _options.UtcNow, user.Claims);
+                context.Result = new GrantValidationResult(
+                    user.SubjectId ?? throw new ArgumentException("Subject ID not set", nameof(user.SubjectId)), 
+                    OidcConstants.AuthenticationMethods.Password, _options.UtcNow, 
+                    user.Claims);
             }
 
             return Task.CompletedTask;
