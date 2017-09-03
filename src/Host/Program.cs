@@ -2,14 +2,13 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using System;
 using Microsoft.Extensions.Logging;
 using Serilog;
-using Serilog.Extensions.Logging;
 using Serilog.Sinks.SystemConsole.Themes;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore;
+using Serilog.Events;
 
 namespace Host
 {
@@ -20,43 +19,26 @@ namespace Host
             Console.Title = "IdentityServer4";
 
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Verbose()
+                .MinimumLevel.Debug()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                .MinimumLevel.Override("System", LogEventLevel.Warning)
+                .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Information)
                 .Enrich.FromLogContext()
                 .WriteTo.File(@"identityserver4_log.txt")
                 .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}", theme: AnsiConsoleTheme.Literate)
                 .CreateLogger();
 
-            var host = new WebHostBuilder()
-                .ConfigureAppConfiguration((hostingContext, config) =>
-                {
-                    var env = hostingContext.HostingEnvironment;
+            BuildWebHost(args).Run();
+        }
 
-                    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                          .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
-
-                    config.AddEnvironmentVariables();
-
-                    if (args != null)
-                    {
-                        config.AddCommandLine(args);
-                    }
-                })
+        public static IWebHost BuildWebHost(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
+                .UseStartup<Startup>()
                 .ConfigureLogging(builder =>
                 {
-                    builder.AddProvider(new SerilogLoggerProvider());
-
-                    builder.AddFilter("IdentityServer4", LogLevel.Debug);
-                    builder.AddFilter("System", LogLevel.Warning);
-                    builder.AddFilter("Microsoft", LogLevel.Warning);
-                    builder.AddFilter("Microsoft.AspNetCore.Authentication", LogLevel.Information);
+                    builder.ClearProviders();
+                    builder.AddSerilog();
                 })
-                .UseKestrel()
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseIISIntegration()
-                .UseStartup<Startup>()
                 .Build();
-
-            host.Run();
-        }
     }
 }
