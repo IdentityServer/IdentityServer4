@@ -262,6 +262,14 @@ namespace IdentityServer4.Models
         public ICollection<string> AllowedCorsOrigins { get; set; } = new HashSet<string>();
 
         /// <summary>
+        /// Gets or sets the custom properties for the client.
+        /// </summary>
+        /// <value>
+        /// The properties.
+        /// </value>
+        public IDictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
+
+        /// <summary>
         /// Validates the grant types.
         /// </summary>
         /// <param name="grantTypes">The grant types.</param>
