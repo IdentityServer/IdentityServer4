@@ -34,6 +34,7 @@ namespace IdentityServer4.UnitTests.Validation
             IProfileService profile = null,
             IEnumerable<IExtensionGrantValidator> extensionGrantValidators = null,
             ICustomTokenRequestValidator customRequestValidator = null,
+            ITokenValidator tokenValidator = null,
             ScopeValidator scopeValidator = null)
         {
             if (options == null)
@@ -76,26 +77,26 @@ namespace IdentityServer4.UnitTests.Validation
                 authorizationCodeStore = CreateAuthorizationCodeStore();
             }
 
-            if (refreshTokenStore == null)
-            {
-                refreshTokenStore = CreateRefreshTokenStore();
-            }
-
             if (scopeValidator == null)
             {
                 scopeValidator = new ScopeValidator(resourceStore, new LoggerFactory().CreateLogger<ScopeValidator>());
             }
 
+            if (tokenValidator == null)
+            {
+                tokenValidator = CreateTokenValidator(refreshTokenStore: refreshTokenStore, profile: profile);
+            }
+
             return new TokenRequestValidator(
                 options,
                 authorizationCodeStore,
-                refreshTokenStore,
                 resourceOwnerValidator,
                 profile,
                 aggregateExtensionGrantValidator,
                 customRequestValidator,
                 scopeValidator,
                 new TestEventService(),
+                tokenValidator,
                 TestLogger.Create<TokenRequestValidator>());
         }
 
@@ -159,7 +160,11 @@ namespace IdentityServer4.UnitTests.Validation
                 TestLogger.Create<AuthorizeRequestValidator>());
         }
 
-        public static TokenValidator CreateTokenValidator(IReferenceTokenStore store = null, IProfileService profile = null, IdentityServerOptions options = null)
+        public static TokenValidator CreateTokenValidator(
+            IReferenceTokenStore store = null, 
+            IRefreshTokenStore refreshTokenStore = null,
+            IProfileService profile = null, 
+            IdentityServerOptions options = null)
         {
             if (options == null)
             {
@@ -176,13 +181,20 @@ namespace IdentityServer4.UnitTests.Validation
                 store = CreateReferenceTokenStore();
             }
 
+            if (refreshTokenStore == null)
+            {
+                refreshTokenStore = CreateRefreshTokenStore();
+            }
+
             var clients = CreateClientStore();
             var context = new MockHttpContextAccessor(options);
             var logger = TestLogger.Create<TokenValidator>();
 
             var validator = new TokenValidator(
                 clients: clients,
+                profile: profile,
                 referenceTokenStore: store,
+                refreshTokenStore: refreshTokenStore,
                 customValidator: new DefaultCustomTokenValidator(
                     profile: profile,
                     clients: clients,

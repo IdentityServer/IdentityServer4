@@ -31,8 +31,10 @@ namespace IdentityServer4.Validation
         private readonly IdentityServerOptions _options;
         private readonly IHttpContextAccessor _context;
         private readonly IReferenceTokenStore _referenceTokenStore;
+        private readonly IRefreshTokenStore _refreshTokenStore;
         private readonly ICustomTokenValidator _customValidator;
         private readonly IClientStore _clients;
+        private readonly IProfileService _profile;
         private readonly IKeyMaterialService _keys;
 
         private readonly TokenValidationLog _log;
@@ -47,12 +49,23 @@ namespace IdentityServer4.Validation
         /// <param name="customValidator">The custom validator.</param>
         /// <param name="keys">The keys.</param>
         /// <param name="logger">The logger.</param>
-        public TokenValidator(IdentityServerOptions options, IHttpContextAccessor context, IClientStore clients, IReferenceTokenStore referenceTokenStore, ICustomTokenValidator customValidator, IKeyMaterialService keys, ILogger<TokenValidator> logger)
+        public TokenValidator(
+            IdentityServerOptions options,
+            IHttpContextAccessor context,
+            IClientStore clients,
+            IProfileService profile,
+            IReferenceTokenStore referenceTokenStore,
+            IRefreshTokenStore refreshTokenStore,
+            ICustomTokenValidator customValidator,
+            IKeyMaterialService keys,
+            ILogger<TokenValidator> logger)
         {
             _options = options;
             _context = context;
             _clients = clients;
+            _profile = profile;
             _referenceTokenStore = referenceTokenStore;
+            _refreshTokenStore = refreshTokenStore;
             _customValidator = customValidator;
             _keys = keys;
             _logger = logger;
@@ -309,6 +322,69 @@ namespace IdentityServer4.Validation
             };
         }
 
+        public async Task<TokenValidationResult> ValidateRefreshTokenAsync(string tokenHandle, Client client = null)
+        {
+            /////////////////////////////////////////////
+            // check if refresh token is valid
+            /////////////////////////////////////////////
+            var refreshToken = await _refreshTokenStore.GetRefreshTokenAsync(tokenHandle);
+            if (refreshToken == null)
+            {
+                //LogError("Invalid refresh token: {refreshToken}", tokenHandle);
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+            }
+
+            /////////////////////////////////////////////
+            // check if refresh token has expired
+            /////////////////////////////////////////////
+            if (refreshToken.CreationTime.HasExceeded(refreshToken.Lifetime, _options.UtcNow))
+            {
+                LogError("Refresh token has expired");
+
+                await _refreshTokenStore.RemoveRefreshTokenAsync(tokenHandle);
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+            }
+
+            if (client != null)
+            {
+                /////////////////////////////////////////////
+                // check if client belongs to requested refresh token
+                /////////////////////////////////////////////
+                if (client.ClientId != refreshToken.ClientId)
+                {
+                    //LogError("{0} tries to refresh token belonging to {1}", _validatedRequest.Client.ClientId, refreshToken.ClientId);
+                    return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+                }
+
+                /////////////////////////////////////////////
+                // check if client still has offline_access scope
+                /////////////////////////////////////////////
+                if (!client.AllowOfflineAccess)
+                {
+                    //LogError("{clientId} does not have access to offline_access scope anymore", _validatedRequest.Client.ClientId);
+                    return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+                }
+            }
+
+            /////////////////////////////////////////////
+            // make sure user is enabled
+            /////////////////////////////////////////////
+            var isActiveCtx = new IsActiveContext(refreshToken.Subject, client, IdentityServerConstants.ProfileIsActiveCallers.RefreshTokenValidation);
+            await _profile.IsActiveAsync(isActiveCtx);
+
+            if (isActiveCtx.IsActive == false)
+            {
+                //LogError("{subjectId} has been disabled", _validatedRequest.RefreshToken.SubjectId);
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+            }
+
+            return new TokenValidationResult
+            {
+                IsError = false,
+                RefreshToken = refreshToken
+            };
+        }
+
         private IEnumerable<Claim> ReferenceTokenToClaims(Token token)
         {
             var claims = new List<Claim>
@@ -354,7 +430,7 @@ namespace IdentityServer4.Validation
 
         private void LogError(string message)
         {
-            _logger.LogError(message +"\n{logMessage}", _log);
+            _logger.LogError(message + "\n{logMessage}", _log);
         }
 
         private void LogSuccess()

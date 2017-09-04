@@ -29,10 +29,10 @@ namespace IdentityServer4.Validation
         private readonly ILogger _logger;
         private readonly IdentityServerOptions _options;
         private readonly IAuthorizationCodeStore _authorizationCodeStore;
-        private readonly IRefreshTokenStore _refreshTokenStore;
         private readonly ExtensionGrantValidator _extensionGrantValidator;
         private readonly ICustomTokenRequestValidator _customRequestValidator;
         private readonly ScopeValidator _scopeValidator;
+        private readonly ITokenValidator _tokenValidator;
         private readonly IEventService _events;
         private readonly IResourceOwnerPasswordValidator _resourceOwnerValidator;
         private readonly IProfileService _profile;
@@ -52,17 +52,27 @@ namespace IdentityServer4.Validation
         /// <param name="scopeValidator">The scope validator.</param>
         /// <param name="events">The events.</param>
         /// <param name="logger">The logger.</param>
-        public TokenRequestValidator(IdentityServerOptions options, IAuthorizationCodeStore authorizationCodeStore, IRefreshTokenStore refreshTokenStore, IResourceOwnerPasswordValidator resourceOwnerValidator, IProfileService profile, ExtensionGrantValidator extensionGrantValidator, ICustomTokenRequestValidator customRequestValidator, ScopeValidator scopeValidator, IEventService events, ILogger<TokenRequestValidator> logger)
+        public TokenRequestValidator(
+            IdentityServerOptions options, 
+            IAuthorizationCodeStore authorizationCodeStore, 
+            IResourceOwnerPasswordValidator resourceOwnerValidator, 
+            IProfileService profile, 
+            ExtensionGrantValidator extensionGrantValidator, 
+            ICustomTokenRequestValidator customRequestValidator, 
+            ScopeValidator scopeValidator, 
+            IEventService events, 
+            ITokenValidator tokenValidator,
+            ILogger<TokenRequestValidator> logger)
         {
             _logger = logger;
             _options = options;
             _authorizationCodeStore = authorizationCodeStore;
-            _refreshTokenStore = refreshTokenStore;
             _resourceOwnerValidator = resourceOwnerValidator;
             _profile = profile;
             _extensionGrantValidator = extensionGrantValidator;
             _customRequestValidator = customRequestValidator;
             _scopeValidator = scopeValidator;
+            _tokenValidator = tokenValidator;
             _events = events;
         }
 
@@ -471,63 +481,16 @@ namespace IdentityServer4.Validation
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
-            _validatedRequest.RefreshTokenHandle = refreshTokenHandle;
-
-            /////////////////////////////////////////////
-            // check if refresh token is valid
-            /////////////////////////////////////////////
-            var refreshToken = await _refreshTokenStore.GetRefreshTokenAsync(refreshTokenHandle);
-            if (refreshToken == null)
+            var result = await _tokenValidator.ValidateRefreshTokenAsync(refreshTokenHandle, _validatedRequest.Client);
+            
+            if (result.IsError)
             {
-                LogError("Invalid refresh token: {refreshToken}", refreshTokenHandle);
+                // todo: logging
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
-            /////////////////////////////////////////////
-            // check if refresh token has expired
-            /////////////////////////////////////////////
-            if (refreshToken.CreationTime.HasExceeded(refreshToken.Lifetime, _options.UtcNow))
-            {
-                LogError("Refresh token has expired");
-
-                await _refreshTokenStore.RemoveRefreshTokenAsync(refreshTokenHandle);
-                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
-            }
-
-            /////////////////////////////////////////////
-            // check if client belongs to requested refresh token
-            /////////////////////////////////////////////
-            if (_validatedRequest.Client.ClientId != refreshToken.ClientId)
-            {
-                LogError("{0} tries to refresh token belonging to {1}", _validatedRequest.Client.ClientId, refreshToken.ClientId);
-                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
-            }
-
-            /////////////////////////////////////////////
-            // check if client still has offline_access scope
-            /////////////////////////////////////////////
-            if (!_validatedRequest.Client.AllowOfflineAccess)
-            {
-                LogError("{clientId} does not have access to offline_access scope anymore", _validatedRequest.Client.ClientId);
-                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
-            }
-
-            _validatedRequest.RefreshToken = refreshToken;
-
-            /////////////////////////////////////////////
-            // make sure user is enabled
-            /////////////////////////////////////////////
-            var subject = _validatedRequest.RefreshToken.Subject;
-            var isActiveCtx = new IsActiveContext(subject, _validatedRequest.Client, IdentityServerConstants.ProfileIsActiveCallers.RefreshTokenValidation);
-            await _profile.IsActiveAsync(isActiveCtx);
-
-            if (isActiveCtx.IsActive == false)
-            {
-                LogError("{subjectId} has been disabled", _validatedRequest.RefreshToken.SubjectId);
-                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
-            }
-
-            _validatedRequest.Subject = subject;
+            _validatedRequest.RefreshToken = result.RefreshToken;
+            _validatedRequest.Subject = result.RefreshToken.Subject;
 
             _logger.LogDebug("Validation of refresh token request success");
             return Valid();
