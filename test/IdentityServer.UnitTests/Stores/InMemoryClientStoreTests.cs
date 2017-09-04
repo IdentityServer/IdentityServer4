@@ -3,6 +3,7 @@ using IdentityServer4.Stores;
 using System;
 using System.Collections.Generic;
 using Xunit;
+using FluentAssertions;
 
 namespace IdentityServer.UnitTests.Stores
 {
@@ -18,7 +19,8 @@ namespace IdentityServer.UnitTests.Stores
                 new Client { ClientId = "3"}
             };
 
-            Assert.Throws(typeof(ArgumentException), () => new InMemoryClientStore(clients));
+            Action act = () => new InMemoryClientStore(clients);
+            act.ShouldThrow<ArgumentException>();
         }
 
         [Fact]

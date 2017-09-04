@@ -43,7 +43,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
             Init();
         }
 
-        public void Init()
+        internal void Init()
         {
             _context = new MockHttpContextAccessor().HttpContext;
 

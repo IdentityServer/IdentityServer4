@@ -32,7 +32,7 @@ namespace IdentityServer4.UnitTests.Hosting.Cors
             Init();
         }
 
-        public void Init()
+        internal void Init()
         {
             _options = new IdentityServerOptions();
             _options.Cors.CorsPaths.Clear();

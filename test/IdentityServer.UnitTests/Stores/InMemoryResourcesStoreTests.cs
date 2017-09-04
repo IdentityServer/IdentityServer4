@@ -3,7 +3,7 @@ using IdentityServer4.Stores;
 using System;
 using System.Collections.Generic;
 using Xunit;
-
+using FluentAssertions;
 
 namespace IdentityServer.UnitTests.Stores
 {
@@ -26,8 +26,11 @@ namespace IdentityServer.UnitTests.Stores
                 new ApiResource { Name = "C" }
             };
 
-            Assert.Throws(typeof(ArgumentException), () => new InMemoryResourcesStore(identityResources, null));
-            Assert.Throws(typeof(ArgumentException), () => new InMemoryResourcesStore(null, apiResources));
+            Action act = () => new InMemoryResourcesStore(identityResources, null);
+            act.ShouldThrow<ArgumentException>();
+
+            act = () => new InMemoryResourcesStore(null, apiResources);
+            act.ShouldThrow<ArgumentException>();
         }
 
         [Fact]
