@@ -14,7 +14,7 @@ namespace IdentityServer4.Validation
     /// <summary>
     /// Validates API secrets using the registered secret validators and parsers
     /// </summary>
-    internal class ApiSecretValidator
+    public class ApiSecretValidator
     {
         private readonly ILogger _logger;
         private readonly IResourceStore _resources;
