@@ -35,8 +35,8 @@ namespace IdentityServer4.Stores
                 throw new ArgumentException("Api resources must not contain duplicate names");
             }
 
-            _identityResources = identityResources.ToArray() ?? Enumerable.Empty<IdentityResource>();
-            _apiResources = apiResources.ToArray() ?? Enumerable.Empty<ApiResource>();
+            _identityResources = identityResources ?? Enumerable.Empty<IdentityResource>();
+            _apiResources = apiResources ?? Enumerable.Empty<ApiResource>();
         }
 
         /// <summary>

@@ -102,7 +102,7 @@ namespace IdentityServer4.Validation
                 consentedScopes = consentedScopes.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess);
             }
 
-            var identityToKeep = GrantedResources.IdentityResources.Where(x => x.Required || consentedScopes.Contains(x.Name)).ToArray();
+            var identityToKeep = GrantedResources.IdentityResources.Where(x => x.Required || consentedScopes.Contains(x.Name));
             var apisToKeep = from api in GrantedResources.ApiResources
                              where api.Scopes != null
                              let scopesToKeep = (from scope in api.Scopes
@@ -111,7 +111,7 @@ namespace IdentityServer4.Validation
                              where scopesToKeep.Any()
                              select api.CloneWithScopes(scopesToKeep);
 
-            GrantedResources = new Resources(identityToKeep.ToArray(), apisToKeep.ToArray())
+            GrantedResources = new Resources(identityToKeep, apisToKeep)
             {
                 OfflineAccess = offline
             };
