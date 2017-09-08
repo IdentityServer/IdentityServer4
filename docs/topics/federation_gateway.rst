@@ -1,7 +1,7 @@
 Federation Gateway
 ==================
 
-A common architecture is the so-called federation gateway. In this approach IdentityServer itself does not store user credentials (or migt not even have a UI at all) 
+A common architecture is the so-called federation gateway. In this approach IdentityServer itself does not store user credentials (or might not even have a UI at all) 
 but rather acts as a gateway to one or more external identity providers.
 
 .. image:: images/federation_gateway.png
