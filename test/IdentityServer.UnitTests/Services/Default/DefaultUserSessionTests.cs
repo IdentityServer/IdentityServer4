@@ -67,6 +67,18 @@ namespace IdentityServer4.UnitTests.Services.Default
         }
 
         [Fact]
+        public async Task CreateSessionId_when_props_does_not_contain_key_should_generate_new_sid()
+        {
+            _mockAuthenticationHandler.Result = AuthenticateResult.Success(new AuthenticationTicket(_user, _props, "scheme"));
+
+            _props.Items.ContainsKey(DefaultUserSession.SessionIdKey).Should().BeFalse();
+
+            await _subject.CreateSessionIdAsync(_user, _props);
+
+            _props.Items.ContainsKey(DefaultUserSession.SessionIdKey).Should().BeTrue();
+        }
+
+        [Fact]
         public async Task CreateSessionId_when_user_is_authenticated_but_different_sub_should_create_new_sid()
         {
             _props.Items.Add(DefaultUserSession.SessionIdKey, "999");

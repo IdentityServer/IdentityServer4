@@ -93,8 +93,7 @@ namespace IdentityServer4.Services
             var currentSubjectId = (await GetUserAsync())?.GetSubjectId();
             var newSubjectId = principal.GetSubjectId();
 
-            // todo: add some tests here
-            if (!properties.Items.ContainsKey(SessionIdKey) || currentSubjectId == null || currentSubjectId != newSubjectId)
+            if (!properties.Items.ContainsKey(SessionIdKey) || currentSubjectId != newSubjectId)
             {
                 properties.Items[SessionIdKey] = CryptoRandom.CreateUniqueId(16);
             }
