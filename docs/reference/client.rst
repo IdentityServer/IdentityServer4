@@ -82,6 +82,8 @@ Token
     Allows settings claims for the client (will be included in the access token).
 ``AlwaysSendClientClaims``
     If set, the client claims will be sent for every flow. If not, only for client credentials flow (default is `false`)
+``AlwaysIncludeUserClaimsInIdToken ``
+    When requesting both an id token and access token, should the user claims always be added to the id token instead of requring the client to use the userinfo endpoint. Default is `false`.
 ``PrefixClientClaims``
     If set, all client claims will be prefixed with `client_` to make sure they don't accidentally collide with user claims. Default is `true`.
 
