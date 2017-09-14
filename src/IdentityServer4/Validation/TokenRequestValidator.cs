@@ -17,6 +17,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.Validation
 {
@@ -28,6 +29,7 @@ namespace IdentityServer4.Validation
     {
         private readonly ILogger _logger;
         private readonly IdentityServerOptions _options;
+        private readonly ISystemClock _clock;
         private readonly IAuthorizationCodeStore _authorizationCodeStore;
         private readonly IRefreshTokenStore _refreshTokenStore;
         private readonly ExtensionGrantValidator _extensionGrantValidator;
@@ -43,6 +45,7 @@ namespace IdentityServer4.Validation
         /// Initializes a new instance of the <see cref="TokenRequestValidator"/> class.
         /// </summary>
         /// <param name="options">The options.</param>
+        /// <param name="clock">The clock.</param>
         /// <param name="authorizationCodeStore">The authorization code store.</param>
         /// <param name="refreshTokenStore">The refresh token store.</param>
         /// <param name="resourceOwnerValidator">The resource owner validator.</param>
@@ -52,10 +55,11 @@ namespace IdentityServer4.Validation
         /// <param name="scopeValidator">The scope validator.</param>
         /// <param name="events">The events.</param>
         /// <param name="logger">The logger.</param>
-        public TokenRequestValidator(IdentityServerOptions options, IAuthorizationCodeStore authorizationCodeStore, IRefreshTokenStore refreshTokenStore, IResourceOwnerPasswordValidator resourceOwnerValidator, IProfileService profile, ExtensionGrantValidator extensionGrantValidator, ICustomTokenRequestValidator customRequestValidator, ScopeValidator scopeValidator, IEventService events, ILogger<TokenRequestValidator> logger)
+        public TokenRequestValidator(IdentityServerOptions options, ISystemClock clock, IAuthorizationCodeStore authorizationCodeStore, IRefreshTokenStore refreshTokenStore, IResourceOwnerPasswordValidator resourceOwnerValidator, IProfileService profile, ExtensionGrantValidator extensionGrantValidator, ICustomTokenRequestValidator customRequestValidator, ScopeValidator scopeValidator, IEventService events, ILogger<TokenRequestValidator> logger)
         {
             _logger = logger;
             _options = options;
+            _clock = clock;
             _authorizationCodeStore = authorizationCodeStore;
             _refreshTokenStore = refreshTokenStore;
             _resourceOwnerValidator = resourceOwnerValidator;
@@ -207,7 +211,7 @@ namespace IdentityServer4.Validation
 
             await _authorizationCodeStore.RemoveAuthorizationCodeAsync(code);
 
-            if (authZcode.CreationTime.HasExceeded(authZcode.Lifetime, _options.UtcNow))
+            if (authZcode.CreationTime.HasExceeded(authZcode.Lifetime, _clock.UtcNow.UtcDateTime))
             {
                 LogError("Authorization code expired: {code}", code);
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
@@ -233,7 +237,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // validate code expiration
             /////////////////////////////////////////////
-            if (authZcode.CreationTime.HasExceeded(_validatedRequest.Client.AuthorizationCodeLifetime, _options.UtcNow))
+            if (authZcode.CreationTime.HasExceeded(_validatedRequest.Client.AuthorizationCodeLifetime, _clock.UtcNow.UtcDateTime))
             {
                 LogError("Authorization code is expired");
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
@@ -486,7 +490,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // check if refresh token has expired
             /////////////////////////////////////////////
-            if (refreshToken.CreationTime.HasExceeded(refreshToken.Lifetime, _options.UtcNow))
+            if (refreshToken.CreationTime.HasExceeded(refreshToken.Lifetime, _clock.UtcNow.UtcDateTime))
             {
                 LogError("Refresh token has expired");
 

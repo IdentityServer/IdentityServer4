@@ -13,6 +13,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using IdentityServer.UnitTests.Common;
 
 namespace IdentityServer4.UnitTests.Validation
 {
@@ -22,6 +23,7 @@ namespace IdentityServer4.UnitTests.Validation
 
         IClientStore _clients = Factory.CreateClientStore();
         IdentityServerOptions _options = new IdentityServerOptions();
+        StubClock _clock = new StubClock();
 
         static AccessTokenValidation()
         {
@@ -40,7 +42,7 @@ namespace IdentityServer4.UnitTests.Validation
 
         public AccessTokenValidation()
         {
-            _options.UtcNowFunc = () => UtcNow;
+            _clock.UtcNowFunc = () => UtcNow;
         }
 
         [Fact]
@@ -127,7 +129,7 @@ namespace IdentityServer4.UnitTests.Validation
             now = DateTime.UtcNow;
 
             var store = Factory.CreateReferenceTokenStore();
-            var validator = Factory.CreateTokenValidator(store, options:_options);
+            var validator = Factory.CreateTokenValidator(store, clock:_clock);
 
             var token = TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "valid", 2, "read", "write");
             token.CreationTime = now;

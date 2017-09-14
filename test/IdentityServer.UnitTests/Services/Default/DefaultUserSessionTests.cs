@@ -39,7 +39,8 @@ namespace IdentityServer4.UnitTests.Services.Default
                 _mockHttpContext, 
                 _mockAuthenticationSchemeProvider,
                 _mockAuthenticationHandlerProvider,
-                _options, 
+                _options,
+                new StubClock(), 
                 TestLogger.Create<DefaultUserSession>());
         }
 

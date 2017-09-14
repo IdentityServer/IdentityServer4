@@ -12,6 +12,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using IdentityServer4.Extensions;
 using System;
+using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.Endpoints.Results
 {
@@ -36,19 +37,23 @@ namespace IdentityServer4.Endpoints.Results
         internal EndSessionResult(
             EndSessionValidationResult result,
             IdentityServerOptions options,
+            ISystemClock clock,
             IMessageStore<LogoutMessage> logoutMessageStore)
             : this(result)
         {
             _options = options;
+            _clock = clock;
             _logoutMessageStore = logoutMessageStore;
         }
 
         private IdentityServerOptions _options;
+        private ISystemClock _clock;
         private IMessageStore<LogoutMessage> _logoutMessageStore;
 
         void Init(HttpContext context)
         {
             _options = _options ?? context.RequestServices.GetRequiredService<IdentityServerOptions>();
+            _clock = _clock ?? context.RequestServices.GetRequiredService<ISystemClock>();
             _logoutMessageStore = _logoutMessageStore ?? context.RequestServices.GetRequiredService<IMessageStore<LogoutMessage>>();
         }
 
@@ -70,7 +75,7 @@ namespace IdentityServer4.Endpoints.Results
                 var logoutMessage = new LogoutMessage(validatedRequest);
                 if (logoutMessage.ContainsPayload)
                 {
-                    var msg = new Message<LogoutMessage>(logoutMessage, _options.UtcNow);
+                    var msg = new Message<LogoutMessage>(logoutMessage, _clock.UtcNow.UtcDateTime);
                     id = await _logoutMessageStore.WriteAsync(msg);
                 }
             }

@@ -13,6 +13,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Configuration;
+using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.ResponseHandling
 {
@@ -43,21 +44,21 @@ namespace IdentityServer4.ResponseHandling
         protected readonly ILogger Logger;
 
         /// <summary>
-        /// The IdentityServerOptions
+        /// The clock
         /// </summary>
-        protected readonly IdentityServerOptions Options;
+        protected readonly ISystemClock Clock;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizeResponseGenerator"/> class.
         /// </summary>
-        /// <param name="options">The options.</param>
+        /// <param name="clock">The clock.</param>
         /// <param name="logger">The logger.</param>
         /// <param name="tokenService">The token service.</param>
         /// <param name="authorizationCodeStore">The authorization code store.</param>
         /// <param name="events">The events.</param>
-        public AuthorizeResponseGenerator(IdentityServerOptions options, ITokenService tokenService, IAuthorizationCodeStore authorizationCodeStore, ILogger<AuthorizeResponseGenerator> logger, IEventService events)
+        public AuthorizeResponseGenerator(ISystemClock clock, ITokenService tokenService, IAuthorizationCodeStore authorizationCodeStore, ILogger<AuthorizeResponseGenerator> logger, IEventService events)
         {
-            Options = options;
+            Clock = clock;
             TokenService = tokenService;
             AuthorizationCodeStore = authorizationCodeStore;
             Events = events;
@@ -198,7 +199,7 @@ namespace IdentityServer4.ResponseHandling
         {
             var code = new AuthorizationCode
             {
-                CreationTime = Options.UtcNow,
+                CreationTime = Clock.UtcNow.UtcDateTime,
                 ClientId = request.Client.ClientId,
                 Lifetime = request.Client.AuthorizationCodeLifetime,
                 Subject = request.Subject,

@@ -14,6 +14,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
 using IdentityServer4.Configuration;
+using IdentityServer.UnitTests.Common;
 
 namespace IdentityServer4.UnitTests.Services.Default
 {
@@ -25,13 +26,13 @@ namespace IdentityServer4.UnitTests.Services.Default
         ClaimsPrincipal _user;
         Client _client;
         TestUserConsentStore _userConsentStore = new TestUserConsentStore();
-        IdentityServerOptions _options = new IdentityServerOptions();
+        StubClock _clock = new StubClock();
 
         DateTime now;
 
         public DefaultConsentServiceTests()
         {
-            _options.UtcNowFunc = () => UtcNow;
+            _clock.UtcNowFunc = () => UtcNow;
 
             _client = new Client
             {
@@ -46,7 +47,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                 new Claim(JwtClaimTypes.AuthenticationContextClassReference, "acr1")
             });
 
-            _subject = new DefaultConsentService(_options, _userConsentStore);
+            _subject = new DefaultConsentService(_clock, _userConsentStore);
         }
 
         public DateTime UtcNow

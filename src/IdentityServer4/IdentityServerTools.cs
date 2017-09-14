@@ -13,6 +13,7 @@ using IdentityModel;
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using IdentityServer4.Configuration;
+using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4
 {
@@ -47,11 +48,11 @@ namespace IdentityServer4
             if (claims == null) throw new ArgumentNullException(nameof(claims));
 
             var issuer = _contextAccessor.HttpContext.GetIdentityServerIssuerUri();
-            var options = _contextAccessor.HttpContext.RequestServices.GetRequiredService<IdentityServerOptions>();
+            var clock = _contextAccessor.HttpContext.RequestServices.GetRequiredService<ISystemClock>();
 
             var token = new Token
             {
-                CreationTime = options.UtcNow,
+                CreationTime = clock.UtcNow.UtcDateTime,
                 Issuer = issuer,
                 Lifetime = lifetime,
 

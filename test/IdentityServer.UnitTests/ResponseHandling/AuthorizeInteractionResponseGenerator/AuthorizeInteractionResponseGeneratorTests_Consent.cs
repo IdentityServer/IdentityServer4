@@ -17,6 +17,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
+using IdentityServer.UnitTests.Common;
 
 namespace IdentityServer4.UnitTests.ResponseHandling
 {
@@ -91,7 +92,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
         public AuthorizeInteractionResponseGeneratorTests_Consent()
         {
             _subject = new AuthorizeInteractionResponseGenerator(
-                _options,
+                new StubClock(),
                 TestLogger.Create<AuthorizeInteractionResponseGenerator>(),
                 _mockConsent,
                 _fakeUserService);
