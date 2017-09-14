@@ -39,6 +39,11 @@ namespace IdentityServer4.Test
         public string ProviderSubjectId { get; set; }
 
         /// <summary>
+        /// Gets or sets if the user is active.
+        /// </summary>
+        public bool IsActive { get; set; } = true;
+
+        /// <summary>
         /// Gets or sets the claims.
         /// </summary>
         public ICollection<Claim> Claims { get; set; } = new HashSet<Claim>(new ClaimComparer());
