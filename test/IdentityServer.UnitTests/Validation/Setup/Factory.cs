@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using IdentityServer4.Stores;
 using IdentityServer4.UnitTests.Common;
 using IdentityServer4.Stores.Serialization;
+using IdentityServer.UnitTests.Common;
+using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.UnitTests.Validation
 {
@@ -88,6 +90,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             return new TokenRequestValidator(
                 options,
+                new StubClock(),
                 authorizationCodeStore,
                 refreshTokenStore,
                 resourceOwnerValidator,
@@ -99,12 +102,10 @@ namespace IdentityServer4.UnitTests.Validation
                 TestLogger.Create<TokenRequestValidator>());
         }
 
-        internal static ITokenCreationService CreateDefaultTokenCreator(IdentityServerOptions options = null)
+        internal static ITokenCreationService CreateDefaultTokenCreator()
         {
-            options = options ?? new IdentityServerOptions();
-
             return new DefaultTokenCreationService(
-                options,
+                new StubClock(),
                 new DefaultKeyMaterialService(new IValidationKeysStore[] { }, new DefaultSigningCredentialsStore(TestCert.LoadSigningCredentials())), TestLogger.Create<DefaultTokenCreationService>());
         }
 
@@ -159,7 +160,7 @@ namespace IdentityServer4.UnitTests.Validation
                 TestLogger.Create<AuthorizeRequestValidator>());
         }
 
-        public static TokenValidator CreateTokenValidator(IReferenceTokenStore store = null, IProfileService profile = null, IdentityServerOptions options = null)
+        public static TokenValidator CreateTokenValidator(IReferenceTokenStore store = null, IProfileService profile = null, IdentityServerOptions options = null, ISystemClock clock = null)
         {
             if (options == null)
             {
@@ -176,12 +177,15 @@ namespace IdentityServer4.UnitTests.Validation
                 store = CreateReferenceTokenStore();
             }
 
+            clock = clock ?? new StubClock();
+
             var clients = CreateClientStore();
             var context = new MockHttpContextAccessor(options);
             var logger = TestLogger.Create<TokenValidator>();
 
             var validator = new TokenValidator(
                 clients: clients,
+                clock: clock,
                 referenceTokenStore: store,
                 customValidator: new DefaultCustomTokenValidator(
                     profile: profile,
@@ -220,7 +224,7 @@ namespace IdentityServer4.UnitTests.Validation
                     new PlainTextSharedSecretValidator(TestLogger.Create<PlainTextSharedSecretValidator>())
                 };
 
-                validator = new SecretValidator(options, validators, TestLogger.Create<SecretValidator>());
+                validator = new SecretValidator(new StubClock(), validators, TestLogger.Create<SecretValidator>());
             }
 
             return new ClientSecretValidator(clients, parser, validator, new TestEventService(), TestLogger.Create<ClientSecretValidator>());

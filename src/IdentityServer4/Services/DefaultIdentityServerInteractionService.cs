@@ -12,12 +12,13 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using System.Linq;
+using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.Services
 {
     class DefaultIdentityServerInteractionService : IIdentityServerInteractionService
     {
-        private readonly IdentityServerOptions _options;
+        private readonly ISystemClock _clock;
         private readonly IHttpContextAccessor _context;
         private readonly IMessageStore<LogoutMessage> _logoutMessageStore;
         private readonly IMessageStore<ErrorMessage> _errorMessageStore;
@@ -28,7 +29,7 @@ namespace IdentityServer4.Services
         private readonly ReturnUrlParser _returnUrlParser;
 
         public DefaultIdentityServerInteractionService(
-            IdentityServerOptions options,
+            ISystemClock clock,
             IHttpContextAccessor context,
             IMessageStore<LogoutMessage> logoutMessageStore,
             IMessageStore<ErrorMessage> errorMessageStore,
@@ -38,7 +39,7 @@ namespace IdentityServer4.Services
             ReturnUrlParser returnUrlParser,
             ILogger<DefaultIdentityServerInteractionService> logger)
         {
-            _options = options;
+            _clock = clock;
             _context = context;
             _logoutMessageStore = logoutMessageStore;
             _errorMessageStore = errorMessageStore;
@@ -86,7 +87,7 @@ namespace IdentityServer4.Services
                         SubjectId = user?.GetSubjectId(),
                         SessionId = sid,
                         ClientIds = clientIds
-                    }, _options.UtcNow);
+                    }, _clock.UtcNow.UtcDateTime);
                     var id = await _logoutMessageStore.WriteAsync(msg);
                     return id;
                 }
@@ -131,7 +132,7 @@ namespace IdentityServer4.Services
             }
 
             var consentRequest = new ConsentRequest(request, subject);
-            await _consentMessageStore.WriteAsync(consentRequest.Id, new Message<ConsentResponse>(consent, _options.UtcNow));
+            await _consentMessageStore.WriteAsync(consentRequest.Id, new Message<ConsentResponse>(consent, _clock.UtcNow.UtcDateTime));
         }
 
         public bool IsValidReturnUrl(string returnUrl)

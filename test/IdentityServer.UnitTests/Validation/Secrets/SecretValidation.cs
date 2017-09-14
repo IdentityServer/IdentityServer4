@@ -11,6 +11,7 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 using IdentityServer4.Configuration;
+using IdentityServer.UnitTests.Common;
 
 namespace IdentityServer4.UnitTests.Validation.Secrets
 {
@@ -26,7 +27,7 @@ namespace IdentityServer4.UnitTests.Validation.Secrets
         public SecretValidation()
         {
             _validator = new SecretValidator(
-                _options,
+                new StubClock(),
                 new[] { _hashedSecretValidator }, 
                 new Logger<SecretValidator>(new LoggerFactory()));
         }

@@ -13,6 +13,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Configuration;
+using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.ResponseHandling
 {
@@ -48,22 +49,22 @@ namespace IdentityServer4.ResponseHandling
         protected readonly IClientStore Clients;
 
         /// <summary>
-        ///  The IdentityServerOptions
+        ///  The clock
         /// </summary>
-        protected readonly IdentityServerOptions Options;
+        protected readonly ISystemClock Clock;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenResponseGenerator" /> class.
         /// </summary>
-        /// <param name="options">The options.</param>
+        /// <param name="clock">The clock.</param>
         /// <param name="tokenService">The token service.</param>
         /// <param name="refreshTokenService">The refresh token service.</param>
         /// <param name="resources">The resources.</param>
         /// <param name="clients">The clients.</param>
         /// <param name="logger">The logger.</param>
-        public TokenResponseGenerator(IdentityServerOptions options, ITokenService tokenService, IRefreshTokenService refreshTokenService, IResourceStore resources, IClientStore clients, ILogger<TokenResponseGenerator> logger)
+        public TokenResponseGenerator(ISystemClock clock, ITokenService tokenService, IRefreshTokenService refreshTokenService, IResourceStore resources, IClientStore clients, ILogger<TokenResponseGenerator> logger)
         {
-            Options = options;
+            Clock = clock;
             TokenService = tokenService;
             RefreshTokenService = refreshTokenService;
             Resources = resources;
@@ -208,7 +209,7 @@ namespace IdentityServer4.ResponseHandling
             }
             else
             {
-                oldAccessToken.CreationTime = Options.UtcNow;
+                oldAccessToken.CreationTime = Clock.UtcNow.UtcDateTime;
                 oldAccessToken.Lifetime = request.ValidatedRequest.AccessTokenLifetime;
 
                 accessTokenString = await TokenService.CreateSecurityTokenAsync(oldAccessToken);
