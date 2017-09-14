@@ -16,8 +16,7 @@ Please start a discussion on the `core repo issue tracker <https://github.com/Id
 
 Platform
 ^^^^^^^^
-IdentityServer is built against ASP.NET Core 1.1.0 using the RTM tooling that ships with Visual Studio 2017. 
-This is the only configuration we accept.
+IdentityServer is built against ASP.NET Core 2 and runs on .NET Framework 4.6.1 (and higher) and .NET Core 2 (and higher).
 
 Bugs and feature requests?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
