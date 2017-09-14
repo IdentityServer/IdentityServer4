@@ -70,7 +70,7 @@ namespace IdentityServer4.Test
         public virtual Task IsActiveAsync(IsActiveContext context)
         {
             var user = Users.FindBySubjectId(context.Subject.GetSubjectId());
-            context.IsActive = user != null;
+            context.IsActive = user?.IsActive == true;
 
             return Task.CompletedTask;
         }
