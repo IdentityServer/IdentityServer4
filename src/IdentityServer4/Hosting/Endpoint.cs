@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace IdentityServer4.Hosting
 {
-    internal class Endpoint
+    public class Endpoint
     {
         public Endpoint(string name, string path, Type handlerType)
         {
@@ -24,7 +24,7 @@ namespace IdentityServer4.Hosting
         /// The name.
         /// </value>
         public string Name { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the path.
         /// </summary>
