@@ -5,7 +5,6 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityModel;
-using IdentityServer4.Configuration;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;

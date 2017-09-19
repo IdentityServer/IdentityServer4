@@ -3,7 +3,6 @@
 
 
 using IdentityServer4;
-using IdentityServer4.Configuration;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;

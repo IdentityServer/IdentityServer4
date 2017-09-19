@@ -13,7 +13,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
-using IdentityServer4.Configuration;
 using IdentityServer.UnitTests.Common;
 
 namespace IdentityServer4.UnitTests.Services.Default

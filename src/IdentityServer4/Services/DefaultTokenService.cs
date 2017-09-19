@@ -15,7 +15,6 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using IdentityServer4.Configuration;
 using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.Services

@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using IdentityServer4.Configuration;
 using IdentityServer4.Services;
 using Microsoft.Extensions.Logging;
 using IdentityServer4.Configuration.DependencyInjection;

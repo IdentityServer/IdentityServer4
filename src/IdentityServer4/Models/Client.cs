@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Linq;
 using System;
-using IdentityServer4.Extensions;
 using IdentityModel;
 using System.Collections;
 

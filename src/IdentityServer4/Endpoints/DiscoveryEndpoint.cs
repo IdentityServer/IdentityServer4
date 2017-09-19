@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityModel;
 using IdentityServer4.Configuration;
 using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Extensions;

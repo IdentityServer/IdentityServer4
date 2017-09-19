@@ -14,7 +14,6 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using Microsoft.Extensions.Logging;
-using IdentityServer4.Configuration;
 using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.Services

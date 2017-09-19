@@ -12,7 +12,6 @@ using IdentityServer4.Services;
 using IdentityModel;
 using System;
 using Microsoft.Extensions.DependencyInjection;
-using IdentityServer4.Configuration;
 using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4

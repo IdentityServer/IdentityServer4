@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using IdentityServer4.Configuration;
 using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.Validation
