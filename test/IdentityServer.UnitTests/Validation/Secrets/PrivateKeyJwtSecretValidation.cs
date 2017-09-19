@@ -23,8 +23,8 @@ namespace IdentityServer4.Tests.Validation.Secrets
 {
     public class PrivateKeyJwtSecretValidation
     {
-        readonly ISecretValidator _validator;
-        readonly IClientStore _clients;
+        private readonly ISecretValidator _validator;
+        private readonly IClientStore _clients;
 
         public PrivateKeyJwtSecretValidation()
         {

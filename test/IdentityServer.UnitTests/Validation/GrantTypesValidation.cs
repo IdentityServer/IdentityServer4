@@ -12,7 +12,7 @@ namespace IdentityServer4.UnitTests.Validation
 {
     public class GrantTypesValidation
     {
-        const string Category = "Grant Types Validation";
+        private const string Category = "Grant Types Validation";
 
         [Fact]
         [Trait("Category", Category)]

@@ -16,9 +16,9 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
 {
     public class TokenRequestValidation_ResourceOwner_Invalid
     {
-        const string Category = "TokenRequest Validation - ResourceOwner - Invalid";
+        private const string Category = "TokenRequest Validation - ResourceOwner - Invalid";
 
-        IClientStore _clients = Factory.CreateClientStore();
+        private IClientStore _clients = Factory.CreateClientStore();
 
         [Fact]
         [Trait("Category", Category)]

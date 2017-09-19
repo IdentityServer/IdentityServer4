@@ -13,7 +13,7 @@ namespace IdentityServer4.Infrastructure
 {
     internal class BackChannelLogoutClient
     {
-        const int LogoutTokenLifetime = 5 * 60;
+        private const int LogoutTokenLifetime = 5 * 60;
 
         //private readonly IHttpContextAccessor _httpContext;
         private readonly ISystemClock _clock;
@@ -42,7 +42,7 @@ namespace IdentityServer4.Infrastructure
             return Task.WhenAll(tasks);
         }
 
-        async Task SendLogoutAsync(BackChannelLogoutModel client)
+        private async Task SendLogoutAsync(BackChannelLogoutModel client)
         {
             var token = await CreateLogoutTokenAsync(client);
 
@@ -64,17 +64,17 @@ namespace IdentityServer4.Infrastructure
             }
         }
 
-        async Task<string> CreateLogoutTokenAsync(BackChannelLogoutModel client)
+        private async Task<string> CreateLogoutTokenAsync(BackChannelLogoutModel client)
         {
             var json = "{\"" + OidcConstants.Events.BackChannelLogout + "\":{} }";
-            var claims = new List<Claim>()
+            var claims = new List<Claim>
             {
                 //new Claim(JwtClaimTypes.Issuer, _httpContext.HttpContext.GetIdentityServerIssuerUri()),
                 new Claim(JwtClaimTypes.Subject, client.SubjectId),
                 new Claim(JwtClaimTypes.Audience, client.ClientId),
                 new Claim(JwtClaimTypes.IssuedAt, _clock.UtcNow.UtcDateTime.ToEpochTime().ToString(), ClaimValueTypes.Integer),
                 new Claim(JwtClaimTypes.JwtId, CryptoRandom.CreateUniqueId(16)),
-                new Claim(JwtClaimTypes.Events, json, IdentityServerConstants.ClaimValueTypes.Json),
+                new Claim(JwtClaimTypes.Events, json, IdentityServerConstants.ClaimValueTypes.Json)
             };
 
             if (client.SessionIdRequired)

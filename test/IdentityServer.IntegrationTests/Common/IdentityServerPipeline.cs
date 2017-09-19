@@ -170,20 +170,20 @@ namespace IdentityServer4.IntegrationTests.Common
         public ClaimsPrincipal Subject { get; set; }
         public bool FollowLoginReturnUrl { get; set; }
 
-        async Task OnLogin(HttpContext ctx)
+        private async Task OnLogin(HttpContext ctx)
         {
             LoginWasCalled = true;
             await ReadLoginRequest(ctx);
             await IssueLoginCookie(ctx);
         }
 
-        async Task ReadLoginRequest(HttpContext ctx)
+        private async Task ReadLoginRequest(HttpContext ctx)
         {
             var interaction = ctx.RequestServices.GetRequiredService<IIdentityServerInteractionService>();
             LoginRequest = await interaction.GetAuthorizationContextAsync(ctx.Request.Query["returnUrl"].FirstOrDefault());
         }
 
-        async Task IssueLoginCookie(HttpContext ctx)
+        private async Task IssueLoginCookie(HttpContext ctx)
         {
             if (Subject != null)
             {
@@ -201,7 +201,7 @@ namespace IdentityServer4.IntegrationTests.Common
         public bool LogoutWasCalled { get; set; }
         public LogoutRequest LogoutRequest { get; set; }
 
-        async Task OnLogout(HttpContext ctx)
+        private async Task OnLogout(HttpContext ctx)
         {
             LogoutWasCalled = true;
             await ReadLogoutRequest(ctx);
@@ -217,20 +217,20 @@ namespace IdentityServer4.IntegrationTests.Common
         public AuthorizationRequest ConsentRequest { get; set; }
         public ConsentResponse ConsentResponse { get; set; }
 
-        async Task OnConsent(HttpContext ctx)
+        private async Task OnConsent(HttpContext ctx)
         {
             ConsentWasCalled = true;
             await ReadConsentMessage(ctx);
             await CreateConsentResponse(ctx);
         }
 
-        async Task ReadConsentMessage(HttpContext ctx)
+        private async Task ReadConsentMessage(HttpContext ctx)
         {
             var interaction = ctx.RequestServices.GetRequiredService<IIdentityServerInteractionService>();
             ConsentRequest = await interaction.GetAuthorizationContextAsync(ctx.Request.Query["returnUrl"].FirstOrDefault());
         }
 
-        async Task CreateConsentResponse(HttpContext ctx)
+        private async Task CreateConsentResponse(HttpContext ctx)
         {
             if (ConsentRequest != null && ConsentResponse != null)
             {
@@ -249,13 +249,13 @@ namespace IdentityServer4.IntegrationTests.Common
         public bool ErrorWasCalled { get; set; }
         public ErrorMessage ErrorMessage { get; set; }
 
-        async Task OnError(HttpContext ctx)
+        private async Task OnError(HttpContext ctx)
         {
             ErrorWasCalled = true;
             await ReadErrorMessage(ctx);
         }
 
-        async Task ReadErrorMessage(HttpContext ctx)
+        private async Task ReadErrorMessage(HttpContext ctx)
         {
             var interaction = ctx.RequestServices.GetRequiredService<IIdentityServerInteractionService>();
             ErrorMessage = await interaction.GetErrorContextAsync(ctx.Request.Query["errorId"].FirstOrDefault());
@@ -386,7 +386,7 @@ namespace IdentityServer4.IntegrationTests.Common
         IAuthenticationRequestHandler
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        HttpContext HttpContext => _httpContextAccessor.HttpContext;
+        private HttpContext HttpContext => _httpContextAccessor.HttpContext;
 
         public Func<HttpContext, Task<bool>> OnFederatedSignout = 
             async context =>

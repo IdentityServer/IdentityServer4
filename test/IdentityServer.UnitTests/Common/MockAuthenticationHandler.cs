@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace IdentityServer.UnitTests.Common
 {
-    class MockAuthenticationHandler : IAuthenticationHandler
+    internal class MockAuthenticationHandler : IAuthenticationHandler
     {
         public AuthenticateResult Result { get; set; } = AuthenticateResult.NoResult();
 

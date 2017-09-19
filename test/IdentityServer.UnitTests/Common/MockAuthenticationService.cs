@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace IdentityServer4.UnitTests.Common
 {
-    class MockAuthenticationService : IAuthenticationService
+    internal class MockAuthenticationService : IAuthenticationService
     {
         public AuthenticateResult Result { get; set; }
 

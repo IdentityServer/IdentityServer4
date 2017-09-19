@@ -17,9 +17,9 @@ namespace IdentityServer4.IntegrationTests.Conformance.Basic
 {
     public class ResponseTypeResponseModeTests
     {
-        const string Category = "Conformance.Basic.ResponseTypeResponseModeTests";
+        private const string Category = "Conformance.Basic.ResponseTypeResponseModeTests";
 
-        IdentityServerPipeline _mockPipeline = new IdentityServerPipeline();
+        private IdentityServerPipeline _mockPipeline = new IdentityServerPipeline();
 
         public ResponseTypeResponseModeTests()
         {

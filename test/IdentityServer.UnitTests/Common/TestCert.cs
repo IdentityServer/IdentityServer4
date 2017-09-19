@@ -8,7 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace IdentityServer4.UnitTests.Common
 {
-    static class TestCert
+    internal static class TestCert
     {
         public static X509Certificate2 Load()
         {

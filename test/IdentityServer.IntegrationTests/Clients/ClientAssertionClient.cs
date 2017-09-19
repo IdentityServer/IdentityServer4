@@ -25,8 +25,8 @@ namespace IdentityServer4.IntegrationTests.Clients
 {
     public class ClientAssertionClient
     {
-        const string TokenEndpoint = "https://idsvr4/connect/token";
-        const string ClientId = "certificate_base64_valid";
+        private const string TokenEndpoint = "https://idsvr4/connect/token";
+        private const string ClientId = "certificate_base64_valid";
 
         private readonly HttpClient _client;
 

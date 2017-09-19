@@ -20,10 +20,10 @@ namespace IdentityServer4.IntegrationTests.Pipeline
 {
     public class FederatedSignoutTests
     {
-        const string Category = "Federated Signout";
+        private const string Category = "Federated Signout";
 
-        IdentityServerPipeline _pipeline = new IdentityServerPipeline();
-        ClaimsPrincipal _user;
+        private IdentityServerPipeline _pipeline = new IdentityServerPipeline();
+        private ClaimsPrincipal _user;
 
         public FederatedSignoutTests()
         {

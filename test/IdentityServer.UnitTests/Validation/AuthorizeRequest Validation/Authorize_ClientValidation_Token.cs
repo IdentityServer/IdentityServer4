@@ -14,9 +14,9 @@ namespace IdentityServer4.UnitTests.Validation.AuthorizeRequest
 {
     public class Authorize_ClientValidation_Token
     {
-        const string Category = "AuthorizeRequest Client Validation - Token";
+        private const string Category = "AuthorizeRequest Client Validation - Token";
 
-        IdentityServerOptions _options = TestIdentityServerOptions.Create();
+        private IdentityServerOptions _options = TestIdentityServerOptions.Create();
 
         [Fact]
         [Trait("Category", Category)]

@@ -18,7 +18,7 @@ namespace IdentityServer4.Endpoints
     /// The discovery endpoint
     /// </summary>
     /// <seealso cref="IdentityServer4.Hosting.IEndpointHandler" />
-    class DiscoveryEndpoint : IEndpointHandler
+    internal class DiscoveryEndpoint : IEndpointHandler
     {
         private readonly IdentityServerOptions _options;
         private readonly IDiscoveryResponseGenerator _responseGenerator;

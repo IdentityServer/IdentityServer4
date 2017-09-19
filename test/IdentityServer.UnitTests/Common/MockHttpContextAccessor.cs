@@ -12,9 +12,9 @@ using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.UnitTests.Common
 {
-    class MockHttpContextAccessor : IHttpContextAccessor
+    internal class MockHttpContextAccessor : IHttpContextAccessor
     {
-        HttpContext _context = new DefaultHttpContext();
+        private HttpContext _context = new DefaultHttpContext();
         public MockAuthenticationService AuthenticationService { get; set; } = new MockAuthenticationService();
 
         public MockHttpContextAccessor(

@@ -19,10 +19,10 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
 {
     public class TokenRequestValidation_Code_Invalid
     {
-        IClientStore _clients = Factory.CreateClientStore();
-        const string Category = "TokenRequest Validation - AuthorizationCode - Invalid";
+        private IClientStore _clients = Factory.CreateClientStore();
+        private const string Category = "TokenRequest Validation - AuthorizationCode - Invalid";
 
-        ClaimsPrincipal _subject = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
+        private ClaimsPrincipal _subject = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
 
         [Fact]
         [Trait("Category", Category)]

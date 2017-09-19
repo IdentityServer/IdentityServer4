@@ -13,9 +13,9 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
 {
     public class TokenRequestValidation_ExtensionGrants_Invalid
     {
-        const string Category = "TokenRequest Validation - AssertionFlow - Invalid";
+        private const string Category = "TokenRequest Validation - AssertionFlow - Invalid";
 
-        IClientStore _clients = Factory.CreateClientStore();
+        private IClientStore _clients = Factory.CreateClientStore();
 
         [Fact]
         [Trait("Category", Category)]

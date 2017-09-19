@@ -10,7 +10,7 @@ using IdentityServer4.Configuration;
 
 namespace IdentityServer4.Endpoints.Results
 {
-    class CheckSessionResult : IEndpointResult
+    internal class CheckSessionResult : IEndpointResult
     {
         public CheckSessionResult()
         {
@@ -23,7 +23,7 @@ namespace IdentityServer4.Endpoints.Results
 
         private IdentityServerOptions _options;
 
-        void Init(HttpContext context)
+        private void Init(HttpContext context)
         {
             _options = _options ?? context.RequestServices.GetRequiredService<IdentityServerOptions>();
         }
@@ -54,12 +54,12 @@ namespace IdentityServer4.Endpoints.Results
             }
         }
 
-        string GetHtml(string cookieName)
+        private string GetHtml(string cookieName)
         {
             return Html.Replace("{cookieName}", cookieName);
         }
 
-        const string Html = @"
+        private const string Html = @"
 <!DOCTYPE html>
 <!--Copyright (c) Brock Allen & Dominick Baier. All rights reserved.-->
 <!--Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.-->

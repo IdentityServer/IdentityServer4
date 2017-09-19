@@ -19,16 +19,16 @@ namespace IdentityServer4.UnitTests.Validation.EndSessionRequestValidation
 {
     public class EndSessionRequestValidatorTests
     {
-        EndSessionRequestValidator _subject;
-        IdentityServerOptions _options;
-        StubTokenValidator _stubTokenValidator = new StubTokenValidator();
-        StubRedirectUriValidator _stubRedirectUriValidator = new StubRedirectUriValidator();
-        MockHttpContextAccessor _context = new MockHttpContextAccessor();
-        MockUserSession _userSession = new MockUserSession();
-        MockMessageStore<EndSession> _mockEndSessionMessageStore = new MockMessageStore<EndSession>();
-        InMemoryClientStore _clientStore;
+        private EndSessionRequestValidator _subject;
+        private IdentityServerOptions _options;
+        private StubTokenValidator _stubTokenValidator = new StubTokenValidator();
+        private StubRedirectUriValidator _stubRedirectUriValidator = new StubRedirectUriValidator();
+        private MockHttpContextAccessor _context = new MockHttpContextAccessor();
+        private MockUserSession _userSession = new MockUserSession();
+        private MockMessageStore<EndSession> _mockEndSessionMessageStore = new MockMessageStore<EndSession>();
+        private InMemoryClientStore _clientStore;
 
-        ClaimsPrincipal _user;
+        private ClaimsPrincipal _user;
 
         public EndSessionRequestValidatorTests()
         {

@@ -16,10 +16,10 @@ namespace IdentityServer4.UnitTests.Validation.Secrets
 {
     public class FormPostCredentialExtraction
     {
-        const string Category = "Secrets - Form Post Secret Parsing";
+        private const string Category = "Secrets - Form Post Secret Parsing";
 
-        IdentityServerOptions _options;
-        PostBodySecretParser _parser;
+        private IdentityServerOptions _options;
+        private PostBodySecretParser _parser;
 
         public FormPostCredentialExtraction()
         {

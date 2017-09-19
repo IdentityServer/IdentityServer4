@@ -39,7 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
 namespace IdentityServer4.Hosting
 {
-    class DistributedCacheStateDataFormatterInitializerForAll<TOptions> : IPostConfigureOptions<TOptions>
+    internal class DistributedCacheStateDataFormatterInitializerForAll<TOptions> : IPostConfigureOptions<TOptions>
          where TOptions : class
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -56,7 +56,7 @@ namespace IdentityServer4.Hosting
         }
     }
 
-    class DistributedCacheStateDataFormatterInitializer<TOptions> : IPostConfigureOptions<TOptions>
+    internal class DistributedCacheStateDataFormatterInitializer<TOptions> : IPostConfigureOptions<TOptions>
         where TOptions : class
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -79,7 +79,7 @@ namespace IdentityServer4.Hosting
         }
     }
 
-    class DistributedCacheStateDataFormatterMarker : ISecureDataFormat<AuthenticationProperties>
+    internal class DistributedCacheStateDataFormatterMarker : ISecureDataFormat<AuthenticationProperties>
     {
         public string Name { get; set; }
 
@@ -120,10 +120,10 @@ namespace IdentityServer4.Hosting
             _name = name;
         }
 
-        string CacheKeyPrefix => "DistributedCacheStateDataFormatter";
+        private string CacheKeyPrefix => "DistributedCacheStateDataFormatter";
 
-        IDistributedCache Cache => _httpContext.HttpContext.RequestServices.GetRequiredService<IDistributedCache>();
-        IDataProtector Protector => _httpContext.HttpContext.RequestServices.GetRequiredService<IDataProtectionProvider>().CreateProtector(CacheKeyPrefix, _name);
+        private IDistributedCache Cache => _httpContext.HttpContext.RequestServices.GetRequiredService<IDistributedCache>();
+        private IDataProtector Protector => _httpContext.HttpContext.RequestServices.GetRequiredService<IDataProtectionProvider>().CreateProtector(CacheKeyPrefix, _name);
 
         public string Protect(AuthenticationProperties data)
         {

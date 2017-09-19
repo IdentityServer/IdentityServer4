@@ -12,8 +12,8 @@ namespace IdentityServer4.UnitTests.Common
 {
     public class TestUserConsentStore : IUserConsentStore
     {
-        DefaultUserConsentStore _userConsentStore;
-        InMemoryPersistedGrantStore _grantStore = new InMemoryPersistedGrantStore();
+        private DefaultUserConsentStore _userConsentStore;
+        private InMemoryPersistedGrantStore _grantStore = new InMemoryPersistedGrantStore();
 
         public TestUserConsentStore()
         {

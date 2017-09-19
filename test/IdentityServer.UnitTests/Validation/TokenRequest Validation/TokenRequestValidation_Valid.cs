@@ -17,9 +17,9 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
 {
     public class TokenRequestValidation_Valid
     {
-        const string Category = "TokenRequest Validation - General - Valid";
+        private const string Category = "TokenRequest Validation - General - Valid";
 
-        IClientStore _clients = Factory.CreateClientStore();
+        private IClientStore _clients = Factory.CreateClientStore();
 
         [Fact]
         [Trait("Category", Category)]

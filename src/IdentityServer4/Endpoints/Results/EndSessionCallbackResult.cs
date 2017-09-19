@@ -16,7 +16,7 @@ using IdentityServer4.Infrastructure;
 
 namespace IdentityServer4.Endpoints.Results
 {
-    class EndSessionCallbackResult : IEndpointResult
+    internal class EndSessionCallbackResult : IEndpointResult
     {
         private readonly EndSessionCallbackValidationResult _result;
 
@@ -38,7 +38,7 @@ namespace IdentityServer4.Endpoints.Results
         private IdentityServerOptions _options;
         private BackChannelLogoutClient _backChannelClient;
 
-        void Init(HttpContext context)
+        private void Init(HttpContext context)
         {
             _options = _options ?? context.RequestServices.GetRequiredService<IdentityServerOptions>();
             _backChannelClient = _backChannelClient ?? context.RequestServices.GetRequiredService<BackChannelLogoutClient>();
@@ -91,7 +91,7 @@ namespace IdentityServer4.Endpoints.Results
             }
         }
 
-        string GetHtml()
+        private string GetHtml()
         {
             string framesHtml = null;
 

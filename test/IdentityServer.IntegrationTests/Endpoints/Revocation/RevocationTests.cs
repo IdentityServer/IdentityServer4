@@ -18,16 +18,16 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
 {
     public class RevocationTests
     {
-        const string Category = "RevocationTests endpoint";
+        private const string Category = "RevocationTests endpoint";
 
-        string client_id = "client";
-        string client_secret = "secret";
-        string redirect_uri = "https://client/callback";
+        private string client_id = "client";
+        private string client_secret = "secret";
+        private string redirect_uri = "https://client/callback";
 
-        string scope_name = "api";
-        string scope_secret = "api_secret";
+        private string scope_name = "api";
+        private string scope_secret = "api_secret";
 
-        IdentityServerPipeline _mockPipeline = new IdentityServerPipeline();
+        private IdentityServerPipeline _mockPipeline = new IdentityServerPipeline();
 
         public RevocationTests()
         {
@@ -99,7 +99,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
             _mockPipeline.Initialize();
         }
 
-        class Tokens
+        private class Tokens
         {
             public Tokens(IdentityModel.Client.TokenResponse response)
             {
@@ -111,7 +111,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
             public string RefreshToken { get; set; }
         }
 
-        async Task<Tokens> GetTokensAsync()
+        private async Task<Tokens> GetTokensAsync()
         {
             await _mockPipeline.LoginAsync("bob");
 
@@ -134,7 +134,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
             return new Tokens(tokenResponse);
         }
 
-        async Task<string> GetAccessTokenForImplicitClientAsync(string clientId)
+        private async Task<string> GetAccessTokenForImplicitClientAsync(string clientId)
         {
             await _mockPipeline.LoginAsync("bob");
 
@@ -150,12 +150,12 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
             return authorizationResponse.AccessToken;
         }
 
-        Task<bool> IsAccessTokenValidAsync(Tokens tokens)
+        private Task<bool> IsAccessTokenValidAsync(Tokens tokens)
         {
             return IsAccessTokenValidAsync(tokens.AccessToken);
         }
 
-        async Task<bool> IsAccessTokenValidAsync(string token)
+        private async Task<bool> IsAccessTokenValidAsync(string token)
         {
             var introspectionClient = new IntrospectionClient(IdentityServerPipeline.IntrospectionEndpoint, scope_name, scope_secret, _mockPipeline.Handler);
             var response = await introspectionClient.SendAsync(new IntrospectionRequest
@@ -166,7 +166,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
             return response.IsError == false && response.IsActive;
         }
 
-        async Task<bool> UseRefreshTokenAsync(Tokens tokens)
+        private async Task<bool> UseRefreshTokenAsync(Tokens tokens)
         {
             var tokenClient = new TokenClient(IdentityServerPipeline.TokenEndpoint, client_id, client_secret, _mockPipeline.Handler);
             var response = await tokenClient.RequestRefreshTokenAsync(tokens.RefreshToken);

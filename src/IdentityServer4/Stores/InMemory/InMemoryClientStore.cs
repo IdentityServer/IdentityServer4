@@ -16,7 +16,7 @@ namespace IdentityServer4.Stores
     /// </summary>
     public class InMemoryClientStore : IClientStore
     {
-        readonly IEnumerable<Client> _clients;
+        private readonly IEnumerable<Client> _clients;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InMemoryClientStore"/> class.

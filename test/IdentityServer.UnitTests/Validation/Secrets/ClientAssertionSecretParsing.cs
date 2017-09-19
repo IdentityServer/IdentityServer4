@@ -18,8 +18,8 @@ namespace IdentityServer4.Tests.Validation.Secrets
 {
     public class ClientAssertionSecretParsing
     {
-        IdentityServerOptions _options;
-        ClientAssertionSecretParser _parser;
+        private IdentityServerOptions _options;
+        private ClientAssertionSecretParser _parser;
 
         public ClientAssertionSecretParsing()
         {

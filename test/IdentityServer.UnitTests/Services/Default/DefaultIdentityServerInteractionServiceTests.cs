@@ -17,17 +17,17 @@ namespace IdentityServer4.UnitTests.Services.Default
 {
     public class DefaultIdentityServerInteractionServiceTests
     {
-        DefaultIdentityServerInteractionService _subject;
+        private DefaultIdentityServerInteractionService _subject;
 
-        IdentityServerOptions _options = new IdentityServerOptions();
-        MockHttpContextAccessor _mockMockHttpContextAccessor;
-        MockMessageStore<EndSession> _mockEndSessionStore = new MockMessageStore<EndSession>();
-        MockMessageStore<LogoutMessage> _mockLogoutMessageStore = new MockMessageStore<LogoutMessage>();
-        MockMessageStore<ErrorMessage> _mockErrorMessageStore = new MockMessageStore<ErrorMessage>();
-        MockConsentMessageStore _mockConsentStore = new MockConsentMessageStore();
-        MockPersistedGrantService _mockPersistedGrantService = new MockPersistedGrantService();
-        MockUserSession _mockUserSession = new MockUserSession();
-        MockReturnUrlParser _mockReturnUrlParser = new MockReturnUrlParser();
+        private IdentityServerOptions _options = new IdentityServerOptions();
+        private MockHttpContextAccessor _mockMockHttpContextAccessor;
+        private MockMessageStore<EndSession> _mockEndSessionStore = new MockMessageStore<EndSession>();
+        private MockMessageStore<LogoutMessage> _mockLogoutMessageStore = new MockMessageStore<LogoutMessage>();
+        private MockMessageStore<ErrorMessage> _mockErrorMessageStore = new MockMessageStore<ErrorMessage>();
+        private MockConsentMessageStore _mockConsentStore = new MockConsentMessageStore();
+        private MockPersistedGrantService _mockPersistedGrantService = new MockPersistedGrantService();
+        private MockUserSession _mockUserSession = new MockUserSession();
+        private MockReturnUrlParser _mockReturnUrlParser = new MockReturnUrlParser();
 
         public DefaultIdentityServerInteractionServiceTests()
         {

@@ -19,10 +19,10 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
 {
     public class TokenRequestValidation_PKCE
     {
-        const string Category = "TokenRequest Validation - PKCE";
+        private const string Category = "TokenRequest Validation - PKCE";
 
-        IClientStore _clients = Factory.CreateClientStore();
-        InputLengthRestrictions lengths = new InputLengthRestrictions();
+        private IClientStore _clients = Factory.CreateClientStore();
+        private InputLengthRestrictions lengths = new InputLengthRestrictions();
 
         [Theory]
         [InlineData("codeclient.pkce")]

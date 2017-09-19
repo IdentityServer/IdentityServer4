@@ -11,7 +11,7 @@ namespace IdentityServer4.Configuration
     /// </summary>
     public class CachingOptions
     {
-        static readonly TimeSpan Default = TimeSpan.FromMinutes(15);
+        private static readonly TimeSpan Default = TimeSpan.FromMinutes(15);
 
         /// <summary>
         /// Gets or sets the client store expiration.

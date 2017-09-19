@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.UnitTests.Validation
 {
-    static class Factory
+    internal static class Factory
     {
         public static IClientStore CreateClientStore()
         {

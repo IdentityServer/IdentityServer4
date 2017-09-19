@@ -19,18 +19,18 @@ namespace IdentityServer4.UnitTests.Validation
 {
     public class AccessTokenValidation
     {
-        const string Category = "Access token validation";
+        private const string Category = "Access token validation";
 
-        IClientStore _clients = Factory.CreateClientStore();
-        IdentityServerOptions _options = new IdentityServerOptions();
-        StubClock _clock = new StubClock();
+        private IClientStore _clients = Factory.CreateClientStore();
+        private IdentityServerOptions _options = new IdentityServerOptions();
+        private StubClock _clock = new StubClock();
 
         static AccessTokenValidation()
         {
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
         }
 
-        DateTime now;
+        private DateTime now;
         public DateTime UtcNow
         {
             get

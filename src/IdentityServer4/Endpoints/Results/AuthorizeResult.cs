@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.Endpoints.Results
 {
-    class AuthorizeResult : IEndpointResult
+    internal class AuthorizeResult : IEndpointResult
     {
         public AuthorizeResponse Response { get; }
 
@@ -46,7 +46,7 @@ namespace IdentityServer4.Endpoints.Results
         private IMessageStore<ErrorMessage> _errorMessageStore;
         private ISystemClock _clock;
 
-        void Init(HttpContext context)
+        private void Init(HttpContext context)
         {
             _options = _options ?? context.RequestServices.GetRequiredService<IdentityServerOptions>();
             _userSession = _userSession ?? context.RequestServices.GetRequiredService<IUserSession>();
@@ -68,7 +68,7 @@ namespace IdentityServer4.Endpoints.Results
             }
         }
 
-        async Task ProcessErrorAsync(HttpContext context)
+        private async Task ProcessErrorAsync(HttpContext context)
         {
             // these are the conditions where we can send a response 
             // back directly to the client, otherwise we're only showing the error UI
@@ -141,7 +141,7 @@ namespace IdentityServer4.Endpoints.Results
             }
         }
 
-        string BuildRedirectUri()
+        private string BuildRedirectUri()
         {
             var uri = Response.RedirectUri;
             var query = Response.ToNameValueCollection().ToQueryString();
@@ -164,9 +164,9 @@ namespace IdentityServer4.Endpoints.Results
             return uri;
         }
 
-        const string FormPostHtml = "<form method='post' action='{uri}'>{body}</form><script>(function(){document.forms[0].submit();})();</script>";
+        private const string FormPostHtml = "<form method='post' action='{uri}'>{body}</form><script>(function(){document.forms[0].submit();})();</script>";
 
-        string GetFormPostHtml()
+        private string GetFormPostHtml()
         {
             var html = FormPostHtml;
 
@@ -176,7 +176,7 @@ namespace IdentityServer4.Endpoints.Results
             return html;
         }
 
-        async Task RedirectToErrorPageAsync(HttpContext context)
+        private async Task RedirectToErrorPageAsync(HttpContext context)
         {
             var errorModel = new ErrorMessage
             {

@@ -17,12 +17,12 @@ namespace IdentityServer4.UnitTests.Validation.Secrets
 {
     public class SecretValidation
     {
-        const string Category = "Secrets - Secret Validator";
+        private const string Category = "Secrets - Secret Validator";
 
-        ISecretValidator _hashedSecretValidator = new HashedSharedSecretValidator(new Logger<HashedSharedSecretValidator>(new LoggerFactory()));
-        IClientStore _clients = new InMemoryClientStore(ClientValidationTestClients.Get());
-        SecretValidator _validator;
-        IdentityServerOptions _options = new IdentityServerOptions();
+        private ISecretValidator _hashedSecretValidator = new HashedSharedSecretValidator(new Logger<HashedSharedSecretValidator>(new LoggerFactory()));
+        private IClientStore _clients = new InMemoryClientStore(ClientValidationTestClients.Get());
+        private SecretValidator _validator;
+        private IdentityServerOptions _options = new IdentityServerOptions();
 
         public SecretValidation()
         {

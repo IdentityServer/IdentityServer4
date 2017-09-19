@@ -18,9 +18,9 @@ namespace IdentityServer4.IntegrationTests.Conformance.Basic
 {
     public class ClientAuthenticationTests 
     {
-        const string Category = "Conformance.Basic.ClientAuthenticationTests";
+        private const string Category = "Conformance.Basic.ClientAuthenticationTests";
 
-        IdentityServerPipeline _pipeline = new IdentityServerPipeline();
+        private IdentityServerPipeline _pipeline = new IdentityServerPipeline();
 
         public ClientAuthenticationTests()
         {

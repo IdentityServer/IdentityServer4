@@ -23,7 +23,7 @@ using System;
 
 namespace IdentityServer4.Endpoints
 {
-    class AuthorizeEndpoint : IEndpointHandler
+    internal class AuthorizeEndpoint : IEndpointHandler
     {
         private readonly IEventService _events;
         private readonly ILogger _logger;
@@ -72,7 +72,7 @@ namespace IdentityServer4.Endpoints
             return new StatusCodeResult(HttpStatusCode.NotFound);
         }
 
-        async Task<IEndpointResult> ProcessAuthorizeAsync(HttpContext context)
+        private async Task<IEndpointResult> ProcessAuthorizeAsync(HttpContext context)
         {
             _logger.LogDebug("Start authorize request");
 
@@ -201,7 +201,7 @@ namespace IdentityServer4.Endpoints
             _logger.LogInformation("Authorize endpoint response" + Environment.NewLine + "{response}", details);
         }
 
-        async Task<IEndpointResult> CreateErrorResultAsync(
+        private async Task<IEndpointResult> CreateErrorResultAsync(
             string logMessage,
             ValidatedAuthorizeRequest request = null, 
             string error = OidcConstants.AuthorizeErrors.ServerError, 

@@ -14,9 +14,9 @@ namespace IdentityServer4.UnitTests.Validation.AuthorizeRequest
 {
     public class Authorize_ProtocolValidation_Valid_PKCE
     {
-        const string Category = "AuthorizeRequest Protocol Validation - PKCE";
+        private const string Category = "AuthorizeRequest Protocol Validation - PKCE";
 
-        InputLengthRestrictions lengths = new InputLengthRestrictions();
+        private InputLengthRestrictions lengths = new InputLengthRestrictions();
 
         [Theory]
         [InlineData("codeclient.pkce")]

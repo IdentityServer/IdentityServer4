@@ -16,10 +16,10 @@ namespace IdentityServer4.UnitTests.Validation.Secrets
 {
     public class BasicAuthenticationSecretParsing
     {
-        const string Category = "Secrets - Basic Authentication Secret Parsing";
+        private const string Category = "Secrets - Basic Authentication Secret Parsing";
 
-        IdentityServerOptions _options;
-        BasicAuthenticationSecretParser _parser;
+        private IdentityServerOptions _options;
+        private BasicAuthenticationSecretParser _parser;
 
         public BasicAuthenticationSecretParsing()
         {

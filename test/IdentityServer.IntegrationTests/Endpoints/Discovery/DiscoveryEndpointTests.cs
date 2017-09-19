@@ -12,7 +12,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Discovery
 {
     public class DiscoveryEndpointTests
     {
-        const string Category = "Discovery endpoint";
+        private const string Category = "Discovery endpoint";
 
         [Fact]
         [Trait("Category", Category)]

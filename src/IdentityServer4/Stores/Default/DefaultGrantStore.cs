@@ -67,7 +67,7 @@ namespace IdentityServer4.Stores
             Logger = logger;
         }
 
-        const string KeySeparator = ":";
+        private const string KeySeparator = ":";
 
         /// <summary>
         /// Gets the hashed key.

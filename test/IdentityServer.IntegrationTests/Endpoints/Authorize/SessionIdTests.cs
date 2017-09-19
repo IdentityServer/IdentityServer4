@@ -15,9 +15,9 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 {
     public class SessionIdTests
     {
-        const string Category = "SessionIdTests";
+        private const string Category = "SessionIdTests";
 
-        IdentityServerPipeline _mockPipeline = new IdentityServerPipeline();
+        private IdentityServerPipeline _mockPipeline = new IdentityServerPipeline();
 
         public SessionIdTests()
         {

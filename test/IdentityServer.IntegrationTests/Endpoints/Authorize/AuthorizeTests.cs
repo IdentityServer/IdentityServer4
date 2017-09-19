@@ -18,11 +18,11 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 {
     public class AuthorizeTests
     {
-        const string Category = "Authorize endpoint";
+        private const string Category = "Authorize endpoint";
 
-        IdentityServerPipeline _mockPipeline = new IdentityServerPipeline();
+        private IdentityServerPipeline _mockPipeline = new IdentityServerPipeline();
 
-        Client _client1;
+        private Client _client1;
 
         public AuthorizeTests()
         {

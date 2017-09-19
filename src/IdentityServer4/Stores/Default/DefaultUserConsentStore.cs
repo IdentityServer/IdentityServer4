@@ -31,7 +31,7 @@ namespace IdentityServer4.Stores
         {
         }
 
-        string GetConsentKey(string subjectId, string clientId)
+        private string GetConsentKey(string subjectId, string clientId)
         {
             return subjectId + "|" + clientId;
         }

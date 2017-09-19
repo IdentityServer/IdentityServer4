@@ -41,7 +41,7 @@ namespace IdentityServer4.Hosting
             _logger = logger;
         }
 
-        async Task<string> GetCookieAuthenticationSchemeAsync()
+        private async Task<string> GetCookieAuthenticationSchemeAsync()
         {
             var scheme = await _schemes.GetDefaultAuthenticateSchemeAsync();
             if (scheme == null)

@@ -24,9 +24,9 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
 {
     public class EndSessionTests
     {
-        const string Category = "End session endpoint";
+        private const string Category = "End session endpoint";
 
-        IdentityServerPipeline _mockPipeline = new IdentityServerPipeline();
+        private IdentityServerPipeline _mockPipeline = new IdentityServerPipeline();
 
         public EndSessionTests()
         {

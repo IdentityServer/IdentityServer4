@@ -10,7 +10,7 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace IdentityServer4.UnitTests.Validation
 {
-    static class ClientValidationTestClients
+    internal static class ClientValidationTestClients
     {
         public static List<Client> Get()
         {

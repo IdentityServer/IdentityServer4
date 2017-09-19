@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.UnitTests.Validation
 {
-    class TestProfileService : IProfileService
+    internal class TestProfileService : IProfileService
     {
-        bool _shouldBeActive;
+        private bool _shouldBeActive;
 
         public TestProfileService(bool shouldBeActive = true)
         {

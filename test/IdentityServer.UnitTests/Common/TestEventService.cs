@@ -14,7 +14,7 @@ namespace IdentityServer4.UnitTests.Common
 {
     public class TestEventService : IEventService
     {
-        Dictionary<Type, object> _events = new Dictionary<Type, object>();
+        private Dictionary<Type, object> _events = new Dictionary<Type, object>();
 
         public Task RaiseAsync(Event evt)
         {

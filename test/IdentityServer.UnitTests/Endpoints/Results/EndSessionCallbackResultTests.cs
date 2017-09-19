@@ -18,14 +18,14 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
 {
     public class EndSessionCallbackResultTests
     {
-        EndSessionCallbackResult _subject;
+        private EndSessionCallbackResult _subject;
 
-        EndSessionCallbackValidationResult _result = new EndSessionCallbackValidationResult();
-        MockUserSession _mockUserSession = new MockUserSession();
-        IdentityServerOptions _options = TestIdentityServerOptions.Create();
-        StubBackChannelLogoutClient _stubBackChannelLogoutClient = new StubBackChannelLogoutClient();
+        private EndSessionCallbackValidationResult _result = new EndSessionCallbackValidationResult();
+        private MockUserSession _mockUserSession = new MockUserSession();
+        private IdentityServerOptions _options = TestIdentityServerOptions.Create();
+        private StubBackChannelLogoutClient _stubBackChannelLogoutClient = new StubBackChannelLogoutClient();
 
-        DefaultHttpContext _context = new DefaultHttpContext();
+        private DefaultHttpContext _context = new DefaultHttpContext();
 
         public EndSessionCallbackResultTests()
         {

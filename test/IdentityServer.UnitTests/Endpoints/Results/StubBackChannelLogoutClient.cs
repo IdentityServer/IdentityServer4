@@ -5,7 +5,7 @@ using IdentityServer4.Validation;
 
 namespace IdentityServer4.UnitTests.Endpoints.Results
 {
-    class StubBackChannelLogoutClient : BackChannelLogoutClient
+    internal class StubBackChannelLogoutClient : BackChannelLogoutClient
     {
         public StubBackChannelLogoutClient() : base(null, null, null, null)
         {

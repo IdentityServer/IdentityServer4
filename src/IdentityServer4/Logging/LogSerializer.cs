@@ -12,7 +12,7 @@ namespace IdentityServer4.Logging
     /// </summary>
     internal static class LogSerializer
     {
-        static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
+        private static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
         {
             NullValueHandling = NullValueHandling.Ignore,
             DateFormatHandling = DateFormatHandling.IsoDateFormat,

@@ -50,7 +50,7 @@ namespace IdentityServer4.Endpoints.Results
         private ISystemClock _clock;
         private IMessageStore<LogoutMessage> _logoutMessageStore;
 
-        void Init(HttpContext context)
+        private void Init(HttpContext context)
         {
             _options = _options ?? context.RequestServices.GetRequiredService<IdentityServerOptions>();
             _clock = _clock ?? context.RequestServices.GetRequiredService<ISystemClock>();

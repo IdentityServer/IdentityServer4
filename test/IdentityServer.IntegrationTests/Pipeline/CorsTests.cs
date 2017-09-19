@@ -19,9 +19,9 @@ namespace IdentityServer4.IntegrationTests.Pipeline
 {
     public class CorsTests
     {
-        const string Category = "CORS Integration";
+        private const string Category = "CORS Integration";
 
-        IdentityServerPipeline _pipeline = new IdentityServerPipeline();
+        private IdentityServerPipeline _pipeline = new IdentityServerPipeline();
 
         public CorsTests()
         {

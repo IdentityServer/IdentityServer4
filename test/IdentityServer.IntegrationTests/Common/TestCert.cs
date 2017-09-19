@@ -7,7 +7,7 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace IdentityServer4.IntegrationTests.Common
 {
-    static class TestCert
+    internal static class TestCert
     {
         public static X509Certificate2 Load()
         {

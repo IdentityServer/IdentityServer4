@@ -17,10 +17,10 @@ namespace IdentityServer4.UnitTests.Validation
 {
     public class IntrospectionRequestValidatorTests
     {
-        const string Category = "Introspection request validation";
+        private const string Category = "Introspection request validation";
 
-        IntrospectionRequestValidator _subject;
-        IReferenceTokenStore _referenceTokenStore;
+        private IntrospectionRequestValidator _subject;
+        private IReferenceTokenStore _referenceTokenStore;
 
         public IntrospectionRequestValidatorTests()
         {

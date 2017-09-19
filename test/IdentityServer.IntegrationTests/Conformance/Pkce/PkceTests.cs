@@ -19,22 +19,22 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
 {
     public class PkceTests
     {
-        const string Category = "PKCE";
+        private const string Category = "PKCE";
 
-        IdentityServerPipeline _pipeline = new IdentityServerPipeline();
+        private IdentityServerPipeline _pipeline = new IdentityServerPipeline();
 
-        Client client;
+        private Client client;
 
-        const string client_id = "code_client";
-        const string client_id_plain = "code_plain_client";
-        const string client_id_pkce = "codewithproofkey_client";
-        const string client_id_pkce_plain = "codewithproofkey_plain_client";
+        private const string client_id = "code_client";
+        private const string client_id_plain = "code_plain_client";
+        private const string client_id_pkce = "codewithproofkey_client";
+        private const string client_id_pkce_plain = "codewithproofkey_plain_client";
 
 
-        string redirect_uri = "https://code_client/callback";
-        string code_verifier = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-        string client_secret = "secret";
-        string response_type = "code";
+        private string redirect_uri = "https://code_client/callback";
+        private string code_verifier = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+        private string client_secret = "secret";
+        private string response_type = "code";
 
         public PkceTests()
         {

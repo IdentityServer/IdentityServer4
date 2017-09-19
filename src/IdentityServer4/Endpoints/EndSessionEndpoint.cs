@@ -15,7 +15,7 @@ using IdentityServer4.Services;
 
 namespace IdentityServer4.Endpoints
 {
-    class EndSessionEndpoint : IEndpointHandler
+    internal class EndSessionEndpoint : IEndpointHandler
     {
         private readonly IEndSessionRequestValidator _endSessionRequestValidator;
         private readonly ILogger _logger;

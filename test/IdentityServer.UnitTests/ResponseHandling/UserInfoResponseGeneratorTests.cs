@@ -18,14 +18,14 @@ namespace IdentityServer4.UnitTests.ResponseHandling
 {
     public class UserInfoResponseGeneratorTests
     {
-        UserInfoResponseGenerator _subject;
-        MockProfileService _mockProfileService = new MockProfileService();
-        ClaimsPrincipal _user;
-        Client _client;
+        private UserInfoResponseGenerator _subject;
+        private MockProfileService _mockProfileService = new MockProfileService();
+        private ClaimsPrincipal _user;
+        private Client _client;
 
-        InMemoryResourcesStore _resourceStore;
-        List<IdentityResource> _identityResources = new List<IdentityResource>();
-        List<ApiResource> _apiResources = new List<ApiResource>();
+        private InMemoryResourcesStore _resourceStore;
+        private List<IdentityResource> _identityResources = new List<IdentityResource>();
+        private List<ApiResource> _apiResources = new List<ApiResource>();
 
         public UserInfoResponseGeneratorTests()
         {

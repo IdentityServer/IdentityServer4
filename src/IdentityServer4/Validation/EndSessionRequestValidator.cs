@@ -64,7 +64,7 @@ namespace IdentityServer4.Validation
 
             var validatedRequest = new ValidatedEndSessionRequest
             {
-                Raw = parameters,
+                Raw = parameters
             };
 
             var idTokenHint = parameters.Get(OidcConstants.EndSessionRequest.IdTokenHint);

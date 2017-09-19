@@ -17,9 +17,9 @@ namespace IdentityServer4.IntegrationTests.Conformance.Basic
 {
     public class RedirectUriTests
     {
-        const string Category = "Conformance.Basic.RedirectUriTests";
+        private const string Category = "Conformance.Basic.RedirectUriTests";
 
-        IdentityServerPipeline _mockPipeline = new IdentityServerPipeline();
+        private IdentityServerPipeline _mockPipeline = new IdentityServerPipeline();
 
         public RedirectUriTests()
         {

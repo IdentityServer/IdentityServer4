@@ -17,10 +17,10 @@ namespace IdentityServer4.UnitTests.Hosting
 {
     public class EndpointRouterTests
     {
-        Dictionary<string, Endpoint> _pathMap;
-        List<Endpoint> _endpoints;
-        IdentityServerOptions _options;
-        EndpointRouter _subject;
+        private Dictionary<string, Endpoint> _pathMap;
+        private List<Endpoint> _endpoints;
+        private IdentityServerOptions _options;
+        private EndpointRouter _subject;
 
         public EndpointRouterTests()
         {

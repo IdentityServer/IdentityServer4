@@ -12,7 +12,7 @@ using System;
 
 namespace IdentityServer4.UnitTests.Validation
 {
-    static class TokenFactory
+    internal static class TokenFactory
     {
         public static Token CreateAccessToken(Client client, string subjectId, int lifetime, params string[] scopes)
         {

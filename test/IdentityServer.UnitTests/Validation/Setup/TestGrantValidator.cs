@@ -8,7 +8,7 @@ using IdentityServer4.Models;
 
 namespace IdentityServer4.UnitTests.Validation
 {
-    class TestGrantValidator : IExtensionGrantValidator
+    internal class TestGrantValidator : IExtensionGrantValidator
     {
         private readonly bool _isInvalid;
         private readonly string _errorDescription;

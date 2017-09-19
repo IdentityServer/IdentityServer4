@@ -19,9 +19,9 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
 {
     public class TokenRequestValidation_RefreshToken_Invalid
     {
-        const string Category = "TokenRequest Validation - RefreshToken - Invalid";
+        private const string Category = "TokenRequest Validation - RefreshToken - Invalid";
 
-        IClientStore _clients = Factory.CreateClientStore();
+        private IClientStore _clients = Factory.CreateClientStore();
 
         [Fact]
         [Trait("Category", Category)]

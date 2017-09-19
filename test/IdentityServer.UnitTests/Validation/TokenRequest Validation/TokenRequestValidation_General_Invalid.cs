@@ -18,8 +18,8 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
     {
         private const string Category = "TokenRequest Validation - General - Invalid";
 
-        IClientStore _clients = new InMemoryClientStore(TestClients.Get());
-        ClaimsPrincipal _subject = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
+        private IClientStore _clients = new InMemoryClientStore(TestClients.Get());
+        private ClaimsPrincipal _subject = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
 
         [Fact]
         [Trait("Category", Category)]

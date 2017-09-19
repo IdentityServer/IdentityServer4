@@ -11,7 +11,7 @@ using System.Collections.Generic;
 
 namespace IdentityServer4.Hosting
 {
-    class EndpointRouter : IEndpointRouter
+    internal class EndpointRouter : IEndpointRouter
     {
         private readonly IEnumerable<Endpoint> _endpoints;
         private readonly IdentityServerOptions _options;

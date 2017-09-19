@@ -20,23 +20,23 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 {
     public class AuthorizeEndpointTests
     {
-        const string Category = "Authorize Endpoint";
+        private const string Category = "Authorize Endpoint";
 
-        AuthorizeEndpoint _subject;
+        private AuthorizeEndpoint _subject;
 
-        NameValueCollection _params = new NameValueCollection();
-        ClaimsPrincipal _user = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
+        private NameValueCollection _params = new NameValueCollection();
+        private ClaimsPrincipal _user = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
 
-        HttpContext _context;
-        ValidatedAuthorizeRequest _validatedAuthorizeRequest;
+        private HttpContext _context;
+        private ValidatedAuthorizeRequest _validatedAuthorizeRequest;
 
-        TestEventService _fakeEventService = new TestEventService();
-        ILogger<AuthorizeEndpoint> _fakeLogger = TestLogger.Create<AuthorizeEndpoint>();
-        StubAuthorizeRequestValidator _stubAuthorizeRequestValidator = new StubAuthorizeRequestValidator();
-        StubAuthorizeInteractionResponseGenerator _stubInteractionGenerator = new StubAuthorizeInteractionResponseGenerator();
-        MockConsentMessageStore _mockUserConsentResponseMessageStore = new MockConsentMessageStore();
-        StubAuthorizeResponseGenerator _stubAuthorizeResponseGenerator = new StubAuthorizeResponseGenerator();
-        MockUserSession _mockUserSession = new MockUserSession();
+        private TestEventService _fakeEventService = new TestEventService();
+        private ILogger<AuthorizeEndpoint> _fakeLogger = TestLogger.Create<AuthorizeEndpoint>();
+        private StubAuthorizeRequestValidator _stubAuthorizeRequestValidator = new StubAuthorizeRequestValidator();
+        private StubAuthorizeInteractionResponseGenerator _stubInteractionGenerator = new StubAuthorizeInteractionResponseGenerator();
+        private MockConsentMessageStore _mockUserConsentResponseMessageStore = new MockConsentMessageStore();
+        private StubAuthorizeResponseGenerator _stubAuthorizeResponseGenerator = new StubAuthorizeResponseGenerator();
+        private MockUserSession _mockUserSession = new MockUserSession();
 
         public AuthorizeEndpointTests()
         {

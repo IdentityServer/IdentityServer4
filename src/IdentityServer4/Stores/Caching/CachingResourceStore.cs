@@ -21,7 +21,7 @@ namespace IdentityServer4.Stores
     public class CachingResourceStore<T> : IResourceStore
         where T : IResourceStore
     {
-        const string AllKey = "__all__";
+        private const string AllKey = "__all__";
 
         private readonly IdentityServerOptions _options;
         private readonly ICache<IEnumerable<IdentityResource>> _identityCache;

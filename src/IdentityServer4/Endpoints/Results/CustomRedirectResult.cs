@@ -52,7 +52,7 @@ namespace IdentityServer4.Endpoints.Results
 
         private IdentityServerOptions _options;
 
-        void Init(HttpContext context)
+        private void Init(HttpContext context)
         {
             _options = _options ?? context.RequestServices.GetRequiredService<IdentityServerOptions>();
         }

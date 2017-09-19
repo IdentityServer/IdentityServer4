@@ -19,15 +19,15 @@ namespace IdentityServer4.UnitTests.Services.Default
 {
     public class DefaultConsentServiceTests
     {
-        DefaultConsentService _subject;
-        MockProfileService _mockMockProfileService = new MockProfileService();
+        private DefaultConsentService _subject;
+        private MockProfileService _mockMockProfileService = new MockProfileService();
 
-        ClaimsPrincipal _user;
-        Client _client;
-        TestUserConsentStore _userConsentStore = new TestUserConsentStore();
-        StubClock _clock = new StubClock();
+        private ClaimsPrincipal _user;
+        private Client _client;
+        private TestUserConsentStore _userConsentStore = new TestUserConsentStore();
+        private StubClock _clock = new StubClock();
 
-        DateTime now;
+        private DateTime now;
 
         public DefaultConsentServiceTests()
         {

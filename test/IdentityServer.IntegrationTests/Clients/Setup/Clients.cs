@@ -10,7 +10,7 @@ using IdentityServer4.IntegrationTests.Common;
 
 namespace IdentityServer4.IntegrationTests.Clients
 {
-    class Clients
+    internal class Clients
     {
         public static IEnumerable<Client> Get()
         {

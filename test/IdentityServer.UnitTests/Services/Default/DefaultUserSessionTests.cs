@@ -20,15 +20,15 @@ namespace IdentityServer4.UnitTests.Services.Default
 {
     public class DefaultUserSessionTests
     {
-        DefaultUserSession _subject;
-        MockHttpContextAccessor _mockHttpContext = new MockHttpContextAccessor();
-        MockAuthenticationSchemeProvider _mockAuthenticationSchemeProvider = new MockAuthenticationSchemeProvider();
-        MockAuthenticationHandlerProvider _mockAuthenticationHandlerProvider = new MockAuthenticationHandlerProvider();
-        MockAuthenticationHandler _mockAuthenticationHandler = new MockAuthenticationHandler();
+        private DefaultUserSession _subject;
+        private MockHttpContextAccessor _mockHttpContext = new MockHttpContextAccessor();
+        private MockAuthenticationSchemeProvider _mockAuthenticationSchemeProvider = new MockAuthenticationSchemeProvider();
+        private MockAuthenticationHandlerProvider _mockAuthenticationHandlerProvider = new MockAuthenticationHandlerProvider();
+        private MockAuthenticationHandler _mockAuthenticationHandler = new MockAuthenticationHandler();
 
-        IdentityServerOptions _options = new IdentityServerOptions();
-        ClaimsPrincipal _user;
-        AuthenticationProperties _props = new AuthenticationProperties();
+        private IdentityServerOptions _options = new IdentityServerOptions();
+        private ClaimsPrincipal _user;
+        private AuthenticationProperties _props = new AuthenticationProperties();
 
         public DefaultUserSessionTests()
         {

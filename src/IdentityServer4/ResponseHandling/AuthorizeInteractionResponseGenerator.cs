@@ -76,7 +76,7 @@ namespace IdentityServer4.ResponseHandling
                 Logger.LogInformation("Error: User denied consent");
                 return new InteractionResponse
                 {
-                    Error = OidcConstants.AuthorizeErrors.AccessDenied,
+                    Error = OidcConstants.AuthorizeErrors.AccessDenied
                 };
             }
 

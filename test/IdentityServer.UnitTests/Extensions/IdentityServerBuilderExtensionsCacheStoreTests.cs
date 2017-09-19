@@ -12,7 +12,7 @@ namespace IdentityServer4.UnitTests.Extensions
 {
     public class IdentityServerBuilderExtensionsCacheStoreTests
     {
-        class CustomClientStore: IClientStore
+        private class CustomClientStore: IClientStore
         {
             public Task<Client> FindClientByIdAsync(string clientId)
             {
@@ -20,7 +20,7 @@ namespace IdentityServer4.UnitTests.Extensions
             }
         }
 
-        class CustomResourceStore : IResourceStore
+        private class CustomResourceStore : IResourceStore
         {
             public Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeAsync(IEnumerable<string> scopeNames)
             {

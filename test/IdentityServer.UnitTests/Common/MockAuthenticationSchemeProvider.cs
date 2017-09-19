@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer.UnitTests.Common
 {
-    class MockAuthenticationSchemeProvider : IAuthenticationSchemeProvider
+    internal class MockAuthenticationSchemeProvider : IAuthenticationSchemeProvider
     {
         public string Default { get; set; } = "scheme";
         public List<AuthenticationScheme> Schemes { get; set; } = new List<AuthenticationScheme>()

@@ -334,12 +334,12 @@ namespace IdentityServer4.Models
                 _inner = new HashSet<string>(values);
             }
 
-            ICollection<string> Clone()
+            private ICollection<string> Clone()
             {
                 return new HashSet<string>(this);
             }
 
-            ICollection<string> CloneWith(params string[] values)
+            private ICollection<string> CloneWith(params string[] values)
             {
                 var clone = Clone();
                 foreach (var item in values) clone.Add(item);

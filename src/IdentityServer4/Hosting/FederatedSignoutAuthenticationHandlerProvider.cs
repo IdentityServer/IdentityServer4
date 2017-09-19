@@ -16,7 +16,7 @@ namespace IdentityServer4.Hosting
     // we assume they are handling the federated signout in an iframe. 
     // based on this assumption, we then render our federated signout iframes 
     // to any current clients.
-    class FederatedSignoutAuthenticationHandlerProvider : IAuthenticationHandlerProvider
+    internal class FederatedSignoutAuthenticationHandlerProvider : IAuthenticationHandlerProvider
     {
         private readonly IAuthenticationHandlerProvider _provider;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -51,10 +51,10 @@ namespace IdentityServer4.Hosting
         }
     }
 
-    class AuthenticationRequestHandlerWrapper : IAuthenticationRequestHandler
+    internal class AuthenticationRequestHandlerWrapper : IAuthenticationRequestHandler
     {
-        const string DocumentHtml = "<!DOCTYPE html><html><body>{0}</body></html>";
-        const string IframeHtml = "<iframe style='display:none' width='0' height='0' src='{0}'></iframe>";
+        private const string DocumentHtml = "<!DOCTYPE html><html><body>{0}</body></html>";
+        private const string IframeHtml = "<iframe style='display:none' width='0' height='0' src='{0}'></iframe>";
 
         private readonly IAuthenticationRequestHandler _inner;
         private readonly HttpContext _context;
@@ -137,7 +137,7 @@ namespace IdentityServer4.Hosting
         }
     }
 
-    class AuthenticationRequestSignOutHandlerWrapper : AuthenticationRequestHandlerWrapper, IAuthenticationSignOutHandler
+    internal class AuthenticationRequestSignOutHandlerWrapper : AuthenticationRequestHandlerWrapper, IAuthenticationSignOutHandler
     {
         private readonly IAuthenticationSignOutHandler _inner;
 
@@ -153,7 +153,7 @@ namespace IdentityServer4.Hosting
         }
     }
 
-    class AuthenticationRequestSignInHandlerWrapper : AuthenticationRequestSignOutHandlerWrapper, IAuthenticationSignInHandler
+    internal class AuthenticationRequestSignInHandlerWrapper : AuthenticationRequestSignOutHandlerWrapper, IAuthenticationSignInHandler
     {
         private readonly IAuthenticationSignInHandler _inner;
 

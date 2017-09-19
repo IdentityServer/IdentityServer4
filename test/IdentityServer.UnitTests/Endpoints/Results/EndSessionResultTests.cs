@@ -21,13 +21,13 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
 {
     public class EndSessionResultTests
     {
-        EndSessionResult _subject;
+        private EndSessionResult _subject;
 
-        EndSessionValidationResult _result = new EndSessionValidationResult();
-        IdentityServerOptions _options = new IdentityServerOptions();
-        MockMessageStore<LogoutMessage> _mockLogoutMessageStore = new MockMessageStore<LogoutMessage>();
+        private EndSessionValidationResult _result = new EndSessionValidationResult();
+        private IdentityServerOptions _options = new IdentityServerOptions();
+        private MockMessageStore<LogoutMessage> _mockLogoutMessageStore = new MockMessageStore<LogoutMessage>();
 
-        DefaultHttpContext _context = new DefaultHttpContext();
+        private DefaultHttpContext _context = new DefaultHttpContext();
 
         public EndSessionResultTests()
         {

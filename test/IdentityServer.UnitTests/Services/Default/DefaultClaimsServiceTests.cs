@@ -17,13 +17,13 @@ namespace IdentityServer4.UnitTests.Services.Default
 {
     public class DefaultClaimsServiceTests
     {
-        DefaultClaimsService _subject;
-        MockProfileService _mockMockProfileService = new MockProfileService();
+        private DefaultClaimsService _subject;
+        private MockProfileService _mockMockProfileService = new MockProfileService();
 
-        ClaimsPrincipal _user;
-        Client _client;
-        ValidatedRequest _validatedRequest;
-        Resources _resources = new Resources();
+        private ClaimsPrincipal _user;
+        private Client _client;
+        private ValidatedRequest _validatedRequest;
+        private Resources _resources = new Resources();
 
         public DefaultClaimsServiceTests()
         {

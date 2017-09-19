@@ -16,11 +16,11 @@ namespace IdentityServer4.IntegrationTests.Pipeline
 {
     public class SubpathHosting
     {
-        const string Category = "Subpath endpoint";
+        private const string Category = "Subpath endpoint";
 
-        IdentityServerPipeline _mockPipeline = new IdentityServerPipeline();
+        private IdentityServerPipeline _mockPipeline = new IdentityServerPipeline();
 
-        Client _client1;
+        private Client _client1;
 
         public SubpathHosting()
         {
@@ -33,7 +33,7 @@ namespace IdentityServer4.IntegrationTests.Pipeline
                     AllowedScopes = new List<string> { "openid", "profile" },
                     RedirectUris = new List<string> { "https://client1/callback" },
                     AllowAccessTokensViaBrowser = true
-                },
+                }
             });
 
             _mockPipeline.Users.Add(new TestUser

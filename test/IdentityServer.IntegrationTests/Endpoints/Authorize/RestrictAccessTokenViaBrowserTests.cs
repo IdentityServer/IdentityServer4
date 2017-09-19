@@ -16,11 +16,11 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 {
     public class RestrictAccessTokenViaBrowserTests
     {
-        const string Category = "RestrictAccessTokenViaBrowserTests";
+        private const string Category = "RestrictAccessTokenViaBrowserTests";
 
-        IdentityServerPipeline _mockPipeline = new IdentityServerPipeline();
+        private IdentityServerPipeline _mockPipeline = new IdentityServerPipeline();
 
-        ClaimsPrincipal _user = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
+        private ClaimsPrincipal _user = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
 
         public RestrictAccessTokenViaBrowserTests()
         {

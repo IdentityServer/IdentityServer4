@@ -14,7 +14,7 @@ namespace IdentityServer4.IntegrationTests.Clients
 {
     public class ClientCredentialsandResourceOwnerClient
     {
-        const string TokenEndpoint = "https://server/connect/token";
+        private const string TokenEndpoint = "https://server/connect/token";
 
         private readonly HttpClient _client;
         private readonly HttpMessageHandler _handler;

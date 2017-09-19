@@ -45,7 +45,7 @@ namespace IdentityServer4
             }
         }
 
-        async Task<CorsPolicy> ProcessAsync(HttpContext context)
+        private async Task<CorsPolicy> ProcessAsync(HttpContext context)
         {
             var origin = context.Request.GetCorsOrigin();
             if (origin != null)

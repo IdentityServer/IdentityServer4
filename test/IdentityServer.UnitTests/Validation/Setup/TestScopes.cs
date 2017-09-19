@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace IdentityServer4.UnitTests.Validation
 {
-    class TestScopes
+    internal class TestScopes
     {
         public static IEnumerable<IdentityResource> GetIdentity()
         {

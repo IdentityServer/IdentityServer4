@@ -12,9 +12,9 @@ namespace IdentityServer4.IntegrationTests.Endpoints.CheckSession
 {
     public class CheckSessionTests
     {
-        const string Category = "Check session endpoint";
+        private const string Category = "Check session endpoint";
 
-        IdentityServerPipeline _mockPipeline = new IdentityServerPipeline();
+        private IdentityServerPipeline _mockPipeline = new IdentityServerPipeline();
 
         public CheckSessionTests()
         {

@@ -20,9 +20,9 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
 {
     public class IntrospectionTests
     {
-        const string Category = "Introspection endpoint";
-        const string IntrospectionEndpoint = "https://server/connect/introspect";
-        const string TokenEndpoint = "https://server/connect/token";
+        private const string Category = "Introspection endpoint";
+        private const string IntrospectionEndpoint = "https://server/connect/introspect";
+        private const string TokenEndpoint = "https://server/connect/token";
 
         private readonly HttpClient _client;
         private readonly HttpMessageHandler _handler;
