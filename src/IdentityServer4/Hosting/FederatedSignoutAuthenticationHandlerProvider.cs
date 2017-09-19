@@ -158,7 +158,7 @@ namespace IdentityServer4.Hosting
         private readonly IAuthenticationSignInHandler _inner;
 
         public AuthenticationRequestSignInHandlerWrapper(IAuthenticationSignInHandler inner, IHttpContextAccessor httpContextAccessor)
-            : base((IAuthenticationSignOutHandler)inner, httpContextAccessor)
+            : base(inner, httpContextAccessor)
         {
             _inner = inner;
         }

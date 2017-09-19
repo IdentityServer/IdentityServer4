@@ -37,7 +37,7 @@ namespace IdentityServer4
                 }
             }
 
-            claims.Add(new Claim(JwtClaimTypes.Audience, string.Format(Constants.AccessTokenAudience, tools._contextAccessor.HttpContext.GetIdentityServerIssuerUri().EnsureTrailingSlash())));
+            claims.Add(new Claim(JwtClaimTypes.Audience, string.Format(Constants.AccessTokenAudience, tools.ContextAccessor.HttpContext.GetIdentityServerIssuerUri().EnsureTrailingSlash())));
             if (!audiences.IsNullOrEmpty())
             {
                 foreach (var audience in audiences)

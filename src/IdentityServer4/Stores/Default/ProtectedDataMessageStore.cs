@@ -14,14 +14,14 @@ namespace IdentityServer4.Stores
 {
     internal class ProtectedDataMessageStore<TModel> : IMessageStore<TModel>
     {
-        const string purpose = "IdentityServer4.Stores.ProtectedDataMessageStore";
+        const string Purpose = "IdentityServer4.Stores.ProtectedDataMessageStore";
 
         private readonly IDataProtector _protector;
         private readonly ILogger _logger;
 
         public ProtectedDataMessageStore(IDataProtectionProvider provider, ILogger<ProtectedDataMessageStore<TModel>> logger)
         {
-            _protector = provider.CreateProtector(purpose);
+            _protector = provider.CreateProtector(Purpose);
             _logger = logger;
         }
 

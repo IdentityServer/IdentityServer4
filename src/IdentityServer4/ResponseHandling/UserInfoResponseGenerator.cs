@@ -31,13 +31,12 @@ namespace IdentityServer4.ResponseHandling
         /// <summary>
         /// The profile service
         /// </summary>
-        private readonly IProfileService Profile;
+        protected readonly IProfileService Profile;
 
         /// <summary>
         /// The resource store
         /// </summary>
         protected readonly IResourceStore Resources;
-
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserInfoResponseGenerator"/> class.

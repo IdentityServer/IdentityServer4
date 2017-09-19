@@ -22,12 +22,12 @@ namespace IdentityServer4.Services
         /// <summary>
         /// The user consent store
         /// </summary>
-        protected readonly IUserConsentStore _userConsentStore;
+        protected readonly IUserConsentStore UserConsentStore;
 
         /// <summary>
         ///  The clock
         /// </summary>
-        protected readonly ISystemClock _clock;
+        protected readonly ISystemClock Clock;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultConsentService" /> class.
@@ -37,8 +37,8 @@ namespace IdentityServer4.Services
         /// <exception cref="System.ArgumentNullException">store</exception>
         public DefaultConsentService(ISystemClock clock, IUserConsentStore userConsentStore)
         {
-            _clock = clock;
-            _userConsentStore = userConsentStore;
+            Clock = clock;
+            UserConsentStore = userConsentStore;
         }
 
         /// <summary>
@@ -82,16 +82,16 @@ namespace IdentityServer4.Services
                 return true;
             }
             
-            var consent = await _userConsentStore.GetUserConsentAsync(subject.GetSubjectId(), client.ClientId);
+            var consent = await UserConsentStore.GetUserConsentAsync(subject.GetSubjectId(), client.ClientId);
 
             if (consent == null)
             {
                 return true;
             }
 
-            if (consent.Expiration.HasExpired(_clock.UtcNow.UtcDateTime))
+            if (consent.Expiration.HasExpired(Clock.UtcNow.UtcDateTime))
             {
-                await _userConsentStore.RemoveUserConsentAsync(consent.SubjectId, consent.ClientId);
+                await UserConsentStore.RemoveUserConsentAsync(consent.SubjectId, consent.ClientId);
                 return true;
             }
 
@@ -130,7 +130,7 @@ namespace IdentityServer4.Services
                 {
                     var consent = new Consent
                     {
-                        CreationTime = _clock.UtcNow.UtcDateTime,
+                        CreationTime = Clock.UtcNow.UtcDateTime,
                         SubjectId = subjectId,
                         ClientId = clientId,
                         Scopes = scopes
@@ -141,11 +141,11 @@ namespace IdentityServer4.Services
                         consent.Expiration = consent.CreationTime.AddSeconds(client.ConsentLifetime.Value);
                     }
 
-                    await _userConsentStore.StoreUserConsentAsync(consent);
+                    await UserConsentStore.StoreUserConsentAsync(consent);
                 }
                 else
                 {
-                    await _userConsentStore.RemoveUserConsentAsync(subjectId, clientId);
+                    await UserConsentStore.RemoveUserConsentAsync(subjectId, clientId);
                 }
             }
         }

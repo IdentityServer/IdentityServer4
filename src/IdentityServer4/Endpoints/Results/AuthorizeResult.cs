@@ -164,11 +164,11 @@ namespace IdentityServer4.Endpoints.Results
             return uri;
         }
 
-        const string _formPostHtml = "<form method='post' action='{uri}'>{body}</form><script>(function(){document.forms[0].submit();})();</script>";
+        const string FormPostHtml = "<form method='post' action='{uri}'>{body}</form><script>(function(){document.forms[0].submit();})();</script>";
 
         string GetFormPostHtml()
         {
-            var html = _formPostHtml;
+            var html = FormPostHtml;
 
             html = html.Replace("{uri}", Response.Request.RedirectUri);
             html = html.Replace("{body}", Response.ToNameValueCollection().ToFormPost());
