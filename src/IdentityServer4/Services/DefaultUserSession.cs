@@ -19,8 +19,8 @@ namespace IdentityServer4.Services
         internal const string ClientListKey = "client_list";
 
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private IAuthenticationSchemeProvider _schemes;
-        private IAuthenticationHandlerProvider _handlers;
+        private readonly IAuthenticationSchemeProvider _schemes;
+        private readonly IAuthenticationHandlerProvider _handlers;
         private readonly IdentityServerOptions _options;
         private readonly ISystemClock _clock;
         private readonly ILogger _logger;

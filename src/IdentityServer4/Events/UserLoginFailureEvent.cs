@@ -13,10 +13,11 @@ namespace IdentityServer4.Events
     public class UserLoginFailureEvent : Event
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserLoginFailureEvent"/> class.
+        /// Initializes a new instance of the <see cref="T:IdentityServer4.Events.UserLoginFailureEvent" /> class.
         /// </summary>
         /// <param name="username">The username.</param>
         /// <param name="error">The error.</param>
+        /// <param name="interactive">Specifies if login was interactive</param>
         public UserLoginFailureEvent(string username, string error, bool interactive = true)
             : base(EventCategories.Authentication,
                   "User Login Failure",

@@ -38,6 +38,7 @@ namespace IdentityServer4.Hosting
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="router">The router.</param>
+        /// <param name="session">The user session.</param>
         /// <returns></returns>
         public async Task Invoke(HttpContext context, IEndpointRouter router, IUserSession session)
         {

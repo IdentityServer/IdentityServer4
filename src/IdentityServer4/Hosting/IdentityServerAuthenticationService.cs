@@ -19,13 +19,13 @@ namespace IdentityServer4.Hosting
     // cookie used for check session iframe for session management spec.
     // finally, we track if signout is called to collaborate with the 
     // FederatedSignoutAuthenticationHandlerProvider for federated signout.
-    class IdentityServerAuthenticationService : IAuthenticationService
+    internal class IdentityServerAuthenticationService : IAuthenticationService
     {
-        private IAuthenticationService _inner;
-        private IAuthenticationSchemeProvider _schemes;
+        private readonly IAuthenticationService _inner;
+        private readonly IAuthenticationSchemeProvider _schemes;
         private readonly ISystemClock _clock;
         private readonly IUserSession _session;
-        private ILogger<IdentityServerAuthenticationService> _logger;
+        private readonly ILogger<IdentityServerAuthenticationService> _logger;
 
         public IdentityServerAuthenticationService(
             Decorator<IAuthenticationService> decorator,

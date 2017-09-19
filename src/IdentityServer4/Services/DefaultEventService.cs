@@ -41,6 +41,7 @@ namespace IdentityServer4.Events
         /// <param name="options">The options.</param>
         /// <param name="context">The context.</param>
         /// <param name="sink">The sink.</param>
+        /// <param name="clock">The clock.</param>
         public DefaultEventService(IdentityServerOptions options, IHttpContextAccessor context, IEventSink sink, ISystemClock clock)
         {
             Options = options;
