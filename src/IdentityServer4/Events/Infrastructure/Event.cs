@@ -132,7 +132,7 @@ namespace IdentityServer4.Events
         /// <returns></returns>
         protected static string Obfuscate(string value)
         {
-            string last4Chars = "****";
+            var last4Chars = "****";
             if (value.IsPresent() && value.Length > 4)
             {
                 last4Chars = value.Substring(value.Length - 4);

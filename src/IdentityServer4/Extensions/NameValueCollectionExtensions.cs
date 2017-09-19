@@ -21,17 +21,17 @@ namespace IdentityServer4.Extensions
             }
 
             var builder = new StringBuilder(128);
-            bool first = true;
+            var first = true;
             foreach (string name in collection)
             {
-                string[] values = collection.GetValues(name);
+                var values = collection.GetValues(name);
                 if (values == null || values.Length == 0)
                 {
                     first = AppendNameValuePair(builder, first, true, name, String.Empty);
                 }
                 else
                 {
-                    foreach (string value in values)
+                    foreach (var value in values)
                     {
                         first = AppendNameValuePair(builder, first, true, name, value);
                     }
@@ -66,7 +66,7 @@ namespace IdentityServer4.Extensions
                 return result;
             }
 
-            foreach (string name in data.Keys)
+            foreach (var name in data.Keys)
             {
                 var value = data[name];
                 if (value != null)
@@ -119,11 +119,11 @@ namespace IdentityServer4.Extensions
 
         private static bool AppendNameValuePair(StringBuilder builder, bool first, bool urlEncode, string name, string value)
         {
-            string effectiveName = name ?? String.Empty;
-            string encodedName = urlEncode ? UrlEncoder.Default.Encode(effectiveName) : effectiveName;
+            var effectiveName = name ?? String.Empty;
+            var encodedName = urlEncode ? UrlEncoder.Default.Encode(effectiveName) : effectiveName;
 
-            string effectiveValue = value ?? String.Empty;
-            string encodedValue = urlEncode ? UrlEncoder.Default.Encode(effectiveValue) : effectiveValue;
+            var effectiveValue = value ?? String.Empty;
+            var encodedValue = urlEncode ? UrlEncoder.Default.Encode(effectiveValue) : effectiveValue;
             encodedValue = ConvertFormUrlEncodedSpacesToUrlEncodedSpaces(encodedValue);
 
             if (first)

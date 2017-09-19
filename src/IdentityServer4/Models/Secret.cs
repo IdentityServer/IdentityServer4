@@ -87,7 +87,7 @@ namespace IdentityServer4.Models
         {
             unchecked
             {
-                int hash = 17;
+                var hash = 17;
                 hash = hash * 23 + Value?.GetHashCode() ?? 0;
                 hash = hash * 23 + Type?.GetHashCode() ?? 0;
 

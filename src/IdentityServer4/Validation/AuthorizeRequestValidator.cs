@@ -529,7 +529,7 @@ namespace IdentityServer4.Validation
             var maxAge = request.Raw.Get(OidcConstants.AuthorizeRequest.MaxAge);
             if (maxAge.IsPresent())
             {
-                if (int.TryParse(maxAge, out int seconds))
+                if (int.TryParse(maxAge, out var seconds))
                 {
                     if (seconds >= 0)
                     {

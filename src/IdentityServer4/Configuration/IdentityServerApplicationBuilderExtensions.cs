@@ -76,7 +76,7 @@ namespace Microsoft.AspNetCore.Builder
         {
             var schemes = services.GetRequiredService<IAuthenticationSchemeProvider>();
 
-            if ((await schemes.GetDefaultAuthenticateSchemeAsync()) == null)
+            if (await schemes.GetDefaultAuthenticateSchemeAsync() == null)
             {
                 logger.LogWarning("No default authentication scheme has been set. Setting a default scheme is required.");
             }

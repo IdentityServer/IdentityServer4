@@ -177,7 +177,7 @@ namespace IdentityServer4.Services
                     throw new Exception(String.Format("Can't add two claims where one is a JSON array and the other is not a JSON array ({0})", group.Key));
                 }
 
-                List<JToken> newArr = new List<JToken>();
+                var newArr = new List<JToken>();
                 foreach (var arrays in group)
                 {
                     var arr = (JArray)arrays.JsonValue;

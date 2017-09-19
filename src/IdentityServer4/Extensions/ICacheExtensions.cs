@@ -38,7 +38,7 @@ namespace IdentityServer4.Extensions
             if (get == null) throw new ArgumentNullException(nameof(get));
             if (key == null) return null;
 
-            T item = await cache.GetAsync(key);
+            var item = await cache.GetAsync(key);
 
             if (item == null)
             {

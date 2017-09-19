@@ -83,7 +83,7 @@ namespace IdentityServer4.Validation
                 return false;
             }
 
-            if (int.TryParse(parts[2], out int port))
+            if (int.TryParse(parts[2], out var port))
             {
                 if (port >= 0 && port <= 65536) return true;
             }

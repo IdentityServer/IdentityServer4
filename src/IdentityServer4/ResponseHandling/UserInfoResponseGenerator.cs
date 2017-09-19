@@ -78,7 +78,7 @@ namespace IdentityServer4.ResponseHandling
             var profileClaims = context.IssuedClaims;
 
             // construct outgoing claims
-            List<Claim> outgoingClaims = new List<Claim>();
+            var outgoingClaims = new List<Claim>();
 
             if (profileClaims == null)
             {

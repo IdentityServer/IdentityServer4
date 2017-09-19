@@ -98,7 +98,7 @@ namespace IdentityServer4.Services
             return Enumerable.Empty<Consent>();
         }
 
-        IEnumerable<Consent> Join(IEnumerable<Consent> first, IEnumerable<Consent> second)
+        private IEnumerable<Consent> Join(IEnumerable<Consent> first, IEnumerable<Consent> second)
         {
             var list = first.ToList();
 

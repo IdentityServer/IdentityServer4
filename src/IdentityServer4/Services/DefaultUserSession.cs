@@ -47,9 +47,9 @@ namespace IdentityServer4.Services
             _logger = logger;
         }
 
-        async Task<string> GetCookieSchemeAsync()
+        private async Task<string> GetCookieSchemeAsync()
         {
-            var defaultScheme = (await _schemes.GetDefaultAuthenticateSchemeAsync());
+            var defaultScheme = await _schemes.GetDefaultAuthenticateSchemeAsync();
             if (defaultScheme == null)
             {
                 throw new InvalidOperationException("No DefaultAuthenticateScheme found.");
@@ -67,7 +67,7 @@ namespace IdentityServer4.Services
         // just reading the incoming cookie
         // 
         // this design requires this to be in DI as scoped
-        async Task AuthenticateAsync()
+        private async Task AuthenticateAsync()
         {
             if (_principal == null || _properties == null)
             {
@@ -192,7 +192,7 @@ namespace IdentityServer4.Services
         }
 
         // client list helpers
-        async Task<string> GetClientListPropertyValueAsync()
+        private async Task<string> GetClientListPropertyValueAsync()
         {
             await AuthenticateAsync();
 
@@ -204,13 +204,13 @@ namespace IdentityServer4.Services
             return null;
         }
 
-        async Task SetClientsAsync(IEnumerable<string> clients)
+        private async Task SetClientsAsync(IEnumerable<string> clients)
         {
             var value = EncodeList(clients);
             await SetClientListPropertyValueAsync(value);
         }
 
-        async Task SetClientListPropertyValueAsync(string value)
+        private async Task SetClientListPropertyValueAsync(string value)
         {
             await AuthenticateAsync();
 
@@ -229,7 +229,7 @@ namespace IdentityServer4.Services
             await HttpContext.SignInAsync(scheme, _principal, _properties);
         }
 
-        IEnumerable<string> DecodeList(string value)
+        private IEnumerable<string> DecodeList(string value)
         {
             if (value.IsPresent())
             {
@@ -241,7 +241,7 @@ namespace IdentityServer4.Services
             return Enumerable.Empty<string>();
         }
 
-        string EncodeList(IEnumerable<string> list)
+        private string EncodeList(IEnumerable<string> list)
         {
             if (list != null && list.Any())
             {
@@ -255,12 +255,12 @@ namespace IdentityServer4.Services
         }
 
         // session id cookie helpers
-        string GetSessionIdCookieValue()
+        private string GetSessionIdCookieValue()
         {
             return HttpContext.Request.Cookies[CheckSessionCookieName];
         }
 
-        void IssueSessionIdCookie(string sid)
+        private void IssueSessionIdCookie(string sid)
         {
             if (GetSessionIdCookieValue() != sid)
             {
@@ -271,7 +271,7 @@ namespace IdentityServer4.Services
             }
         }
 
-        CookieOptions CreateSessionIdCookieOptions()
+        private CookieOptions CreateSessionIdCookieOptions()
         {
             var secure = HttpContext.Request.IsHttps;
             var path = HttpContext.GetIdentityServerBasePath().CleanUrlPath();

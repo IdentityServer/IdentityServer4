@@ -325,7 +325,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // check if client is allowed to request scopes
             /////////////////////////////////////////////
-            if (!(await ValidateRequestedScopesAsync(parameters)))
+            if (!await ValidateRequestedScopesAsync(parameters))
             {
                 return Invalid(OidcConstants.TokenErrors.InvalidScope);
             }
@@ -511,7 +511,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // check if client is allowed to request scopes
             /////////////////////////////////////////////
-            if (!(await ValidateRequestedScopesAsync(parameters)))
+            if (!await ValidateRequestedScopesAsync(parameters))
             {
                 return Invalid(OidcConstants.TokenErrors.InvalidScope);
             }
@@ -589,7 +589,7 @@ namespace IdentityServer4.Validation
                 return false;
             }
 
-            if (!(await _scopeValidator.AreScopesAllowedAsync(_validatedRequest.Client, requestedScopes)))
+            if (!await _scopeValidator.AreScopesAllowedAsync(_validatedRequest.Client, requestedScopes))
             {
                 LogError();
                 return false;
