@@ -29,13 +29,12 @@ namespace IdentityServer4.Hosting
         public IdentityServerAuthenticationService(
             Decorator<IAuthenticationService> decorator,
             IAuthenticationSchemeProvider schemes,
-            IAuthenticationHandlerProvider handlers,
-            IClaimsTransformation transform,
             ISystemClock clock,
             IUserSession session,
             ILogger<IdentityServerAuthenticationService> logger)
         {
             _inner = decorator.Instance;
+            
             _schemes = schemes;
             _clock = clock;
             _session = session;

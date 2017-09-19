@@ -6,7 +6,6 @@ using System;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Extensions;
-using Microsoft.AspNetCore.Http;
 using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
 
@@ -14,18 +13,15 @@ namespace IdentityServer4.Services
 {
     internal class OidcReturnUrlParser : IReturnUrlParser
     {
-        private readonly IHttpContextAccessor _context;
         private readonly IAuthorizeRequestValidator _validator;
         private readonly IUserSession _userSession;
         private readonly ILogger _logger;
 
         public OidcReturnUrlParser(
-            IHttpContextAccessor httpContext, 
             IAuthorizeRequestValidator validator,
             IUserSession userSession,
             ILogger<OidcReturnUrlParser> logger)
         {
-            _context = httpContext;
             _validator = validator;
             _userSession = userSession;
             _logger = logger;

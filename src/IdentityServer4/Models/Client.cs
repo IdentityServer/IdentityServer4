@@ -352,7 +352,7 @@ namespace IdentityServer4.Models
 
             public void Add(string item)
             {
-                Client.ValidateGrantTypes(CloneWith(item));
+                ValidateGrantTypes(CloneWith(item));
                 _inner.Add(item);
             }
 

@@ -68,8 +68,7 @@ namespace IdentityServer4.Stores
         /// <returns></returns>
         public Task RemoveAsync(string key)
         {
-            PersistedGrant val;
-            _repository.TryRemove(key, out val);
+            _repository.TryRemove(key, out _);
 
             return Task.CompletedTask;
         }
@@ -91,8 +90,7 @@ namespace IdentityServer4.Stores
             var keys = query.ToArray();
             foreach (var key in keys)
             {
-                PersistedGrant grant;
-                _repository.TryRemove(key, out grant);
+                _repository.TryRemove(key, out _);
             }
 
             return Task.CompletedTask;
@@ -117,8 +115,7 @@ namespace IdentityServer4.Stores
             var keys = query.ToArray();
             foreach (var key in keys)
             {
-                PersistedGrant grant;
-                _repository.TryRemove(key, out grant);
+                _repository.TryRemove(key, out _);
             }
 
             return Task.CompletedTask;

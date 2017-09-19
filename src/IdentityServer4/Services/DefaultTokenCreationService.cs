@@ -7,6 +7,7 @@ using IdentityServer4.Models;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Linq;
 using IdentityModel;
@@ -88,7 +89,7 @@ namespace IdentityServer4.Services
                 var cert = x509key.Certificate;
                 if (Clock.UtcNow.UtcDateTime > cert.NotAfter)
                 {
-                    Logger.LogWarning("Certificate {subjectName} has expired on {expiration}", cert.Subject, cert.NotAfter.ToString());
+                    Logger.LogWarning("Certificate {subjectName} has expired on {expiration}", cert.Subject, cert.NotAfter.ToString(CultureInfo.InvariantCulture));
                 }
 
                 header.Add("x5t", Base64Url.Encode(cert.GetCertHash()));

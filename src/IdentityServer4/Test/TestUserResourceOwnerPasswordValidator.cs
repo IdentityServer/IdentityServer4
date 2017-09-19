@@ -17,18 +17,16 @@ namespace IdentityServer4.Test
     /// <seealso cref="IdentityServer4.Validation.IResourceOwnerPasswordValidator" />
     public class TestUserResourceOwnerPasswordValidator : IResourceOwnerPasswordValidator
     {
-        private readonly IdentityServerOptions _options;
         private readonly TestUserStore _users;
         private readonly ISystemClock _clock;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestUserResourceOwnerPasswordValidator"/> class.
         /// </summary>
-        /// <param name="options">The options.</param>
         /// <param name="users">The users.</param>
-        public TestUserResourceOwnerPasswordValidator(IdentityServerOptions options, TestUserStore users, ISystemClock clock)
+        /// <param name="clock">The clock.</param>
+        public TestUserResourceOwnerPasswordValidator(TestUserStore users, ISystemClock clock)
         {
-            _options = options;
             _users = users;
             _clock = clock;
         }

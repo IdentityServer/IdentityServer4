@@ -99,12 +99,12 @@ namespace IdentityServer4.Validation
         /// <param name="identityProvider">The identity provider.</param>
         /// <param name="customResponse">The custom response.</param>
         public GrantValidationResult(
-        string subject,
-        string authenticationMethod,
-        DateTime authTime,
-        IEnumerable<Claim> claims = null,
-        string identityProvider = IdentityServerConstants.LocalIdentityProvider,
-        Dictionary<string, object> customResponse = null)
+            string subject,
+            string authenticationMethod,
+            DateTime authTime,
+            IEnumerable<Claim> claims = null,
+            string identityProvider = IdentityServerConstants.LocalIdentityProvider,
+            Dictionary<string, object> customResponse = null)
         {
             IsError = false;
 
