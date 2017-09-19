@@ -36,6 +36,7 @@ namespace IdentityServer4.UnitTests.Validation
             IProfileService profile = null,
             IEnumerable<IExtensionGrantValidator> extensionGrantValidators = null,
             ICustomTokenRequestValidator customRequestValidator = null,
+            ITokenValidator tokenValidator = null,
             ScopeValidator scopeValidator = null)
         {
             if (options == null)
@@ -88,18 +89,21 @@ namespace IdentityServer4.UnitTests.Validation
                 scopeValidator = new ScopeValidator(resourceStore, new LoggerFactory().CreateLogger<ScopeValidator>());
             }
 
+            if (tokenValidator == null)
+            {
+                tokenValidator = CreateTokenValidator(refreshTokenStore: refreshTokenStore, profile: profile);
+            }
+
             return new TokenRequestValidator(
                 options,
-                new StubClock(),
                 authorizationCodeStore,
-                refreshTokenStore,
                 resourceOwnerValidator,
                 profile,
                 aggregateExtensionGrantValidator,
                 customRequestValidator,
                 scopeValidator,
-                new TestEventService(),
-                TestLogger.Create<TokenRequestValidator>());
+                tokenValidator,
+                new TestEventService(), new StubClock(), TestLogger.Create<TokenRequestValidator>());
         }
 
         internal static ITokenCreationService CreateDefaultTokenCreator()
@@ -160,7 +164,11 @@ namespace IdentityServer4.UnitTests.Validation
                 TestLogger.Create<AuthorizeRequestValidator>());
         }
 
-        public static TokenValidator CreateTokenValidator(IReferenceTokenStore store = null, IProfileService profile = null, IdentityServerOptions options = null, ISystemClock clock = null)
+        public static TokenValidator CreateTokenValidator(
+            IReferenceTokenStore store = null, 
+            IRefreshTokenStore refreshTokenStore = null,
+            IProfileService profile = null, 
+            IdentityServerOptions options = null, ISystemClock clock = null)
         {
             if (options == null)
             {
@@ -179,6 +187,11 @@ namespace IdentityServer4.UnitTests.Validation
 
             clock = clock ?? new StubClock();
 
+            if (refreshTokenStore == null)
+            {
+                refreshTokenStore = CreateRefreshTokenStore();
+            }
+
             var clients = CreateClientStore();
             var context = new MockHttpContextAccessor(options);
             var logger = TestLogger.Create<TokenValidator>();
@@ -186,7 +199,9 @@ namespace IdentityServer4.UnitTests.Validation
             var validator = new TokenValidator(
                 clients: clients,
                 clock: clock,
+                profile: profile,
                 referenceTokenStore: store,
+                refreshTokenStore: refreshTokenStore,
                 customValidator: new DefaultCustomTokenValidator(
                     profile: profile,
                     clients: clients,
@@ -237,6 +252,7 @@ namespace IdentityServer4.UnitTests.Validation
                 new DefaultHandleGenerationService(),
                 TestLogger.Create<DefaultAuthorizationCodeStore>());
         }
+        
         public static IRefreshTokenStore CreateRefreshTokenStore()
         {
             return new DefaultRefreshTokenStore(new InMemoryPersistedGrantStore(),
@@ -244,6 +260,7 @@ namespace IdentityServer4.UnitTests.Validation
                 new DefaultHandleGenerationService(),
                 TestLogger.Create<DefaultRefreshTokenStore>());
         }
+        
         public static IReferenceTokenStore CreateReferenceTokenStore()
         {
             return new DefaultReferenceTokenStore(new InMemoryPersistedGrantStore(),
@@ -251,6 +268,7 @@ namespace IdentityServer4.UnitTests.Validation
                 new DefaultHandleGenerationService(),
                 TestLogger.Create<DefaultReferenceTokenStore>());
         }
+        
         public static IUserConsentStore CreateUserConsentStore()
         {
             return new DefaultUserConsentStore(new InMemoryPersistedGrantStore(),
