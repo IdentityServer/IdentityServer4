@@ -300,13 +300,15 @@ namespace IdentityServer4.Validation
 
         public async Task<TokenValidationResult> ValidateRefreshTokenAsync(string tokenHandle, Client client = null)
         {
+            _logger.LogTrace("Start refresh token validation");
+            
             /////////////////////////////////////////////
             // check if refresh token is valid
             /////////////////////////////////////////////
             var refreshToken = await _refreshTokenStore.GetRefreshTokenAsync(tokenHandle);
             if (refreshToken == null)
             {
-                //LogError("Invalid refresh token: {refreshToken}", tokenHandle);
+                _logger.LogError("Invalid refresh token");
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
@@ -315,7 +317,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             if (refreshToken.CreationTime.HasExceeded(refreshToken.Lifetime, _clock.UtcNow.DateTime))
             {
-                LogError("Refresh token has expired");
+                _logger.LogError("Refresh token has expired. Removing from store.");
 
                 await _refreshTokenStore.RemoveRefreshTokenAsync(tokenHandle);
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
@@ -328,7 +330,7 @@ namespace IdentityServer4.Validation
                 /////////////////////////////////////////////
                 if (client.ClientId != refreshToken.ClientId)
                 {
-                    //LogError("{0} tries to refresh token belonging to {1}", _validatedRequest.Client.ClientId, refreshToken.ClientId);
+                    _logger.LogError("{0} tries to refresh token belonging to {1}", client.ClientId, refreshToken.ClientId);
                     return Invalid(OidcConstants.TokenErrors.InvalidGrant);
                 }
 
@@ -337,23 +339,33 @@ namespace IdentityServer4.Validation
                 /////////////////////////////////////////////
                 if (!client.AllowOfflineAccess)
                 {
-                    //LogError("{clientId} does not have access to offline_access scope anymore", _validatedRequest.Client.ClientId);
+                    _logger.LogError("{clientId} does not have access to offline_access scope anymore", client.ClientId);
                     return Invalid(OidcConstants.TokenErrors.InvalidGrant);
                 }
+
+                _log.ClientId = client.ClientId;
+                _log.ClientName = client.ClientName;
             }
 
             /////////////////////////////////////////////
             // make sure user is enabled
             /////////////////////////////////////////////
-            var isActiveCtx = new IsActiveContext(refreshToken.Subject, client, IdentityServerConstants.ProfileIsActiveCallers.RefreshTokenValidation);
+            var isActiveCtx = new IsActiveContext(
+                refreshToken.Subject, 
+                client, 
+                IdentityServerConstants.ProfileIsActiveCallers.RefreshTokenValidation);
             await _profile.IsActiveAsync(isActiveCtx);
 
             if (isActiveCtx.IsActive == false)
             {
-                //LogError("{subjectId} has been disabled", _validatedRequest.RefreshToken.SubjectId);
+                _logger.LogError("{subjectId} has been disabled", refreshToken.Subject.GetSubjectId());
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
+            _log.Claims = refreshToken.Subject.Claims.ToClaimsDictionary();
+
+            LogSuccess();
+            
             return new TokenValidationResult
             {
                 IsError = false,
