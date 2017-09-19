@@ -22,10 +22,6 @@ using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.Validation
 {
-    /// <summary>
-    /// The token validator
-    /// </summary>
-    /// <seealso cref="IdentityServer4.Validation.ITokenValidator" />
     internal class TokenValidator : ITokenValidator
     {
         private readonly ILogger _logger;
@@ -40,16 +36,6 @@ namespace IdentityServer4.Validation
         private readonly ISystemClock _clock;
         private readonly TokenValidationLog _log;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TokenValidator"/> class.
-        /// </summary>
-        /// <param name="options">The options.</param>
-        /// <param name="context">The context.</param>
-        /// <param name="clients">The clients.</param>
-        /// <param name="referenceTokenStore">The reference token store.</param>
-        /// <param name="customValidator">The custom validator.</param>
-        /// <param name="keys">The keys.</param>
-        /// <param name="logger">The logger.</param>
         public TokenValidator(
             IdentityServerOptions options,
             IHttpContextAccessor context,
@@ -59,8 +45,8 @@ namespace IdentityServer4.Validation
             IRefreshTokenStore refreshTokenStore,
             ICustomTokenValidator customValidator,
             IKeyMaterialService keys,
+            ISystemClock clock,
             ILogger<TokenValidator> logger)
-        public TokenValidator(IdentityServerOptions options, IHttpContextAccessor context, IClientStore clients, IReferenceTokenStore referenceTokenStore, ICustomTokenValidator customValidator, IKeyMaterialService keys, ISystemClock clock, ILogger<TokenValidator> logger)
         {
             _options = options;
             _context = context;
@@ -76,14 +62,7 @@ namespace IdentityServer4.Validation
             _log = new TokenValidationLog();
         }
 
-        /// <summary>
-        /// Validates an identity token.
-        /// </summary>
-        /// <param name="token">The token.</param>
-        /// <param name="clientId">The client identifier.</param>
-        /// <param name="validateLifetime">if set to <c>true</c> the lifetime gets validated. Otherwise not.</param>
-        /// <returns></returns>
-        public virtual async Task<TokenValidationResult> ValidateIdentityTokenAsync(string token, string clientId = null, bool validateLifetime = true)
+        public async Task<TokenValidationResult> ValidateIdentityTokenAsync(string token, string clientId = null, bool validateLifetime = true)
         {
             _logger.LogDebug("Start identity token validation");
 
@@ -145,13 +124,7 @@ namespace IdentityServer4.Validation
             return customResult;
         }
 
-        /// <summary>
-        /// Validates an access token.
-        /// </summary>
-        /// <param name="token">The token.</param>
-        /// <param name="expectedScope">The expected scope.</param>
-        /// <returns></returns>
-        public virtual async Task<TokenValidationResult> ValidateAccessTokenAsync(string token, string expectedScope = null)
+        public async Task<TokenValidationResult> ValidateAccessTokenAsync(string token, string expectedScope = null)
         {
             _logger.LogTrace("Start access token validation");
 
@@ -340,7 +313,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // check if refresh token has expired
             /////////////////////////////////////////////
-            if (refreshToken.CreationTime.HasExceeded(refreshToken.Lifetime, _options.UtcNow))
+            if (refreshToken.CreationTime.HasExceeded(refreshToken.Lifetime, _clock.UtcNow.DateTime))
             {
                 LogError("Refresh token has expired");
 

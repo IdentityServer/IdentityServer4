@@ -21,15 +21,9 @@ using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.Validation
 {
-    /// <summary>
-    /// The token request validator
-    /// </summary>
-    /// <seealso cref="IdentityServer4.Validation.ITokenRequestValidator" />
     internal class TokenRequestValidator : ITokenRequestValidator
     {
-        private readonly ILogger _logger;
         private readonly IdentityServerOptions _options;
-        private readonly ISystemClock _clock;
         private readonly IAuthorizationCodeStore _authorizationCodeStore;
         private readonly ExtensionGrantValidator _extensionGrantValidator;
         private readonly ICustomTokenRequestValidator _customRequestValidator;
@@ -38,24 +32,26 @@ namespace IdentityServer4.Validation
         private readonly IEventService _events;
         private readonly IResourceOwnerPasswordValidator _resourceOwnerValidator;
         private readonly IProfileService _profile;
-
+        private readonly ISystemClock _clock;
+        private readonly ILogger _logger;
+        
         private ValidatedTokenRequest _validatedRequest;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenRequestValidator"/> class.
         /// </summary>
         /// <param name="options">The options.</param>
-        /// <param name="clock">The clock.</param>
         /// <param name="authorizationCodeStore">The authorization code store.</param>
-        /// <param name="refreshTokenStore">The refresh token store.</param>
         /// <param name="resourceOwnerValidator">The resource owner validator.</param>
         /// <param name="profile">The profile.</param>
         /// <param name="extensionGrantValidator">The extension grant validator.</param>
         /// <param name="customRequestValidator">The custom request validator.</param>
         /// <param name="scopeValidator">The scope validator.</param>
+        /// <param name="tokenValidator"></param>
         /// <param name="events">The events.</param>
+        /// <param name="clock">The clock.</param>
         /// <param name="logger">The logger.</param>
-        public TokenRequestValidator(IdentityServerOptions options, ISystemClock clock,IAuthorizationCodeStore authorizationCodeStore,  IResourceOwnerPasswordValidator resourceOwnerValidator, IProfileService profile, ExtensionGrantValidator extensionGrantValidator, ICustomTokenRequestValidator customRequestValidator, ScopeValidator scopeValidator, IEventService events, ITokenValidator tokenValidator,ILogger<TokenRequestValidator> logger)
+        public TokenRequestValidator(IdentityServerOptions options, IAuthorizationCodeStore authorizationCodeStore, IResourceOwnerPasswordValidator resourceOwnerValidator, IProfileService profile, ExtensionGrantValidator extensionGrantValidator, ICustomTokenRequestValidator customRequestValidator, ScopeValidator scopeValidator, ITokenValidator tokenValidator, IEventService events, ISystemClock clock, ILogger<TokenRequestValidator> logger)
         {
             _logger = logger;
             _options = options;

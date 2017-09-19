@@ -96,16 +96,14 @@ namespace IdentityServer4.UnitTests.Validation
 
             return new TokenRequestValidator(
                 options,
-                new StubClock(),
                 authorizationCodeStore,
                 resourceOwnerValidator,
                 profile,
                 aggregateExtensionGrantValidator,
                 customRequestValidator,
                 scopeValidator,
-                new TestEventService(),
                 tokenValidator,
-                TestLogger.Create<TokenRequestValidator>());
+                new TestEventService(), new StubClock(), TestLogger.Create<TokenRequestValidator>());
         }
 
         internal static ITokenCreationService CreateDefaultTokenCreator()
@@ -254,6 +252,7 @@ namespace IdentityServer4.UnitTests.Validation
                 new DefaultHandleGenerationService(),
                 TestLogger.Create<DefaultAuthorizationCodeStore>());
         }
+        
         public static IRefreshTokenStore CreateRefreshTokenStore()
         {
             return new DefaultRefreshTokenStore(new InMemoryPersistedGrantStore(),
@@ -261,6 +260,7 @@ namespace IdentityServer4.UnitTests.Validation
                 new DefaultHandleGenerationService(),
                 TestLogger.Create<DefaultRefreshTokenStore>());
         }
+        
         public static IReferenceTokenStore CreateReferenceTokenStore()
         {
             return new DefaultReferenceTokenStore(new InMemoryPersistedGrantStore(),
@@ -268,6 +268,7 @@ namespace IdentityServer4.UnitTests.Validation
                 new DefaultHandleGenerationService(),
                 TestLogger.Create<DefaultReferenceTokenStore>());
         }
+        
         public static IUserConsentStore CreateUserConsentStore()
         {
             return new DefaultUserConsentStore(new InMemoryPersistedGrantStore(),
