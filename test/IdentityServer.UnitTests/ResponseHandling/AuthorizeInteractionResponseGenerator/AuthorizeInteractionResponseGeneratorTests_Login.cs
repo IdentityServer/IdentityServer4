@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using Xunit;
+using IdentityServer.UnitTests.Common;
 
 namespace IdentityServer4.UnitTests.ResponseHandling
 {
@@ -25,7 +26,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
         public AuthorizeInteractionResponseGeneratorTests_Login()
         {
             _subject = new AuthorizeInteractionResponseGenerator(
-                _options,
+                new StubClock(),
                 TestLogger.Create<AuthorizeInteractionResponseGenerator>(),
                 _mockConsentService,
                 new MockProfileService());

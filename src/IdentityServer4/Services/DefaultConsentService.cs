@@ -11,6 +11,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityServer4.Configuration;
+using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.Services
 {
@@ -25,19 +26,19 @@ namespace IdentityServer4.Services
         protected readonly IUserConsentStore _userConsentStore;
 
         /// <summary>
-        ///  The IdentityServerOptions
+        ///  The clock
         /// </summary>
-        protected readonly IdentityServerOptions _options;
+        protected readonly ISystemClock _clock;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultConsentService" /> class.
         /// </summary>
-        /// <param name="options">The options.</param>
+        /// <param name="clock">The clock.</param>
         /// <param name="userConsentStore">The user consent store.</param>
         /// <exception cref="System.ArgumentNullException">store</exception>
-        public DefaultConsentService(IdentityServerOptions options, IUserConsentStore userConsentStore)
+        public DefaultConsentService(ISystemClock clock, IUserConsentStore userConsentStore)
         {
-            _options = options;
+            _clock = clock;
             _userConsentStore = userConsentStore;
         }
 
@@ -89,7 +90,7 @@ namespace IdentityServer4.Services
                 return true;
             }
 
-            if (consent.Expiration.HasExpired(_options.UtcNow))
+            if (consent.Expiration.HasExpired(_clock.UtcNow.UtcDateTime))
             {
                 await _userConsentStore.RemoveUserConsentAsync(consent.SubjectId, consent.ClientId);
                 return true;
@@ -130,7 +131,7 @@ namespace IdentityServer4.Services
                 {
                     var consent = new Consent
                     {
-                        CreationTime = _options.UtcNow,
+                        CreationTime = _clock.UtcNow.UtcDateTime,
                         SubjectId = subjectId,
                         ClientId = clientId,
                         Scopes = scopes

@@ -3,6 +3,7 @@
   <PropertyGroup>
     <Description>OpenID Connect and OAuth 2.0 Framework for ASP.NET Core</Description>
     <VersionPrefix>2.0.0</VersionPrefix>
+    <!--<VersionSuffix>rc1</VersionSuffix>-->
     <Authors>Brock Allen;Dominick Baier</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>IdentityServer4</AssemblyName>
@@ -24,5 +25,6 @@
     <PackageReference Include="IdentityModel" Version="2.10.0" />
     <PackageReference Include="System.Security.Cryptography.Cng" Version="4.4.0" />
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
+    <!--<PackageReference Include="SourceLink.Embed.AllSourceFiles" Version="2.2.1" PrivateAssets="all" />-->
   </ItemGroup>
 </Project>

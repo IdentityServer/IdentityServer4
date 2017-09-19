@@ -15,6 +15,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using IdentityServer.UnitTests.Common;
 
 namespace IdentityServer4.UnitTests.Endpoints.Results
 {
@@ -36,7 +37,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
             _options.UserInteraction.LogoutUrl = "~/logout";
             _options.UserInteraction.LogoutIdParameter = "logoutId";
 
-            _subject = new EndSessionResult(_result, _options, _mockLogoutMessageStore);
+            _subject = new EndSessionResult(_result, _options, new StubClock(), _mockLogoutMessageStore);
         }
 
         [Fact]

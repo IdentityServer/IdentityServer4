@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using IdentityServer4.Stores;
 using IdentityServer4.UnitTests.Common;
 using IdentityServer4.Stores.Serialization;
+using IdentityServer.UnitTests.Common;
+using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.UnitTests.Validation
 {
@@ -77,6 +79,11 @@ namespace IdentityServer4.UnitTests.Validation
                 authorizationCodeStore = CreateAuthorizationCodeStore();
             }
 
+            if (refreshTokenStore == null)
+            {
+                refreshTokenStore = CreateRefreshTokenStore();
+            }
+
             if (scopeValidator == null)
             {
                 scopeValidator = new ScopeValidator(resourceStore, new LoggerFactory().CreateLogger<ScopeValidator>());
@@ -89,6 +96,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             return new TokenRequestValidator(
                 options,
+                new StubClock(),
                 authorizationCodeStore,
                 resourceOwnerValidator,
                 profile,
@@ -100,12 +108,10 @@ namespace IdentityServer4.UnitTests.Validation
                 TestLogger.Create<TokenRequestValidator>());
         }
 
-        internal static ITokenCreationService CreateDefaultTokenCreator(IdentityServerOptions options = null)
+        internal static ITokenCreationService CreateDefaultTokenCreator()
         {
-            options = options ?? new IdentityServerOptions();
-
             return new DefaultTokenCreationService(
-                options,
+                new StubClock(),
                 new DefaultKeyMaterialService(new IValidationKeysStore[] { }, new DefaultSigningCredentialsStore(TestCert.LoadSigningCredentials())), TestLogger.Create<DefaultTokenCreationService>());
         }
 
@@ -164,7 +170,7 @@ namespace IdentityServer4.UnitTests.Validation
             IReferenceTokenStore store = null, 
             IRefreshTokenStore refreshTokenStore = null,
             IProfileService profile = null, 
-            IdentityServerOptions options = null)
+            IdentityServerOptions options = null, ISystemClock clock = null)
         {
             if (options == null)
             {
@@ -181,6 +187,8 @@ namespace IdentityServer4.UnitTests.Validation
                 store = CreateReferenceTokenStore();
             }
 
+            clock = clock ?? new StubClock();
+
             if (refreshTokenStore == null)
             {
                 refreshTokenStore = CreateRefreshTokenStore();
@@ -192,6 +200,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             var validator = new TokenValidator(
                 clients: clients,
+                clock: clock,
                 profile: profile,
                 referenceTokenStore: store,
                 refreshTokenStore: refreshTokenStore,
@@ -232,7 +241,7 @@ namespace IdentityServer4.UnitTests.Validation
                     new PlainTextSharedSecretValidator(TestLogger.Create<PlainTextSharedSecretValidator>())
                 };
 
-                validator = new SecretValidator(options, validators, TestLogger.Create<SecretValidator>());
+                validator = new SecretValidator(new StubClock(), validators, TestLogger.Create<SecretValidator>());
             }
 
             return new ClientSecretValidator(clients, parser, validator, new TestEventService(), TestLogger.Create<ClientSecretValidator>());

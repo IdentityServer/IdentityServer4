@@ -18,6 +18,7 @@ using Microsoft.IdentityModel.Tokens;
 using IdentityServer4.Stores;
 using IdentityServer4.Configuration;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.Validation
 {
@@ -36,7 +37,7 @@ namespace IdentityServer4.Validation
         private readonly IClientStore _clients;
         private readonly IProfileService _profile;
         private readonly IKeyMaterialService _keys;
-
+        private readonly ISystemClock _clock;
         private readonly TokenValidationLog _log;
 
         /// <summary>
@@ -59,6 +60,7 @@ namespace IdentityServer4.Validation
             ICustomTokenValidator customValidator,
             IKeyMaterialService keys,
             ILogger<TokenValidator> logger)
+        public TokenValidator(IdentityServerOptions options, IHttpContextAccessor context, IClientStore clients, IReferenceTokenStore referenceTokenStore, ICustomTokenValidator customValidator, IKeyMaterialService keys, ISystemClock clock, ILogger<TokenValidator> logger)
         {
             _options = options;
             _context = context;
@@ -68,6 +70,7 @@ namespace IdentityServer4.Validation
             _refreshTokenStore = refreshTokenStore;
             _customValidator = customValidator;
             _keys = keys;
+            _clock = clock;
             _logger = logger;
 
             _log = new TokenValidationLog();
@@ -290,7 +293,7 @@ namespace IdentityServer4.Validation
                 return Invalid(OidcConstants.ProtectedResourceErrors.InvalidToken);
             }
 
-            if (token.CreationTime.HasExceeded(token.Lifetime, _options.UtcNow))
+            if (token.CreationTime.HasExceeded(token.Lifetime, _clock.UtcNow.UtcDateTime))
             {
                 LogError("Token expired.");
 

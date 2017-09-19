@@ -33,7 +33,7 @@ Here are questions you can answer before you file a bug to make sure you're not 
 GitHub supports [markdown](http://github.github.com/github-flavored-markdown/), so when filing bugs make sure you check the formatting before clicking submit.
 
 ## Contributing code and content
-You will need to sign a [Contributor License Agreement](https://cla.dotnetfoundation.org/) before submitting your pull request. 
+You will need to sign a [Contributor License Agreement](https://cla2.dotnetfoundation.org/) before submitting your pull request.
 
 Make sure you can build the code. Familiarize yourself with the project workflow and our coding conventions. If you don't know what a pull request is read this article: https://help.github.com/articles/using-pull-requests.
 

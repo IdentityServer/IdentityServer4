@@ -34,7 +34,7 @@ Also check the `contribution <https://github.com/IdentityServer/IdentityServer4/
 
 Commercial support
 ^^^^^^^^^^^^^^^^^^
-We are doing consulting around identity & access control architecture in general, and IdentityServer in particular.
+We are doing consulting, mentoring and custom software development around identity & access control architecture in general, and IdentityServer in particular.
 Please `get in touch <mailto:identity@leastprivilege.com>`_ with us to discuss possible options.
 
 **Training**
@@ -42,14 +42,6 @@ Please `get in touch <mailto:identity@leastprivilege.com>`_ with us to discuss p
 We are regularly doing workshops around identity & acess control for modern applications.
 Check the agenda and upcoming dates  `here <https://identityserver.io/training>`_.
 
-**Production support in North America**
-
-If you are looking for production support in North America - `write us an email <mailto:identityserversupport@solliance.net>`_. 
-
-**Production support in Europe**
-
-If you are looking for production support please visit http://identityserver.com
-
 **Admin UI, Identity Express and SAML2p support**
 
-if you are interested in commercial products using IdentityServer, check https://www.identityserver.com/upcoming-products.
+There are a couple of commercial add-on products available from our partners, check https://www.identityserver.com/products/.

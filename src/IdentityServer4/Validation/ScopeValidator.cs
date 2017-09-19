@@ -111,7 +111,7 @@ namespace IdentityServer4.Validation
                              where scopesToKeep.Any()
                              select api.CloneWithScopes(scopesToKeep);
 
-            GrantedResources = new Resources(identityToKeep.ToArray(), apisToKeep.ToArray())
+            GrantedResources = new Resources(identityToKeep, apisToKeep)
             {
                 OfflineAccess = offline
             };

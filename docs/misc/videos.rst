@@ -3,6 +3,7 @@ Videos
 
 2017
 ^^^^
+* `14/09 [Microsoft Learning] -- Introduction to IdentityServer for ASP.NET Core - Brock Allen <https://mva.microsoft.com/en-US/training-courses/introduction-to-identityserver-for-aspnet-core-17945>`_
 * `22/02 [NDC Mini Copenhagen] -- IdentityServer4: New & Improved for ASP.NET Core - Dominick Baier <https://vimeo.com/215352044>`_
 * `02/02 [DotNetRocks] -- IdentityServer4 on DotNetRocks <https://www.dotnetrocks.com/?show=1409>`_
 * `16/01 [NDC London] -- IdentityServer4: New and Improved for ASP.NET Core <https://vimeo.com/204141878>`_

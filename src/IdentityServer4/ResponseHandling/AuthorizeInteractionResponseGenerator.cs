@@ -12,6 +12,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Configuration;
+using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.ResponseHandling
 {
@@ -37,24 +38,24 @@ namespace IdentityServer4.ResponseHandling
         protected readonly IProfileService Profile;
 
         /// <summary>
-        /// The IdentityServerOptions.
+        /// The clock
         /// </summary>
-        protected readonly IdentityServerOptions Options;
+        protected readonly ISystemClock Clock;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizeInteractionResponseGenerator"/> class.
         /// </summary>
-        /// <param name="options">The options.</param>
+        /// <param name="clock">The clock.</param>
         /// <param name="logger">The logger.</param>
         /// <param name="consent">The consent.</param>
         /// <param name="profile">The profile.</param>
         public AuthorizeInteractionResponseGenerator(
-            IdentityServerOptions options,
+            ISystemClock clock,
             ILogger<AuthorizeInteractionResponseGenerator> logger,
             IConsentService consent, 
             IProfileService profile)
         {
-            Options = options;
+            Clock = clock;
             Logger = logger;
             Consent = consent;
             Profile = profile;
@@ -174,7 +175,7 @@ namespace IdentityServer4.ResponseHandling
             if (request.MaxAge.HasValue)
             {
                 var authTime = request.Subject.GetAuthenticationTime();
-                if (Options.UtcNow > authTime.AddSeconds(request.MaxAge.Value))
+                if (Clock.UtcNow > authTime.AddSeconds(request.MaxAge.Value))
                 {
                     Logger.LogInformation("Showing login: Requested MaxAge exceeded.");
 

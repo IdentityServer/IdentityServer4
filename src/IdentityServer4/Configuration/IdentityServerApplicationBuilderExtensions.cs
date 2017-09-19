@@ -7,6 +7,8 @@ using IdentityServer4.Stores;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using Microsoft.AspNetCore.Authentication;
+using System.Threading.Tasks;
 
 namespace Microsoft.AspNetCore.Builder
 {
@@ -66,12 +68,25 @@ namespace Microsoft.AspNetCore.Builder
                     logger.LogInformation("You are using the in-memory version of the persisted grant store. This will store consent decisions, authorization codes, refresh and reference tokens in memory only. If you are using any of those features in production, you want to switch to a different store implementation.");
                 }
 
-                // todo: cookie diagnostics
-                //var logger = app.ApplicationServices.GetRequiredService<ILoggerFactory>().CreateLogger(typeof(CookieConfiguration).FullName);
-                //var schemes = app.ApplicationServices.GetRequiredService<IAuthenticationSchemeProvider>();
+                ValidateAsync(serviceProvider, logger).GetAwaiter().GetResult();
+            }
+        }
 
-                //var defaultScheme = schemes.GetDefaultSignInSchemeAsync();
-                //logger.LogDebug("Using {scheme} for sign-in", defaultScheme.)
+        static async Task ValidateAsync(IServiceProvider services, ILogger logger)
+        {
+            var schemes = services.GetRequiredService<IAuthenticationSchemeProvider>();
+
+            if ((await schemes.GetDefaultAuthenticateSchemeAsync()) == null)
+            {
+                logger.LogWarning("No default authentication scheme has been set. Setting a default scheme is required.");
+            }
+            else
+            {
+                logger.LogDebug("Using {scheme} as default scheme for authentication", (await schemes.GetDefaultAuthenticateSchemeAsync())?.Name);
+                logger.LogDebug("Using {scheme} as default scheme for sign-in", (await schemes.GetDefaultSignInSchemeAsync())?.Name);
+                logger.LogDebug("Using {scheme} as default scheme for sign-out", (await schemes.GetDefaultSignOutSchemeAsync())?.Name);
+                logger.LogDebug("Using {scheme} as default scheme for challenge", (await schemes.GetDefaultChallengeSchemeAsync())?.Name);
+                logger.LogDebug("Using {scheme} as default scheme for forbid", (await schemes.GetDefaultForbidSchemeAsync())?.Name);
             }
         }
 

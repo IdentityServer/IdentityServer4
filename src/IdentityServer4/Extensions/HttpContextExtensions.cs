@@ -162,8 +162,8 @@ namespace IdentityServer4.Extensions
 
             if (endSessionMsg != null)
             {
-                var options = context.RequestServices.GetRequiredService<IdentityServerOptions>();
-                var msg = new Message<EndSession>(endSessionMsg, options.UtcNow);
+                var clock = context.RequestServices.GetRequiredService<ISystemClock>();
+                var msg = new Message<EndSession>(endSessionMsg, clock.UtcNow.UtcDateTime);
 
                 var endSessionMessageStore = context.RequestServices.GetRequiredService<IMessageStore<EndSession>>();
                 var id = await endSessionMessageStore.WriteAsync(msg);

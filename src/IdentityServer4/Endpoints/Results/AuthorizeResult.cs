@@ -14,6 +14,7 @@ using IdentityServer4.Services;
 using IdentityServer4.Configuration;
 using IdentityServer4.Stores;
 using IdentityServer4.ResponseHandling;
+using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.Endpoints.Results
 {
@@ -30,23 +31,27 @@ namespace IdentityServer4.Endpoints.Results
             AuthorizeResponse response,
             IdentityServerOptions options,
             IUserSession userSession,
-            IMessageStore<ErrorMessage> errorMessageStore)
+            IMessageStore<ErrorMessage> errorMessageStore,
+            ISystemClock clock)
             : this(response)
         {
             _options = options;
             _userSession = userSession;
             _errorMessageStore = errorMessageStore;
+            _clock = clock;
         }
 
         private IdentityServerOptions _options;
         private IUserSession _userSession;
         private IMessageStore<ErrorMessage> _errorMessageStore;
+        private ISystemClock _clock;
 
         void Init(HttpContext context)
         {
             _options = _options ?? context.RequestServices.GetRequiredService<IdentityServerOptions>();
             _userSession = _userSession ?? context.RequestServices.GetRequiredService<IUserSession>();
             _errorMessageStore = _errorMessageStore ?? context.RequestServices.GetRequiredService<IMessageStore<ErrorMessage>>();
+            _clock = _clock ?? context.RequestServices.GetRequiredService<ISystemClock>();
         }
 
         public async Task ExecuteAsync(HttpContext context)
@@ -180,7 +185,7 @@ namespace IdentityServer4.Endpoints.Results
                 ErrorDescription = Response.ErrorDescription
             };
 
-            var message = new Message<ErrorMessage>(errorModel, _options.UtcNow);
+            var message = new Message<ErrorMessage>(errorModel, _clock.UtcNow.UtcDateTime);
             var id = await _errorMessageStore.WriteAsync(message);
 
             var errorUrl = _options.UserInteraction.ErrorUrl;
