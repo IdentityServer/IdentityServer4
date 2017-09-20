@@ -1,9 +1,15 @@
-Community quickstarts
-=====================
+Community quickstarts & samples
+===============================
 
+IdentityServer4 samples for MongoDB
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+* IdentityServer4-mongo: Similar to Quickstart #8 EntityFramework configuration but using MongoDB for the configuration data.
+* IdentityServer4-mongo-AspIdentity: More elaborated sample based on uses ASP.NET Identity for identity management that uses using MongoDB for the configuration data
+  
+https://github.com/souzartn/IdentityServer4.Samples.Mongo
 
-1. IdentityServer4 Samples for MongoDB
-  * Repository - https://github.com/souzartn/IdentityServer4.Samples.Mongo
-  * Description - This repo contains 02 samples based on MongoDB:
-     * IdentityServer4-mongo: Similar to Quickstart #8 EntityFramework configuration but using MongoDB for the configuration data.
-     * IdentityServer4-mongo-AspIdentity: More elaborated sample based on uses ASP.NET Identity for identity management that uses using MongoDB for the configuration data
+Exchanging external tokens from Facebook, Google and Twitter
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+* Shows how to exchange an external authentication token to an identity server acesss token using an extension grant
+
+https://github.com/waqaskhan540/IdentityServerExternalAuth
