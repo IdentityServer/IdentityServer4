@@ -1,4 +1,0 @@
-Community quickstarts
-=====================
-
-coming soon...

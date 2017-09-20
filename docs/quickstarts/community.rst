@@ -1,7 +1,5 @@
-Community quickstarts
-=====================
-<<<<<<< HEAD
-=======
+Community quickstarts & samples
+===============================
 
 IdentityServer4 samples for MongoDB
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -15,4 +13,3 @@ Exchanging external tokens from Facebook, Google and Twitter
 * Shows how to exchange an external authentication token to an identity server acesss token using an extension grant
 
 https://github.com/waqaskhan540/IdentityServerExternalAuth
->>>>>>> release
