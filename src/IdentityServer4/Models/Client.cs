@@ -245,12 +245,12 @@ namespace IdentityServer4.Models
         public bool AlwaysSendClientClaims { get; set; } = false;
 
         /// <summary>
-        /// Gets or sets a value indicating whether all client claims should be prefixed. Defaults to <c>true</c>.
+        /// Gets or sets a value to prefix it on client claims. Defaults to <c>client_</c>.
         /// </summary>
         /// <value>
-        /// <c>true</c> if client claims should be prefixed; otherwise, <c>false</c>.
+        /// <c>any non empty string if claims should be prefixed with the value; otherwise, <c>null</c>.
         /// </value>
-        public bool PrefixClientClaims { get; set; } = true;
+        public string ClientClaimsPrefix { get; set; } = "client_";
 
         /// <summary>
         /// Gets or sets the allowed CORS origins for JavaScript clients.
