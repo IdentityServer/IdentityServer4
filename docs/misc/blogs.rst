@@ -9,6 +9,8 @@ Team posts
 * `Bootstraping OpenID Connect: Discovery <https://leastprivilege.com/2017/01/06/bootstrapping-openid-connect-discovery/>`_
 * `Extending IdentityServer4 with WS-Federation Support <https://leastprivilege.com/2017/03/03/extending-identityserver4-with-ws-federation-support/>`_
 * `Announcing IdentityServer4 RC1 <https://leastprivilege.com/2016/09/06/identityserver4-rc1/>`_
+* `Getting Started with IdentityServer 4 <https://www.scottbrady91.com/Identity-Server/Getting-Started-with-IdentityServer-4>`_
+* `IdentityServer 4 SharePoint Integration using WS-Federation <https://www.scottbrady91.com/Identity-Server/IdentityServer-4-SharePoint-Integration-using-WS-Federation>`_
 
 What's new posts
 ^^^^^^^^^^^^^^^^
@@ -22,7 +24,6 @@ What's new posts
 Community posts
 ^^^^^^^^^^^^^^^
 * `IdentityServer4 on the ASP.NET Team Blog <https://blogs.msdn.microsoft.com/webdev/2017/01/23/asp-net-core-authentication-with-identityserver4/>`_
-* `Getting Started with IdentityServer 4 <https://www.scottbrady91.com/Identity-Server/Getting-Started-with-IdentityServer-4>`_
 * `Angular2 OpenID Connect Implicit Flow with IdentityServer4 <https://damienbod.com/2016/03/02/angular2-openid-connect-implicit-flow-with-identityserver4/>`_
 * `Full Server Logout with IdentityServer4 and OpenID Connect Implicit Flow <https://damienbod.com/2016/09/16/full-server-logout-with-identityserver4-and-openid-connect-implicit-flow/>`_
 * `IdentityServer4, ASP.NET Identity, Web API and Angular in a single Project <https://damienbod.com/2016/10/01/identityserver4-webapi-and-angular2-in-a-single-asp-net-core-project/>`_

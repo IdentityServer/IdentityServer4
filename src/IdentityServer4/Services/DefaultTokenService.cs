@@ -50,11 +50,6 @@ namespace IdentityServer4.Services
         protected readonly ITokenCreationService CreationService;
 
         /// <summary>
-        /// The events service
-        /// </summary>
-        protected readonly IEventService Events;
-
-        /// <summary>
         /// The clock
         /// </summary>
         protected readonly ISystemClock Clock;
@@ -62,22 +57,26 @@ namespace IdentityServer4.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultTokenService" /> class. This overloaded constructor is deprecated and will be removed in 3.0.0.
         /// </summary>
-        /// <param name="clock">The clock.</param>
-        /// <param name="context">The context.</param>
         /// <param name="claimsProvider">The claims provider.</param>
         /// <param name="referenceTokenStore">The reference token store.</param>
         /// <param name="creationService">The signing service.</param>
-        /// <param name="events">The events service.</param>
+        /// <param name="contextAccessor">The HTTP context accessor.</param>
+        /// <param name="clock">The clock.</param>
         /// <param name="logger">The logger.</param>
-        public DefaultTokenService(ISystemClock clock, IHttpContextAccessor context, IClaimsService claimsProvider, IReferenceTokenStore referenceTokenStore, ITokenCreationService creationService, IEventService events, ILogger<DefaultTokenService> logger)
+        public DefaultTokenService(
+            IClaimsService claimsProvider, 
+            IReferenceTokenStore referenceTokenStore, 
+            ITokenCreationService creationService,  
+            IHttpContextAccessor contextAccessor, 
+            ISystemClock clock, 
+            ILogger<DefaultTokenService> logger)
         {
-            Clock = clock;
-            Logger = logger;
-            Context = context;
+            Context = contextAccessor;
             ClaimsProvider = claimsProvider;
             ReferenceTokenStore = referenceTokenStore;
             CreationService = creationService;
-            Events = events;
+            Clock = clock;
+            Logger = logger;            
         }
 
         /// <summary>
