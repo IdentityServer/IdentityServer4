@@ -43,7 +43,7 @@ This is important so the existing clients and api projects will continue to work
 Add IdentityServer packages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Add the ``IdentityServer4.AspNetIdentity`` NuGet package (at least version "1.0.1").
+Add the ``IdentityServer4.AspNetIdentity`` NuGet package.
 This depends on the ``IdentityServer4`` package, so that's automatically added as a transitive dependency.
 
 .. image:: images/6_nuget.png
@@ -105,36 +105,36 @@ The ``AddAspNetIdentity`` extension method requires a generic parameter which is
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
+        // Add application services.
+        services.AddTransient<IEmailSender, EmailSender>();
+
         services.AddMvc();
 
-        services.AddTransient<IEmailSender, AuthMessageSender>();
-        services.AddTransient<ISmsSender, AuthMessageSender>();
-
-        // Adds IdentityServer
+        // configure identity server with in-memory stores, keys, clients and scopes
         services.AddIdentityServer()
-            .AddTemporarySigningCredential()
+            .AddDeveloperSigningCredential()
+            .AddInMemoryPersistedGrants()
             .AddInMemoryIdentityResources(Config.GetIdentityResources())
             .AddInMemoryApiResources(Config.GetApiResources())
             .AddInMemoryClients(Config.GetClients())
             .AddAspNetIdentity<ApplicationUser>();
     }
 
+.. note:: It's important when using ASP.NET Identity that IdentityServer be registered *after* ASP.NET Identity in the DI system because IdentityServer is overwriting some configuration from ASP.NET Identity.
+    
 **Configure**
 
-This shows both the template code generated for ASP.NET Identity, plus the additions needed for IdentityServer (just after ``UseIdentity``).
-It's important when using ASP.NET Identity that IdentityServer be registered *after* ASP.NET Identity in the pipeline because IdentityServer is relying upon the authentication cookie that ASP.NET Identity creates and manages. 
+This shows both the template code generated for ASP.NET Identity, plus the call to ``UseIdentityServer`` which replaces the call to ``UseIdentity``.
+
 ::
 
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
     {
-        loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-        loggerFactory.AddDebug();
-
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
-            app.UseDatabaseErrorPage();
             app.UseBrowserLink();
+            app.UseDatabaseErrorPage();
         }
         else
         {
@@ -143,9 +143,7 @@ It's important when using ASP.NET Identity that IdentityServer be registered *af
 
         app.UseStaticFiles();
 
-        app.UseIdentity();
-
-        // Adds IdentityServer
+        // app.UseIdentity(); // not needed, since UseIdentityServer adds the authentication middleware
         app.UseIdentityServer();
 
         app.UseMvc(routes =>
