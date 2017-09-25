@@ -11,7 +11,7 @@ you don't have to worry about persistence right from the start.
 
 If you start with ASP.NET Identity, we provide an easy way to integrate with that as well.
 
-The quickstarts provide step by step instructions for various common identityserver scenarios.
+The quickstarts provide step by step instructions for various common IdentityServer scenarios.
 They start with the absolute basics and become more complex - 
 it is recommended you do them in order.
 
@@ -33,8 +33,6 @@ Then select the "Empty" option.
 
 .. image:: images/0_empty_web.png
 
-.. note:: IdentityServer currently only targets ASP.NET Core 1.1.
-
 Next, add the `IdentityServer4` nuget package:
 
 .. image:: images/0_nuget.png
@@ -43,38 +41,38 @@ Alternatively you can use Package Manager Console to add the dependency by runni
 
     "Install-Package IdentityServer4"
 
+.. note:: IdentityServer build numbers 1.x target ASP.NET Core 1.1, and IdentityServer build numbers 2.x targets ASP.NET Core 2.0 .
+
 IdentityServer uses the usual pattern to configure and add services to an ASP.NET Core host.
 In ``ConfigureServices`` the required services are configured and added to the DI system. 
 In ``Configure`` the middleware is added to the HTTP pipeline.
 
 Modify your ``Startup.cs`` file to look like this::
 
-  public class Startup
-  {
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+    public class Startup
     {
-      loggerFactory.AddConsole();
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddIdentityServer()
+                .AddDeveloperSigningCredential();
+        }
 
-      if (env.IsDevelopment())
-      {
-        app.UseDeveloperExceptionPage();
-      }
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
 
-      app.UseIdentityServer();
+            app.UseIdentityServer();
+        }
     }
-
-    public void ConfigureServices(IServiceCollection services)
-    {
-      services.AddIdentityServer()
-        .AddTemporarySigningCredential();
-    }
-  }
 
 ``AddIdentityServer`` registers the IdentityServer services in DI. It also registers an in-memory store for runtime state.
 This is useful for development scenarios. For production scenarios you need a persistent or shared store like a database or cache for that.
 See the :ref:`EntityFramework <refEntityFrameworkQuickstart>` quickstart for more information.
 
-The ``AddTemporarySigningCredential`` extension creates temporary key material for signing tokens on every start.
+The ``AddDeveloperSigningCredential`` extension creates temporary key material for signing tokens.
 Again this might be useful to get started, but needs to be replaced by some persistent key material for production scenarios.
 See the :ref:`cryptography docs <refCrypto>` for more information.
 
@@ -95,29 +93,15 @@ You also don't need to launch a browser every time you start IdentityServer - yo
 
 .. image:: images/0_launch_profile.png
 
-When you switch to self-hosting, the web server port defaults to 5000. 
-You can configure this either in the launch profile dialog above, or programmatically in ``Program.cs`` - 
-we use the following configuration for the IdentityServer host in the quickstarts::
-
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            Console.Title = "IdentityServer";
-
-            var host = new WebHostBuilder()
-                .UseKestrel()
-                .UseUrls("http://localhost:5000")
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseIISIntegration()
-                .UseStartup<Startup>()
-                .Build();
-
-            host.Run();
-        }
-    }
+In addition, it will be helpful to run IdentityServer on a consistent URL for these quickstarts.
+You should also configure this URL in the launch profile dialog above, and use ``http://localhost:5000/``.
+In the above screenshot  you can see this URL has been configured.
 
 .. Note:: We recommend to configure the same port for IIS Express and self-hosting. This way you can switch between the two without having to modify any configuration in your clients.
+
+To then choose the console host when you launch, you must select it in the launch menu from Visual Studio:
+
+.. image:: images/0_choose_launch.png
 
 How to run the quickstart
 ^^^^^^^^^^^^^^^^^^^^^^^^^

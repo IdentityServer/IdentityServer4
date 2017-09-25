@@ -40,7 +40,9 @@ Please `get in touch <mailto:identity@leastprivilege.com>`_ with us to discuss p
 **Training**
 
 We are regularly doing workshops around identity & acess control for modern applications.
-Check the agenda and upcoming dates  `here <https://identityserver.io/training>`_.
+Check the agenda and upcoming public dates  `here <https://identityserver.io/training>`_.
+We can also perform the training privately at your company. 
+`Contact us <mailto:identity@leastprivilege.com>`_ to request the training on-site. 
 
 **Admin UI, Identity Express and SAML2p support**
 

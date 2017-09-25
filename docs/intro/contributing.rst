@@ -35,7 +35,7 @@ Contributing code and content
 You will need to sign a Contributor License Agreement before you can contribute any code or content.
 This is an automated process that will start after you opened a pull request. 
 
-**We only accept PRs to the dev branch.**
+.. Note:: **We only accept PRs to the dev branch.**
 
 Contribution projects
 ^^^^^^^^^^^^^^^^^^^^^

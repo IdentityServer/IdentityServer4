@@ -7,7 +7,7 @@ The specs, documentation and object model use a certain terminology that you sho
 
 IdentityServer
 ^^^^^^^^^^^^^^
-IdentityServer is an OpenID Connect provider - it implements the OpenID Connect and OAuth 2.0 protocol.
+IdentityServer is an OpenID Connect provider - it implements the OpenID Connect and OAuth 2.0 protocols.
 
 Different literature uses different terms for the same role - you probably also find security token service,
 identity provider, authorization server, IP-STS and more.
