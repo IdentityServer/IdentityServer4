@@ -33,6 +33,9 @@ namespace IdentityServer4.Events
         /// </summary>
         protected readonly IEventSink Sink;
 
+        /// <summary>
+        /// The clock
+        /// </summary>
         protected readonly ISystemClock Clock;
 
         /// <summary>

@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 
 namespace IdentityServer4.Configuration
 {
-    public class ConfigureInternalCookieOptions : IConfigureNamedOptions<CookieAuthenticationOptions>
+    internal class ConfigureInternalCookieOptions : IConfigureNamedOptions<CookieAuthenticationOptions>
     {
         private readonly IdentityServerOptions _idsrv;
 
