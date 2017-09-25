@@ -475,7 +475,7 @@ namespace IdentityServer4.Validation
             
             if (result.IsError)
             {
-                // todo: logging
+                LogError("Refresh token validation failed. aborting.");
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
