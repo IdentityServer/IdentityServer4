@@ -66,7 +66,7 @@ under the covers these add the relevant stores and data into the DI system::
     {
         // configure identity server with in-memory stores, keys, clients and resources
         services.AddIdentityServer()
-            .AddTemporarySigningCredential()
+            .AddDeveloperSigningCredential()
             .AddInMemoryApiResources(Config.GetApiResources())
             .AddInMemoryClients(Config.GetClients());
     }
@@ -82,7 +82,7 @@ Adding an API
 ^^^^^^^^^^^^^
 Next, add an API to your solution. 
 
-You can use the ASP.NET Core Web API template for that, or add the ``Microsoft.AspNetCore.Mvc`` package to your project.
+You can use the ASP.NET Core Web API template.
 Again, we recommend you take control over the ports and use the same technique as you used
 to configure Kestrel and the launch profile as before.
 This walkthrough assumes you have configured your API to run on ``http://localhost:5001``.
@@ -107,8 +107,8 @@ as visualize the claims identity through the eyes of the API.
 
 **Configuration**
 
-The last step is to add authentication middleware to your API host.
-The job of that middleware is:
+The last step is to add the authentication services to DI and the authentication middleware to the pipeline.
+These will:
 
 * validate the incoming token to make sure it is coming from a trusted issuer
 * validate that the token is valid to be used with this api (aka scope)
@@ -117,24 +117,38 @@ Add the `IdentityServer4.AccessTokenValidation` NuGet package to your project.
 
 .. image:: images/1_nuget_accesstokenvalidation.png
 
-You also need to add the middleware to your pipeline. 
-It must be added **before** MVC, e.g.::
+Update `Startup` to look like this::
 
-    public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)    
+    public class Startup
     {
-        loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-        loggerFactory.AddDebug();
-
-        app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
+        public void ConfigureServices(IServiceCollection services)
         {
-            Authority = "http://localhost:5000",
-            RequireHttpsMetadata = false,
+            services.AddMvcCore()
+                .AddAuthorization()
+                .AddJsonFormatters();
 
-            ApiName = "api1"
-        });
+            services.AddAuthentication("Bearer")
+                .AddIdentityServerAuthentication(options =>
+                {
+                    options.Authority = "http://localhost:5000";
+                    options.RequireHttpsMetadata = false;
 
-        app.UseMvc();
+                    options.ApiName = "api1";
+                });
+        }
+
+        public void Configure(IApplicationBuilder app)
+        {
+            app.UseAuthentication();
+
+            app.UseMvc();
+        }
     }
+
+
+``AddAuthentication`` adds the authentication services to DI and configures ``"Bearer"`` as the default scheme.
+``AddIdentityServerAuthentication`` adds the IdentityServer access token validation handler into DI for use by the authentication services.
+``UseAuthentication`` adds the authentication middleware to the pipeline so authentication will be performed automatically on every call into the host.
 
 If you use the browser to navigate to the controller (``http://localhost:5001/identity``), 
 you should get a 401 status code in return. This means your API requires a credential.
