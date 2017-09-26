@@ -132,6 +132,7 @@ IdentityServer is officially certified by the OpenID Foundation and part of the 
    reference/api_resource
    reference/client
    reference/grant_validation_result
+   reference/profileservice
    reference/interactionservice
    reference/options
 

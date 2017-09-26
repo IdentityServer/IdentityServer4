@@ -327,7 +327,6 @@ namespace IdentityServer4.Quickstart.UI
                 string url = Url.Action("Logout", new { logoutId = vm.LogoutId });
 
                 // this triggers a redirect to the external provider for sign-out
-                // hack: try/catch to handle social providers that throw
                 return SignOut(new AuthenticationProperties { RedirectUri = url }, vm.ExternalAuthenticationScheme);
             }
 

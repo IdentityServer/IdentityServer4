@@ -25,31 +25,38 @@ From Package Manager Console verify that Default Project drop-down has your proj
     install-package Serilog.Sinks.File
     install-package Serilog.Sinks.Literate
 
-You want to setup logging as early as possible in your application host, e.g. in the constructor of your startup class, e.g::
+You want to setup logging as early as possible in your application host, e.g. in ``Main``::
 
-    public class Startup
+    public class Program
     {
-        public Startup(ILoggerFactory loggerFactory, IHostingEnvironment environment)
+        public static void Main(string[] args)
         {
-            var serilog = new LoggerConfiguration()
-                .MinimumLevel.Verbose()
+            Console.Title = "IdentityServer4";
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                .MinimumLevel.Override("System", LogEventLevel.Warning)
+                .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Information)
                 .Enrich.FromLogContext()
-                .WriteTo.File(@"identityserver4_log.txt");
+                .WriteTo.File(@"identityserver4_log.txt")
+                .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}", theme: AnsiConsoleTheme.Literate)
+                .CreateLogger();
 
-            if (environment.IsDevelopment())
-            {
-                serilog.WriteTo.LiterateConsole(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message}{NewLine}{Exception}{NewLine}");
-            }
-
-            loggerFactory
-                .WithFilter(new FilterLoggerSettings
-                {
-                    { "IdentityServer", LogLevel.Debug },
-                    { "Microsoft", LogLevel.Information },
-                    { "System", LogLevel.Error },
-                })
-                .AddSerilog(serilog.CreateLogger());
+            BuildWebHost(args).Run();
         }
+
+        public static IWebHost BuildWebHost(string[] args)
+        {
+            return WebHost.CreateDefaultBuilder(args)
+                    .UseStartup<Startup>()
+                    .ConfigureLogging(builder =>
+                    {
+                        builder.ClearProviders();
+                        builder.AddSerilog();
+                    })
+                    .Build();
+        }            
     }
 
 Further reading

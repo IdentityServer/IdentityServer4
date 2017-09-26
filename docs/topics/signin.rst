@@ -6,13 +6,31 @@ In order for IdentityServer to issue tokens on behalf of a user, that user must 
 
 Cookie authentication
 ^^^^^^^^^^^^^^^^^^^^^
-Authentication is tracked with a cookie managed by the `cookie authentication <https://docs.microsoft.com/en-us/aspnet/core/security/authentication/cookie>`_ middleware from ASP.NET Core.
-You can register the cookie middleware yourself, or IdentityServer can automatically register it.
+Authentication is tracked with a cookie managed by the `cookie authentication <https://docs.microsoft.com/en-us/aspnet/core/security/authentication/cookie>`_ handler from ASP.NET Core.
+You can register the cookie handler yourself, or you can use the one that IdentityServer automatically registers.
+IdentityServer uses whichever cookie handler that matches the ``DefaultAuthenticateScheme`` as configured on the ``AuthenticationOptions`` when using ``AddAuthentication`` from ASP.NET Core.
 
-If you wish to use your own cookie authentication middleware (typically to change the default settings), then you must tell IdentityServer by setting the 
-``AuthenticationScheme`` configuration property via the :ref:`options <refOptions>`.
-If you do not configure this, then IdentityServer will register the middleware using the constant ``IdentityServerConstants.DefaultCookieAuthenticationScheme`` 
-as the authentication scheme.
+Overriding cookie handler configuration
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you wish to use your own cookie authentication handler (typically to change the default settings), then you must configure it yourself.
+This must be done in ``ConfigureServices`` after registering IdentityServer in DI (with ``AddIdentityServer``).
+For example::
+
+    services.AddIdentityServer()
+        .AddInMemoryClients(Clients.Get())
+        .AddInMemoryIdentityResources(Resources.GetIdentityResources())
+        .AddInMemoryApiResources(Resources.GetApiResources())
+        .AddDeveloperSigningCredential()
+        .AddTestUsers(TestUsers.Users);
+
+    services.AddAuthentication("MyCookie")
+        .AddCookie("MyCookie", options =>
+        {
+            options.ExpireTimeSpan = ...;
+        });
+
+.. note:: IdentityServer internally calls both ``AddAuthentication`` and ``AddCookie`` with a custom scheme (via the constant ``IdentityServerConstants.DefaultCookieAuthenticationScheme``), so to override them you must make the same calls after ``AddIdentityServer``.
 
 Login User Interface and Identity Management System
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -38,13 +56,13 @@ On your login page you might require information about the context of the reques
 (such as client, prompt parameter, IdP hint, or something else).
 This is made available via the ``GetAuthorizationContextAsync`` API on the the :ref:`interaction service <refInteractionService>`.
 
-AuthenticationManager and Claims
+Issuing a cookie and Claims
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-The ``AuthenticationManager`` from ASP.NET Core is used to issue the authentication cookie and sign a user in. 
-The authentication scheme used must match the cookie middleware you are using (see above).
+There are authentication-related extension methods on the ``HttpContext`` from ASP.NET Core to issue the authentication cookie and sign a user in. 
+The authentication scheme used must match the cookie handler you are using (see above).
 
 When you sign the user in you must issue at least a ``sub`` claim and a ``name`` claim.
-IdentityServer provides a few ``SignInAsync`` extension methods on the ``AuthenticationManager`` to make this more convenient.
+IdentityServer also provides a few ``SignInAsync`` extension methods on the ``HttpContext`` to make this more convenient.
 
 You can also optionally issue an ``idp`` claim (for the identity provider name), an ``amr`` claim (for the authentication method used), and/or an ``auth_time`` claim (for the epoch time a user authenticated).
 If you do not provide these, then IdentityServer will provide default values.
