@@ -13,3 +13,8 @@ Exchanging external tokens from Facebook, Google and Twitter
 * Shows how to exchange an external authentication token to an identity server acesss token using an extension grant
 
 https://github.com/waqaskhan540/IdentityServerExternalAuth
+
+.NET Core and ASP.NET Core "Platform" scenario
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+* Show an interaction of trusted "internal" applications and "external" applications with .NET Core 2.0 and ASP.NET Core 2.0 applications
+https://github.com/BenjaminAbt/Samples.AspNetCore-IdentityServer4
