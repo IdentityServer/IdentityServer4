@@ -93,12 +93,20 @@ The use of ``TestUser`` is not recommended in production.
 Client and resource configuration data is used frequently by IdentityServer.
 If this data is being loaded from a database or other external store, then it might be expensive to frequently re-load the same data.
 
+* ``AddInMemoryCaching``
+    To use any of the caches described below, an implementation of ``ICache<T>`` must be registered in DI.
+    This API registers a default in-memory implementation of ``ICache<T>`` that's based on ASP.NET Core's ``MemoryCache``.
+
 * ``AddClientStoreCache``
     Registers a ``IClientStore`` decorator implementation which will maintain an in-memory cache of ``Client`` configuration objects.
     The cache duration is configurable on the ``Caching`` configuration options on the ``IdentityServerOptions``.
 
 * ``AddResourceStoreCache``
     Registers a ``IResourceStore`` decorator implementation which will maintain an in-memory cache of ``IdentityResource`` and ``ApiResource`` configuration objects.
+    The cache duration is configurable on the ``Caching`` configuration options on the ``IdentityServerOptions``.
+
+* ``AddCorsPolicyCache``
+    Registers a ``ICorsPolicyService`` decorator implementation which will maintain an in-memory cache of the results of the CORS policy service evaluation.
     The cache duration is configurable on the ``Caching`` configuration options on the ``IdentityServerOptions``.
 
 Further customization of the cache is possible:
