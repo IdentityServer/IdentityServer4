@@ -253,6 +253,11 @@ namespace IdentityServer4.Models
         public string ClientClaimsPrefix { get; set; } = "client_";
 
         /// <summary>
+        /// Gets or sets a salt value used in pair-wise subjectId generation for users of this client.
+        /// </summary>
+        public string PairWiseSubjectSalt { get; set; }
+
+        /// <summary>
         /// Gets or sets the allowed CORS origins for JavaScript clients.
         /// </summary>
         /// <value>

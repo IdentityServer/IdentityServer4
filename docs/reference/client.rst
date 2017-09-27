@@ -92,6 +92,8 @@ Token
     When requesting both an id token and access token, should the user claims always be added to the id token instead of requring the client to use the userinfo endpoint. Default is `false`.
 ``ClientClaimsPrefix``
     If set, the prefix client claim types will be prefixed with. Defaults to `client_`. The intent is to make sure they don't accidentally collide with user claims.
+``PairWiseSubjectSalt``
+    Salt value used in pair-wise subjectId generation for users of this client.
 
 Consent Screen
 ^^^^^^^^^^^^^^
