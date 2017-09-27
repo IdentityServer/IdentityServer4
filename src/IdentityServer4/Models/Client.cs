@@ -245,10 +245,10 @@ namespace IdentityServer4.Models
         public bool AlwaysSendClientClaims { get; set; } = false;
 
         /// <summary>
-        /// Gets or sets a value to prefix it on client claims. Defaults to <c>client_</c>.
+        /// Gets or sets a value to prefix it on client claim types. Defaults to <c>client_</c>.
         /// </summary>
         /// <value>
-        /// <c>any non empty string if claims should be prefixed with the value; otherwise, <c>null</c>.
+        /// Any non empty string if claims should be prefixed with the value; otherwise, <c>null</c>.
         /// </value>
         public string ClientClaimsPrefix { get; set; } = "client_";
 
