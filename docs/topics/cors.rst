@@ -31,7 +31,7 @@ If you simply wish to hard-code a set of allowed origins, then there is a pre-bu
 This would be configured as a singleton in DI, and hard-coded with its ``AllowedOrigins`` collection, or setting the flag ``AllowAll`` to ``true`` to allow all origins.
 For example, in ``ConfigureServices``::
 
-    var cors = new DefaultCorsPolicyService()
+    var cors = new DefaultCorsPolicyService(_loggerFactory.CreateLogger<DefaultCorsPolicyService>())
     {
         AllowedOrigins = { "https://foo", "https://bar" }
     };
