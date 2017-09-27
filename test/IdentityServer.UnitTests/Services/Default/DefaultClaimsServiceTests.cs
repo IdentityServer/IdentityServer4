@@ -118,7 +118,6 @@ namespace IdentityServer4.UnitTests.Services.Default
         [Fact]
         public async Task GetAccessTokenClaimsAsync_client_claims_should_be_prefixed()
         {
-            _validatedRequest.Client.PrefixClientClaims = true;
             var claims = await _subject.GetAccessTokenClaimsAsync(null, _resources, _validatedRequest);
 
             claims.Where(x => x.Type == "client_some_claim" && x.Value == "some_claim_value").Count().Should().Be(1);
@@ -127,7 +126,7 @@ namespace IdentityServer4.UnitTests.Services.Default
         [Fact]
         public async Task GetAccessTokenClaimsAsync_should_contain_client_claims_when_no_subject()
         {
-            _validatedRequest.Client.PrefixClientClaims = false;
+            _validatedRequest.Client.ClientClaimsPrefix = null;
             var claims = await _subject.GetAccessTokenClaimsAsync(null, _resources, _validatedRequest);
 
             claims.Where(x => x.Type == "some_claim" && x.Value == "some_claim_value").Count().Should().Be(1);
@@ -136,7 +135,7 @@ namespace IdentityServer4.UnitTests.Services.Default
         [Fact]
         public async Task GetAccessTokenClaimsAsync_should_contain_client_claims_when_configured_to_send_client_claims()
         {
-            _validatedRequest.Client.PrefixClientClaims = false;
+            _validatedRequest.Client.ClientClaimsPrefix = null;
             _validatedRequest.Client.AlwaysSendClientClaims = true;
 
             var claims = await _subject.GetAccessTokenClaimsAsync(_user, _resources, _validatedRequest);
