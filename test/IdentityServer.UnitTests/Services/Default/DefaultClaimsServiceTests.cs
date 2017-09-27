@@ -112,15 +112,24 @@ namespace IdentityServer4.UnitTests.Services.Default
         {
             var claims = await _subject.GetAccessTokenClaimsAsync(_user, _resources, _validatedRequest);
 
-            claims.Where(x => x.Type == JwtClaimTypes.ClientId && x.Value == _client.ClientId).Count().Should().Be(1);
+            claims.Count(x => x.Type == JwtClaimTypes.ClientId && x.Value == _client.ClientId).Should().Be(1);
         }
 
         [Fact]
-        public async Task GetAccessTokenClaimsAsync_client_claims_should_be_prefixed()
+        public async Task GetAccessTokenClaimsAsync_client_claims_should_be_prefixed_with_default_value()
         {
             var claims = await _subject.GetAccessTokenClaimsAsync(null, _resources, _validatedRequest);
 
-            claims.Where(x => x.Type == "client_some_claim" && x.Value == "some_claim_value").Count().Should().Be(1);
+            claims.Count(x => x.Type == "client_some_claim" && x.Value == "some_claim_value").Should().Be(1);
+        }
+        
+        [Fact]
+        public async Task GetAccessTokenClaimsAsync_client_claims_should_be_prefixed_with_custom_value()
+        {
+            _validatedRequest.Client.ClientClaimsPrefix = "custom_prefix_";
+            var claims = await _subject.GetAccessTokenClaimsAsync(null, _resources, _validatedRequest);
+
+            claims.Count(x => x.Type == "custom_prefix_some_claim" && x.Value == "some_claim_value").Should().Be(1);
         }
 
         [Fact]
@@ -129,7 +138,7 @@ namespace IdentityServer4.UnitTests.Services.Default
             _validatedRequest.Client.ClientClaimsPrefix = null;
             var claims = await _subject.GetAccessTokenClaimsAsync(null, _resources, _validatedRequest);
 
-            claims.Where(x => x.Type == "some_claim" && x.Value == "some_claim_value").Count().Should().Be(1);
+            claims.Count(x => x.Type == "some_claim" && x.Value == "some_claim_value").Should().Be(1);
         }
 
         [Fact]
@@ -140,7 +149,7 @@ namespace IdentityServer4.UnitTests.Services.Default
 
             var claims = await _subject.GetAccessTokenClaimsAsync(_user, _resources, _validatedRequest);
 
-            claims.Where(x => x.Type == "some_claim" && x.Value == "some_claim_value").Count().Should().Be(1);
+            claims.Count(x => x.Type == "some_claim" && x.Value == "some_claim_value").Should().Be(1);
         }
 
         [Fact]
