@@ -135,7 +135,7 @@ namespace IdentityServer4.Services
             }
             else
             {
-                // todo: validate if this is still true since we now pass a 
+                // todo brock: validate if this is still true since we now pass a 
                 // seralized message as param to end sesison callback
                 //
                 // we don't want to delete the session id cookie if the user is
