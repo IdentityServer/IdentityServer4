@@ -46,7 +46,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                 new Claim(JwtClaimTypes.AuthenticationContextClassReference, "acr1")
             });
 
-            _subject = new DefaultConsentService(_clock, _userConsentStore);
+            _subject = new DefaultConsentService(_clock, _userConsentStore, TestLogger.Create<DefaultConsentService>());
         }
 
         public DateTime UtcNow
