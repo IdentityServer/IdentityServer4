@@ -41,7 +41,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                 new Claim(JwtClaimTypes.AuthenticationContextClassReference, "acr1")
             });
 
-            _subject = new DefaultClaimsService(_mockMockProfileService, TestLogger.Create<DefaultClaimsService>());
+            _subject = new DefaultClaimsService(_mockMockProfileService, new DefaultClientSubjectService(), TestLogger.Create<DefaultClaimsService>());
 
             _validatedRequest = new ValidatedRequest();
             _validatedRequest.SetClient(_client);

@@ -24,6 +24,8 @@ namespace IdentityServer4.Services
         /// </summary>
         protected readonly ILogger Logger;
 
+        private readonly IClientSubjectService _subjectService;
+
         /// <summary>
         /// The user service
         /// </summary>
@@ -33,10 +35,12 @@ namespace IdentityServer4.Services
         /// Initializes a new instance of the <see cref="DefaultClaimsService"/> class.
         /// </summary>
         /// <param name="profile">The profile service</param>
+        /// <param name="subjectService"></param>
         /// <param name="logger">The logger</param>
-        public DefaultClaimsService(IProfileService profile, ILogger<DefaultClaimsService> logger)
+        public DefaultClaimsService(IProfileService profile, IClientSubjectService subjectService, ILogger<DefaultClaimsService> logger)
         {
             Logger = logger;
+            _subjectService = subjectService;
             Profile = profile;
         }
 
@@ -156,8 +160,13 @@ namespace IdentityServer4.Services
 
                 Logger.LogDebug("Getting claims for access token for subject: {subject}", subject.GetSubjectId());
 
-                var standardSubjectClaims = GetStandardSubjectClaims(subject);
-                outputClaims.AddRange(TransformSubjectToPairwiseSubject(standardSubjectClaims, request.Client));
+                var subjectClaims = GetStandardSubjectClaims(subject);
+               
+                if (request.Client.AccessTokenType == AccessTokenType.Jwt)
+                {
+                    subjectClaims = TransformSubjectToPairwiseSubject(subjectClaims, request.Client);
+                }
+                outputClaims.AddRange(subjectClaims);
                 outputClaims.AddRange(GetOptionalClaims(subject));
 
                 // fetch all resource claims that need to go into the access token
@@ -213,8 +222,7 @@ namespace IdentityServer4.Services
             {
                 if (claim.Type == JwtClaimTypes.Subject && !string.IsNullOrWhiteSpace(client.PairWiseSubjectSalt))
                 {
-                    var pairwiseSubject = (claim.Value + client.PairWiseSubjectSalt).Sha256();
-                    yield return new Claim(JwtClaimTypes.Subject, pairwiseSubject);
+                    yield return new Claim(JwtClaimTypes.Subject, _subjectService.CreateSubject(claim.Value, client));
                 }
                 else
                 {

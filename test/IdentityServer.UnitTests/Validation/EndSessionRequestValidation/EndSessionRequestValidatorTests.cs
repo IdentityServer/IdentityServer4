@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using IdentityServer4.Services;
 using Xunit;
 
 namespace IdentityServer4.UnitTests.Validation.EndSessionRequestValidation
@@ -43,8 +44,7 @@ namespace IdentityServer4.UnitTests.Validation.EndSessionRequestValidation
                 _stubRedirectUriValidator,
                 _userSession,
                 _clientStore,
-                _mockEndSessionMessageStore,
-                TestLogger.Create<EndSessionRequestValidator>());
+                _mockEndSessionMessageStore, new DefaultClientSubjectService(), TestLogger.Create<EndSessionRequestValidator>());
         }
 
         [Fact]

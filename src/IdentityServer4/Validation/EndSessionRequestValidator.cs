@@ -23,6 +23,7 @@ namespace IdentityServer4.Validation
     internal class EndSessionRequestValidator : IEndSessionRequestValidator
     {
         private readonly ILogger _logger;
+        private readonly IClientSubjectService _subjectService;
         private readonly IdentityServerOptions _options;
         private readonly ITokenValidator _tokenValidator;
         private readonly IRedirectUriValidator _uriValidator;
@@ -34,11 +35,12 @@ namespace IdentityServer4.Validation
         public EndSessionRequestValidator(
             IHttpContextAccessor context,
             IdentityServerOptions options,
-            ITokenValidator tokenValidator,
-            IRedirectUriValidator uriValidator,
+            ITokenValidator tokenValidator, 
+            IRedirectUriValidator uriValidator, 
             IUserSession userSession,
-            IClientStore clientStore,
+            IClientStore clientStore, 
             IMessageStore<EndSession> endSessionMessageStore,
+            IClientSubjectService subjectService, 
             ILogger<EndSessionRequestValidator> logger)
         {
             _context = context;
@@ -49,9 +51,11 @@ namespace IdentityServer4.Validation
             _clientStore = clientStore;
             _endSessionMessageStore = endSessionMessageStore;
             _logger = logger;
+            _subjectService = subjectService;
         }
 
-        public async Task<EndSessionValidationResult> ValidateAsync(NameValueCollection parameters, ClaimsPrincipal subject)
+        public async Task<EndSessionValidationResult> ValidateAsync(NameValueCollection parameters,
+            ClaimsPrincipal subject)
         {
             _logger.LogDebug("Start end session request validation");
 
@@ -96,7 +100,8 @@ namespace IdentityServer4.Validation
                 var redirectUri = parameters.Get(OidcConstants.EndSessionRequest.PostLogoutRedirectUri);
                 if (redirectUri.IsPresent())
                 {
-                    if (await _uriValidator.IsPostLogoutRedirectUriValidAsync(redirectUri, validatedRequest.Client) == false)
+                    if (await _uriValidator.IsPostLogoutRedirectUriValidAsync(redirectUri, validatedRequest.Client) ==
+                        false)
                     {
                         return Invalid("Invalid post logout URI", validatedRequest);
                     }
@@ -136,12 +141,7 @@ namespace IdentityServer4.Validation
 
         private bool SubjectIsInvalid(ClaimsPrincipal subject, Claim subjectClaim, Client client)
         {
-            if (string.IsNullOrWhiteSpace(client.PairWiseSubjectSalt))
-            {
-                return subjectClaim.Value != subject.GetSubjectId();
-            }
-            var pairwiseSubject = (subject.GetSubjectId() + client.PairWiseSubjectSalt).Sha256();
-            return subjectClaim.Value != pairwiseSubject;
+            return !_subjectService.ValidateSubject(subject.GetSubjectId(), subjectClaim.Value, client);
         }
 
         private EndSessionValidationResult Invalid(string message, ValidatedEndSessionRequest request = null)
@@ -192,7 +192,8 @@ namespace IdentityServer4.Validation
             return result;
         }
 
-        private async Task<(IEnumerable<string> frontChannel, IEnumerable<BackChannelLogoutModel> backChannel)> GetClientEndSessionUrlsAsync(EndSession endSession)
+        private async Task<(IEnumerable<string> frontChannel, IEnumerable<BackChannelLogoutModel> backChannel)>
+            GetClientEndSessionUrlsAsync(EndSession endSession)
         {
             var frontChannelUrls = new List<string>();
             var backChannelLogouts = new List<BackChannelLogoutModel>();
@@ -209,7 +210,8 @@ namespace IdentityServer4.Validation
                         if (client.FrontChannelLogoutSessionRequired)
                         {
                             url = url.AddQueryString(OidcConstants.EndSessionRequest.Sid, endSession.SessionId);
-                            url = url.AddQueryString(OidcConstants.EndSessionRequest.Issuer, _context.HttpContext.GetIdentityServerIssuerUri());
+                            url = url.AddQueryString(OidcConstants.EndSessionRequest.Issuer,
+                                _context.HttpContext.GetIdentityServerIssuerUri());
                         }
 
                         frontChannelUrls.Add(url);

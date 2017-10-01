@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System.Collections.Generic;
 using IdentityModel;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace IdentityServer4.Validation
 {
@@ -34,17 +36,21 @@ namespace IdentityServer4.Validation
         /// </summary>
         protected readonly IClientStore Clients;
 
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultCustomTokenValidator"/> class.
         /// </summary>
         /// <param name="profile">The profile service</param>
         /// <param name="clients">The client store.</param>
+        /// <param name="httpContextAccessor"></param>
         /// <param name="logger">The logger</param>
-        public DefaultCustomTokenValidator(IProfileService profile, IClientStore clients, ILogger<DefaultCustomTokenValidator> logger)
+        public DefaultCustomTokenValidator(IProfileService profile, IClientStore clients, IHttpContextAccessor httpContextAccessor, ILogger<DefaultCustomTokenValidator> logger)
         {
             Logger = logger;
             Profile = profile;
             Clients = clients;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         /// <summary>
@@ -62,7 +68,7 @@ namespace IdentityServer4.Validation
             }
 
             // make sure user is still active (if sub claim is present)
-            var subClaim = result.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject);
+            var subClaim = FindSubject(result);
             if (subClaim != null)
             {
                 var principal = Principal.Create("tokenvalidator", result.Claims.ToArray());
@@ -117,10 +123,11 @@ namespace IdentityServer4.Validation
         public virtual async Task<TokenValidationResult> ValidateIdentityTokenAsync(TokenValidationResult result)
         {
             // make sure user is still active (if sub claim is present)
-            var subClaim = result.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject);
+            var claim = FindSubject(result);
+            var subClaim = claim;
             if (subClaim != null)
             {
-                var principal = Principal.Create("tokenvalidator", result.Claims.ToArray());
+                var principal = Principal.Create("tokenvalidator", ExchangeSubjectClaim(result.Claims, subClaim).ToArray());
 
                 var isActiveCtx = new IsActiveContext(principal, result.Client, IdentityServerConstants.ProfileIsActiveCallers.IdentityTokenValidation);
                 await Profile.IsActiveAsync(isActiveCtx);
@@ -138,6 +145,31 @@ namespace IdentityServer4.Validation
             }
 
             return result;
+        }
+
+        private Claim FindSubject(TokenValidationResult result)
+        {
+            if (string.IsNullOrWhiteSpace(result.Client.PairWiseSubjectSalt))
+            {
+                return result.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject);
+            }
+            return _httpContextAccessor.HttpContext?.User?.FindFirst(JwtClaimTypes.Subject) ?? result.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject);
+        }
+
+        private IEnumerable<Claim> ExchangeSubjectClaim(IEnumerable<Claim> resultClaims, Claim subClaim)
+        {
+            foreach (var claim in resultClaims)
+            {
+                if (claim.Type == subClaim.Type)
+                {
+                    yield return subClaim;
+                }
+                else
+                {
+                    yield return claim;
+                }
+                
+            }
         }
     }
 }
