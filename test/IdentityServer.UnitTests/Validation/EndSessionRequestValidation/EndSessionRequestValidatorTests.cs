@@ -90,6 +90,91 @@ namespace IdentityServer4.UnitTests.Validation.EndSessionRequestValidation
         }
 
         [Fact]
+        public async Task valid_params_without_pairwisesub_should_return_success()
+        {
+            var user = IdentityServerPrincipal.Create("bob", "Bob");
+
+            _stubTokenValidator.IdentityTokenValidationResult = new TokenValidationResult()
+            {
+                IsError = false,
+                Claims = new Claim[] { new Claim("sub", user.GetSubjectId()) },
+                Client = new Client() { ClientId = "client" }
+            };
+            _stubRedirectUriValidator.IsPostLogoutRedirectUriValid = true;
+
+            var parameters = new NameValueCollection();
+            parameters.Add("id_token_hint", "id_token");
+            parameters.Add("post_logout_redirect_uri", "http://client/signout-cb");
+            parameters.Add("client_id", "client1");
+            parameters.Add("state", "foo");
+
+            var result = await _subject.ValidateAsync(parameters, user);
+            result.IsError.Should().BeFalse();
+
+            result.ValidatedRequest.Client.ClientId.Should().Be("client");
+            result.ValidatedRequest.PostLogOutUri.Should().Be("http://client/signout-cb");
+            result.ValidatedRequest.State.Should().Be("foo");
+            result.ValidatedRequest.Subject.GetSubjectId().Should().Be(user.GetSubjectId());
+        }
+
+        [Fact]
+        public async Task valid_params_with_pairwisesub_should_return_success()
+        {
+            var user = IdentityServerPrincipal.Create("bob", "Bob");
+
+            var pairwiseSubject = ("bob" + "foovalidate").Sha256();
+            
+            _stubTokenValidator.IdentityTokenValidationResult = new TokenValidationResult()
+            {
+                IsError = false,
+                Claims = new Claim[] { new Claim("sub", pairwiseSubject) },
+                Client = new Client() { ClientId = "client", PairWiseSubjectSalt = "foovalidate"}
+            };
+            _stubRedirectUriValidator.IsPostLogoutRedirectUriValid = true;
+
+            var parameters = new NameValueCollection();
+            parameters.Add("id_token_hint", "id_token");
+            parameters.Add("post_logout_redirect_uri", "http://client/signout-cb");
+            parameters.Add("client_id", "client1");
+            parameters.Add("state", "foo");
+
+            var result = await _subject.ValidateAsync(parameters, user);
+            result.IsError.Should().BeFalse();
+
+            result.ValidatedRequest.Client.ClientId.Should().Be("client");
+            result.ValidatedRequest.PostLogOutUri.Should().Be("http://client/signout-cb");
+            result.ValidatedRequest.State.Should().Be("foo");
+            result.ValidatedRequest.Subject.GetSubjectId().Should().Be(user.GetSubjectId());
+        }
+
+        [Fact]
+        public async Task params_with_invalid_pairwisesub_should_return_false()
+        {
+            var user = IdentityServerPrincipal.Create("bob", "Bob");
+
+            var invalidPairWiseSubject = ("alice" + "foovalidate").Sha256();
+
+            _stubTokenValidator.IdentityTokenValidationResult = new TokenValidationResult()
+            {
+                IsError = false,
+                Claims = new Claim[] { new Claim("sub", invalidPairWiseSubject) },
+                Client = new Client() { ClientId = "client", PairWiseSubjectSalt = "foovalidate" }
+            };
+            _stubRedirectUriValidator.IsPostLogoutRedirectUriValid = true;
+
+            var parameters = new NameValueCollection();
+            parameters.Add("id_token_hint", "id_token");
+            parameters.Add("post_logout_redirect_uri", "http://client/signout-cb");
+            parameters.Add("client_id", "client1");
+            parameters.Add("state", "foo");
+
+            var result = await _subject.ValidateAsync(parameters, user);
+            result.IsError.Should().BeTrue();
+
+            result.ValidatedRequest.Should().BeNull();
+        }
+        
+        [Fact]
         public async Task no_post_logout_redirect_uri_should_use_single_registered_uri()
         {
             _stubTokenValidator.IdentityTokenValidationResult = new TokenValidationResult()

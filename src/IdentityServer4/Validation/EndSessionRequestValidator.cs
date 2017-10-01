@@ -83,7 +83,7 @@ namespace IdentityServer4.Validation
                 var subClaim = tokenValidationResult.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject);
                 if (subClaim != null && isAuthenticated)
                 {
-                    if (subject.GetSubjectId() != subClaim.Value)
+                    if (SubjectIsInvalid(subject, subClaim, validatedRequest.Client))
                     {
                         return Invalid("Current user does not match identity token", validatedRequest);
                     }
@@ -132,6 +132,16 @@ namespace IdentityServer4.Validation
                 ValidatedRequest = validatedRequest,
                 IsError = false
             };
+        }
+
+        private bool SubjectIsInvalid(ClaimsPrincipal subject, Claim subjectClaim, Client client)
+        {
+            if (string.IsNullOrWhiteSpace(client.PairWiseSubjectSalt))
+            {
+                return subjectClaim.Value != subject.GetSubjectId();
+            }
+            var pairwiseSubject = (subject.GetSubjectId() + client.PairWiseSubjectSalt).Sha256();
+            return subjectClaim.Value != pairwiseSubject;
         }
 
         private EndSessionValidationResult Invalid(string message, ValidatedEndSessionRequest request = null)

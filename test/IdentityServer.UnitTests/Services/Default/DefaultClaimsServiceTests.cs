@@ -61,6 +61,37 @@ namespace IdentityServer4.UnitTests.Services.Default
         }
 
         [Fact]
+        public async Task GetIdentityTokenClaimsAsync_should_return_original_subject_without_pairwisesubjectsalt()
+        {
+            var claims = await _subject.GetIdentityTokenClaimsAsync(_user, _resources, false, _validatedRequest);
+
+            var subjectClaim = claims.Single(c => c.Type == JwtClaimTypes.Subject);
+
+            subjectClaim.Value.Should().Be("bob");
+        }
+
+        [Fact]
+        public async Task GetIdentityTokenClaimsAsync_should_return_hashed_subject_with_pairwisesubjectsalt()
+        {
+            var pairWiseClient = new Client
+            {
+                ClientId = "client1",
+                Claims = { new Claim("some_claim", "some_claim_value") },
+                PairWiseSubjectSalt = "fooidentity"
+            };
+
+            _validatedRequest.SetClient(pairWiseClient);
+            
+            var claims = await _subject.GetIdentityTokenClaimsAsync(_user, _resources, false, _validatedRequest);
+
+            var subjectClaim = claims.Single(c => c.Type == JwtClaimTypes.Subject);
+
+            var expectedSubject = ("bob" + "fooidentity").Sha256();
+            subjectClaim.Value.Should().Be(expectedSubject);
+
+        }
+
+        [Fact]
         public async Task GetIdentityTokenClaimsAsync_should_return_minimal_claims_when_includeAllIdentityClaims_is_false()
         {
             _resources.IdentityResources.Add(new IdentityResource("id_scope", new[] { "foo" }));
@@ -286,6 +317,35 @@ namespace IdentityServer4.UnitTests.Services.Default
 
             _mockMockProfileService.ProfileContext.RequestedClaimTypes.Should().Contain("foo");
             _mockMockProfileService.ProfileContext.RequestedClaimTypes.Should().Contain("bar");
+        }
+
+        [Fact]
+        public async Task GetAccessTokenClaimsAsync_should_return_original_subject_without_pairwisesubjectsalt()
+        {
+            var claims = await _subject.GetAccessTokenClaimsAsync(_user, _resources, _validatedRequest);
+
+            var subjectClaim = claims.Single(c => c.Type == JwtClaimTypes.Subject);
+
+            subjectClaim.Value.Should().Be("bob");
+        }
+
+        [Fact]
+        public async Task GetAccessTokenClaimsAsync_should_return_hashed_subject_with_pairwisesubjectsalt()
+        {
+            var pairWiseClient = new Client
+            {
+                ClientId = "client1",
+                Claims = { new Claim("some_claim", "some_claim_value") },
+                PairWiseSubjectSalt = "fooaccess"
+            };
+
+            _validatedRequest.SetClient(pairWiseClient);
+            var claims = await _subject.GetAccessTokenClaimsAsync(_user, _resources, _validatedRequest);
+
+            var subjectClaim = claims.Single(c => c.Type == JwtClaimTypes.Subject);
+
+            var expectedSubject = ("bob" + "fooaccess").Sha256();
+            subjectClaim.Value.Should().Be(expectedSubject);
         }
     }
 }

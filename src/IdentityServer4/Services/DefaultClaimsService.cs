@@ -56,7 +56,8 @@ namespace IdentityServer4.Services
                 subject.GetSubjectId(),
                 request.Client.ClientId);
 
-            var outputClaims = new List<Claim>(GetStandardSubjectClaims(subject));
+            var standardSubjectClaims = GetStandardSubjectClaims(subject);
+            var outputClaims = new List<Claim>(TransformSubjectToPairwiseSubject(standardSubjectClaims, request.Client));
             outputClaims.AddRange(GetOptionalClaims(subject));
 
             // fetch all identity claims that need to go into the id token
@@ -155,7 +156,8 @@ namespace IdentityServer4.Services
 
                 Logger.LogDebug("Getting claims for access token for subject: {subject}", subject.GetSubjectId());
 
-                outputClaims.AddRange(GetStandardSubjectClaims(subject));
+                var standardSubjectClaims = GetStandardSubjectClaims(subject);
+                outputClaims.AddRange(TransformSubjectToPairwiseSubject(standardSubjectClaims, request.Client));
                 outputClaims.AddRange(GetOptionalClaims(subject));
 
                 // fetch all resource claims that need to go into the access token
@@ -203,6 +205,22 @@ namespace IdentityServer4.Services
             }
 
             return outputClaims;
+        }
+
+        private IEnumerable<Claim> TransformSubjectToPairwiseSubject(IEnumerable<Claim> standardSubjectClaims, Client client)
+        {
+            foreach (var claim in standardSubjectClaims)
+            {
+                if (claim.Type == JwtClaimTypes.Subject && !string.IsNullOrWhiteSpace(client.PairWiseSubjectSalt))
+                {
+                    var pairwiseSubject = (claim.Value + client.PairWiseSubjectSalt).Sha256();
+                    yield return new Claim(JwtClaimTypes.Subject, pairwiseSubject);
+                }
+                else
+                {
+                    yield return claim;
+                }
+            }
         }
 
         /// <summary>
