@@ -10,6 +10,7 @@ PluralSight courses
 ^^^^^^^^^^^^^^^^^^^
 **new**
 
+* `Getting Started with ASP.NET Core and OAuth <https://www.pluralsight.com/courses/asp-dot-net-core-oauth/>`_
 * `Securing ASP.NET Core with OAuth2 and OpenID Connect <https://app.pluralsight.com/library/courses/asp-dotnet-core-oauth2-openid-connect-securing/>`_
 * `Understanding ASP.NET Core Security (Centralized Authentication with a Token Service) <https://app.pluralsight.com/library/courses/asp-dot-net-core-security-understanding/>`_
 
