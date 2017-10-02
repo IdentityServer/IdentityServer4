@@ -5,7 +5,6 @@ using System.Net;
 using System.Threading.Tasks;
 using IdentityServer4.Configuration;
 using IdentityServer4.Endpoints.Results;
-using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
 using IdentityServer4.ResponseHandling;
 using Microsoft.AspNetCore.Http;
@@ -13,7 +12,7 @@ using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.Endpoints
 {
-    internal class DiscoveryEndpoint : IEndpointHandler
+    internal class DiscoveryKeyEndpoint : IEndpointHandler
     {
         private readonly ILogger _logger;
 
@@ -21,10 +20,10 @@ namespace IdentityServer4.Endpoints
 
         private readonly IDiscoveryResponseGenerator _responseGenerator;
 
-        public DiscoveryEndpoint(
+        public DiscoveryKeyEndpoint(
             IdentityServerOptions options,
             IDiscoveryResponseGenerator responseGenerator,
-            ILogger<DiscoveryEndpoint> logger)
+            ILogger<DiscoveryKeyEndpoint> logger)
         {
             this._logger = logger;
             this._options = options;
@@ -42,22 +41,19 @@ namespace IdentityServer4.Endpoints
                 return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
             }
 
-            this._logger.LogDebug("Start discovery request");
+            this._logger.LogDebug("Start key discovery request");
 
-            if (!this._options.Endpoints.EnableDiscoveryEndpoint)
+            if (this._options.Discovery.ShowKeySet == false)
             {
-                this._logger.LogInformation("Discovery endpoint disabled. 404.");
+                this._logger.LogInformation("Key discovery disabled. 404.");
                 return new StatusCodeResult(HttpStatusCode.NotFound);
             }
 
-            var baseUrl = context.GetIdentityServerBaseUrl().EnsureTrailingSlash();
-            var issuerUri = context.GetIdentityServerIssuerUri();
-
             // generate response
             this._logger.LogTrace("Calling into discovery response generator: {type}", this._responseGenerator.GetType().FullName);
-            var response = await this._responseGenerator.CreateDiscoveryDocumentAsync(baseUrl, issuerUri);
+            var response = await this._responseGenerator.CreateJwkDocumentAsync();
 
-            return new DiscoveryDocumentResult(response, this._options.Discovery.ResponseCacheInterval);
+            return new JsonWebKeysResult(response, this._options.Discovery.ResponseCacheInterval);
         }
     }
 }
