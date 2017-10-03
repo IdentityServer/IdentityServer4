@@ -1,7 +1,7 @@
 Deployment
 ==========
 Your identity server is `just` a standard ASP.NET Core appplication including the IdentityServer middleware.
-Read the official Microsoft `documenatation <https://docs.microsoft.com/en-us/aspnet/core/publishing>`_ on publishing and deployment first.
+Read the official Microsoft `documentation <https://docs.microsoft.com/en-us/aspnet/core/publishing>`_ on publishing and deployment first.
 You will also most likely need to configure the `ASP.NET Core data protection <https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/configuration/overview?tabs=aspnetcore2x>`_ for a load-balanced environment.
 
 .. note:: One common question is how to configure ASP.NET Core correctly behind a load-balancer or a reverse proxy. Check this github `issue <https://github.com/aspnet/Docs/issues/2384>`_ for more info.
