@@ -82,8 +82,6 @@ namespace Host
                 })
                 .AddOpenIdConnect("demoidsrv", "IdentityServer", options =>
                 {
-                    //options.StateDataFormat = demoidsrvFormatter;
-
                     options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
                     options.SignOutScheme = IdentityServerConstants.SignoutScheme;
 
@@ -103,8 +101,6 @@ namespace Host
                 })
                 .AddOpenIdConnect("aad", "Azure AD", options =>
                 {
-                    //options.StateDataFormat = aadFormatter;
-
                     options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
                     options.SignOutScheme = IdentityServerConstants.SignoutScheme;
                 

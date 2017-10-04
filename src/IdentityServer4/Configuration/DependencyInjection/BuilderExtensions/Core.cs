@@ -25,6 +25,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using static IdentityServer4.Constants;
 using IdentityServer4.Extensions;
+using IdentityServer4.Hosting.FederatedSignOut;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

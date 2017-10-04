@@ -10,7 +10,6 @@ using System;
 
 namespace IdentityServer4.Hosting
 {
-    // todo brock: cleanup
     // this decorates the real authentication service to detect when the 
     // user is being signed in. this allows us to ensure the user has
     // the claims needed for identity server to do its job. it also allows
@@ -82,7 +81,10 @@ namespace IdentityServer4.Hosting
 
             if ((scheme == null && defaultScheme?.Name == cookieScheme) || scheme == cookieScheme)
             {
+                // this sets a flag used by the FederatedSignoutAuthenticationHandlerProvider
                 context.SetSignOutCalled();
+                
+                // this clears our session id cookie so JS clients can detect the user has signed out
                 await _session.RemoveSessionIdCookieAsync();
             }
 
