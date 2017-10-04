@@ -18,8 +18,6 @@ namespace IdentityServer4.Configuration
         /// The login URL.
         /// </value>
         public string LoginUrl { get; set; } = Constants.UIConstants.DefaultRoutePaths.Login.EnsureLeadingSlash();
-        // TODO brock: consider either using the cookie authN defaults, or adding a postconfigure and setting dynamically
-        // from IOptions<CookieOptions>
 
         /// <summary>
         /// Gets or sets the login return URL parameter.
