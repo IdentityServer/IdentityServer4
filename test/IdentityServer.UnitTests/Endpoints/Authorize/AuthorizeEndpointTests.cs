@@ -45,18 +45,18 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
         public AuthorizeEndpointTests()
         {
-            this.Init();
+            Init();
         }
 
         [Fact]
         [Trait("Category", Category)]
         public async Task ProcessAsync_authorize_path_should_return_authorization_result()
         {
-            this._context.Request.Method = "GET";
-            this._context.Request.Path = new PathString("/connect/authorize");
-            this._mockUserSession.User = this._user;
+            _context.Request.Method = "GET";
+            _context.Request.Path = new PathString("/connect/authorize");
+            _mockUserSession.User = _user;
 
-            var result = await this._subject.ProcessAsync(this._context);
+            var result = await _subject.ProcessAsync(_context);
 
             result.Should().BeOfType<AuthorizeResult>();
         }
@@ -65,9 +65,9 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task ProcessAsync_post_without_form_content_type_should_return_415()
         {
-            this._context.Request.Method = "POST";
+            _context.Request.Method = "POST";
 
-            var result = await this._subject.ProcessAsync(this._context);
+            var result = await _subject.ProcessAsync(_context);
 
             var statusCode = result as StatusCodeResult;
             statusCode.Should().NotBeNull();
@@ -76,9 +76,9 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
         internal void Init()
         {
-            this._context = new MockHttpContextAccessor().HttpContext;
+            _context = new MockHttpContextAccessor().HttpContext;
 
-            this._validatedAuthorizeRequest = new ValidatedAuthorizeRequest()
+            _validatedAuthorizeRequest = new ValidatedAuthorizeRequest()
             {
                 RedirectUri = "http://client/callback",
                 State = "123",
@@ -89,20 +89,20 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
                     ClientId = "client",
                     ClientName = "Test Client"
                 },
-                Raw = this._params,
-                Subject = this._user
+                Raw = _params,
+                Subject = _user
             };
-            this._stubAuthorizeResponseGenerator.Response.Request = this._validatedAuthorizeRequest;
+            _stubAuthorizeResponseGenerator.Response.Request = _validatedAuthorizeRequest;
 
-            this._stubAuthorizeRequestValidator.Result = new AuthorizeRequestValidationResult(this._validatedAuthorizeRequest);
+            _stubAuthorizeRequestValidator.Result = new AuthorizeRequestValidationResult(_validatedAuthorizeRequest);
 
-            this._subject = new AuthorizeEndpoint(
-                this._fakeEventService,
-                this._fakeLogger,
-                this._stubAuthorizeRequestValidator,
-                this._stubInteractionGenerator,
-                this._stubAuthorizeResponseGenerator,
-                this._mockUserSession);
+            _subject = new AuthorizeEndpoint(
+                _fakeEventService,
+                _fakeLogger,
+                _stubAuthorizeRequestValidator,
+                _stubInteractionGenerator,
+                _stubAuthorizeResponseGenerator,
+                _mockUserSession);
         }
     }
 }

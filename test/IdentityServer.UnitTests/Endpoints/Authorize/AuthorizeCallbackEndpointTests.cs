@@ -47,7 +47,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
         public AuthorizeCallbackEndpointTests()
         {
-            this.Init();
+            Init();
         }
 
         [Fact]
@@ -60,16 +60,16 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
                 { "nonce", "some_nonce" },
                 { "scope", "api1 api2" }
             };
-            var request = new ConsentRequest(parameters, this._user.GetSubjectId());
-            this._mockUserConsentResponseMessageStore.Messages.Add(request.Id, new Message<ConsentResponse>(new ConsentResponse()));
+            var request = new ConsentRequest(parameters, _user.GetSubjectId());
+            _mockUserConsentResponseMessageStore.Messages.Add(request.Id, new Message<ConsentResponse>(new ConsentResponse()));
 
-            this._mockUserSession.User = this._user;
+            _mockUserSession.User = _user;
 
-            this._context.Request.Method = "GET";
-            this._context.Request.Path = new PathString("/connect/authorize/callback");
-            this._context.Request.QueryString = new QueryString("?" + parameters.ToQueryString());
+            _context.Request.Method = "GET";
+            _context.Request.Path = new PathString("/connect/authorize/callback");
+            _context.Request.QueryString = new QueryString("?" + parameters.ToQueryString());
 
-            var result = await this._subject.ProcessAsync(this._context);
+            var result = await _subject.ProcessAsync(_context);
 
             result.Should().BeOfType<AuthorizeResult>();
         }
@@ -78,11 +78,11 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task ProcessAsync_authorize_after_login_path_should_return_authorization_result()
         {
-            this._context.Request.Method = "GET";
-            this._context.Request.Path = new PathString("/connect/authorize/callback");
-            this._mockUserSession.User = this._user;
+            _context.Request.Method = "GET";
+            _context.Request.Path = new PathString("/connect/authorize/callback");
+            _mockUserSession.User = _user;
 
-            var result = await this._subject.ProcessAsync(this._context);
+            var result = await _subject.ProcessAsync(_context);
 
             result.Should().BeOfType<AuthorizeResult>();
         }
@@ -97,16 +97,16 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
                 { "nonce", "some_nonce" },
                 { "scope", "api1 api2" }
             };
-            var request = new ConsentRequest(parameters, this._user.GetSubjectId());
-            this._mockUserConsentResponseMessageStore.Messages.Add(request.Id, new Message<ConsentResponse>(null));
+            var request = new ConsentRequest(parameters, _user.GetSubjectId());
+            _mockUserConsentResponseMessageStore.Messages.Add(request.Id, new Message<ConsentResponse>(null));
 
-            this._mockUserSession.User = this._user;
+            _mockUserSession.User = _user;
 
-            this._context.Request.Method = "GET";
-            this._context.Request.Path = new PathString("/connect/authorize/callback");
-            this._context.Request.QueryString = new QueryString("?" + parameters.ToQueryString());
+            _context.Request.Method = "GET";
+            _context.Request.Path = new PathString("/connect/authorize/callback");
+            _context.Request.QueryString = new QueryString("?" + parameters.ToQueryString());
 
-            var result = await this._subject.ProcessAsync(this._context);
+            var result = await _subject.ProcessAsync(_context);
 
             result.Should().BeOfType<AuthorizeResult>();
             ((AuthorizeResult)result).Response.IsError.Should().BeTrue();
@@ -116,7 +116,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task ProcessAsync_no_consent_message_should_return_redirect_for_consent()
         {
-            this._stubInteractionGenerator.Response.IsConsent = true;
+            _stubInteractionGenerator.Response.IsConsent = true;
 
             var parameters = new NameValueCollection()
             {
@@ -124,16 +124,16 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
                 { "nonce", "some_nonce" },
                 { "scope", "api1 api2" }
             };
-            var request = new ConsentRequest(parameters, this._user.GetSubjectId());
-            this._mockUserConsentResponseMessageStore.Messages.Add(request.Id, null);
+            var request = new ConsentRequest(parameters, _user.GetSubjectId());
+            _mockUserConsentResponseMessageStore.Messages.Add(request.Id, null);
 
-            this._mockUserSession.User = this._user;
+            _mockUserSession.User = _user;
 
-            this._context.Request.Method = "GET";
-            this._context.Request.Path = new PathString("/connect/authorize/callback");
-            this._context.Request.QueryString = new QueryString("?" + parameters.ToQueryString());
+            _context.Request.Method = "GET";
+            _context.Request.Path = new PathString("/connect/authorize/callback");
+            _context.Request.QueryString = new QueryString("?" + parameters.ToQueryString());
 
-            var result = await this._subject.ProcessAsync(this._context);
+            var result = await _subject.ProcessAsync(_context);
 
             result.Should().BeOfType<ConsentPageResult>();
         }
@@ -142,9 +142,9 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task ProcessAsync_post_to_entry_point_should_return_405()
         {
-            this._context.Request.Method = "POST";
+            _context.Request.Method = "POST";
 
-            var result = await this._subject.ProcessAsync(this._context);
+            var result = await _subject.ProcessAsync(_context);
 
             var statusCode = result as StatusCodeResult;
             statusCode.Should().NotBeNull();
@@ -161,18 +161,18 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
                 { "nonce", "some_nonce" },
                 { "scope", "api1 api2" }
             };
-            var request = new ConsentRequest(parameters, this._user.GetSubjectId());
-            this._mockUserConsentResponseMessageStore.Messages.Add(request.Id, new Message<ConsentResponse>(new ConsentResponse() { ScopesConsented = new string[] { "api1", "api2" } }));
+            var request = new ConsentRequest(parameters, _user.GetSubjectId());
+            _mockUserConsentResponseMessageStore.Messages.Add(request.Id, new Message<ConsentResponse>(new ConsentResponse() { ScopesConsented = new string[] { "api1", "api2" } }));
 
-            this._mockUserSession.User = this._user;
+            _mockUserSession.User = _user;
 
-            this._context.Request.Method = "GET";
-            this._context.Request.Path = new PathString("/connect/authorize/callback");
-            this._context.Request.QueryString = new QueryString("?" + parameters.ToQueryString());
+            _context.Request.Method = "GET";
+            _context.Request.Path = new PathString("/connect/authorize/callback");
+            _context.Request.QueryString = new QueryString("?" + parameters.ToQueryString());
 
-            var result = await this._subject.ProcessAsync(this._context);
+            var result = await _subject.ProcessAsync(_context);
 
-            this._mockUserConsentResponseMessageStore.Messages.Count.Should().Be(0);
+            _mockUserConsentResponseMessageStore.Messages.Count.Should().Be(0);
         }
 
         [Fact]
@@ -185,25 +185,25 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
                 { "nonce", "some_nonce" },
                 { "scope", "api1 api2" }
             };
-            var request = new ConsentRequest(parameters, this._user.GetSubjectId());
-            this._mockUserConsentResponseMessageStore.Messages.Add(request.Id, new Message<ConsentResponse>(new ConsentResponse() { ScopesConsented = new string[] { "api1", "api2" } }));
+            var request = new ConsentRequest(parameters, _user.GetSubjectId());
+            _mockUserConsentResponseMessageStore.Messages.Add(request.Id, new Message<ConsentResponse>(new ConsentResponse() { ScopesConsented = new string[] { "api1", "api2" } }));
 
-            this._mockUserSession.User = this._user;
+            _mockUserSession.User = _user;
 
-            this._context.Request.Method = "GET";
-            this._context.Request.Path = new PathString("/connect/authorize/callback");
-            this._context.Request.QueryString = new QueryString("?" + parameters.ToQueryString());
+            _context.Request.Method = "GET";
+            _context.Request.Path = new PathString("/connect/authorize/callback");
+            _context.Request.QueryString = new QueryString("?" + parameters.ToQueryString());
 
-            var result = await this._subject.ProcessAsync(this._context);
+            var result = await _subject.ProcessAsync(_context);
 
             result.Should().BeOfType<AuthorizeResult>();
         }
 
         internal void Init()
         {
-            this._context = new MockHttpContextAccessor().HttpContext;
+            _context = new MockHttpContextAccessor().HttpContext;
 
-            this._validatedAuthorizeRequest = new ValidatedAuthorizeRequest()
+            _validatedAuthorizeRequest = new ValidatedAuthorizeRequest()
             {
                 RedirectUri = "http://client/callback",
                 State = "123",
@@ -214,21 +214,21 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
                     ClientId = "client",
                     ClientName = "Test Client"
                 },
-                Raw = this._params,
-                Subject = this._user
+                Raw = _params,
+                Subject = _user
             };
-            this._stubAuthorizeResponseGenerator.Response.Request = this._validatedAuthorizeRequest;
+            _stubAuthorizeResponseGenerator.Response.Request = _validatedAuthorizeRequest;
 
-            this._stubAuthorizeRequestValidator.Result = new AuthorizeRequestValidationResult(this._validatedAuthorizeRequest);
+            _stubAuthorizeRequestValidator.Result = new AuthorizeRequestValidationResult(_validatedAuthorizeRequest);
 
-            this._subject = new AuthorizeCallbackEndpoint(
-                this._fakeEventService,
-                this._fakeLogger,
-                this._stubAuthorizeRequestValidator,
-                this._stubInteractionGenerator,
-                this._stubAuthorizeResponseGenerator,
-                this._mockUserSession,
-                this._mockUserConsentResponseMessageStore);
+            _subject = new AuthorizeCallbackEndpoint(
+                _fakeEventService,
+                _fakeLogger,
+                _stubAuthorizeRequestValidator,
+                _stubInteractionGenerator,
+                _stubAuthorizeResponseGenerator,
+                _mockUserSession,
+                _mockUserConsentResponseMessageStore);
         }
     }
 }

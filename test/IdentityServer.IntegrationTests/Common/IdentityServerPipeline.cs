@@ -190,7 +190,7 @@ namespace IdentityServer4.IntegrationTests.Common
                 var props = new AuthenticationProperties();
                 await ctx.SignInAsync(Subject, props);
                 Subject = null;
-                var url = ctx.Request.Query[this.Options.UserInteraction.LoginReturnUrlParameter].FirstOrDefault();
+                var url = ctx.Request.Query[Options.UserInteraction.LoginReturnUrlParameter].FirstOrDefault();
                 if (url != null)
                 {
                     ctx.Response.Redirect(url);
@@ -238,7 +238,7 @@ namespace IdentityServer4.IntegrationTests.Common
                 await interaction.GrantConsentAsync(ConsentRequest, ConsentResponse);
                 ConsentResponse = null;
 
-                var url = ctx.Request.Query[this.Options.UserInteraction.ConsentReturnUrlParameter].FirstOrDefault();
+                var url = ctx.Request.Query[Options.UserInteraction.ConsentReturnUrlParameter].FirstOrDefault();
                 if (url != null)
                 {
                     ctx.Response.Redirect(url);

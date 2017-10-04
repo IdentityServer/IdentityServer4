@@ -47,17 +47,17 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
         public AuthorizeEndpointBaseTests()
         {
-            this.Init();
+            Init();
         }
 
         [Fact]
         [Trait("Category", Category)]
         public async Task authorize_request_validation_produces_error_should_display_error_page()
         {
-            this._stubAuthorizeRequestValidator.Result.IsError = true;
-            this._stubAuthorizeRequestValidator.Result.Error = "some_error";
+            _stubAuthorizeRequestValidator.Result.IsError = true;
+            _stubAuthorizeRequestValidator.Result.Error = "some_error";
 
-            var result = await this._subject.ProcessAuthorizeRequestAsync(this._params, this._user, null);
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
             result.Should().BeOfType<AuthorizeResult>();
             ((AuthorizeResult)result).Response.IsError.Should().BeTrue();
@@ -67,9 +67,9 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task interaction_generator_consent_produces_consent_should_show_consent_page()
         {
-            this._stubInteractionGenerator.Response.IsConsent = true;
+            _stubInteractionGenerator.Response.IsConsent = true;
 
-            var result = await this._subject.ProcessAuthorizeRequestAsync(this._params, this._user, null);
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
             result.Should().BeOfType<ConsentPageResult>();
         }
@@ -78,9 +78,9 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task interaction_produces_error_should_show_error_page()
         {
-            this._stubInteractionGenerator.Response.Error = "error";
+            _stubInteractionGenerator.Response.Error = "error";
 
-            var result = await this._subject.ProcessAuthorizeRequestAsync(this._params, this._user, null);
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
             result.Should().BeOfType<AuthorizeResult>();
             ((AuthorizeResult)result).Response.IsError.Should().BeTrue();
@@ -90,9 +90,9 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task interaction_produces_login_result_should_trigger_login()
         {
-            this._stubInteractionGenerator.Response.IsLogin = true;
+            _stubInteractionGenerator.Response.IsLogin = true;
 
-            var result = await this._subject.ProcessAuthorizeRequestAsync(this._params, this._user, null);
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
             result.Should().BeOfType<LoginPageResult>();
         }
@@ -101,10 +101,10 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task ProcessAuthorizeRequestAsync_custom_interaction_redirect_result_should_issue_redirect()
         {
-            this._mockUserSession.User = this._user;
-            this._stubInteractionGenerator.Response.RedirectUrl = "http://foo.com";
+            _mockUserSession.User = _user;
+            _stubInteractionGenerator.Response.RedirectUrl = "http://foo.com";
 
-            var result = await this._subject.ProcessAuthorizeRequestAsync(this._params, this._user, null);
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
             result.Should().BeOfType<CustomRedirectResult>();
         }
@@ -113,16 +113,16 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task successful_authorization_request_should_generate_authorize_result()
         {
-            var result = await this._subject.ProcessAuthorizeRequestAsync(this._params, this._user, null);
+            var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
 
             result.Should().BeOfType<AuthorizeResult>();
         }
 
         internal void Init()
         {
-            this._context = new MockHttpContextAccessor().HttpContext;
+            _context = new MockHttpContextAccessor().HttpContext;
 
-            this._validatedAuthorizeRequest = new ValidatedAuthorizeRequest()
+            _validatedAuthorizeRequest = new ValidatedAuthorizeRequest()
             {
                 RedirectUri = "http://client/callback",
                 State = "123",
@@ -133,20 +133,20 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
                     ClientId = "client",
                     ClientName = "Test Client"
                 },
-                Raw = this._params,
-                Subject = this._user
+                Raw = _params,
+                Subject = _user
             };
-            this._stubAuthorizeResponseGenerator.Response.Request = this._validatedAuthorizeRequest;
+            _stubAuthorizeResponseGenerator.Response.Request = _validatedAuthorizeRequest;
 
-            this._stubAuthorizeRequestValidator.Result = new AuthorizeRequestValidationResult(this._validatedAuthorizeRequest);
+            _stubAuthorizeRequestValidator.Result = new AuthorizeRequestValidationResult(_validatedAuthorizeRequest);
 
-            this._subject = new TestAuthorizeEndpoint(
-                this._fakeEventService,
-                this._fakeLogger,
-                this._stubAuthorizeRequestValidator,
-                this._stubInteractionGenerator,
-                this._stubAuthorizeResponseGenerator,
-                this._mockUserSession);
+            _subject = new TestAuthorizeEndpoint(
+                _fakeEventService,
+                _fakeLogger,
+                _stubAuthorizeRequestValidator,
+                _stubInteractionGenerator,
+                _stubAuthorizeResponseGenerator,
+                _mockUserSession);
         }
 
         internal class TestAuthorizeEndpoint : AuthorizeEndpointBase
