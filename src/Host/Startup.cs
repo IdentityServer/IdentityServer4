@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using Microsoft.IdentityModel.Tokens;
 using IdentityServer4;
-using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Quickstart.UI;
 using Microsoft.Extensions.Configuration;
@@ -71,10 +70,7 @@ namespace Host
     {
         public static IServiceCollection AddExternalIdentityProviders(this IServiceCollection services)
         {
-            //var aadFormatter = services.CreateDistributedCacheStateDataFormatter<OpenIdConnectOptions>("aad");
-            //var demoidsrvFormatter = services.CreateDistributedCacheStateDataFormatter<OpenIdConnectOptions>("demoidsrv");
-
-            services.AddDistributedCacheStateDataFormatterForOidc();
+            services.AddOidcStateDataFormatterCache();
 
             services.AddAuthentication()
                 .AddGoogle("Google", options =>
