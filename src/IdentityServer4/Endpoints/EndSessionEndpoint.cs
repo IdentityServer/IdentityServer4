@@ -27,9 +27,9 @@ namespace IdentityServer4.Endpoints
             IUserSession userSession,
             ILogger<EndSessionEndpoint> logger)
         {
-            this._endSessionRequestValidator = endSessionRequestValidator;
-            this._userSession = userSession;
-            this._logger = logger;
+            _endSessionRequestValidator = endSessionRequestValidator;
+            _userSession = userSession;
+            _logger = logger;
         }
 
         public async Task<IEndpointResult> ProcessAsync(HttpContext context)
@@ -45,23 +45,23 @@ namespace IdentityServer4.Endpoints
             }
             else
             {
-                this._logger.LogWarning("Invalid HTTP method for end session endpoint.");
+                _logger.LogWarning("Invalid HTTP method for end session endpoint.");
                 return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
             }
 
-            var user = await this._userSession.GetUserAsync();
+            var user = await _userSession.GetUserAsync();
 
-            this._logger.LogDebug("Processing signout request for {subjectId}", user?.GetSubjectId() ?? "anonymous");
+            _logger.LogDebug("Processing signout request for {subjectId}", user?.GetSubjectId() ?? "anonymous");
 
-            var result = await this._endSessionRequestValidator.ValidateAsync(parameters, user);
+            var result = await _endSessionRequestValidator.ValidateAsync(parameters, user);
 
             if (result.IsError)
             {
-                this._logger.LogError("Error processing end session request {error}", result.Error);
+                _logger.LogError("Error processing end session request {error}", result.Error);
             }
             else
             {
-                this._logger.LogDebug("Success validating end session request from {clientId}", result.ValidatedRequest?.Client?.ClientId);
+                _logger.LogDebug("Success validating end session request from {clientId}", result.ValidatedRequest?.Client?.ClientId);
             }
 
             return new EndSessionResult(result);

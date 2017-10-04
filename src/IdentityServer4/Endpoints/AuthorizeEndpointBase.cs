@@ -38,12 +38,12 @@ namespace IdentityServer4.Endpoints
             IAuthorizeResponseGenerator authorizeResponseGenerator,
             IUserSession userSession)
         {
-            this._events = events;
-            this.Logger = logger;
-            this._validator = validator;
-            this._interactionGenerator = interactionGenerator;
-            this._authorizeResponseGenerator = authorizeResponseGenerator;
-            this.UserSession = userSession;
+            _events = events;
+            Logger = logger;
+            _validator = validator;
+            _interactionGenerator = interactionGenerator;
+            _authorizeResponseGenerator = authorizeResponseGenerator;
+            UserSession = userSession;
         }
 
         protected ILogger Logger { get; private set; }
@@ -56,18 +56,18 @@ namespace IdentityServer4.Endpoints
         {
             if (user != null)
             {
-                this.Logger.LogDebug("User in authorize request: {subjectId}", user.GetSubjectId());
+                Logger.LogDebug("User in authorize request: {subjectId}", user.GetSubjectId());
             }
             else
             {
-                this.Logger.LogDebug("No user present in authorize request");
+                Logger.LogDebug("No user present in authorize request");
             }
 
             // validate request
-            var result = await this._validator.ValidateAsync(parameters, user);
+            var result = await _validator.ValidateAsync(parameters, user);
             if (result.IsError)
             {
-                return await this.CreateErrorResultAsync(
+                return await CreateErrorResultAsync(
                     "Request validation failed",
                     result.ValidatedRequest,
                     result.Error,
@@ -75,13 +75,13 @@ namespace IdentityServer4.Endpoints
             }
 
             var request = result.ValidatedRequest;
-            this.LogRequest(request);
+            LogRequest(request);
 
             // determine user interaction
-            var interactionResult = await this._interactionGenerator.ProcessInteractionAsync(request, consent);
+            var interactionResult = await _interactionGenerator.ProcessInteractionAsync(request, consent);
             if (interactionResult.IsError)
             {
-                return await this.CreateErrorResultAsync("Interaction generator error", request, interactionResult.Error, logError: false);
+                return await CreateErrorResultAsync("Interaction generator error", request, interactionResult.Error, logError: false);
             }
             if (interactionResult.IsLogin)
             {
@@ -96,11 +96,11 @@ namespace IdentityServer4.Endpoints
                 return new CustomRedirectResult(request, interactionResult.RedirectUrl);
             }
 
-            var response = await this._authorizeResponseGenerator.CreateResponseAsync(request);
+            var response = await _authorizeResponseGenerator.CreateResponseAsync(request);
 
-            await this.RaiseResponseEventAsync(response);
+            await RaiseResponseEventAsync(response);
 
-            this.LogResponse(response);
+            LogResponse(response);
 
             return new AuthorizeResult(response);
         }
@@ -114,17 +114,17 @@ namespace IdentityServer4.Endpoints
         {
             if (logError)
             {
-                this.Logger.LogError(logMessage);
+                Logger.LogError(logMessage);
             }
 
             if (request != null)
             {
                 var details = new AuthorizeRequestValidationLog(request);
-                this.Logger.LogInformation("{validationDetails}", details);
+                Logger.LogInformation("{validationDetails}", details);
             }
 
             // TODO: should we raise a token failure event for all errors to the authorize endpoint?
-            await this.RaiseFailureEventAsync(request, error, errorDescription);
+            await RaiseFailureEventAsync(request, error, errorDescription);
 
             return new AuthorizeResult(new AuthorizeResponse
             {
@@ -137,13 +137,13 @@ namespace IdentityServer4.Endpoints
         private void LogRequest(ValidatedAuthorizeRequest request)
         {
             var details = new AuthorizeRequestValidationLog(request);
-            this.Logger.LogInformation(nameof(ValidatedAuthorizeRequest) + Environment.NewLine + "{validationDetails}", details);
+            Logger.LogInformation(nameof(ValidatedAuthorizeRequest) + Environment.NewLine + "{validationDetails}", details);
         }
 
         private void LogResponse(AuthorizeResponse response)
         {
             var details = new AuthorizeResponseLog(response);
-            this.Logger.LogInformation("Authorize endpoint response" + Environment.NewLine + "{response}", details);
+            Logger.LogInformation("Authorize endpoint response" + Environment.NewLine + "{response}", details);
         }
 
         private void LogTokens(AuthorizeResponse response)
@@ -153,33 +153,33 @@ namespace IdentityServer4.Endpoints
 
             if (response.IdentityToken != null)
             {
-                this.Logger.LogTrace("Identity token issued for {clientId} / {subjectId}: {token}", clientId, subjectId, response.IdentityToken);
+                Logger.LogTrace("Identity token issued for {clientId} / {subjectId}: {token}", clientId, subjectId, response.IdentityToken);
             }
             if (response.Code != null)
             {
-                this.Logger.LogTrace("Code issued for {clientId} / {subjectId}: {token}", clientId, subjectId, response.Code);
+                Logger.LogTrace("Code issued for {clientId} / {subjectId}: {token}", clientId, subjectId, response.Code);
             }
             if (response.AccessToken != null)
             {
-                this.Logger.LogTrace("Access token issued for {clientId} / {subjectId}: {token}", clientId, subjectId, response.AccessToken);
+                Logger.LogTrace("Access token issued for {clientId} / {subjectId}: {token}", clientId, subjectId, response.AccessToken);
             }
         }
 
         private Task RaiseFailureEventAsync(ValidatedAuthorizeRequest request, string error, string errorDescription)
         {
-            return this._events.RaiseAsync(new TokenIssuedFailureEvent(request, error, errorDescription));
+            return _events.RaiseAsync(new TokenIssuedFailureEvent(request, error, errorDescription));
         }
 
         private Task RaiseResponseEventAsync(AuthorizeResponse response)
         {
             if (!response.IsError)
             {
-                this.LogTokens(response);
-                return this._events.RaiseAsync(new TokenIssuedSuccessEvent(response));
+                LogTokens(response);
+                return _events.RaiseAsync(new TokenIssuedSuccessEvent(response));
             }
             else
             {
-                return this.RaiseFailureEventAsync(response.Request, response.Error, response.ErrorDescription);
+                return RaiseFailureEventAsync(response.Request, response.Error, response.ErrorDescription);
             }
         }
     }

@@ -104,7 +104,7 @@ namespace IdentityServer4.Endpoints
             return new IntrospectionResult(response);
         }
 
-        // todo: cleanup logging and log levels
+        // todo dom: cleanup logging and log levels
         private void LogSuccess(string tokenStatus, string apiName)
         {
             _logger.LogInformation("Success token introspection. Token status: {tokenStatus}, for API name: {apiName}", tokenStatus, apiName);

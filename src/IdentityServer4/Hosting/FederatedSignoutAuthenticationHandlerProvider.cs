@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.Hosting
 {
-    // todo: FML
+    // todo: brock cleanup classes and move into folder under hosting
     // this intercepts IAuthenticationRequestHandler authentication handlers
     // to detect when they are handling federated signout. when they are invoked,
     // call signout on the default authentication scheme, and return 200 then 

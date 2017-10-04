@@ -13,19 +13,31 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    // todo: review all of this mess and maybe move to infrastructure?
+    // todo brock: add dependency to oidc handler
+    // move to subfolder in infrastructure
+
     public static class DistributedCacheStateDataFormatterExtensions
     {
-        public static ISecureDataFormat<AuthenticationProperties> CreateDistributedCacheStateDataFormatter<TOptions>(this IServiceCollection services, string name)
-            where TOptions : class
-        {
-            if (services == null) throw new ArgumentNullException(nameof(services));
-            if (String.IsNullOrWhiteSpace(name)) throw new ArgumentNullException(nameof(name));
+        // todo brock: remove this one in favor of one below
+        //public static ISecureDataFormat<AuthenticationProperties> CreateDistributedCacheStateDataFormatter<TOptions>(this IServiceCollection services, string scheme)
+        //    where TOptions : class
+        //{
+        //    if (services == null) throw new ArgumentNullException(nameof(services));
+        //    if (String.IsNullOrWhiteSpace(scheme)) throw new ArgumentNullException(nameof(scheme));
 
-            services.AddSingleton<IPostConfigureOptions<TOptions>, DistributedCacheStateDataFormatterInitializer<TOptions>>();
-            return new DistributedCacheStateDataFormatterMarker(name);
-        }
+        //    services.AddSingleton<IPostConfigureOptions<TOptions>, DistributedCacheStateDataFormatterInitializer<TOptions>>();
+        //    return new DistributedCacheStateDataFormatterMarker(scheme);
+        //}
 
+        // todo brock: finish
+        //public static void AddDistributedCacheStateDataFormatterForOidc(this IServiceCollection services, params string[] schemes)
+        //{
+        //    var typeName = "Microsoft.AspNetCore.Authentication.OpenIdConnect.OpenIdConnectOptions, Microsoft.AspNetCore.Authentication.OpenIdConnect";
+        //    var optionsType = Type.GetType(typeName);
+        //    var serviceType = typeof(IPostConfigureOptions<>).MakeGenericType(optionsType);
+        //    var implType = typeof(DistributedCacheStateDataFormatterInitializerForAll<>).MakeGenericType(optionsType);
+        //    services.AddSingleton(serviceType, implType);
+        //}
         public static void AddDistributedCacheStateDataFormatterForOidc(this IServiceCollection services)
         {
             var typeName = "Microsoft.AspNetCore.Authentication.OpenIdConnect.OpenIdConnectOptions, Microsoft.AspNetCore.Authentication.OpenIdConnect";

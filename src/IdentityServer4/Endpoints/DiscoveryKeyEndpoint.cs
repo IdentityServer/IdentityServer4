@@ -25,35 +25,35 @@ namespace IdentityServer4.Endpoints
             IDiscoveryResponseGenerator responseGenerator,
             ILogger<DiscoveryKeyEndpoint> logger)
         {
-            this._logger = logger;
-            this._options = options;
-            this._responseGenerator = responseGenerator;
+            _logger = logger;
+            _options = options;
+            _responseGenerator = responseGenerator;
         }
 
         public async Task<IEndpointResult> ProcessAsync(HttpContext context)
         {
-            this._logger.LogTrace("Processing discovery request.");
+            _logger.LogTrace("Processing discovery request.");
 
             // validate HTTP
             if (context.Request.Method != "GET")
             {
-                this._logger.LogWarning("Discovery endpoint only supports GET requests");
+                _logger.LogWarning("Discovery endpoint only supports GET requests");
                 return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
             }
 
-            this._logger.LogDebug("Start key discovery request");
+            _logger.LogDebug("Start key discovery request");
 
-            if (this._options.Discovery.ShowKeySet == false)
+            if (_options.Discovery.ShowKeySet == false)
             {
-                this._logger.LogInformation("Key discovery disabled. 404.");
+                _logger.LogInformation("Key discovery disabled. 404.");
                 return new StatusCodeResult(HttpStatusCode.NotFound);
             }
 
             // generate response
-            this._logger.LogTrace("Calling into discovery response generator: {type}", this._responseGenerator.GetType().FullName);
-            var response = await this._responseGenerator.CreateJwkDocumentAsync();
+            _logger.LogTrace("Calling into discovery response generator: {type}", _responseGenerator.GetType().FullName);
+            var response = await _responseGenerator.CreateJwkDocumentAsync();
 
-            return new JsonWebKeysResult(response, this._options.Discovery.ResponseCacheInterval);
+            return new JsonWebKeysResult(response, _options.Discovery.ResponseCacheInterval);
         }
     }
 }

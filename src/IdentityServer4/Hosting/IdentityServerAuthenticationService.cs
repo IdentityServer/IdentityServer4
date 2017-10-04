@@ -10,7 +10,7 @@ using System;
 
 namespace IdentityServer4.Hosting
 {
-    // todo: review
+    // todo brock: cleanup
     // this decorates the real authentication service to detect when the 
     // user is being signed in. this allows us to ensure the user has
     // the claims needed for identity server to do its job. it also allows
@@ -46,7 +46,7 @@ namespace IdentityServer4.Hosting
             var scheme = await _schemes.GetDefaultAuthenticateSchemeAsync();
             if (scheme == null)
             {
-                throw new InvalidOperationException($"No DefaultAuthenticateScheme found.");
+                throw new InvalidOperationException("No DefaultAuthenticateScheme found.");
             }
             return scheme.Name;
         }

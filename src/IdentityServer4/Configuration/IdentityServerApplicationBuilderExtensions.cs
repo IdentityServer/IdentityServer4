@@ -30,15 +30,13 @@ namespace Microsoft.AspNetCore.Builder
 
             app.UseMiddleware<BaseUrlMiddleware>();
 
-            // todo: review
+            // todo brock: review
             app.ConfigureCors();
 
             // it seems ok if we have UseAuthentication more than once in the pipeline --
             // this will just re-run the various callback handlers and the default authN 
             // handler, which just re-assigns the user on the context. claims transformation
             // will run twice, since that's not cached (whereas the authN handler result is)
-            // todo: maybe we don't do this at all? maybe we become an authN MW?
-            // we could handle our protocol endpoints with IAuthenticationHandlerProvider
             // related: https://github.com/aspnet/Security/issues/1399
             app.UseAuthentication();
 

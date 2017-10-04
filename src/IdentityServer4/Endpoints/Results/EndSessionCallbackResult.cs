@@ -61,8 +61,9 @@ namespace IdentityServer4.Endpoints.Results
                 await context.Response.WriteHtmlAsync(html);
                 await context.Response.Body.FlushAsync();
 
-                // todo: discuss if we should do this before rendering/flushing
+                // todo brock: discuss if we should do this before rendering/flushing
                 // or even from a forked task
+                // move to EP handler
                 await _backChannelClient.SendLogoutsAsync(_result.BackChannelLogouts);
             }
         }

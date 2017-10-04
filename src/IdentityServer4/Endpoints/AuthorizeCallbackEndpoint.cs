@@ -31,7 +31,7 @@ namespace IdentityServer4.Endpoints
             IConsentMessageStore consentResponseStore)
             : base(events, logger, validator, interactionGenerator, authorizeResponseGenerator, userSession)
         {
-            this._consentResponseStore = consentResponseStore;
+            _consentResponseStore = consentResponseStore;
         }
 
         public override async Task<IEndpointResult> ProcessAsync(HttpContext context)
@@ -48,7 +48,7 @@ namespace IdentityServer4.Endpoints
 
             var user = await UserSession.GetUserAsync();
             var consentRequest = new ConsentRequest(parameters, user?.GetSubjectId());
-            var consent = await this._consentResponseStore.ReadAsync(consentRequest.Id);
+            var consent = await _consentResponseStore.ReadAsync(consentRequest.Id);
 
             if (consent != null && consent.Data == null)
             {
@@ -67,7 +67,7 @@ namespace IdentityServer4.Endpoints
             {
                 if (consent != null)
                 {
-                    await this._consentResponseStore.DeleteAsync(consentRequest.Id);
+                    await _consentResponseStore.DeleteAsync(consentRequest.Id);
                 }
             }
         }

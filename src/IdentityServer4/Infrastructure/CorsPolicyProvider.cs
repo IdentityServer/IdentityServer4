@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace IdentityServer4
 {
+    // todo brock: move to hosting
     internal class CorsPolicyProvider : ICorsPolicyProvider
     {
         private readonly ILogger _logger;

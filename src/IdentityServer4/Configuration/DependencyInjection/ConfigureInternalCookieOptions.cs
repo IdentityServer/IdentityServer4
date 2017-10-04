@@ -26,7 +26,7 @@ namespace IdentityServer4.Configuration
                 options.ExpireTimeSpan = _idsrv.Authentication.CookieLifetime;
                 options.Cookie.Name = IdentityServerConstants.DefaultCookieAuthenticationScheme;
                 options.Cookie.SameSite = SameSiteMode.None;
-                //todo:which is source of truth for these values?
+                //todo brock:which is source of truth for these values?
                 options.LoginPath = ExtractLocalUrl(_idsrv.UserInteraction.LoginUrl);
                 options.LogoutPath = ExtractLocalUrl(_idsrv.UserInteraction.LogoutUrl);
                 options.ReturnUrlParameter = _idsrv.UserInteraction.LoginReturnUrlParameter;
@@ -72,7 +72,7 @@ namespace IdentityServer4.Configuration
 
             if (name == scheme)
             {
-                // todo: review and uncomment or remove
+                // todo brock: review and uncomment or remove
                 //_idsrv.UserInteraction.LoginUrl = _idsrv.UserInteraction.LoginUrl ?? options.LoginPath;
                 //_idsrv.UserInteraction.LoginReturnUrlParameter = _idsrv.UserInteraction.LoginReturnUrlParameter ?? options.ReturnUrlParameter;
                 //_idsrv.UserInteraction.LogoutUrl = _idsrv.UserInteraction.LogoutUrl ?? options.LogoutPath;
