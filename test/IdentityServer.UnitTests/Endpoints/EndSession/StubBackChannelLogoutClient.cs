@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using IdentityServer4.Infrastructure;
 using IdentityServer4.Validation;
 
-namespace IdentityServer4.UnitTests.Endpoints.Results
+namespace IdentityServer.UnitTests.Endpoints.EndSession
 {
     internal class StubBackChannelLogoutClient : BackChannelLogoutClient
     {

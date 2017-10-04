@@ -12,7 +12,6 @@ using System.Net;
 using System;
 using IdentityServer4.Extensions;
 using IdentityServer4.Configuration;
-using IdentityServer4.Infrastructure;
 
 namespace IdentityServer4.Endpoints.Results
 {
@@ -27,21 +26,17 @@ namespace IdentityServer4.Endpoints.Results
 
         internal EndSessionCallbackResult(
             EndSessionCallbackValidationResult result,
-            IdentityServerOptions options,
-            BackChannelLogoutClient backChannelClient)
+            IdentityServerOptions options)
             : this(result)
         {
             _options = options;
-            _backChannelClient = backChannelClient;
         }
 
         private IdentityServerOptions _options;
-        private BackChannelLogoutClient _backChannelClient;
 
         private void Init(HttpContext context)
         {
             _options = _options ?? context.RequestServices.GetRequiredService<IdentityServerOptions>();
-            _backChannelClient = _backChannelClient ?? context.RequestServices.GetRequiredService<BackChannelLogoutClient>();
         }
 
         public async Task ExecuteAsync(HttpContext context)
@@ -59,12 +54,6 @@ namespace IdentityServer4.Endpoints.Results
 
                 var html = GetHtml();
                 await context.Response.WriteHtmlAsync(html);
-                await context.Response.Body.FlushAsync();
-
-                // todo brock: discuss if we should do this before rendering/flushing
-                // or even from a forked task
-                // move to EP handler
-                await _backChannelClient.SendLogoutsAsync(_result.BackChannelLogouts);
             }
         }
 
