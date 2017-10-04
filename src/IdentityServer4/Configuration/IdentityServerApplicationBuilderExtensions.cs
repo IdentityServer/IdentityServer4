@@ -30,7 +30,6 @@ namespace Microsoft.AspNetCore.Builder
 
             app.UseMiddleware<BaseUrlMiddleware>();
 
-            // todo brock: review
             app.ConfigureCors();
 
             // it seems ok if we have UseAuthentication more than once in the pipeline --
@@ -95,6 +94,9 @@ namespace Microsoft.AspNetCore.Builder
 
         private static void ValidateOptions(IdentityServerOptions options, ILogger logger)
         {
+            if (options.IssuerUri.IsPresent()) logger.LogDebug("Custom IssuerUri set to {0}", options.IssuerUri);
+            if (options.PublicOrigin.IsPresent()) logger.LogDebug("PublicOrigin explicitly set to {0}", options.PublicOrigin);
+
             if (options.UserInteraction.LoginUrl.IsMissing()) throw new InvalidOperationException("LoginUrl is not configured");
             if (options.UserInteraction.LoginReturnUrlParameter.IsMissing()) throw new InvalidOperationException("LoginReturnUrlParameter is not configured");
             if (options.UserInteraction.LogoutUrl.IsMissing()) throw new InvalidOperationException("LogoutUrl is not configured");
@@ -104,6 +106,10 @@ namespace Microsoft.AspNetCore.Builder
             if (options.UserInteraction.ConsentUrl.IsMissing()) throw new InvalidOperationException("ConsentUrl is not configured");
             if (options.UserInteraction.ConsentReturnUrlParameter.IsMissing()) throw new InvalidOperationException("ConsentReturnUrlParameter is not configured");
             if (options.UserInteraction.CustomRedirectReturnUrlParameter.IsMissing()) throw new InvalidOperationException("CustomRedirectReturnUrlParameter is not configured");
+
+            if (options.Authentication.CheckSessionCookieName.IsMissing()) throw new InvalidOperationException("CheckSessionCookieName is not configured");
+
+            if (options.Cors.CorsPolicyName.IsMissing()) throw new InvalidOperationException("CorsPolicyName is not configured");
         }
 
         internal static object TestService(IServiceProvider serviceProvider, Type service, ILogger logger, string message = null, bool doThrow = true)

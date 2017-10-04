@@ -71,7 +71,7 @@ namespace IdentityServer4.Hosting
                 }
                 else
                 {
-                    _logger.LogDebug("CORS request made for path: {path} from origin: {origin} but rejected because invalid CORS path", path, origin);
+                    _logger.LogDebug("CORS request made for path: {path} from origin: {origin} but was ignored because path was not for an allowed IdentityServer CORS endpoint", path, origin);
                 }
             }
 
