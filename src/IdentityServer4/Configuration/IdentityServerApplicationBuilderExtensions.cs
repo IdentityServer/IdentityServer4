@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using Microsoft.AspNetCore.Authentication;
 using System.Threading.Tasks;
+using IdentityServer4.Configuration;
+using IdentityServer4.Extensions;
 
 namespace Microsoft.AspNetCore.Builder
 {
@@ -68,6 +70,9 @@ namespace Microsoft.AspNetCore.Builder
                     logger.LogInformation("You are using the in-memory version of the persisted grant store. This will store consent decisions, authorization codes, refresh and reference tokens in memory only. If you are using any of those features in production, you want to switch to a different store implementation.");
                 }
 
+                var options = serviceProvider.GetRequiredService<IdentityServerOptions>();
+                ValidateOptions(options, logger);
+
                 ValidateAsync(serviceProvider, logger).GetAwaiter().GetResult();
             }
         }
@@ -88,6 +93,19 @@ namespace Microsoft.AspNetCore.Builder
                 logger.LogDebug("Using {scheme} as default scheme for challenge", (await schemes.GetDefaultChallengeSchemeAsync())?.Name);
                 logger.LogDebug("Using {scheme} as default scheme for forbid", (await schemes.GetDefaultForbidSchemeAsync())?.Name);
             }
+        }
+
+        private static void ValidateOptions(IdentityServerOptions options, ILogger logger)
+        {
+            if (options.UserInteraction.LoginUrl.IsMissing()) throw new InvalidOperationException("LoginUrl is not configured");
+            if (options.UserInteraction.LoginReturnUrlParameter.IsMissing()) throw new InvalidOperationException("LoginReturnUrlParameter is not configured");
+            if (options.UserInteraction.LogoutUrl.IsMissing()) throw new InvalidOperationException("LogoutUrl is not configured");
+            if (options.UserInteraction.LogoutIdParameter.IsMissing()) throw new InvalidOperationException("LogoutIdParameter is not configured");
+            if (options.UserInteraction.ErrorUrl.IsMissing()) throw new InvalidOperationException("ErrorUrl is not configured");
+            if (options.UserInteraction.ErrorIdParameter.IsMissing()) throw new InvalidOperationException("ErrorIdParameter is not configured");
+            if (options.UserInteraction.ConsentUrl.IsMissing()) throw new InvalidOperationException("ConsentUrl is not configured");
+            if (options.UserInteraction.ConsentReturnUrlParameter.IsMissing()) throw new InvalidOperationException("ConsentReturnUrlParameter is not configured");
+            if (options.UserInteraction.CustomRedirectReturnUrlParameter.IsMissing()) throw new InvalidOperationException("CustomRedirectReturnUrlParameter is not configured");
         }
 
         internal static object TestService(IServiceProvider serviceProvider, Type service, ILogger logger, string message = null, bool doThrow = true)
