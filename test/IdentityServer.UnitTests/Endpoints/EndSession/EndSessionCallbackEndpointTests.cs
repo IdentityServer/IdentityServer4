@@ -2,14 +2,9 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using System.Collections.Specialized;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityServer4.Endpoints;
-using IdentityServer4.Endpoints.Results;
-using IdentityServer4.Models;
-using IdentityServer4.UnitTests.Common;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -40,6 +35,10 @@ namespace IdentityServer.UnitTests.Endpoints.EndSession
             ctx.Request.Method = "GET";
 
             _stubEndSessionRequestValidator.EndSessionCallbackValidationResult.IsError = false;
+            _stubEndSessionRequestValidator.EndSessionCallbackValidationResult.BackChannelLogouts =
+                new BackChannelLogoutModel[] {
+                    new BackChannelLogoutModel { LogoutUri = "foo" }
+                };
 
             var result = await _subject.ProcessAsync(ctx);
 

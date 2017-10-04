@@ -74,18 +74,21 @@ namespace IdentityServer4.Endpoints
 
         private void InvokeBackChannelClients(EndSessionCallbackValidationResult result)
         {
-            // best-effort, and async to not block the response to the browser
-            Task.Run(async () =>
+            if (result.BackChannelLogouts.Any() == true)
             {
-                try
+                // best-effort, and async to not block the response to the browser
+                Task.Run(async () =>
                 {
-                    await _backChannelClient.SendLogoutsAsync(result.BackChannelLogouts);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error calling backchannel sign-out urls");
-                }
-            });
+                    try
+                    {
+                        await _backChannelClient.SendLogoutsAsync(result.BackChannelLogouts);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error calling backchannel sign-out urls");
+                    }
+                });
+            }
         }
     }
 }
