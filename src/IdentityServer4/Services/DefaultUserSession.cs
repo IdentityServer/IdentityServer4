@@ -135,14 +135,7 @@ namespace IdentityServer4.Services
             }
             else
             {
-                // todo brock: validate if this is still true since we now pass a 
-                // seralized message as param to end sesison callback
-                //
-                // we don't want to delete the session id cookie if the user is
-                // no longer authenticated since we might be waiting for the 
-                // signout iframe to render -- it's a timing issue between the 
-                // logout page removing the authentication cookie and the 
-                // signout iframe callback from performing SLO
+                await RemoveSessionIdCookieAsync();
             }
         }
 
