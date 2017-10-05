@@ -34,6 +34,6 @@
     <PackageReference Include="IdentityModel" Version="2.12.0" />
     <PackageReference Include="System.Security.Cryptography.Cng" Version="4.4.0" />
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
-    <!--<PackageReference Include="SourceLink.Embed.AllSourceFiles" Version="2.2.1" PrivateAssets="all" />-->
+    <PackageReference Include="SourceLink.Embed.AllSourceFiles" Version="2.2.1" PrivateAssets="all" />
   </ItemGroup>
 </Project>
