@@ -101,13 +101,13 @@ namespace IdentityServer4.Endpoints
             var response = await _responseGenerator.ProcessAsync(validationResult);
 
             // render result
+            LogSuccess(validationResult.IsActive, validationResult.Api.Name);
             return new IntrospectionResult(response);
         }
 
-        // todo dom: cleanup logging and log levels
-        private void LogSuccess(string tokenStatus, string apiName)
+        private void LogSuccess(bool tokenActive, string apiName)
         {
-            _logger.LogInformation("Success token introspection. Token status: {tokenStatus}, for API name: {apiName}", tokenStatus, apiName);
+            _logger.LogInformation("Success token introspection. Token active: {tokenActive}, for API name: {apiName}", tokenActive, apiName);
         }
 
         private void LogFailure(string error, string apiName)

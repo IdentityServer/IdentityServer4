@@ -70,7 +70,8 @@ namespace Host
     {
         public static IServiceCollection AddExternalIdentityProviders(this IServiceCollection services)
         {
-            services.AddOidcStateDataFormatterCache();
+            // configures the OpenIdConnect handlers to persist the state parameter into the server-side IDistributedCache.
+            services.AddOidcStateDataFormatterCache("aad", "demoidsrv");
 
             services.AddAuthentication()
                 .AddGoogle("Google", options =>

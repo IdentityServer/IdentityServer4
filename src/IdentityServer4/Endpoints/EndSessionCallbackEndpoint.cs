@@ -74,7 +74,7 @@ namespace IdentityServer4.Endpoints
 
         private void InvokeBackChannelClients(EndSessionCallbackValidationResult result)
         {
-            if (result.BackChannelLogouts.Any() == true)
+            if (result.BackChannelLogouts?.Any() == true)
             {
                 // best-effort, and async to not block the response to the browser
                 Task.Run(async () =>
