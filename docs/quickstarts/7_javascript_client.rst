@@ -63,7 +63,7 @@ Add a new NPM package file to your project and name it `package.json`:
 In `package.json` add a ``devDependency`` to ``oidc-client``::
 
   "devDependencies": {
-    "oidc-client": "1.4.0"
+    "oidc-client": "1.4.1"
   }
 
 Once you have saved this file, Visual Studio should automatically restore these packages into a folder called `node_modules`:
