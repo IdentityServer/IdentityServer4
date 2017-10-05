@@ -135,6 +135,8 @@ IdentityServer is officially certified by the OpenID Foundation and part of the 
    reference/profileservice
    reference/interactionservice
    reference/options
+   reference/ef
+   reference/aspnet_identity
 
 .. toctree::
    :maxdepth: 2

@@ -1,6 +1,18 @@
 Community quickstarts & samples
 ===============================
 
+IdentityServer4 EF and ASP.NET Identity
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+This sample combines the EF and ASP.NET Identity quickstarts (#6 and #8).
+
+https://github.com/IdentityServer/IdentityServer4.Samples/tree/release/Quickstarts/Combined_AspNetIdentity_and_EntityFrameworkStorage
+
+Co-hosting IdentityServer4 and a Web API
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+This sample shows how to host an API in the same host as the IdentityServer that is protecting the API.
+
+https://github.com/brockallen/IdentityServerAndApi
+
 IdentityServer4 samples for MongoDB
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 * IdentityServer4-mongo: Similar to Quickstart #8 EntityFramework configuration but using MongoDB for the configuration data.
