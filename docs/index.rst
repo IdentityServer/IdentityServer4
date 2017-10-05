@@ -139,6 +139,8 @@ There are several ways we can help you out.
    reference/profileservice
    reference/interactionservice
    reference/options
+   reference/ef
+   reference/aspnet_identity
 
 .. toctree::
    :maxdepth: 2
