@@ -18,7 +18,7 @@ Protecting a ASP.NET Core-based API is only a matter of configuring the JWT bear
         {
             services.AddMvc();
 
-            services.AddAuthentication("Bearer")
+            services.AddAuthentication(JwtBearerAuthenticationDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
                     // base-address of your identityserver
@@ -54,7 +54,7 @@ For the simplest case, our handler configuration looks very similar to the above
         {
             services.AddMvc();
 
-            services.AddAuthentication("Bearer")
+            services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
                 .AddIdentityServerAuthentication(options =>
                 {
                     // base-address of your identityserver
@@ -111,35 +111,29 @@ Validating scopes
 ^^^^^^^^^^^^^^^^^
 The `ApiName` property checks if the token has a matching audience (or short ``aud``) claim.
 
-In IdentityServer you can also sub-divide APIs into multiple scopes. If you need that granularity and want to check those scopes at the middleware level, 
-you can add the ``AllowedScopes`` property::
+In IdentityServer you can also sub-divide APIs into multiple scopes. If you need that granularity you can use the ASP.NET Core authorization policy system to check for scopes.
 
-    .AddIdentityServerAuthentication(options =>
+**Creating a global policy**::
+
+    services
+        .AddMvcCore(options =>
+        {
+            // require scope1 or scope2
+            var policy = ScopePolicy.Create("scope1", "scope2");
+            options.Filters.Add(new AuthorizeFilter(policy));
+        })
+        .AddJsonFormatters()
+        .AddAuthorization();
+
+**Composing a scope policy**::
+
+    services.AddAuthorization(options =>
     {
-        // base-address of your identityserver
-        options.Authority = "https://demo.identityserver.io";
-
-        // name of the API resource
-        options.ApiName = "api1";
-        options.ApiSecret = "secret";
-
-        options.AllowedScopes = { "api1.read", "api1.write" };
-    })
-
-
-**Note on Targeting Earlier .NET Frameworks**
-
-When the middleware calls the configured metadata endpoint during token validation, you may encounter runtime exceptions related to SSL/TLS failures if you are targeting your build to an earlier .NET Framework (for example, NET452) due to the default configuration for HTTPS communication found in earlier versions of the framework.  If this occurs, you can avoid the problem by enabling support for the latest versions of TLS through your security protocol configuration located within ServicePointManager.  The code can go in your Startup.cs for example, and would be as follows::
-
-    #if NET452
-        System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
-    #endif
-
-The highest level error you will likely see will be:
-    
-    System.InvalidOperationException: IDX10803: Unable to obtain configuration from: 'https://MYWEBSITE.LOCAL/.well-known/openid-configuration'.
-
-The originating error will reflect something similar to the following:
-    
-    System.Security.Authentication.AuthenticationException: A call to SSPI failed, see inner exception. ---> System.ComponentModel.Win32Exception: The client and server cannot communicate, because they do not possess a common algorithm
-
+        options.AddPolicy("myPolicy", builder =>
+        {
+            // require scope1
+            builder.RequireScope("scope1");
+            // and require scope2 or scope3
+            builder.RequireScope("scope2", "scope3");
+        });
+    });
