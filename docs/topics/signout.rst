@@ -3,7 +3,7 @@ Sign-out
 ========
 
 Signing out of IdentityServer is as simple as removing the authentication cookie, 
-but given the nature of IdentityServer we must consider signing the user out of the client applications as well.
+but for doing a complete federated sign-out, we must consider signing the user out of the client applications (and maybe even up-stream identity providers) as well.
 
 Removing the authentication cookie
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
