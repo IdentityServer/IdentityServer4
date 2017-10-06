@@ -90,7 +90,7 @@ This options class contains properties to control the operational store and ``Pe
     Allows setting the default database schema name for all the tables in the ``PersistedGrantDbContext``.
 ``EnableTokenCleanup``
     Indicates whether stale entries will be automatically cleaned up from the database. The default is ``false``.
-``DefaultSchema``
+``TokenCleanupInterval``
     The token cleanup interval (in seconds). The default is 3600 (1 hour).
 
 
