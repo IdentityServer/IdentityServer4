@@ -6,7 +6,7 @@ Read the official Microsoft `documentation <https://docs.microsoft.com/en-us/asp
 The two most common task for deploying to load-balanced environment is configuration of `data protection <https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/configuration/default-settings>`_, 
 and setting the right `protocol scheme/host name behind load-balancers <https://docs.microsoft.com/en-us/aspnet/core/publishing/linuxproduction?tabs=aspnetcore2x>`_.
 
-IdentityServer Configuration data
+IdentityServer configuration data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 This typically includes:
 
@@ -22,7 +22,7 @@ ASP.NET Core configuration system for that (see `documentation <https://docs.mic
 
 One important piece of startup configuration is your key material, see :ref:`here <refCrypto>` for more details on key material and cryptography.
 
-IdentityServer Operational data
+IdentityServer operational data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 For certain operations, IdentityServer needs a persistence store to keep state, this includes:
 
