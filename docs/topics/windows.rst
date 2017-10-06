@@ -36,3 +36,5 @@ This is done in ``ConfigureServices``::
         iis.AuthenticationDisplayName = "Windows";
         iis.AutomaticAuthentication = false;
     });
+
+.. Note:: By default, the display name is empty, and the Windows authentication button will not show up in the quickstart UI. You need to set a display name if you rely on automatic discovery of external providers.

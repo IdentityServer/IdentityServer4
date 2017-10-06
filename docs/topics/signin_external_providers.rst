@@ -55,22 +55,27 @@ You can also register your own custom cookie handler instead, like this::
             options.ClientSecret = "...";
         })
 
+.. Note:: For specialized scenarios, you can also short-circuit the external cookie mechanism and forward the external user directly to the main cookie handler. This typically involves handling events on the external handler to make sure you do the correct claims transformation from the external identity source.
 
-Triggering the authentication middleware
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-You invoke an external authentication middleware via the ``ChallengeAsync`` extension method on the ``HttpContext`` (or using the MVC ``ChallengeResult``).
+Triggering the authentication handler
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+You invoke an external authentication handler via the ``ChallengeAsync`` extension method on the ``HttpContext`` (or using the MVC ``ChallengeResult``).
 
 You typically want to pass in some options to the challenge operation, e.g. the path to your callback page and the name of the provider for bookkeeping, e.g.::
 
-    var callbackUrl = Url.Action("ExternalLoginCallback", new { returnUrl = returnUrl });
+    var callbackUrl = Url.Action("ExternalLoginCallback");
     
     var props = new AuthenticationProperties
     {
         RedirectUri = callbackUrl,
-        Items = { { "scheme", provider } }
+        Items = 
+        { 
+            { "scheme", provider },
+            { "returnUrl", returnUrl }
+        }
     };
     
-    return new ChallengeResult(provider, props);
+    return Challenge(provider, props);
 
 Handling the callback and signing in the user
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
