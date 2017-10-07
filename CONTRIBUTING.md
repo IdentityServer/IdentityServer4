@@ -9,7 +9,7 @@ Also read this first: [Being a good open source citizen](https://hackernoon.com/
 Please start a discussion on the [core repo issue tracker](https://github.com/IdentityServer/IdentityServer4/issues).
 
 ## Platform
-IdentityServer is built against ASP.NET Core 1.1 using the RTM tooling that ships with Visual Studio 2017. This is the only configuration we accept.
+IdentityServer is built against ASP.NET Core 2.0 using the RTM tooling that ships with Visual Studio 2017. This is the only configuration we accept.
 
 ## Bugs and feature requests?
 Please log a new issue in the appropriate GitHub repo:
