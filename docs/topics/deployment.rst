@@ -6,6 +6,8 @@ Read the official Microsoft `documentation <https://docs.microsoft.com/en-us/asp
 The two most common task for deploying to load-balanced environment is configuration of `data protection <https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/configuration/default-settings>`_, 
 and setting the right `protocol scheme/host name behind load-balancers <https://docs.microsoft.com/en-us/aspnet/core/publishing/linuxproduction?tabs=aspnetcore2x>`_.
 
+.. note:: If setting the public origin behind a reverse-proxy or load balancer does not work for you, you can hard-code the host name using the ``PublicOrigin`` property on the ``IdentityServerOptions``.
+
 IdentityServer configuration data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 This typically includes:
