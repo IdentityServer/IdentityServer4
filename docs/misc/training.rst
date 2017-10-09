@@ -1,13 +1,17 @@
 Training
 ========
 
-Our workshop
-^^^^^^^^^^^^
-Brock and Dominick are regularly doing workshops around identity & access control for modern applications.
-Check the agenda and upcoming dates `here <https://identityserver.io/training>`_.
+Identity & Access Control for modern Applications (using ASP.NET Core 2 and IdentityServer4)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+That's our own three day flagship course (including extensive hands-on labs) that we deliver as part of conferences, on-sites and remote.
+
+The agenda and dates for public training can be found `here <https://identityserver.io/training>`_,
+`contact <mailto:identity@leastprivilege.com>`_ us for private workshops.
 
 PluralSight courses
 ^^^^^^^^^^^^^^^^^^^
+There are some good courses on PluralSight around identity, ASP.NET Core and IdentityServer.
+
 **new**
 
 * `Getting Started with ASP.NET Core and OAuth <https://www.pluralsight.com/courses/asp-dot-net-core-oauth/>`_
