@@ -16,7 +16,7 @@ New Project for ASP.NET Identity
 
 The first step is to add a new project for ASP.NET Identity to your solution.
 Given that a lot of code is required for ASP.NET Identity, it makes sense to use the template from Visual Studio.
-You will eventually delete the old project for IdentityServer (assuming you were following the other quickstarts), but there are several items that you will need to migrate over (or rewrite from scratch as decribed in the prior quickstarts).
+You will eventually delete the old project for IdentityServer (assuming you were following the other quickstarts), but there are several items that you will need to migrate over (or rewrite from scratch as described in the prior quickstarts).
 
 Start by creating a new "ASP.NET Core Web Application" project.
 
