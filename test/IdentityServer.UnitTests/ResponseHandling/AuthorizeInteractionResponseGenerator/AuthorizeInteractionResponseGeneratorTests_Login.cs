@@ -91,6 +91,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
                 Subject = IdentityServerPrincipal.Create("123", "dom"),
                 Client = new Client
                 {
+                    EnableLocalLogin = false,
                     IdentityProviderRestrictions = new List<string> 
                     {
                         "some_idp"
