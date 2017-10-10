@@ -97,6 +97,7 @@ There are several ways we can help you out.
    topics/signout
    topics/signout_external_providers
    topics/signout_federated
+   topics/federation_gateway
    topics/consent
    topics/apis
    topics/deployment
