@@ -18,7 +18,7 @@ Protecting a ASP.NET Core-based API is only a matter of configuring the JWT bear
         {
             services.AddMvc();
 
-            services.AddAuthentication(JwtBearerAuthenticationDefaults.AuthenticationScheme)
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
                     // base-address of your identityserver
