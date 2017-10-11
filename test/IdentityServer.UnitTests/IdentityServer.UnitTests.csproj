@@ -27,10 +27,6 @@
     <ProjectReference Include="..\..\src\IdentityServer4\IdentityServer4.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
-
   
 
   <!--<ItemGroup Condition=" '$(TargetFramework)' == 'net452' ">
