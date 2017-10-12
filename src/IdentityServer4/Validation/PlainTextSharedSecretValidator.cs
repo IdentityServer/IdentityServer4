@@ -8,6 +8,7 @@ using IdentityServer4.Models;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Validation
@@ -48,6 +49,13 @@ namespace IdentityServer4.Validation
                 return fail;
             }
 
+            var sharedSecrets = secrets.Where(s => s.Type == IdentityServerConstants.SecretTypes.SharedSecret);
+            if (!sharedSecrets.Any())
+            {
+                _logger.LogDebug("No shared secret configured for client.");
+                return fail;
+            }
+
             var sharedSecret = parsedSecret.Credential as string;
 
             if (parsedSecret.Id.IsMissing() || sharedSecret.IsMissing())
@@ -55,16 +63,9 @@ namespace IdentityServer4.Validation
                 throw new ArgumentException("Id or Credential is missing.");
             }
 
-            foreach (var secret in secrets)
+            foreach (var secret in sharedSecrets)
             {
                 var secretDescription = string.IsNullOrEmpty(secret.Description) ? "no description" : secret.Description;
-
-                // this validator is only applicable to shared secrets
-                if (secret.Type != IdentityServerConstants.SecretTypes.SharedSecret)
-                {
-                    _logger.LogDebug("Skipping secret: {description}, secret is not of type {type}.", secretDescription, IdentityServerConstants.SecretTypes.SharedSecret);
-                    continue;
-                }
 
                 // use time constant string comparison
                 var isValid = TimeConstantComparer.IsEqual(sharedSecret, secret.Value);
