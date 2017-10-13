@@ -46,8 +46,10 @@ We generally don't want to take ownership of those contribution libraries, we ar
 
 **Naming conventions**
 
-If you publish nuget packages that contribute to IdentityServer, we would like to ask you to **not** use the IdentityServer4 prefix - rather use a suffix, e.g.
+As of October 2017, the IdentityServer4.* nuget namespace is reserved for our packages. Please use the following naming conventions:
 
-**good** MyProject.MongoDb.IdentityServer4
+YourProjectName.IdentityServer4
 
-**bad** IdentityServer4.MongoDb
+or
+
+IdentityServer4.Contrib.YourProjectName
