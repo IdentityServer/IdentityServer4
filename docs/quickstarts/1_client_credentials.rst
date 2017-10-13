@@ -175,6 +175,16 @@ endpoint addresses can be read from the metadata::
     // discover endpoints from metadata
     var disco = await DiscoveryClient.GetAsync("http://localhost:5000");
 
+The above code necessitates that the console app entrace point be modified as follows::
+
+    public static async Task Main() {... /* more complete code provided later in this section */ }
+
+In order to support this syntax, you will need to add the following section to your console project's .csproj file::
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
 Next you can use the ``TokenClient`` class to request the token.
 To create an instance you need to pass in the token endpoint address, client id and secret.
 
@@ -213,6 +223,126 @@ This is done using the ``SetBearerToken`` extension method::
     {
         var content = await response.Content.ReadAsStringAsync();
         Console.WriteLine(JArray.Parse(content));
+    }
+
+A self-contained, complete set of code (with several classes embedded in one file, for simplicity) for placement in your Program.cs file is provided below with some modifications that will make debugging and review of your results easier to read::
+
+    using IdentityModel.Client;
+    using Newtonsoft.Json.Linq;
+    using System;
+    using System.Net.Http;
+    using System.Threading.Tasks;
+    using System.Diagnostics;
+
+    namespace ConsoleClient
+    {
+        public static class ConsoleExtensions
+        {
+            [DebuggerStepThrough]
+            public static void ConsoleGreen(this string text)
+            {
+                text.ColoredWriteLine(ConsoleColor.Green);
+            }
+        
+            [DebuggerStepThrough]
+            public static void ConsoleRed(this string text)
+            {
+                text.ColoredWriteLine(ConsoleColor.Red);
+            }
+  
+            [DebuggerStepThrough]
+            public static void ColoredWriteLine(this string text, ConsoleColor color)
+            {
+                Console.ForegroundColor = color;
+                Console.WriteLine(text);
+                Console.ResetColor();
+            }
+        }
+
+        public class Constants
+        {
+            public const string Authority = "http://localhost:5000";
+            public const string SampleApi = "http://localhost:5001";
+        }
+
+        public class Program
+        {
+            public static async Task Main()
+            {
+                Console.Title = "Console Client Credentials Flow";
+
+                try
+                {
+
+                    "\nAttempting to retrieve bearer token from authority...\n".ConsoleGreen();
+                    var response = await RequestTokenAsync();
+            
+                    if (response.IsError)
+                    {
+                        response.Error.ConsoleRed();
+                    }
+                    else
+                    {
+                        "\nServer Token Received:\n".ConsoleGreen();
+                        Console.WriteLine(response.Json);                
+                    }
+
+                    "\nAttempting to retrieve protected resource from API...\n".ConsoleGreen();
+                    await CallServiceAsync(response.AccessToken);
+
+                }
+                catch (Exception ex)
+                {
+                    ex.ToString().ConsoleRed();
+                }
+                finally
+                {
+                    "\nPress any key To close this console application...\n".ConsoleGreen();
+                    Console.ReadKey();
+                }
+            }
+
+            static async Task<TokenResponse> RequestTokenAsync()
+            {
+                var disco = await DiscoveryClient.GetAsync(Constants.Authority);
+                if (disco.IsError)
+                    throw new Exception(disco.Error);
+
+                // uncomment one of the following sections in order to test an approach...
+
+                // client credentials
+                //var client = new TokenClient(disco.TokenEndpoint, "client", "secret");
+                //return await client.RequestClientCredentialsAsync("api1");
+                
+                // password grant
+                //var client = new TokenClient(disco.TokenEndpoint, "ro.client", "secret");
+                //return await client.RequestResourceOwnerPasswordAsync("alice", "password", "api1");
+            
+            }
+
+            static async Task CallServiceAsync(string token)
+            {
+                var client = new HttpClient
+                {
+                    BaseAddress = new Uri(Constants.SampleApi)
+                };
+            
+                client.SetBearerToken(token);
+                var response = await client.GetAsync("identity");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    "\nService claims retrieved from API:\n".ConsoleGreen();
+                    Console.WriteLine(JArray.Parse(content));
+                }
+                else
+                {
+                    response.StatusCode.ToString().ConsoleRed();
+                }
+
+            }
+        }
     }
 
 The output should look like this:
