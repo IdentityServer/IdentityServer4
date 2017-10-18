@@ -35,3 +35,12 @@ On your API, you need to add the ``[Authorize]`` attribute and explicitly refere
     }
 
 If you want to call that API from browsers, you additionally need to configure CORS (see :ref:`here <refCors>`).
+
+Discovery
+^^^^^^^^^
+You can also add your endpoints to the discovery document if you want, e.g like this::
+
+    services.AddIdentityServer(options =>
+    {
+        options.Discovery.CustomEntries.Add("custom_endpoint", "~/api/custom");
+    })
