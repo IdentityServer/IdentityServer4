@@ -116,7 +116,6 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IIdentityServerBuilder AddCoreServices(this IIdentityServerBuilder builder)
         {
-            builder.Services.AddTransient<ApiSecretValidator>();
             builder.Services.AddTransient<SecretParser>();
             builder.Services.AddTransient<SecretValidator>();
             builder.Services.AddTransient<ScopeValidator>();
@@ -168,6 +167,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IEventService, DefaultEventService>();
             builder.Services.TryAddTransient<IEventSink, DefaultEventSink>();
             builder.Services.AddTransient<IClientSecretValidator, ClientSecretValidator>();
+            builder.Services.AddTransient<IApiSecretValidator, ApiSecretValidator>();
 
             return builder;
         }
