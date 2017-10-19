@@ -10,6 +10,7 @@ using IdentityServer4.Logging;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,6 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.Validation
 {
@@ -34,7 +34,7 @@ namespace IdentityServer4.Validation
         private readonly IProfileService _profile;
         private readonly ISystemClock _clock;
         private readonly ILogger _logger;
-        
+
         private ValidatedTokenRequest _validatedRequest;
 
         /// <summary>
@@ -291,7 +291,7 @@ namespace IdentityServer4.Validation
                     return Invalid(OidcConstants.TokenErrors.InvalidGrant);
                 }
             }
-        
+
             /////////////////////////////////////////////
             // make sure user is enabled
             /////////////////////////////////////////////
@@ -416,7 +416,7 @@ namespace IdentityServer4.Validation
                 {
                     errorDescription = resourceOwnerContext.Result.ErrorDescription;
                 }
-               
+
                 LogError("User authentication failed: {error}", errorDescription ?? resourceOwnerContext.Result.Error);
                 await RaiseFailedResourceOwnerAuthenticationEventAsync(userName, errorDescription);
 
@@ -472,7 +472,7 @@ namespace IdentityServer4.Validation
             }
 
             var result = await _tokenValidator.ValidateRefreshTokenAsync(refreshTokenHandle, _validatedRequest.Client);
-            
+
             if (result.IsError)
             {
                 LogError("Refresh token validation failed. aborting.");
@@ -480,6 +480,7 @@ namespace IdentityServer4.Validation
             }
 
             _validatedRequest.RefreshToken = result.RefreshToken;
+            _validatedRequest.RefreshTokenHandle = refreshTokenHandle;
             _validatedRequest.Subject = result.RefreshToken.Subject;
 
             _logger.LogDebug("Validation of refresh token request success");
@@ -557,7 +558,7 @@ namespace IdentityServer4.Validation
             if (scopes.IsMissing())
             {
                 _logger.LogTrace("Client provided no scopes - checking allowed scopes list");
-                
+
                 if (!_validatedRequest.Client.AllowedScopes.IsNullOrEmpty())
                 {
                     var clientAllowedScopes = new List<string>(_validatedRequest.Client.AllowedScopes);
