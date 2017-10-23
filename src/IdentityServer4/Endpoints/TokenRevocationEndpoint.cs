@@ -24,7 +24,7 @@ namespace IdentityServer4.Endpoints
     internal class TokenRevocationEndpoint : IEndpointHandler
     {
         private readonly ILogger _logger;
-        private readonly ClientSecretValidator _clientValidator;
+        private readonly IClientSecretValidator _clientValidator;
         private readonly ITokenRevocationRequestValidator _requestValidator;
         private readonly ITokenRevocationResponseGenerator _responseGenerator;
         private readonly IEventService _events;
@@ -38,7 +38,7 @@ namespace IdentityServer4.Endpoints
         /// <param name="responseGenerator">The response generator.</param>
         /// <param name="events">The events.</param>
         public TokenRevocationEndpoint(ILogger<TokenRevocationEndpoint> logger,
-            ClientSecretValidator clientValidator,
+            IClientSecretValidator clientValidator,
             ITokenRevocationRequestValidator requestValidator,
             ITokenRevocationResponseGenerator responseGenerator,
             IEventService events)

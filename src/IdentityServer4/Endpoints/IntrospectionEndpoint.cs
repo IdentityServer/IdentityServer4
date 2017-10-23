@@ -22,7 +22,7 @@ namespace IdentityServer4.Endpoints
         private readonly IIntrospectionResponseGenerator _responseGenerator;
         private readonly ILogger _logger;
         private readonly IIntrospectionRequestValidator _requestValidator;
-        private readonly ApiSecretValidator _apiSecretValidator;
+        private readonly IApiSecretValidator _apiSecretValidator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IntrospectionEndpoint"/> class.
@@ -32,7 +32,7 @@ namespace IdentityServer4.Endpoints
         /// <param name="responseGenerator">The generator.</param>
         /// <param name="logger">The logger.</param>
         public IntrospectionEndpoint(
-            ApiSecretValidator apiSecretValidator, 
+            IApiSecretValidator apiSecretValidator, 
             IIntrospectionRequestValidator requestValidator, 
             IIntrospectionResponseGenerator responseGenerator,  
             ILogger<IntrospectionEndpoint> logger)

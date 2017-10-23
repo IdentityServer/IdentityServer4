@@ -214,7 +214,7 @@ namespace IdentityServer4.UnitTests.Validation
             return validator;
         }
 
-        public static ClientSecretValidator CreateClientSecretValidator(IClientStore clients = null, SecretParser parser = null, SecretValidator validator = null, IdentityServerOptions options = null)
+        public static IClientSecretValidator CreateClientSecretValidator(IClientStore clients = null, SecretParser parser = null, SecretValidator validator = null, IdentityServerOptions options = null)
         {
             options = options ?? TestIdentityServerOptions.Create();
 
