@@ -32,7 +32,9 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                     RequireConsent = false,
                     AllowedScopes = new List<string> { "openid" },
                     RedirectUris = new List<string> { "https://client1/callback" },
-                    AllowAccessTokensViaBrowser = true
+                    AllowAccessTokensViaBrowser = true,
+                    PairWiseSubjectSalt = "saltclient1"
+
                 },
                 new Client
                 {

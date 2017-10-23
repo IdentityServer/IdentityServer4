@@ -46,6 +46,9 @@ namespace IdentityServer.IntegrationTests.Clients
 
             var doc = await client.GetAsync();
 
+            doc.SubjectTypesSupported.Count().Should().Be(2);
+
+            doc.SubjectTypesSupported.Should().Contain("public", "pairwise");
             // endpoints
             doc.TokenEndpoint.Should().Be("https://server/connect/token");
             doc.AuthorizeEndpoint.Should().Be("https://server/connect/authorize");

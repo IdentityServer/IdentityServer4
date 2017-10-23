@@ -100,7 +100,6 @@ namespace IdentityServer4.Validation
             var result = await ValidateJwtAsync(token, clientId, keys, validateLifetime);
 
             result.Client = client;
-
             if (result.IsError)
             {
                 LogError("Error validating JWT");

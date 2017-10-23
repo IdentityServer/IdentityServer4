@@ -49,7 +49,9 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                     AllowedScopes = new List<string> { "openid", "profile", "api1", "api2" },
                     RedirectUris = new List<string> { "https://client3/callback" },
                     AllowAccessTokensViaBrowser = true,
-                    IdentityProviderRestrictions = new List<string> { "google" }
+                    IdentityProviderRestrictions = new List<string> { "google" },
+                    PairWiseSubjectSalt = "saltclient3"
+
                 }
             });
 

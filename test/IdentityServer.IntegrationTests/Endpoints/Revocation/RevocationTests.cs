@@ -42,7 +42,8 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
                 RedirectUris = new List<string> { redirect_uri },
                 AllowAccessTokensViaBrowser = true,
                 AccessTokenType = AccessTokenType.Reference,
-                RefreshTokenUsage = TokenUsage.ReUse
+                RefreshTokenUsage = TokenUsage.ReUse,
+                PairWiseSubjectSalt = "saltclient1"
             });
             _mockPipeline.Clients.Add(new Client
             {
@@ -52,7 +53,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
                 AllowedScopes = new List<string> { "api" },
                 RedirectUris = new List<string> { redirect_uri },
                 AllowAccessTokensViaBrowser = true,
-                AccessTokenType = AccessTokenType.Reference
+                AccessTokenType = AccessTokenType.Reference,
             });
             _mockPipeline.Clients.Add(new Client
             {

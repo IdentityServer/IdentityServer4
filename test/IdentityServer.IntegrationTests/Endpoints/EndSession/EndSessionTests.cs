@@ -39,7 +39,8 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
                 RedirectUris = new List<string> { "https://client1/callback" },
                 FrontChannelLogoutUri = "https://client1/signout",
                 PostLogoutRedirectUris = new List<string> { "https://client1/signout-callback" },
-                AllowAccessTokensViaBrowser = true
+                AllowAccessTokensViaBrowser = true,
+                PairWiseSubjectSalt = "pairWiseSalt"
             });
 
             _mockPipeline.Clients.Add(new Client
@@ -65,9 +66,11 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
                 AllowedScopes = new List<string> { "openid" },
                 RedirectUris = new List<string> { "https://client3/callback" },
                 BackChannelLogoutUri = "https://client3/signout",
-                AllowAccessTokensViaBrowser = true
+                AllowAccessTokensViaBrowser = true,
+
             });
 
+            
             _mockPipeline.Users.Add(new TestUser
             {
                 SubjectId = "bob",
@@ -134,6 +137,8 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
             response.StatusCode.Should().Be(HttpStatusCode.Redirect);
             response.Headers.Location.ToString().Should().StartWith("https://server/logout?id=");
         }
+
+
 
         [Fact]
         [Trait("Category", Category)]

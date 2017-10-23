@@ -149,6 +149,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<ITokenService, DefaultTokenService>();
             builder.Services.TryAddTransient<ITokenCreationService, DefaultTokenCreationService>();
             builder.Services.TryAddTransient<IClaimsService, DefaultClaimsService>();
+            builder.Services.TryAddTransient<IClientSubjectService, DefaultClientSubjectService>();
             builder.Services.TryAddTransient<IRefreshTokenService, DefaultRefreshTokenService>();
             builder.Services.TryAddTransient<IConsentService, DefaultConsentService>();
             builder.Services.TryAddTransient<ICorsPolicyService, DefaultCorsPolicyService>();

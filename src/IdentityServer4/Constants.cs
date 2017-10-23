@@ -88,7 +88,7 @@ namespace IdentityServer4
             OidcConstants.ResponseModes.Fragment
         };
 
-        public static string[] SupportedSubjectTypes =
+        public static readonly string[] SupportedSubjectTypes =
         {
             "pairwise", "public"
         };

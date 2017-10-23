@@ -241,7 +241,7 @@ namespace IdentityServer4.ResponseHandling
                 entries.Add(OidcConstants.Discovery.TokenEndpointAuthenticationMethodsSupported, SecretParsers.GetAvailableAuthenticationMethods().ToArray());
             }
 
-            entries.Add(OidcConstants.Discovery.SubjectTypesSupported, new[] { "public" });
+            entries.Add(OidcConstants.Discovery.SubjectTypesSupported, Constants.SupportedSubjectTypes);
             entries.Add(OidcConstants.Discovery.IdTokenSigningAlgorithmsSupported, new[] { Constants.SigningAlgorithms.RSA_SHA_256 });
             entries.Add(OidcConstants.Discovery.CodeChallengeMethodsSupported, new[] { OidcConstants.CodeChallengeMethods.Plain, OidcConstants.CodeChallengeMethods.Sha256 });
 
