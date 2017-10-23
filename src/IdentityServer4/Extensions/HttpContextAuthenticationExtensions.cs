@@ -23,7 +23,7 @@ namespace Microsoft.AspNetCore.Http
             var scheme = await schemes.GetDefaultAuthenticateSchemeAsync();
             if (scheme == null)
             {
-                throw new InvalidOperationException($"No DefaultAuthenticateScheme found.");
+                throw new InvalidOperationException("No DefaultAuthenticateScheme found.");
             }
             return scheme.Name;
         }

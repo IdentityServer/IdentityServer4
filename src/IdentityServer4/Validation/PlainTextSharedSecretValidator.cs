@@ -65,8 +65,6 @@ namespace IdentityServer4.Validation
 
             foreach (var secret in sharedSecrets)
             {
-                var secretDescription = string.IsNullOrEmpty(secret.Description) ? "no description" : secret.Description;
-
                 // use time constant string comparison
                 var isValid = TimeConstantComparer.IsEqual(sharedSecret, secret.Value);
 
