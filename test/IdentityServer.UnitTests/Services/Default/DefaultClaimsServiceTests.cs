@@ -33,13 +33,25 @@ namespace IdentityServer4.UnitTests.Services.Default
                 Claims = { new Claim("some_claim", "some_claim_value") }
             };
 
-            _user = IdentityServerPrincipal.Create("bob", "bob", new Claim[] {
-                new Claim("foo", "foo1"),
-                new Claim("foo", "foo2"),
-                new Claim("bar", "bar1"),
-                new Claim("bar", "bar2"),
-                new Claim(JwtClaimTypes.AuthenticationContextClassReference, "acr1")
-            });
+            _user = new IdentityServerUser("bob")
+            {
+                AdditionalClaims =
+                {
+                    new Claim("foo", "foo1"),
+                    new Claim("foo", "foo2"),
+                    new Claim("bar", "bar1"),
+                    new Claim("bar", "bar2"),
+                    new Claim(JwtClaimTypes.AuthenticationContextClassReference, "acr1")
+                }
+            }.CreatePrincipal();
+
+            //_user = IdentityServerPrincipal.Create("bob", "bob", new Claim[] {
+            //    new Claim("foo", "foo1"),
+            //    new Claim("foo", "foo2"),
+            //    new Claim("bar", "bar1"),
+            //    new Claim("bar", "bar2"),
+            //    new Claim(JwtClaimTypes.AuthenticationContextClassReference, "acr1")
+            //});
 
             _subject = new DefaultClaimsService(_mockMockProfileService, TestLogger.Create<DefaultClaimsService>());
 
@@ -104,7 +116,7 @@ namespace IdentityServer4.UnitTests.Services.Default
 
             var claims = await _subject.GetIdentityTokenClaimsAsync(_user, _resources, true, _validatedRequest);
 
-            claims.Count(x=>x.Type == "aud" && x.Value == "bar").Should().Be(0);
+            claims.Count(x => x.Type == "aud" && x.Value == "bar").Should().Be(0);
         }
 
         [Fact]
@@ -122,7 +134,7 @@ namespace IdentityServer4.UnitTests.Services.Default
 
             claims.Count(x => x.Type == "client_some_claim" && x.Value == "some_claim_value").Should().Be(1);
         }
-        
+
         [Fact]
         public async Task GetAccessTokenClaimsAsync_client_claims_should_be_prefixed_with_custom_value()
         {
