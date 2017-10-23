@@ -20,7 +20,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 
         private IdentityServerPipeline _mockPipeline = new IdentityServerPipeline();
 
-        private ClaimsPrincipal _user = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
+        private ClaimsPrincipal _user = new IdentityServerUser("bob").CreatePrincipal();
 
         public RestrictAccessTokenViaBrowserTests()
         {

@@ -76,6 +76,10 @@ namespace IdentityServer4
             {
                 claims.Add(new Claim(JwtClaimTypes.IdentityProvider, IdentityProvider));
             }
+            else
+            {
+                claims.Add(new Claim(JwtClaimTypes.IdentityProvider, IdentityServerConstants.LocalIdentityProvider));
+            }
 
             if (AuthenticationMethods.Any())
             {

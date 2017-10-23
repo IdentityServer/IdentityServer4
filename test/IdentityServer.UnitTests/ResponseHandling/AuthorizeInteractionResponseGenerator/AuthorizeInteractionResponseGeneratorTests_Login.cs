@@ -53,7 +53,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             {
                 ClientId = "foo",
                 Client = new Client(),
-                Subject = IdentityServerPrincipal.Create("123", "dom")
+                Subject = new IdentityServerUser("123").CreatePrincipal()
             };
 
             var result = await _subject.ProcessInteractionAsync(request);
@@ -67,7 +67,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             var request = new ValidatedAuthorizeRequest
             {
                 ClientId = "foo",
-                Subject = IdentityServerPrincipal.Create("123", "dom"),
+                Subject = new IdentityServerUser("123").CreatePrincipal(),
                 Client = new Client 
                 {
                     IdentityProviderRestrictions = new List<string> 
