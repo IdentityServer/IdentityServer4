@@ -32,7 +32,11 @@ namespace IdentityServer4.Endpoints
         /// <param name="requestValidator">The request validator.</param>
         /// <param name="responseGenerator">The response generator.</param>
         /// <param name="logger">The logger.</param>
-        public UserInfoEndpoint(BearerTokenUsageValidator tokenUsageValidator, IUserInfoRequestValidator requestValidator, IUserInfoResponseGenerator responseGenerator, ILogger<UserInfoEndpoint> logger)
+        public UserInfoEndpoint(
+            BearerTokenUsageValidator tokenUsageValidator, 
+            IUserInfoRequestValidator requestValidator, 
+            IUserInfoResponseGenerator responseGenerator, 
+            ILogger<UserInfoEndpoint> logger)
         {
             _tokenUsageValidator = tokenUsageValidator;
             _requestValidator = requestValidator;
