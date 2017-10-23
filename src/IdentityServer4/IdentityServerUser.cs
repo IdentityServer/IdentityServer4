@@ -81,6 +81,15 @@ namespace IdentityServer4
                 claims.Add(new Claim(JwtClaimTypes.IdentityProvider, IdentityServerConstants.LocalIdentityProvider));
             }
 
+            if (AuthenticationTime.HasValue)
+            {
+                claims.Add(new Claim(JwtClaimTypes.AuthenticationTime, AuthenticationTime.Value.ToEpochTime().ToString()));
+            }
+            else
+            {
+                claims.Add(new Claim(JwtClaimTypes.AuthenticationTime, DateTime.UtcNow.ToEpochTime().ToString()));
+            }
+
             if (AuthenticationMethods.Any())
             {
                 foreach (var amr in AuthenticationMethods)
@@ -88,10 +97,9 @@ namespace IdentityServer4
                     claims.Add(new Claim(JwtClaimTypes.AuthenticationMethod, amr));
                 }
             }
-
-            if (AuthenticationTime.HasValue)
+            else
             {
-                claims.Add(new Claim(JwtClaimTypes.AuthenticationTime, AuthenticationTime.Value.ToEpochTime().ToString()));
+                claims.Add(new Claim(JwtClaimTypes.AuthenticationMethod, OidcConstants.AuthenticationMethods.Password));
             }
 
             claims.AddRange(AdditionalClaims);

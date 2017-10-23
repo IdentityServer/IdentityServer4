@@ -88,7 +88,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             var request = new ValidatedAuthorizeRequest
             {
                 ClientId = "foo",
-                Subject = IdentityServerPrincipal.Create("123", "dom"),
+                Subject = new IdentityServerUser("123").CreatePrincipal(),
                 Client = new Client
                 {
                     EnableLocalLogin = false,
@@ -114,7 +114,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
                  AuthenticationContextReferenceClasses = new List<string>{
                     "idp:" + IdentityServerConstants.LocalIdentityProvider
                 },
-                Subject = IdentityServerPrincipal.Create("123", "dom")
+                Subject = new IdentityServerUser("123").CreatePrincipal()
             };
 
             var result = await _subject.ProcessLoginAsync(request);
@@ -132,7 +132,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
                 AuthenticationContextReferenceClasses = new List<string>{
                     "idp:some_idp"
                 },
-                Subject = IdentityServerPrincipal.Create("123", "dom")
+                Subject = new IdentityServerUser("123").CreatePrincipal()
             };
 
             var result = await _subject.ProcessLoginAsync(request);
@@ -150,7 +150,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
                 {
                     EnableLocalLogin = false
                 },
-                Subject = IdentityServerPrincipal.Create("123", "dom")
+                Subject = new IdentityServerUser("123").CreatePrincipal()
             };
 
             var result = await _subject.ProcessLoginAsync(request);
@@ -164,7 +164,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             var request = new ValidatedAuthorizeRequest
             {
                 ClientId = "foo",
-                Subject = IdentityServerPrincipal.Create("123", "dom"),
+                Subject = new IdentityServerUser("123").CreatePrincipal(),
                 PromptMode = OidcConstants.PromptModes.Login,
                 Raw = new NameValueCollection()
             };
@@ -180,7 +180,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             var request = new ValidatedAuthorizeRequest
             {
                 ClientId = "foo",
-                Subject = IdentityServerPrincipal.Create("123", "dom"),
+                Subject = new IdentityServerUser("123").CreatePrincipal(),
                 PromptMode = OidcConstants.PromptModes.SelectAccount,
                 Raw = new NameValueCollection()
             };
@@ -196,7 +196,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             var request = new ValidatedAuthorizeRequest
             {
                 ClientId = "foo",
-                Subject = IdentityServerPrincipal.Create("123", "dom"),
+                Subject = new IdentityServerUser("123").CreatePrincipal(),
                 PromptMode = OidcConstants.PromptModes.Login,
                 Raw = new NameValueCollection
                 {
