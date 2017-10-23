@@ -143,7 +143,7 @@ This shows both the template code generated for ASP.NET Identity, plus the call 
 
         app.UseStaticFiles();
 
-        // app.UseIdentity(); // not needed, since UseIdentityServer adds the authentication middleware
+        // app.UseAuthentication(); // not needed, since UseIdentityServer adds the authentication middleware
         app.UseIdentityServer();
 
         app.UseMvc(routes =>
