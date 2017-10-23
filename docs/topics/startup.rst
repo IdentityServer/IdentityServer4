@@ -88,6 +88,15 @@ The use of ``TestUser`` is not recommended in production.
 * ``AddCustomTokenRequestValidator``
     Adds ``ICustomTokenRequestValidator`` implementation to customize request parameter validation at the token endpoint.
 
+* ``AddRedirectUriValidator``
+    Adds ``IRedirectUriValidator`` implementation to customize redirect URI validation.
+
+* ``AddAppAuthRedirectUriValidator``
+    Adds a an "AppAuth" (OAuth 2.0 for Native Apps) compliant redirect URI validator (does strict validation but also allows http://127.0.0.1 with random port).
+
+* ``AddJwtBearerClientAuthentication``
+    Adds support for client authentication using JWT bearer assertions.
+
 **Caching**
 
 Client and resource configuration data is used frequently by IdentityServer.
