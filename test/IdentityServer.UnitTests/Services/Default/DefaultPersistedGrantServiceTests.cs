@@ -26,7 +26,7 @@ namespace IdentityServer4.UnitTests.Services.Default
         private IReferenceTokenStore _referenceTokens;
         private IUserConsentStore _userConsent;
 
-        private ClaimsPrincipal _user = IdentityServerPrincipal.Create("123", "bob");
+        private ClaimsPrincipal _user = new IdentityServerUser("123").CreatePrincipal();
 
         public DefaultPersistedGrantServiceTests()
         {
@@ -202,7 +202,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                 ClientId = "client1",
                 CreationTime = DateTime.UtcNow,
                 Lifetime = 10,
-                Subject = IdentityServerPrincipal.Create("456", "alice"),
+                Subject = new IdentityServerUser("456").CreatePrincipal(),
                 CodeChallenge = "challenge",
                 RedirectUri = "http://client/cb",
                 Nonce = "nonce",
@@ -373,7 +373,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                 ClientId = "client1",
                 CreationTime = DateTime.UtcNow,
                 Lifetime = 10,
-                Subject = IdentityServerPrincipal.Create("456", "alice"),
+                Subject = new IdentityServerUser("456").CreatePrincipal(),
                 CodeChallenge = "challenge",
                 RedirectUri = "http://client/cb",
                 Nonce = "nonce",
@@ -413,7 +413,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                 ClientId = "client1",
                 CreationTime = DateTime.UtcNow,
                 Lifetime = 10,
-                Subject = IdentityServerPrincipal.Create("123", "alice"),
+                Subject = new IdentityServerUser("123").CreatePrincipal(),
                 CodeChallenge = "challenge",
                 RedirectUri = "http://client/cb",
                 Nonce = "nonce",

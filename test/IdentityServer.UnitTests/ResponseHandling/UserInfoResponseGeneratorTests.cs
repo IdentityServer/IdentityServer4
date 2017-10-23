@@ -34,13 +34,16 @@ namespace IdentityServer4.UnitTests.ResponseHandling
                 ClientId = "client"
             };
 
-            _user = IdentityServerPrincipal.Create("bob", "bob", new Claim[]
+            _user = new IdentityServerUser("bob")
             {
-                new Claim("foo", "foo1"),
-                new Claim("foo", "foo2"),
-                new Claim("bar", "bar1"),
-                new Claim("bar", "bar2")
-            });
+                AdditionalClaims =
+                {
+                    new Claim("foo", "foo1"),
+                    new Claim("foo", "foo2"),
+                    new Claim("bar", "bar1"),
+                    new Claim("bar", "bar2")
+                }
+            }.CreatePrincipal();
 
             _resourceStore = new InMemoryResourcesStore(_identityResources, _apiResources);
             _subject = new UserInfoResponseGenerator(_mockProfileService, _resourceStore, TestLogger.Create<UserInfoResponseGenerator>());

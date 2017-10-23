@@ -62,7 +62,7 @@ namespace IdentityServer4.UnitTests.Services.Default
         {
             _mockUserSession.Clients.Add("foo");
             _mockUserSession.SessionId = "session";
-            _mockUserSession.User = IdentityServerPrincipal.Create("123", "bob");
+            _mockUserSession.User = new IdentityServerUser("123").CreatePrincipal();
 
             var context = await _subject.GetLogoutContextAsync(null);
 
@@ -93,7 +93,7 @@ namespace IdentityServer4.UnitTests.Services.Default
         public async Task CreateLogoutContextAsync_with_session_should_create_session()
         {
             _mockUserSession.Clients.Add("foo");
-            _mockUserSession.User = IdentityServerPrincipal.Create("123", "bob");
+            _mockUserSession.User = new IdentityServerUser("123").CreatePrincipal();
             _mockUserSession.SessionId = "session";
 
             var context = await _subject.CreateLogoutContextAsync();
@@ -123,7 +123,7 @@ namespace IdentityServer4.UnitTests.Services.Default
         [Fact]
         public async Task GrantConsentAsync_should_use_current_subject_and_create_message()
         {
-            _mockUserSession.User = IdentityServerPrincipal.Create("bob", "bob");
+            _mockUserSession.User = new IdentityServerUser("bob").CreatePrincipal();
 
             var req = new AuthorizationRequest() { ClientId = "client" };
             await _subject.GrantConsentAsync(req, new ConsentResponse(), null);

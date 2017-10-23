@@ -45,14 +45,6 @@ namespace IdentityServer4.UnitTests.Services.Default
                 }
             }.CreatePrincipal();
 
-            //_user = IdentityServerPrincipal.Create("bob", "bob", new Claim[] {
-            //    new Claim("foo", "foo1"),
-            //    new Claim("foo", "foo2"),
-            //    new Claim("bar", "bar1"),
-            //    new Claim("bar", "bar2"),
-            //    new Claim(JwtClaimTypes.AuthenticationContextClassReference, "acr1")
-            //});
-
             _subject = new DefaultClaimsService(_mockMockProfileService, TestLogger.Create<DefaultClaimsService>());
 
             _validatedRequest = new ValidatedRequest();
