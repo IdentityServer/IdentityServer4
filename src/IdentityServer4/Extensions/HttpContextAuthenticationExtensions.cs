@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System;
+using System.Linq;
 
 namespace Microsoft.AspNetCore.Http
 {
@@ -17,15 +18,45 @@ namespace Microsoft.AspNetCore.Http
     /// </summary>
     public static class AuthenticationManagerExtensions
     {
-        internal static async Task<string> GetCookieAuthenticationSchemeAsync(this HttpContext context)
+        /// <summary>
+        /// Signs the user in.
+        /// </summary>
+        /// <param name="context">The manager.</param>
+        /// <param name="subject">The subject.</param>
+        /// <param name="claims">The claims.</param>
+        /// <returns></returns>
+        public static async Task SignInAsync(this HttpContext context, string subject, params Claim[] claims)
         {
-            var schemes = context.RequestServices.GetRequiredService<IAuthenticationSchemeProvider>();
-            var scheme = await schemes.GetDefaultAuthenticateSchemeAsync();
-            if (scheme == null)
+            var clock = context.GetClock();
+
+            var user = new IdentityServerUser(subject)
             {
-                throw new InvalidOperationException("No DefaultAuthenticateScheme found.");
-            }
-            return scheme.Name;
+                AdditionalClaims = claims,
+                AuthenticationTime = clock.UtcNow.UtcDateTime
+            };
+
+            await context.SignInAsync(user);
+        }
+
+        /// <summary>
+        /// Signs the user in.
+        /// </summary>
+        /// <param name="context">The manager.</param>
+        /// <param name="subject">The subject.</param>
+        /// <param name="properties">The authentication properties</param>
+        /// <param name="claims">The claims.</param>
+        /// <returns></returns>
+        public static async Task SignInAsync(this HttpContext context, string subject, AuthenticationProperties properties, params Claim[] claims)
+        {
+            var clock = context.GetClock();
+
+            var user = new IdentityServerUser(subject)
+            {
+                AdditionalClaims = claims,
+                AuthenticationTime = clock.UtcNow.UtcDateTime
+            };
+
+            await context.SignInAsync(user, properties);
         }
 
         /// <summary>
@@ -38,10 +69,16 @@ namespace Microsoft.AspNetCore.Http
         /// <returns></returns>
         public static async Task SignInAsync(this HttpContext context, string subject, string name, params Claim[] claims)
         {
-            var clock = context.RequestServices.GetRequiredService<ISystemClock>();
+            var clock = context.GetClock();
 
-            var principal = IdentityServerPrincipal.Create(subject, name, clock.UtcNow.UtcDateTime, claims);
-            await context.SignInAsync(await context.GetCookieAuthenticationSchemeAsync(), principal);
+            var user = new IdentityServerUser(subject)
+            {
+                DisplayName = name,
+                AdditionalClaims = claims,
+                AuthenticationTime = clock.UtcNow.UtcDateTime
+            };
+
+            await context.SignInAsync(user);
         }
 
         /// <summary>
@@ -55,10 +92,16 @@ namespace Microsoft.AspNetCore.Http
         /// <returns></returns>
         public static async Task SignInAsync(this HttpContext context, string subject, string name, AuthenticationProperties properties, params Claim[] claims)
         {
-            var clock = context.RequestServices.GetRequiredService<ISystemClock>();
+            var clock = context.GetClock();
 
-            var principal = IdentityServerPrincipal.Create(subject, name, clock.UtcNow.UtcDateTime, claims);
-            await context.SignInAsync(await context.GetCookieAuthenticationSchemeAsync(), principal, properties);
+            var user = new IdentityServerUser(subject)
+            {
+                DisplayName = name,
+                AdditionalClaims = claims,
+                AuthenticationTime = clock.UtcNow.UtcDateTime
+            };
+
+            await context.SignInAsync(user, properties);
         }
 
         /// <summary>
@@ -72,10 +115,17 @@ namespace Microsoft.AspNetCore.Http
         /// <returns></returns>
         public static async Task SignInAsync(this HttpContext context, string subject, string name, string identityProvider, params Claim[] claims)
         {
-            var clock = context.RequestServices.GetRequiredService<ISystemClock>();
+            var clock = context.GetClock();
 
-            var principal = IdentityServerPrincipal.Create(subject, name, identityProvider, clock.UtcNow.UtcDateTime, claims);
-            await context.SignInAsync(await context.GetCookieAuthenticationSchemeAsync(), principal);
+            var user = new IdentityServerUser(subject)
+            {
+                DisplayName = name,
+                IdentityProvider = identityProvider,
+                AdditionalClaims = claims,
+                AuthenticationTime = clock.UtcNow.UtcDateTime
+            };
+
+            await context.SignInAsync(user);
         }
 
         /// <summary>
@@ -90,10 +140,17 @@ namespace Microsoft.AspNetCore.Http
         /// <returns></returns>
         public static async Task SignInAsync(this HttpContext context, string subject, string name, string identityProvider, AuthenticationProperties properties, params Claim[] claims)
         {
-            var clock = context.RequestServices.GetRequiredService<ISystemClock>();
+            var clock = context.GetClock();
 
-            var principal = IdentityServerPrincipal.Create(subject, name, identityProvider, clock.UtcNow.UtcDateTime, claims);
-            await context.SignInAsync(await context.GetCookieAuthenticationSchemeAsync(), principal, properties);
+            var user = new IdentityServerUser(subject)
+            {
+                DisplayName = name,
+                IdentityProvider = identityProvider,
+                AdditionalClaims = claims,
+                AuthenticationTime = clock.UtcNow.UtcDateTime
+            };
+
+            await context.SignInAsync(user, properties);
         }
 
         /// <summary>
@@ -107,10 +164,17 @@ namespace Microsoft.AspNetCore.Http
         /// <returns></returns>
         public static async Task SignInAsync(this HttpContext context, string subject, string name, IEnumerable<string> authenticationMethods, params Claim[] claims)
         {
-            var clock = context.RequestServices.GetRequiredService<ISystemClock>();
+            var clock = context.GetClock();
 
-            var principal = IdentityServerPrincipal.Create(subject, name, authenticationMethods, clock.UtcNow.UtcDateTime, claims);
-            await context.SignInAsync(await context.GetCookieAuthenticationSchemeAsync(), principal);
+            var user = new IdentityServerUser(subject)
+            {
+                DisplayName = name,
+                AuthenticationMethods = authenticationMethods.ToList(),
+                AdditionalClaims = claims,
+                AuthenticationTime = clock.UtcNow.UtcDateTime
+            };
+
+            await context.SignInAsync(user);
         }
 
         /// <summary>
@@ -125,10 +189,17 @@ namespace Microsoft.AspNetCore.Http
         /// <returns></returns>
         public static async Task SignInAsync(this HttpContext context, string subject, string name, IEnumerable<string> authenticationMethods, AuthenticationProperties properties, params Claim[] claims)
         {
-            var clock = context.RequestServices.GetRequiredService<ISystemClock>();
+            var clock = context.GetClock();
 
-            var principal = IdentityServerPrincipal.Create(subject, name, authenticationMethods, clock.UtcNow.UtcDateTime, claims);
-            await context.SignInAsync(await context.GetCookieAuthenticationSchemeAsync(), principal, properties);
+            var user = new IdentityServerUser(subject)
+            {
+                DisplayName = name,
+                AuthenticationMethods = authenticationMethods.ToList(),
+                AdditionalClaims = claims,
+                AuthenticationTime = clock.UtcNow.UtcDateTime
+            };
+
+            await context.SignInAsync(user, properties);
         }
 
         /// <summary>
@@ -143,10 +214,18 @@ namespace Microsoft.AspNetCore.Http
         /// <returns></returns>
         public static async Task SignInAsync(this HttpContext context, string sub, string name, string identityProvider, IEnumerable<string> authenticationMethods, params Claim[] claims)
         {
-            var clock = context.RequestServices.GetRequiredService<ISystemClock>();
+            var clock = context.GetClock();
 
-            var principal = IdentityServerPrincipal.Create(sub, name, identityProvider, authenticationMethods, clock.UtcNow.UtcDateTime, claims);
-            await context.SignInAsync(await context.GetCookieAuthenticationSchemeAsync(), principal);
+            var user = new IdentityServerUser(sub)
+            {
+                DisplayName = name,
+                IdentityProvider = identityProvider,
+                AuthenticationMethods = authenticationMethods.ToList(),
+                AdditionalClaims = claims,
+                AuthenticationTime = clock.UtcNow.UtcDateTime
+            };
+
+            await context.SignInAsync(user);
         }
 
         /// <summary>
@@ -162,10 +241,57 @@ namespace Microsoft.AspNetCore.Http
         /// <returns></returns>
         public static async Task SignInAsync(this HttpContext context, string sub, string name, string identityProvider, IEnumerable<string> authenticationMethods, AuthenticationProperties properties, params Claim[] claims)
         {
-            var clock = context.RequestServices.GetRequiredService<ISystemClock>();
+            var clock = context.GetClock();
 
-            var principal = IdentityServerPrincipal.Create(sub, name, identityProvider, authenticationMethods, clock.UtcNow.UtcDateTime, claims);
-            await context.SignInAsync(await context.GetCookieAuthenticationSchemeAsync(), principal, properties);
+            var user = new IdentityServerUser(sub)
+            {
+                DisplayName = name,
+                IdentityProvider = identityProvider,
+                AuthenticationMethods = authenticationMethods.ToList(),
+                AdditionalClaims = claims,
+                AuthenticationTime = clock.UtcNow.UtcDateTime
+            };
+
+            await context.SignInAsync(user, properties);
+        }
+
+        /// <summary>
+        /// Signs the user in.
+        /// </summary>
+        /// <param name="context">The manager.</param>
+        /// <param name="user">The IdentityServer user.</param>
+        /// <returns></returns>
+        public static async Task SignInAsync(this HttpContext context, IdentityServerUser user)
+        {
+            await context.SignInAsync(await context.GetCookieAuthenticationSchemeAsync(), user.CreatePrincipal());
+        }
+
+        /// <summary>
+        /// Signs the user in.
+        /// </summary>
+        /// <param name="context">The manager.</param>
+        /// <param name="user">The IdentityServer user.</param>
+        /// <param name="properties">The authentication properties.</param>
+        /// <returns></returns>
+        public static async Task SignInAsync(this HttpContext context, IdentityServerUser user, AuthenticationProperties properties)
+        {
+            await context.SignInAsync(await context.GetCookieAuthenticationSchemeAsync(), user.CreatePrincipal(), properties);
+        }
+
+        internal static ISystemClock GetClock(this HttpContext context)
+        {
+            return context.RequestServices.GetRequiredService<ISystemClock>();
+        }
+
+        internal static async Task<string> GetCookieAuthenticationSchemeAsync(this HttpContext context)
+        {
+            var schemes = context.RequestServices.GetRequiredService<IAuthenticationSchemeProvider>();
+            var scheme = await schemes.GetDefaultAuthenticateSchemeAsync();
+            if (scheme == null)
+            {
+                throw new InvalidOperationException($"No DefaultAuthenticateScheme found.");
+            }
+            return scheme.Name;
         }
     }
 }
