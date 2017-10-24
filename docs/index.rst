@@ -112,6 +112,7 @@ There are several ways we can help you out.
    topics/reference_tokens
    topics/cors
    topics/discovery
+   topics/add_apis
    topics/add_protocols
    topics/tools
 
