@@ -76,18 +76,10 @@ namespace IdentityServer4
             {
                 claims.Add(new Claim(JwtClaimTypes.IdentityProvider, IdentityProvider));
             }
-            else
-            {
-                claims.Add(new Claim(JwtClaimTypes.IdentityProvider, IdentityServerConstants.LocalIdentityProvider));
-            }
 
             if (AuthenticationTime.HasValue)
             {
                 claims.Add(new Claim(JwtClaimTypes.AuthenticationTime, AuthenticationTime.Value.ToEpochTime().ToString()));
-            }
-            else
-            {
-                claims.Add(new Claim(JwtClaimTypes.AuthenticationTime, DateTime.UtcNow.ToEpochTime().ToString()));
             }
 
             if (AuthenticationMethods.Any())
@@ -96,10 +88,6 @@ namespace IdentityServer4
                 {
                     claims.Add(new Claim(JwtClaimTypes.AuthenticationMethod, amr));
                 }
-            }
-            else
-            {
-                claims.Add(new Claim(JwtClaimTypes.AuthenticationMethod, OidcConstants.AuthenticationMethods.Password));
             }
 
             claims.AddRange(AdditionalClaims);

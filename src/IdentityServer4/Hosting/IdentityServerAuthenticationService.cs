@@ -144,7 +144,14 @@ namespace IdentityServer4.Hosting
 
             if (identity.FindFirst(JwtClaimTypes.AuthenticationMethod) == null)
             {
-                identity.AddClaim(new Claim(JwtClaimTypes.AuthenticationMethod, OidcConstants.AuthenticationMethods.Password));
+                if (identity.FindFirst(JwtClaimTypes.IdentityProvider).Value == IdentityServerConstants.LocalIdentityProvider)
+                {
+                    identity.AddClaim(new Claim(JwtClaimTypes.AuthenticationMethod, Constants.ExternalAuthenticationMethod));
+                }
+                else
+                {
+                    identity.AddClaim(new Claim(JwtClaimTypes.AuthenticationMethod, OidcConstants.AuthenticationMethods.Password));
+                }
             }
 
             if (identity.FindFirst(JwtClaimTypes.AuthenticationTime) == null)

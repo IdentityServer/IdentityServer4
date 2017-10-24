@@ -53,7 +53,10 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             {
                 ClientId = "foo",
                 Client = new Client(),
-                Subject = new IdentityServerUser("123").CreatePrincipal()
+                Subject = new IdentityServerUser("123")
+                {
+                    IdentityProvider = IdentityServerConstants.LocalIdentityProvider
+                }.CreatePrincipal()
             };
 
             var result = await _subject.ProcessInteractionAsync(request);
@@ -67,7 +70,9 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             var request = new ValidatedAuthorizeRequest
             {
                 ClientId = "foo",
-                Subject = new IdentityServerUser("123").CreatePrincipal(),
+                Subject = new IdentityServerUser("123") {
+                    IdentityProvider = IdentityServerConstants.LocalIdentityProvider
+                }.CreatePrincipal(),
                 Client = new Client 
                 {
                     IdentityProviderRestrictions = new List<string> 
@@ -88,7 +93,10 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             var request = new ValidatedAuthorizeRequest
             {
                 ClientId = "foo",
-                Subject = new IdentityServerUser("123").CreatePrincipal(),
+                Subject = new IdentityServerUser("123")
+                {
+                    IdentityProvider = IdentityServerConstants.LocalIdentityProvider
+                }.CreatePrincipal(),
                 Client = new Client
                 {
                     EnableLocalLogin = false,
@@ -114,7 +122,10 @@ namespace IdentityServer4.UnitTests.ResponseHandling
                  AuthenticationContextReferenceClasses = new List<string>{
                     "idp:" + IdentityServerConstants.LocalIdentityProvider
                 },
-                Subject = new IdentityServerUser("123").CreatePrincipal()
+                Subject = new IdentityServerUser("123")
+                {
+                    IdentityProvider = IdentityServerConstants.LocalIdentityProvider
+                }.CreatePrincipal()
             };
 
             var result = await _subject.ProcessLoginAsync(request);
@@ -132,7 +143,10 @@ namespace IdentityServer4.UnitTests.ResponseHandling
                 AuthenticationContextReferenceClasses = new List<string>{
                     "idp:some_idp"
                 },
-                Subject = new IdentityServerUser("123").CreatePrincipal()
+                Subject = new IdentityServerUser("123")
+                {
+                    IdentityProvider = IdentityServerConstants.LocalIdentityProvider
+                }.CreatePrincipal()
             };
 
             var result = await _subject.ProcessLoginAsync(request);
@@ -150,7 +164,10 @@ namespace IdentityServer4.UnitTests.ResponseHandling
                 {
                     EnableLocalLogin = false
                 },
-                Subject = new IdentityServerUser("123").CreatePrincipal()
+                Subject = new IdentityServerUser("123")
+                {
+                    IdentityProvider = IdentityServerConstants.LocalIdentityProvider
+                }.CreatePrincipal()
             };
 
             var result = await _subject.ProcessLoginAsync(request);

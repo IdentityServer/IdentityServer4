@@ -35,6 +35,9 @@ namespace IdentityServer4.UnitTests.Services.Default
 
             _user = new IdentityServerUser("bob")
             {
+                IdentityProvider = "idp",
+                AuthenticationMethods = { OidcConstants.AuthenticationMethods.Password },
+                AuthenticationTime = new System.DateTime(2000, 1, 1),
                 AdditionalClaims =
                 {
                     new Claim("foo", "foo1"),
