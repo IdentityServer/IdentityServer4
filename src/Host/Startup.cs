@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using IdentityServer4.Quickstart.UI;
 using Microsoft.Extensions.Configuration;
 
+
 namespace Host
 {
     public class Startup
