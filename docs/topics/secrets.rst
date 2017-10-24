@@ -4,12 +4,12 @@ Secrets
 In certain situations, clients need to authenticate with identityserver, e.g.
 
 * confidential applications (aka clients) requesting tokens at the token endpoint
-* APIs (aka resource scopes) validating reference tokens at the introspection endpoint
+* APIs validating reference tokens at the introspection endpoint
 
-For that purpose you can assign a list of secrets to a ``Client`` or a ``Scope``.
+For that purpose you can assign a list of secrets to a client or an API resource.
 
 Secret parsing and validation is an extensibility point in identityserver, out of the box it supports shared secrets
-(stored hashed or plaintext - but defaults to hashed) as well as transmitting the shared secret via a basic authentication header or the POST body.
+as well as transmitting the shared secret via a basic authentication header or the POST body.
 
 Creating a shared secret
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -68,3 +68,41 @@ You can manually create a basic authentication header using the following C# cod
 
 The `IdentityModel <https://github.com/IdentityModel/IdentityModel2>`_ library has helper classes called ``TokenClient`` and ``IntrospectionClient`` that encapsulate
 both authentication and protocol messages.
+
+Beyond shared secrets
+^^^^^^^^^^^^^^^^^^^^^
+There are other techniques to authenticate clients, e.g. based on public/private key cryptography.
+IdentityServer includes support for private key JWT client secrets (see `RFC 7523 <https://tools.ietf.org/html/rfc7523>`_).
+
+Secret extensibility typically consists of three things:
+
+* a secret definition
+* a secret parser that knows how to extract the secret from the incoming request
+* a secret validator that knows how to validate the parsed secret based on the definition
+
+Secret parsers and validators are implementatios of the ``ISecretParser`` and ``ISecretValidator`` interfaces. 
+To make them available to IdentityServer, you need to register them with the DI container, e.g.::
+
+    builder.AddSecretParser<ClientAssertionSecretParser>()
+    builder.AddSecretValidator<PrivateKeyJwtSecretValidator>()
+
+Our default private key JWT secret validator expects the full (leaf) certificate as base64 on the secret definition.
+This certificate will then be used to validate the signature on the self-signed JWT, e.g.::
+
+    var client = new Client
+    {
+        ClientId = "client.jwt",
+        ClientSecrets =
+        {
+            new Secret
+            {
+                Type = IdentityServerConstants.SecretTypes.X509CertificateBase64,
+                Value = "MIIDATCCAe2gAwIBAgIQoHUYAquk9rBJcq8W+F0FAzAJBgUrDgMCHQUAMBIxEDAOBgNVBAMTB0RldlJvb3QwHhcNMTAwMTIwMjMwMDAwWhcNMjAwMTIwMjMwMDAwWjARMQ8wDQYDVQQDEwZDbGllbnQwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDSaY4x1eXqjHF1iXQcF3pbFrIbmNw19w/IdOQxbavmuPbhY7jX0IORu/GQiHjmhqWt8F4G7KGLhXLC1j7rXdDmxXRyVJBZBTEaSYukuX7zGeUXscdpgODLQVay/0hUGz54aDZPAhtBHaYbog+yH10sCXgV1Mxtzx3dGelA6pPwiAmXwFxjJ1HGsS/hdbt+vgXhdlzud3ZSfyI/TJAnFeKxsmbJUyqMfoBl1zFKG4MOvgHhBjekp+r8gYNGknMYu9JDFr1ue0wylaw9UwG8ZXAkYmYbn2wN/CpJl3gJgX42/9g87uLvtVAmz5L+rZQTlS1ibv54ScR2lcRpGQiQav/LAgMBAAGjXDBaMBMGA1UdJQQMMAoGCCsGAQUFBwMCMEMGA1UdAQQ8MDqAENIWANpX5DZ3bX3WvoDfy0GhFDASMRAwDgYDVQQDEwdEZXZSb290ghAsWTt7E82DjU1E1p427Qj2MAkGBSsOAwIdBQADggEBADLje0qbqGVPaZHINLn+WSM2czZk0b5NG80btp7arjgDYoWBIe2TSOkkApTRhLPfmZTsaiI3Ro/64q+Dk3z3Kt7w+grHqu5nYhsn7xQFAQUf3y2KcJnRdIEk0jrLM4vgIzYdXsoC6YO+9QnlkNqcN36Y8IpSVSTda6gRKvGXiAhu42e2Qey/WNMFOL+YzMXGt/nDHL/qRKsuXBOarIb++43DV3YnxGTx22llhOnPpuZ9/gnNY7KLjODaiEciKhaKqt/b57mTEz4jTF4kIg6BP03MUfDXeVlM1Qf1jB43G2QQ19n5lUiqTpmQkcfLfyci2uBZ8BkOhXr3Vk9HIk/xBXQ="
+            }
+        },
+
+        AllowedGrantTypes = GrantTypes.ClientCredentials,
+        AllowedScopes = { "api1", "api2" }
+    };
+
+You could implement your own secret validator (or extend ours) to implement e.g. chain trust validation instead.

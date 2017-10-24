@@ -13,21 +13,24 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using IdentityServer.UnitTests.Common;
 
 namespace IdentityServer4.UnitTests.Validation
 {
-    public class AccessTokenValidation : IDisposable
+    public class AccessTokenValidation
     {
-        const string Category = "Access token validation";
+        private const string Category = "Access token validation";
 
-        IClientStore _clients = Factory.CreateClientStore();
+        private IClientStore _clients = Factory.CreateClientStore();
+        private IdentityServerOptions _options = new IdentityServerOptions();
+        private StubClock _clock = new StubClock();
 
         static AccessTokenValidation()
         {
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
         }
 
-        DateTime now;
+        private DateTime now;
         public DateTime UtcNow
         {
             get
@@ -37,22 +40,10 @@ namespace IdentityServer4.UnitTests.Validation
             }
         }
 
-        Func<DateTime> originalNowFunc;
-        
         public AccessTokenValidation()
         {
-            originalNowFunc = IdentityServerDateTime.UtcNowFunc;
-            IdentityServerDateTime.UtcNowFunc = () => UtcNow;
+            _clock.UtcNowFunc = () => UtcNow;
         }
-
-        public void Dispose()
-        {
-            if (originalNowFunc != null)
-            {
-                IdentityServerDateTime.UtcNowFunc = originalNowFunc;
-            }
-        }
-
 
         [Fact]
         [Trait("Category", Category)]
@@ -138,13 +129,14 @@ namespace IdentityServer4.UnitTests.Validation
             now = DateTime.UtcNow;
 
             var store = Factory.CreateReferenceTokenStore();
-            var validator = Factory.CreateTokenValidator(store);
+            var validator = Factory.CreateTokenValidator(store, clock:_clock);
 
             var token = TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "valid", 2, "read", "write");
+            token.CreationTime = now;
 
             var handle = await store.StoreReferenceTokenAsync(token);
-            
-            now = now.AddMilliseconds(2000);
+
+            now = now.AddSeconds(3);
 
             var result = await validator.ValidateAccessTokenAsync(handle);
 

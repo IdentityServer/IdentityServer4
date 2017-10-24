@@ -3,9 +3,8 @@
 
 
 using IdentityServer4.Extensions;
-using IdentityServer4.Hosting;
-using IdentityServer4.Models;
 using IdentityServer4.Validation;
+using static IdentityServer4.Constants;
 
 namespace IdentityServer4.Events
 {
@@ -38,7 +37,7 @@ namespace IdentityServer4.Events
                 }
             }
 
-            Endpoint = EndpointName.Authorize.ToString();
+            Endpoint = EndpointNames.Authorize;
             Error = error;
             ErrorDescription = description;
         }
@@ -63,7 +62,7 @@ namespace IdentityServer4.Events
                 }
             }
 
-            Endpoint = EndpointName.Token.ToString();
+            Endpoint = EndpointNames.Token;
             Error = result.Error;
             ErrorDescription = result.ErrorDescription;
         }

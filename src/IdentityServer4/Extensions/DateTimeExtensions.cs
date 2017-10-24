@@ -10,22 +10,22 @@ namespace IdentityServer4.Extensions
     internal static class DateTimeExtensions
     {
         [DebuggerStepThrough]
-        public static bool HasExceeded(this DateTime creationTime, int seconds)
+        public static bool HasExceeded(this DateTime creationTime, int seconds, DateTime now)
         {
-            return (IdentityServerDateTime.UtcNow > creationTime.AddSeconds(seconds));
+            return (now > creationTime.AddSeconds(seconds));
         }
 
         [DebuggerStepThrough]
-        public static int GetLifetimeInSeconds(this DateTime creationTime)
+        public static int GetLifetimeInSeconds(this DateTime creationTime, DateTime now)
         {
-            return ((int)(IdentityServerDateTime.UtcNow - creationTime).TotalSeconds);
+            return ((int)(now - creationTime).TotalSeconds);
         }
 
         [DebuggerStepThrough]
-        public static bool HasExpired(this DateTime? expirationTime)
+        public static bool HasExpired(this DateTime? expirationTime, DateTime now)
         {
             if (expirationTime.HasValue &&
-                expirationTime.Value.HasExpired())
+                expirationTime.Value.HasExpired(now))
             {
                 return true;
             }
@@ -34,9 +34,9 @@ namespace IdentityServer4.Extensions
         }
 
         [DebuggerStepThrough]
-        public static bool HasExpired(this DateTime expirationTime)
+        public static bool HasExpired(this DateTime expirationTime, DateTime now)
         {
-            if (expirationTime < IdentityServerDateTime.UtcNow)
+            if (now > expirationTime)
             {
                 return true;
             }

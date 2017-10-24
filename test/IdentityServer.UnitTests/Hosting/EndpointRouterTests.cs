@@ -11,29 +11,37 @@ using Xunit;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Configuration;
 using IdentityServer4.UnitTests.Common;
+using static IdentityServer4.Constants;
 
 namespace IdentityServer4.UnitTests.Hosting
 {
     public class EndpointRouterTests
     {
-        Dictionary<string, EndpointName> _pathMap;
-        List<EndpointMapping> _mappings;
-        IdentityServerOptions _options;
-        EndpointRouter _subject;
+        private Dictionary<string, Endpoint> _pathMap;
+        private List<Endpoint> _endpoints;
+        private IdentityServerOptions _options;
+        private EndpointRouter _subject;
 
         public EndpointRouterTests()
         {
-            _pathMap = new Dictionary<string, EndpointName>();
-            _mappings = new List<EndpointMapping>();
+            _pathMap = new Dictionary<string, Endpoint>();
+            _endpoints = new List<Endpoint>();
             _options = new IdentityServerOptions();
-            _subject = new EndpointRouter(_pathMap, _options, _mappings, TestLogger.Create<EndpointRouter>());
+            _subject = new EndpointRouter(_endpoints, _options, TestLogger.Create<EndpointRouter>());
+        }
+
+        [Fact]
+        public void Endpoint_ctor_requires_path_to_start_with_slash()
+        {
+            Action a = () => new Endpoint("ep1", "ep1", typeof(MyEndpointHandler));
+            a.ShouldThrow<ArgumentException>();
         }
 
         [Fact]
         public void Find_should_return_null_for_incorrect_path()
         {
-            _pathMap.Add("/endpoint", EndpointName.Authorize);
-            _mappings.Add(new EndpointMapping { Endpoint = EndpointName.Authorize, Handler = typeof(MyEndpoint) });
+            _endpoints.Add(new Endpoint("ep1", "/ep1", typeof(MyEndpointHandler)));
+            _endpoints.Add(new Endpoint("ep2", "/ep2", typeof(MyOtherEndpointHandler)));
 
             var ctx = new DefaultHttpContext();
             ctx.Request.Path = new PathString("/wrong");
@@ -46,76 +54,62 @@ namespace IdentityServer4.UnitTests.Hosting
         [Fact]
         public void Find_should_find_path()
         {
-            _pathMap.Add("/endpoint", EndpointName.Authorize);
-            _mappings.Add(new EndpointMapping { Endpoint = EndpointName.Authorize, Handler = typeof(MyEndpoint) });
+            _endpoints.Add(new Endpoint("ep1", "/ep1", typeof(MyEndpointHandler)));
+            _endpoints.Add(new Endpoint("ep2", "/ep2", typeof(MyOtherEndpointHandler)));
 
             var ctx = new DefaultHttpContext();
-            ctx.Request.Path = new PathString("/endpoint");
+            ctx.Request.Path = new PathString("/ep1");
             ctx.RequestServices = new StubServiceProvider();
 
             var result = _subject.Find(ctx);
-            result.Should().BeOfType<MyEndpoint>();
+            result.Should().BeOfType<MyEndpointHandler>();
         }
 
         [Fact]
-        public void Find_should_find_unprefixed_path()
+        public void Find_should_not_find_nested_paths()
         {
-            _pathMap.Add("endpoint", EndpointName.Authorize);
-            _mappings.Add(new EndpointMapping { Endpoint = EndpointName.Authorize, Handler = typeof(MyEndpoint) });
+            _endpoints.Add(new Endpoint("ep1", "/ep1", typeof(MyEndpointHandler)));
+            _endpoints.Add(new Endpoint("ep2", "/ep2", typeof(MyOtherEndpointHandler)));
 
             var ctx = new DefaultHttpContext();
-            ctx.Request.Path = new PathString("/endpoint");
-            ctx.RequestServices = new StubServiceProvider();
-
-            var result = _subject.Find(ctx);
-            result.Should().BeOfType<MyEndpoint>();
-        }
-
-        [Fact]
-        public void Find_should_find_nested_paths()
-        {
-            _pathMap.Add("/endpoint", EndpointName.Authorize);
-            _mappings.Add(new EndpointMapping { Endpoint = EndpointName.Authorize, Handler = typeof(MyEndpoint) });
-
-            var ctx = new DefaultHttpContext();
-            ctx.Request.Path = new PathString("/endpoint/subpath");
-            ctx.RequestServices = new StubServiceProvider();
-
-            var result = _subject.Find(ctx);
-            result.Should().BeOfType<MyEndpoint>();
-        }
-
-        [Fact]
-        public void Find_should_find_last_registered_mapping()
-        {
-            _pathMap.Add("/endpoint", EndpointName.Authorize);
-            _mappings.Add(new EndpointMapping { Endpoint = EndpointName.Authorize, Handler = typeof(MyEndpoint) });
-            _mappings.Add(new EndpointMapping { Endpoint = EndpointName.Authorize, Handler = typeof(MyOtherEndpoint) });
-
-            var ctx = new DefaultHttpContext();
-            ctx.Request.Path = new PathString("/endpoint");
-            ctx.RequestServices = new StubServiceProvider();
-
-            var result = _subject.Find(ctx);
-            result.Should().BeOfType<MyOtherEndpoint>();
-        }
-
-        [Fact]
-        public void Find_should_return_null_for_disabled_endpoint()
-        {
-            _pathMap.Add("/endpoint", EndpointName.Authorize);
-            _mappings.Add(new EndpointMapping { Endpoint = EndpointName.Authorize, Handler = typeof(MyEndpoint) });
-            _options.Endpoints.EnableAuthorizeEndpoint = false;
-
-            var ctx = new DefaultHttpContext();
-            ctx.Request.Path = new PathString("/endpoint");
+            ctx.Request.Path = new PathString("/ep1/subpath");
             ctx.RequestServices = new StubServiceProvider();
 
             var result = _subject.Find(ctx);
             result.Should().BeNull();
         }
 
-        private class MyEndpoint: IEndpoint
+        [Fact]
+        public void Find_should_find_first_registered_mapping()
+        {
+            _endpoints.Add(new Endpoint("ep1", "/ep1", typeof(MyEndpointHandler)));
+            _endpoints.Add(new Endpoint("ep1", "/ep1", typeof(MyOtherEndpointHandler)));
+
+            var ctx = new DefaultHttpContext();
+            ctx.Request.Path = new PathString("/ep1");
+            ctx.RequestServices = new StubServiceProvider();
+
+            var result = _subject.Find(ctx);
+            result.Should().BeOfType<MyEndpointHandler>();
+        }
+
+        [Fact]
+        public void Find_should_return_null_for_disabled_endpoint()
+        {
+            _endpoints.Add(new Endpoint(EndpointNames.Authorize, "/ep1", typeof(MyEndpointHandler)));
+            _endpoints.Add(new Endpoint("ep2", "/ep2", typeof(MyOtherEndpointHandler)));
+
+            _options.Endpoints.EnableAuthorizeEndpoint = false;
+
+            var ctx = new DefaultHttpContext();
+            ctx.Request.Path = new PathString("/ep1");
+            ctx.RequestServices = new StubServiceProvider();
+
+            var result = _subject.Find(ctx);
+            result.Should().BeNull();
+        }
+
+        private class MyEndpointHandler : IEndpointHandler
         {
             public Task<IEndpointResult> ProcessAsync(HttpContext context)
             {
@@ -123,7 +117,7 @@ namespace IdentityServer4.UnitTests.Hosting
             }
         }
 
-        private class MyOtherEndpoint : IEndpoint
+        private class MyOtherEndpointHandler : IEndpointHandler
         {
             public Task<IEndpointResult> ProcessAsync(HttpContext context)
             {
@@ -135,8 +129,8 @@ namespace IdentityServer4.UnitTests.Hosting
         {
             public object GetService(Type serviceType)
             {
-                if (serviceType == typeof(MyEndpoint)) return new MyEndpoint();
-                if (serviceType == typeof(MyOtherEndpoint)) return new MyOtherEndpoint();
+                if (serviceType == typeof(MyEndpointHandler)) return new MyEndpointHandler();
+                if (serviceType == typeof(MyOtherEndpointHandler)) return new MyOtherEndpointHandler();
 
                 throw new InvalidOperationException();
             }

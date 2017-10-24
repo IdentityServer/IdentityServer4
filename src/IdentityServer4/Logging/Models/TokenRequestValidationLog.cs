@@ -26,7 +26,7 @@ namespace IdentityServer4.Logging
 
         public Dictionary<string, string> Raw { get; set; }
 
-        static readonly string[] SensitiveValuesFilter = {
+        private static readonly string[] SensitiveValuesFilter = {
             OidcConstants.TokenRequest.ClientSecret,
             OidcConstants.TokenRequest.Password,
             OidcConstants.TokenRequest.ClientAssertion

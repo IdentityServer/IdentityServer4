@@ -18,8 +18,8 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
     {
         private const string Category = "TokenRequest Validation - General - Invalid";
 
-        IClientStore _clients = new InMemoryClientStore(TestClients.Get());
-        ClaimsPrincipal _subject = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
+        private IClientStore _clients = new InMemoryClientStore(TestClients.Get());
+        private ClaimsPrincipal _subject = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
 
         [Fact]
         [Trait("Category", Category)]
@@ -57,6 +57,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
 
             var code = new AuthorizationCode
             {
+                CreationTime = DateTime.UtcNow,
                 ClientId = client.ClientId,
                 Lifetime = client.AuthorizationCodeLifetime,
                 IsOpenId = true,
@@ -74,7 +75,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.Code, handle);
             parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server/cb");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.UnsupportedGrantType);
@@ -93,7 +94,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, "client_credentials");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.InvalidClient);
@@ -108,6 +109,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
 
             var code = new AuthorizationCode
             {
+                CreationTime = DateTime.UtcNow,
                 ClientId = client.ClientId,
                 Lifetime = client.AuthorizationCodeLifetime,
                 IsOpenId = true,
@@ -124,7 +126,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.Code, handle);
             parameters.Add(OidcConstants.TokenRequest.RedirectUri, "https://server/cb");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.UnsupportedGrantType);

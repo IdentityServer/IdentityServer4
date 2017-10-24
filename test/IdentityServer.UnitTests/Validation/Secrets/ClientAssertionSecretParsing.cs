@@ -18,13 +18,13 @@ namespace IdentityServer4.Tests.Validation.Secrets
 {
     public class ClientAssertionSecretParsing
     {
-        IdentityServerOptions _options;
-        ClientAssertionSecretParser _parser;
+        private IdentityServerOptions _options;
+        private JwtBearerClientAssertionSecretParser _parser;
 
         public ClientAssertionSecretParsing()
         {
             _options = new IdentityServerOptions();
-            _parser = new ClientAssertionSecretParser(_options, new LoggerFactory().CreateLogger<ClientAssertionSecretParser>());
+            _parser = new JwtBearerClientAssertionSecretParser(_options, new LoggerFactory().CreateLogger<JwtBearerClientAssertionSecretParser>());
         }
 
         [Fact]

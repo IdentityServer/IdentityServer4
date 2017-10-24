@@ -3,6 +3,7 @@
 
 
 using System.Threading.Tasks;
+using IdentityServer4.Models;
 
 namespace IdentityServer4.Validation
 {
@@ -14,10 +15,18 @@ namespace IdentityServer4.Validation
         /// <summary>
         /// Validates an access token.
         /// </summary>
-        /// <param name="token">The token.</param>
+        /// <param name="token">The access token.</param>
         /// <param name="expectedScope">The expected scope.</param>
         /// <returns></returns>
         Task<TokenValidationResult> ValidateAccessTokenAsync(string token, string expectedScope = null);
+
+        /// <summary>
+        /// Validates a refresh token.
+        /// </summary>
+        /// <param name="token">The refresh token.</param>
+        /// <param name="client">The client.</param>
+        /// <returns></returns>
+        Task<TokenValidationResult> ValidateRefreshTokenAsync(string token, Client client = null);
 
         /// <summary>
         /// Validates an identity token.

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
 {
-    class Scopes
+    internal class Scopes
     {
         public static IEnumerable<ApiResource> GetApiScopes()
         {

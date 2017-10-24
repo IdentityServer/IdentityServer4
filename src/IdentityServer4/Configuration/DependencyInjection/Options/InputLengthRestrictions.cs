@@ -84,17 +84,17 @@ namespace IdentityServer4.Configuration
         /// <summary>
         /// Max length for authorization codes
         /// </summary>
-        public int AuthorizationCode { get; private set; } = Default;
+        public int AuthorizationCode { get; set; } = Default;
 
         /// <summary>
         /// Max length for refresh tokens
         /// </summary>
-        public int RefreshToken { get; private set; } = Default;
+        public int RefreshToken { get; set; } = Default;
 
         /// <summary>
         /// Max length for token handles
         /// </summary>
-        public int TokenHandle { get; private set; } = Default;
+        public int TokenHandle { get; set; } = Default;
 
         /// <summary>
         /// Max length for JWTs

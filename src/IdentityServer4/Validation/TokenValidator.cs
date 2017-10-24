@@ -18,56 +18,51 @@ using Microsoft.IdentityModel.Tokens;
 using IdentityServer4.Stores;
 using IdentityServer4.Configuration;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.Validation
 {
-    /// <summary>
-    /// The token validator
-    /// </summary>
-    /// <seealso cref="IdentityServer4.Validation.ITokenValidator" />
-    public class TokenValidator : ITokenValidator
+    internal class TokenValidator : ITokenValidator
     {
         private readonly ILogger _logger;
         private readonly IdentityServerOptions _options;
         private readonly IHttpContextAccessor _context;
         private readonly IReferenceTokenStore _referenceTokenStore;
+        private readonly IRefreshTokenStore _refreshTokenStore;
         private readonly ICustomTokenValidator _customValidator;
         private readonly IClientStore _clients;
+        private readonly IProfileService _profile;
         private readonly IKeyMaterialService _keys;
-
+        private readonly ISystemClock _clock;
         private readonly TokenValidationLog _log;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TokenValidator"/> class.
-        /// </summary>
-        /// <param name="options">The options.</param>
-        /// <param name="context">The context.</param>
-        /// <param name="clients">The clients.</param>
-        /// <param name="referenceTokenStore">The reference token store.</param>
-        /// <param name="customValidator">The custom validator.</param>
-        /// <param name="keys">The keys.</param>
-        /// <param name="logger">The logger.</param>
-        public TokenValidator(IdentityServerOptions options, IHttpContextAccessor context, IClientStore clients, IReferenceTokenStore referenceTokenStore, ICustomTokenValidator customValidator, IKeyMaterialService keys, ILogger<TokenValidator> logger)
+        public TokenValidator(
+            IdentityServerOptions options,
+            IHttpContextAccessor context,
+            IClientStore clients,
+            IProfileService profile,
+            IReferenceTokenStore referenceTokenStore,
+            IRefreshTokenStore refreshTokenStore,
+            ICustomTokenValidator customValidator,
+            IKeyMaterialService keys,
+            ISystemClock clock,
+            ILogger<TokenValidator> logger)
         {
             _options = options;
             _context = context;
             _clients = clients;
+            _profile = profile;
             _referenceTokenStore = referenceTokenStore;
+            _refreshTokenStore = refreshTokenStore;
             _customValidator = customValidator;
             _keys = keys;
+            _clock = clock;
             _logger = logger;
 
             _log = new TokenValidationLog();
         }
 
-        /// <summary>
-        /// Validates an identity token.
-        /// </summary>
-        /// <param name="token">The token.</param>
-        /// <param name="clientId">The client identifier.</param>
-        /// <param name="validateLifetime">if set to <c>true</c> the lifetime gets validated. Otherwise not.</param>
-        /// <returns></returns>
-        public virtual async Task<TokenValidationResult> ValidateIdentityTokenAsync(string token, string clientId = null, bool validateLifetime = true)
+        public async Task<TokenValidationResult> ValidateIdentityTokenAsync(string token, string clientId = null, bool validateLifetime = true)
         {
             _logger.LogDebug("Start identity token validation");
 
@@ -94,7 +89,7 @@ namespace IdentityServer4.Validation
             var client = await _clients.FindEnabledClientByIdAsync(clientId);
             if (client == null)
             {
-                _logger.LogError("Unknown or diabled client: {clientId}.", clientId);
+                _logger.LogError("Unknown or disabled client: {clientId}.", clientId);
                 return Invalid(OidcConstants.ProtectedResourceErrors.InvalidToken);
             }
 
@@ -129,13 +124,7 @@ namespace IdentityServer4.Validation
             return customResult;
         }
 
-        /// <summary>
-        /// Validates an access token.
-        /// </summary>
-        /// <param name="token">The token.</param>
-        /// <param name="expectedScope">The expected scope.</param>
-        /// <returns></returns>
-        public virtual async Task<TokenValidationResult> ValidateAccessTokenAsync(string token, string expectedScope = null)
+        public async Task<TokenValidationResult> ValidateAccessTokenAsync(string token, string expectedScope = null)
         {
             _logger.LogTrace("Start access token validation");
 
@@ -277,7 +266,7 @@ namespace IdentityServer4.Validation
                 return Invalid(OidcConstants.ProtectedResourceErrors.InvalidToken);
             }
 
-            if (IdentityServerDateTime.UtcNow >= token.CreationTime.AddSeconds(token.Lifetime))
+            if (token.CreationTime.HasExceeded(token.Lifetime, _clock.UtcNow.UtcDateTime))
             {
                 LogError("Token expired.");
 
@@ -306,6 +295,81 @@ namespace IdentityServer4.Validation
                 Claims = ReferenceTokenToClaims(token),
                 ReferenceToken = token,
                 ReferenceTokenId = tokenHandle
+            };
+        }
+
+        public async Task<TokenValidationResult> ValidateRefreshTokenAsync(string tokenHandle, Client client = null)
+        {
+            _logger.LogTrace("Start refresh token validation");
+            
+            /////////////////////////////////////////////
+            // check if refresh token is valid
+            /////////////////////////////////////////////
+            var refreshToken = await _refreshTokenStore.GetRefreshTokenAsync(tokenHandle);
+            if (refreshToken == null)
+            {
+                _logger.LogError("Invalid refresh token");
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+            }
+
+            /////////////////////////////////////////////
+            // check if refresh token has expired
+            /////////////////////////////////////////////
+            if (refreshToken.CreationTime.HasExceeded(refreshToken.Lifetime, _clock.UtcNow.DateTime))
+            {
+                _logger.LogError("Refresh token has expired. Removing from store.");
+
+                await _refreshTokenStore.RemoveRefreshTokenAsync(tokenHandle);
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+            }
+
+            if (client != null)
+            {
+                /////////////////////////////////////////////
+                // check if client belongs to requested refresh token
+                /////////////////////////////////////////////
+                if (client.ClientId != refreshToken.ClientId)
+                {
+                    _logger.LogError("{0} tries to refresh token belonging to {1}", client.ClientId, refreshToken.ClientId);
+                    return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+                }
+
+                /////////////////////////////////////////////
+                // check if client still has offline_access scope
+                /////////////////////////////////////////////
+                if (!client.AllowOfflineAccess)
+                {
+                    _logger.LogError("{clientId} does not have access to offline_access scope anymore", client.ClientId);
+                    return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+                }
+
+                _log.ClientId = client.ClientId;
+                _log.ClientName = client.ClientName;
+            }
+
+            /////////////////////////////////////////////
+            // make sure user is enabled
+            /////////////////////////////////////////////
+            var isActiveCtx = new IsActiveContext(
+                refreshToken.Subject, 
+                client, 
+                IdentityServerConstants.ProfileIsActiveCallers.RefreshTokenValidation);
+            await _profile.IsActiveAsync(isActiveCtx);
+
+            if (isActiveCtx.IsActive == false)
+            {
+                _logger.LogError("{subjectId} has been disabled", refreshToken.Subject.GetSubjectId());
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+            }
+
+            _log.Claims = refreshToken.Subject.Claims.ToClaimsDictionary();
+
+            LogSuccess();
+            
+            return new TokenValidationResult
+            {
+                IsError = false,
+                RefreshToken = refreshToken
             };
         }
 
@@ -354,7 +418,7 @@ namespace IdentityServer4.Validation
 
         private void LogError(string message)
         {
-            _logger.LogError(message +"\n{logMessage}", _log);
+            _logger.LogError(message + "\n{logMessage}", _log);
         }
 
         private void LogSuccess()

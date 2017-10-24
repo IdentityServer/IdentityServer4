@@ -81,7 +81,7 @@ namespace IdentityServer4.Models
                 Name = IdentityServerConstants.StandardScopes.Phone;
                 DisplayName = "Your phone number";
                 Emphasize = true;
-                UserClaims = (Constants.ScopeToClaimsMapping[IdentityServerConstants.StandardScopes.Phone].ToList());
+                UserClaims = Constants.ScopeToClaimsMapping[IdentityServerConstants.StandardScopes.Phone].ToList();
             }
         }
 
@@ -99,7 +99,7 @@ namespace IdentityServer4.Models
                 Name = IdentityServerConstants.StandardScopes.Address;
                 DisplayName = "Your postal address";
                 Emphasize = true;
-                UserClaims = (Constants.ScopeToClaimsMapping[IdentityServerConstants.StandardScopes.Address].ToList());
+                UserClaims = Constants.ScopeToClaimsMapping[IdentityServerConstants.StandardScopes.Address].ToList();
             }
         }
     }

@@ -6,21 +6,13 @@ using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System;
 
 namespace IdentityServer4.UnitTests.Common
 {
     public class MockMessageStore<TModel> : IMessageStore<TModel>
     {
         public Dictionary<string, Message<TModel>> Messages { get; set; } = new Dictionary<string, Message<TModel>>();
-
-        public Task DeleteAsync(string id)
-        {
-            if (id != null && Messages.ContainsKey(id))
-            {
-                Messages.Remove(id);
-            }
-            return Task.FromResult(0);
-        }
 
         public Task<Message<TModel>> ReadAsync(string id)
         {
@@ -32,10 +24,11 @@ namespace IdentityServer4.UnitTests.Common
             return Task.FromResult(val);
         }
 
-        public Task WriteAsync(string id, Message<TModel> message)
+        public Task<string> WriteAsync(Message<TModel> message)
         {
+            var id = Guid.NewGuid().ToString();
             Messages[id] = message;
-            return Task.FromResult(0);
+            return Task.FromResult(id);
         }
     }
 }

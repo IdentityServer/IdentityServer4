@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace IdentityServer4.IntegrationTests.Clients
 {
-    class Scopes
+    internal class Scopes
     {
         public static IEnumerable<IdentityResource> GetIdentityScopes()
         {

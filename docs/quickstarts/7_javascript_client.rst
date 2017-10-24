@@ -32,14 +32,8 @@ Add the static file middleware
 
 Given that this project is designed to mainly run client-side, we need ASP.NET Core to serve up the static HTML and JavaScript files that will make up our application.
 The static file middleware is designed to do this.
-Add the NuGet package ``Microsoft.AspNetCore.StaticFiles``.
 
-.. image:: images/7_nuget_static_files.png
-
-Register the static file middleware
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Next, register the static file middleware in `Startup.cs` in the ``Configure`` method::
+Register the static file middleware in `Startup.cs` in the ``Configure`` method::
 
     public void Configure(IApplicationBuilder app)
     {
@@ -69,7 +63,7 @@ Add a new NPM package file to your project and name it `package.json`:
 In `package.json` add a ``devDependency`` to ``oidc-client``::
 
   "devDependencies": {
-    "oidc-client": "1.2.2"
+    "oidc-client": "1.4.1"
   }
 
 Once you have saved this file, Visual Studio should automatically restore these packages into a folder called `node_modules`:
@@ -254,19 +248,26 @@ Allowing Ajax calls to the Web API with CORS
 One last bit of configuration that is necessary is to configure CORS in the web API project. 
 This will allow Ajax calls to be made from `http://localhost:5003` to `http://localhost:5001`.
 
-**CORS NuGet Package**
-
-Add the ``Microsoft.AspNetCore.Cors`` NuGet package.
-
-.. image:: images/7_nuget_cors.png
-
 **Configure CORS**
 
-Next, add the CORS services to the dependency injection system in ``ConfigureServices`` in `Startup.cs`::
+Add the CORS services to the dependency injection system in ``ConfigureServices`` in `Startup.cs`::
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddCors(options=>
+        services.AddMvcCore()
+            .AddAuthorization()
+            .AddJsonFormatters();
+
+        services.AddAuthentication("Bearer")
+            .AddIdentityServerAuthentication(options =>
+            {
+                options.Authority = "http://localhost:5000";
+                options.RequireHttpsMetadata = false;
+
+                options.ApiName = "api1";
+            });
+
+        services.AddCors(options =>
         {
             // this defines a CORS policy called "default"
             options.AddPolicy("default", policy =>
@@ -276,29 +277,15 @@ Next, add the CORS services to the dependency injection system in ``ConfigureSer
                     .AllowAnyMethod();
             });
         });
-
-        services.AddMvcCore()
-            .AddAuthorization()
-            .AddJsonFormatters();
     }
 
-Finally, add the CORS middleware to the pipeline in ``Configure``::
+Add the CORS middleware to the pipeline in ``Configure``::
 
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+    public void Configure(IApplicationBuilder app)
     {
-        loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-        loggerFactory.AddDebug();
-
-        // this uses the policy called "default"
         app.UseCors("default");
 
-        app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
-        {
-            Authority = "http://localhost:5000",
-            AllowedScopes = { "api1" },
-
-            RequireHttpsMetadata = false
-        });
+        app.UseAuthentication();
 
         app.UseMvc();
     }

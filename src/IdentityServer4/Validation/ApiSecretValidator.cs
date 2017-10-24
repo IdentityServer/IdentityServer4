@@ -56,7 +56,7 @@ namespace IdentityServer4.Validation
             var parsedSecret = await _parser.ParseAsync(context);
             if (parsedSecret == null)
             {
-                await RaiseFailureEvent("unknown", "No API id or secret found");
+                await RaiseFailureEventAsync("unknown", "No API id or secret found");
 
                 _logger.LogError("No API secret found");
                 return fail;
@@ -66,7 +66,7 @@ namespace IdentityServer4.Validation
             var api = await _resources.FindApiResourceAsync(parsedSecret.Id);
             if (api == null)
             {
-                await RaiseFailureEvent(parsedSecret.Id, "Unknown API resource");
+                await RaiseFailureEventAsync(parsedSecret.Id, "Unknown API resource");
 
                 _logger.LogError("No API resource with that name found. aborting");
                 return fail;
@@ -74,7 +74,7 @@ namespace IdentityServer4.Validation
 
             if (api.Enabled == false)
             {
-                await RaiseFailureEvent(parsedSecret.Id, "API resource not enabled");
+                await RaiseFailureEventAsync(parsedSecret.Id, "API resource not enabled");
 
                 _logger.LogError("API resource not enabled. aborting.");
                 return fail;
@@ -91,22 +91,22 @@ namespace IdentityServer4.Validation
                     Resource = api
                 };
 
-                await RaiseSuccessEvent(api.Name, parsedSecret.Type);
+                await RaiseSuccessEventAsync(api.Name, parsedSecret.Type);
                 return success;
             }
 
-            await RaiseFailureEvent(api.Name, "Invalid API secret");
+            await RaiseFailureEventAsync(api.Name, "Invalid API secret");
             _logger.LogError("API validation failed.");
 
             return fail;
         }
 
-        private Task RaiseSuccessEvent(string clientId, string authMethod)
+        private Task RaiseSuccessEventAsync(string clientId, string authMethod)
         {
             return _events.RaiseAsync(new ApiAuthenticationSuccessEvent(clientId, authMethod));
         }
 
-        private Task RaiseFailureEvent(string clientId, string message)
+        private Task RaiseFailureEventAsync(string clientId, string message)
         {
             return _events.RaiseAsync(new ApiAuthenticationFailureEvent(clientId, message));
         }

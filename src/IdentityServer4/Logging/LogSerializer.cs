@@ -12,7 +12,7 @@ namespace IdentityServer4.Logging
     /// </summary>
     internal static class LogSerializer
     {
-        static readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings
+        private static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
         {
             NullValueHandling = NullValueHandling.Ignore,
             DateFormatHandling = DateFormatHandling.IsoDateFormat,
@@ -21,7 +21,7 @@ namespace IdentityServer4.Logging
 
         static LogSerializer()
         {
-            jsonSettings.Converters.Add(new StringEnumConverter());
+            JsonSettings.Converters.Add(new StringEnumConverter());
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace IdentityServer4.Logging
         /// <returns></returns>
         public static string Serialize(object logObject)
         {
-            return JsonConvert.SerializeObject(logObject, jsonSettings);
+            return JsonConvert.SerializeObject(logObject, JsonSettings);
         }
     }
 }

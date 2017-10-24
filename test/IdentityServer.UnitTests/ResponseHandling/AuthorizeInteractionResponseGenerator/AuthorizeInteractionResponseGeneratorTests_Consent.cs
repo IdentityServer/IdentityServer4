@@ -17,17 +17,18 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
+using IdentityServer.UnitTests.Common;
 
 namespace IdentityServer4.UnitTests.ResponseHandling
 {
     public class AuthorizeInteractionResponseGeneratorTests_Consent
     {
-        AuthorizeInteractionResponseGenerator _subject;
-        IdentityServerOptions _options = new IdentityServerOptions();
-        MockConsentService _mockConsent = new MockConsentService();
-        MockProfileService _fakeUserService = new MockProfileService();
+        private AuthorizeInteractionResponseGenerator _subject;
+        private IdentityServerOptions _options = new IdentityServerOptions();
+        private MockConsentService _mockConsent = new MockConsentService();
+        private MockProfileService _fakeUserService = new MockProfileService();
 
-        void RequiresConsent(bool value)
+        private void RequiresConsent(bool value)
         {
             _mockConsent.RequiresConsentResult = value;
         }
@@ -91,6 +92,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
         public AuthorizeInteractionResponseGeneratorTests_Consent()
         {
             _subject = new AuthorizeInteractionResponseGenerator(
+                new StubClock(),
                 TestLogger.Create<AuthorizeInteractionResponseGenerator>(),
                 _mockConsent,
                 _fakeUserService);

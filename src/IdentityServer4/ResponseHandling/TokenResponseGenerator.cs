@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.ResponseHandling
 {
@@ -47,15 +48,22 @@ namespace IdentityServer4.ResponseHandling
         protected readonly IClientStore Clients;
 
         /// <summary>
+        ///  The clock
+        /// </summary>
+        protected readonly ISystemClock Clock;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="TokenResponseGenerator" /> class.
         /// </summary>
+        /// <param name="clock">The clock.</param>
         /// <param name="tokenService">The token service.</param>
         /// <param name="refreshTokenService">The refresh token service.</param>
         /// <param name="resources">The resources.</param>
         /// <param name="clients">The clients.</param>
         /// <param name="logger">The logger.</param>
-        public TokenResponseGenerator(ITokenService tokenService, IRefreshTokenService refreshTokenService, IResourceStore resources, IClientStore clients, ILogger<TokenResponseGenerator> logger)
+        public TokenResponseGenerator(ISystemClock clock, ITokenService tokenService, IRefreshTokenService refreshTokenService, IResourceStore resources, IClientStore clients, ILogger<TokenResponseGenerator> logger)
         {
+            Clock = clock;
             TokenService = tokenService;
             RefreshTokenService = refreshTokenService;
             Resources = resources;
@@ -177,7 +185,7 @@ namespace IdentityServer4.ResponseHandling
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
-        private async Task<TokenResponse> ProcessRefreshTokenRequestAsync(TokenRequestValidationResult request)
+        protected virtual async Task<TokenResponse> ProcessRefreshTokenRequestAsync(TokenRequestValidationResult request)
         {
             Logger.LogTrace("Creating response for refresh token request");
 
@@ -200,7 +208,7 @@ namespace IdentityServer4.ResponseHandling
             }
             else
             {
-                oldAccessToken.CreationTime = IdentityServerDateTime.UtcNow;
+                oldAccessToken.CreationTime = Clock.UtcNow.UtcDateTime;
                 oldAccessToken.Lifetime = request.ValidatedRequest.AccessTokenLifetime;
 
                 accessTokenString = await TokenService.CreateSecurityTokenAsync(oldAccessToken);
@@ -258,7 +266,7 @@ namespace IdentityServer4.ResponseHandling
         /// <param name="request">The request.</param>
         /// <returns></returns>
         /// <exception cref="System.InvalidOperationException">Client does not exist anymore.</exception>
-        protected async Task<(string accessToken, string refreshToken)> CreateAccessTokenAsync(ValidatedTokenRequest request)
+        protected virtual async Task<(string accessToken, string refreshToken)> CreateAccessTokenAsync(ValidatedTokenRequest request)
         {
             TokenCreationRequest tokenRequest;
             bool createRefreshToken;
@@ -317,7 +325,7 @@ namespace IdentityServer4.ResponseHandling
         /// <param name="request">The request.</param>
         /// <param name="newAccessToken">The new access token.</param>
         /// <returns></returns>
-        protected async Task<string> CreateIdTokenFromRefreshTokenRequestAsync(ValidatedTokenRequest request, string newAccessToken)
+        protected virtual async Task<string> CreateIdTokenFromRefreshTokenRequestAsync(ValidatedTokenRequest request, string newAccessToken)
         {
             var resources = await Resources.FindResourcesByScopeAsync(request.RefreshToken.Scopes);
             if (resources.IdentityResources.Any())

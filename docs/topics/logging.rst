@@ -7,7 +7,7 @@ The Microsoft `documentation <https://docs.microsoft.com/en-us/aspnet/core/funda
 We are roughly following the Microsoft guidelines for usage of log levels:
 
 * ``Trace`` For information that is valuable only to a developer troubleshooting an issue. These messages may contain sensitive application data like tokens and should not be enabled in a production environment.
-* ``Debug`` For following the interal flow and understanding why certain decisions are made. Has short-term usefulness during development and debugging.
+* ``Debug`` For following the internal flow and understanding why certain decisions are made. Has short-term usefulness during development and debugging.
 * ``Information`` For tracking the general flow of the application. These logs typically have some long-term value.
 * ``Warning`` For abnormal or unexpected events in the application flow. These may include errors or other conditions that do not cause the application to stop, but which may need to be investigated.
 * ``Error`` For errors and exceptions that cannot be handled. Examples: failed validation of a protocol request.
@@ -17,38 +17,36 @@ Setup
 ^^^^^
 We personally like `Serilog <https://serilog.net/>`_ a lot. Give it a try.
 
-Install Serilog packages: 
-From Package Manager Console verify that Default Project drop-down has your project selected and run
-    install-package Serilog.Extensions.Logging
-    install-package Serilog.Sinks.File
-    
-You want to setup logging as early as possible in your application host, e.g. in the constructor of your startup class, e.g::
+For the following configuration you need the ``Serilog.Extensions.Logging`` and ``Serilog.Sinks.Console`` packages::
 
-    public class Startup
+    public class Program
     {
-        public Startup(ILoggerFactory loggerFactory, IHostingEnvironment environment)
+        public static void Main(string[] args)
         {
-            var serilog = new LoggerConfiguration()
-                .MinimumLevel.Verbose()
+            Console.Title = "IdentityServer4";
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                .MinimumLevel.Override("System", LogEventLevel.Warning)
+                .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Information)
                 .Enrich.FromLogContext()
-                .WriteTo.File(@"identityserver4_log.txt");
-                
-            if (environment.IsDevelopment())
-            {
-                serilog.WriteTo.LiterateConsole(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message}{NewLine}{Exception}{NewLine}");
-            }
+                .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}", theme: AnsiConsoleTheme.Literate)
+                .CreateLogger();
 
-            loggerFactory
-                .WithFilter(new FilterLoggerSettings
-                {
-                    { "IdentityServer", LogLevel.Debug },
-                    { "Microsoft", LogLevel.Information },
-                    { "System", LogLevel.Error },
-                })
-                .AddSerilog(serilog.CreateLogger());
+            BuildWebHost(args).Run();
         }
-    }
 
-Further reading
-^^^^^^^^^^^^^^^
-* `ASP.NET Core Logging with Azure App Service and Serilog <https://blogs.msdn.microsoft.com/webdev/2017/04/26/asp-net-core-logging/>`_
+        public static IWebHost BuildWebHost(string[] args)
+        {
+            return WebHost.CreateDefaultBuilder(args)
+                    .UseStartup<Startup>()
+                    .ConfigureLogging(builder =>
+                    {
+                        builder.ClearProviders();
+                        builder.AddSerilog();
+                    })
+                    .Build();
+        }            
+    }
+    

@@ -16,9 +16,9 @@ namespace IdentityServer4.Services
     public class DefaultCache<T> : ICache<T>
         where T : class
     {
-        const string KeySeparator = ":";
+        private const string KeySeparator = ":";
 
-        readonly IMemoryCache _cache;
+        private readonly IMemoryCache _cache;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultCache{T}"/> class.
@@ -29,7 +29,7 @@ namespace IdentityServer4.Services
             _cache = cache;
         }
 
-        string GetKey(string key)
+        private string GetKey(string key)
         {
             return typeof(T).FullName + KeySeparator + key;
         }
@@ -59,7 +59,7 @@ namespace IdentityServer4.Services
         {
             key = GetKey(key);
             _cache.Set(key, item, expiration);
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

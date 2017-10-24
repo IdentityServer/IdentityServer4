@@ -21,7 +21,7 @@ namespace IdentityServer4.ResponseHandling
         /// <value>
         /// The reference token store.
         /// </value>
-        public IReferenceTokenStore ReferenceTokenStore { get; }
+        protected readonly IReferenceTokenStore ReferenceTokenStore;
 
         /// <summary>
         /// Gets the refresh token store.
@@ -29,7 +29,7 @@ namespace IdentityServer4.ResponseHandling
         /// <value>
         /// The refresh token store.
         /// </value>
-        public IRefreshTokenStore RefreshTokenStore { get; }
+        protected readonly IRefreshTokenStore RefreshTokenStore;
 
         /// <summary>
         /// Gets the logger.
@@ -37,7 +37,7 @@ namespace IdentityServer4.ResponseHandling
         /// <value>
         /// The logger.
         /// </value>
-        public ILogger Logger { get; }
+        protected readonly ILogger Logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenRevocationResponseGenerator" /> class.
@@ -57,7 +57,7 @@ namespace IdentityServer4.ResponseHandling
         /// </summary>
         /// <param name="validationResult">The userinfo request validation result.</param>
         /// <returns></returns>
-        public async Task<TokenRevocationResponse> ProcessAsync(TokenRevocationRequestValidationResult validationResult)
+        public virtual async Task<TokenRevocationResponse> ProcessAsync(TokenRevocationRequestValidationResult validationResult)
         {
             var response = new TokenRevocationResponse
             {
@@ -96,8 +96,10 @@ namespace IdentityServer4.ResponseHandling
             return response;
         }
 
-        // revoke access token only if it belongs to client doing the request
-        private async Task<bool> RevokeAccessTokenAsync(TokenRevocationRequestValidationResult validationResult)
+        /// <summary>
+        /// Revoke access token only if it belongs to client doing the request.
+        /// </summary>
+        protected virtual async Task<bool> RevokeAccessTokenAsync(TokenRevocationRequestValidationResult validationResult)
         {
             var token = await ReferenceTokenStore.GetReferenceTokenAsync(validationResult.Token);
 
@@ -119,8 +121,10 @@ namespace IdentityServer4.ResponseHandling
             return false;
         }
 
-        // revoke refresh token only if it belongs to client doing the request
-        private async Task<bool> RevokeRefreshTokenAsync(TokenRevocationRequestValidationResult validationResult)
+        /// <summary>
+        /// Revoke refresh token only if it belongs to client doing the request
+        /// </summary>
+        protected virtual async Task<bool> RevokeRefreshTokenAsync(TokenRevocationRequestValidationResult validationResult)
         {
             var token = await RefreshTokenStore.GetRefreshTokenAsync(validationResult.Token);
 
@@ -129,7 +133,7 @@ namespace IdentityServer4.ResponseHandling
                 if (token.ClientId == validationResult.Client.ClientId)
                 {
                     Logger.LogDebug("Refresh token revoked");
-                    await RefreshTokenStore.RemoveRefreshTokensAsync(token.SubjectId, token.ClientId);
+                    await RefreshTokenStore.RemoveRefreshTokenAsync(validationResult.Token);
                     await ReferenceTokenStore.RemoveReferenceTokensAsync(token.SubjectId, token.ClientId);
                 }
                 else

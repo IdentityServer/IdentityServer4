@@ -37,7 +37,7 @@ namespace IdentityServer4.Services
             context.AddRequestedClaims(context.Subject.Claims);
             context.LogIssuedClaims(_logger);
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace IdentityServer4.Services
         public Task IsActiveAsync(IsActiveContext context)
         {
             context.IsActive = true;
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

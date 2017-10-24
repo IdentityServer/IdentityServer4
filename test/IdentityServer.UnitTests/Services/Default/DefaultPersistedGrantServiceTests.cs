@@ -19,14 +19,14 @@ namespace IdentityServer4.UnitTests.Services.Default
 {
     public class DefaultPersistedGrantServiceTests
     {
-        DefaultPersistedGrantService _subject;
-        InMemoryPersistedGrantStore _store = new InMemoryPersistedGrantStore();
-        IAuthorizationCodeStore _codes;
-        IRefreshTokenStore _refreshTokens;
-        IReferenceTokenStore _referenceTokens;
-        IUserConsentStore _userConsent;
+        private DefaultPersistedGrantService _subject;
+        private InMemoryPersistedGrantStore _store = new InMemoryPersistedGrantStore();
+        private IAuthorizationCodeStore _codes;
+        private IRefreshTokenStore _refreshTokens;
+        private IReferenceTokenStore _referenceTokens;
+        private IUserConsentStore _userConsent;
 
-        ClaimsPrincipal _user = IdentityServerPrincipal.Create("123", "bob");
+        private ClaimsPrincipal _user = IdentityServerPrincipal.Create("123", "bob");
 
         public DefaultPersistedGrantServiceTests()
         {
@@ -57,18 +57,21 @@ namespace IdentityServer4.UnitTests.Services.Default
         {
             await _userConsent.StoreUserConsentAsync(new Consent()
             {
+                CreationTime = DateTime.UtcNow,
                 ClientId = "client1",
                 SubjectId = "123",
                 Scopes = new string[] { "foo1", "foo2" }
             });
             await _userConsent.StoreUserConsentAsync(new Consent()
             {
+                CreationTime = DateTime.UtcNow,
                 ClientId = "client2",
                 SubjectId = "123",
                 Scopes = new string[] { "foo3" }
             });
             await _userConsent.StoreUserConsentAsync(new Consent()
             {
+                CreationTime = DateTime.UtcNow,
                 ClientId = "client1",
                 SubjectId = "456",
                 Scopes = new string[] { "foo3" }

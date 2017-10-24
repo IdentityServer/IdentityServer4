@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace IdentityServer4.UnitTests.Validation
 {
-    class TestClients
+    internal class TestClients
     {
         public static IEnumerable<Client> Get()
         {
@@ -25,6 +25,29 @@ namespace IdentityServer4.UnitTests.Validation
 
                     AllowedGrantTypes = GrantTypes.Code,
                     AllowedScopes = { "openid", "profile", "resource", "resource2" },
+
+                    RequireConsent = false,
+
+                    RedirectUris = new List<string>
+                    {
+                        "https://server/cb"
+                    },
+
+                    AuthorizationCodeLifetime = 60
+                },
+                new Client
+                {
+                    ClientName = "Code Client (allows plain text PKCE)",
+                    Enabled = true,
+                    ClientId = "codeclient.plain",
+                    ClientSecrets = new List<Secret>
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    AllowedGrantTypes = GrantTypes.Code,
+                    AllowedScopes = { "openid", "profile", "resource", "resource2" },
+                    AllowPlainTextPkce = true,
 
                     RequireConsent = false,
 

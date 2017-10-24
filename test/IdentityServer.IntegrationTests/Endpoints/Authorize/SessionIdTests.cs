@@ -15,9 +15,9 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 {
     public class SessionIdTests
     {
-        const string Category = "SessionIdTests";
+        private const string Category = "SessionIdTests";
 
-        MockIdSvrUiPipeline _mockPipeline = new MockIdSvrUiPipeline();
+        private IdentityServerPipeline _mockPipeline = new IdentityServerPipeline();
 
         public SessionIdTests()
         {
@@ -89,7 +89,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 
             _mockPipeline.RemoveSessionCookie();
 
-            await _mockPipeline.BrowserClient.GetAsync(MockIdSvrUiPipeline.DiscoveryEndpoint);
+            await _mockPipeline.BrowserClient.GetAsync(IdentityServerPipeline.DiscoveryEndpoint);
 
             var sid2 = _mockPipeline.GetSessionCookie().Value;
             sid2.Should().Be(sid1);

@@ -17,26 +17,24 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.Validation
 {
-    /// <summary>
-    /// The token request validator
-    /// </summary>
-    /// <seealso cref="IdentityServer4.Validation.ITokenRequestValidator" />
-    public class TokenRequestValidator : ITokenRequestValidator
+    internal class TokenRequestValidator : ITokenRequestValidator
     {
-        private readonly ILogger _logger;
         private readonly IdentityServerOptions _options;
         private readonly IAuthorizationCodeStore _authorizationCodeStore;
-        private readonly IRefreshTokenStore _refreshTokenStore;
         private readonly ExtensionGrantValidator _extensionGrantValidator;
         private readonly ICustomTokenRequestValidator _customRequestValidator;
         private readonly ScopeValidator _scopeValidator;
+        private readonly ITokenValidator _tokenValidator;
         private readonly IEventService _events;
         private readonly IResourceOwnerPasswordValidator _resourceOwnerValidator;
         private readonly IProfileService _profile;
-
+        private readonly ISystemClock _clock;
+        private readonly ILogger _logger;
+        
         private ValidatedTokenRequest _validatedRequest;
 
         /// <summary>
@@ -44,25 +42,27 @@ namespace IdentityServer4.Validation
         /// </summary>
         /// <param name="options">The options.</param>
         /// <param name="authorizationCodeStore">The authorization code store.</param>
-        /// <param name="refreshTokenStore">The refresh token store.</param>
         /// <param name="resourceOwnerValidator">The resource owner validator.</param>
         /// <param name="profile">The profile.</param>
         /// <param name="extensionGrantValidator">The extension grant validator.</param>
         /// <param name="customRequestValidator">The custom request validator.</param>
         /// <param name="scopeValidator">The scope validator.</param>
+        /// <param name="tokenValidator"></param>
         /// <param name="events">The events.</param>
+        /// <param name="clock">The clock.</param>
         /// <param name="logger">The logger.</param>
-        public TokenRequestValidator(IdentityServerOptions options, IAuthorizationCodeStore authorizationCodeStore, IRefreshTokenStore refreshTokenStore, IResourceOwnerPasswordValidator resourceOwnerValidator, IProfileService profile, ExtensionGrantValidator extensionGrantValidator, ICustomTokenRequestValidator customRequestValidator, ScopeValidator scopeValidator, IEventService events, ILogger<TokenRequestValidator> logger)
+        public TokenRequestValidator(IdentityServerOptions options, IAuthorizationCodeStore authorizationCodeStore, IResourceOwnerPasswordValidator resourceOwnerValidator, IProfileService profile, ExtensionGrantValidator extensionGrantValidator, ICustomTokenRequestValidator customRequestValidator, ScopeValidator scopeValidator, ITokenValidator tokenValidator, IEventService events, ISystemClock clock, ILogger<TokenRequestValidator> logger)
         {
             _logger = logger;
             _options = options;
+            _clock = clock;
             _authorizationCodeStore = authorizationCodeStore;
-            _refreshTokenStore = refreshTokenStore;
             _resourceOwnerValidator = resourceOwnerValidator;
             _profile = profile;
             _extensionGrantValidator = extensionGrantValidator;
             _customRequestValidator = customRequestValidator;
             _scopeValidator = scopeValidator;
+            _tokenValidator = tokenValidator;
             _events = events;
         }
 
@@ -70,14 +70,14 @@ namespace IdentityServer4.Validation
         /// Validates the request.
         /// </summary>
         /// <param name="parameters">The parameters.</param>
-        /// <param name="client">The client.</param>
+        /// <param name="clientValidationResult">The client validation result.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException">
         /// parameters
         /// or
         /// client
         /// </exception>
-        public async Task<TokenRequestValidationResult> ValidateRequestAsync(NameValueCollection parameters, Client client)
+        public async Task<TokenRequestValidationResult> ValidateRequestAsync(NameValueCollection parameters, ClientSecretValidationResult clientValidationResult)
         {
             _logger.LogDebug("Start token request validation");
 
@@ -87,14 +87,16 @@ namespace IdentityServer4.Validation
                 Options = _options
             };
 
-            _validatedRequest.SetClient(client ?? throw new ArgumentNullException(nameof(client)));
+            if (clientValidationResult == null) throw new ArgumentNullException(nameof(clientValidationResult));
+
+            _validatedRequest.SetClient(clientValidationResult.Client, clientValidationResult.Secret);
 
             /////////////////////////////////////////////
             // check client protocol type
             /////////////////////////////////////////////
-            if (client.ProtocolType != IdentityServerConstants.ProtocolTypes.OpenIdConnect)
+            if (_validatedRequest.Client.ProtocolType != IdentityServerConstants.ProtocolTypes.OpenIdConnect)
             {
-                LogError("Client {clientId} has invalid protocol type for token endpoint: {protocolType}", client.ClientId, client.ProtocolType);
+                LogError("Client {clientId} has invalid protocol type for token endpoint: {protocolType}", _validatedRequest.Client.ClientId, _validatedRequest.Client.ProtocolType);
                 return Invalid(OidcConstants.TokenErrors.InvalidClient);
             }
 
@@ -205,6 +207,12 @@ namespace IdentityServer4.Validation
 
             await _authorizationCodeStore.RemoveAuthorizationCodeAsync(code);
 
+            if (authZcode.CreationTime.HasExceeded(authZcode.Lifetime, _clock.UtcNow.UtcDateTime))
+            {
+                LogError("Authorization code expired: {code}", code);
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+            }
+
             /////////////////////////////////////////////
             // populate session id
             /////////////////////////////////////////////
@@ -225,7 +233,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // validate code expiration
             /////////////////////////////////////////////
-            if (authZcode.CreationTime.HasExceeded(_validatedRequest.Client.AuthorizationCodeLifetime))
+            if (authZcode.CreationTime.HasExceeded(_validatedRequest.Client.AuthorizationCodeLifetime, _clock.UtcNow.UtcDateTime))
             {
                 LogError("Authorization code is expired");
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
@@ -263,7 +271,7 @@ namespace IdentityServer4.Validation
             // validate PKCE parameters
             /////////////////////////////////////////////
             var codeVerifier = parameters.Get(OidcConstants.TokenRequest.CodeVerifier);
-            if (_validatedRequest.Client.RequirePkce)
+            if (_validatedRequest.Client.RequirePkce || _validatedRequest.AuthorizationCode.CodeChallenge.IsPresent())
             {
                 _logger.LogDebug("Client required a proof key for code exchange. Starting PKCE validation");
 
@@ -317,7 +325,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // check if client is allowed to request scopes
             /////////////////////////////////////////////
-            if (!(await ValidateRequestedScopesAsync(parameters)))
+            if (!await ValidateRequestedScopesAsync(parameters))
             {
                 return Invalid(OidcConstants.TokenErrors.InvalidScope);
             }
@@ -463,63 +471,16 @@ namespace IdentityServer4.Validation
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
-            _validatedRequest.RefreshTokenHandle = refreshTokenHandle;
-
-            /////////////////////////////////////////////
-            // check if refresh token is valid
-            /////////////////////////////////////////////
-            var refreshToken = await _refreshTokenStore.GetRefreshTokenAsync(refreshTokenHandle);
-            if (refreshToken == null)
+            var result = await _tokenValidator.ValidateRefreshTokenAsync(refreshTokenHandle, _validatedRequest.Client);
+            
+            if (result.IsError)
             {
-                LogError("Invalid refresh token: {refreshToken}", refreshTokenHandle);
+                LogError("Refresh token validation failed. aborting.");
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
-            /////////////////////////////////////////////
-            // check if refresh token has expired
-            /////////////////////////////////////////////
-            if (refreshToken.CreationTime.HasExceeded(refreshToken.Lifetime))
-            {
-                LogError("Refresh token has expired");
-
-                await _refreshTokenStore.RemoveRefreshTokenAsync(refreshTokenHandle);
-                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
-            }
-
-            /////////////////////////////////////////////
-            // check if client belongs to requested refresh token
-            /////////////////////////////////////////////
-            if (_validatedRequest.Client.ClientId != refreshToken.ClientId)
-            {
-                LogError("{0} tries to refresh token belonging to {1}", _validatedRequest.Client.ClientId, refreshToken.ClientId);
-                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
-            }
-
-            /////////////////////////////////////////////
-            // check if client still has offline_access scope
-            /////////////////////////////////////////////
-            if (!_validatedRequest.Client.AllowOfflineAccess)
-            {
-                LogError("{clientId} does not have access to offline_access scope anymore", _validatedRequest.Client.ClientId);
-                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
-            }
-
-            _validatedRequest.RefreshToken = refreshToken;
-
-            /////////////////////////////////////////////
-            // make sure user is enabled
-            /////////////////////////////////////////////
-            var subject = _validatedRequest.RefreshToken.Subject;
-            var isActiveCtx = new IsActiveContext(subject, _validatedRequest.Client, IdentityServerConstants.ProfileIsActiveCallers.RefreshTokenValidation);
-            await _profile.IsActiveAsync(isActiveCtx);
-
-            if (isActiveCtx.IsActive == false)
-            {
-                LogError("{subjectId} has been disabled", _validatedRequest.RefreshToken.SubjectId);
-                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
-            }
-
-            _validatedRequest.Subject = subject;
+            _validatedRequest.RefreshToken = result.RefreshToken;
+            _validatedRequest.Subject = result.RefreshToken.Subject;
 
             _logger.LogDebug("Validation of refresh token request success");
             return Valid();
@@ -550,7 +511,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // check if client is allowed to request scopes
             /////////////////////////////////////////////
-            if (!(await ValidateRequestedScopesAsync(parameters)))
+            if (!await ValidateRequestedScopesAsync(parameters))
             {
                 return Invalid(OidcConstants.TokenErrors.InvalidScope);
             }
@@ -628,7 +589,7 @@ namespace IdentityServer4.Validation
                 return false;
             }
 
-            if (!(await _scopeValidator.AreScopesAllowedAsync(_validatedRequest.Client, requestedScopes)))
+            if (!await _scopeValidator.AreScopesAllowedAsync(_validatedRequest.Client, requestedScopes))
             {
                 LogError();
                 return false;

@@ -21,8 +21,8 @@ namespace IdentityServer4.IntegrationTests.Clients
 {
     public class UserInfoEndpointClient
     {
-        const string TokenEndpoint = "https://server/connect/token";
-        const string UserInfoEndpoint = "https://server/connect/userinfo";
+        private const string TokenEndpoint = "https://server/connect/token";
+        private const string UserInfoEndpoint = "https://server/connect/userinfo";
 
         private readonly HttpClient _client;
         private readonly HttpMessageHandler _handler;

@@ -17,8 +17,7 @@ namespace IdentityServer4.Extensions
         {
             foreach (var item in dictionary)
             {
-                JToken token;
-                if (jobject.TryGetValue(item.Key, out token))
+                if (jobject.TryGetValue(item.Key, out _))
                 {
                     throw new Exception("Item does already exist - cannot add it via a custom entry: " + item.Key);
                 }

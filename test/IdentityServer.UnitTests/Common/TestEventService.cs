@@ -14,12 +14,12 @@ namespace IdentityServer4.UnitTests.Common
 {
     public class TestEventService : IEventService
     {
-        Dictionary<Type, object> _events = new Dictionary<Type, object>();
+        private Dictionary<Type, object> _events = new Dictionary<Type, object>();
 
         public Task RaiseAsync(Event evt)
         {
             _events.Add(evt.GetType(), evt);
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         public T AssertEventWasRaised<T>()

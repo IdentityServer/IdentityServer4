@@ -6,6 +6,7 @@ using IdentityServer4.ResponseHandling;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using IdentityServer4.Validation;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -40,6 +41,16 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddTransient<IRedirectUriValidator, T>();
 
             return builder;
+        }
+
+        /// <summary>
+        /// Adds a an "AppAuth" (OAuth 2.0 for Native Apps) compliant redirect URI validator (does strict validation but also allows http://127.0.0.1 with random port)
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddAppAuthRedirectUriValidator(this IIdentityServerBuilder builder)
+        {
+            return builder.AddRedirectUriValidator<StrictRedirectUriValidatorAppAuth>();
         }
 
         /// <summary>
@@ -111,6 +122,19 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
+        /// <summary>
+        /// Adds a CORS policy service cache.
+        /// </summary>
+        /// <typeparam name="T">The type of the concrete CORS policy service that is registered in DI.</typeparam>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddCorsPolicyCache<T>(this IIdentityServerBuilder builder)
+            where T : class, ICorsPolicyService
+        {
+            builder.Services.TryAddTransient(typeof(T));
+            builder.Services.AddTransient<ICorsPolicyService, CachingCorsPolicyService<T>>();
+            return builder;
+        }
 
         /// <summary>
         /// Adds the secret parser.
@@ -149,6 +173,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IIdentityServerBuilder AddClientStoreCache<T>(this IIdentityServerBuilder builder)
             where T : IClientStore
         {
+            builder.Services.TryAddTransient(typeof(T));
             builder.Services.AddTransient<IClientStore, CachingClientStore<T>>();
             return builder;
         }
@@ -162,6 +187,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IIdentityServerBuilder AddResourceStoreCache<T>(this IIdentityServerBuilder builder)
             where T : IResourceStore
         {
+            builder.Services.TryAddTransient(typeof(T));
             builder.Services.AddTransient<IResourceStore, CachingResourceStore<T>>();
             return builder;
         }
@@ -204,6 +230,19 @@ namespace Microsoft.Extensions.DependencyInjection
            where T : class, ICustomTokenRequestValidator
         {
             builder.Services.AddTransient<ICustomTokenRequestValidator, T>();
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds support for client authentication using JWT bearer assertions.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddJwtBearerClientAuthentication(this IIdentityServerBuilder builder)
+        {
+            builder.AddSecretParser<JwtBearerClientAssertionSecretParser>();
+            builder.AddSecretValidator<PrivateKeyJwtSecretValidator>();
 
             return builder;
         }

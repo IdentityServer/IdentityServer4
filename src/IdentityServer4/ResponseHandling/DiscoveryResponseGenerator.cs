@@ -152,6 +152,8 @@ namespace IdentityServer4.ResponseHandling
             {
                 entries.Add(OidcConstants.Discovery.FrontChannelLogoutSupported, true);
                 entries.Add(OidcConstants.Discovery.FrontChannelLogoutSessionSupported, true);
+                entries.Add(OidcConstants.Discovery.BackChannelLogoutSupported, true);
+                entries.Add(OidcConstants.Discovery.BackChannelLogoutSessionSupported, true);
             }
 
             // scopes and claims
@@ -206,7 +208,7 @@ namespace IdentityServer4.ResponseHandling
                     OidcConstants.GrantTypes.Implicit
                 };
 
-                if (!(ResourceOwnerValidator is NotSupportedResouceOwnerPasswordValidator))
+                if (!(ResourceOwnerValidator is NotSupportedResourceOwnerPasswordValidator))
                 {
                     standardGrantTypes.Add(OidcConstants.GrantTypes.Password);
                 }
@@ -277,6 +279,8 @@ namespace IdentityServer4.ResponseHandling
         public virtual async Task<IEnumerable<Models.JsonWebKey>> CreateJwkDocumentAsync()
         {
             var webKeys = new List<Models.JsonWebKey>();
+            var signingCredentials = await Keys.GetSigningCredentialsAsync();
+            var algorithm = signingCredentials?.Algorithm ?? Constants.SigningAlgorithms.RSA_SHA_256;
 
             foreach (var key in await Keys.GetValidationKeysAsync())
             {
@@ -298,7 +302,8 @@ namespace IdentityServer4.ResponseHandling
                         x5t = thumbprint,
                         e = exponent,
                         n = modulus,
-                        x5c = new[] { cert64 }
+                        x5c = new[] { cert64 },
+                        alg = algorithm
                     };
 
                     webKeys.Add(webKey);
@@ -317,7 +322,8 @@ namespace IdentityServer4.ResponseHandling
                         use = "sig",
                         kid = rsaKey.KeyId,
                         e = exponent,
-                        n = modulus
+                        n = modulus,
+                        alg = algorithm
                     };
 
                     webKeys.Add(webKey);

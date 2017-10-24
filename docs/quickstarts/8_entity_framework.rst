@@ -1,6 +1,6 @@
 .. _refEntityFrameworkQuickstart:
-Using EntityFramework Core for configuration data
-=================================================
+Using EntityFramework Core for configuration and operational data
+=================================================================
 
 IdentityServer is designed for extensibility, and one of the extensibility points is the storage mechanism used for data that IdentityServer needs.
 This quickstart shows how to configure IdentityServer to use EntityFramework (EF) as the storage mechanism for this data (rather than using the in-memory implementations we had been using up until now).
@@ -10,40 +10,42 @@ IdentityServer4.EntityFramework
 
 There are two types of data that we are moving to the database. 
 The first is the configuration data (resources and clients).
-The second is operational data that IdentityServer produces as it's being used.
+The second is operational data that IdentityServer produces as it's being used (tokens, codes, and consents).
 These stores are modeled with interfaces, and we provide an EF implementation of these interfaces in the `IdentityServer4.EntityFramework` Nuget package.
 
-Get started by adding a reference to the `IdentityServer4.EntityFramework` Nuget package the IdentityServer project (use at least version "1.0.1").
+Get started by adding a reference to the `IdentityServer4.EntityFramework` Nuget package the IdentityServer project.
 
 .. image:: images/8_nuget.png
 
-Adding SqlServer
-^^^^^^^^^^^^^^^^
+Using SqlServer
+^^^^^^^^^^^^^^^
 
 Given EF's flexibility, you can then use any EF-supported database.
 For this quickstart we will use the LocalDb version of SqlServer that comes with Visual Studio.
 
-To add SqlServer, we need several more NuGet packages.  
+Database Schema Changes and Using EF Migrations
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Add `Microsoft.EntityFrameworkCore.SqlServer`:
+The `IdentityServer4.EntityFramework` package contains entity classes that map from IdentityServer's models.
+As IdentityServer's models change, so will the entity classes in `IdentityServer4.EntityFramework`.
+As you use `IdentityServer4.EntityFramework` and upgrade over time, you are responsible for your own database schema and changes necessary to that schema as the entity classes change.
+One approach for managing those changes is to use EF migrations, and this quickstart will show how that can be done.
+If migrations are not your preference, then you can manage the schema changes in any way you see fit.
 
-.. image:: images/8_nuget_ef_sqlserver.png
+.. Note:: SQL scripts for SqlServer are maintained for the entities in `IdentityServer4.EntityFramework`. They are located `here <https://github.com/IdentityServer/IdentityServer4.EntityFramework/tree/dev/src/Host/Migrations/IdentityServer>`_.
 
-And `Microsoft.EntityFrameworkCore.Tools`:
-
-.. image:: images/8_nuget_ef_tools.png
-
-Next, we need to add some command line tooling (more details `here <https://docs.microsoft.com/en-us/ef/core/miscellaneous/cli/dotnet>`_).
-Unfortunately this must be done by hand-editing your `.csproj` file.
+In addition to tracking schema changes with EF migrations, we will also use it to create the initial schema in the database.
+This requires the use of the EF Core tooling (more details `here <https://docs.microsoft.com/en-us/ef/core/miscellaneous/cli/dotnet>`_).
+We will add those now, and unfortunately this must be done by hand-editing your `.csproj` file.
 To edit the `.csproj` by right-click the project and select "Edit projectname.csproj":
 
 .. image:: images/8_edit_csproj.png
 
 And then add the below snippet before the end `</Project>` element::
 
-    <ItemGroup>
-        <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="1.0.0" />
-    </ItemGroup>
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" />
+  </ItemGroup>
 
 It should look something like this:
 
@@ -61,27 +63,37 @@ Configuring the stores
 The next step is to replace the current calls to ``AddInMemoryClients``, ``AddInMemoryIdentityResources``, and ``AddInMemoryApiResources`` in the ``Configure`` method in `Startup.cs`.
 We will replace them with this code::
 
-  using Microsoft.EntityFrameworkCore;
-  using System.Reflection;
+    const string connectionString = @"Data Source=(LocalDb)\MSSQLLocalDB;database=IdentityServer4.Quickstart.EntityFramework-2.0.0;trusted_connection=yes;";
+    var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
 
-  public void ConfigureServices(IServiceCollection services)
-  {
-      services.AddMvc();
+    // configure identity server with in-memory stores, keys, clients and scopes
+    services.AddIdentityServer()
+        .AddDeveloperSigningCredential()
+        .AddTestUsers(Config.GetUsers())
+        // this adds the config data from DB (clients, resources)
+        .AddConfigurationStore(options =>
+        {
+            options.ConfigureDbContext = builder =>
+                builder.UseSqlServer(connectionString,
+                    sql => sql.MigrationsAssembly(migrationsAssembly));
+        })
+        // this adds the operational data from DB (codes, tokens, consents)
+        .AddOperationalStore(options =>
+        {
+            options.ConfigureDbContext = builder =>
+                builder.UseSqlServer(connectionString,
+                    sql => sql.MigrationsAssembly(migrationsAssembly));
 
-      var connectionString = @"server=(localdb)\mssqllocaldb;database=IdentityServer4.Quickstart.EntityFramework;trusted_connection=yes";
-      var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
-            
-      // configure identity server with in-memory users, but EF stores for clients and resources
-      services.AddIdentityServer()
-          .AddTemporarySigningCredential()
-          .AddTestUsers(Config.GetUsers())
-          .AddConfigurationStore(builder =>
-              builder.UseSqlServer(connectionString, options =>
-                  options.MigrationsAssembly(migrationsAssembly)))
-          .AddOperationalStore(builder =>
-              builder.UseSqlServer(connectionString, options =>
-                  options.MigrationsAssembly(migrationsAssembly)));
-  }
+            // this enables automatic token cleanup. this is optional.
+            options.EnableTokenCleanup = true;
+            options.TokenCleanupInterval = 30;
+        });
+
+You might need these namespaces added to the file::
+
+    using Microsoft.EntityFrameworkCore;
+    using System.Reflection;
+
 
 The above code is hard-coding a connection string, which you should feel free to change if you wish.
 Also, the calls to ``AddConfigurationStore`` and ``AddOperationalStore`` are registering the EF-backed store implementations.
@@ -106,7 +118,6 @@ In the command prompt run these two commands::
 
     dotnet ef migrations add InitialIdentityServerPersistedGrantDbMigration -c PersistedGrantDbContext -o Data/Migrations/IdentityServer/PersistedGrantDb
     dotnet ef migrations add InitialIdentityServerConfigurationDbMigration -c ConfigurationDbContext -o Data/Migrations/IdentityServer/ConfigurationDb
-
 
 It should look something like this:
 

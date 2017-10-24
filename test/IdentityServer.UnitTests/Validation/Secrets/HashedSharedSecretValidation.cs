@@ -15,10 +15,10 @@ namespace IdentityServer4.UnitTests.Validation.Secrets
 {
     public class HashedSharedSecretValidation
     {
-        const string Category = "Secrets - Hashed Shared Secret Validation";
+        private const string Category = "Secrets - Hashed Shared Secret Validation";
 
-        ISecretValidator _validator = new HashedSharedSecretValidator(new Logger<HashedSharedSecretValidator>(new LoggerFactory()));
-        IClientStore _clients = new InMemoryClientStore(ClientValidationTestClients.Get());
+        private ISecretValidator _validator = new HashedSharedSecretValidator(new Logger<HashedSharedSecretValidator>(new LoggerFactory()));
+        private IClientStore _clients = new InMemoryClientStore(ClientValidationTestClients.Get());
 
         [Fact]
         [Trait("Category", Category)]

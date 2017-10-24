@@ -13,7 +13,7 @@ namespace IdentityServer4.Validation
     /// Default userinfo request validator
     /// </summary>
     /// <seealso cref="IdentityServer4.Validation.IUserInfoRequestValidator" />
-    public class UserInfoRequestValidator : IUserInfoRequestValidator
+    internal class UserInfoRequestValidator : IUserInfoRequestValidator
     {
         private readonly ITokenValidator _tokenValidator;
         private readonly ILogger _logger;

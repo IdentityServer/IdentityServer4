@@ -7,7 +7,7 @@ IdentityServer relies on a couple of crypto mechanisms to do its job.
 Token signing and validation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 IdentityServer needs an asymmetric key pair to sign and validate JWTs. 
-This keypair can can be a certificate/private key combination or raw RSA keys.
+This keypair can be a certificate/private key combination or raw RSA keys.
 In any case it must support RSA with SHA256.
 
 Loading of signing key and the corresponding validation part is done by implementations of ``ISigningCredentialStore`` and ``IValidationKeysStore``.

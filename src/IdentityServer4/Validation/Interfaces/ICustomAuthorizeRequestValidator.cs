@@ -14,8 +14,7 @@ namespace IdentityServer4.Validation
         /// <summary>
         /// Custom validation logic for the authorize request.
         /// </summary>
-        /// <param name="request">The validated request.</param>
-        /// <returns>The validation result</returns>
-        Task<AuthorizeRequestValidationResult> ValidateAsync(ValidatedAuthorizeRequest request);
+        /// <param name="context">The context.</param>
+        Task ValidateAsync(CustomAuthorizeRequestValidationContext context);
     }
 }

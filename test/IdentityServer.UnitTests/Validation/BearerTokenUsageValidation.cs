@@ -15,7 +15,7 @@ namespace IdentityServer4.UnitTests.Validation
 {
     public class BearerTokenUsageValidation
     {
-        const string Category = "BearerTokenUsageValidator Tests";
+        private const string Category = "BearerTokenUsageValidator Tests";
 
         [Fact]
         [Trait("Category", Category)]

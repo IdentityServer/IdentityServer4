@@ -57,7 +57,7 @@ namespace IdentityServer4.Validation
             var parsedSecret = await _parser.ParseAsync(context);
             if (parsedSecret == null)
             {
-                await RaiseFailureEvent("unknown", "No client id found");
+                await RaiseFailureEventAsync("unknown", "No client id found");
 
                 _logger.LogError("No client identifier found");
                 return fail;
@@ -67,7 +67,7 @@ namespace IdentityServer4.Validation
             var client = await _clients.FindEnabledClientByIdAsync(parsedSecret.Id);
             if (client == null)
             {
-                await RaiseFailureEvent(parsedSecret.Id, "Unknown client");
+                await RaiseFailureEventAsync(parsedSecret.Id, "Unknown client");
 
                 _logger.LogError("No client with id '{clientId}' found. aborting", parsedSecret.Id);
                 return fail;
@@ -82,7 +82,7 @@ namespace IdentityServer4.Validation
                 var result = await _validator.ValidateAsync(parsedSecret, client.ClientSecrets);
                 if (result.Success == false)
                 {
-                    await RaiseFailureEvent(client.ClientId, "Invalid client secret");
+                    await RaiseFailureEventAsync(client.ClientId, "Invalid client secret");
                     _logger.LogError("Client secret validation failed for client: {clientId}.", client.ClientId);
 
                     return fail;
@@ -94,19 +94,20 @@ namespace IdentityServer4.Validation
             var success = new ClientSecretValidationResult
             {
                 IsError = false,
-                Client = client
+                Client = client,
+                Secret = parsedSecret
             };
 
-            await RaiseSuccessEvent(client.ClientId, parsedSecret.Type);
+            await RaiseSuccessEventAsync(client.ClientId, parsedSecret.Type);
             return success;
         }
 
-        private Task RaiseSuccessEvent(string clientId, string authMethod)
+        private Task RaiseSuccessEventAsync(string clientId, string authMethod)
         {
             return _events.RaiseAsync(new ClientAuthenticationSuccessEvent(clientId, authMethod));
         }
 
-        private Task RaiseFailureEvent(string clientId, string message)
+        private Task RaiseFailureEventAsync(string clientId, string message)
         {
             return _events.RaiseAsync(new ClientAuthenticationFailureEvent(clientId, message));
         }

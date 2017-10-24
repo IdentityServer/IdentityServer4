@@ -18,44 +18,5 @@ which means we are missing the sign-out notifications to IdentityServer's client
 We must add code for each of these federated sign-out endpoints to render the necessary notifications to achieve federated sign-out.
 
 Fortunately IdentityServer already contains this code. 
-You simply need to configure IdentityServer with the federated sign-out paths that the external identity providers will use for federated sign-out.
-This is done in the callback function of ``AddIdentityServer`` when configuring IdentityServer. 
-Simply add the appropriate paths to the ``FederatedSignOutPaths`` collection on the :ref:`authentiction options <refOptions>`.
-For example, from ``ConfigureServices``::
-
-    public IServiceProvider ConfigureServices(IServiceCollection services)
-    {
-        services.AddIdentityServer(options =>
-        {
-            options.Authentication.FederatedSignOutPaths.Add("/signout-callback-aad");
-            options.Authentication.FederatedSignOutPaths.Add("/signout-callback-adfs");
-        });
-    }
-
-Which corresponds to the external identity providers that would be configured in ``Configure``::
-
-    public void Configure(IApplicationBuilder app)
-    {
-        app.UseIdentityServer();
-
-        app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
-        {
-            AuthenticationScheme = "aad",
-            // ...
-            CallbackPath = new PathString("/signin-aad"),
-            SignedOutCallbackPath = new PathString("/signout-callback-aad"),
-            RemoteSignOutPath = new PathString("/signout-aad"),
-        });
-
-        app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
-        {
-            AuthenticationScheme = "adfs",
-            // ...
-            CallbackPath = new PathString("/signin-adfs"),
-            SignedOutCallbackPath = new PathString("/signout-callback-adfs"),
-            RemoteSignOutPath = new PathString("/signout-adfs"),
-        });
-
-        app.UseStaticFiles();
-        app.UseMvcWithDefaultRoute();
-    }
+When requests come into IdentityServer and invoke the handlers for external authentication providers, IdentityServer detects if these are federated signout requests and if they are it will automatically render the same ``<iframe>`` as :ref:`described here for signout <refSignOut>`.
+In short, federated signout is automatically supported.

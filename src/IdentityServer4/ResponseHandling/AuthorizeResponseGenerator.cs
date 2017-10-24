@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.ResponseHandling
 {
@@ -42,14 +43,21 @@ namespace IdentityServer4.ResponseHandling
         protected readonly ILogger Logger;
 
         /// <summary>
+        /// The clock
+        /// </summary>
+        protected readonly ISystemClock Clock;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizeResponseGenerator"/> class.
         /// </summary>
+        /// <param name="clock">The clock.</param>
         /// <param name="logger">The logger.</param>
         /// <param name="tokenService">The token service.</param>
         /// <param name="authorizationCodeStore">The authorization code store.</param>
         /// <param name="events">The events.</param>
-        public AuthorizeResponseGenerator(ITokenService tokenService, IAuthorizationCodeStore authorizationCodeStore, ILogger<AuthorizeResponseGenerator> logger, IEventService events)
+        public AuthorizeResponseGenerator(ISystemClock clock, ITokenService tokenService, IAuthorizationCodeStore authorizationCodeStore, ILogger<AuthorizeResponseGenerator> logger, IEventService events)
         {
+            Clock = clock;
             TokenService = tokenService;
             AuthorizationCodeStore = authorizationCodeStore;
             Events = events;
@@ -190,6 +198,7 @@ namespace IdentityServer4.ResponseHandling
         {
             var code = new AuthorizationCode
             {
+                CreationTime = Clock.UtcNow.UtcDateTime,
                 ClientId = request.Client.ClientId,
                 Lifetime = request.Client.AuthorizationCodeLifetime,
                 Subject = request.Subject,

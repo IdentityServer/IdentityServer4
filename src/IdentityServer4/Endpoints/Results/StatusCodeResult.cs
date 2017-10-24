@@ -50,7 +50,7 @@ namespace IdentityServer4.Endpoints.Results
         {
             context.Response.StatusCode = StatusCode;
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

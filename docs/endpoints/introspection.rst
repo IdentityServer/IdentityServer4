@@ -43,11 +43,11 @@ You can programmatically access the introspection endpoint using the `IdentityMo
 
     var introspectionClient = new IntrospectionClient(
         doc.IntrospectionEndpoint,
-        "scope_name",
-        "scope_secret");
+        "api_name",
+        "api_secret");
 
     var response = await introspectionClient.SendAsync(
         new IntrospectionRequest { Token = token });
 
-    var isActice = response.IsActive;
+    var isActive = response.IsActive;
     var claims = response.Claims;

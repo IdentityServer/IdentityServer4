@@ -38,3 +38,53 @@ and give different clients access to different parts.
     Specifies whether this scope is shown in the discovery document. Defaults to true.
 ``UserClaims``
     List of associated user claim types that should be included in the access token. The claims specified here will be added to the list of claims specified for the API.
+
+Convenience Constructor Behavior
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Just a note about the constructors provided for the ``ApiResource`` class.
+
+For full control over the data in the ``ApiResource``, use the default constructor with no parameters.
+You would use this approach if you wanted to configure multiple scopes per API. 
+For example::
+
+    new ApiResource
+    {
+        Name = "api2",
+
+        Scopes =
+        {
+            new Scope()
+            {
+                Name = "api2.full_access",
+                DisplayName = "Full access to API 2"
+            },
+            new Scope
+            {
+                Name = "api2.read_only",
+                DisplayName = "Read only access to API 2"
+            }
+        }
+    }
+
+For simpler scenarios where you only require one scope per API, then several convenience constructors which accept a ``name`` are provided.
+For example::
+
+    new ApiResource("api1", "Some API 1")
+
+Using the convenience constructor is equivalent to this::
+
+    new ApiResource
+    {
+        Name = "api1",
+        DisplayName = "Some API 1",
+
+        Scopes =
+        {
+            new Scope()
+            {
+                Name = "api1",
+                DisplayName = "Some API 1"
+            }
+        }
+    }

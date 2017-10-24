@@ -28,28 +28,22 @@ https://gitter.im/IdentityServer/IdentityServer4
 **Reporting a bug**
 
 If you think you have found a bug or unexpected behavior, please open an issue on the Github `issue tracker <https://github.com/IdentityServer/IdentityServer4/issues>`_.
-We try to get back to you ASAP. Please understand that we also have day jobs, and might be to busy to reply immediately.
+We try to get back to you ASAP. Please understand that we also have day jobs, and might be too busy to reply immediately.
 
 Also check the `contribution <https://github.com/IdentityServer/IdentityServer4/blob/dev/CONTRIBUTING.md>`_ guidelines before posting.
 
 Commercial support
 ^^^^^^^^^^^^^^^^^^
-Both Brock and I do consulting around identity & access control architecture in general, and IdentityServer in particular.
+We are doing consulting, mentoring and custom software development around identity & access control architecture in general, and IdentityServer in particular.
 Please `get in touch <mailto:identity@leastprivilege.com>`_ with us to discuss possible options.
 
 **Training**
 
-Brock and Dominick are regularly doing workshops around identity & acess control for modern applications.
-Check the agenda and upcoming dates  `here <https://identityserver.io/training>`_.
+We are regularly doing workshops around identity & acess control for modern applications.
+Check the agenda and upcoming public dates  `here <https://identityserver.io/training>`_.
+We can also perform the training privately at your company. 
+`Contact us <mailto:identity@leastprivilege.com>`_ to request the training on-site. 
 
-**Production support in North America**
+**Admin UI, Identity Express and SAML2p support**
 
-If you are looking for production support in North America - `write us an email <mailto:identityserversupport@solliance.net>`_. 
-
-**Production support in Europe**
-
-If you are looking for production support please visit http://identityserver.com
-
-**Admin UI and appliance**
-
-if you are interested in commercial products using IdentityServer - e.g. the new Admin API/UI or an appliance - check https://www.identityserver.com/upcoming-products.
+There are a couple of commercial add-on products available from our partners, check https://www.identityserver.com/products/.

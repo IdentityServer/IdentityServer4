@@ -16,7 +16,7 @@ namespace IdentityServer4.Stores.Serialization
     {
         protected override IList<JsonProperty> CreateProperties(Type type, MemberSerialization memberSerialization)
         {
-            IList<JsonProperty> props = base.CreateProperties(type, memberSerialization);
+            var props = base.CreateProperties(type, memberSerialization);
             return props.Where(p => p.Writable).ToList();
         }
     }

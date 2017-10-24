@@ -17,8 +17,8 @@ namespace IdentityServer4.Endpoints
     /// <summary>
     /// The userinfo endpoint
     /// </summary>
-    /// <seealso cref="IdentityServer4.Hosting.IEndpoint" />
-    public class UserInfoEndpoint : IEndpoint
+    /// <seealso cref="IdentityServer4.Hosting.IEndpointHandler" />
+    internal class UserInfoEndpoint : IEndpointHandler
     {
         private readonly BearerTokenUsageValidator _tokenUsageValidator;
         private readonly IUserInfoRequestValidator _requestValidator;

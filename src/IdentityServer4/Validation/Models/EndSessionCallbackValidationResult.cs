@@ -13,27 +13,44 @@ namespace IdentityServer4.Validation
     public class EndSessionCallbackValidationResult : ValidationResult
     {
         /// <summary>
-        /// Gets the client logout urls.
+        /// Gets the client front-channel logout urls.
         /// </summary>
-        /// <value>
-        /// The client logout urls.
-        /// </value>
-        public IEnumerable<string> ClientLogoutUrls { get; internal set; }
+        public IEnumerable<string> FrontChannelLogoutUrls { get; set; }
+        
+        /// <summary>
+        /// Gets the client back-channel logouts.
+        /// </summary>
+        public IEnumerable<BackChannelLogoutModel> BackChannelLogouts { get; set; }
+    }
+
+    /// <summary>
+    /// Information necessary to make a back-channel logout request to a client.
+    /// </summary>
+    public class BackChannelLogoutModel
+    {
+        /// <summary>
+        /// Gets or sets the client identifier.
+        /// </summary>
+        public string ClientId { get; set; }
 
         /// <summary>
-        /// Gets the logout identifier.
+        /// Gets the subject identifier.
         /// </summary>
-        /// <value>
-        /// The logout identifier.
-        /// </value>
-        public string LogoutId { get; internal set; }
+        public string SubjectId { get; set; }
 
         /// <summary>
         /// Gets or sets the session identifier.
         /// </summary>
-        /// <value>
-        /// The session identifier.
-        /// </value>
         public string SessionId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the back channel logout URI.
+        /// </summary>
+        public string LogoutUri { get; set; }
+
+        /// <summary>
+        /// Gets a value indicating whether the session identifier is required.
+        /// </summary>
+        public bool SessionIdRequired { get; set; }
     }
 }

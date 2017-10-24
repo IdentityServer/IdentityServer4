@@ -31,13 +31,12 @@ namespace IdentityServer4.ResponseHandling
         /// <summary>
         /// The profile service
         /// </summary>
-        private readonly IProfileService Profile;
+        protected readonly IProfileService Profile;
 
         /// <summary>
         /// The resource store
         /// </summary>
         protected readonly IResourceStore Resources;
-
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserInfoResponseGenerator"/> class.
@@ -79,7 +78,7 @@ namespace IdentityServer4.ResponseHandling
             var profileClaims = context.IssuedClaims;
 
             // construct outgoing claims
-            List<Claim> outgoingClaims = new List<Claim>();
+            var outgoingClaims = new List<Claim>();
 
             if (profileClaims == null)
             {
@@ -110,7 +109,7 @@ namespace IdentityServer4.ResponseHandling
         /// </summary>
         /// <param name="scopes">The scopes.</param>
         /// <returns></returns>
-        internal async Task<IEnumerable<string>> GetRequestedClaimTypesAsync(IEnumerable<string> scopes)
+        internal protected virtual async Task<IEnumerable<string>> GetRequestedClaimTypesAsync(IEnumerable<string> scopes)
         {
             if (scopes == null || !scopes.Any())
             {

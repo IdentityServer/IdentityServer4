@@ -12,14 +12,16 @@ using System.Security.Claims;
 using System.Net.Http;
 using IdentityServer4.IntegrationTests.Common;
 using IdentityServer4.Test;
+using Microsoft.Extensions.DependencyInjection;
+using IdentityServer4.Services;
 
 namespace IdentityServer4.IntegrationTests.Pipeline
 {
     public class CorsTests
     {
-        const string Category = "CORS Integration";
+        private const string Category = "CORS Integration";
 
-        MockIdSvrUiPipeline _pipeline = new MockIdSvrUiPipeline();
+        private IdentityServerPipeline _pipeline = new IdentityServerPipeline();
 
         public CorsTests()
         {
@@ -74,11 +76,11 @@ namespace IdentityServer4.IntegrationTests.Pipeline
         }
 
         [Theory]
-        [InlineData(MockIdSvrUiPipeline.DiscoveryEndpoint)]
-        [InlineData(MockIdSvrUiPipeline.DiscoveryKeysEndpoint)]
-        [InlineData(MockIdSvrUiPipeline.TokenEndpoint)]
-        [InlineData(MockIdSvrUiPipeline.UserInfoEndpoint)]
-        [InlineData(MockIdSvrUiPipeline.RevocationEndpoint)]
+        [InlineData(IdentityServerPipeline.DiscoveryEndpoint)]
+        [InlineData(IdentityServerPipeline.DiscoveryKeysEndpoint)]
+        [InlineData(IdentityServerPipeline.TokenEndpoint)]
+        [InlineData(IdentityServerPipeline.UserInfoEndpoint)]
+        [InlineData(IdentityServerPipeline.RevocationEndpoint)]
         [Trait("Category", Category)]
         public async Task cors_request_to_allowed_endpoints_should_succeed(string url)
         {
@@ -93,12 +95,12 @@ namespace IdentityServer4.IntegrationTests.Pipeline
         }
 
         [Theory]
-        [InlineData(MockIdSvrUiPipeline.AuthorizeEndpoint)]
-        [InlineData(MockIdSvrUiPipeline.EndSessionEndpoint)]
-        [InlineData(MockIdSvrUiPipeline.CheckSessionEndpoint)]
-        [InlineData(MockIdSvrUiPipeline.LoginPage)]
-        [InlineData(MockIdSvrUiPipeline.ConsentPage)]
-        [InlineData(MockIdSvrUiPipeline.ErrorPage)]
+        [InlineData(IdentityServerPipeline.AuthorizeEndpoint)]
+        [InlineData(IdentityServerPipeline.EndSessionEndpoint)]
+        [InlineData(IdentityServerPipeline.CheckSessionEndpoint)]
+        [InlineData(IdentityServerPipeline.LoginPage)]
+        [InlineData(IdentityServerPipeline.ConsentPage)]
+        [InlineData(IdentityServerPipeline.ErrorPage)]
         [Trait("Category", Category)]
         public async Task cors_request_to_restricted_endpoints_should_not_succeed(string url)
         {
@@ -109,6 +111,38 @@ namespace IdentityServer4.IntegrationTests.Pipeline
             var response = await _pipeline.Client.SendAsync(message);
 
             response.Headers.Contains("Access-Control-Allow-Origin").Should().BeFalse();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task custom_cors_policy_provider_should_be_used()
+        {
+            var policy = new StubCorePolicyProvider();
+            _pipeline.OnPreConfigureServices += services =>
+            {
+                services.AddSingleton<ICorsPolicyService>(policy);
+            };
+            _pipeline.Initialize();
+
+            _pipeline.Client.DefaultRequestHeaders.Add("Origin", "https://client");
+            _pipeline.Client.DefaultRequestHeaders.Add("Access-Control-Request-Method", "GET");
+
+            var message = new HttpRequestMessage(HttpMethod.Options, IdentityServerPipeline.DiscoveryEndpoint);
+            var response = await _pipeline.Client.SendAsync(message);
+
+            policy.WasCalled.Should().BeTrue();
+        }
+    }
+
+    public class StubCorePolicyProvider : ICorsPolicyService
+    {
+        public bool Result;
+        public bool WasCalled;
+
+        public Task<bool> IsOriginAllowedAsync(string origin)
+        {
+            WasCalled = true;
+            return Task.FromResult(Result);
         }
     }
 }

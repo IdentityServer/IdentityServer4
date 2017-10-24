@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Linq;
 using System;
-using IdentityServer4.Extensions;
 using IdentityModel;
 using System.Collections;
 
@@ -18,10 +17,10 @@ namespace IdentityServer4.Models
     public class Client
     {
         // setting grant types should be atomic
-        private ICollection<string> _allowedGrantTypes = new GrantTypeValidatingHashSet(GrantTypes.Implicit);
+        private ICollection<string> _allowedGrantTypes = new GrantTypeValidatingHashSet();
 
         /// <summary>
-        /// Specifies if client is enabled (defaults to true)
+        /// Specifies if client is enabled (defaults to <c>true</c>)
         /// </summary>
         public bool Enabled { get; set; } = true;
 
@@ -44,7 +43,7 @@ namespace IdentityServer4.Models
         public ICollection<Secret> ClientSecrets { get; set; } = new HashSet<Secret>();
 
         /// <summary>
-        /// If set to false, no client secret is needed to request tokens at the token endpoint (defaults to true)
+        /// If set to false, no client secret is needed to request tokens at the token endpoint (defaults to <c>true</c>)
         /// </summary>
         public bool RequireClientSecret { get; set; } = true;
 
@@ -64,12 +63,12 @@ namespace IdentityServer4.Models
         public string LogoUri { get; set; }
 
         /// <summary>
-        /// Specifies whether a consent screen is required (defaults to true)
+        /// Specifies whether a consent screen is required (defaults to <c>true</c>)
         /// </summary>
         public bool RequireConsent { get; set; } = true;
 
         /// <summary>
-        /// Specifies whether user can choose to store consent decisions (defaults to true)
+        /// Specifies whether user can choose to store consent decisions (defaults to <c>true</c>)
         /// </summary>
         public bool AllowRememberConsent { get; set; } = true;
 
@@ -87,17 +86,17 @@ namespace IdentityServer4.Models
         }
 
         /// <summary>
-        /// Specifies whether a proof key is required for authorization code based token requests
+        /// Specifies whether a proof key is required for authorization code based token requests (defaults to <c>false</c>).
         /// </summary>
         public bool RequirePkce { get; set; } = false;
 
         /// <summary>
-        /// Specifies whether a proof key can be sent using plain method (not recommended and default to false)
+        /// Specifies whether a proof key can be sent using plain method (not recommended and defaults to <c>false</c>.)
         /// </summary>
         public bool AllowPlainTextPkce { get; set; } = false;
 
         /// <summary>
-        /// Controls whether access tokens are transmitted via the browser for this client (defaults to false).
+        /// Controls whether access tokens are transmitted via the browser for this client (defaults to <c>false</c>).
         /// This can prevent accidental leakage of access tokens when multiple response types are allowed.
         /// </summary>
         /// <value>
@@ -114,19 +113,29 @@ namespace IdentityServer4.Models
         /// Specifies allowed URIs to redirect to after logout
         /// </summary>
         public ICollection<string> PostLogoutRedirectUris { get; set; } = new HashSet<string>();
+
+        /// <summary>
+        /// Specifies logout URI at client for HTTP front-channel based logout.
+        /// </summary>
+        public string FrontChannelLogoutUri { get; set; }
+
+        /// <summary>
+        /// Specifies is the user's session id should be sent to the FrontChannelLogoutUri. Defaults to <c>true</c>.
+        /// </summary>
+        public bool FrontChannelLogoutSessionRequired { get; set; } = true;
         
         /// <summary>
-        /// Specifies logout URI at client for HTTP based logout.
+        /// Specifies logout URI at client for HTTP back-channel based logout.
         /// </summary>
-        public string LogoutUri { get; set; }
+        public string BackChannelLogoutUri { get; set; }
 
         /// <summary>
-        /// Specifies is the user's session id should be sent to the LogoutUri. Defaults to true.
+        /// Specifies is the user's session id should be sent to the BackChannelLogoutUri. Defaults to <c>true</c>.
         /// </summary>
-        public bool LogoutSessionRequired { get; set; } = true;
+        public bool BackChannelLogoutSessionRequired { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets a value indicating whether [allow offline access].
+        /// Gets or sets a value indicating whether [allow offline access]. Defaults to <c>false</c>.
         /// </summary>
         public bool AllowOfflineAccess { get; set; } = false;
 
@@ -137,6 +146,7 @@ namespace IdentityServer4.Models
 
         /// <summary>
         /// When requesting both an id token and access token, should the user claims always be added to the id token instead of requring the client to use the userinfo endpoint.
+        /// Defaults to <c>false</c>.
         /// </summary>
         public bool AlwaysIncludeUserClaimsInIdToken { get; set; } = false;
 
@@ -166,6 +176,11 @@ namespace IdentityServer4.Models
         public int SlidingRefreshTokenLifetime { get; set; } = 1296000;
 
         /// <summary>
+        /// Lifetime of a user consent in seconds. Defaults to null (no expiration)
+        /// </summary>
+        public int? ConsentLifetime { get; set; } = null;
+
+        /// <summary>
         /// ReUse: the refresh token handle will stay the same when refreshing tokens
         /// OneTime: the refresh token handle will be updated when refreshing tokens
         /// </summary>
@@ -173,6 +188,7 @@ namespace IdentityServer4.Models
 
         /// <summary>
         /// Gets or sets a value indicating whether the access token (and its claims) should be updated on a refresh token request.
+        /// Defaults to <c>false</c>.
         /// </summary>
         /// <value>
         /// <c>true</c> if the token should be updated; otherwise, <c>false</c>.
@@ -204,7 +220,7 @@ namespace IdentityServer4.Models
         public ICollection<string> IdentityProviderRestrictions { get; set; } = new HashSet<string>();
 
         /// <summary>
-        /// Gets or sets a value indicating whether JWT access tokens should include an identifier
+        /// Gets or sets a value indicating whether JWT access tokens should include an identifier. Defaults to <c>false</c>.
         /// </summary>
         /// <value>
         /// <c>true</c> to add an id; otherwise, <c>false</c>.
@@ -221,6 +237,7 @@ namespace IdentityServer4.Models
 
         /// <summary>
         /// Gets or sets a value indicating whether client claims should be always included in the access tokens - or only for client credentials flow.
+        /// Defaults to <c>false</c>
         /// </summary>
         /// <value>
         /// <c>true</c> if claims should always be sent; otherwise, <c>false</c>.
@@ -228,12 +245,17 @@ namespace IdentityServer4.Models
         public bool AlwaysSendClientClaims { get; set; } = false;
 
         /// <summary>
-        /// Gets or sets a value indicating whether all client claims should be prefixed.
+        /// Gets or sets a value to prefix it on client claim types. Defaults to <c>client_</c>.
         /// </summary>
         /// <value>
-        /// <c>true</c> if client claims should be prefixed; otherwise, <c>false</c>.
+        /// Any non empty string if claims should be prefixed with the value; otherwise, <c>null</c>.
         /// </value>
-        public bool PrefixClientClaims { get; set; } = true;
+        public string ClientClaimsPrefix { get; set; } = "client_";
+
+        /// <summary>
+        /// Gets or sets a salt value used in pair-wise subjectId generation for users of this client.
+        /// </summary>
+        public string PairWiseSubjectSalt { get; set; }
 
         /// <summary>
         /// Gets or sets the allowed CORS origins for JavaScript clients.
@@ -242,6 +264,14 @@ namespace IdentityServer4.Models
         /// The allowed CORS origins.
         /// </value>
         public ICollection<string> AllowedCorsOrigins { get; set; } = new HashSet<string>();
+
+        /// <summary>
+        /// Gets or sets the custom properties for the client.
+        /// </summary>
+        /// <value>
+        /// The properties.
+        /// </value>
+        public IDictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
 
         /// <summary>
         /// Validates the grant types.
@@ -256,10 +286,9 @@ namespace IdentityServer4.Models
         /// </exception>
         public static void ValidateGrantTypes(IEnumerable<string> grantTypes)
         {
-            // must set at least one grant type
-            if (grantTypes.IsNullOrEmpty())
+            if (grantTypes == null)
             {
-                throw new InvalidOperationException("Grant types list is empty");
+                throw new ArgumentNullException(nameof(grantTypes));
             }
 
             // spaces are not allowed in grant types
@@ -300,17 +329,22 @@ namespace IdentityServer4.Models
         {
             private readonly ICollection<string> _inner;
 
+            public GrantTypeValidatingHashSet()
+            {
+                _inner = new HashSet<string>();
+            }
+
             public GrantTypeValidatingHashSet(IEnumerable<string> values)
             {
                 _inner = new HashSet<string>(values);
             }
 
-            ICollection<string> Clone()
+            private ICollection<string> Clone()
             {
                 return new HashSet<string>(this);
             }
 
-            ICollection<string> CloneWith(params string[] values)
+            private ICollection<string> CloneWith(params string[] values)
             {
                 var clone = Clone();
                 foreach (var item in values) clone.Add(item);
@@ -323,7 +357,7 @@ namespace IdentityServer4.Models
 
             public void Add(string item)
             {
-                Client.ValidateGrantTypes(CloneWith(item));
+                ValidateGrantTypes(CloneWith(item));
                 _inner.Add(item);
             }
 

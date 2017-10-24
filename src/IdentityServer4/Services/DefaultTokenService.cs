@@ -15,6 +15,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.Services
 {
@@ -49,27 +50,33 @@ namespace IdentityServer4.Services
         protected readonly ITokenCreationService CreationService;
 
         /// <summary>
-        /// The events service
+        /// The clock
         /// </summary>
-        protected readonly IEventService Events;
+        protected readonly ISystemClock Clock;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultTokenService" /> class. This overloaded constructor is deprecated and will be removed in 3.0.0.
         /// </summary>
-        /// <param name="context">The context.</param>
         /// <param name="claimsProvider">The claims provider.</param>
         /// <param name="referenceTokenStore">The reference token store.</param>
         /// <param name="creationService">The signing service.</param>
-        /// <param name="events">The events service.</param>
+        /// <param name="contextAccessor">The HTTP context accessor.</param>
+        /// <param name="clock">The clock.</param>
         /// <param name="logger">The logger.</param>
-        public DefaultTokenService(IHttpContextAccessor context, IClaimsService claimsProvider, IReferenceTokenStore referenceTokenStore, ITokenCreationService creationService, IEventService events, ILogger<DefaultTokenService> logger)
+        public DefaultTokenService(
+            IClaimsService claimsProvider, 
+            IReferenceTokenStore referenceTokenStore, 
+            ITokenCreationService creationService,  
+            IHttpContextAccessor contextAccessor, 
+            ISystemClock clock, 
+            ILogger<DefaultTokenService> logger)
         {
-            Logger = logger;
-            Context = context;
+            Context = contextAccessor;
             ClaimsProvider = claimsProvider;
             ReferenceTokenStore = referenceTokenStore;
             CreationService = creationService;
-            Events = events;
+            Clock = clock;
+            Logger = logger;            
         }
 
         /// <summary>
@@ -94,7 +101,7 @@ namespace IdentityServer4.Services
             }
 
             // add iat claim
-            claims.Add(new Claim(JwtClaimTypes.IssuedAt, IdentityServerDateTime.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer));
+            claims.Add(new Claim(JwtClaimTypes.IssuedAt, Clock.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer));
 
             // add at_hash claim
             if (request.AccessTokenToHash.IsPresent())
@@ -124,6 +131,7 @@ namespace IdentityServer4.Services
 
             var token = new Token(OidcConstants.TokenTypes.IdentityToken)
             {
+                CreationTime = Clock.UtcNow.UtcDateTime,
                 Audiences = { request.ValidatedRequest.Client.ClientId },
                 Issuer = issuer,
                 Lifetime = request.ValidatedRequest.Client.IdentityTokenLifetime,
@@ -161,6 +169,7 @@ namespace IdentityServer4.Services
             var issuer = Context.HttpContext.GetIdentityServerIssuerUri();
             var token = new Token(OidcConstants.TokenTypes.AccessToken)
             {
+                CreationTime = Clock.UtcNow.UtcDateTime,
                 Audiences = { string.Format(Constants.AccessTokenAudience, issuer.EnsureTrailingSlash()) },
                 Issuer = issuer,
                 Lifetime = request.ValidatedRequest.AccessTokenLifetime,

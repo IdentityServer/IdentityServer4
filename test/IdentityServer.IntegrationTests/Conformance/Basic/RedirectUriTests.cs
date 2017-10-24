@@ -10,7 +10,6 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
-using System.Net.Http;
 using IdentityServer4.IntegrationTests.Common;
 using IdentityServer4.Test;
 
@@ -18,9 +17,9 @@ namespace IdentityServer4.IntegrationTests.Conformance.Basic
 {
     public class RedirectUriTests
     {
-        const string Category = "Conformance.Basic.RedirectUriTests";
+        private const string Category = "Conformance.Basic.RedirectUriTests";
 
-        MockIdSvrUiPipeline _mockPipeline = new MockIdSvrUiPipeline();
+        private IdentityServerPipeline _mockPipeline = new IdentityServerPipeline();
 
         public RedirectUriTests()
         {
@@ -130,7 +129,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Basic
             var authorization = _mockPipeline.ParseAuthorizationResponseUrl(response.Headers.Location.ToString());
             authorization.Code.Should().NotBeNull();
             authorization.State.Should().Be(state);
-            var query = response.Headers.Location.ParseQueryString();
+            var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(response.Headers.Location.Query);
             query["foo"].ToString().Should().Be("bar");
             query["baz"].ToString().Should().Be("quux");
         }

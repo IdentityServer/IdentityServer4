@@ -52,6 +52,7 @@ namespace IdentityServer4.Validation
             if (principal.FindFirst(JwtClaimTypes.Subject) == null) throw new InvalidOperationException("sub claim is missing");
             if (principal.FindFirst(JwtClaimTypes.IdentityProvider) == null) throw new InvalidOperationException("idp claim is missing");
             if (principal.FindFirst(JwtClaimTypes.AuthenticationMethod) == null) throw new InvalidOperationException("amr claim is missing");
+            if (principal.FindFirst(JwtClaimTypes.AuthenticationTime) == null) throw new InvalidOperationException("auth_time claim is missing");
 
             Subject = principal;
             CustomResponse = customResponse;
@@ -84,6 +85,26 @@ namespace IdentityServer4.Validation
             IEnumerable<Claim> claims = null,
             string identityProvider = IdentityServerConstants.LocalIdentityProvider,
             Dictionary<string, object> customResponse = null)
+            : this(subject, authenticationMethod, DateTime.UtcNow, claims, identityProvider, customResponse)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GrantValidationResult" /> class.
+        /// </summary>
+        /// <param name="subject">The subject claim used to uniquely identifier the user.</param>
+        /// <param name="authenticationMethod">The authentication method which describes the custom grant type.</param>
+        /// <param name="authTime">The UTC date/time of authentication.</param>
+        /// <param name="claims">Additional claims that will be maintained in the principal.</param>
+        /// <param name="identityProvider">The identity provider.</param>
+        /// <param name="customResponse">The custom response.</param>
+        public GrantValidationResult(
+            string subject,
+            string authenticationMethod,
+            DateTime authTime,
+            IEnumerable<Claim> claims = null,
+            string identityProvider = IdentityServerConstants.LocalIdentityProvider,
+            Dictionary<string, object> customResponse = null)
         {
             IsError = false;
 
@@ -92,7 +113,7 @@ namespace IdentityServer4.Validation
                 new Claim(JwtClaimTypes.Subject, subject),
                 new Claim(JwtClaimTypes.AuthenticationMethod, authenticationMethod),
                 new Claim(JwtClaimTypes.IdentityProvider, identityProvider),
-                new Claim(JwtClaimTypes.AuthenticationTime, IdentityServerDateTime.UtcNow.ToEpochTime().ToString(), ClaimValueTypes.Integer)
+                new Claim(JwtClaimTypes.AuthenticationTime, authTime.ToEpochTime().ToString(), ClaimValueTypes.Integer)
             };
 
             if (!claims.IsNullOrEmpty())

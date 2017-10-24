@@ -6,58 +6,76 @@ ASP.NET Core has a flexible way to deal with external authentication. This invol
 
 .. Note:: If you are using ASP.NET Identity, many of the underlying technical details are hidden from you. It is recommended that you also read the Microsoft `docs <https://docs.microsoft.com/en-us/aspnet/core/security/authentication/social/>`_ and do the ASP.NET Identity :ref:`quickstart <refAspNetIdentityQuickstart>`.
 
-Adding authentication middleware
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-The protocol implementation that is needed to talk to an external provider is encapsulated in an so-called *authentication middleware*.
+Adding authentication handlers for external providers
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The protocol implementation that is needed to talk to an external provider is encapsulated in an *authentication handler*.
 Some providers use proprietary protocols (e.g. social providers like Facebook) and some use standard protocols, e.g. OpenID Connect, WS-Federation or SAML2p.
 
-See this :ref:`quickstart <refExternalAuthenticationQuickstart>` for step-by-step instructions for adding middleware and configuring it.
+See this :ref:`quickstart <refExternalAuthenticationQuickstart>` for step-by-step instructions for adding external authentication and configuring it.
 
 The role of cookies
 ^^^^^^^^^^^^^^^^^^^
-One parameter on the authentication middleware options is called the ``SignInScheme``, e.g.::
+One option on an external authentication handlers is called ``SignInScheme``, e.g.::
 
-   app.UseGoogleAuthentication(new GoogleOptions
-    {
-        AuthenticationScheme = "unique name of middleware",
-        SignInScheme = "name of cookie middleware to use",
+    services.AddAuthentication()
+        .AddGoogle("Google", options =>
+        {
+            options.SignInScheme = "scheme of cookie handler to use";
 
-        ClientId = "..."",
-        ClientSecret = "..."
-    });
+            options.ClientId = "...";
+            options.ClientSecret = "...";
+        })
 
-The signin scheme specifies the name of the cookie middleware that will temporarily store the outcome of the external authentication, 
+The signin scheme specifies the name of the cookie handler that will temporarily store the outcome of the external authentication, 
 e.g. the claims that got sent by the external provider. This is necessary, since there are typically a couple of redirects involved until you are done with the 
 external authentication process.
 
-If you don't take over control of your cookie configuration by setting your own authentication scheme on the IdentityServer options (see :ref:`here <refSignIn>`),
-we automatically register a cookie middleware called ``idsrv.external``.
+Given that this is such a common practise, IdentityServer registers a cookie handler specifically for this external provider workflow.
+The scheme is represented via the ``IdentityServerConstants.ExternalCookieAuthenticationScheme`` constant.
+If you were to use our external cookie handler, then for the ``SignInScheme`` above you'd assign the value to be the ``IdentityServerConstants.ExternalCookieAuthenticationScheme`` constant::
 
-You can also register your own like this::
+    services.AddAuthentication()
+        .AddGoogle("Google", options =>
+        {
+            options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
 
-    app.UseCookieAuthentication(new CookieAuthenticationOptions
-    {
-        AuthenticationScheme = "my.custom.scheme",
-        AutomaticAuthenticate = false,
-        AutomaticChallenge = false
-    });
+            options.ClientId = "...";
+            options.ClientSecret = "...";
+        })
 
+You can also register your own custom cookie handler instead, like this::
 
-Triggering the authentication middleware
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-You invoke an external authentication middleware via the ``ChallengeAsync`` method on the ASP.NET Core authentication manager (or using the MVC ``ChallengeResult``).
+    services.AddAuthentication()
+        .AddCookie("YourCustomScheme")
+        .AddGoogle("Google", options =>
+        {
+            options.SignInScheme = "YourCustomScheme";
+
+            options.ClientId = "...";
+            options.ClientSecret = "...";
+        })
+
+.. Note:: For specialized scenarios, you can also short-circuit the external cookie mechanism and forward the external user directly to the main cookie handler. This typically involves handling events on the external handler to make sure you do the correct claims transformation from the external identity source.
+
+Triggering the authentication handler
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+You invoke an external authentication handler via the ``ChallengeAsync`` extension method on the ``HttpContext`` (or using the MVC ``ChallengeResult``).
 
 You typically want to pass in some options to the challenge operation, e.g. the path to your callback page and the name of the provider for bookkeeping, e.g.::
 
-    var callbackUrl = Url.Action("ExternalLoginCallback", new { returnUrl = returnUrl });
+    var callbackUrl = Url.Action("ExternalLoginCallback");
     
     var props = new AuthenticationProperties
     {
         RedirectUri = callbackUrl,
-        Items = { { "scheme", provider } }
+        Items = 
+        { 
+            { "scheme", provider },
+            { "returnUrl", returnUrl }
+        }
     };
     
-    return new ChallengeResult(provider, props);
+    return Challenge(provider, props);
 
 Handling the callback and signing in the user
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -74,15 +92,21 @@ On the callback page your typical tasks are:
 **Inspecting the external identity**::
 
     // read external identity from the temporary cookie
-    var info = await HttpContext.Authentication.GetAuthenticateInfoAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme);
-    var tempUser = info?.Principal;
-    if (tempUser == null)
+    var result = await HttpContext.AuthenticateAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme);
+    if (result?.Succeeded != true)
     {
         throw new Exception("External authentication error");
     }
 
     // retrieve claims of the external user
-    var claims = tempUser.Claims.ToList();
+    var externalUser = result.Principal;
+    if (externalUser == null)
+    {
+        throw new Exception("External authentication error");
+    }
+
+    // retrieve claims of the external user
+    var claims = externalUser.Claims.ToList();
 
     // try to determine the unique id of the external user - the most common claim type for that are the sub claim and the NameIdentifier
     // depending on the external provider, some other claim type might be used
@@ -95,14 +119,19 @@ On the callback page your typical tasks are:
     {
         throw new Exception("Unknown userid");
     }
+    
+    var externalUserId = userIdClaim.Value;
+    var externalProvider = userIdClaim.Issuer;
+
+    // use externalProvider and externalUserId to find your user, or provision a new user
 
 **Clean-up and sign-in**::
 
     // issue authentication cookie for user
-    await HttpContext.Authentication.SignInAsync(user.SubjectId, user.Username, provider, props, additionalClaims.ToArray());
+    await HttpContext.SignInAsync(user.SubjectId, user.Username, provider, props, additionalClaims.ToArray());
 
     // delete temporary cookie used during external authentication
-    await HttpContext.Authentication.SignOutAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme);
+    await HttpContext.SignOutAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme);
 
     // validate return URL and redirect back to authorization endpoint or a local page
     if (_interaction.IsValidReturnUrl(returnUrl) || Url.IsLocalUrl(returnUrl))

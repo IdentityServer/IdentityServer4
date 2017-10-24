@@ -13,14 +13,16 @@ using IdentityModel.Client;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
 {
     public class IntrospectionTests
     {
-        const string Category = "Introspection endpoint";
-        const string IntrospectionEndpoint = "https://server/connect/introspect";
-        const string TokenEndpoint = "https://server/connect/token";
+        private const string Category = "Introspection endpoint";
+        private const string IntrospectionEndpoint = "https://server/connect/introspect";
+        private const string TokenEndpoint = "https://server/connect/token";
 
         private readonly HttpClient _client;
         private readonly HttpMessageHandler _handler;
@@ -99,6 +101,31 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
 
             response.IsActive.Should().Be(false);
             response.IsError.Should().Be(false);
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task Invalid_ContentType()
+        {
+            var tokenClient = new TokenClient(
+                TokenEndpoint,
+                "client1",
+                "secret",
+                _handler);
+
+            var tokenResponse = await tokenClient.RequestClientCredentialsAsync("api1");
+
+            var data = new
+            {
+                client_id = "api1",
+                client_secret = "secret",
+                token = tokenResponse.AccessToken
+            };
+            var json = JsonConvert.SerializeObject(data);
+
+            var client = new HttpClient(_handler);
+            var response = await client.PostAsync(IntrospectionEndpoint, new StringContent(json, Encoding.UTF8, "application/json"));
+            response.StatusCode.Should().Be(HttpStatusCode.UnsupportedMediaType);
         }
 
         [Fact]

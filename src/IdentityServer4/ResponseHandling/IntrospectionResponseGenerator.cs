@@ -4,7 +4,6 @@
 
 using IdentityModel;
 using IdentityServer4.Extensions;
-using IdentityServer4.Models;
 using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
@@ -56,7 +55,7 @@ namespace IdentityServer4.ResponseHandling
             }
 
             // expected scope not present
-            if (await AreExpectedScopesPresent(validationResult) == false)
+            if (await AreExpectedScopesPresentAsync(validationResult) == false)
             {
                 return response;
             }
@@ -74,7 +73,7 @@ namespace IdentityServer4.ResponseHandling
             var scopes = validationResult.Claims.Where(c => c.Type == JwtClaimTypes.Scope).Select(x => x.Value);
             scopes = scopes.Where(x => allowedScopes.Contains(x));
             response.Add("scope", scopes.ToSpaceSeparatedString());
-            
+
             return response;
         }
 
@@ -83,16 +82,26 @@ namespace IdentityServer4.ResponseHandling
         /// </summary>
         /// <param name="validationResult">The validation result.</param>
         /// <returns></returns>
-        protected virtual Task<bool> AreExpectedScopesPresent(IntrospectionRequestValidationResult validationResult)
+        protected virtual Task<bool> AreExpectedScopesPresentAsync(IntrospectionRequestValidationResult validationResult)
         {
-            // check expected scopes
-            var supportedScopes = validationResult.Api.Scopes.Select(x => x.Name);
-            var expectedScopes = validationResult.Claims.Where(
-                c => c.Type == JwtClaimTypes.Scope && supportedScopes.Contains(c.Value));
+            var apiScopes = validationResult.Api.Scopes.Select(x => x.Name);
+            var tokenScopesThatMatchApi = validationResult.Claims.Where(
+                c => c.Type == JwtClaimTypes.Scope && apiScopes.Contains(c.Value));
 
-            Logger.LogError("Expected scope {scopes} is missing in token", supportedScopes);
+            var result = false;
 
-            return Task.FromResult(expectedScopes.Any());
+            if (tokenScopesThatMatchApi.Any())
+            {
+                // at least one of the scopes the API supports is in the token
+                result = true;
+            }
+            else
+            {
+                // no scopes for this API are found in the token
+                Logger.LogError("Expected scope {scopes} is missing in token", apiScopes);
+            }
+
+            return Task.FromResult(result);
         }
     }
 }

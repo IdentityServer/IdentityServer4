@@ -20,8 +20,8 @@ namespace IdentityServer4.Endpoints
     /// <summary>
     /// The token endpoint
     /// </summary>
-    /// <seealso cref="IdentityServer4.Hosting.IEndpoint" />
-    public class TokenEndpoint : IEndpoint
+    /// <seealso cref="IdentityServer4.Hosting.IEndpointHandler" />
+    internal class TokenEndpoint : IEndpointHandler
     {
         private readonly ClientSecretValidator _clientValidator;
         private readonly ITokenRequestValidator _requestValidator;
@@ -80,7 +80,7 @@ namespace IdentityServer4.Endpoints
             // validate request
             var form = (await context.Request.ReadFormAsync()).AsNameValueCollection();
             _logger.LogTrace("Calling into token request validator: {type}", _requestValidator.GetType().FullName);
-            var requestResult = await _requestValidator.ValidateRequestAsync(form, clientResult.Client);
+            var requestResult = await _requestValidator.ValidateRequestAsync(form, clientResult);
 
             if (requestResult.IsError)
             {

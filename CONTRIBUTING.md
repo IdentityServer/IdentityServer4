@@ -9,7 +9,7 @@ Also read this first: [Being a good open source citizen](https://hackernoon.com/
 Please start a discussion on the [core repo issue tracker](https://github.com/IdentityServer/IdentityServer4/issues).
 
 ## Platform
-IdentityServer is built against ASP.NET Core 1.1 using the RTM tooling that ships with Visual Studio 2017. This is the only configuration we accept.
+IdentityServer is built against ASP.NET Core 2.0 using the RTM tooling that ships with Visual Studio 2017. This is the only configuration we accept.
 
 ## Bugs and feature requests?
 Please log a new issue in the appropriate GitHub repo:
@@ -33,7 +33,7 @@ Here are questions you can answer before you file a bug to make sure you're not 
 GitHub supports [markdown](http://github.github.com/github-flavored-markdown/), so when filing bugs make sure you check the formatting before clicking submit.
 
 ## Contributing code and content
-You will need to sign a [Contributor License Agreement](https://cla.dotnetfoundation.org/) before submitting your pull request. 
+You will need to sign a [Contributor License Agreement](https://cla2.dotnetfoundation.org/) before submitting your pull request.
 
 Make sure you can build the code. Familiarize yourself with the project workflow and our coding conventions. If you don't know what a pull request is read this article: https://help.github.com/articles/using-pull-requests.
 

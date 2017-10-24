@@ -23,7 +23,7 @@ namespace IdentityServer4.UnitTests.Common
         public Task RemoveAllGrantsAsync(string subjectId, string clientId)
         {
             RemoveAllGrantsWasCalled = true;
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

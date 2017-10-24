@@ -8,38 +8,35 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace IdentityServer4.Hosting
 {
-    class EndpointRouter : IEndpointRouter
+    internal class EndpointRouter : IEndpointRouter
     {
-        private readonly Dictionary<string, EndpointName> _pathToNameMap;
+        private readonly IEnumerable<Endpoint> _endpoints;
         private readonly IdentityServerOptions _options;
-        private readonly IEnumerable<EndpointMapping> _mappings;
         private readonly ILogger _logger;
 
-        public EndpointRouter(Dictionary<string, EndpointName> pathToNameMap, IdentityServerOptions options, IEnumerable<EndpointMapping> mappings, ILogger<EndpointRouter> logger)
+        public EndpointRouter(IEnumerable<Endpoint> endpoints, IdentityServerOptions options, ILogger<EndpointRouter> logger)
         {
-            _pathToNameMap = pathToNameMap;
+            _endpoints = endpoints;
             _options = options;
-            _mappings = mappings;
             _logger = logger;
         }
 
-        public IEndpoint Find(HttpContext context)
+        public IEndpointHandler Find(HttpContext context)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            foreach(var key in _pathToNameMap.Keys)
+            foreach(var endpoint in _endpoints)
             {
-                var path = key.EnsureLeadingSlash();
-                if (context.Request.Path.StartsWithSegments(path))
+                var path = endpoint.Path;
+                if (context.Request.Path.Equals(path, StringComparison.OrdinalIgnoreCase))
                 {
-                    var endpointName = _pathToNameMap[key];
+                    var endpointName = endpoint.Name;
                     _logger.LogDebug("Request path {path} matched to endpoint type {endpoint}", context.Request.Path, endpointName);
 
-                    return GetEndpoint(endpointName, context);
+                    return GetEndpointHandler(endpoint, context);
                 }
             }
 
@@ -48,24 +45,24 @@ namespace IdentityServer4.Hosting
             return null;
         }
 
-        private IEndpoint GetEndpoint(EndpointName endpointName, HttpContext context)
+        private IEndpointHandler GetEndpointHandler(Endpoint endpoint, HttpContext context)
         {
-            if (_options.Endpoints.IsEndpointEnabled(endpointName))
+            if (_options.Endpoints.IsEndpointEnabled(endpoint))
             {
-                var mapping = _mappings.LastOrDefault(x => x.Endpoint == endpointName);
-                if (mapping != null)
+                var handler = context.RequestServices.GetService(endpoint.Handler) as IEndpointHandler;
+                if (handler != null)
                 {
-                    _logger.LogDebug("Mapping found for endpoint: {endpoint}, creating handler: {endpointHandler}", endpointName, mapping.Handler.FullName);
-                    return context.RequestServices.GetService(mapping.Handler) as IEndpoint;
+                    _logger.LogDebug("Endpoint enabled: {endpoint}, successfully created handler: {endpointHandler}", endpoint.Name, endpoint.Handler.FullName);
+                    return handler;
                 }
                 else
                 {
-                    _logger.LogError("No mapping found for endpoint: {endpoint}", endpointName);
+                    _logger.LogDebug("Endpoint enabled: {endpoint}, failed to create handler: {endpointHandler}", endpoint.Name, endpoint.Handler.FullName);
                 }
             }
             else
             {
-                _logger.LogWarning("{endpoint} endpoint requested, but is disabled in endpoint options.", endpointName);
+                _logger.LogWarning("Endpoint disabled: {endpoint}", endpoint.Name);
             }
 
             return null;

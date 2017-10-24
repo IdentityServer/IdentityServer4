@@ -14,9 +14,9 @@ namespace IdentityServer4.UnitTests.Validation.AuthorizeRequest
 {
     public class Authorize_ClientValidation_Invalid
     {
-        const string Category = "AuthorizeRequest Client Validation - Invalid";
+        private const string Category = "AuthorizeRequest Client Validation - Invalid";
 
-        IdentityServerOptions _options = TestIdentityServerOptions.Create();
+        private IdentityServerOptions _options = TestIdentityServerOptions.Create();
 
         [Fact]
         [Trait("Category", Category)]

@@ -6,6 +6,9 @@ IdentityServer Options
     Set the issuer name that will appear in the discovery document and the issued JWT tokens.
     It is recommended to not set this property, which infers the issuer name from the host name that is used by the clients.
 
+* ``PublicOrigin``
+    The origin of this server instance, e.g. https://myorigin.com. If not set, the origin name is inferred from the request.
+
 Endpoints
 ^^^^^^^^^
 Allows enabling/disabling individual endpoints, e.g. token, authorize, userinfo etc.
@@ -20,18 +23,17 @@ The ``CustomEntries`` dictionary allows adding custom elements to the discovery 
 
 Authentication
 ^^^^^^^^^^^^^^
-* ``AuthenticationScheme``
-    If set, specifies the cookie middleware you want to use. If not set, IdentityServer will use a built-in cookie middleware with default values.
+* ``CookieLifetime``
+    The authentication cookie lifetime (only effective if the IdentityServer-provided cookie handler is used).
+
+* ``CookieSlidingExpiration``
+    Specified if the cookie should be sliding or not (only effective if the IdentityServer-provided cookie handler is used).
 
 * ``RequireAuthenticatedUserForSignOutMessage``
-    Indicates if user must be authenticated to accept parameters to end session endpoint. Defaults to ``false``.
+    Indicates if user must be authenticated to accept parameters to end session endpoint. Defaults to false.
 
-* ``FederatedSignOutPaths``
-    Collection of paths that match ``SignedOutCallbackPath`` on any middleware being used to support external identity providers (such as AzureAD, or ADFS).
-    ``SignedOutCallbackPath`` is used as the "signout cleanup" endpoint called from upstream identity providers when the user signs out of that upstream provider.
-    This ``SignedOutCallbackPath`` is typically invoked in an ``<iframe>`` from the upstream identity provider, and is intended to sign the user out of the application. 
-    Given that IdentityServer should notify all of its client applications when a user signs out, IdentityServer must extend the behavior at these ``SignedOutCallbackPath`` endpoints to sign the user our of any client applictions of IdentityServer.
-
+* ``CheckSessionCookieName``
+    The name of the cookie used for the check session endpoint.
 
 Events
 ^^^^^^

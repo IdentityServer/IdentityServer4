@@ -17,13 +17,13 @@ namespace IdentityServer4.UnitTests.Services.Default
 {
     public class DefaultClaimsServiceTests
     {
-        DefaultClaimsService _subject;
-        MockProfileService _mockMockProfileService = new MockProfileService();
+        private DefaultClaimsService _subject;
+        private MockProfileService _mockMockProfileService = new MockProfileService();
 
-        ClaimsPrincipal _user;
-        Client _client;
-        ValidatedRequest _validatedRequest;
-        Resources _resources = new Resources();
+        private ClaimsPrincipal _user;
+        private Client _client;
+        private ValidatedRequest _validatedRequest;
+        private Resources _resources = new Resources();
 
         public DefaultClaimsServiceTests()
         {
@@ -112,36 +112,44 @@ namespace IdentityServer4.UnitTests.Services.Default
         {
             var claims = await _subject.GetAccessTokenClaimsAsync(_user, _resources, _validatedRequest);
 
-            claims.Where(x => x.Type == JwtClaimTypes.ClientId && x.Value == _client.ClientId).Count().Should().Be(1);
+            claims.Count(x => x.Type == JwtClaimTypes.ClientId && x.Value == _client.ClientId).Should().Be(1);
         }
 
         [Fact]
-        public async Task GetAccessTokenClaimsAsync_client_claims_should_be_prefixed()
+        public async Task GetAccessTokenClaimsAsync_client_claims_should_be_prefixed_with_default_value()
         {
-            _validatedRequest.Client.PrefixClientClaims = true;
             var claims = await _subject.GetAccessTokenClaimsAsync(null, _resources, _validatedRequest);
 
-            claims.Where(x => x.Type == "client_some_claim" && x.Value == "some_claim_value").Count().Should().Be(1);
+            claims.Count(x => x.Type == "client_some_claim" && x.Value == "some_claim_value").Should().Be(1);
+        }
+        
+        [Fact]
+        public async Task GetAccessTokenClaimsAsync_client_claims_should_be_prefixed_with_custom_value()
+        {
+            _validatedRequest.Client.ClientClaimsPrefix = "custom_prefix_";
+            var claims = await _subject.GetAccessTokenClaimsAsync(null, _resources, _validatedRequest);
+
+            claims.Count(x => x.Type == "custom_prefix_some_claim" && x.Value == "some_claim_value").Should().Be(1);
         }
 
         [Fact]
         public async Task GetAccessTokenClaimsAsync_should_contain_client_claims_when_no_subject()
         {
-            _validatedRequest.Client.PrefixClientClaims = false;
+            _validatedRequest.Client.ClientClaimsPrefix = null;
             var claims = await _subject.GetAccessTokenClaimsAsync(null, _resources, _validatedRequest);
 
-            claims.Where(x => x.Type == "some_claim" && x.Value == "some_claim_value").Count().Should().Be(1);
+            claims.Count(x => x.Type == "some_claim" && x.Value == "some_claim_value").Should().Be(1);
         }
 
         [Fact]
         public async Task GetAccessTokenClaimsAsync_should_contain_client_claims_when_configured_to_send_client_claims()
         {
-            _validatedRequest.Client.PrefixClientClaims = false;
+            _validatedRequest.Client.ClientClaimsPrefix = null;
             _validatedRequest.Client.AlwaysSendClientClaims = true;
 
             var claims = await _subject.GetAccessTokenClaimsAsync(_user, _resources, _validatedRequest);
 
-            claims.Where(x => x.Type == "some_claim" && x.Value == "some_claim_value").Count().Should().Be(1);
+            claims.Count(x => x.Type == "some_claim" && x.Value == "some_claim_value").Should().Be(1);
         }
 
         [Fact]

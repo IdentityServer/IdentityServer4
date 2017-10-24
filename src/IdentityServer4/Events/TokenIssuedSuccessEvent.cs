@@ -4,11 +4,11 @@
 
 using IdentityModel;
 using IdentityServer4.Extensions;
-using IdentityServer4.Hosting;
 using IdentityServer4.Models;
 using IdentityServer4.ResponseHandling;
 using IdentityServer4.Validation;
 using System.Collections.Generic;
+using static IdentityServer4.Constants;
 
 namespace IdentityServer4.Events
 {
@@ -28,7 +28,7 @@ namespace IdentityServer4.Events
             ClientId = response.Request.ClientId;
             ClientName = response.Request.Client.ClientName;
             RedirectUri = response.RedirectUri;
-            Endpoint = EndpointName.Authorize.ToString();
+            Endpoint = EndpointNames.Authorize;
             SubjectId = response.Request.Subject.GetSubjectId();
             Scopes = response.Scope;
             GrantType = response.Request.GrantType;
@@ -59,7 +59,7 @@ namespace IdentityServer4.Events
         {
             ClientId = request.ValidatedRequest.Client.ClientId;
             ClientName = request.ValidatedRequest.Client.ClientName;
-            Endpoint = EndpointName.Token.ToString();
+            Endpoint = EndpointNames.Token;
             SubjectId = request.ValidatedRequest.Subject?.GetSubjectId();
             GrantType = request.ValidatedRequest.GrantType;
 

@@ -26,14 +26,14 @@ namespace IdentityServer4.UnitTests.Common
         {
             ProfileContext = context;
             context.IssuedClaims = ProfileClaims.ToList();
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         public Task IsActiveAsync(IsActiveContext context)
         {
             ActiveContext = context;
             context.IsActive = IsActive;
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

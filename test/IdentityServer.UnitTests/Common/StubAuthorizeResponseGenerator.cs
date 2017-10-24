@@ -8,7 +8,7 @@ using IdentityServer4.Validation;
 
 namespace IdentityServer4.UnitTests.Common
 {
-    class StubAuthorizeResponseGenerator : IAuthorizeResponseGenerator
+    internal class StubAuthorizeResponseGenerator : IAuthorizeResponseGenerator
     {
         public AuthorizeResponse Response { get; set; } = new AuthorizeResponse();
 

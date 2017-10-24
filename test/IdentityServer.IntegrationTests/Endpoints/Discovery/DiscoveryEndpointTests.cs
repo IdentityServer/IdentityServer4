@@ -12,13 +12,13 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Discovery
 {
     public class DiscoveryEndpointTests
     {
-        const string Category = "Discovery endpoint";
+        private const string Category = "Discovery endpoint";
 
         [Fact]
         [Trait("Category", Category)]
         public async Task issuer_uri_should_be_lowercase()
         {
-            MockIdSvrUiPipeline pipeline = new MockIdSvrUiPipeline();
+            IdentityServerPipeline pipeline = new IdentityServerPipeline();
             pipeline.Initialize("/ROOT");
 
             var result = await pipeline.Client.GetAsync("HTTPS://SERVER/ROOT/.WELL-KNOWN/OPENID-CONFIGURATION");
@@ -28,6 +28,30 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Discovery
             var issuer = data["issuer"].ToString();
 
             issuer.Should().Be("https://server/root");
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task jwks_entries_should_contain_alg()
+        {
+            IdentityServerPipeline pipeline = new IdentityServerPipeline();
+            pipeline.Initialize("/ROOT");
+
+            var result = await pipeline.Client.GetAsync("https://server/root/.well-known/openid-configuration/jwks");
+
+            var json = await result.Content.ReadAsStringAsync();
+            var data = JObject.Parse(json);
+
+            var keys = data["keys"];
+            keys.Should().NotBeNull();
+
+            var key = keys[0];
+            key.Should().NotBeNull();
+
+            var alg = key["alg"];
+            alg.Should().NotBeNull();
+
+            alg.Value<string>().Should().Be(Constants.SigningAlgorithms.RSA_SHA_256);
         }
     }
 }

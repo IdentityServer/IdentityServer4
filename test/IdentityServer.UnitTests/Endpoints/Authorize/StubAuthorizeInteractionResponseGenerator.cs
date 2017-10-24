@@ -9,7 +9,7 @@ using IdentityServer4.Validation;
 
 namespace IdentityServer4.UnitTests.Endpoints.Authorize
 {
-    class StubAuthorizeInteractionResponseGenerator : IAuthorizeInteractionResponseGenerator
+    internal class StubAuthorizeInteractionResponseGenerator : IAuthorizeInteractionResponseGenerator
     {
         internal InteractionResponse Response { get; set; } = new InteractionResponse();
 

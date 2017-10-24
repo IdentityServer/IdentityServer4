@@ -6,12 +6,21 @@ using FluentAssertions;
 using IdentityServer4.Models;
 using System;
 using Xunit;
+using System.Collections.Generic;
 
 namespace IdentityServer4.UnitTests.Validation
 {
     public class GrantTypesValidation
     {
-        const string Category = "Grant Types Validation";
+        private const string Category = "Grant Types Validation";
+
+        [Fact]
+        [Trait("Category", Category)]
+        public void empty_should_be_allowed()
+        {
+            var client = new Client();
+            client.AllowedGrantTypes = new List<string>();
+        }
 
         [Fact]
         [Trait("Category", Category)]
@@ -76,13 +85,13 @@ namespace IdentityServer4.UnitTests.Validation
         }
 
         [Fact]
-        public void empty_grant_type_list_should_throw_single()
+        public void null_grant_type_list_should_throw_single()
         {
             var client = new Client();
 
-            Action act = () => client.AllowedGrantTypes = new string[] { };
+            Action act = () => client.AllowedGrantTypes = null;
 
-            act.ShouldThrow<InvalidOperationException>();
+            act.ShouldThrow<ArgumentNullException>();
         }
 
         [Fact]

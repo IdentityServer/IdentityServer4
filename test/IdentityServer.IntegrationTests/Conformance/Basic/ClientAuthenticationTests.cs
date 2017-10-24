@@ -18,9 +18,9 @@ namespace IdentityServer4.IntegrationTests.Conformance.Basic
 {
     public class ClientAuthenticationTests 
     {
-        const string Category = "Conformance.Basic.ClientAuthenticationTests";
+        private const string Category = "Conformance.Basic.ClientAuthenticationTests";
 
-        MockIdSvrUiPipeline _pipeline = new MockIdSvrUiPipeline();
+        private IdentityServerPipeline _pipeline = new IdentityServerPipeline();
 
         public ClientAuthenticationTests()
         {
@@ -84,7 +84,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Basic
 
             // backchannel client
             var wrapper = new MessageHandlerWrapper(_pipeline.Handler);
-            var tokenClient = new TokenClient(MockIdSvrUiPipeline.TokenEndpoint, "code_pipeline.Client", "secret", wrapper);
+            var tokenClient = new TokenClient(IdentityServerPipeline.TokenEndpoint, "code_pipeline.Client", "secret", wrapper);
             var tokenResult = await tokenClient.RequestAuthorizationCodeAsync(code, "https://code_pipeline.Client/callback?foo=bar&baz=quux");
 
             tokenResult.IsError.Should().BeFalse();
@@ -121,7 +121,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Basic
             var code = authorization.Code;
 
             // backchannel client
-            var tokenClient = new TokenClient(MockIdSvrUiPipeline.TokenEndpoint, "code_pipeline.Client", "secret", _pipeline.Handler, AuthenticationStyle.PostValues);
+            var tokenClient = new TokenClient(IdentityServerPipeline.TokenEndpoint, "code_pipeline.Client", "secret", _pipeline.Handler, AuthenticationStyle.PostValues);
             var tokenResult = await tokenClient.RequestAuthorizationCodeAsync(code, "https://code_pipeline.Client/callback?foo=bar&baz=quux");
 
             tokenResult.IsError.Should().BeFalse();

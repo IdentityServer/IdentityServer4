@@ -46,7 +46,7 @@ namespace IdentityServer4.Validation
             Array.Sort(xValues);
             Array.Sort(yValues);
 
-            for (int i = 0; i < xValues.Length; i++)
+            for (var i = 0; i < xValues.Length; i++)
             {
                 if (xValues[i] != yValues[i])
                 {
@@ -76,7 +76,7 @@ namespace IdentityServer4.Validation
             Array.Sort(values);
 
             // Using Skeet's answer here: http://stackoverflow.com/a/7244729/208990
-            int hash = 17;
+            var hash = 17;
             foreach (var element in values)
             {
                 // changed to use StringComparer.Ordinal, rather than StringComparer.InvariantCulture

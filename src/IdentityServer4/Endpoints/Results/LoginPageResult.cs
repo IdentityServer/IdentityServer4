@@ -41,7 +41,7 @@ namespace IdentityServer4.Endpoints.Results
 
         private IdentityServerOptions _options;
 
-        void Init(HttpContext context)
+        private void Init(HttpContext context)
         {
             _options = _options ?? context.RequestServices.GetRequiredService<IdentityServerOptions>();
         }
@@ -55,7 +55,7 @@ namespace IdentityServer4.Endpoints.Results
         {
             Init(context);
 
-            var returnUrl = context.GetIdentityServerBasePath().EnsureTrailingSlash() + Constants.ProtocolRoutePaths.AuthorizeAfterLogin;
+            var returnUrl = context.GetIdentityServerBasePath().EnsureTrailingSlash() + Constants.ProtocolRoutePaths.AuthorizeCallback;
             returnUrl = returnUrl.AddQueryString(_request.Raw.ToQueryString());
 
             var loginUrl = _options.UserInteraction.LoginUrl;
@@ -69,7 +69,7 @@ namespace IdentityServer4.Endpoints.Results
             var url = loginUrl.AddQueryString(_options.UserInteraction.LoginReturnUrlParameter, returnUrl);
             context.Response.RedirectToAbsoluteUrl(url);
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

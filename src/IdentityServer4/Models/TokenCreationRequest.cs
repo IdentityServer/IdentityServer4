@@ -71,14 +71,8 @@ namespace IdentityServer4.Models
 
         internal void Validate()
         {
-            //if (Client == null) LogAndStop("client");
-            if (Resources == null) LogAndStop("resources");
-            if (ValidatedRequest == null) LogAndStop("validatedRequest");
-        }
-
-        private void LogAndStop(string name)
-        {
-            throw new ArgumentNullException(name);
+            if (Resources == null) throw new ArgumentNullException(nameof(Resources));
+            if (ValidatedRequest == null) throw new ArgumentNullException(nameof(ValidatedRequest));
         }
     }
 }

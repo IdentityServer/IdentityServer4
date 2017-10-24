@@ -11,7 +11,7 @@ namespace IdentityServer4.Configuration
     /// </summary>
     public class CachingOptions
     {
-        static readonly TimeSpan Default = TimeSpan.FromMinutes(15);
+        private static readonly TimeSpan Default = TimeSpan.FromMinutes(15);
 
         /// <summary>
         /// Gets or sets the client store expiration.
@@ -28,5 +28,10 @@ namespace IdentityServer4.Configuration
         /// The scope store expiration.
         /// </value>
         public TimeSpan ResourceStoreExpiration { get; set; } = Default;
+
+        /// <summary>
+        /// Gets or sets the CORS origin expiration.
+        /// </summary>
+        public TimeSpan CorsExpiration { get; set; } = Default;
     }
 }

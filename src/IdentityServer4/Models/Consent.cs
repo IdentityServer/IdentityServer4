@@ -42,7 +42,7 @@ namespace IdentityServer4.Models
         /// <value>
         /// The creation time.
         /// </value>
-        public DateTime CreationTime { get; set; } = IdentityServerDateTime.UtcNow;
+        public DateTime CreationTime { get; set; }
 
         /// <summary>
         /// Gets or sets the expiration.

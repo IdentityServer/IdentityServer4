@@ -11,67 +11,68 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using IdentityServer.UnitTests.Common;
 
 namespace IdentityServer4.UnitTests.Services.Default
 {
     public class DefaultIdentityServerInteractionServiceTests
     {
-        DefaultIdentityServerInteractionService _subject;
+        private DefaultIdentityServerInteractionService _subject;
 
-        IdentityServerOptions _options = new IdentityServerOptions();
-        MockHttpContextAccessor _mockMockHttpContextAccessor;
-        MockMessageStore<LogoutMessage> _mockLogoutMessageStore = new MockMessageStore<LogoutMessage>();
-        MockMessageStore<Models.ErrorMessage> _mockErrorMessageStore = new MockMessageStore<Models.ErrorMessage>();
-        MockMessageStore<ConsentResponse> _mockConsentStore = new MockMessageStore<ConsentResponse>();
-        MockPersistedGrantService _mockPersistedGrantService = new MockPersistedGrantService();
-        MockClientSessionService _mockClientSessionService = new MockClientSessionService();
-        MockSessionIdService _mockSessionIdService = new MockSessionIdService();
-        MockReturnUrlParser _mockReturnUrlParser = new MockReturnUrlParser();
+        private IdentityServerOptions _options = new IdentityServerOptions();
+        private MockHttpContextAccessor _mockMockHttpContextAccessor;
+        private MockMessageStore<EndSession> _mockEndSessionStore = new MockMessageStore<EndSession>();
+        private MockMessageStore<LogoutMessage> _mockLogoutMessageStore = new MockMessageStore<LogoutMessage>();
+        private MockMessageStore<ErrorMessage> _mockErrorMessageStore = new MockMessageStore<ErrorMessage>();
+        private MockConsentMessageStore _mockConsentStore = new MockConsentMessageStore();
+        private MockPersistedGrantService _mockPersistedGrantService = new MockPersistedGrantService();
+        private MockUserSession _mockUserSession = new MockUserSession();
+        private MockReturnUrlParser _mockReturnUrlParser = new MockReturnUrlParser();
 
         public DefaultIdentityServerInteractionServiceTests()
         {
-            _mockMockHttpContextAccessor = new MockHttpContextAccessor(_options, _mockSessionIdService, _mockClientSessionService);
+            _mockMockHttpContextAccessor = new MockHttpContextAccessor(_options, _mockUserSession, _mockEndSessionStore);
 
-            _subject = new DefaultIdentityServerInteractionService(_options, 
+            _subject = new DefaultIdentityServerInteractionService(new StubClock(), 
                 _mockMockHttpContextAccessor,
                 _mockLogoutMessageStore,
                 _mockErrorMessageStore,
                 _mockConsentStore,
                 _mockPersistedGrantService,
-                _mockClientSessionService,
-                _mockSessionIdService,
+                _mockUserSession,
                 _mockReturnUrlParser,
                 TestLogger.Create<DefaultIdentityServerInteractionService>()
             );
         }
         
         [Fact]
-        public async Task GetLogoutContextAsync_valid_session_and_logout_id_should_provide_iframe_with_logoutid_param()
+        public async Task GetLogoutContextAsync_valid_session_and_logout_id_should_not_provide_signout_iframe()
         {
-            // for this, we're just ensuring that the session is used from the message, not from the current session cookie
-            _mockSessionIdService.SessionId = null;
+            // for this, we're just confirming that since the session has changed, there's not use in doing the iframe and thsu SLO
+            _mockUserSession.SessionId = null;
             _mockLogoutMessageStore.Messages.Add("id", new Message<LogoutMessage>(new LogoutMessage() { SessionId = "session" }));
 
             var context = await _subject.GetLogoutContextAsync("id");
 
-            context.SignOutIFrameUrl.Should().NotBeNull();
-            context.SignOutIFrameUrl.Should().Contain(_options.UserInteraction.LogoutIdParameter + "=id");
+            context.SignOutIFrameUrl.Should().BeNull();
         }
 
         [Fact]
         public async Task GetLogoutContextAsync_valid_session_no_logout_id_should_provide_iframe()
         {
-            _mockSessionIdService.SessionId = "session";
+            _mockUserSession.Clients.Add("foo");
+            _mockUserSession.SessionId = "session";
+            _mockUserSession.User = IdentityServerPrincipal.Create("123", "bob");
+
             var context = await _subject.GetLogoutContextAsync(null);
 
             context.SignOutIFrameUrl.Should().NotBeNull();
-            context.SignOutIFrameUrl.Should().NotContain(_options.UserInteraction.LogoutIdParameter + "=");
         }
 
         [Fact]
         public async Task GetLogoutContextAsync_without_session_should_not_provide_iframe()
         {
-            _mockSessionIdService.SessionId = null;
+            _mockUserSession.SessionId = null;
             _mockLogoutMessageStore.Messages.Add("id", new Message<LogoutMessage>(new LogoutMessage()));
 
             var context = await _subject.GetLogoutContextAsync("id");
@@ -82,8 +83,6 @@ namespace IdentityServer4.UnitTests.Services.Default
         [Fact]
         public async Task CreateLogoutContextAsync_without_session_should_not_create_session()
         {
-            _mockSessionIdService.SessionId = null;
-
             var context = await _subject.CreateLogoutContextAsync();
 
             context.Should().BeNull();
@@ -93,7 +92,9 @@ namespace IdentityServer4.UnitTests.Services.Default
         [Fact]
         public async Task CreateLogoutContextAsync_with_session_should_create_session()
         {
-            _mockSessionIdService.SessionId = "session";
+            _mockUserSession.Clients.Add("foo");
+            _mockUserSession.User = IdentityServerPrincipal.Create("123", "bob");
+            _mockUserSession.SessionId = "session";
 
             var context = await _subject.CreateLogoutContextAsync();
 
@@ -102,19 +103,27 @@ namespace IdentityServer4.UnitTests.Services.Default
         }
 
         [Fact]
-        public void GrantConsentAsync_should_throw_if_no_subject()
+        public void GrantConsentAsync_should_throw_if_granted_and_no_subject()
         {
-            Func<Task> act = () => _subject.GrantConsentAsync(new AuthorizationRequest(), new ConsentResponse(), null);
+            Func<Task> act = () => _subject.GrantConsentAsync(
+                new AuthorizationRequest(), 
+                new ConsentResponse() { ScopesConsented = new[] { "openid" } }, 
+                null);
 
             act.ShouldThrow<ArgumentNullException>()
                 .And.Message.Should().Contain("subject");
         }
 
         [Fact]
+        public async Task GrantConsentAsync_should_allow_deny_for_anonymous_users()
+        {
+            await _subject.GrantConsentAsync(new AuthorizationRequest(), ConsentResponse.Denied, null);
+        }
+
+        [Fact]
         public async Task GrantConsentAsync_should_use_current_subject_and_create_message()
         {
-            var user = IdentityServerPrincipal.Create("bob", "bob");
-            _mockMockHttpContextAccessor.HttpContext.SetUser(user);
+            _mockUserSession.User = IdentityServerPrincipal.Create("bob", "bob");
 
             var req = new AuthorizationRequest() { ClientId = "client" };
             await _subject.GrantConsentAsync(req, new ConsentResponse(), null);

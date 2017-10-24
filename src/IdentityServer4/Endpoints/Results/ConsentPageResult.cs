@@ -41,7 +41,7 @@ namespace IdentityServer4.Endpoints.Results
 
         private IdentityServerOptions _options;
 
-        void Init(HttpContext context)
+        private void Init(HttpContext context)
         {
             _options = _options ?? context.RequestServices.GetRequiredService<IdentityServerOptions>();
         }
@@ -55,7 +55,7 @@ namespace IdentityServer4.Endpoints.Results
         {
             Init(context);
 
-            var returnUrl = context.Request.PathBase.ToString().EnsureTrailingSlash() + Constants.ProtocolRoutePaths.AuthorizeAfterConsent;
+            var returnUrl = context.Request.PathBase.ToString().EnsureTrailingSlash() + Constants.ProtocolRoutePaths.AuthorizeCallback;
             returnUrl = returnUrl.AddQueryString(_request.Raw.ToQueryString());
 
             var consentUrl = _options.UserInteraction.ConsentUrl;
@@ -69,7 +69,7 @@ namespace IdentityServer4.Endpoints.Results
             var url = consentUrl.AddQueryString(_options.UserInteraction.ConsentReturnUrlParameter, returnUrl);
             context.Response.RedirectToAbsoluteUrl(url);
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

@@ -9,7 +9,7 @@ using System.Security.Claims;
 
 namespace IdentityServer4.IntegrationTests.Clients
 {
-    static class Users
+    internal static class Users
     {
         public static List<TestUser> Get()
         {

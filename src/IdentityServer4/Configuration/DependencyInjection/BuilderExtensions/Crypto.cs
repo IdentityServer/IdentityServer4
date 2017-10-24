@@ -9,8 +9,10 @@ using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using Newtonsoft.Json.Serialization;
 using CryptoRandom = IdentityModel.CryptoRandom;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -28,9 +30,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IIdentityServerBuilder AddSigningCredential(this IIdentityServerBuilder builder, SigningCredentials credential)
         {
-            // todo
+            // todo dom
             if (!(credential.Key is AsymmetricSecurityKey
-                || (credential.Key is JsonWebKey && ((JsonWebKey)credential.Key).HasPrivateKey)))
+                || credential.Key is JsonWebKey && ((JsonWebKey)credential.Key).HasPrivateKey))
             //&& !credential.Key.IsSupportedAlgorithm(SecurityAlgorithms.RsaSha256Signature))
             {
                 throw new InvalidOperationException("Signing key is not asymmetric");
@@ -72,31 +74,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <exception cref="InvalidOperationException">certificate: '{name}'</exception>
         public static IIdentityServerBuilder AddSigningCredential(this IIdentityServerBuilder builder, string name, StoreLocation location = StoreLocation.LocalMachine, NameType nameType = NameType.SubjectDistinguishedName)
         {
-            X509Certificate2 certificate = null;
-
-            if (location == StoreLocation.LocalMachine)
-            {
-                if (nameType == NameType.SubjectDistinguishedName)
-                {
-                    certificate = X509.LocalMachine.My.SubjectDistinguishedName.Find(name, validOnly: false).FirstOrDefault();
-                }
-                else if (nameType == NameType.Thumbprint)
-                {
-                    certificate = X509.LocalMachine.My.Thumbprint.Find(name, validOnly: false).FirstOrDefault();
-                }
-            }
-            else
-            {
-                if (nameType == NameType.SubjectDistinguishedName)
-                {
-                    certificate = X509.CurrentUser.My.SubjectDistinguishedName.Find(name, validOnly: false).FirstOrDefault();
-                }
-                else if (nameType == NameType.Thumbprint)
-                {
-                    certificate = X509.CurrentUser.My.Thumbprint.Find(name, validOnly: false).FirstOrDefault();
-                }
-            }
-
+            var certificate = FindCertificate(name, location, nameType);
             if (certificate == null) throw new InvalidOperationException($"certificate: '{name}' not found in certificate store");
 
             return builder.AddSigningCredential(certificate);
@@ -124,21 +102,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Sets the temporary signing credential.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        /// <returns></returns>
-        public static IIdentityServerBuilder AddTemporarySigningCredential(this IIdentityServerBuilder builder)
-        {
-            var key = CreateRsaSecurityKey();
-
-            return builder.AddSigningCredential(new SigningCredentials(key, "RS256"));
-        }
-
-        /// <summary>
-        /// Sets the temporary signing credential.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
+        /// <param name="persistKey">Specifies if the temporary key should be persisted to disk.</param>
         /// <param name="filename">The filename.</param>
         /// <returns></returns>
-        public static IIdentityServerBuilder AddDeveloperSigningCredential(this IIdentityServerBuilder builder, string filename = null)
+        public static IIdentityServerBuilder AddDeveloperSigningCredential(this IIdentityServerBuilder builder, bool persistKey = true, string filename = null)
         {
             if (filename == null)
             {
@@ -148,14 +115,20 @@ namespace Microsoft.Extensions.DependencyInjection
             if (File.Exists(filename))
             {
                 var keyFile = File.ReadAllText(filename);
-                var tempKey = JsonConvert.DeserializeObject<TemporaryRsaKey>(keyFile);
+                var tempKey = JsonConvert.DeserializeObject<TemporaryRsaKey>(keyFile, new JsonSerializerSettings { ContractResolver = new RsaKeyContractResolver() });
 
                 return builder.AddSigningCredential(CreateRsaSecurityKey(tempKey.Parameters, tempKey.KeyId));
             }
             else
             {
                 var key = CreateRsaSecurityKey();
-                var parameters = key.Rsa.ExportParameters(includePrivateParameters: true);
+
+                RSAParameters parameters;
+
+                if (key.Rsa != null)
+                    parameters = key.Rsa.ExportParameters(includePrivateParameters: true);
+                else
+                    parameters = key.Parameters;
 
                 var tempKey = new TemporaryRsaKey
                 {
@@ -163,7 +136,11 @@ namespace Microsoft.Extensions.DependencyInjection
                     KeyId = key.KeyId
                 };
 
-                File.WriteAllText(filename, JsonConvert.SerializeObject(tempKey));
+                if (persistKey)
+                {
+                    File.WriteAllText(filename, JsonConvert.SerializeObject(tempKey, new JsonSerializerSettings { ContractResolver = new RsaKeyContractResolver() }));
+                }
+                
                 return builder.AddSigningCredential(key);
             }
         }
@@ -191,31 +168,23 @@ namespace Microsoft.Extensions.DependencyInjection
         public static RsaSecurityKey CreateRsaSecurityKey()
         {
             var rsa = RSA.Create();
+            RsaSecurityKey key;
 
-#if NET452
-            if (rsa.KeySize < 2048)
+            if (rsa is RSACryptoServiceProvider)
             {
                 rsa.Dispose();
-                rsa = new RSACryptoServiceProvider(2048);
-            }
-#endif
-            RsaSecurityKey key = null;
-#if NET452
-            if (rsa is RSACryptoServiceProvider) 
-            {
-                var parameters = rsa.ExportParameters(includePrivateParameters: true);
+                var cng = new RSACng(2048);
+
+                var parameters = cng.ExportParameters(includePrivateParameters: true);
                 key = new RsaSecurityKey(parameters);
-                        
-                rsa.Dispose();
-            }   
-#endif
-            if (key == null)
+            }
+            else
             {
+                rsa.KeySize = 2048;
                 key = new RsaSecurityKey(rsa);
             }
 
             key.KeyId = CryptoRandom.CreateUniqueId(16);
-
             return key;
         }
 
@@ -232,11 +201,83 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
+        /// <summary>
+        /// Adds the validation key.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="certificate">The certificate.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static IIdentityServerBuilder AddValidationKey(this IIdentityServerBuilder builder, X509Certificate2 certificate)
+        {
+            if (certificate == null) throw new ArgumentNullException(nameof(certificate));
+
+            var key = new X509SecurityKey(certificate);
+            return builder.AddValidationKeys(key);
+        }
+
+        /// <summary>
+        /// Adds the validation key from the certificate store.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="name">The name.</param>
+        /// <param name="location">The location.</param>
+        /// <param name="nameType">Name parameter can be either a distinguished name or a thumbprint</param>
+        public static IIdentityServerBuilder AddValidationKey(this IIdentityServerBuilder builder, string name, StoreLocation location = StoreLocation.LocalMachine, NameType nameType = NameType.SubjectDistinguishedName)
+        {
+            var certificate = FindCertificate(name, location, nameType);
+            if (certificate == null) throw new InvalidOperationException($"certificate: '{name}' not found in certificate store");
+
+            return builder.AddValidationKey(certificate);
+        }
+
+        private static X509Certificate2 FindCertificate(string name, StoreLocation location, NameType nameType)
+        {
+            X509Certificate2 certificate = null;
+
+            if (location == StoreLocation.LocalMachine)
+            {
+                if (nameType == NameType.SubjectDistinguishedName)
+                {
+                    certificate = X509.LocalMachine.My.SubjectDistinguishedName.Find(name, validOnly: false).FirstOrDefault();
+                }
+                else if (nameType == NameType.Thumbprint)
+                {
+                    certificate = X509.LocalMachine.My.Thumbprint.Find(name, validOnly: false).FirstOrDefault();
+                }
+            }
+            else
+            {
+                if (nameType == NameType.SubjectDistinguishedName)
+                {
+                    certificate = X509.CurrentUser.My.SubjectDistinguishedName.Find(name, validOnly: false).FirstOrDefault();
+                }
+                else if (nameType == NameType.Thumbprint)
+                {
+                    certificate = X509.CurrentUser.My.Thumbprint.Find(name, validOnly: false).FirstOrDefault();
+                }
+            }
+
+            return certificate;
+        }
+
         // used for serialization to temporary RSA key
         private class TemporaryRsaKey
         {
             public string KeyId { get; set; }
             public RSAParameters Parameters { get; set; }
+        }
+
+        private class RsaKeyContractResolver : DefaultContractResolver
+        {
+            protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
+            {
+                var property = base.CreateProperty(member, memberSerialization);
+
+                property.Ignored = false;
+
+                return property;
+            }
         }
     }
 

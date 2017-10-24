@@ -12,7 +12,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using IdentityServer4.Extensions;
 using System;
-using IdentityServer4.Services;
+using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.Endpoints.Results
 {
@@ -37,23 +37,23 @@ namespace IdentityServer4.Endpoints.Results
         internal EndSessionResult(
             EndSessionValidationResult result,
             IdentityServerOptions options,
-            IClientSessionService clientSessionService,
+            ISystemClock clock,
             IMessageStore<LogoutMessage> logoutMessageStore)
             : this(result)
         {
             _options = options;
-            _clientSessionService = clientSessionService;
+            _clock = clock;
             _logoutMessageStore = logoutMessageStore;
         }
 
         private IdentityServerOptions _options;
+        private ISystemClock _clock;
         private IMessageStore<LogoutMessage> _logoutMessageStore;
-        private IClientSessionService _clientSessionService;
 
-        void Init(HttpContext context)
+        private void Init(HttpContext context)
         {
             _options = _options ?? context.RequestServices.GetRequiredService<IdentityServerOptions>();
-            _clientSessionService = _clientSessionService ?? context.RequestServices.GetRequiredService<IClientSessionService>();
+            _clock = _clock ?? context.RequestServices.GetRequiredService<ISystemClock>();
             _logoutMessageStore = _logoutMessageStore ?? context.RequestServices.GetRequiredService<IMessageStore<LogoutMessage>>();
         }
 
@@ -72,11 +72,12 @@ namespace IdentityServer4.Endpoints.Results
 
             if (validatedRequest != null)
             {
-                var msg = new MessageWithId<LogoutMessage>(new LogoutMessage(validatedRequest));
-                id = msg.Id;
-
-                await _logoutMessageStore.WriteAsync(id, msg);
-                await _clientSessionService.EnsureClientListCookieAsync(validatedRequest.SessionId);
+                var logoutMessage = new LogoutMessage(validatedRequest);
+                if (logoutMessage.ContainsPayload)
+                {
+                    var msg = new Message<LogoutMessage>(logoutMessage, _clock.UtcNow.UtcDateTime);
+                    id = await _logoutMessageStore.WriteAsync(msg);
+                }
             }
 
             var redirect = _options.UserInteraction.LogoutUrl;

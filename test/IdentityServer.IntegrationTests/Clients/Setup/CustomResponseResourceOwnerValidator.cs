@@ -29,7 +29,7 @@ namespace IdentityServer4.IntegrationTests.Clients
                 context.Result = new GrantValidationResult(TokenRequestErrors.InvalidGrant, "invalid_credential", response);
             }
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

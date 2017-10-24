@@ -13,18 +13,20 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using Xunit;
+using IdentityServer.UnitTests.Common;
 
 namespace IdentityServer4.UnitTests.ResponseHandling
 {
     public class AuthorizeInteractionResponseGeneratorTests_Login
     {
-        IdentityServerOptions _options = new IdentityServerOptions();
-        AuthorizeInteractionResponseGenerator _subject;
-        MockConsentService _mockConsentService = new MockConsentService();
+        private IdentityServerOptions _options = new IdentityServerOptions();
+        private AuthorizeInteractionResponseGenerator _subject;
+        private MockConsentService _mockConsentService = new MockConsentService();
 
         public AuthorizeInteractionResponseGeneratorTests_Login()
         {
             _subject = new AuthorizeInteractionResponseGenerator(
+                new StubClock(),
                 TestLogger.Create<AuthorizeInteractionResponseGenerator>(),
                 _mockConsentService,
                 new MockProfileService());
@@ -89,6 +91,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
                 Subject = IdentityServerPrincipal.Create("123", "dom"),
                 Client = new Client
                 {
+                    EnableLocalLogin = false,
                     IdentityProviderRestrictions = new List<string> 
                     {
                         "some_idp"

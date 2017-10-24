@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,17 @@ namespace IdentityServer4.Stores
         /// </summary>
         public InMemoryResourcesStore(IEnumerable<IdentityResource> identityResources = null, IEnumerable<ApiResource> apiResources = null)
         {
+
+            if (identityResources?.HasDuplicates(m => m.Name) == true)
+            {
+                throw new ArgumentException("Identity resources must not contain duplicate names");
+            }
+
+            if (apiResources?.HasDuplicates(m => m.Name) == true)
+            {
+                throw new ArgumentException("Api resources must not contain duplicate names");
+            }
+
             _identityResources = identityResources ?? Enumerable.Empty<IdentityResource>();
             _apiResources = apiResources ?? Enumerable.Empty<ApiResource>();
         }
@@ -31,7 +43,7 @@ namespace IdentityServer4.Stores
         /// Gets all resources.
         /// </summary>
         /// <returns></returns>
-        public Task<Resources> GetAllResources()
+        public Task<Resources> GetAllResourcesAsync()
         {
             var result = new Resources(_identityResources, _apiResources);
             return Task.FromResult(result);
@@ -78,8 +90,8 @@ namespace IdentityServer4.Stores
             if (names == null) throw new ArgumentNullException(nameof(names));
 
             var api = from a in _apiResources
-                      from s in a.Scopes
-                      where names.Contains(s.Name)
+                      let scopes = (from s in a.Scopes where names.Contains(s.Name) select s)
+                      where scopes.Any()
                       select a;
 
             return Task.FromResult(api);

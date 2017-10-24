@@ -24,7 +24,7 @@ namespace IdentityServer4.IntegrationTests.Clients
                 context.Result = new GrantValidationResult(Models.TokenRequestErrors.InvalidGrant, "invalid_custom_credential");
             }
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         public string GrantType =>  "custom";

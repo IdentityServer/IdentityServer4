@@ -15,10 +15,10 @@ namespace IdentityServer4.UnitTests.Validation.Secrets
 {
     public class PlainTextClientSecretValidation
     {
-        const string Category = "Secrets - PlainText Shared Secret Validation";
+        private const string Category = "Secrets - PlainText Shared Secret Validation";
 
-        ISecretValidator _validator = new PlainTextSharedSecretValidator(new Logger<PlainTextSharedSecretValidator>(new LoggerFactory()));
-        IClientStore _clients = new InMemoryClientStore(ClientValidationTestClients.Get());
+        private ISecretValidator _validator = new PlainTextSharedSecretValidator(new Logger<PlainTextSharedSecretValidator>(new LoggerFactory()));
+        private IClientStore _clients = new InMemoryClientStore(ClientValidationTestClients.Get());
 
         [Fact]
         [Trait("Category", Category)]

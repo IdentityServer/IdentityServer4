@@ -50,7 +50,7 @@ Then register the test users with IdentityServer::
     {
         // configure identity server with in-memory stores, keys, clients and scopes
         services.AddIdentityServer()
-            .AddTemporarySigningCredential()
+            .AddDeveloperSigningCredential()
             .AddInMemoryApiResources(Config.GetApiResources())
             .AddInMemoryClients(Config.GetClients())
             .AddTestUsers(Config.GetUsers());

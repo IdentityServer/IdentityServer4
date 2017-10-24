@@ -6,7 +6,6 @@ using System;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Extensions;
-using Microsoft.AspNetCore.Http;
 using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
 
@@ -14,17 +13,17 @@ namespace IdentityServer4.Services
 {
     internal class OidcReturnUrlParser : IReturnUrlParser
     {
-        private readonly IHttpContextAccessor _context;
-        private readonly ILogger _logger;
         private readonly IAuthorizeRequestValidator _validator;
+        private readonly IUserSession _userSession;
+        private readonly ILogger _logger;
 
         public OidcReturnUrlParser(
-            IHttpContextAccessor httpContext, 
             IAuthorizeRequestValidator validator,
+            IUserSession userSession,
             ILogger<OidcReturnUrlParser> logger)
         {
-            _context = httpContext;
             _validator = validator;
+            _userSession = userSession;
             _logger = logger;
         }
 
@@ -33,7 +32,7 @@ namespace IdentityServer4.Services
             if (IsValidReturnUrl(returnUrl))
             {
                 var parameters = returnUrl.ReadQueryStringAsNameValueCollection();
-                var user = await _context.HttpContext.GetIdentityServerUserAsync();
+                var user = await _userSession.GetUserAsync();
                 var result = await _validator.ValidateAsync(parameters, user);
                 if (!result.IsError)
                 {
@@ -57,8 +56,7 @@ namespace IdentityServer4.Services
                 }
 
                 if (returnUrl.EndsWith(Constants.ProtocolRoutePaths.Authorize, StringComparison.Ordinal) ||
-                    returnUrl.EndsWith(Constants.ProtocolRoutePaths.AuthorizeAfterLogin, StringComparison.Ordinal) ||
-                    returnUrl.EndsWith(Constants.ProtocolRoutePaths.AuthorizeAfterConsent, StringComparison.Ordinal))
+                    returnUrl.EndsWith(Constants.ProtocolRoutePaths.AuthorizeCallback, StringComparison.Ordinal))
                 {
                     _logger.LogTrace("returnUrl is valid");
                     return true;

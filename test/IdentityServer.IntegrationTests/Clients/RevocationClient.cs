@@ -14,9 +14,9 @@ namespace IdentityServer4.IntegrationTests.Clients
 {
     public class RevocationClient
     {
-        const string TokenEndpoint = "https://server/connect/token";
-        const string RevocationEndpoint = "https://server/connect/revocation";
-        const string IntrospectionEndpoint = "https://server/connect/introspect";
+        private const string TokenEndpoint = "https://server/connect/token";
+        private const string RevocationEndpoint = "https://server/connect/revocation";
+        private const string IntrospectionEndpoint = "https://server/connect/introspect";
 
         private readonly HttpClient _client;
         private readonly HttpMessageHandler _handler;
