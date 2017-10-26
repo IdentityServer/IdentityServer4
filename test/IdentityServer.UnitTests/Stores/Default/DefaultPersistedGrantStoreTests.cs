@@ -26,7 +26,7 @@ namespace IdentityServer4.UnitTests.Stores.Default
         private IUserConsentStore _userConsent;
         private StubHandleGenerationService _stubHandleGenerationService = new StubHandleGenerationService();
 
-        private ClaimsPrincipal _user = IdentityServerPrincipal.Create("123", "bob");
+        private ClaimsPrincipal _user = new IdentityServerUser("123").CreatePrincipal();
 
         public DefaultPersistedGrantStoreTests()
         {

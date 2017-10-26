@@ -34,7 +34,7 @@ namespace IdentityServer4.UnitTests.Services.Default
         {
             _mockAuthenticationHandlerProvider.Handler = _mockAuthenticationHandler;
 
-            _user = IdentityServerPrincipal.Create("123", "bob");
+            _user = new IdentityServerUser("123").CreatePrincipal();
             _subject = new DefaultUserSession(
                 _mockHttpContext, 
                 _mockAuthenticationSchemeProvider,
@@ -85,7 +85,7 @@ namespace IdentityServer4.UnitTests.Services.Default
             _props.Items.Add(DefaultUserSession.SessionIdKey, "999");
             _mockAuthenticationHandler.Result = AuthenticateResult.Success(new AuthenticationTicket(_user, _props, "scheme"));
 
-            await _subject.CreateSessionIdAsync(IdentityServerPrincipal.Create("alice", "alice"), _props);
+            await _subject.CreateSessionIdAsync(new IdentityServerUser("alice").CreatePrincipal(), _props);
 
             _props.Items[DefaultUserSession.SessionIdKey].Should().NotBeNull();
             _props.Items[DefaultUserSession.SessionIdKey].Should().NotBe("999");

@@ -69,6 +69,8 @@ namespace IdentityServer4.Test
         /// <returns></returns>
         public virtual Task IsActiveAsync(IsActiveContext context)
         {
+            Logger.LogDebug("IsActive called from: {caller}", context.Caller);
+
             var user = Users.FindBySubjectId(context.Subject.GetSubjectId());
             context.IsActive = user?.IsActive == true;
 

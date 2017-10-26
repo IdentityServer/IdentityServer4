@@ -127,7 +127,7 @@ namespace IdentityServer4.UnitTests.Validation.Secrets
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task Client_with_no_Secret_Should_Throw()
+        public async Task Client_with_no_Secret_Should_Fail()
         {
             var clientId = "no_secret_client";
             var client = await _clients.FindEnabledClientByIdAsync(clientId);
@@ -138,9 +138,8 @@ namespace IdentityServer4.UnitTests.Validation.Secrets
                 Type = IdentityServerConstants.ParsedSecretTypes.SharedSecret
             };
 
-            Func<Task> act = () => _validator.ValidateAsync(client.ClientSecrets, secret);
-
-            act.ShouldThrow<ArgumentException>();
+            var result = await _validator.ValidateAsync(client.ClientSecrets, secret);
+            result.Success.Should().BeFalse();
         }
     }
 }

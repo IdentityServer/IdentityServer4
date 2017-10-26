@@ -38,13 +38,17 @@ namespace IdentityServer4.UnitTests.Services.Default
                 ClientId = "client"
             };
 
-            _user = IdentityServerPrincipal.Create("bob", "bob", new Claim[] {
-                new Claim("foo", "foo1"),
-                new Claim("foo", "foo2"),
-                new Claim("bar", "bar1"),
-                new Claim("bar", "bar2"),
-                new Claim(JwtClaimTypes.AuthenticationContextClassReference, "acr1")
-            });
+            _user = new IdentityServerUser("bob")
+            {
+                AdditionalClaims =
+                {
+                    new Claim("foo", "foo1"),
+                    new Claim("foo", "foo2"),
+                    new Claim("bar", "bar1"),
+                    new Claim("bar", "bar2"),
+                    new Claim(JwtClaimTypes.AuthenticationContextClassReference, "acr1")
+                }
+            }.CreatePrincipal();
 
             _subject = new DefaultConsentService(_clock, _userConsentStore, TestLogger.Create<DefaultConsentService>());
         }

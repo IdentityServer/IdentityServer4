@@ -41,7 +41,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
         private AuthorizeCallbackEndpoint _subject;
 
-        private ClaimsPrincipal _user = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
+        private ClaimsPrincipal _user = new IdentityServerUser("bob").CreatePrincipal();
 
         private ValidatedAuthorizeRequest _validatedAuthorizeRequest;
 

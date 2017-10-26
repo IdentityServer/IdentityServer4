@@ -275,9 +275,7 @@ namespace IdentityServer4.IntegrationTests.Common
 
         public async Task LoginAsync(string subject)
         {
-            var user = Users.Single(x => x.SubjectId == subject);
-            var name = user.Claims.Where(x => x.Type == "name").Select(x => x.Value).FirstOrDefault() ?? user.Username;
-            await LoginAsync(IdentityServerPrincipal.Create(subject, name));
+            await LoginAsync(new IdentityServerUser(subject).CreatePrincipal());
         }
 
         public void RemoveLoginCookie()
