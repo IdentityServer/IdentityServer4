@@ -544,6 +544,24 @@ namespace IdentityServer4.Validation
 
             if (result.Subject != null)
             {
+                /////////////////////////////////////////////
+                // make sure user is enabled
+                /////////////////////////////////////////////
+                var isActiveCtx = new IsActiveContext(
+                    result.Subject, 
+                    _validatedRequest.Client, 
+                    IdentityServerConstants.ProfileIsActiveCallers.ExtensionGrantValidation);
+
+                await _profile.IsActiveAsync(isActiveCtx);
+
+                if (isActiveCtx.IsActive == false)
+                {
+                    // todo: raise event?
+
+                    LogError("User has been disabled: {subjectId}", result.Subject.GetSubjectId());
+                    return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+                }
+
                 _validatedRequest.Subject = result.Subject;
             }
 
