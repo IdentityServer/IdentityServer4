@@ -174,6 +174,11 @@ endpoint addresses can be read from the metadata::
 
     // discover endpoints from metadata
     var disco = await DiscoveryClient.GetAsync("http://localhost:5000");
+    if (disco.IsError)
+    {
+        Console.WriteLine(disco.Error);
+        return;
+    }
 
 Next you can use the ``TokenClient`` class to request the token.
 To create an instance you need to pass in the token endpoint address, client id and secret.
