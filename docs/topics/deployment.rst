@@ -30,7 +30,7 @@ You can also build your own configuration stores by implementing ``IResourceStor
 
 Another important piece of startup configuration is your key material, see :ref:`here <refCrypto>` for more details on key material and cryptography.
 
-operational data
+Operational data
 ^^^^^^^^^^^^^^^^
 For certain operations, IdentityServer needs a persistence store to keep state, this includes:
 
