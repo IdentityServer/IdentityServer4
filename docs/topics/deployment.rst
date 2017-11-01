@@ -3,34 +3,49 @@ Deployment
 Your identity server is `just` a standard ASP.NET Core appplication including the IdentityServer middleware.
 Read the official Microsoft `documentation <https://docs.microsoft.com/en-us/aspnet/core/publishing>`_ on publishing and deployment first.
 
-The two most common task for deploying to load-balanced environment is configuration of `data protection <https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/configuration/default-settings>`_, 
-and setting the right `protocol scheme/host name behind load-balancers <https://docs.microsoft.com/en-us/aspnet/core/publishing/linuxproduction?tabs=aspnetcore2x>`_.
+Typical architecture
+^^^^^^^^^^^^^^^^^^^^
+Typically you will design your IdentityServer deployment for high availability:
 
-.. note:: If setting the public origin behind a reverse-proxy or load balancer does not work for you, you can hard-code the host name using the ``PublicOrigin`` property on the ``IdentityServerOptions``.
+.. image:: images/deployment.png
 
-IdentityServer configuration data
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+IdentityServer itself is stateless and does not require server affinity - but there is data that needs to be shared between the instances.
+
+Configuration data
+^^^^^^^^^^^^^^^^^^
 This typically includes:
 
 * resources
 * clients
-* startup configuration, e.g. key material
+* startup configuration, e.g. key material, external provider settings etc...
 
-All of that configuration data must be shared by all instances running your identity server. For resources and clients you can either implement
-``IResourceStore`` and ``IClientStore`` from scratch - or you can use our built-in support for `Entity Framework <https://github.com/IdentityServer/IdentityServer4.EntityFramework>`_ based databases.
+The way you store that data depends on your environment. In situations where configuration data rarely changes we recommend using the in-memory stores and code or configuration files.
 
-Startup configuration is often either hardcoded or loaded from a configuration file or environment variables. You can use the standard
-ASP.NET Core configuration system for that (see `documentation <https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration>`_).
+In highly dynamic environments (e.g. Saas) we recommend using a database or configuration service to load configuration dynamically.
 
-One important piece of startup configuration is your key material, see :ref:`here <refCrypto>` for more details on key material and cryptography.
+IdentityServer supports code configuration and configuration files (see `here <https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration>`_) out of the box. 
+For databases we provide support for `Entity Framework Core <https://github.com/IdentityServer/IdentityServer4.EntityFramework>`_ based databases.
 
-IdentityServer operational data
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+You can also build your own configuration stores by implementing ``IResourceStore`` and ``IClientStore``.
+
+Another important piece of startup configuration is your key material, see :ref:`here <refCrypto>` for more details on key material and cryptography.
+
+operational data
+^^^^^^^^^^^^^^^^
 For certain operations, IdentityServer needs a persistence store to keep state, this includes:
 
 * issuing authorization codes
 * issuing reference and refresh tokens
 * storing consent
 
-If any of the above features are used, you need an implementation of ``IPersistedGrantStore`` - by default IdentityServer injects an in-memory version.
-Again you can use our EF Core based one, build one from scratch, or use a community contribution.
+You can either use a traditional database for storing operational data, or use a cache with persistence features like Redis. 
+The EF Core implementation mentioned above has also support for operational data.
+
+You can also implement support for your own custom storage mechanism by implementing ``IPersistedGrantStore`` - by default IdentityServer injects an in-memory version.
+
+ASP.NET Core data protection
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ASP.NET Core itself needs shared key material for protecting sensitive data like cookies, state strings etc.
+See the official docs `here <https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/>`_).
+
+You can either re-use one of the above persistence store or use something simple like a shared file if possible.
