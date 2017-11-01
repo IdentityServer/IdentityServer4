@@ -46,6 +46,6 @@ You can also implement support for your own custom storage mechanism by implemen
 ASP.NET Core data protection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ASP.NET Core itself needs shared key material for protecting sensitive data like cookies, state strings etc.
-See the official docs `here <https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/>`_).
+See the official docs `here <https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/>`_.
 
 You can either re-use one of the above persistence store or use something simple like a shared file if possible.
