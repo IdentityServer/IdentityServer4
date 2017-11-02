@@ -1,5 +1,6 @@
 Community quickstarts & samples
 ===============================
+These samples are not maintained by the IdentityServer organization. Please contact the authors directly.
 
 Various ASP.NET Core security samples
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
