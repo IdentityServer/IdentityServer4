@@ -43,8 +43,7 @@ This is important so the existing clients and api projects will continue to work
 Add IdentityServer packages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Add the ``IdentityServer4.AspNetIdentity`` NuGet package.
-This depends on the ``IdentityServer4`` package, so that's automatically added as a transitive dependency.
+Add the ``IdentityServer4.AspNetIdentity`` NuGet package. If the ``IdentityServer4`` NuGet package is not installed along with ``IdentityServer4.AspNetIdentity`` (as a transitive dependency), select and install the ``IdentityServer4`` NuGet package as well.
 
 .. image:: images/6_nuget.png
 
