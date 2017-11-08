@@ -87,23 +87,6 @@ namespace IdentityServer4.Validation
                 }
             }
 
-            // make sure client is still active (if client_id claim is present)
-            var clientClaim = result.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.ClientId);
-            if (clientClaim != null)
-            {
-                var client = await Clients.FindEnabledClientByIdAsync(clientClaim.Value);
-                if (client == null)
-                {
-                    Logger.LogError("Client deleted or disabled: {clientId}", clientClaim.Value);
-
-                    result.IsError = true;
-                    result.Error = OidcConstants.ProtectedResourceErrors.InvalidToken;
-                    result.Claims = null;
-
-                    return result;
-                }
-            }
-
             return result;
         }
 

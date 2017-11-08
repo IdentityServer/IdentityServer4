@@ -178,6 +178,24 @@ namespace IdentityServer4.Validation
                 return result;
             }
 
+            // make sure client is still active (if client_id claim is present)
+            var clientClaim = result.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.ClientId);
+            if (clientClaim != null)
+            {
+                var client = await _clients.FindEnabledClientByIdAsync(clientClaim.Value);
+                if (client == null)
+                {
+                    _logger.LogError("Client deleted or disabled: {clientId}", clientClaim.Value);
+
+                    result.IsError = true;
+                    result.Error = OidcConstants.ProtectedResourceErrors.InvalidToken;
+                    result.Claims = null;
+
+                    return result;
+                }
+            }
+
+            // check expected scope(s)
             if (expectedScope.IsPresent())
             {
                 var scope = result.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Scope && c.Value == expectedScope);
