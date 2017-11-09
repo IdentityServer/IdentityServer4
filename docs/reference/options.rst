@@ -13,7 +13,7 @@ Endpoints
 ^^^^^^^^^
 Allows enabling/disabling individual endpoints, e.g. token, authorize, userinfo etc.
 
-By default all endpoints are enabled, but you can lock down your server by disbling endpoint that you don't need.
+By default all endpoints are enabled, but you can lock down your server by disabling endpoint that you don't need.
 
 Discovery
 ^^^^^^^^^
