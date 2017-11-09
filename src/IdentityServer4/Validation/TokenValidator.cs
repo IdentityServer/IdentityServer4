@@ -109,6 +109,27 @@ namespace IdentityServer4.Validation
 
             _log.Claims = result.Claims.ToClaimsDictionary();
 
+            // make sure user is still active (if sub claim is present)
+            var subClaim = result.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject);
+            if (subClaim != null)
+            {
+                var principal = Principal.Create("tokenvalidator", result.Claims.ToArray());
+
+                var isActiveCtx = new IsActiveContext(principal, result.Client, IdentityServerConstants.ProfileIsActiveCallers.IdentityTokenValidation);
+                await _profile.IsActiveAsync(isActiveCtx);
+
+                if (isActiveCtx.IsActive == false)
+                {
+                    _logger.LogError("User marked as not active: {subject}", subClaim.Value);
+
+                    result.IsError = true;
+                    result.Error = OidcConstants.ProtectedResourceErrors.InvalidToken;
+                    result.Claims = null;
+
+                    return result;
+                }
+            }
+
             _logger.LogDebug("Calling into custom token validator: {type}", _customValidator.GetType().FullName);
             var customResult = await _customValidator.ValidateIdentityTokenAsync(result);
 
@@ -346,7 +367,7 @@ namespace IdentityServer4.Validation
         public async Task<TokenValidationResult> ValidateRefreshTokenAsync(string tokenHandle, Client client = null)
         {
             _logger.LogTrace("Start refresh token validation");
-            
+
             /////////////////////////////////////////////
             // check if refresh token is valid
             /////////////////////////////////////////////
@@ -396,8 +417,8 @@ namespace IdentityServer4.Validation
             // make sure user is enabled
             /////////////////////////////////////////////
             var isActiveCtx = new IsActiveContext(
-                refreshToken.Subject, 
-                client, 
+                refreshToken.Subject,
+                client,
                 IdentityServerConstants.ProfileIsActiveCallers.RefreshTokenValidation);
             await _profile.IsActiveAsync(isActiveCtx);
 
@@ -410,7 +431,7 @@ namespace IdentityServer4.Validation
             _log.Claims = refreshToken.Subject.Claims.ToClaimsDictionary();
 
             LogSuccess();
-            
+
             return new TokenValidationResult
             {
                 IsError = false,
