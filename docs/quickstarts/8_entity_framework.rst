@@ -69,7 +69,7 @@ We will replace them with this code::
     // configure identity server with in-memory stores, keys, clients and scopes
     services.AddIdentityServer()
         .AddDeveloperSigningCredential()
-        .AddTestUsers(Config.GetUsers())
+        .AddAspNetIdentity<ApplicationUser>()
         // this adds the config data from DB (clients, resources)
         .AddConfigurationStore(options =>
         {
@@ -183,7 +183,7 @@ And then we can invoke this from the ``Configure`` method::
     }
 
 Now if you run the IdentityServer project, the database should be created and seeded with the quickstart configuration data.
-You should be able to use SqlServer Management Studio or Visual Studio to connect and inspect the data.
+You should be able to use SQL Server Management Studio or Visual Studio to connect and inspect the data.
 
 .. image:: images/8_database.png
 
