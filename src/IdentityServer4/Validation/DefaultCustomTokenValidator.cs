@@ -54,40 +54,9 @@ namespace IdentityServer4.Validation
         /// <returns>
         /// The validation result
         /// </returns>
-        public virtual async Task<TokenValidationResult> ValidateAccessTokenAsync(TokenValidationResult result)
+        public virtual Task<TokenValidationResult> ValidateAccessTokenAsync(TokenValidationResult result)
         {
-            if (result.IsError)
-            {
-                return result;
-            }
-
-            // make sure user is still active (if sub claim is present)
-            var subClaim = result.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject);
-            if (subClaim != null)
-            {
-                var principal = Principal.Create("tokenvalidator", result.Claims.ToArray());
-
-                if (result.ReferenceTokenId.IsPresent())
-                {
-                    principal.Identities.First().AddClaim(new Claim(JwtClaimTypes.ReferenceTokenId, result.ReferenceTokenId));
-                }
-
-                var isActiveCtx = new IsActiveContext(principal, result.Client, IdentityServerConstants.ProfileIsActiveCallers.AccessTokenValidation);
-                await Profile.IsActiveAsync(isActiveCtx);
-                
-                if (isActiveCtx.IsActive == false)
-                {
-                    Logger.LogError("User marked as not active: {subject}", subClaim.Value);
-
-                    result.IsError = true;
-                    result.Error = OidcConstants.ProtectedResourceErrors.InvalidToken;
-                    result.Claims = null;
-
-                    return result;
-                }
-            }
-
-            return result;
+            return Task.FromResult(result);
         }
 
         /// <summary>
