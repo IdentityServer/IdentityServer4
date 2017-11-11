@@ -343,6 +343,25 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 
         [Fact]
         [Trait("Category", Category)]
+        public async Task invalid_redirect_uri_should_not_pass_return_url_to_error_page()
+        {
+            await _mockPipeline.LoginAsync("bob");
+
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: "client1",
+                responseType: "id_token",
+                scope: "openid",
+                redirectUri: "https://invalid",
+                state: "123_state",
+                nonce: "123_nonce");
+            await _mockPipeline.BrowserClient.GetAsync(url);
+
+            _mockPipeline.ErrorWasCalled.Should().BeTrue();
+            _mockPipeline.ErrorMessage.RedirectUri.Should().BeNull();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
         public async Task invalid_client_id_should_show_error_page()
         {
             await _mockPipeline.LoginAsync("bob");
@@ -358,6 +377,25 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
             _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.UnauthorizedClient);
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task invalid_client_id_should_not_pass_return_url_to_error_page()
+        {
+            await _mockPipeline.LoginAsync("bob");
+
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: "client1_invalid",
+                responseType: "id_token",
+                scope: "openid",
+                redirectUri: "https://client1/callback",
+                state: "123_state",
+                nonce: "123_nonce");
+            await _mockPipeline.BrowserClient.GetAsync(url);
+
+            _mockPipeline.ErrorWasCalled.Should().BeTrue();
+            _mockPipeline.ErrorMessage.RedirectUri.Should().BeNull();
         }
 
         [Fact]
@@ -378,6 +416,25 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
             _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("redirect_uri");
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task missing_redirect_uri_should_not_pass_return_url_to_error_page()
+        {
+            await _mockPipeline.LoginAsync("bob");
+
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: "client1_invalid",
+                responseType: "id_token",
+                scope: "openid",
+                //redirectUri: "https://client1/callback",
+                state: "123_state",
+                nonce: "123_nonce");
+            await _mockPipeline.BrowserClient.GetAsync(url);
+
+            _mockPipeline.ErrorWasCalled.Should().BeTrue();
+            _mockPipeline.ErrorMessage.RedirectUri.Should().BeNull();
         }
 
         [Fact]
@@ -423,6 +480,27 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 
         [Fact]
         [Trait("Category", Category)]
+        public async Task disabled_client_should_not_pass_return_url_to_error_page()
+        {
+            await _mockPipeline.LoginAsync("bob");
+
+            _client1.Enabled = false;
+
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: "client1",
+                responseType: "id_token",
+                scope: "openid",
+                redirectUri: "https://client1/callback",
+                state: "123_state",
+                nonce: "123_nonce");
+            await _mockPipeline.BrowserClient.GetAsync(url);
+
+            _mockPipeline.ErrorWasCalled.Should().BeTrue();
+            _mockPipeline.ErrorMessage.RedirectUri.Should().BeNull();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
         public async Task invalid_protocol_for_client_should_show_error_page()
         {
             await _mockPipeline.LoginAsync("bob");
@@ -445,6 +523,27 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 
         [Fact]
         [Trait("Category", Category)]
+        public async Task invalid_protocol_for_client_should_not_pass_return_url_to_error_page()
+        {
+            await _mockPipeline.LoginAsync("bob");
+
+            _client1.ProtocolType = "invalid";
+
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: "client1",
+                responseType: "id_token",
+                scope: "openid",
+                redirectUri: "https://client1/callback",
+                state: "123_state",
+                nonce: "123_nonce");
+            await _mockPipeline.BrowserClient.GetAsync(url);
+
+            _mockPipeline.ErrorWasCalled.Should().BeTrue();
+            _mockPipeline.ErrorMessage.RedirectUri.Should().BeNull();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
         public async Task invalid_response_type_should_show_error_page()
         {
             await _mockPipeline.LoginAsync("bob");
@@ -460,6 +559,25 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
             _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.UnsupportedResponseType);
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task invalid_response_type_should_pass_return_url_to_error_page()
+        {
+            await _mockPipeline.LoginAsync("bob");
+
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: "client1",
+                responseType: "invalid",
+                scope: "openid",
+                redirectUri: "https://client1/callback",
+                state: "123_state",
+                nonce: "123_nonce");
+            await _mockPipeline.BrowserClient.GetAsync(url);
+
+            _mockPipeline.ErrorWasCalled.Should().BeTrue();
+            _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
         }
 
         [Fact]
@@ -485,6 +603,26 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 
         [Fact]
         [Trait("Category", Category)]
+        public async Task invalid_response_mode_for_flow_should_pass_return_url_to_error_page()
+        {
+            await _mockPipeline.LoginAsync("bob");
+
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: "client1",
+                responseType: "id_token",
+                responseMode: "query",
+                scope: "openid",
+                redirectUri: "https://client1/callback",
+                state: "123_state",
+                nonce: "123_nonce");
+            await _mockPipeline.BrowserClient.GetAsync(url);
+
+            _mockPipeline.ErrorWasCalled.Should().BeTrue();
+            _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
         public async Task invalid_response_mode_should_show_error_page()
         {
             await _mockPipeline.LoginAsync("bob");
@@ -502,6 +640,26 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
             _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.UnsupportedResponseType);
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("response_mode");
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task invalid_response_mode_should_pass_return_url_to_error_page()
+        {
+            await _mockPipeline.LoginAsync("bob");
+
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: "client1",
+                responseType: "id_token",
+                responseMode: "invalid",
+                scope: "openid",
+                redirectUri: "https://client1/callback",
+                state: "123_state",
+                nonce: "123_nonce");
+            await _mockPipeline.BrowserClient.GetAsync(url);
+
+            _mockPipeline.ErrorWasCalled.Should().BeTrue();
+            _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
         }
 
         [Fact]
@@ -526,6 +684,25 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 
         [Fact]
         [Trait("Category", Category)]
+        public async Task missing_scope_should_pass_return_url_to_error_page()
+        {
+            await _mockPipeline.LoginAsync("bob");
+
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: "client1",
+                responseType: "id_token",
+                //scope: "openid",
+                redirectUri: "https://client1/callback",
+                state: "123_state",
+                nonce: "123_nonce");
+            await _mockPipeline.BrowserClient.GetAsync(url);
+
+            _mockPipeline.ErrorWasCalled.Should().BeTrue();
+            _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
         public async Task scope_too_long_should_show_error_page()
         {
             await _mockPipeline.LoginAsync("bob");
@@ -542,6 +719,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
             _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("scope");
+            _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
         }
 
         [Fact]
@@ -563,6 +741,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("scope");
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("openid");
+            _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
         }
 
         [Fact]
@@ -583,6 +762,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
             _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.UnauthorizedClient);
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("scope");
+            _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
         }
 
         [Fact]
@@ -604,6 +784,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
             _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("nonce");
+            _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
         }
 
         [Fact]
@@ -624,6 +805,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
             _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("nonce");
+            _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
         }
 
         [Fact]
@@ -645,6 +827,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
             _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("ui_locales");
+            _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
         }
 
         [Fact]
@@ -666,6 +849,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
             _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("max_age");
+            _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
         }
 
         [Fact]
@@ -687,6 +871,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
             _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("max_age");
+            _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
         }
 
         [Fact]
@@ -708,6 +893,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
             _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("login_hint");
+            _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
         }
 
         [Fact]
@@ -729,6 +915,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
             _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("acr_values");
+            _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
         }
     }
 }

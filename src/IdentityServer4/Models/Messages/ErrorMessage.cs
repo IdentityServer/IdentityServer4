@@ -48,5 +48,10 @@ namespace IdentityServer4.Models
         /// The request identifier.
         /// </value>
         public string RequestId { get; set; }
+
+        /// <summary>
+        /// The redirect URI.
+        /// </summary>
+        public string RedirectUri { get; set; }
     }
 }
