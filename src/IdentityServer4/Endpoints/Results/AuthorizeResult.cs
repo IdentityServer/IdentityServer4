@@ -13,41 +13,45 @@ using System;
 using IdentityServer4.Services;
 using IdentityServer4.Configuration;
 using IdentityServer4.Stores;
+using IdentityServer4.ResponseHandling;
+using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.Endpoints.Results
 {
-    class AuthorizeResult : IEndpointResult
+    internal class AuthorizeResult : IEndpointResult
     {
         public AuthorizeResponse Response { get; }
 
         public AuthorizeResult(AuthorizeResponse response)
         {
-            if (response == null) throw new ArgumentNullException(nameof(response));
-
-            Response = response;
+            Response = response ?? throw new ArgumentNullException(nameof(response));
         }
 
         internal AuthorizeResult(
             AuthorizeResponse response,
             IdentityServerOptions options,
-            IClientSessionService clientSession,
-            IMessageStore<ErrorMessage> errorMessageStore)
+            IUserSession userSession,
+            IMessageStore<ErrorMessage> errorMessageStore,
+            ISystemClock clock)
             : this(response)
         {
             _options = options;
-            _clientSession = clientSession;
+            _userSession = userSession;
             _errorMessageStore = errorMessageStore;
+            _clock = clock;
         }
 
         private IdentityServerOptions _options;
-        private IClientSessionService _clientSession;
+        private IUserSession _userSession;
         private IMessageStore<ErrorMessage> _errorMessageStore;
+        private ISystemClock _clock;
 
-        void Init(HttpContext context)
+        private void Init(HttpContext context)
         {
             _options = _options ?? context.RequestServices.GetRequiredService<IdentityServerOptions>();
-            _clientSession = _clientSession ?? context.RequestServices.GetRequiredService<IClientSessionService>();
+            _userSession = _userSession ?? context.RequestServices.GetRequiredService<IUserSession>();
             _errorMessageStore = _errorMessageStore ?? context.RequestServices.GetRequiredService<IMessageStore<ErrorMessage>>();
+            _clock = _clock ?? context.RequestServices.GetRequiredService<ISystemClock>();
         }
 
         public async Task ExecuteAsync(HttpContext context)
@@ -64,7 +68,7 @@ namespace IdentityServer4.Endpoints.Results
             }
         }
 
-        async Task ProcessErrorAsync(HttpContext context)
+        private async Task ProcessErrorAsync(HttpContext context)
         {
             // these are the conditions where we can send a response 
             // back directly to the client, otherwise we're only showing the error UI
@@ -93,7 +97,7 @@ namespace IdentityServer4.Endpoints.Results
             {
                 // success response -- track client authorization for sign-out
                 //_logger.LogDebug("Adding client {0} to client list cookie for subject {1}", request.ClientId, request.Subject.GetSubjectId());
-                await _clientSession.AddClientIdAsync(Response.Request.ClientId);
+                await _userSession.AddClientIdAsync(Response.Request.ClientId);
             }
 
             await RenderAuthorizeResponseAsync(context);
@@ -137,7 +141,7 @@ namespace IdentityServer4.Endpoints.Results
             }
         }
 
-        string BuildRedirectUri()
+        private string BuildRedirectUri()
         {
             var uri = Response.RedirectUri;
             var query = Response.ToNameValueCollection().ToQueryString();
@@ -160,11 +164,11 @@ namespace IdentityServer4.Endpoints.Results
             return uri;
         }
 
-        const string _formPostHtml = "<form method='post' action='{uri}'>{body}</form><script>(function(){document.forms[0].submit();})();</script>";
+        private const string FormPostHtml = "<form method='post' action='{uri}'>{body}</form><script>(function(){document.forms[0].submit();})();</script>";
 
-        string GetFormPostHtml()
+        private string GetFormPostHtml()
         {
-            var html = _formPostHtml;
+            var html = FormPostHtml;
 
             html = html.Replace("{uri}", Response.Request.RedirectUri);
             html = html.Replace("{body}", Response.ToNameValueCollection().ToFormPost());
@@ -172,7 +176,7 @@ namespace IdentityServer4.Endpoints.Results
             return html;
         }
 
-        async Task RedirectToErrorPageAsync(HttpContext context)
+        private async Task RedirectToErrorPageAsync(HttpContext context)
         {
             var errorModel = new ErrorMessage
             {
@@ -181,12 +185,12 @@ namespace IdentityServer4.Endpoints.Results
                 ErrorDescription = Response.ErrorDescription
             };
 
-            var message = new MessageWithId<ErrorMessage>(errorModel);
-            await _errorMessageStore.WriteAsync(message.Id, message);
+            var message = new Message<ErrorMessage>(errorModel, _clock.UtcNow.UtcDateTime);
+            var id = await _errorMessageStore.WriteAsync(message);
 
             var errorUrl = _options.UserInteraction.ErrorUrl;
 
-            var url = errorUrl.AddQueryString(_options.UserInteraction.ErrorIdParameter, message.Id);
+            var url = errorUrl.AddQueryString(_options.UserInteraction.ErrorIdParameter, id);
             context.Response.RedirectToAbsoluteUrl(url);
         }
     }

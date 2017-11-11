@@ -12,7 +12,7 @@ namespace IdentityServer4.UnitTests.Validation
 {
     public class IdentityTokenValidation
     {
-        const string Category = "Identity token validation";
+        private const string Category = "Identity token validation";
 
         static IdentityTokenValidation()
         {

@@ -19,9 +19,9 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
 {
     public class TokenRequestValidation_RefreshToken_Invalid
     {
-        const string Category = "TokenRequest Validation - RefreshToken - Invalid";
+        private const string Category = "TokenRequest Validation - RefreshToken - Invalid";
 
-        IClientStore _clients = Factory.CreateClientStore();
+        private IClientStore _clients = Factory.CreateClientStore();
 
         [Fact]
         [Trait("Category", Category)]
@@ -35,7 +35,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.GrantType, "refresh_token");
             parameters.Add(OidcConstants.TokenRequest.RefreshToken, "nonexistent");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
@@ -55,7 +55,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.GrantType, "refresh_token");
             parameters.Add(OidcConstants.TokenRequest.RefreshToken, longRefreshToken);
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
@@ -84,7 +84,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.GrantType, "refresh_token");
             parameters.Add(OidcConstants.TokenRequest.RefreshToken, handle);
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
@@ -116,7 +116,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.GrantType, "refresh_token");
             parameters.Add(OidcConstants.TokenRequest.RefreshToken, handle);
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
@@ -148,7 +148,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.GrantType, "refresh_token");
             parameters.Add(OidcConstants.TokenRequest.RefreshToken, handle);
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
@@ -184,7 +184,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.GrantType, "refresh_token");
             parameters.Add(OidcConstants.TokenRequest.RefreshToken, handle);
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);

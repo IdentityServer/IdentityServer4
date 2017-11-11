@@ -19,14 +19,14 @@ namespace IdentityServer4.UnitTests.Services.Default
 {
     public class DefaultPersistedGrantServiceTests
     {
-        DefaultPersistedGrantService _subject;
-        InMemoryPersistedGrantStore _store = new InMemoryPersistedGrantStore();
-        IAuthorizationCodeStore _codes;
-        IRefreshTokenStore _refreshTokens;
-        IReferenceTokenStore _referenceTokens;
-        IUserConsentStore _userConsent;
+        private DefaultPersistedGrantService _subject;
+        private InMemoryPersistedGrantStore _store = new InMemoryPersistedGrantStore();
+        private IAuthorizationCodeStore _codes;
+        private IRefreshTokenStore _refreshTokens;
+        private IReferenceTokenStore _referenceTokens;
+        private IUserConsentStore _userConsent;
 
-        ClaimsPrincipal _user = IdentityServerPrincipal.Create("123", "bob");
+        private ClaimsPrincipal _user = new IdentityServerUser("123").CreatePrincipal();
 
         public DefaultPersistedGrantServiceTests()
         {
@@ -57,18 +57,21 @@ namespace IdentityServer4.UnitTests.Services.Default
         {
             await _userConsent.StoreUserConsentAsync(new Consent()
             {
+                CreationTime = DateTime.UtcNow,
                 ClientId = "client1",
                 SubjectId = "123",
                 Scopes = new string[] { "foo1", "foo2" }
             });
             await _userConsent.StoreUserConsentAsync(new Consent()
             {
+                CreationTime = DateTime.UtcNow,
                 ClientId = "client2",
                 SubjectId = "123",
                 Scopes = new string[] { "foo3" }
             });
             await _userConsent.StoreUserConsentAsync(new Consent()
             {
+                CreationTime = DateTime.UtcNow,
                 ClientId = "client1",
                 SubjectId = "456",
                 Scopes = new string[] { "foo3" }
@@ -84,8 +87,8 @@ namespace IdentityServer4.UnitTests.Services.Default
                 {
                     new Claim("sub", "123"),
                     new Claim("scope", "bar1"),
-                    new Claim("scope", "bar2"),
-                },
+                    new Claim("scope", "bar2")
+                }
             });
 
             var handle2 = await _referenceTokens.StoreReferenceTokenAsync(new Token()
@@ -97,8 +100,8 @@ namespace IdentityServer4.UnitTests.Services.Default
                 Claims = new List<Claim>
                 {
                     new Claim("sub", "123"),
-                    new Claim("scope", "bar3"),
-                },
+                    new Claim("scope", "bar3")
+                }
             });
 
             var handle3 = await _referenceTokens.StoreReferenceTokenAsync(new Token()
@@ -110,8 +113,8 @@ namespace IdentityServer4.UnitTests.Services.Default
                 Claims = new List<Claim>
                 {
                     new Claim("sub", "456"),
-                    new Claim("scope", "bar3"),
-                },
+                    new Claim("scope", "bar3")
+                }
             });
 
             var handle4 = await _refreshTokens.StoreRefreshTokenAsync(new RefreshToken()
@@ -146,7 +149,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                     Claims = new List<Claim>
                     {
                         new Claim("sub", "456"),
-                        new Claim("scope", "baz3"),
+                        new Claim("scope", "baz3")
                     }
                 },
                 Version = 1
@@ -164,7 +167,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                     Claims = new List<Claim>
                     {
                         new Claim("sub", "123"),
-                        new Claim("scope", "baz3"),
+                        new Claim("scope", "baz3")
                     }
                 },
                 Version = 1
@@ -199,7 +202,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                 ClientId = "client1",
                 CreationTime = DateTime.UtcNow,
                 Lifetime = 10,
-                Subject = IdentityServerPrincipal.Create("456", "alice"),
+                Subject = new IdentityServerUser("456").CreatePrincipal(),
                 CodeChallenge = "challenge",
                 RedirectUri = "http://client/cb",
                 Nonce = "nonce",
@@ -253,8 +256,8 @@ namespace IdentityServer4.UnitTests.Services.Default
                 {
                     new Claim("sub", "123"),
                     new Claim("scope", "bar1"),
-                    new Claim("scope", "bar2"),
-                },
+                    new Claim("scope", "bar2")
+                }
             });
 
             var handle2 = await _referenceTokens.StoreReferenceTokenAsync(new Token()
@@ -267,8 +270,8 @@ namespace IdentityServer4.UnitTests.Services.Default
                 Claims = new List<Claim>
                 {
                     new Claim("sub", "123"),
-                    new Claim("scope", "bar3"),
-                },
+                    new Claim("scope", "bar3")
+                }
             });
 
             var handle3 = await _referenceTokens.StoreReferenceTokenAsync(new Token()
@@ -281,8 +284,8 @@ namespace IdentityServer4.UnitTests.Services.Default
                 Claims = new List<Claim>
                 {
                     new Claim("sub", "456"),
-                    new Claim("scope", "bar3"),
-                },
+                    new Claim("scope", "bar3")
+                }
             });
 
             var handle4 = await _refreshTokens.StoreRefreshTokenAsync(new RefreshToken()
@@ -317,7 +320,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                     Claims = new List<Claim>
                     {
                         new Claim("sub", "456"),
-                        new Claim("scope", "baz3"),
+                        new Claim("scope", "baz3")
                     }
                 },
                 Version = 1
@@ -335,7 +338,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                     Claims = new List<Claim>
                     {
                         new Claim("sub", "123"),
-                        new Claim("scope", "baz3"),
+                        new Claim("scope", "baz3")
                     }
                 },
                 Version = 1
@@ -370,7 +373,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                 ClientId = "client1",
                 CreationTime = DateTime.UtcNow,
                 Lifetime = 10,
-                Subject = IdentityServerPrincipal.Create("456", "alice"),
+                Subject = new IdentityServerUser("456").CreatePrincipal(),
                 CodeChallenge = "challenge",
                 RedirectUri = "http://client/cb",
                 Nonce = "nonce",
@@ -410,7 +413,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                 ClientId = "client1",
                 CreationTime = DateTime.UtcNow,
                 Lifetime = 10,
-                Subject = IdentityServerPrincipal.Create("123", "alice"),
+                Subject = new IdentityServerUser("123").CreatePrincipal(),
                 CodeChallenge = "challenge",
                 RedirectUri = "http://client/cb",
                 Nonce = "nonce",

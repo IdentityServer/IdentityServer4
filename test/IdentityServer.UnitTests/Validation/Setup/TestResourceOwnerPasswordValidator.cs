@@ -29,7 +29,7 @@ namespace IdentityServer4.UnitTests.Validation
             if (_sendError)
             {
                 context.Result = new GrantValidationResult(_error, _erroDescription);
-                return Task.FromResult(0);
+                return Task.CompletedTask;
             }
 
             if (context.UserName == context.Password)
@@ -37,7 +37,7 @@ namespace IdentityServer4.UnitTests.Validation
                 context.Result = new GrantValidationResult(context.UserName, "password");
             }
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

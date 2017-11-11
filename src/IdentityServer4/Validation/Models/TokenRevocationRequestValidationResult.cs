@@ -2,6 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using IdentityServer4.Models;
+
 namespace IdentityServer4.Validation
 {
     /// <summary>
@@ -24,5 +26,13 @@ namespace IdentityServer4.Validation
         /// The token.
         /// </value>
         public string Token { get; set; }
+
+        /// <summary>
+        /// Gets or sets the client.
+        /// </summary>
+        /// <value>
+        /// The client.
+        /// </value>
+        public Client Client { get; set; }
     }
 }

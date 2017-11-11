@@ -17,24 +17,36 @@ The workflow at sign-out is then to revoke IdentityServer's authentication cooki
 The post-logout redirect shoud maintain the necessary sign-out state described :ref:`here <refSignOut>` (i.e. the ``logoutId`` parameter value).
 To redirect back to IdentityServer after the external provider sign-out, the ``RedirectUri`` should be used on the ``AuthenticationProperties`` when using ASP.NET Core's ``SignOutAsync`` API, for example::
 
-    // delete local authentication cookie
-    await HttpContext.Authentication.SignOutAsync();
-
-    string url = Url.Action("Logout", new { logoutId = logoutId });
-    try
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Logout(LogoutInputModel model)
     {
-        // hack: try/catch to handle social providers that throw
-        await HttpContext.Authentication.SignOutAsync(vm.ExternalAuthenticationScheme, 
-            new AuthenticationProperties { RedirectUri = url });
-    }
-    catch(NotSupportedException) // this is for the external providers that don't have signout
-    {
-    }
-    catch(InvalidOperationException) // this is for Windows/Negotiate
-    {
-    }
+        // build a model so the logged out page knows what to display
+        var vm = await _account.BuildLoggedOutViewModelAsync(model.LogoutId);
 
+        var user = HttpContext.User;
+        if (user?.Identity.IsAuthenticated == true)
+        {
+            // delete local authentication cookie
+            await HttpContext.SignOutAsync();
 
-.. Note:: It is necessary to wrap the call to ``SignOutAsync`` in a ``try/catch`` because not all external providers support sign-out, and they express it by throwing.
+            // raise the logout event
+            await _events.RaiseAsync(new UserLogoutSuccessEvent(user.GetSubjectId(), user.GetName()));
+        }
+
+        // check if we need to trigger sign-out at an upstream identity provider
+        if (vm.TriggerExternalSignout)
+        {
+            // build a return URL so the upstream provider will redirect back
+            // to us after the user has logged out. this allows us to then
+            // complete our single sign-out processing.
+            string url = Url.Action("Logout", new { logoutId = vm.LogoutId });
+
+            // this triggers a redirect to the external provider for sign-out
+            return SignOut(new AuthenticationProperties { RedirectUri = url }, vm.ExternalAuthenticationScheme);
+        }
+
+        return View("LoggedOut", vm);
+    }
 
 Once the user is signed-out of the external provider and then redirected back, the normal sign-out processing at IdentityServer should execute which involves processing the ``logoutId`` and doing all necessary cleanup.

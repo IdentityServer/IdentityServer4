@@ -16,9 +16,9 @@ namespace IdentityServer4.Validation
     /// The token revocation request validator
     /// </summary>
     /// <seealso cref="IdentityServer4.Validation.ITokenRevocationRequestValidator" />
-    public class TokenRevocationRequestValidator : ITokenRevocationRequestValidator
+    internal class TokenRevocationRequestValidator : ITokenRevocationRequestValidator
     {
-        private readonly ILogger<TokenRevocationRequestValidator> _logger;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenRevocationRequestValidator"/> class.
@@ -49,6 +49,7 @@ namespace IdentityServer4.Validation
                 _logger.LogError("no parameters passed");
                 throw new ArgumentNullException(nameof(parameters));
             }
+
             if (client == null)
             {
                 _logger.LogError("no client passed");
@@ -72,7 +73,8 @@ namespace IdentityServer4.Validation
             var result = new TokenRevocationRequestValidationResult
             {
                 IsError = false,
-                Token = token
+                Token = token,
+                Client = client
             };
 
             ////////////////////////////

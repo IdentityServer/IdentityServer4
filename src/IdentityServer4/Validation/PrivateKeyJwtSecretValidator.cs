@@ -65,7 +65,7 @@ namespace IdentityServer4.Validation
             List<SecurityKey> trustedKeys; 
             try
             {
-                trustedKeys = GetTrustedKeys(enumeratedSecrets, jwtTokenString);
+                trustedKeys = GetTrustedKeys(enumeratedSecrets);
             }
             catch (Exception e)
             {
@@ -114,7 +114,7 @@ namespace IdentityServer4.Validation
             }
         }
 
-        private List<SecurityKey> GetTrustedKeys(IReadOnlyCollection<Secret> secrets, string jwtTokenString)
+        private List<SecurityKey> GetTrustedKeys(IReadOnlyCollection<Secret> secrets)
         {
             var trustedKeys = GetAllTrustedCertificates(secrets)
                                 .Select(c => (SecurityKey)new X509SecurityKey(c))

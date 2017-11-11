@@ -7,7 +7,7 @@ IdentityServer relies on a couple of crypto mechanisms to do its job.
 Token signing and validation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 IdentityServer needs an asymmetric key pair to sign and validate JWTs. 
-This keypair can can be a certificate/private key combination or raw RSA keys.
+This keypair can be a certificate/private key combination or raw RSA keys.
 In any case it must support RSA with SHA256.
 
 Loading of signing key and the corresponding validation part is done by implementations of ``ISigningCredentialStore`` and ``IValidationKeysStore``.
@@ -34,9 +34,8 @@ This requires that clients and APIs use the discovery document, and also have a 
 
 Data protection
 ^^^^^^^^^^^^^^^
-We use the ASP.NET Core data protection API. For the most part, this requires no manual configuration - some adjustments might be needed
-depending on your deployment scenario (e.g. self-hosted web farms). 
-See the Microsoft `docs <https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/configuration/overview>`_ for more information.
+Cookie authentication in ASP.NET Core (or anti-forgery in MVC) use the ASP.NET Core data protection feature.
+Depending on your deployment scenario, this might require additional configuration. See the Microsoft `docs <https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/configuration/overview>`_ for more information.
 
 HTTPS
 ^^^^^

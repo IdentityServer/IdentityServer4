@@ -26,7 +26,7 @@ namespace IdentityServer4.Stores
         {
             _repository[grant.Key] = grant;
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -68,10 +68,9 @@ namespace IdentityServer4.Stores
         /// <returns></returns>
         public Task RemoveAsync(string key)
         {
-            PersistedGrant val;
-            _repository.TryRemove(key, out val);
+            _repository.TryRemove(key, out _);
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -91,11 +90,10 @@ namespace IdentityServer4.Stores
             var keys = query.ToArray();
             foreach (var key in keys)
             {
-                PersistedGrant grant;
-                _repository.TryRemove(key, out grant);
+                _repository.TryRemove(key, out _);
             }
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -117,11 +115,10 @@ namespace IdentityServer4.Stores
             var keys = query.ToArray();
             foreach (var key in keys)
             {
-                PersistedGrant grant;
-                _repository.TryRemove(key, out grant);
+                _repository.TryRemove(key, out _);
             }
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

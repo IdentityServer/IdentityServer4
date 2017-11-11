@@ -4,9 +4,8 @@ notifications:
       - identity@leastprivilege.com
 
 language: csharp
-# dotnet: 1.0.0-preview2-003131
+
 os:
-  - osx
   - linux
 script:
   - ./build_travis.sh
@@ -22,11 +21,6 @@ addons:
     - libicu-dev
     - libssl-dev
     - libunwind8
-
-# .NET CLI require OSX 10.10
-osx_image: xcode7.1
-before_install:  
-  - if test "$TRAVIS_OS_NAME" == "osx"; then brew update; brew install openssl; ln -s /usr/local/opt/openssl/lib/libcrypto.1.0.0.dylib /usr/local/lib/; ln -s /usr/local/opt/openssl/lib/libssl.1.0.0.dylib /usr/local/lib/; fi
 
 mono:  
   - 4.6.0

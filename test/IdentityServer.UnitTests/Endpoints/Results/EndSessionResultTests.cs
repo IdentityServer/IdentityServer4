@@ -15,19 +15,19 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using IdentityServer.UnitTests.Common;
 
 namespace IdentityServer4.UnitTests.Endpoints.Results
 {
     public class EndSessionResultTests
     {
-        EndSessionResult _subject;
+        private EndSessionResult _subject;
 
-        EndSessionValidationResult _result = new EndSessionValidationResult();
-        IdentityServerOptions _options = new IdentityServerOptions();
-        MockMessageStore<LogoutMessage> _mockLogoutMessageStore = new MockMessageStore<LogoutMessage>();
-        MockClientSessionService _mockClientSessionService = new MockClientSessionService();
+        private EndSessionValidationResult _result = new EndSessionValidationResult();
+        private IdentityServerOptions _options = new IdentityServerOptions();
+        private MockMessageStore<LogoutMessage> _mockLogoutMessageStore = new MockMessageStore<LogoutMessage>();
 
-        DefaultHttpContext _context = new DefaultHttpContext();
+        private DefaultHttpContext _context = new DefaultHttpContext();
 
         public EndSessionResultTests()
         {
@@ -37,7 +37,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
             _options.UserInteraction.LogoutUrl = "~/logout";
             _options.UserInteraction.LogoutIdParameter = "logoutId";
 
-            _subject = new EndSessionResult(_result, _options, _mockClientSessionService, _mockLogoutMessageStore);
+            _subject = new EndSessionResult(_result, _options, new StubClock(), _mockLogoutMessageStore);
         }
 
         [Fact]

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace IdentityServer4.UnitTests.Validation
 {
-    class TestClients
+    internal class TestClients
     {
         public static IEnumerable<Client> Get()
         {
@@ -30,7 +30,30 @@ namespace IdentityServer4.UnitTests.Validation
 
                     RedirectUris = new List<string>
                     {
-                        "https://server/cb",
+                        "https://server/cb"
+                    },
+
+                    AuthorizationCodeLifetime = 60
+                },
+                new Client
+                {
+                    ClientName = "Code Client (allows plain text PKCE)",
+                    Enabled = true,
+                    ClientId = "codeclient.plain",
+                    ClientSecrets = new List<Secret>
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    AllowedGrantTypes = GrantTypes.Code,
+                    AllowedScopes = { "openid", "profile", "resource", "resource2" },
+                    AllowPlainTextPkce = true,
+
+                    RequireConsent = false,
+
+                    RedirectUris = new List<string>
+                    {
+                        "https://server/cb"
                     },
 
                     AuthorizationCodeLifetime = 60
@@ -53,7 +76,7 @@ namespace IdentityServer4.UnitTests.Validation
 
                     RedirectUris = new List<string>
                     {
-                        "https://server/cb",
+                        "https://server/cb"
                     },
 
                     AuthorizationCodeLifetime = 60
@@ -77,7 +100,7 @@ namespace IdentityServer4.UnitTests.Validation
 
                     RedirectUris = new List<string>
                     {
-                        "https://server/cb",
+                        "https://server/cb"
                     },
 
                     AuthorizationCodeLifetime = 60
@@ -100,7 +123,7 @@ namespace IdentityServer4.UnitTests.Validation
 
                         RedirectUris = new List<string>
                         {
-                            "https://server/cb",
+                            "https://server/cb"
                         },
 
                         AuthorizationCodeLifetime = 60
@@ -124,7 +147,7 @@ namespace IdentityServer4.UnitTests.Validation
 
                         RedirectUris = new List<string>
                         {
-                            "https://server/cb",
+                            "https://server/cb"
                         },
 
                         AuthorizationCodeLifetime = 60
@@ -147,7 +170,7 @@ namespace IdentityServer4.UnitTests.Validation
 
                         RedirectUris = new List<string>
                         {
-                            "https://server/cb",
+                            "https://server/cb"
                         },
 
                         AuthorizationCodeLifetime = 60
@@ -166,7 +189,7 @@ namespace IdentityServer4.UnitTests.Validation
                         RedirectUris = new List<string>
                         {
                             "oob://implicit/cb"
-                        },
+                        }
                     },
                     new Client
                     {
@@ -182,7 +205,7 @@ namespace IdentityServer4.UnitTests.Validation
                         RedirectUris = new List<string>
                         {
                             "oob://implicit/cb"
-                        },
+                        }
                     },
                     new Client
                     {
@@ -201,7 +224,7 @@ namespace IdentityServer4.UnitTests.Validation
                         RedirectUris = new List<string>
                         {
                             "oob://implicit/cb"
-                        },
+                        }
                     },
                     new Client
                     {
@@ -223,8 +246,8 @@ namespace IdentityServer4.UnitTests.Validation
 
                         RedirectUris = new List<string>
                         {
-                            "https://server/cb",
-                        },
+                            "https://server/cb"
+                        }
                     },
                     new Client
                     {
@@ -256,7 +279,7 @@ namespace IdentityServer4.UnitTests.Validation
                         AllowedScopes = new List<string>
                         {
                             "resource"
-                        },
+                        }
                     },
                     new Client
                     {
@@ -280,7 +303,7 @@ namespace IdentityServer4.UnitTests.Validation
                         RequireClientSecret = false,
 
                         AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
-                        AllowedScopes = { "openid", "profile", "resource", "resource2" },
+                        AllowedScopes = { "openid", "profile", "resource", "resource2" }
                     },
                     new Client
                     {
@@ -367,7 +390,7 @@ namespace IdentityServer4.UnitTests.Validation
                         AllowedScopes = new List<string>
                         {
                             "resource"
-                        },
+                        }
                     },
                     new Client
                     {
@@ -384,8 +407,8 @@ namespace IdentityServer4.UnitTests.Validation
                         AllowOfflineAccess = true,
                         AllowedScopes = new List<string>
                         {
-                            "resource",
-                        },
+                            "resource"
+                        }
                     },
 
                     new Client
@@ -398,8 +421,8 @@ namespace IdentityServer4.UnitTests.Validation
                             new Secret("secret".Sha256())
                         },
 
-                        AllowedGrantTypes = GrantTypes.List("custom_grant"),
-                        AllowedScopes = { "openid", "profile", "resource", "resource2" },
+                        AllowedGrantTypes = { "custom_grant" },
+                        AllowedScopes = { "openid", "profile", "resource", "resource2" }
                     },
 
                     new Client
@@ -413,7 +436,7 @@ namespace IdentityServer4.UnitTests.Validation
                         },
 
                         AllowedGrantTypes = GrantTypes.ClientCredentials,
-                        AllowedScopes = { "openid", "profile", "resource", "resource2" },
+                        AllowedScopes = { "openid", "profile", "resource", "resource2" }
                     },
                     new Client
                     {
@@ -450,21 +473,21 @@ namespace IdentityServer4.UnitTests.Validation
                         ClientSecrets = { new Secret("secret".Sha256()) },
 
                         Enabled = true,
-                        AllowedScopes = { "openid", "profile", "resource", "resource2" },
+                        AllowedScopes = { "openid", "profile", "resource", "resource2" }
                     },
                     new Client
                     {
                         ClientId = "client.implicit",
                         ClientName = "Implicit Client",
                         AllowedGrantTypes = GrantTypes.Implicit,
-                        AllowedScopes = { "openid", "profile", "resource", "resource2" },
+                        AllowedScopes = { "openid", "profile", "resource", "resource2" }
                     },
                     new Client
                     {
                         ClientId = "implicit_and_client_creds",
                         AllowedGrantTypes = GrantTypes.ImplicitAndClientCredentials,
                         AllowedScopes = {"api1"}
-                    },
+                    }
             };
         }
     }

@@ -36,41 +36,72 @@ If this style doesn't suit you, feel free to organize the code in any way you wa
 Creating an MVC client
 ^^^^^^^^^^^^^^^^^^^^^^
 Next you will add an MVC application to your solution.
-Use the ASP.NET Core "Web Application" template for that.
-Configure the application to use port 5002 (see the overview part for instructions on how to do that).
+Use the ASP.NET Core "Web Application" (i.e. MVC) template for that. 
+Don't configure the "Authentication" settings in the wizard -- you will do this manually in this quickstart.
+Once you've created the project, configure the application to use port 5002 (see the overview part for instructions on how to do that).
 
-To add support for OpenID Connect authentication to the MVC application, add the following
-NuGet packages:
+To add support for OpenID Connect authentication to the MVC application, add the following to ``ConfigureServices`` in ``Startup``::
 
-* `Microsoft.AspNetCore.Authentication.Cookies`
-* `Microsoft.AspNetCore.Authentication.OpenIdConnect`
-
-Next add both middlewares to your pipeline - the cookies one is simple::
-
-    app.UseCookieAuthentication(new CookieAuthenticationOptions
+    public void ConfigureServices(IServiceCollection services)
     {
-        AuthenticationScheme = "Cookies"
-    });
+        services.AddMvc();
 
-The OpenID Connect middleware needs slightly more configuration.
-You point it to your IdentityServer, specify a client ID and tell it which middleware will do
-the local signin (namely the cookies middleware).  As well, we've turned off the JWT claim type mapping to allow well-known claims (e.g. 'sub' and 'idp') to flow through unmolested.  This "clearing" of the claim type mappings must be done before the call to `UseOpenIdConnectAuthentication()`::
+        JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+        services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = "Cookies";
+                options.DefaultChallengeScheme = "oidc";
+            })
+            .AddCookie("Cookies")
+            .AddOpenIdConnect("oidc", options =>
+            {
+                options.SignInScheme = "Cookies";
+
+                options.Authority = "http://localhost:5000";
+                options.RequireHttpsMetadata = false;
+
+                options.ClientId = "mvc";
+                options.SaveTokens = true;
+            });
+    }
+
+``AddAuthentication`` adds the authentication services to DI.
+We are using a cookie as the primary means to authenticate a user (via ``"Cookies"`` as the ``DefaultScheme``).
+We set the ``DefaultChallengeScheme`` to ``"oidc"`` because when we need the user to login, we will be using the OpenID Connect scheme.
+
+We then use ``AddCookie`` to add the handler that can process cookies.
+
+Finally, ``AddOpenIdConnect`` is used to configure the handler that perform the OpenID Connect protocol.
+The ``Authority`` indicates that we are trusting IdentityServer.
+We then identity this client via the ``ClientId``.
+``SignInScheme`` is used to issue a cookie using the cookie handler once the OpenID Connect protocol is complete.
+And ``SaveTokens`` is used to persist the tokens from IdentityServer in the cookie (as they will be needed later).
+
+As well, we've turned off the JWT claim type mapping to allow well-known claims (e.g. 'sub' and 'idp') to flow through unmolested::
 
     JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
-    app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
+And then to ensure the authentication services execute on each request, add ``UseAuthentication`` to ``Configure`` in ``Startup``::
+
+    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
     {
-        AuthenticationScheme = "oidc",
-        SignInScheme = "Cookies",
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+        }
+        else
+        {
+            app.UseExceptionHandler("/Home/Error");
+        }
 
-        Authority = "http://localhost:5000",
-        RequireHttpsMetadata = false,
+        app.UseAuthentication();
 
-        ClientId = "mvc",
-        SaveTokens = true
-    });
+        app.UseStaticFiles();
+        app.UseMvcWithDefaultRoute();
+    }
 
-Both middlewares should be added before the MVC in the pipeline.
+The authentication middleware should be added before the MVC in the pipeline.
 
 The last step is to trigger the authentication handshake. For that go to the home controller and
 add the ``[Authorize]`` on one of the actions.
@@ -95,7 +126,7 @@ In contrast to OAuth, scopes in OIDC don't represent APIs, but identity data lik
 name or email address.
 
 Add support for the standard ``openid`` (subject id) and ``profile`` (first name, last name etc..) scopes
-by adding a new helper (in ``config.cs``) to create a collection of ``IdentityResource`` objects::
+by adding a new helper (in ``Config.cs``) to create a collection of ``IdentityResource`` objects::
 
     public static IEnumerable<IdentityResource> GetIdentityResources()
     {
@@ -117,7 +148,7 @@ Use the ``AddInMemoryIdentityResources`` extension method where you call ``AddId
 
         // configure identity server with in-memory stores, keys, clients and scopes
         services.AddIdentityServer()
-            .AddTemporarySigningCredential()
+            .AddDeveloperSigningCredential()
             .AddInMemoryIdentityResources(Config.GetIdentityResources())
             .AddInMemoryApiResources(Config.GetApiResources())
             .AddInMemoryClients(Config.GetClients())
@@ -126,7 +157,7 @@ Use the ``AddInMemoryIdentityResources`` extension method where you call ``AddId
 
 Adding a client for OpenID Connect implicit flow
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-The last step is to add a new client to IdentityServer.
+The last step is to add a new configuration entry for the MVC client to IdentityServer.
 
 OpenID Connect-based clients are very similar to the OAuth 2.0 clients we added so far.
 But since the flows in OIDC are always interactive, we need to add some redirect URLs to our configuration.
@@ -196,8 +227,8 @@ simply add the following code to some controller to trigger the sign-out::
 
     public async Task Logout()
     {
-        await HttpContext.Authentication.SignOutAsync("Cookies");
-        await HttpContext.Authentication.SignOutAsync("oidc");
+        await HttpContext.SignOutAsync("Cookies");
+        await HttpContext.SignOutAsync("oidc");
     }
 
 This will clear the local cookie and then redirect to IdentityServer.

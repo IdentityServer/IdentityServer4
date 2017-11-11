@@ -15,9 +15,9 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 {
     public class SessionIdTests
     {
-        const string Category = "SessionIdTests";
+        private const string Category = "SessionIdTests";
 
-        MockIdSvrUiPipeline _mockPipeline = new MockIdSvrUiPipeline();
+        private IdentityServerPipeline _mockPipeline = new IdentityServerPipeline();
 
         public SessionIdTests()
         {
@@ -50,14 +50,14 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                 {
                     new Claim("name", "Bob Loblaw"),
                     new Claim("email", "bob@loblaw.com"),
-                    new Claim("role", "Attorney"),
+                    new Claim("role", "Attorney")
                 }
             });
 
             _mockPipeline.IdentityScopes.AddRange(new IdentityResource[] {
                 new IdentityResources.OpenId(),
                 new IdentityResources.Profile(),
-                new IdentityResources.Email(),
+                new IdentityResources.Email()
             });
             _mockPipeline.ApiScopes.AddRange(new ApiResource[] {
                 new ApiResource
@@ -67,11 +67,11 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                     {
                         new Scope
                         {
-                            Name = "api1",
+                            Name = "api1"
                         },
                         new Scope
                         {
-                            Name = "api2",
+                            Name = "api2"
                         }
                     }
                 }
@@ -89,7 +89,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 
             _mockPipeline.RemoveSessionCookie();
 
-            await _mockPipeline.BrowserClient.GetAsync(MockIdSvrUiPipeline.DiscoveryEndpoint);
+            await _mockPipeline.BrowserClient.GetAsync(IdentityServerPipeline.DiscoveryEndpoint);
 
             var sid2 = _mockPipeline.GetSessionCookie().Value;
             sid2.Should().Be(sid1);

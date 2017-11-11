@@ -16,9 +16,9 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
 {
     public class TokenRequestValidation_ResourceOwner_Invalid
     {
-        const string Category = "TokenRequest Validation - ResourceOwner - Invalid";
+        private const string Category = "TokenRequest Validation - ResourceOwner - Invalid";
 
-        IClientStore _clients = Factory.CreateClientStore();
+        private IClientStore _clients = Factory.CreateClientStore();
 
         [Fact]
         [Trait("Category", Category)]
@@ -31,7 +31,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.Password);
             parameters.Add(OidcConstants.TokenRequest.Scope, "resource");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.UnauthorizedClient);
@@ -50,7 +50,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.UserName, "bob");
             parameters.Add(OidcConstants.TokenRequest.Password, "bob");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.InvalidScope);
@@ -69,7 +69,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.UserName, "bob");
             parameters.Add(OidcConstants.TokenRequest.Password, "bob");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.InvalidScope);
@@ -88,7 +88,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.UserName, "bob");
             parameters.Add(OidcConstants.TokenRequest.Password, "bob");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.InvalidScope);
@@ -107,7 +107,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.UserName, "bob");
             parameters.Add(OidcConstants.TokenRequest.Password, "bob");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.InvalidScope);
@@ -124,7 +124,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.Password);
             parameters.Add(OidcConstants.TokenRequest.Scope, "resource");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
@@ -142,7 +142,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.Scope, "resource");
             parameters.Add(OidcConstants.TokenRequest.Password, "bob");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
@@ -160,7 +160,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.Scope, "resource");
             parameters.Add(OidcConstants.TokenRequest.UserName, "bob");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
@@ -179,7 +179,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.UserName, "bob");
             parameters.Add(OidcConstants.TokenRequest.Password, "notbob");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
@@ -191,7 +191,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
         public async Task Password_GrantType_Not_Supported()
         {
             var client = await _clients.FindEnabledClientByIdAsync("roclient");
-            var validator = Factory.CreateTokenRequestValidator(resourceOwnerValidator: new NotSupportedResouceOwnerPasswordValidator(TestLogger.Create<NotSupportedResouceOwnerPasswordValidator>()));
+            var validator = Factory.CreateTokenRequestValidator(resourceOwnerValidator: new NotSupportedResourceOwnerPasswordValidator(TestLogger.Create<NotSupportedResourceOwnerPasswordValidator>()));
 
             var parameters = new NameValueCollection();
             parameters.Add(OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.Password);
@@ -199,7 +199,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.UserName, "bob");
             parameters.Add(OidcConstants.TokenRequest.Password, "bob");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.UnsupportedGrantType);
@@ -219,7 +219,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.UserName, "bob");
             parameters.Add(OidcConstants.TokenRequest.Password, "bob");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
@@ -238,7 +238,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             parameters.Add(OidcConstants.TokenRequest.UserName, "bob");
             parameters.Add(OidcConstants.TokenRequest.Password, "notbob");
 
-            var result = await validator.ValidateRequestAsync(parameters, client);
+            var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);

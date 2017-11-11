@@ -10,7 +10,7 @@ using IdentityServer4.IntegrationTests.Common;
 
 namespace IdentityServer4.IntegrationTests.Clients
 {
-    class Clients
+    internal class Clients
     {
         public static IEnumerable<Client> Get()
         {
@@ -74,7 +74,7 @@ namespace IdentityServer4.IntegrationTests.Clients
                         new Secret("secret".Sha256())
                     },
 
-                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+                    AllowedGrantTypes = GrantTypes.ClientCredentials
                 },
 
                 ///////////////////////////////////////////
@@ -100,6 +100,28 @@ namespace IdentityServer4.IntegrationTests.Clients
                         "api1", "api2", "api4.with.roles"
                     }
                 },
+                new Client
+                {
+                    ClientId = "roclient.reuse",
+                    ClientSecrets =
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+
+                    AllowOfflineAccess = true,
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Email,
+                        IdentityServerConstants.StandardScopes.Address,
+                        "roles",
+                        "api1", "api2", "api4.with.roles"
+                    },
+
+                    RefreshTokenUsage = TokenUsage.ReUse
+                },
 
                 /////////////////////////////////////////
                 // Console Custom Grant Flow Sample
@@ -112,7 +134,7 @@ namespace IdentityServer4.IntegrationTests.Clients
                         new Secret("secret".Sha256())
                     },
 
-                    AllowedGrantTypes = GrantTypes.List("custom", "custom.nosubject"),
+                    AllowedGrantTypes = { "custom", "custom.nosubject" },
 
                     AllowedScopes = 
                     {
@@ -127,7 +149,7 @@ namespace IdentityServer4.IntegrationTests.Clients
                         new Secret("secret".Sha256())
                     },
 
-                    AllowedGrantTypes = GrantTypes.List("dynamic"),
+                    AllowedGrantTypes = { "dynamic" },
 
                     AllowedScopes =
                     {
@@ -179,7 +201,7 @@ namespace IdentityServer4.IntegrationTests.Clients
                     AllowedScopes = new List<string>
                     {
                         "api1", "api2"
-                    },
+                    }
                 },
 
                 new Client
@@ -193,7 +215,7 @@ namespace IdentityServer4.IntegrationTests.Clients
                     ClientId = "implicit_and_client_creds",
                     AllowedGrantTypes = GrantTypes.ImplicitAndClientCredentials,
                     AllowedScopes = {"api1"}
-                },
+                }
             };
         }
     }

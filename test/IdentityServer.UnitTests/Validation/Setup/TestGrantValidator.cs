@@ -8,7 +8,7 @@ using IdentityServer4.Models;
 
 namespace IdentityServer4.UnitTests.Validation
 {
-    class TestGrantValidator : IExtensionGrantValidator
+    internal class TestGrantValidator : IExtensionGrantValidator
     {
         private readonly bool _isInvalid;
         private readonly string _errorDescription;
@@ -40,7 +40,7 @@ namespace IdentityServer4.UnitTests.Validation
                 context.Result = new GrantValidationResult("bob", "CustomGrant");
             }
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         public string GrantType

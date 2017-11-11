@@ -4,6 +4,7 @@
 
 using IdentityServer4.Validation;
 using System.Threading.Tasks;
+using IdentityServer4.Models;
 
 namespace IdentityServer4.UnitTests.Validation.EndSessionRequestValidation
 {
@@ -20,6 +21,11 @@ namespace IdentityServer4.UnitTests.Validation.EndSessionRequestValidation
         public Task<TokenValidationResult> ValidateIdentityTokenAsync(string token, string clientId = null, bool validateLifetime = true)
         {
             return Task.FromResult(IdentityTokenValidationResult);
+        }
+
+        public Task<TokenValidationResult> ValidateRefreshTokenAsync(string token, Client client)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

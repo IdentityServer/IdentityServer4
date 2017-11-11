@@ -3,6 +3,7 @@
 
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace IdentityServer4.Models
 {
@@ -35,8 +36,8 @@ namespace IdentityServer4.Models
         /// <param name="apiResources">The API resources.</param>
         public Resources(IEnumerable<IdentityResource> identityResources, IEnumerable<ApiResource> apiResources)
         {
-            IdentityResources = new HashSet<IdentityResource>(identityResources);
-            ApiResources = new HashSet<ApiResource>(apiResources);
+            IdentityResources = new HashSet<IdentityResource>(identityResources.ToArray());
+            ApiResources = new HashSet<ApiResource>(apiResources.ToArray());
         }
 
         /// <summary>

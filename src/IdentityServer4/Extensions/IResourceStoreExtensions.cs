@@ -44,7 +44,7 @@ namespace IdentityServer4.Stores
         /// <param name="store">The store.</param>
         /// <param name="scopeNames">The scope names.</param>
         /// <returns></returns>
-        public async static Task<Resources> FindEnabledResourcesByScopeAsync(this IResourceStore store, IEnumerable<string> scopeNames)
+        public static async Task<Resources> FindEnabledResourcesByScopeAsync(this IResourceStore store, IEnumerable<string> scopeNames)
         {
             return (await store.FindResourcesByScopeAsync(scopeNames)).FilterEnabled();
         }
@@ -56,7 +56,7 @@ namespace IdentityServer4.Stores
         /// <returns></returns>
         public static async Task<Resources> GetAllEnabledResourcesAsync(this IResourceStore store)
         {
-            var resources = await store.GetAllResources();
+            var resources = await store.GetAllResourcesAsync();
             return resources.FilterEnabled();
         }
 
@@ -66,7 +66,7 @@ namespace IdentityServer4.Stores
         /// <param name="store">The store.</param>
         /// <param name="scopeNames">The scope names.</param>
         /// <returns></returns>
-        public async static Task<IEnumerable<IdentityResource>> FindEnabledIdentityResourcesByScopeAsync(this IResourceStore store, IEnumerable<string> scopeNames)
+        public static async Task<IEnumerable<IdentityResource>> FindEnabledIdentityResourcesByScopeAsync(this IResourceStore store, IEnumerable<string> scopeNames)
         {
             return (await store.FindIdentityResourcesByScopeAsync(scopeNames)).Where(x => x.Enabled).ToArray();
         }

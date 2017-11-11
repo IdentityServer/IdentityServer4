@@ -13,7 +13,7 @@ namespace IdentityServer4.UnitTests.Validation.AuthorizeRequest
 {
     public class Authorize_ProtocolValidation_Invalid
     {
-        const string Category = "AuthorizeRequest Protocol Validation";
+        private const string Category = "AuthorizeRequest Protocol Validation";
 
         [Fact]
         [Trait("Category", Category)]

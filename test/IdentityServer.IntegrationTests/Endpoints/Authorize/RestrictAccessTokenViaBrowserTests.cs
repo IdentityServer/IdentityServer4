@@ -16,11 +16,11 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 {
     public class RestrictAccessTokenViaBrowserTests
     {
-        const string Category = "RestrictAccessTokenViaBrowserTests";
+        private const string Category = "RestrictAccessTokenViaBrowserTests";
 
-        MockIdSvrUiPipeline _mockPipeline = new MockIdSvrUiPipeline();
+        private IdentityServerPipeline _mockPipeline = new IdentityServerPipeline();
 
-        ClaimsPrincipal _user = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
+        private ClaimsPrincipal _user = new IdentityServerUser("bob").CreatePrincipal();
 
         public RestrictAccessTokenViaBrowserTests()
         {
@@ -60,7 +60,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                     AllowedScopes = new List<string> { "openid" },
                     RedirectUris = new List<string> { "https://client4/callback" },
                     AllowAccessTokensViaBrowser = false
-                },
+                }
             });
 
             _mockPipeline.Users.Add(new TestUser
@@ -71,7 +71,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                 {
                     new Claim("name", "Bob Loblaw"),
                     new Claim("email", "bob@loblaw.com"),
-                    new Claim("role", "Attorney"),
+                    new Claim("role", "Attorney")
                 }
             });
 

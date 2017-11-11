@@ -7,7 +7,7 @@ using IdentityModel;
 using IdentityServer4.Configuration;
 using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Extensions;
-using IdentityServer4.Models;
+using IdentityServer4.ResponseHandling;
 using IdentityServer4.UnitTests.Common;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http;
@@ -17,19 +17,20 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using IdentityServer.UnitTests.Common;
 
 namespace IdentityServer4.UnitTests.Endpoints.Results
 {
     public class AuthorizeResultTests
     {
-        AuthorizeResult _subject;
+        private AuthorizeResult _subject;
 
-        AuthorizeResponse _response = new AuthorizeResponse();
-        IdentityServerOptions _options = new IdentityServerOptions();
-        MockClientSessionService _mockClientSession = new MockClientSessionService();
-        MockMessageStore<Models.ErrorMessage> _mockErrorMessageStore = new MockMessageStore<Models.ErrorMessage>();
+        private AuthorizeResponse _response = new AuthorizeResponse();
+        private IdentityServerOptions _options = new IdentityServerOptions();
+        private MockUserSession _mockUserSession = new MockUserSession();
+        private MockMessageStore<Models.ErrorMessage> _mockErrorMessageStore = new MockMessageStore<Models.ErrorMessage>();
 
-        DefaultHttpContext _context = new DefaultHttpContext();
+        private DefaultHttpContext _context = new DefaultHttpContext();
 
         public AuthorizeResultTests()
         {
@@ -40,7 +41,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
             _options.UserInteraction.ErrorUrl = "~/error";
             _options.UserInteraction.ErrorIdParameter = "errorId";
 
-            _subject = new AuthorizeResult(_response, _options, _mockClientSession, _mockErrorMessageStore);
+            _subject = new AuthorizeResult(_response, _options, _mockUserSession, _mockErrorMessageStore, new StubClock());
         }
 
         [Fact]
@@ -75,7 +76,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
 
             await _subject.ExecuteAsync(_context);
 
-            _mockClientSession.Clients.Count.Should().Be(0);
+            _mockUserSession.Clients.Count.Should().Be(0);
             _context.Response.StatusCode.Should().Be(302);
             var location = _context.Response.Headers["Location"].First();
             location.Should().StartWith("http://client/callback");
@@ -88,12 +89,12 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
             _response.Request = new ValidatedAuthorizeRequest
             {
                 ResponseMode = OidcConstants.ResponseModes.Query,
-                RedirectUri = "http://client/callback",
+                RedirectUri = "http://client/callback"
             };
 
             await _subject.ExecuteAsync(_context);
 
-            _mockClientSession.Clients.Count.Should().Be(0);
+            _mockUserSession.Clients.Count.Should().Be(0);
             _context.Response.StatusCode.Should().Be(302);
             var location = _context.Response.Headers["Location"].First();
             location.Should().StartWith("http://client/callback");
@@ -106,12 +107,12 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
             {
                 ClientId = "client",
                 ResponseMode = OidcConstants.ResponseModes.Query,
-                RedirectUri = "http://client/callback",
+                RedirectUri = "http://client/callback"
             };
 
             await _subject.ExecuteAsync(_context);
 
-            _mockClientSession.Clients.Should().Contain("client");
+            _mockUserSession.Clients.Should().Contain("client");
         }
 
         [Fact]

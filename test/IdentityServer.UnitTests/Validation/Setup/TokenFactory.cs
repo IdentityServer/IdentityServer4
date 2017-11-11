@@ -8,10 +8,11 @@ using IdentityServer4.UnitTests.Common;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System;
 
 namespace IdentityServer4.UnitTests.Validation
 {
-    static class TokenFactory
+    internal static class TokenFactory
     {
         public static Token CreateAccessToken(Client client, string subjectId, int lifetime, params string[] scopes)
         {
@@ -25,6 +26,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             var token = new Token(OidcConstants.TokenTypes.AccessToken)
             {
+                CreationTime = DateTime.UtcNow,
                 Audiences = { "https://idsvr.com/resources" },
                 Issuer = "https://idsvr.com",
                 Lifetime = lifetime,
@@ -53,6 +55,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             var token = new Token(OidcConstants.TokenTypes.AccessToken)
             {
+                CreationTime = DateTime.UtcNow,
                 Audiences = { "https://idsvr.com/resources" },
                 Issuer = "https://idsvr.com",
                 Lifetime = lifetime,
@@ -75,6 +78,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             var token = new Token(OidcConstants.TokenTypes.IdentityToken)
             {
+                CreationTime = DateTime.UtcNow,
                 Audiences = { clientId },
                 ClientId = clientId,
                 Issuer = "https://idsvr.com",
@@ -101,6 +105,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             var token = new Token(OidcConstants.TokenTypes.IdentityToken)
             {
+                CreationTime = DateTime.UtcNow,
                 Audiences = { clientId },
                 ClientId = clientId,
                 Issuer = "https://idsvr.com",

@@ -17,17 +17,18 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
+using IdentityServer.UnitTests.Common;
 
 namespace IdentityServer4.UnitTests.ResponseHandling
 {
     public class AuthorizeInteractionResponseGeneratorTests_Consent
     {
-        AuthorizeInteractionResponseGenerator _subject;
-        IdentityServerOptions _options = new IdentityServerOptions();
-        MockConsentService _mockConsent = new MockConsentService();
-        MockProfileService _fakeUserService = new MockProfileService();
+        private AuthorizeInteractionResponseGenerator _subject;
+        private IdentityServerOptions _options = new IdentityServerOptions();
+        private MockConsentService _mockConsent = new MockConsentService();
+        private MockProfileService _fakeUserService = new MockProfileService();
 
-        void RequiresConsent(bool value)
+        private void RequiresConsent(bool value)
         {
             _mockConsent.RequiresConsentResult = value;
         }
@@ -52,7 +53,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             {
                 new IdentityResources.OpenId(),
                 new IdentityResources.Profile(),
-                new IdentityResources.Email(),
+                new IdentityResources.Email()
             };
         }
 
@@ -69,13 +70,13 @@ namespace IdentityServer4.UnitTests.ResponseHandling
                         {
                             Name = "read",
                             DisplayName = "Read data",
-                            Emphasize = false,
+                            Emphasize = false
                         },
                         new Scope
                         {
                             Name = "write",
                             DisplayName = "Write data",
-                            Emphasize = true,
+                            Emphasize = true
                         },
                         new Scope
                         {
@@ -91,8 +92,8 @@ namespace IdentityServer4.UnitTests.ResponseHandling
         public AuthorizeInteractionResponseGeneratorTests_Consent()
         {
             _subject = new AuthorizeInteractionResponseGenerator(
+                new StubClock(),
                 TestLogger.Create<AuthorizeInteractionResponseGenerator>(),
-                _options,
                 _mockConsent,
                 _fakeUserService);
         }
@@ -239,7 +240,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             {
                 ResponseMode = OidcConstants.ResponseModes.Fragment,
                 State = "12345",
-                RedirectUri = "https://client.com/callback",
+                RedirectUri = "https://client.com/callback"
             };
             var consent = new ConsentResponse
             {

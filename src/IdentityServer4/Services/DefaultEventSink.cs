@@ -41,7 +41,7 @@ namespace IdentityServer4.Services
             var json = LogSerializer.Serialize(evt);
             _logger.LogInformation(json);
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

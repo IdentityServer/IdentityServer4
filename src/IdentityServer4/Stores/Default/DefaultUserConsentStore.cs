@@ -27,11 +27,11 @@ namespace IdentityServer4.Stores
             IPersistentGrantSerializer serializer,
             IHandleGenerationService handleGenerationService,
             ILogger<DefaultUserConsentStore> logger) 
-            : base(Constants.PersistedGrantTypes.UserConsent, store, serializer, handleGenerationService, logger)
+            : base(IdentityServerConstants.PersistedGrantTypes.UserConsent, store, serializer, handleGenerationService, logger)
         {
         }
 
-        string GetConsentKey(string subjectId, string clientId)
+        private string GetConsentKey(string subjectId, string clientId)
         {
             return subjectId + "|" + clientId;
         }

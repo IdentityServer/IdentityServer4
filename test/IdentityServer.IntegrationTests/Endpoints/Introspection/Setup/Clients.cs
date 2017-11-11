@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
 {
-    class Clients
+    internal class Clients
     {
         public static IEnumerable<Client> Get()
         {

@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.ResponseHandling
 {
@@ -21,24 +22,46 @@ namespace IdentityServer4.ResponseHandling
     /// <seealso cref="IdentityServer4.ResponseHandling.IAuthorizeResponseGenerator" />
     public class AuthorizeResponseGenerator : IAuthorizeResponseGenerator
     {
-        private readonly ILogger<AuthorizeResponseGenerator> _logger;
-        private readonly ITokenService _tokenService;
-        private readonly IAuthorizationCodeStore _authorizationCodeStore;
-        private readonly IEventService _events;
+        /// <summary>
+        /// The token service
+        /// </summary>
+        protected readonly ITokenService TokenService;
+
+        /// <summary>
+        /// The authorization code store
+        /// </summary>
+        protected readonly IAuthorizationCodeStore AuthorizationCodeStore;
+
+        /// <summary>
+        /// The event service
+        /// </summary>
+        protected readonly IEventService Events;
+
+        /// <summary>
+        /// The logger
+        /// </summary>
+        protected readonly ILogger Logger;
+
+        /// <summary>
+        /// The clock
+        /// </summary>
+        protected readonly ISystemClock Clock;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizeResponseGenerator"/> class.
         /// </summary>
+        /// <param name="clock">The clock.</param>
         /// <param name="logger">The logger.</param>
         /// <param name="tokenService">The token service.</param>
         /// <param name="authorizationCodeStore">The authorization code store.</param>
         /// <param name="events">The events.</param>
-        public AuthorizeResponseGenerator(ILogger<AuthorizeResponseGenerator> logger, ITokenService tokenService, IAuthorizationCodeStore authorizationCodeStore, IEventService events)
+        public AuthorizeResponseGenerator(ISystemClock clock, ITokenService tokenService, IAuthorizationCodeStore authorizationCodeStore, ILogger<AuthorizeResponseGenerator> logger, IEventService events)
         {
-            _logger = logger;
-            _tokenService = tokenService;
-            _authorizationCodeStore = authorizationCodeStore;
-            _events = events;
+            Clock = clock;
+            TokenService = tokenService;
+            AuthorizationCodeStore = authorizationCodeStore;
+            Events = events;
+            Logger = logger;
         }
 
         /// <summary>
@@ -47,7 +70,7 @@ namespace IdentityServer4.ResponseHandling
         /// <param name="request">The request.</param>
         /// <returns></returns>
         /// <exception cref="System.InvalidOperationException">invalid grant type: " + request.GrantType</exception>
-        public async Task<AuthorizeResponse> CreateResponseAsync(ValidatedAuthorizeRequest request)
+        public virtual async Task<AuthorizeResponse> CreateResponseAsync(ValidatedAuthorizeRequest request)
         {
             if (request.GrantType == GrantType.AuthorizationCode)
             {
@@ -62,13 +85,18 @@ namespace IdentityServer4.ResponseHandling
                 return await CreateHybridFlowResponseAsync(request);
             }
 
-            _logger.LogError("Unsupported grant type: " + request.GrantType);
+            Logger.LogError("Unsupported grant type: " + request.GrantType);
             throw new InvalidOperationException("invalid grant type: " + request.GrantType);
         }
 
-        private async Task<AuthorizeResponse> CreateHybridFlowResponseAsync(ValidatedAuthorizeRequest request)
+        /// <summary>
+        /// Creates the response for a hybrid flow request
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        protected virtual async Task<AuthorizeResponse> CreateHybridFlowResponseAsync(ValidatedAuthorizeRequest request)
         {
-            _logger.LogDebug("Creating Hybrid Flow response.");
+            Logger.LogDebug("Creating Hybrid Flow response.");
 
             var code = await CreateCodeAsync(request);
             var response = await CreateImplicitFlowResponseAsync(request, code);
@@ -77,9 +105,14 @@ namespace IdentityServer4.ResponseHandling
             return response;
         }
 
-        private async Task<AuthorizeResponse> CreateCodeFlowResponseAsync(ValidatedAuthorizeRequest request)
+        /// <summary>
+        /// Creates the response for a code flow request
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        protected virtual async Task<AuthorizeResponse> CreateCodeFlowResponseAsync(ValidatedAuthorizeRequest request)
         {
-            _logger.LogDebug("Creating Authorization Code Flow response.");
+            Logger.LogDebug("Creating Authorization Code Flow response.");
 
             var code = await CreateCodeAsync(request);
 
@@ -93,34 +126,15 @@ namespace IdentityServer4.ResponseHandling
             return response;
         }
 
-        private async Task<string> CreateCodeAsync(ValidatedAuthorizeRequest request)
+        /// <summary>
+        /// Creates the response for a implicit flow request
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="authorizationCode"></param>
+        /// <returns></returns>
+        protected virtual async Task<AuthorizeResponse> CreateImplicitFlowResponseAsync(ValidatedAuthorizeRequest request, string authorizationCode = null)
         {
-            var code = new AuthorizationCode
-            {
-                ClientId = request.Client.ClientId,
-                Lifetime = request.Client.AuthorizationCodeLifetime,
-                Subject = request.Subject,
-                SessionId = request.SessionId,
-                CodeChallenge = request.CodeChallenge.Sha256(),
-                CodeChallengeMethod = request.CodeChallengeMethod,
-
-                IsOpenId = request.IsOpenIdRequest,
-                RequestedScopes = request.ValidatedScopes.GrantedResources.ToScopeNames(),
-                RedirectUri = request.RedirectUri,
-                Nonce = request.Nonce,
-
-                WasConsentShown = request.WasConsentShown,
-            };
-
-            // store id token and access token and return authorization code
-            var id = await _authorizationCodeStore.StoreAuthorizationCodeAsync(code);
-
-            return id;
-        }
-
-        private async Task<AuthorizeResponse> CreateImplicitFlowResponseAsync(ValidatedAuthorizeRequest request, string authorizationCode = null)
-        {
-            _logger.LogDebug("Creating Implicit Flow response.");
+            Logger.LogDebug("Creating Implicit Flow response.");
 
             string accessTokenValue = null;
             int accessTokenLifetime = 0;
@@ -137,10 +151,10 @@ namespace IdentityServer4.ResponseHandling
                     ValidatedRequest = request
                 };
 
-                var accessToken = await _tokenService.CreateAccessTokenAsync(tokenRequest);
+                var accessToken = await TokenService.CreateAccessTokenAsync(tokenRequest);
                 accessTokenLifetime = accessToken.Lifetime;
 
-                accessTokenValue = await _tokenService.CreateSecurityTokenAsync(accessToken);
+                accessTokenValue = await TokenService.CreateSecurityTokenAsync(accessToken);
             }
 
             string jwt = null;
@@ -159,8 +173,8 @@ namespace IdentityServer4.ResponseHandling
                     AuthorizationCodeToHash = authorizationCode
                 };
 
-                var idToken = await _tokenService.CreateIdentityTokenAsync(tokenRequest);
-                jwt = await _tokenService.CreateSecurityTokenAsync(idToken);
+                var idToken = await TokenService.CreateIdentityTokenAsync(tokenRequest);
+                jwt = await TokenService.CreateSecurityTokenAsync(idToken);
             }
 
             var response = new AuthorizeResponse
@@ -173,6 +187,37 @@ namespace IdentityServer4.ResponseHandling
             };
 
             return response;
+        }
+
+        /// <summary>
+        /// Creates an authorization code
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        protected async Task<string> CreateCodeAsync(ValidatedAuthorizeRequest request)
+        {
+            var code = new AuthorizationCode
+            {
+                CreationTime = Clock.UtcNow.UtcDateTime,
+                ClientId = request.Client.ClientId,
+                Lifetime = request.Client.AuthorizationCodeLifetime,
+                Subject = request.Subject,
+                SessionId = request.SessionId,
+                CodeChallenge = request.CodeChallenge.Sha256(),
+                CodeChallengeMethod = request.CodeChallengeMethod,
+
+                IsOpenId = request.IsOpenIdRequest,
+                RequestedScopes = request.ValidatedScopes.GrantedResources.ToScopeNames(),
+                RedirectUri = request.RedirectUri,
+                Nonce = request.Nonce,
+
+                WasConsentShown = request.WasConsentShown
+            };
+
+            // store id token and access token and return authorization code
+            var id = await AuthorizationCodeStore.StoreAuthorizationCodeAsync(code);
+
+            return id;
         }
    }
 }

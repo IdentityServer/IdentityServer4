@@ -7,14 +7,14 @@ using System.Collections.Generic;
 
 namespace IdentityServer4.UnitTests.Validation
 {
-    class TestScopes
+    internal class TestScopes
     {
         public static IEnumerable<IdentityResource> GetIdentity()
         {
             return new IdentityResource[]
             {
                 new IdentityResources.OpenId(),
-                new IdentityResources.Profile(),
+                new IdentityResources.Profile()
             };
         }
 
@@ -30,13 +30,13 @@ namespace IdentityServer4.UnitTests.Validation
                         new Scope
                         {
                             Name = "resource",
-                            Description = "resource scope",
+                            Description = "resource scope"
                         },
                         new Scope
                         {
                             Name = "resource2",
-                            Description = "resource scope",
-                        },
+                            Description = "resource scope"
+                        }
                     }
                 }
             };

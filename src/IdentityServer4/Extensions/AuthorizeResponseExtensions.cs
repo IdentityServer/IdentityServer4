@@ -3,6 +3,7 @@
 
 
 using IdentityServer4.Extensions;
+using IdentityServer4.ResponseHandling;
 using System.Collections.Specialized;
 
 namespace IdentityServer4.Models

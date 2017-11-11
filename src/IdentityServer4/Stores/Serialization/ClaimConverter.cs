@@ -26,7 +26,7 @@ namespace IdentityServer4.Stores.Serialization
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            Claim source = (Claim)value;
+            var source = (Claim)value;
 
             var target = new ClaimLite
             {

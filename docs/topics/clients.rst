@@ -81,7 +81,7 @@ This flow gives you the best security because the access tokens are transmitted 
         
         RedirectUris =           { "http://localhost:21402/signin-oidc" },
         PostLogoutRedirectUris = { "http://localhost:21402/" },
-        LogoutUri =                "http://localhost:21402/signout-oidc",
+        FrontChannelLogoutUri =  "http://localhost:21402/signout-oidc",
 
         AllowedScopes = 
         {

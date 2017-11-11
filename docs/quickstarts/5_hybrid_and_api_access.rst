@@ -6,7 +6,7 @@ In the previous quickstarts we explored both API access and user authentication.
 Now we want to bring the two parts together.
 
 The beauty of the OpenID Connect & OAuth 2.0 combination is, that you can achieve both with
-a single protocol and a single round-trip to the token service.
+a single protocol and a single exchange with the token service.
 
 In the previous quickstart we used the OpenID Connect implicit flow.
 In the implicit flow all tokens are transmitted via the browser, which is totally fine for the identity token.
@@ -54,29 +54,29 @@ this allows requesting refresh tokens for long lived API access::
 Modifying the MVC client
 ^^^^^^^^^^^^^^^^^^^^^^^^
 The modifications at the MVC client are also minimal - the ASP.NET Core OpenID Connect 
-middleware has built-in support for the hybrid flow, so we only need to change some configuration values.
+handler has built-in support for the hybrid flow, so we only need to change some configuration values.
 
-We configure the ``ClientSecret`` to match the secret at IdentityServer. Add the ``offline_access`` scopes, 
+We configure the ``ClientSecret`` to match the secret at IdentityServer. Add the ``offline_access`` and ``api1`` scopes, 
 and set the ``ResponseType`` to ``code id_token`` (which basically means "use hybrid flow")
 
 ::
 
-    app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
+    .AddOpenIdConnect("oidc", options =>
     {
-        AuthenticationScheme = "oidc",
-        SignInScheme = "Cookies",
+        options.SignInScheme = "Cookies";
 
-        Authority = "http://localhost:5000",
-        RequireHttpsMetadata = false,
+        options.Authority = "http://localhost:5000";
+        options.RequireHttpsMetadata = false;
 
-        ClientId = "mvc",
-        ClientSecret = "secret",
+        options.ClientId = "mvc";
+        options.ClientSecret = "secret";
+        options.ResponseType = "code id_token";
 
-        ResponseType = "code id_token",
-        Scope = { "api1", "offline_access" },
+        options.SaveTokens = true;
+        options.GetClaimsFromUserInfoEndpoint = true;
 
-        GetClaimsFromUserInfoEndpoint = true,
-        SaveTokens = true
+        options.Scope.Add("api1");
+        options.Scope.Add("offline_access");
     });
 
 When you run the MVC client, there will be no big differences, besides that the consent
@@ -93,17 +93,17 @@ The easiest way to access them is by using extension methods from the ``Microsof
 For example on your claims view::
 
     <dt>access token</dt>
-    <dd>@await ViewContext.HttpContext.Authentication.GetTokenAsync("access_token")</dd>
+    <dd>@await ViewContext.HttpContext.GetTokenAsync("access_token")</dd>
 
     <dt>refresh token</dt>
-    <dd>@await ViewContext.HttpContext.Authentication.GetTokenAsync("refresh_token")</dd>
+    <dd>@await ViewContext.HttpContext.GetTokenAsync("refresh_token")</dd>
 
-For accessing the API using the user token, all you need to do is retrieve the token, 
+For accessing the API using the access token, all you need to do is retrieve the token, 
 and set it on your *HttpClient*::
 
     public async Task<IActionResult> CallApiUsingUserAccessToken()
     {
-        var accessToken = await HttpContext.Authentication.GetTokenAsync("access_token");
+        var accessToken = await HttpContext.GetTokenAsync("access_token");
 
         var client = new HttpClient();
         client.SetBearerToken(accessToken);

@@ -7,6 +7,7 @@ using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
+using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -22,9 +23,20 @@ namespace IdentityServer4.ResponseHandling
     /// <seealso cref="IdentityServer4.ResponseHandling.IUserInfoResponseGenerator" />
     public class UserInfoResponseGenerator : IUserInfoResponseGenerator
     {
-        private readonly ILogger _logger;
-        private readonly IProfileService _profile;
-        private readonly IResourceStore _resourceStore;
+        /// <summary>
+        /// The logger
+        /// </summary>
+        protected readonly ILogger Logger;
+
+        /// <summary>
+        /// The profile service
+        /// </summary>
+        protected readonly IProfileService Profile;
+
+        /// <summary>
+        /// The resource store
+        /// </summary>
+        protected readonly IResourceStore Resources;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserInfoResponseGenerator"/> class.
@@ -34,60 +46,62 @@ namespace IdentityServer4.ResponseHandling
         /// <param name="logger">The logger.</param>
         public UserInfoResponseGenerator(IProfileService profile, IResourceStore resourceStore, ILogger<UserInfoResponseGenerator> logger)
         {
-            _profile = profile;
-            _resourceStore = resourceStore;
-            _logger = logger;
+            Profile = profile;
+            Resources = resourceStore;
+            Logger = logger;
         }
 
         /// <summary>
-        /// Processes the response.
+        /// Creates the response.
         /// </summary>
-        /// <param name="subject">The subject.</param>
-        /// <param name="scopes">The scopes.</param>
-        /// <param name="client">The client.</param>
+        /// <param name="validationResult">The userinfo request validation result.</param>
         /// <returns></returns>
         /// <exception cref="System.InvalidOperationException">Profile service returned incorrect subject value</exception>
-        public async Task<Dictionary<string, object>> ProcessAsync(ClaimsPrincipal subject, IEnumerable<string> scopes, Client client)
+        public virtual async Task<Dictionary<string, object>> ProcessAsync(UserInfoRequestValidationResult validationResult)
         {
-            _logger.LogTrace("Creating userinfo response");
+            Logger.LogDebug("Creating userinfo response");
 
+            // extract scopes and turn into requested claim types
+            var scopes = validationResult.TokenValidationResult.Claims.Where(c => c.Type == JwtClaimTypes.Scope).Select(c => c.Value);
             var requestedClaimTypes = await GetRequestedClaimTypesAsync(scopes);
 
-            _logger.LogDebug("Requested claim types: {claimTypes}", requestedClaimTypes.ToSpaceSeparatedString());
+            Logger.LogDebug("Requested claim types: {claimTypes}", requestedClaimTypes.ToSpaceSeparatedString());
 
+            // call profile service
             var context = new ProfileDataRequestContext(
-                subject,
-                client,
+                validationResult.Subject,
+                validationResult.TokenValidationResult.Client,
                 IdentityServerConstants.ProfileDataCallers.UserInfoEndpoint,
                 requestedClaimTypes);
 
-            await _profile.GetProfileDataAsync(context);
+            await Profile.GetProfileDataAsync(context);
             var profileClaims = context.IssuedClaims;
 
-            List<Claim> results = new List<Claim>();
+            // construct outgoing claims
+            var outgoingClaims = new List<Claim>();
 
             if (profileClaims == null)
             {
-                _logger.LogInformation("Profile service returned no claims (null)");
+                Logger.LogInformation("Profile service returned no claims (null)");
             }
             else
             {
-                results.AddRange(profileClaims);
-                _logger.LogInformation("Profile service returned to the following claim types: {types}", profileClaims.Select(c => c.Type).ToSpaceSeparatedString());
+                outgoingClaims.AddRange(profileClaims);
+                Logger.LogInformation("Profile service returned to the following claim types: {types}", profileClaims.Select(c => c.Type).ToSpaceSeparatedString());
             }
 
-            var subClaim = results.SingleOrDefault(x => x.Type == JwtClaimTypes.Subject);
+            var subClaim = outgoingClaims.SingleOrDefault(x => x.Type == JwtClaimTypes.Subject);
             if (subClaim == null)
             {
-                results.Add(new Claim(JwtClaimTypes.Subject, subject.GetSubjectId()));
+                outgoingClaims.Add(new Claim(JwtClaimTypes.Subject, validationResult.Subject.GetSubjectId()));
             }
-            else if (subClaim.Value != subject.GetSubjectId())
+            else if (subClaim.Value != validationResult.Subject.GetSubjectId())
             {
-                _logger.LogError("Profile service returned incorrect subject value: {sub}", subClaim);
+                Logger.LogError("Profile service returned incorrect subject value: {sub}", subClaim);
                 throw new InvalidOperationException("Profile service returned incorrect subject value");
             }
 
-            return results.ToClaimsDictionary();
+            return outgoingClaims.ToClaimsDictionary();
         }
 
         /// <summary>
@@ -95,7 +109,7 @@ namespace IdentityServer4.ResponseHandling
         /// </summary>
         /// <param name="scopes">The scopes.</param>
         /// <returns></returns>
-        public async Task<IEnumerable<string>> GetRequestedClaimTypesAsync(IEnumerable<string> scopes)
+        internal protected virtual async Task<IEnumerable<string>> GetRequestedClaimTypesAsync(IEnumerable<string> scopes)
         {
             if (scopes == null || !scopes.Any())
             {
@@ -103,9 +117,9 @@ namespace IdentityServer4.ResponseHandling
             }
 
             var scopeString = string.Join(" ", scopes);
-            _logger.LogDebug("Scopes in access token: {scopes}", scopeString);
+            Logger.LogDebug("Scopes in access token: {scopes}", scopeString);
 
-            var identityResources = await _resourceStore.FindEnabledIdentityResourcesByScopeAsync(scopes);
+            var identityResources = await Resources.FindEnabledIdentityResourcesByScopeAsync(scopes);
             var scopeClaims = new List<string>();
 
             foreach (var scope in scopes)

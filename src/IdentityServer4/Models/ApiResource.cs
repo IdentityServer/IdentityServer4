@@ -12,7 +12,7 @@ namespace IdentityServer4.Models
     /// <summary>
     /// Models a web API resource.
     /// </summary>
-    public class ApiResource
+    public class ApiResource : Resource
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiResource"/> class.
@@ -76,34 +76,9 @@ namespace IdentityServer4.Models
         }
 
         /// <summary>
-        /// Indicates if this API is enabled. Defaults to true.
-        /// </summary>
-        public bool Enabled { get; set; } = true;
-
-        /// <summary>
-        /// The unique name of the API. This value is used for authentication with introspection and will be added to the audience of the outgoing access token.
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Display name of the API resource.
-        /// </summary>
-        public string DisplayName { get; set; }
-        
-        /// <summary>
-        /// Description of the API resource.
-        /// </summary>
-        public string Description { get; set; }
-
-        /// <summary>
         /// The API secret is used for the introspection endpoint. The API can authenticate with introspection using the API name and secret.
         /// </summary>
         public ICollection<Secret> ApiSecrets { get; set; } = new HashSet<Secret>();
-
-        /// <summary>
-        /// List of accociated user claims that should be included in the access token.
-        /// </summary>
-        public ICollection<string> UserClaims { get; set; } = new HashSet<string>();
 
         /// <summary>
         /// An API must have at least one scope. Each scope can have different settings.
@@ -112,13 +87,13 @@ namespace IdentityServer4.Models
 
         internal ApiResource CloneWithScopes(IEnumerable<Scope> scopes)
         {
-            return new ApiResource()
+            return new ApiResource
             {
                 Enabled = Enabled,
                 Name = Name,
                 ApiSecrets = ApiSecrets,
                 Scopes = new HashSet<Scope>(scopes.ToArray()),
-                UserClaims = UserClaims,
+                UserClaims = UserClaims
             };
         }
     }

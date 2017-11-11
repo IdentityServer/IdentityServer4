@@ -16,7 +16,7 @@ namespace IdentityServer.IntegrationTests.Clients
 {
     public class DiscoveryClientTests
     {
-        const string DiscoveryEndpoint = "https://server/.well-known/openid-configuration";
+        private const string DiscoveryEndpoint = "https://server/.well-known/openid-configuration";
 
         private readonly HttpClient _client;
         private readonly HttpMessageHandler _handler;

@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.UnitTests.Validation
 {
-    class TestProfileService : IProfileService
+    internal class TestProfileService : IProfileService
     {
-        bool _shouldBeActive;
+        private bool _shouldBeActive;
 
         public TestProfileService(bool shouldBeActive = true)
         {
@@ -19,13 +19,13 @@ namespace IdentityServer4.UnitTests.Validation
 
         public Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         public Task IsActiveAsync(IsActiveContext context)
         {
             context.IsActive = _shouldBeActive;
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

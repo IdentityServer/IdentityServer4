@@ -211,17 +211,12 @@ namespace IdentityServer4.Extensions
 
         public static string GetOrigin(this string url)
         {
-            if (url != null && (url.StartsWith("http://") || url.StartsWith("https://")))
+            if (url != null)
             {
-                var idx = url.IndexOf("//", StringComparison.Ordinal);
-                if (idx > 0)
+                var uri = new Uri(url);
+                if (uri.Scheme == "http" || uri.Scheme == "https")
                 {
-                    idx = url.IndexOf("/", idx + 2, StringComparison.Ordinal);
-                    if (idx >= 0)
-                    {
-                        url = url.Substring(0, idx);
-                    }
-                    return url;
+                    return $"{uri.Scheme}://{uri.Authority}";
                 }
             }
 

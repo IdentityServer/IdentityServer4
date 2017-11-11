@@ -22,16 +22,16 @@ namespace IdentityServer4.Endpoints.Results
         /// <value>
         /// The result.
         /// </value>
-        public Dictionary<string, object> Result { get; }
+        public Dictionary<string, object> Entries { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IntrospectionResult"/> class.
         /// </summary>
-        /// <param name="result">The result.</param>
+        /// <param name="entries">The result.</param>
         /// <exception cref="System.ArgumentNullException">result</exception>
-        public IntrospectionResult(Dictionary<string, object> result)
+        public IntrospectionResult(Dictionary<string, object> entries)
         {
-            Result = result ?? throw new ArgumentNullException(nameof(result));
+            Entries = entries ?? throw new ArgumentNullException(nameof(entries));
         }
 
         /// <summary>
@@ -42,7 +42,9 @@ namespace IdentityServer4.Endpoints.Results
         public Task ExecuteAsync(HttpContext context)
         {
             context.Response.SetNoCache();
-            return context.Response.WriteJsonAsync(Result);
+
+            var jobject = ObjectSerializer.ToJObject(Entries);
+            return context.Response.WriteJsonAsync(jobject);
         }
     }
 }

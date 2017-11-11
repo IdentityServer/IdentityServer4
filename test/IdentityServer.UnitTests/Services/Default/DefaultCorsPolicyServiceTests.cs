@@ -11,9 +11,9 @@ namespace IdentityServer4.UnitTests.Services.Default
 {
     public class DefaultCorsPolicyServiceTests
     {
-        const string Category = "DefaultCorsPolicyService";
+        private const string Category = "DefaultCorsPolicyService";
 
-        DefaultCorsPolicyService subject;
+        private DefaultCorsPolicyService subject;
 
         public DefaultCorsPolicyServiceTests()
         {

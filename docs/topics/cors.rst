@@ -1,3 +1,4 @@
+.. _refCors:
 CORS
 ====
 
@@ -13,7 +14,7 @@ Simply add the origin of the client to the collection and the default configurat
 .. Note:: Be sure to use an origin (not a URL) when configuring CORS. For example: ``https://foo:123/`` is a URL, whereas ``https://foo:123`` is an origin.
 
 This default CORS implementation will be in use if you are using either the "in-memory" or EF-based client configuration that we provide.
-If you define your own ``IClientStore``, then you will need to impelment your own custom CORS policy service (see below).
+If you define your own ``IClientStore``, then you will need to implement your own custom CORS policy service (see below).
 
 Custom Cors Policy Service
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -23,7 +24,7 @@ IdentityServer allows the hosting application to implement the ``ICorsPolicyServ
 The single method to implement is: ``Task<bool> IsOriginAllowedAsync(string origin)``. 
 Return ``true`` if the `origin` is allowed, ``false`` otherwise.
 
-Once implemented, simply register the implementaion in DI and IdentityServer will then use your custom implementation.
+Once implemented, simply register the implementation in DI and IdentityServer will then use your custom implementation.
 
 **DefaultCorsPolicyService**
 
@@ -31,7 +32,7 @@ If you simply wish to hard-code a set of allowed origins, then there is a pre-bu
 This would be configured as a singleton in DI, and hard-coded with its ``AllowedOrigins`` collection, or setting the flag ``AllowAll`` to ``true`` to allow all origins.
 For example, in ``ConfigureServices``::
 
-    var cors = new DefaultCorsPolicyService()
+    var cors = new DefaultCorsPolicyService(_loggerFactory.CreateLogger<DefaultCorsPolicyService>())
     {
         AllowedOrigins = { "https://foo", "https://bar" }
     };

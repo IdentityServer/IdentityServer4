@@ -14,7 +14,7 @@ namespace IdentityServer4.IntegrationTests.Clients
 {
     public class RefreshTokenClient
     {
-        const string TokenEndpoint = "https://server/connect/token";
+        private const string TokenEndpoint = "https://server/connect/token";
 
         private readonly HttpClient _client;
         private readonly HttpMessageHandler _handler;
@@ -80,5 +80,38 @@ namespace IdentityServer4.IntegrationTests.Clients
             response.IdentityToken.Should().NotBeNull();
             response.RefreshToken.Should().NotBeNull();
         }
+
+        [Fact]
+        public async Task refreshing_a_refresh_token_with_reuse_should_return_same_refresh_token()
+        {
+            var client = new TokenClient(
+                TokenEndpoint,
+                "roclient.reuse",
+                "secret",
+                innerHttpMessageHandler: _handler);
+
+            var response = await client.RequestResourceOwnerPasswordAsync("bob", "bob", "openid api1 offline_access");
+
+            response.IsError.Should().BeFalse();
+            response.ExpiresIn.Should().Be(3600);
+            response.TokenType.Should().Be("Bearer");
+            response.IdentityToken.Should().BeNull();
+            response.RefreshToken.Should().NotBeNull();
+
+            var rt1 = response.RefreshToken;
+
+            response = await client.RequestRefreshTokenAsync(response.RefreshToken);
+
+            response.IsError.Should().BeFalse();
+            response.ExpiresIn.Should().Be(3600);
+            response.TokenType.Should().Be("Bearer");
+            response.IdentityToken.Should().NotBeNull();
+            response.RefreshToken.Should().NotBeNull();
+
+            var rt2 = response.RefreshToken;
+
+            rt1.Should().BeEquivalentTo(rt2);
+        }
+
     }
 }

@@ -18,7 +18,7 @@ namespace IdentityServer4.Models
         /// ppid - scope the subject id to the client
         /// </summary>
         Ppid = 1
-    };
+    }
 
     /// <summary>
     /// Access token types.

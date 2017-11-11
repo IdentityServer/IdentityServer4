@@ -2,7 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityModel;
+
+using System;
 
 namespace IdentityServer4.Models
 {
@@ -12,12 +13,21 @@ namespace IdentityServer4.Models
     public class Message<TModel>
     {
         /// <summary>
+        /// Should only be used from unit tests
+        /// </summary>
+        /// <param name="data"></param>
+        internal Message(TModel data) : this(data, DateTime.UtcNow)
+        {
+        }
+        
+        /// <summary>
         /// Initializes a new instance of the <see cref="Message{TModel}"/> class.
         /// </summary>
         /// <param name="data">The data.</param>
-        public Message(TModel data)
+        /// <param name="now">The current UTC date/time.</param>
+        public Message(TModel data, DateTime now)
         {
-            Created = IdentityServerDateTime.UtcNow.Ticks;
+            Created = now.Ticks;
             Data = data;
         }
 
@@ -36,30 +46,5 @@ namespace IdentityServer4.Models
         /// The data.
         /// </value>
         public TModel Data { get; set; }
-    }
-
-    /// <summary>
-    /// Message with Id
-    /// </summary>
-    /// <typeparam name="TModel">The type of the model.</typeparam>
-    /// <seealso cref="IdentityServer4.Models.Message{TModel}" />
-    public class MessageWithId<TModel> : Message<TModel>
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MessageWithId{TModel}"/> class.
-        /// </summary>
-        /// <param name="data">The data.</param>
-        public MessageWithId(TModel data) : base(data)
-        {
-            Id = CryptoRandom.CreateUniqueId(16);
-        }
-
-        /// <summary>
-        /// Gets or sets the identifier.
-        /// </summary>
-        /// <value>
-        /// The identifier.
-        /// </value>
-        public string Id { get; set; }
     }
 }

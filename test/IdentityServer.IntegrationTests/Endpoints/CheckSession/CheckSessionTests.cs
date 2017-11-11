@@ -12,9 +12,9 @@ namespace IdentityServer4.IntegrationTests.Endpoints.CheckSession
 {
     public class CheckSessionTests
     {
-        const string Category = "Check session endpoint";
+        private const string Category = "Check session endpoint";
 
-        MockIdSvrUiPipeline _mockPipeline = new MockIdSvrUiPipeline();
+        private IdentityServerPipeline _mockPipeline = new IdentityServerPipeline();
 
         public CheckSessionTests()
         {
@@ -25,7 +25,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.CheckSession
         [Trait("Category", Category)]
         public async Task get_request_should_not_return_404()
         {
-            var response = await _mockPipeline.Client.GetAsync(MockIdSvrUiPipeline.CheckSessionEndpoint);
+            var response = await _mockPipeline.Client.GetAsync(IdentityServerPipeline.CheckSessionEndpoint);
 
             response.StatusCode.Should().NotBe(HttpStatusCode.NotFound);
         }

@@ -13,26 +13,27 @@ using IdentityServer4.Configuration.DependencyInjection;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using IdentityServer4.Services;
+using IdentityServer4.Hosting;
 
 namespace IdentityServer4.UnitTests.Hosting.Cors
 {
     public class PolicyProviderTests
     {
-        const string Category = "PolicyProvider";
+        private const string Category = "PolicyProvider";
 
-        CorsPolicyProvider _subject;
-        List<string> _allowedPaths = new List<string>();
+        private CorsPolicyProvider _subject;
+        private List<string> _allowedPaths = new List<string>();
 
-        MockCorsPolicyProvider _mockInner = new MockCorsPolicyProvider();
-        MockCorsPolicyService _mockPolicy = new MockCorsPolicyService();
-        IdentityServerOptions _options;
+        private MockCorsPolicyProvider _mockInner = new MockCorsPolicyProvider();
+        private MockCorsPolicyService _mockPolicy = new MockCorsPolicyService();
+        private IdentityServerOptions _options;
 
         public PolicyProviderTests()
         {
             Init();
         }
 
-        public void Init()
+        internal void Init()
         {
             _options = new IdentityServerOptions();
             _options.Cors.CorsPaths.Clear();
@@ -67,7 +68,7 @@ namespace IdentityServer4.UnitTests.Hosting.Cors
                 "/foo",
                 "/bar/",
                 "/baz/quux",
-                "/baz/quux/",
+                "/baz/quux/"
             });
             Init();
 
@@ -139,7 +140,7 @@ namespace IdentityServer4.UnitTests.Hosting.Cors
         public async Task origin_same_as_server_should_not_call_policy()
         {
             _allowedPaths.AddRange(new string[] {
-                "/foo",
+                "/foo"
             });
             Init();
 
@@ -162,7 +163,7 @@ namespace IdentityServer4.UnitTests.Hosting.Cors
         public async Task origin_not_same_as_server_should_call_policy(string origin)
         {
             _allowedPaths.AddRange(new string[] {
-                "/foo",
+                "/foo"
             });
             Init();
 

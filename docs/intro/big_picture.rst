@@ -1,4 +1,4 @@
-The big Picture
+The Big Picture
 ===============
 
 Most modern applications look more or less like this:

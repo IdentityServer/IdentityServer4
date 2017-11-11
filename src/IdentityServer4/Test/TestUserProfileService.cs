@@ -45,22 +45,20 @@ namespace IdentityServer4.Test
         /// <returns></returns>
         public virtual Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
-            Logger.LogDebug("Get profile called for subject {subject} from client {client} with claim types {claimTypes} via {caller}",
-                context.Subject.GetSubjectId(),
-                context.Client.ClientName ?? context.Client.ClientId,
-                context.RequestedClaimTypes,
-                context.Caller);
+            context.LogProfileRequest(Logger);
 
             if (context.RequestedClaimTypes.Any())
             {
                 var user = Users.FindBySubjectId(context.Subject.GetSubjectId());
                 if (user != null)
                 {
-                    context.AddFilteredClaims(user.Claims);
+                    context.AddRequestedClaims(user.Claims);
                 }
             }
 
-            return Task.FromResult(0);
+            context.LogIssuedClaims(Logger);
+
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -71,10 +69,12 @@ namespace IdentityServer4.Test
         /// <returns></returns>
         public virtual Task IsActiveAsync(IsActiveContext context)
         {
-            var user = Users.FindBySubjectId(context.Subject.GetSubjectId());
-            context.IsActive = user != null;
+            Logger.LogDebug("IsActive called from: {caller}", context.Caller);
 
-            return Task.FromResult(0);
+            var user = Users.FindBySubjectId(context.Subject.GetSubjectId());
+            context.IsActive = user?.IsActive == true;
+
+            return Task.CompletedTask;
         }
     }
 }

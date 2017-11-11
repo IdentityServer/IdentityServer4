@@ -7,10 +7,7 @@ using IdentityServer4.Validation;
 using System.Threading.Tasks;
 using IdentityServer4.Hosting;
 using Microsoft.AspNetCore.Http;
-using IdentityServer4.Services;
 using Microsoft.Extensions.DependencyInjection;
-using IdentityServer4.Stores;
-using IdentityServer4.Models;
 using System.Net;
 using System;
 using IdentityServer4.Extensions;
@@ -18,53 +15,33 @@ using IdentityServer4.Configuration;
 
 namespace IdentityServer4.Endpoints.Results
 {
-    class EndSessionCallbackResult : IEndpointResult
+    internal class EndSessionCallbackResult : IEndpointResult
     {
         private readonly EndSessionCallbackValidationResult _result;
 
         public EndSessionCallbackResult(EndSessionCallbackValidationResult result)
         {
-            if (result == null) throw new ArgumentNullException(nameof(result));
-
-            _result = result;
+            _result = result ?? throw new ArgumentNullException(nameof(result));
         }
 
         internal EndSessionCallbackResult(
             EndSessionCallbackValidationResult result,
-            IClientSessionService clientList,
-            IMessageStore<LogoutMessage> logoutMessageStore,
             IdentityServerOptions options)
             : this(result)
         {
-            _clientList = clientList;
-            _logoutMessageStore = logoutMessageStore;
             _options = options;
         }
 
-        private IClientSessionService _clientList;
-        private IMessageStore<LogoutMessage> _logoutMessageStore;
         private IdentityServerOptions _options;
 
-        void Init(HttpContext context)
+        private void Init(HttpContext context)
         {
-            _clientList = _clientList ?? context.RequestServices.GetRequiredService<IClientSessionService>();
-            _logoutMessageStore = _logoutMessageStore ?? context.RequestServices.GetRequiredService<IMessageStore<LogoutMessage>>();
             _options = _options ?? context.RequestServices.GetRequiredService<IdentityServerOptions>();
         }
 
         public async Task ExecuteAsync(HttpContext context)
         {
             Init(context);
-
-            if (_result.SessionId != null)
-            {
-                _clientList.RemoveCookie(_result.SessionId);
-            }
-
-            if (_result.LogoutId != null)
-            {
-                await _logoutMessageStore.DeleteAsync(_result.LogoutId);
-            }
 
             if (_result.IsError)
             {
@@ -73,7 +50,6 @@ namespace IdentityServer4.Endpoints.Results
             else
             {
                 context.Response.SetNoCache();
-                AddXfoHeaders(context);
                 AddCspHeaders(context);
 
                 var html = GetHtml();
@@ -87,7 +63,7 @@ namespace IdentityServer4.Endpoints.Results
             // the hash matches the embedded style element being used below
             var value = "default-src 'none'; style-src 'unsafe-inline' 'sha256-u+OupXgfekP+x/f6rMdoEAspPCYUtca912isERnoEjY='";
 
-            var origins = _result.ClientLogoutUrls?.Select(x => x.GetOrigin());
+            var origins = _result.FrontChannelLogoutUrls?.Select(x => x.GetOrigin());
             if (origins != null && origins.Any())
             {
                 var list = origins.Aggregate((x, y) => $"{x} {y}");
@@ -105,29 +81,13 @@ namespace IdentityServer4.Endpoints.Results
             }
         }
 
-        private void AddXfoHeaders(HttpContext context)
-        {
-            if (!context.Response.Headers.ContainsKey("X-Frame-Options"))
-            {
-                var logoutPageUrl = _options.UserInteraction.LogoutUrl;
-                if (logoutPageUrl.IsLocalUrl())
-                {
-                    context.Response.Headers.Add("X-Frame-Options", "SAMEORIGIN");
-                }
-                else
-                {
-                    context.Response.Headers.Add("X-Frame-Options", $"ALLOW-FROM {logoutPageUrl.GetOrigin()}");
-                }
-            }
-        }
-
-        string GetHtml()
+        private string GetHtml()
         {
             string framesHtml = null;
 
-            if (_result.ClientLogoutUrls != null && _result.ClientLogoutUrls.Any())
+            if (_result.FrontChannelLogoutUrls != null && _result.FrontChannelLogoutUrls.Any())
             {
-                var frameUrls = _result.ClientLogoutUrls.Select(url => $"<iframe src='{url}'></iframe>");
+                var frameUrls = _result.FrontChannelLogoutUrls.Select(url => $"<iframe src='{url}'></iframe>");
                 framesHtml = frameUrls.Aggregate((x, y) => x + y);
             }
 

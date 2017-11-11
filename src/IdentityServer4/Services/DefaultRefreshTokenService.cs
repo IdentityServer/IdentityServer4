@@ -8,6 +8,7 @@ using IdentityServer4.Stores;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.Services
 {
@@ -27,12 +28,19 @@ namespace IdentityServer4.Services
         protected readonly IRefreshTokenStore RefreshTokenStore;
 
         /// <summary>
+        /// The clock
+        /// </summary>
+        protected readonly ISystemClock Clock;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="DefaultRefreshTokenService" /> class.
         /// </summary>
+        /// <param name="clock">The clock</param>
         /// <param name="refreshTokenStore">The refresh token store</param>
         /// <param name="logger">The logger</param>
-        public DefaultRefreshTokenService(IRefreshTokenStore refreshTokenStore, ILogger<DefaultRefreshTokenService> logger)
+        public DefaultRefreshTokenService(ISystemClock clock, IRefreshTokenStore refreshTokenStore, ILogger<DefaultRefreshTokenService> logger)
         {
+            Clock = clock;
             _logger = logger;
             RefreshTokenStore = refreshTokenStore;
         }
@@ -64,9 +72,9 @@ namespace IdentityServer4.Services
 
             var refreshToken = new RefreshToken
             {
-                CreationTime = IdentityServerDateTime.UtcNow,
+                CreationTime = Clock.UtcNow.UtcDateTime,
                 Lifetime = lifetime,
-                AccessToken = accessToken,
+                AccessToken = accessToken
             };
 
             var handle = await RefreshTokenStore.StoreRefreshTokenAsync(refreshToken);
@@ -85,8 +93,6 @@ namespace IdentityServer4.Services
         public virtual async Task<string> UpdateRefreshTokenAsync(string handle, RefreshToken refreshToken, Client client)
         {
             _logger.LogDebug("Updating refresh token");
-
-            var originalHandle = handle;
 
             bool needsCreate = false;
             bool needsUpdate = false;
@@ -108,7 +114,7 @@ namespace IdentityServer4.Services
 
                 // make sure we don't exceed absolute exp
                 // cap it at absolute exp
-                var currentLifetime = refreshToken.CreationTime.GetLifetimeInSeconds();
+                var currentLifetime = refreshToken.CreationTime.GetLifetimeInSeconds(Clock.UtcNow.UtcDateTime);
                 _logger.LogDebug("Current lifetime: " + currentLifetime.ToString());
 
                 var newLifetime = currentLifetime + client.SlidingRefreshTokenLifetime;

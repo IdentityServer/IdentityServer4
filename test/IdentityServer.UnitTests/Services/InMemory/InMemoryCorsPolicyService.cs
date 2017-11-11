@@ -13,10 +13,10 @@ namespace IdentityServer4.UnitTests.Services.InMemory
 {
     public class InMemoryCorsPolicyServiceTests
     {
-        const string Category = "InMemoryCorsPolicyService";
+        private const string Category = "InMemoryCorsPolicyService";
 
-        InMemoryCorsPolicyService _subject;
-        List<Client> _clients = new List<Client>();
+        private InMemoryCorsPolicyService _subject;
+        private List<Client> _clients = new List<Client>();
 
         public InMemoryCorsPolicyServiceTests()
         {
@@ -65,7 +65,7 @@ namespace IdentityServer4.UnitTests.Services.InMemory
                 {
                     "http://foo",
                     "http://bar",
-                    "http://baz",
+                    "http://baz"
                 }
             });
             _subject.IsOriginAllowedAsync("http://bar").Result.Should().Be(true);
@@ -81,7 +81,7 @@ namespace IdentityServer4.UnitTests.Services.InMemory
                 {
                     "http://foo",
                     "http://bar",
-                    "http://baz",
+                    "http://baz"
                 }
             });
             _subject.IsOriginAllowedAsync("http://quux").Result.Should().Be(false);
@@ -96,14 +96,14 @@ namespace IdentityServer4.UnitTests.Services.InMemory
                 {
                     AllowedCorsOrigins = new List<string>
                     {
-                        "http://foo",
+                        "http://foo"
                     }
                 },
                 new Client
                 {
                     AllowedCorsOrigins = new List<string>
                     {
-                        "http://foo",
+                        "http://foo"
                     }
                 }
             });

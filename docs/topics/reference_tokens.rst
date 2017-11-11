@@ -23,7 +23,7 @@ The introspection endpoint requires authentication - since the client of an intr
 
     var api = new ApiResource("api1")
     {
-        ApiSecrets = { new Secret("secret").Sha256()) }
+        ApiSecrets = { new Secret("secret".Sha256()) }
     }
 
 See :ref:`here <refProtectingApis>` for more information on how to configure the IdentityServer authentication middleware for APIs.

@@ -16,10 +16,10 @@ namespace IdentityServer4.UnitTests.Validation
 {
     public class RevocationRequestValidation
     {
-        const string Category = "Revocation Request Validation Tests";
+        private const string Category = "Revocation Request Validation Tests";
 
-        ITokenRevocationRequestValidator _validator;
-        Client _client;
+        private ITokenRevocationRequestValidator _validator;
+        private Client _client;
 
         public RevocationRequestValidation()
         {
@@ -40,7 +40,7 @@ namespace IdentityServer4.UnitTests.Validation
 
                 RedirectUris = new List<string>
                 {
-                    "https://server/cb",
+                    "https://server/cb"
                 },
 
                 AuthorizationCodeLifetime = 60
@@ -114,7 +114,7 @@ namespace IdentityServer4.UnitTests.Validation
         {
             var parameters = new NameValueCollection
             {
-                { "token", "foo" },
+                { "token", "foo" }
             };
 
             var result = await _validator.ValidateRequestAsync(parameters, _client);

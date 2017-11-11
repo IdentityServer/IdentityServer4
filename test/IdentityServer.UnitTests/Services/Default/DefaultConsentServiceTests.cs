@@ -8,38 +8,58 @@ using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.UnitTests.Common;
+using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
+using IdentityServer.UnitTests.Common;
 
 namespace IdentityServer4.UnitTests.Services.Default
 {
     public class DefaultConsentServiceTests
     {
-        DefaultConsentService _subject;
-        MockProfileService _mockMockProfileService = new MockProfileService();
+        private DefaultConsentService _subject;
+        private MockProfileService _mockMockProfileService = new MockProfileService();
 
-        ClaimsPrincipal _user;
-        Client _client;
-        TestUserConsentStore _userConsentStore = new TestUserConsentStore();
+        private ClaimsPrincipal _user;
+        private Client _client;
+        private TestUserConsentStore _userConsentStore = new TestUserConsentStore();
+        private StubClock _clock = new StubClock();
+
+        private DateTime now;
 
         public DefaultConsentServiceTests()
         {
+            _clock.UtcNowFunc = () => UtcNow;
+
             _client = new Client
             {
                 ClientId = "client"
             };
 
-            _user = IdentityServerPrincipal.Create("bob", "bob", new Claim[] {
-                new Claim("foo", "foo1"),
-                new Claim("foo", "foo2"),
-                new Claim("bar", "bar1"),
-                new Claim("bar", "bar2"),
-                new Claim(JwtClaimTypes.AuthenticationContextClassReference, "acr1")
-            });
+            _user = new IdentityServerUser("bob")
+            {
+                AdditionalClaims =
+                {
+                    new Claim("foo", "foo1"),
+                    new Claim("foo", "foo2"),
+                    new Claim("bar", "bar1"),
+                    new Claim("bar", "bar2"),
+                    new Claim(JwtClaimTypes.AuthenticationContextClassReference, "acr1")
+                }
+            }.CreatePrincipal();
 
-            _subject = new DefaultConsentService(_userConsentStore);
+            _subject = new DefaultConsentService(_clock, _userConsentStore, TestLogger.Create<DefaultConsentService>());
+        }
+
+        public DateTime UtcNow
+        {
+            get
+            {
+                if (now > DateTime.MinValue) return now;
+                return DateTime.UtcNow;
+            }
         }
 
         [Fact]
@@ -149,5 +169,40 @@ namespace IdentityServer4.UnitTests.Services.Default
             result.Should().BeTrue();
         }
 
+        [Fact]
+        public async Task RequiresConsentAsync_expired_consent_should_require_consent()
+        {
+            now = DateTime.UtcNow;
+
+            var scopes = new string[] { "foo", "bar" };
+            _client.ConsentLifetime = 2;
+
+            await _subject.UpdateConsentAsync(_user, _client, scopes);
+
+            now = now.AddSeconds(3);
+
+            var result = await _subject.RequiresConsentAsync(_user, _client, scopes);
+
+            result.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task RequiresConsentAsync_expired_consent_should_remove_consent()
+        {
+            now = DateTime.UtcNow;
+
+            var scopes = new string[] { "foo", "bar" };
+            _client.ConsentLifetime = 2;
+
+            await _subject.UpdateConsentAsync(_user, _client, scopes);
+
+            now = now.AddSeconds(3);
+
+            await _subject.RequiresConsentAsync(_user, _client, scopes);
+
+            var result = await _userConsentStore.GetUserConsentAsync(_user.GetSubjectId(), _client.ClientId);
+
+            result.Should().BeNull();
+        }
     }
 }

@@ -33,6 +33,6 @@ namespace IdentityServer4.Stores
         /// <summary>
         /// Gets all resources.
         /// </summary>
-        Task<Resources> GetAllResources();
+        Task<Resources> GetAllResourcesAsync();
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using IdentityServer4.Configuration;
 using System.Threading.Tasks;
 using IdentityServer4.Services;
+using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.Events
 {
@@ -33,16 +34,23 @@ namespace IdentityServer4.Events
         protected readonly IEventSink Sink;
 
         /// <summary>
+        /// The clock
+        /// </summary>
+        protected readonly ISystemClock Clock;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="DefaultEventService"/> class.
         /// </summary>
         /// <param name="options">The options.</param>
         /// <param name="context">The context.</param>
         /// <param name="sink">The sink.</param>
-        public DefaultEventService(IdentityServerOptions options, IHttpContextAccessor context, IEventSink sink)
+        /// <param name="clock">The clock.</param>
+        public DefaultEventService(IdentityServerOptions options, IHttpContextAccessor context, IEventSink sink, ISystemClock clock)
         {
             Options = options;
             Context = context;
             Sink = sink;
+            Clock = clock;
         }
 
         /// <summary>
@@ -105,7 +113,7 @@ namespace IdentityServer4.Events
         protected virtual async Task PrepareEventAsync(Event evt)
         {
             evt.ActivityId = Context.HttpContext.TraceIdentifier;
-            evt.TimeStamp = IdentityServerDateTime.UtcNow;
+            evt.TimeStamp = Clock.UtcNow.UtcDateTime;
             evt.ProcessId = Process.GetCurrentProcess().Id;
 
             if (Context.HttpContext.Connection.LocalIpAddress != null)

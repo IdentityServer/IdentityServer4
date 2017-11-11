@@ -9,7 +9,7 @@ namespace IdentityServer4.Validation
     /// <summary>
     /// Default custom request validator
     /// </summary>
-    public class DefaultCustomTokenRequestValidator : ICustomTokenRequestValidator
+    internal class DefaultCustomTokenRequestValidator : ICustomTokenRequestValidator
     {
         /// <summary>
         /// Custom validation logic for a token request.
@@ -20,7 +20,7 @@ namespace IdentityServer4.Validation
         /// </returns>
         public Task ValidateAsync(CustomTokenRequestValidationContext context)
         {
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

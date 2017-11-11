@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Endpoints
 {
-    class CheckSessionEndpoint : IEndpoint
+    internal class CheckSessionEndpoint : IEndpointHandler
     {
-        private readonly ILogger<CheckSessionEndpoint> _logger;
+        private readonly ILogger _logger;
 
         public CheckSessionEndpoint(ILogger<CheckSessionEndpoint> logger)
         {

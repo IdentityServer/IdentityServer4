@@ -22,7 +22,7 @@ namespace IdentityServer4.Events
         /// <param name="id">The identifier.</param>
         /// <param name="message">The message.</param>
         /// <exception cref="System.ArgumentNullException">category</exception>
-        public Event(string category, string name, EventTypes type, int id, string message = null)
+        protected Event(string category, string name, EventTypes type, int id, string message = null)
         {
             Category = category ?? throw new ArgumentNullException(nameof(category));
             Name = name ?? throw new ArgumentNullException(nameof(name));
@@ -38,7 +38,7 @@ namespace IdentityServer4.Events
         /// <returns></returns>
         protected internal virtual Task PrepareAsync()
         {
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -132,13 +132,13 @@ namespace IdentityServer4.Events
         /// <returns></returns>
         protected static string Obfuscate(string value)
         {
-            string last4chars = "****";
+            var last4Chars = "****";
             if (value.IsPresent() && value.Length > 4)
             {
-                last4chars = value.Substring(value.Length - 4);
+                last4Chars = value.Substring(value.Length - 4);
             }
 
-            return "****" + last4chars;
+            return "****" + last4Chars;
         }
     }
 }

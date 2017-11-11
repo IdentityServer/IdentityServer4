@@ -21,7 +21,7 @@ namespace Microsoft.AspNetCore.Http
 
         public static async Task WriteJsonAsync(this HttpResponse response, string json)
         {
-            response.ContentType = "application/json";
+            response.ContentType = "application/json; charset=UTF-8";
             await response.WriteAsync(json);
         }
 

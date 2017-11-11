@@ -4,12 +4,11 @@
 
 using IdentityServer4.ResponseHandling;
 using System.Threading.Tasks;
-using IdentityServer4.Models;
 using IdentityServer4.Validation;
 
 namespace IdentityServer4.UnitTests.Common
 {
-    class StubAuthorizeResponseGenerator : IAuthorizeResponseGenerator
+    internal class StubAuthorizeResponseGenerator : IAuthorizeResponseGenerator
     {
         public AuthorizeResponse Response { get; set; } = new AuthorizeResponse();
 

@@ -13,7 +13,7 @@ namespace IdentityServer4.UnitTests.Validation.Secrets
 {
     public class ClientSecretValidation
     {
-        const string Category = "Secrets - Client Secret Validator";
+        private const string Category = "Secrets - Client Secret Validator";
 
         [Fact]
         [Trait("Category", Category)]

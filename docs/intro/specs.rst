@@ -8,8 +8,9 @@ OpenID Connect
 
 * OpenID Connect Core 1.0 (`spec <http://openid.net/specs/openid-connect-core-1_0.html>`_)
 * OpenID Connect Discovery 1.0 (`spec <http://openid.net/specs/openid-connect-discovery-1_0.html>`_)
-* OpenID Connect Session Management 1.0 - draft 22 (`spec <http://openid.net/specs/openid-connect-session-1_0.html>`_)
-* OpenID Connect HTTP-based Logout 1.0 - draft 03 (`spec <http://openid.net/specs/openid-connect-logout-1_0.html>`_)
+* OpenID Connect Session Management 1.0 - draft 28 (`spec <http://openid.net/specs/openid-connect-session-1_0.html>`_)
+* OpenID Connect Front-Channel Logout 1.0 - draft 02 (`spec <https://openid.net/specs/openid-connect-frontchannel-1_0.html>`_)
+* OpenID Connect Back-Channel Logout 1.0 - draft 04 (`spec <https://openid.net/specs/openid-connect-backchannel-1_0.html>`_)
 
 OAuth 2.0
 ^^^^^^^^^
@@ -21,3 +22,4 @@ OAuth 2.0
 * OAuth 2.0 Token Revocation (`RFC 7009 <https://tools.ietf.org/html/rfc7009>`_)
 * OAuth 2.0 Token Introspection (`RFC 7662 <https://tools.ietf.org/html/rfc7662>`_)
 * Proof Key for Code Exchange (`RFC 7636 <https://tools.ietf.org/html/rfc7636>`_)
+* JSON Web Tokens for Client Authentication (`RFC 7523 <https://tools.ietf.org/html/rfc7523>`_)

@@ -4,19 +4,18 @@
 
 using System.Threading.Tasks;
 using IdentityServer4.Models;
-using IdentityServer4.Extensions;
 using Microsoft.Extensions.Logging;
-using System.Linq;
 
 namespace IdentityServer4.Services
 {
     /// <summary>
     /// Default profile service implementation.
+    /// This implementation sources all claims from the current subject (e.g. the cookie).
     /// </summary>
     /// <seealso cref="IdentityServer4.Services.IProfileService" />
     public class DefaultProfileService : IProfileService
     {
-        private readonly ILogger<DefaultProfileService> _logger;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultProfileService"/> class.
@@ -34,18 +33,11 @@ namespace IdentityServer4.Services
         /// <returns></returns>
         public Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
-            _logger.LogDebug("Get profile called for {subject} from {client} with {claimTypes} because {caller}",
-                context.Subject.GetSubjectId(),
-                context.Client.ClientName,
-                context.RequestedClaimTypes,
-                context.Caller);
+            context.LogProfileRequest(_logger);
+            context.AddRequestedClaims(context.Subject.Claims);
+            context.LogIssuedClaims(_logger);
 
-            if (context.RequestedClaimTypes.Any())
-            {
-                context.AddFilteredClaims(context.Subject.Claims);
-            }
-
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -56,8 +48,10 @@ namespace IdentityServer4.Services
         /// <returns></returns>
         public Task IsActiveAsync(IsActiveContext context)
         {
+            _logger.LogDebug("IsActive called from: {caller}", context.Caller);
+
             context.IsActive = true;
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

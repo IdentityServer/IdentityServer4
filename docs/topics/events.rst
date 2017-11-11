@@ -91,15 +91,15 @@ The following events are defined in IdentityServer:
 ``UserLoginSuccessEvent`` & ``UserLoginFailureEvent``
     Gets raised by the quickstart UI for successful/failed user logins.
 ``UserLogoutSuccessEvent``
-    Gets raised for successfull logout requests.
+    Gets raised for successful logout requests.
 ``UnhandledExceptionEvent``
-    Gets raised for unandled excpetions.
+    Gets raised for unhandled exceptions.
 
 Custom events
 ^^^^^^^^^^^^^
 You can create your own events and emit them via our infrastructure.
 
-You need to derive from our base ``Event`` class which injects contextual information like activity ID, timestamp etc.
+You need to derive from our base ``Event`` class which injects contextual information like activity ID, timestamp, etc.
 Your derived class can then add arbitrary data fields specific to the event context::
 
     public class UserLoginFailureEvent : Event
