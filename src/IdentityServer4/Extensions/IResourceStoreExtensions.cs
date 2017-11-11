@@ -6,6 +6,7 @@ using IdentityServer4.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
 
 namespace IdentityServer4.Stores
 {
@@ -24,6 +25,20 @@ namespace IdentityServer4.Stores
         {
             var identity = await store.FindIdentityResourcesByScopeAsync(scopeNames);
             var apiResources = await store.FindApiResourcesByScopeAsync(scopeNames);
+
+            // attempt to detect invalid configuration. this is about the only place
+            // we can do this, since it's hard to vet the values in the store.
+            var identityScopeNames = identity.Select(x => x.Name);
+            var apiScopeNames = from api in apiResources
+                                from scope in api.Scopes
+                                select scope.Name;
+
+            var overlap = identityScopeNames.Intersect(apiScopeNames).ToArray();
+            if (overlap.Any())
+            {
+                var names = overlap.Aggregate((x, y) => x + ", " + y);
+                throw new Exception(String.Format("Found identity scopes and API scopes that use the same names. This is an invalid configuration. Use different names for identity scopes and API scopes. Scopes found: {0}", names));
+            }
 
             var apis = new List<ApiResource>();
             foreach (var apiResource in apiResources)
