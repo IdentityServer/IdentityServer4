@@ -182,7 +182,9 @@ namespace IdentityServer4.Endpoints.Results
             {
                 RequestId = context.TraceIdentifier,
                 Error = Response.Error,
-                ErrorDescription = Response.ErrorDescription
+                ErrorDescription = Response.ErrorDescription,
+                UiLocales = Response.Request.UiLocales,
+                DisplayMode = Response.Request.DisplayMode
             };
 
             var message = new Message<ErrorMessage>(errorModel, _clock.UtcNow.UtcDateTime);

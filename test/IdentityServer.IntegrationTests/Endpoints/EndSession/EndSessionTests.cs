@@ -137,6 +137,30 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
 
         [Fact]
         [Trait("Category", Category)]
+        public async Task ui_locales_should_be_passed_to_logout_page()
+        {
+            await _mockPipeline.LoginAsync("bob");
+
+            var authorization = await _mockPipeline.RequestAuthorizationEndpointAsync(
+                clientId: "client2",
+                responseType: "id_token",
+                scope: "openid",
+                redirectUri: "https://client2/callback",
+                state: "123_state",
+                nonce: "123_nonce");
+
+            var id_token = authorization.IdentityToken;
+
+            var response = await _mockPipeline.BrowserClient.GetAsync(IdentityServerPipeline.EndSessionEndpoint +
+                "?id_token_hint=" + id_token +
+                "&post_logout_redirect_uri=https://client2/signout-callback2" + 
+                "&ui_locales=fr-FR");
+
+            _mockPipeline.LogoutRequest.UiLocales.Should().Be("fr-FR");
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
         public async Task logout_request_with_params_should_pass_values_in_logout_context()
         {
             await _mockPipeline.LoginAsync("bob");

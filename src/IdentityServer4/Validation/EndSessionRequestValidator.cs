@@ -70,6 +70,8 @@ namespace IdentityServer4.Validation
             var idTokenHint = parameters.Get(OidcConstants.EndSessionRequest.IdTokenHint);
             if (idTokenHint.IsPresent())
             {
+
+
                 // validate id_token - no need to validate token life time
                 var tokenValidationResult = await _tokenValidator.ValidateIdentityTokenAsync(idTokenHint, null, false);
                 if (tokenValidationResult.IsError)
@@ -123,6 +125,17 @@ namespace IdentityServer4.Validation
                 validatedRequest.Subject = subject;
                 validatedRequest.SessionId = await _userSession.GetSessionIdAsync();
                 validatedRequest.ClientIds = await _userSession.GetClientListAsync();
+            }
+
+            var uiLocales = parameters.Get(OidcConstants.AuthorizeRequest.UiLocales);
+            if (uiLocales.IsPresent())
+            {
+                if (uiLocales.Length > _options.InputLengthRestrictions.UiLocale)
+                {
+                    return Invalid("UI locale too long", validatedRequest);
+                }
+
+                validatedRequest.UiLocales = uiLocales;
             }
 
             LogSuccess(validatedRequest);
