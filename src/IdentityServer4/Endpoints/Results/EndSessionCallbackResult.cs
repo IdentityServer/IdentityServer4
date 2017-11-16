@@ -62,11 +62,14 @@ namespace IdentityServer4.Endpoints.Results
             // the hash matches the embedded style element being used below
             var value = "default-src 'none'; style-src 'sha256-u+OupXgfekP+x/f6rMdoEAspPCYUtca912isERnoEjY='";
 
-            var origins = _result.FrontChannelLogoutUrls?.Select(x => x.GetOrigin());
-            if (origins != null && origins.Any())
+            if (_options.Authentication.RelaxCspForSignout == false)
             {
-                var list = origins.Distinct().Aggregate((x, y) => $"{x} {y}");
-                value += $";frame-src {list}";
+                var origins = _result.FrontChannelLogoutUrls?.Select(x => x.GetOrigin());
+                if (origins != null && origins.Any())
+                {
+                    var list = origins.Distinct().Aggregate((x, y) => $"{x} {y}");
+                    value += $";frame-src {list}";
+                }
             }
 
             if (!context.Response.Headers.ContainsKey("Content-Security-Policy"))
