@@ -55,9 +55,9 @@ On the wire the call to token service for the exchange could look like this::
 
     grant_type=delegation&
     scope=api2&
-    token=...&
-    client_id=api1.client
-    client_secret=secret
+    token=...
+	
+The client_id and client_secret should be part of the encoded authorization header value. See https://tools.ietf.org/html/rfc6749#section-2.3 for more info.
 
 It's the job of the extension grant validator to handle that request by validating the incoming token, and returning a result that represents the new token::
 
