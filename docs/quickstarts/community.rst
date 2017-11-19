@@ -29,6 +29,11 @@ Exchanging external tokens from Facebook, Google and Twitter
 
 https://github.com/waqaskhan540/IdentityServerExternalAuth
 
+.NET Core and ASP.NET Core "Platform" scenario
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+* Shows an interaction of trusted "internal" applications and "external" applications with .NET Core 2.0 and ASP.NET Core 2.0 applications
+https://github.com/BenjaminAbt/Samples.AspNetCore-IdentityServer4
+
 ASP.NET Core MVC RazorPages template for IdentityServer4 Quickstart UI
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
