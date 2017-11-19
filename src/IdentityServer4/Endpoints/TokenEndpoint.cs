@@ -23,7 +23,7 @@ namespace IdentityServer4.Endpoints
     /// <seealso cref="IdentityServer4.Hosting.IEndpointHandler" />
     internal class TokenEndpoint : IEndpointHandler
     {
-        private readonly ClientSecretValidator _clientValidator;
+        private readonly IClientSecretValidator _clientValidator;
         private readonly ITokenRequestValidator _requestValidator;
         private readonly ITokenResponseGenerator _responseGenerator;
         private readonly IEventService _events;
@@ -37,7 +37,12 @@ namespace IdentityServer4.Endpoints
         /// <param name="responseGenerator">The response generator.</param>
         /// <param name="events">The events.</param>
         /// <param name="logger">The logger.</param>
-        public TokenEndpoint(ClientSecretValidator clientValidator, ITokenRequestValidator requestValidator, ITokenResponseGenerator responseGenerator, IEventService events, ILogger<TokenEndpoint> logger)
+        public TokenEndpoint(
+            IClientSecretValidator clientValidator, 
+            ITokenRequestValidator requestValidator, 
+            ITokenResponseGenerator responseGenerator, 
+            IEventService events, 
+            ILogger<TokenEndpoint> logger)
         {
             _clientValidator = clientValidator;
             _requestValidator = requestValidator;

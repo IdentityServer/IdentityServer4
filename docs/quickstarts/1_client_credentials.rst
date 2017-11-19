@@ -158,7 +158,7 @@ That's it, the API is now protected by IdentityServer.
 Creating the client
 ^^^^^^^^^^^^^^^^^^^
 The last step is to write a client that requests an access token, and then uses this
-token to access the API. For that, add a console project to your solution.
+token to access the API. For that, add a console project to your solution (see full code `here <https://github.com/IdentityServer/IdentityServer4.Samples/blob/release/Quickstarts/1_ClientCredentials/src/Client/Program.cs>`_).
 
 The token endpoint at IdentityServer implements the OAuth 2.0 protocol, and you could use 
 raw HTTP to access it. However, we have a client library called IdentityModel, that
@@ -174,6 +174,11 @@ endpoint addresses can be read from the metadata::
 
     // discover endpoints from metadata
     var disco = await DiscoveryClient.GetAsync("http://localhost:5000");
+    if (disco.IsError)
+    {
+        Console.WriteLine(disco.Error);
+        return;
+    }
 
 Next you can use the ``TokenClient`` class to request the token.
 To create an instance you need to pass in the token endpoint address, client id and secret.

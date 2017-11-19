@@ -14,6 +14,7 @@ Team posts
 
 What's new posts
 ^^^^^^^^^^^^^^^^
+* `New in IdentityServer4 v2: Simplified Configuration behind Load-balancers or Reverse-Proxies <https://leastprivilege.com/2017/10/09/new-in-identityserver4-v2-simplified-configuration-behind-load-balancers-or-reverse-proxies/>`_
 * `New in IdentityServer4: Clients without Secrets <https://leastprivilege.com/2016/09/13/new-in-identityserver4-clients-without-secrets/>`_
 * `New in IdentityServer4: Default Scopes <https://leastprivilege.com/2016/09/14/new-in-identityserver4-default-scopes/>`_
 * `New in IdentityServer4: Support for Extension Grants <https://leastprivilege.com/2016/09/20/new-in-identityserver4-support-for-extension-grants/>`_
@@ -23,6 +24,7 @@ What's new posts
 
 Community posts
 ^^^^^^^^^^^^^^^
+* `Self-issuing an IdentityServer4 token in an IdentityServer4 service <https://www.strathweb.com/2017/10/self-issuing-an-identityserver4-token-in-an-identityserver4-service/>`_
 * `IdentityServer4 on the ASP.NET Team Blog <https://blogs.msdn.microsoft.com/webdev/2017/01/23/asp-net-core-authentication-with-identityserver4/>`_
 * `Angular2 OpenID Connect Implicit Flow with IdentityServer4 <https://damienbod.com/2016/03/02/angular2-openid-connect-implicit-flow-with-identityserver4/>`_
 * `Full Server Logout with IdentityServer4 and OpenID Connect Implicit Flow <https://damienbod.com/2016/09/16/full-server-logout-with-identityserver4-and-openid-connect-implicit-flow/>`_

@@ -5,7 +5,6 @@
 using IdentityModel;
 using IdentityServer4.Validation;
 using System.Threading.Tasks;
-using IdentityServer4.Configuration;
 using System;
 using Microsoft.AspNetCore.Authentication;
 

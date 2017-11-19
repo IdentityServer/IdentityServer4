@@ -12,7 +12,6 @@ using System.Net;
 using System;
 using IdentityServer4.Extensions;
 using IdentityServer4.Configuration;
-using IdentityServer4.Infrastructure;
 
 namespace IdentityServer4.Endpoints.Results
 {
@@ -27,21 +26,17 @@ namespace IdentityServer4.Endpoints.Results
 
         internal EndSessionCallbackResult(
             EndSessionCallbackValidationResult result,
-            IdentityServerOptions options,
-            BackChannelLogoutClient backChannelClient)
+            IdentityServerOptions options)
             : this(result)
         {
             _options = options;
-            _backChannelClient = backChannelClient;
         }
 
         private IdentityServerOptions _options;
-        private BackChannelLogoutClient _backChannelClient;
 
         private void Init(HttpContext context)
         {
             _options = _options ?? context.RequestServices.GetRequiredService<IdentityServerOptions>();
-            _backChannelClient = _backChannelClient ?? context.RequestServices.GetRequiredService<BackChannelLogoutClient>();
         }
 
         public async Task ExecuteAsync(HttpContext context)
@@ -59,24 +54,18 @@ namespace IdentityServer4.Endpoints.Results
 
                 var html = GetHtml();
                 await context.Response.WriteHtmlAsync(html);
-                await context.Response.Body.FlushAsync();
-
-                // todo: discuss if we should do this before rendering/flushing
-                // or even from a forked task
-                await _backChannelClient.SendLogoutsAsync(_result.BackChannelLogouts);
             }
         }
 
         private void AddCspHeaders(HttpContext context)
         {
-            // 'unsafe-inline' for edge
             // the hash matches the embedded style element being used below
-            var value = "default-src 'none'; style-src 'unsafe-inline' 'sha256-u+OupXgfekP+x/f6rMdoEAspPCYUtca912isERnoEjY='";
+            var value = "default-src 'none'; style-src 'sha256-u+OupXgfekP+x/f6rMdoEAspPCYUtca912isERnoEjY='";
 
             var origins = _result.FrontChannelLogoutUrls?.Select(x => x.GetOrigin());
             if (origins != null && origins.Any())
             {
-                var list = origins.Aggregate((x, y) => $"{x} {y}");
+                var list = origins.Distinct().Aggregate((x, y) => $"{x} {y}");
                 value += $";frame-src {list}";
             }
 

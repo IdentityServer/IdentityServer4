@@ -15,12 +15,12 @@ namespace IdentityServer4.Validation
         /// <summary>
         /// Gets the client front-channel logout urls.
         /// </summary>
-        public IEnumerable<string> FrontChannelLogoutUrls { get; internal set; }
+        public IEnumerable<string> FrontChannelLogoutUrls { get; set; }
         
         /// <summary>
         /// Gets the client back-channel logouts.
         /// </summary>
-        public IEnumerable<BackChannelLogoutModel> BackChannelLogouts { get; internal set; }
+        public IEnumerable<BackChannelLogoutModel> BackChannelLogouts { get; set; }
     }
 
     /// <summary>
@@ -36,7 +36,7 @@ namespace IdentityServer4.Validation
         /// <summary>
         /// Gets the subject identifier.
         /// </summary>
-        public string SubjectId { get; internal set; }
+        public string SubjectId { get; set; }
 
         /// <summary>
         /// Gets or sets the session identifier.
@@ -51,6 +51,6 @@ namespace IdentityServer4.Validation
         /// <summary>
         /// Gets a value indicating whether the session identifier is required.
         /// </summary>
-        public bool SessionIdRequired { get; internal set; }
+        public bool SessionIdRequired { get; set; }
     }
 }

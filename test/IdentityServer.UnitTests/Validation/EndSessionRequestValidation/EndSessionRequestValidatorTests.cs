@@ -32,7 +32,7 @@ namespace IdentityServer4.UnitTests.Validation.EndSessionRequestValidation
 
         public EndSessionRequestValidatorTests()
         {
-            _user = IdentityServerPrincipal.Create("alice", "Alice");
+            _user = new IdentityServerUser("alice").CreatePrincipal();
             _clientStore = new InMemoryClientStore(new Client[0]);
 
             _options = TestIdentityServerOptions.Create();

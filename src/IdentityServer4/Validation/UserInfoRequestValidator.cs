@@ -3,6 +3,9 @@
 
 
 using IdentityModel;
+using IdentityServer4.Extensions;
+using IdentityServer4.Models;
+using IdentityServer4.Services;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,16 +19,22 @@ namespace IdentityServer4.Validation
     internal class UserInfoRequestValidator : IUserInfoRequestValidator
     {
         private readonly ITokenValidator _tokenValidator;
+        private readonly IProfileService _profile;
         private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserInfoRequestValidator" /> class.
         /// </summary>
         /// <param name="tokenValidator">The token validator.</param>
+        /// <param name="profile">The profile service</param>
         /// <param name="logger">The logger.</param>
-        public UserInfoRequestValidator(ITokenValidator tokenValidator, ILogger<UserInfoRequestValidator> logger)
+        public UserInfoRequestValidator(
+            ITokenValidator tokenValidator, 
+            IProfileService profile,
+            ILogger<UserInfoRequestValidator> logger)
         {
             _tokenValidator = tokenValidator;
+            _profile = profile;
             _logger = logger;
         }
 
@@ -67,6 +76,21 @@ namespace IdentityServer4.Validation
             // create subject from incoming access token
             var claims = tokenResult.Claims.Where(x => !Constants.Filters.ProtocolClaimsFilter.Contains(x.Type));
             var subject = Principal.Create("UserInfo", claims.ToArray());
+
+            // make sure user is still active
+            var isActiveContext = new IsActiveContext(subject, tokenResult.Client, IdentityServerConstants.ProfileIsActiveCallers.UserInfoRequestValidation);
+            await _profile.IsActiveAsync(isActiveContext);
+
+            if (isActiveContext.IsActive == false)
+            {
+                _logger.LogError("User is not active: {sub}", subject.GetSubjectId());
+
+                return new UserInfoRequestValidationResult
+                {
+                    IsError = true,
+                    Error = OidcConstants.ProtectedResourceErrors.InvalidToken
+                };
+            }
 
             return new UserInfoRequestValidationResult
             {

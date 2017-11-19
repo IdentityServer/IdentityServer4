@@ -53,6 +53,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                     AllowedScopes = new List<string> { "openid", "profile", "api1", "api2" },
                     RedirectUris = new List<string> { "https://client3/callback" },
                     AllowAccessTokensViaBrowser = true,
+                    EnableLocalLogin = false,
                     IdentityProviderRestrictions = new List<string> { "google" }
                 }
             });
@@ -185,7 +186,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task signin_response_should_allow_successful_authorization_response()
         {
-            _mockPipeline.Subject = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
+            _mockPipeline.Subject = new IdentityServerUser("bob").CreatePrincipal();
             _mockPipeline.BrowserClient.StopRedirectingAfter = 2;
 
             var url = _mockPipeline.CreateAuthorizeUrl(
@@ -236,7 +237,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task login_response_and_consent_response_should_receive_authorization_response()
         {
-            _mockPipeline.Subject = IdentityServerPrincipal.Create("bob", "Bob Loblaw");
+            _mockPipeline.Subject = new IdentityServerUser("bob").CreatePrincipal();
 
             _mockPipeline.ConsentResponse = new ConsentResponse()
             {

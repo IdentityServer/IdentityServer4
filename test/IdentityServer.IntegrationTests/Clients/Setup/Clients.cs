@@ -100,6 +100,28 @@ namespace IdentityServer4.IntegrationTests.Clients
                         "api1", "api2", "api4.with.roles"
                     }
                 },
+                new Client
+                {
+                    ClientId = "roclient.reuse",
+                    ClientSecrets =
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+
+                    AllowOfflineAccess = true,
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Email,
+                        IdentityServerConstants.StandardScopes.Address,
+                        "roles",
+                        "api1", "api2", "api4.with.roles"
+                    },
+
+                    RefreshTokenUsage = TokenUsage.ReUse
+                },
 
                 /////////////////////////////////////////
                 // Console Custom Grant Flow Sample

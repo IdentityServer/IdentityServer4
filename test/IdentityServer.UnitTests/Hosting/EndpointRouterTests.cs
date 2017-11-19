@@ -66,7 +66,7 @@ namespace IdentityServer4.UnitTests.Hosting
         }
 
         [Fact]
-        public void Find_should_find_nested_paths()
+        public void Find_should_not_find_nested_paths()
         {
             _endpoints.Add(new Endpoint("ep1", "/ep1", typeof(MyEndpointHandler)));
             _endpoints.Add(new Endpoint("ep2", "/ep2", typeof(MyOtherEndpointHandler)));
@@ -76,7 +76,7 @@ namespace IdentityServer4.UnitTests.Hosting
             ctx.RequestServices = new StubServiceProvider();
 
             var result = _subject.Find(ctx);
-            result.Should().BeOfType<MyEndpointHandler>();
+            result.Should().BeNull();
         }
 
         [Fact]

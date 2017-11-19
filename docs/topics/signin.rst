@@ -7,13 +7,16 @@ In order for IdentityServer to issue tokens on behalf of a user, that user must 
 Cookie authentication
 ^^^^^^^^^^^^^^^^^^^^^
 Authentication is tracked with a cookie managed by the `cookie authentication <https://docs.microsoft.com/en-us/aspnet/core/security/authentication/cookie>`_ handler from ASP.NET Core.
-You can register the cookie handler yourself, or you can use the one that IdentityServer automatically registers.
-IdentityServer uses whichever cookie handler that matches the ``DefaultAuthenticateScheme`` as configured on the ``AuthenticationOptions`` when using ``AddAuthentication`` from ASP.NET Core.
+
+IdentityServer registers two cookie handlers (one for the authentication session and one for temporary external cookies). These are used by default and you can get their
+names from the ``IdentityServerConstants`` class (``DefaultCookieAuthenticationScheme`` and ``ExternalCookieAuthenticationScheme``) if you want to reference them manually.
+
+We only expose basic settings for these cookies (expiration and sliding), and you can register your own cookie handlers if you need more control.
+IdentityServer uses whichever cookie handler matches the ``DefaultAuthenticateScheme`` as configured on the ``AuthenticationOptions`` when using ``AddAuthentication`` from ASP.NET Core.
 
 Overriding cookie handler configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-If you wish to use your own cookie authentication handler (typically to change the default settings), then you must configure it yourself.
+If you wish to use your own cookie authentication handler, then you must configure it yourself.
 This must be done in ``ConfigureServices`` after registering IdentityServer in DI (with ``AddIdentityServer``).
 For example::
 
@@ -34,16 +37,19 @@ For example::
 
 Login User Interface and Identity Management System
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-IdentityServer does not provide any user-interface or user database for authentication.
+IdentityServer does not provide any user-interface or user database for user authentication.
 These are things you are expected to provide or develop yourself.
-We have samples that use :ref:`ASP.NET Identity <refAspNetIdentityQuickstart>`.
 
-We also have a `quickstart UI <https://github.com/IdentityServer/IdentityServer4.Quickstart.UI>`_ that has basic implementations of all the moving parts like login, consent and logout as a starting point.
+If you need a starting point for a basic UI (login, logout, consent and manage grants), 
+you can use our `quickstart UI <https://github.com/IdentityServer/IdentityServer4.Quickstart.UI>`_.
+
+The quickstart UI authenticates users against an in-memory database. You would replace those bits with access to your real user store.
+We have samples that use :ref:`ASP.NET Identity <refAspNetIdentityQuickstart>`.
 
 Login Workflow
 ^^^^^^^^^^^^^^
 When IdentityServer receives a request at the authorization endpoint and the user is not authenticated, the user will be redirected to the configured login page.
-You must inform IdentityServer of the path to your login page via the ``UserInteraction`` settings on the :ref:`options <refOptions>`.
+You must inform IdentityServer of the path to your login page via the ``UserInteraction`` settings on the :ref:`options <refOptions>` (the default is ``/account/login``).
 A ``returnUrl`` parameter will be passed informing your login page where the user should be redirected once login is complete.
 
 .. image:: images/signin_flow.png

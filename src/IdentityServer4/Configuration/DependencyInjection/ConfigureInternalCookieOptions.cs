@@ -53,4 +53,44 @@ namespace IdentityServer4.Configuration
         }
     }
 
+    internal class PostConfigureInternalCookieOptions : IPostConfigureOptions<CookieAuthenticationOptions>
+    {
+        private readonly IdentityServerOptions _idsrv;
+        private readonly IOptions<Microsoft.AspNetCore.Authentication.AuthenticationOptions> _authOptions;
+
+        public PostConfigureInternalCookieOptions(IdentityServerOptions idsrv, IOptions<Microsoft.AspNetCore.Authentication.AuthenticationOptions> authOptions)
+        {
+            _idsrv = idsrv;
+            _authOptions = authOptions;
+        }
+
+        public void PostConfigure(string name, CookieAuthenticationOptions options)
+        {
+            var scheme = _authOptions.Value.DefaultAuthenticateScheme ??
+                _authOptions.Value.DefaultScheme;
+
+            if (name == scheme)
+            {
+                options.LoginPath = ExtractLocalUrl(_idsrv.UserInteraction.LoginUrl);
+                options.LogoutPath = ExtractLocalUrl(_idsrv.UserInteraction.LogoutUrl);
+                options.ReturnUrlParameter = _idsrv.UserInteraction.LoginReturnUrlParameter;
+            }
+        }
+
+        private static string ExtractLocalUrl(string url)
+        {
+            if (url.IsLocalUrl())
+            {
+                if (url.StartsWith("~/"))
+                {
+                    url = url.Substring(1);
+                }
+
+                return url;
+            }
+
+            return null;
+        }
+    }
+
 }

@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using Microsoft.IdentityModel.Tokens;
 using IdentityServer4;
-using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Quickstart.UI;
 using Microsoft.Extensions.Configuration;
@@ -47,9 +46,7 @@ namespace Host
                 .AddDeveloperSigningCredential()
                 .AddExtensionGrantValidator<Extensions.ExtensionGrantValidator>()
                 .AddExtensionGrantValidator<Extensions.NoSubjectExtensionGrantValidator>()
-                // todo: consider a helper extension method for these two?
-                .AddSecretParser<ClientAssertionSecretParser>()
-                .AddSecretValidator<PrivateKeyJwtSecretValidator>()
+                .AddJwtBearerClientAuthentication()
                 .AddAppAuthRedirectUriValidator()
                 .AddTestUsers(TestUsers.Users);
 
@@ -73,10 +70,8 @@ namespace Host
     {
         public static IServiceCollection AddExternalIdentityProviders(this IServiceCollection services)
         {
-            //var aadFormatter = services.CreateDistributedCacheStateDataFormatter<OpenIdConnectOptions>("aad");
-            //var demoidsrvFormatter = services.CreateDistributedCacheStateDataFormatter<OpenIdConnectOptions>("demoidsrv");
-
-            services.AddDistributedCacheStateDataFormatterForOidc();
+            // configures the OpenIdConnect handlers to persist the state parameter into the server-side IDistributedCache.
+            services.AddOidcStateDataFormatterCache("aad", "demoidsrv");
 
             services.AddAuthentication()
                 .AddGoogle("Google", options =>
@@ -88,8 +83,6 @@ namespace Host
                 })
                 .AddOpenIdConnect("demoidsrv", "IdentityServer", options =>
                 {
-                    //options.StateDataFormat = demoidsrvFormatter;
-
                     options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
                     options.SignOutScheme = IdentityServerConstants.SignoutScheme;
 
@@ -109,8 +102,6 @@ namespace Host
                 })
                 .AddOpenIdConnect("aad", "Azure AD", options =>
                 {
-                    //options.StateDataFormat = aadFormatter;
-
                     options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
                     options.SignOutScheme = IdentityServerConstants.SignoutScheme;
                 

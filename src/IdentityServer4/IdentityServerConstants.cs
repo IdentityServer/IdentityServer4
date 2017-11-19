@@ -60,8 +60,10 @@ namespace IdentityServer4
             public const string IdentityTokenValidation = "IdentityTokenValidation";
             public const string AccessTokenValidation = "AccessTokenValidation";
             public const string ResourceOwnerValidation = "ResourceOwnerValidation";
+            public const string ExtensionGrantValidation = "ExtensionGrantValidation";
             public const string RefreshTokenValidation = "RefreshTokenValidation";
             public const string AuthorizationCodeValidation = "AuthorizationCodeValidation";
+            public const string UserInfoRequestValidation = "UserInfoRequestValidation";
         }
 
         public static class StandardScopes

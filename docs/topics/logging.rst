@@ -17,15 +17,7 @@ Setup
 ^^^^^
 We personally like `Serilog <https://serilog.net/>`_ a lot. Give it a try.
 
-Install Serilog packages:
-From Package Manager Console verify that Default Project drop-down has your project selected and run
-
-    install-package Microsoft.Extensions.Logging.Filter
-    install-package Serilog.Extensions.Logging
-    install-package Serilog.Sinks.File
-    install-package Serilog.Sinks.Literate
-
-You want to setup logging as early as possible in your application host, e.g. in ``Main``::
+For the following configuration you need the ``Serilog.Extensions.Logging`` and ``Serilog.Sinks.Console`` packages::
 
     public class Program
     {
@@ -39,7 +31,6 @@ You want to setup logging as early as possible in your application host, e.g. in
                 .MinimumLevel.Override("System", LogEventLevel.Warning)
                 .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Information)
                 .Enrich.FromLogContext()
-                .WriteTo.File(@"identityserver4_log.txt")
                 .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}", theme: AnsiConsoleTheme.Literate)
                 .CreateLogger();
 
@@ -58,7 +49,4 @@ You want to setup logging as early as possible in your application host, e.g. in
                     .Build();
         }            
     }
-
-Further reading
-^^^^^^^^^^^^^^^
-* `ASP.NET Core Logging with Azure App Service and Serilog <https://blogs.msdn.microsoft.com/webdev/2017/04/26/asp-net-core-logging/>`_
+    
