@@ -12,7 +12,7 @@ using IdentityServer4.Configuration.DependencyInjection;
 using IdentityServer4.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace IdentityServer4
+namespace IdentityServer4.Hosting
 {
     internal class CorsPolicyProvider : ICorsPolicyProvider
     {
@@ -71,7 +71,7 @@ namespace IdentityServer4
                 }
                 else
                 {
-                    _logger.LogDebug("CORS request made for path: {path} from origin: {origin} but rejected because invalid CORS path", path, origin);
+                    _logger.LogDebug("CORS request made for path: {path} from origin: {origin} but was ignored because path was not for an allowed IdentityServer CORS endpoint", path, origin);
                 }
             }
 

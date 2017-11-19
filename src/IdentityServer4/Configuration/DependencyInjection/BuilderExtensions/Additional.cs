@@ -122,6 +122,19 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
+        /// <summary>
+        /// Adds a CORS policy service cache.
+        /// </summary>
+        /// <typeparam name="T">The type of the concrete CORS policy service that is registered in DI.</typeparam>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddCorsPolicyCache<T>(this IIdentityServerBuilder builder)
+            where T : class, ICorsPolicyService
+        {
+            builder.Services.TryAddTransient(typeof(T));
+            builder.Services.AddTransient<ICorsPolicyService, CachingCorsPolicyService<T>>();
+            return builder;
+        }
 
         /// <summary>
         /// Adds the secret parser.
@@ -217,6 +230,19 @@ namespace Microsoft.Extensions.DependencyInjection
            where T : class, ICustomTokenRequestValidator
         {
             builder.Services.AddTransient<ICustomTokenRequestValidator, T>();
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds support for client authentication using JWT bearer assertions.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddJwtBearerClientAuthentication(this IIdentityServerBuilder builder)
+        {
+            builder.AddSecretParser<JwtBearerClientAssertionSecretParser>();
+            builder.AddSecretValidator<PrivateKeyJwtSecretValidator>();
 
             return builder;
         }

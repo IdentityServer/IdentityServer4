@@ -28,5 +28,10 @@ namespace IdentityServer4.Configuration
         /// The scope store expiration.
         /// </value>
         public TimeSpan ResourceStoreExpiration { get; set; } = Default;
+
+        /// <summary>
+        /// Gets or sets the CORS origin expiration.
+        /// </summary>
+        public TimeSpan CorsExpiration { get; set; } = Default;
     }
 }

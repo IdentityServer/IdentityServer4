@@ -112,7 +112,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
             _mockPipeline.Options.UserInteraction.LogoutUrl = "/logout";
             _mockPipeline.Options.UserInteraction.LogoutIdParameter = "id";
 
-            await _mockPipeline.LoginAsync(IdentityServerPrincipal.Create("bob", "Bob Loblaw"));
+            await _mockPipeline.LoginAsync("bob");
 
             var url = _mockPipeline.CreateAuthorizeUrl(
                 clientId: "client1",
@@ -139,7 +139,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
         [Trait("Category", Category)]
         public async Task logout_request_with_params_should_pass_values_in_logout_context()
         {
-            await _mockPipeline.LoginAsync(IdentityServerPrincipal.Create("bob", "Bob Loblaw"));
+            await _mockPipeline.LoginAsync("bob");
 
             var authorization = await _mockPipeline.RequestAuthorizationEndpointAsync(
                 clientId: "client2",
@@ -199,7 +199,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
         [Trait("Category", Category)]
         public async Task signout_should_support_POST()
         {
-            await _mockPipeline.LoginAsync(IdentityServerPrincipal.Create("bob", "Bob Loblaw"));
+            await _mockPipeline.LoginAsync("bob");
 
             var url = _mockPipeline.CreateAuthorizeUrl(
                 clientId: "client1",
@@ -246,7 +246,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
         [Trait("Category", Category)]
         public async Task signout_callback_with_mismatched_post_logout_redirect_uri_should_not_pass_along_logout_message()
         {
-            await _mockPipeline.LoginAsync(IdentityServerPrincipal.Create("bob", "Bob Loblaw"));
+            await _mockPipeline.LoginAsync("bob");
 
             var url = _mockPipeline.CreateAuthorizeUrl(
                 clientId: "client1",
@@ -279,7 +279,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
         [Trait("Category", Category)]
         public async Task signout_callback_with_mismatched_id_token_hint_should_not_pass_along_logout_message()
         {
-            await _mockPipeline.LoginAsync(IdentityServerPrincipal.Create("bob", "Bob Loblaw"));
+            await _mockPipeline.LoginAsync("bob");
 
             var url = _mockPipeline.CreateAuthorizeUrl(
                 clientId: "client1",
@@ -295,7 +295,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
             var authorization = new IdentityModel.Client.AuthorizeResponse(response.Headers.Location.ToString());
             var id_token = authorization.IdentityToken;
 
-            await _mockPipeline.LoginAsync(IdentityServerPrincipal.Create("alice", "Alice"));
+            await _mockPipeline.LoginAsync("alice");
 
             _mockPipeline.BrowserClient.AllowAutoRedirect = true;
             response = await _mockPipeline.BrowserClient.GetAsync(IdentityServerPipeline.EndSessionEndpoint +
@@ -310,7 +310,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
         [Trait("Category", Category)]
         public async Task valid_signout_callback_should_return_200_html()
         {
-            await _mockPipeline.LoginAsync(IdentityServerPrincipal.Create("bob", "Bob Loblaw"));
+            await _mockPipeline.LoginAsync("bob");
 
             var url = _mockPipeline.CreateAuthorizeUrl(
                 clientId: "client1",
@@ -337,7 +337,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
         [Trait("Category", Category)]
         public async Task valid_signout_callback_should_render_iframes_for_all_clients()
         {
-            await _mockPipeline.LoginAsync(IdentityServerPrincipal.Create("bob", "Bob Loblaw"));
+            await _mockPipeline.LoginAsync("bob");
             var sid = _mockPipeline.GetSessionCookie().Value;
 
             _mockPipeline.BrowserClient.AllowAutoRedirect = false;
@@ -374,7 +374,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
         [Trait("Category", Category)]
         public async Task valid_id_token_hint_but_no_post_logout_redirect_uri_should_use_single_registered_post_logout_redirect_uri()
         {
-            await _mockPipeline.LoginAsync(IdentityServerPrincipal.Create("bob", "Bob Loblaw"));
+            await _mockPipeline.LoginAsync("bob");
 
             _mockPipeline.BrowserClient.AllowAutoRedirect = false;
             var url = _mockPipeline.CreateAuthorizeUrl(
@@ -399,7 +399,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
         [Trait("Category", Category)]
         public async Task valid_id_token_hint_but_no_post_logout_redirect_uri_should_not_use_any_of_multiple_registered_post_logout_redirect_uri()
         {
-            await _mockPipeline.LoginAsync(IdentityServerPrincipal.Create("bob", "Bob Loblaw"));
+            await _mockPipeline.LoginAsync("bob");
 
             _mockPipeline.BrowserClient.AllowAutoRedirect = false;
             var url = _mockPipeline.CreateAuthorizeUrl(

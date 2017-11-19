@@ -5,7 +5,6 @@
 using System.Threading.Tasks;
 using IdentityServer4.Validation;
 using IdentityServer4.ResponseHandling;
-using IdentityServer4.Services;
 using Microsoft.Extensions.Logging;
 using IdentityServer4.Hosting;
 using IdentityServer4.Endpoints.Results;
@@ -23,7 +22,7 @@ namespace IdentityServer4.Endpoints
         private readonly IIntrospectionResponseGenerator _responseGenerator;
         private readonly ILogger _logger;
         private readonly IIntrospectionRequestValidator _requestValidator;
-        private readonly ApiSecretValidator _apiSecretValidator;
+        private readonly IApiSecretValidator _apiSecretValidator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IntrospectionEndpoint"/> class.
@@ -33,7 +32,7 @@ namespace IdentityServer4.Endpoints
         /// <param name="responseGenerator">The generator.</param>
         /// <param name="logger">The logger.</param>
         public IntrospectionEndpoint(
-            ApiSecretValidator apiSecretValidator, 
+            IApiSecretValidator apiSecretValidator, 
             IIntrospectionRequestValidator requestValidator, 
             IIntrospectionResponseGenerator responseGenerator,  
             ILogger<IntrospectionEndpoint> logger)
@@ -102,13 +101,13 @@ namespace IdentityServer4.Endpoints
             var response = await _responseGenerator.ProcessAsync(validationResult);
 
             // render result
+            LogSuccess(validationResult.IsActive, validationResult.Api.Name);
             return new IntrospectionResult(response);
         }
 
-        // todo: cleanup logging and log levels
-        private void LogSuccess(string tokenStatus, string apiName)
+        private void LogSuccess(bool tokenActive, string apiName)
         {
-            _logger.LogInformation("Success token introspection. Token status: {tokenStatus}, for API name: {apiName}", tokenStatus, apiName);
+            _logger.LogInformation("Success token introspection. Token active: {tokenActive}, for API name: {apiName}", tokenActive, apiName);
         }
 
         private void LogFailure(string error, string apiName)

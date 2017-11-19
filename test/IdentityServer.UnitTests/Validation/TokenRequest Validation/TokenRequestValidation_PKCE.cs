@@ -37,7 +37,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             var code = new AuthorizationCode
             {
                 CreationTime = DateTime.UtcNow,
-                Subject = IdentityServerPrincipal.Create("123", "bob"),
+                Subject = new IdentityServerUser("bob").CreatePrincipal(),
                 ClientId = client.ClientId,
                 Lifetime = client.AuthorizationCodeLifetime,
                 RedirectUri = "https://server/cb",
@@ -77,7 +77,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             var code = new AuthorizationCode
             {
                 CreationTime = DateTime.UtcNow,
-                Subject = IdentityServerPrincipal.Create("123", "bob"),
+                Subject = new IdentityServerUser("123").CreatePrincipal(),
                 ClientId = client.ClientId,
                 Lifetime = client.AuthorizationCodeLifetime,
                 RedirectUri = "https://server/cb",
@@ -121,7 +121,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             var code = new AuthorizationCode
             {
                 CreationTime = DateTime.UtcNow,
-                Subject = IdentityServerPrincipal.Create("123", "bob"),
+                Subject = new IdentityServerUser("123").CreatePrincipal(),
                 ClientId = client.ClientId,
                 Lifetime = client.AuthorizationCodeLifetime,
                 RedirectUri = "https://server/cb",
@@ -161,7 +161,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             var code = new AuthorizationCode
             {
                 CreationTime = DateTime.UtcNow,
-                Subject = IdentityServerPrincipal.Create("123", "bob"),
+                Subject = new IdentityServerUser("123").CreatePrincipal(),
                 ClientId = client.ClientId,
                 Lifetime = client.AuthorizationCodeLifetime,
                 RedirectUri = "https://server/cb",
@@ -199,7 +199,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             var code = new AuthorizationCode
             {
                 CreationTime = DateTime.UtcNow,
-                Subject = IdentityServerPrincipal.Create("123", "bob"),
+                Subject = new IdentityServerUser("123").CreatePrincipal(),
                 ClientId = client.ClientId,
                 Lifetime = client.AuthorizationCodeLifetime,
                 RedirectUri = "https://server/cb",
@@ -240,7 +240,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             var code = new AuthorizationCode
             {
                 CreationTime = DateTime.UtcNow,
-                Subject = IdentityServerPrincipal.Create("123", "bob"),
+                Subject = new IdentityServerUser("123").CreatePrincipal(),
                 ClientId = client.ClientId,
                 Lifetime = client.AuthorizationCodeLifetime,
                 RedirectUri = "https://server/cb",
@@ -285,7 +285,7 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             var code = new AuthorizationCode
             {
                 CreationTime = DateTime.UtcNow,
-                Subject = IdentityServerPrincipal.Create("123", "bob"),
+                Subject = new IdentityServerUser("123").CreatePrincipal(),
                 ClientId = client.ClientId,
                 Lifetime = client.AuthorizationCodeLifetime,
                 RedirectUri = "https://server/cb",

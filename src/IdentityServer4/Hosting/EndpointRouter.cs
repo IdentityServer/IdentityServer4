@@ -31,7 +31,7 @@ namespace IdentityServer4.Hosting
             foreach(var endpoint in _endpoints)
             {
                 var path = endpoint.Path;
-                if (context.Request.Path.StartsWithSegments(path))
+                if (context.Request.Path.Equals(path, StringComparison.OrdinalIgnoreCase))
                 {
                     var endpointName = endpoint.Name;
                     _logger.LogDebug("Request path {path} matched to endpoint type {endpoint}", context.Request.Path, endpointName);

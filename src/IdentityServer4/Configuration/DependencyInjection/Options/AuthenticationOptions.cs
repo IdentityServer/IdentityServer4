@@ -12,7 +12,7 @@ namespace IdentityServer4.Configuration
     public class AuthenticationOptions
     {
         /// <summary>
-        /// Sets the cookie lifetime (only effective if the built-in cookie middleware is used)
+        /// Sets the cookie lifetime (only effective if the IdentityServer-provided cookie handler is used)
         /// </summary>
         public TimeSpan CookieLifetime { get; set; } = Constants.DefaultCookieTimeSpan;
 

@@ -30,7 +30,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IIdentityServerBuilder AddSigningCredential(this IIdentityServerBuilder builder, SigningCredentials credential)
         {
-            // todo
+            // todo dom
             if (!(credential.Key is AsymmetricSecurityKey
                 || credential.Key is JsonWebKey && ((JsonWebKey)credential.Key).HasPrivateKey))
             //&& !credential.Key.IsSupportedAlgorithm(SecurityAlgorithms.RsaSha256Signature))

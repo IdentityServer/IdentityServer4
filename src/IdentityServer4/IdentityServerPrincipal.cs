@@ -23,6 +23,7 @@ namespace IdentityServer4
         /// <param name="name">The name.</param>
         /// <param name="claims">The claims.</param>
         /// <returns></returns>
+        [Obsolete("This method will be removed in a future version, use IdentityServerUser instead to create the ClaimsPrincipal")]
         public static ClaimsPrincipal Create(
             string subject,
             string name,
@@ -39,6 +40,7 @@ namespace IdentityServer4
         /// <param name="authTime">The UTC date/time of authentication.</param>
         /// <param name="claims">The claims.</param>
         /// <returns></returns>
+        [Obsolete("This method will be removed in a future version, use IdentityServerUser instead to create the ClaimsPrincipal")]
         public static ClaimsPrincipal Create(
             string subject,
             string name,
@@ -57,6 +59,7 @@ namespace IdentityServer4
         /// <param name="authTime">The UTC date/time of authentication.</param>
         /// <param name="claims">The claims.</param>
         /// <returns></returns>
+        [Obsolete("This method will be removed in a future version, use IdentityServerUser instead to create the ClaimsPrincipal")]
         public static ClaimsPrincipal Create(
             string subject,
             string name,
@@ -76,6 +79,7 @@ namespace IdentityServer4
         /// <param name="authTime">The UTC date/time of authentication.</param>
         /// <param name="claims">The claims.</param>
         /// <returns></returns>
+        [Obsolete("This method will be removed in a future version, use IdentityServerUser instead to create the ClaimsPrincipal")]
         public static ClaimsPrincipal Create(
             string subject,
             string name,
@@ -105,6 +109,7 @@ namespace IdentityServer4
         /// or
         /// identityProvider
         /// </exception>
+        [Obsolete("This method will be removed in a future version, use IdentityServerUser instead to create the ClaimsPrincipal")]
         public static ClaimsPrincipal Create(
             string subject,
             string name,
@@ -138,48 +143,6 @@ namespace IdentityServer4
 
             var id = new ClaimsIdentity(allClaims.Distinct(new ClaimComparer()), Constants.IdentityServerAuthenticationType, JwtClaimTypes.Name, JwtClaimTypes.Role);
             return new ClaimsPrincipal(id);
-        }
-
-        internal static void AssertRequiredClaims(this ClaimsPrincipal principal)
-        {
-            // for now, we don't allow more than one identity in the principal/cookie
-            if (principal.Identities.Count() != 1) throw new InvalidOperationException("only a single identity supported");
-            if (principal.FindFirst(JwtClaimTypes.Subject) == null) throw new InvalidOperationException("sub claim is missing");
-            if (principal.FindFirst(JwtClaimTypes.Name) == null) throw new InvalidOperationException("name claim is missing");
-        }
-
-        internal static void AugmentMissingClaims(this ClaimsPrincipal principal, DateTime authTime)
-        {
-            var identity = principal.Identities.First();
-
-            // ASP.NET Identity issues this claim type and uses the authentication middleware name
-            // such as "Google" for the value. this code is trying to correct/convert that for
-            // our scenario. IOW, we take their old AuthenticationMethod value of "Google"
-            // and issue it as the idp claim. we then also issue a amr with "external"
-            var amr = identity.FindFirst(ClaimTypes.AuthenticationMethod);
-            if (amr != null &&
-                identity.FindFirst(JwtClaimTypes.IdentityProvider) == null && 
-                identity.FindFirst(JwtClaimTypes.AuthenticationMethod) == null)
-            {
-                identity.RemoveClaim(amr);
-                identity.AddClaim(new Claim(JwtClaimTypes.IdentityProvider, amr.Value));
-                identity.AddClaim(new Claim(JwtClaimTypes.AuthenticationMethod, Constants.ExternalAuthenticationMethod));
-            }
-
-            if (identity.FindFirst(JwtClaimTypes.IdentityProvider) == null)
-            {
-                identity.AddClaim(new Claim(JwtClaimTypes.IdentityProvider, IdentityServerConstants.LocalIdentityProvider));
-            }
-
-            if (identity.FindFirst(JwtClaimTypes.AuthenticationMethod) == null)
-            {
-                identity.AddClaim(new Claim(JwtClaimTypes.AuthenticationMethod, OidcConstants.AuthenticationMethods.Password));
-            }
-
-            if (identity.FindFirst(JwtClaimTypes.AuthenticationTime) == null)
-            {
-                identity.AddClaim(new Claim(JwtClaimTypes.AuthenticationTime, authTime.ToEpochTime().ToString(), ClaimValueTypes.Integer));
-            }
         }
 
         internal static ClaimsPrincipal FromSubjectId(string subjectId, IEnumerable<Claim> additionalClaims = null)

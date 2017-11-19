@@ -183,20 +183,21 @@ namespace IdentityServer4.ResponseHandling
             }
 
             // check local idp restrictions
-            if (currentIdp == IdentityServerConstants.LocalIdentityProvider && !request.Client.EnableLocalLogin)
+            if (currentIdp == IdentityServerConstants.LocalIdentityProvider)
             {
-                Logger.LogInformation("Showing login: User logged in locally, but client does not allow local logins");
-                return new InteractionResponse { IsLogin = true };
-            }
-
-            // check external idp restrictions
-            if (request.Client.IdentityProviderRestrictions != null && request.Client.IdentityProviderRestrictions.Any())
-            {
-                if (!request.Client.IdentityProviderRestrictions.Contains(currentIdp))
+                if (!request.Client.EnableLocalLogin)
                 {
-                    Logger.LogInformation("Showing login: User is logged in with idp: {idp}, but idp not in client restriction list.", currentIdp);
+                    Logger.LogInformation("Showing login: User logged in locally, but client does not allow local logins");
                     return new InteractionResponse { IsLogin = true };
                 }
+            }
+            // check external idp restrictions if user not using local idp
+            else if (request.Client.IdentityProviderRestrictions != null && 
+                request.Client.IdentityProviderRestrictions.Any() &&
+                !request.Client.IdentityProviderRestrictions.Contains(currentIdp))
+            {
+                Logger.LogInformation("Showing login: User is logged in with idp: {idp}, but idp not in client restriction list.", currentIdp);
+                return new InteractionResponse { IsLogin = true };
             }
 
             return new InteractionResponse();

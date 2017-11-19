@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -7,10 +11,11 @@ using Microsoft.Extensions.Logging;
 using IdentityServer4.Configuration.DependencyInjection;
 using IdentityServer4.Extensions;
 using System;
+using IdentityModel;
+using System.Linq;
 
 namespace IdentityServer4.Hosting
 {
-    // todo: review
     // this decorates the real authentication service to detect when the 
     // user is being signed in. this allows us to ensure the user has
     // the claims needed for identity server to do its job. it also allows
@@ -46,7 +51,7 @@ namespace IdentityServer4.Hosting
             var scheme = await _schemes.GetDefaultAuthenticateSchemeAsync();
             if (scheme == null)
             {
-                throw new InvalidOperationException($"No DefaultAuthenticateScheme found.");
+                throw new InvalidOperationException("No DefaultAuthenticateScheme found.");
             }
             return scheme.Name;
         }
@@ -71,8 +76,8 @@ namespace IdentityServer4.Hosting
         {
             _logger.LogDebug("Augmenting SignInContext");
 
-            principal.AssertRequiredClaims();
-            principal.AugmentMissingClaims(_clock.UtcNow.UtcDateTime);
+            AssertRequiredClaims(principal);
+            AugmentMissingClaims(principal, _clock.UtcNow.UtcDateTime);
         }
 
         public async Task SignOutAsync(HttpContext context, string scheme, AuthenticationProperties properties)
@@ -82,7 +87,10 @@ namespace IdentityServer4.Hosting
 
             if ((scheme == null && defaultScheme?.Name == cookieScheme) || scheme == cookieScheme)
             {
+                // this sets a flag used by the FederatedSignoutAuthenticationHandlerProvider
                 context.SetSignOutCalled();
+                
+                // this clears our session id cookie so JS clients can detect the user has signed out
                 await _session.RemoveSessionIdCookieAsync();
             }
 
@@ -102,6 +110,54 @@ namespace IdentityServer4.Hosting
         public Task ForbidAsync(HttpContext context, string scheme, AuthenticationProperties properties)
         {
             return _inner.ForbidAsync(context, scheme, properties);
+        }
+
+        private void AssertRequiredClaims(ClaimsPrincipal principal)
+        {
+            // for now, we don't allow more than one identity in the principal/cookie
+            if (principal.Identities.Count() != 1) throw new InvalidOperationException("only a single identity supported");
+            if (principal.FindFirst(JwtClaimTypes.Subject) == null) throw new InvalidOperationException("sub claim is missing");
+        }
+
+        private void AugmentMissingClaims(ClaimsPrincipal principal, DateTime authTime)
+        {
+            var identity = principal.Identities.First();
+
+            // ASP.NET Identity issues this claim type and uses the authentication middleware name
+            // such as "Google" for the value. this code is trying to correct/convert that for
+            // our scenario. IOW, we take their old AuthenticationMethod value of "Google"
+            // and issue it as the idp claim. we then also issue a amr with "external"
+            var amr = identity.FindFirst(ClaimTypes.AuthenticationMethod);
+            if (amr != null &&
+                identity.FindFirst(JwtClaimTypes.IdentityProvider) == null &&
+                identity.FindFirst(JwtClaimTypes.AuthenticationMethod) == null)
+            {
+                identity.RemoveClaim(amr);
+                identity.AddClaim(new Claim(JwtClaimTypes.IdentityProvider, amr.Value));
+                identity.AddClaim(new Claim(JwtClaimTypes.AuthenticationMethod, Constants.ExternalAuthenticationMethod));
+            }
+
+            if (identity.FindFirst(JwtClaimTypes.IdentityProvider) == null)
+            {
+                identity.AddClaim(new Claim(JwtClaimTypes.IdentityProvider, IdentityServerConstants.LocalIdentityProvider));
+            }
+
+            if (identity.FindFirst(JwtClaimTypes.AuthenticationMethod) == null)
+            {
+                if (identity.FindFirst(JwtClaimTypes.IdentityProvider).Value == IdentityServerConstants.LocalIdentityProvider)
+                {
+                    identity.AddClaim(new Claim(JwtClaimTypes.AuthenticationMethod, OidcConstants.AuthenticationMethods.Password));
+                }
+                else
+                {
+                    identity.AddClaim(new Claim(JwtClaimTypes.AuthenticationMethod, Constants.ExternalAuthenticationMethod));
+                }
+            }
+
+            if (identity.FindFirst(JwtClaimTypes.AuthenticationTime) == null)
+            {
+                identity.AddClaim(new Claim(JwtClaimTypes.AuthenticationTime, authTime.ToEpochTime().ToString(), ClaimValueTypes.Integer));
+            }
         }
     }
 }

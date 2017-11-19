@@ -125,9 +125,9 @@ namespace IdentityServer4.Services
                     {
                         var claimType = claim.Type;
 
-                        if (request.Client.PrefixClientClaims)
+                        if (request.Client.ClientClaimsPrefix.IsPresent())
                         {
-                            claimType = "client_" + claimType;
+                            claimType = request.Client.ClientClaimsPrefix + claimType;
                         }
 
                         outputClaims.Add(new Claim(claimType, claim.Value, claim.ValueType));

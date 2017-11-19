@@ -21,13 +21,16 @@ namespace Microsoft.AspNetCore.Http
 
         public static async Task WriteJsonAsync(this HttpResponse response, string json)
         {
-            response.ContentType = "application/json";
+            response.ContentType = "application/json; charset=UTF-8";
             await response.WriteAsync(json);
         }
 
         public static void SetCache(this HttpResponse response, int maxAge)
         {
-            if (maxAge > 0)
+            if (maxAge == 0 ) {
+                SetNoCache(response);
+            }
+            else if (maxAge > 0)
             {
                 if (!response.Headers.ContainsKey("Cache-Control"))
                 {

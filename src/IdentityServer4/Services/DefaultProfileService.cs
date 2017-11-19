@@ -48,6 +48,8 @@ namespace IdentityServer4.Services
         /// <returns></returns>
         public Task IsActiveAsync(IsActiveContext context)
         {
+            _logger.LogDebug("IsActive called from: {caller}", context.Caller);
+
             context.IsActive = true;
             return Task.CompletedTask;
         }

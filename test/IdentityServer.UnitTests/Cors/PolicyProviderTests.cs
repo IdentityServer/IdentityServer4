@@ -13,6 +13,7 @@ using IdentityServer4.Configuration.DependencyInjection;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using IdentityServer4.Services;
+using IdentityServer4.Hosting;
 
 namespace IdentityServer4.UnitTests.Hosting.Cors
 {

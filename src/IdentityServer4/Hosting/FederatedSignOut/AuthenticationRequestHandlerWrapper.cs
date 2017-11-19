@@ -1,56 +1,16 @@
-﻿using System;
-using System.Security.Claims;
+﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+
+using System;
 using System.Threading.Tasks;
-using IdentityServer4.Configuration.DependencyInjection;
 using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace IdentityServer4.Hosting
+namespace IdentityServer4.Hosting.FederatedSignOut
 {
-    // todo: FML
-    // this intercepts IAuthenticationRequestHandler authentication handlers
-    // to detect when they are handling federated signout. when they are invoked,
-    // call signout on the default authentication scheme, and return 200 then 
-    // we assume they are handling the federated signout in an iframe. 
-    // based on this assumption, we then render our federated signout iframes 
-    // to any current clients.
-    internal class FederatedSignoutAuthenticationHandlerProvider : IAuthenticationHandlerProvider
-    {
-        private readonly IAuthenticationHandlerProvider _provider;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
-        public FederatedSignoutAuthenticationHandlerProvider(
-            Decorator<IAuthenticationHandlerProvider> decorator, 
-            IHttpContextAccessor httpContextAccessor)
-        {
-            _provider = decorator.Instance;
-            _httpContextAccessor = httpContextAccessor;
-        }
-
-        public async Task<IAuthenticationHandler> GetHandlerAsync(HttpContext context, string authenticationScheme)
-        {
-            var handler = await _provider.GetHandlerAsync(context, authenticationScheme);
-            if (handler is IAuthenticationRequestHandler requestHandler)
-            {
-                if (requestHandler is IAuthenticationSignInHandler signinHandler)
-                {
-                    return new AuthenticationRequestSignInHandlerWrapper(signinHandler, _httpContextAccessor);
-                }
-
-                if (requestHandler is IAuthenticationSignOutHandler signoutHandler)
-                {
-                    return new AuthenticationRequestSignOutHandlerWrapper(signoutHandler, _httpContextAccessor);
-                }
-
-                return new AuthenticationRequestHandlerWrapper(requestHandler, _httpContextAccessor);
-            }
-
-            return handler;
-        }
-    }
-
     internal class AuthenticationRequestHandlerWrapper : IAuthenticationRequestHandler
     {
         private const string DocumentHtml = "<!DOCTYPE html><html><body>{0}</body></html>";
@@ -134,38 +94,6 @@ namespace IdentityServer4.Hosting
                 _context.Response.ContentType = "text/html";
                 await _context.Response.WriteAsync(doc);
             }
-        }
-    }
-
-    internal class AuthenticationRequestSignOutHandlerWrapper : AuthenticationRequestHandlerWrapper, IAuthenticationSignOutHandler
-    {
-        private readonly IAuthenticationSignOutHandler _inner;
-
-        public AuthenticationRequestSignOutHandlerWrapper(IAuthenticationSignOutHandler inner, IHttpContextAccessor httpContextAccessor)
-            : base((IAuthenticationRequestHandler)inner, httpContextAccessor)
-        {
-            _inner = inner;
-        }
-
-        public Task SignOutAsync(AuthenticationProperties properties)
-        {
-            return _inner.SignOutAsync(properties);
-        }
-    }
-
-    internal class AuthenticationRequestSignInHandlerWrapper : AuthenticationRequestSignOutHandlerWrapper, IAuthenticationSignInHandler
-    {
-        private readonly IAuthenticationSignInHandler _inner;
-
-        public AuthenticationRequestSignInHandlerWrapper(IAuthenticationSignInHandler inner, IHttpContextAccessor httpContextAccessor)
-            : base(inner, httpContextAccessor)
-        {
-            _inner = inner;
-        }
-
-        public Task SignInAsync(ClaimsPrincipal user, AuthenticationProperties properties)
-        {
-            return _inner.SignInAsync(user, properties);
         }
     }
 }

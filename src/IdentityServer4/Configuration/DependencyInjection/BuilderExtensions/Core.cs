@@ -25,6 +25,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using static IdentityServer4.Constants;
 using IdentityServer4.Extensions;
+using IdentityServer4.Hosting.FederatedSignOut;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -60,6 +61,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddCookie(IdentityServerConstants.ExternalCookieAuthenticationScheme);
 
             builder.Services.AddSingleton<IConfigureOptions<CookieAuthenticationOptions>, ConfigureInternalCookieOptions>();
+            builder.Services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureInternalCookieOptions>();
             builder.Services.AddTransientDecorator<IAuthenticationService, IdentityServerAuthenticationService>();
             builder.Services.AddTransientDecorator<IAuthenticationHandlerProvider, FederatedSignoutAuthenticationHandlerProvider>();
 
@@ -75,9 +77,12 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.Services.AddTransient<IEndpointRouter, EndpointRouter>();
 
+            builder.AddEndpoint<AuthorizeCallbackEndpoint>(EndpointNames.Authorize, ProtocolRoutePaths.AuthorizeCallback.EnsureLeadingSlash());
             builder.AddEndpoint<AuthorizeEndpoint>(EndpointNames.Authorize, ProtocolRoutePaths.Authorize.EnsureLeadingSlash());
             builder.AddEndpoint<CheckSessionEndpoint>(EndpointNames.CheckSession, ProtocolRoutePaths.CheckSession.EnsureLeadingSlash());
+            builder.AddEndpoint<DiscoveryKeyEndpoint>(EndpointNames.Discovery, ProtocolRoutePaths.DiscoveryWebKeys.EnsureLeadingSlash());
             builder.AddEndpoint<DiscoveryEndpoint>(EndpointNames.Discovery, ProtocolRoutePaths.DiscoveryConfiguration.EnsureLeadingSlash());
+            builder.AddEndpoint<EndSessionCallbackEndpoint>(EndpointNames.EndSession, ProtocolRoutePaths.EndSessionCallback.EnsureLeadingSlash());
             builder.AddEndpoint<EndSessionEndpoint>(EndpointNames.EndSession, ProtocolRoutePaths.EndSession.EnsureLeadingSlash());
             builder.AddEndpoint<IntrospectionEndpoint>(EndpointNames.Introspection, ProtocolRoutePaths.Introspection.EnsureLeadingSlash());
             builder.AddEndpoint<TokenRevocationEndpoint>(EndpointNames.Revocation, ProtocolRoutePaths.Revocation.EnsureLeadingSlash());
@@ -111,9 +116,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IIdentityServerBuilder AddCoreServices(this IIdentityServerBuilder builder)
         {
-            builder.Services.AddTransient<ApiSecretValidator>();
             builder.Services.AddTransient<SecretParser>();
-            builder.Services.AddTransient<ClientSecretValidator>();
             builder.Services.AddTransient<SecretValidator>();
             builder.Services.AddTransient<ScopeValidator>();
             builder.Services.AddTransient<ExtensionGrantValidator>();
@@ -163,6 +166,8 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IPersistentGrantSerializer, PersistentGrantSerializer>();
             builder.Services.TryAddTransient<IEventService, DefaultEventService>();
             builder.Services.TryAddTransient<IEventSink, DefaultEventSink>();
+            builder.Services.AddTransient<IClientSecretValidator, ClientSecretValidator>();
+            builder.Services.AddTransient<IApiSecretValidator, ApiSecretValidator>();
 
             return builder;
         }
@@ -246,7 +251,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         internal static void AddDecorator<TService>(this IServiceCollection services)
         {
-            var registration = services.FirstOrDefault(x => x.ServiceType == typeof(TService));
+            var registration = services.LastOrDefault(x => x.ServiceType == typeof(TService));
             if (registration == null)
             {
                 throw new InvalidOperationException("Service type: " + typeof(TService).Name + " not registered.");
