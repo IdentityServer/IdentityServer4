@@ -34,25 +34,7 @@ If migrations are not your preference, then you can manage the schema changes in
 
 .. Note:: SQL scripts for SqlServer are maintained for the entities in `IdentityServer4.EntityFramework`. They are located `here <https://github.com/IdentityServer/IdentityServer4.EntityFramework/tree/dev/src/Host/Migrations/IdentityServer>`_.
 
-In addition to tracking schema changes with EF migrations, we will also use it to create the initial schema in the database.
-This requires the use of the EF Core tooling (more details `here <https://docs.microsoft.com/en-us/ef/core/miscellaneous/cli/dotnet>`_).
-We will add those now, and unfortunately this must be done by hand-editing your `.csproj` file.
-To edit the `.csproj` by right-click the project and select "Edit projectname.csproj":
-
-.. image:: images/8_edit_csproj.png
-
-And then add the below snippet before the end `</Project>` element::
-
-  <ItemGroup>
-    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" />
-  </ItemGroup>
-
-It should look something like this:
-
-.. image:: images/8_csproj.png
-
-Save and close the file. 
-To test that you have the tools properly installed, you can open a command shell in the same directory as the project and run `dotnet ef`.
+We will use EF migrations not only to track database schema changes, but also to create the initial schema in the database. To test that you have EF properly installed, you can open a command shell in the same directory as the project and run `dotnet ef`.
 It should look like this:
 
 .. image:: images/8_dotnet_ef_command_line.png
