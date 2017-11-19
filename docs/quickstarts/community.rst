@@ -29,6 +29,13 @@ Exchanging external tokens from Facebook, Google and Twitter
 
 https://github.com/waqaskhan540/IdentityServerExternalAuth
 
+Securing a Node API with tokens from IdentityServer4 using JWKS
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+* Shows how to secure a Node (Express) API using the JWKS endpoint and RS256 algorithm from IdentityServer4.
+* Provides an alternative to the NodeJsApi sample from IdentityServer4.Samples using higher quality - production ready modules.
+
+https://github.com/lyphtec/idsvr4-node-jwks
+
 ASP.NET Core MVC RazorPages template for IdentityServer4 Quickstart UI
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
