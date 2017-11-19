@@ -39,7 +39,7 @@ namespace IdentityServer4.Hosting
             ILogger<IdentityServerAuthenticationService> logger)
         {
             _inner = decorator.Instance;
-            
+
             _schemes = schemes;
             _clock = clock;
             _session = session;
@@ -89,7 +89,7 @@ namespace IdentityServer4.Hosting
             {
                 // this sets a flag used by the FederatedSignoutAuthenticationHandlerProvider
                 context.SetSignOutCalled();
-                
+
                 // this clears our session id cookie so JS clients can detect the user has signed out
                 await _session.RemoveSessionIdCookieAsync();
             }
@@ -116,12 +116,19 @@ namespace IdentityServer4.Hosting
         {
             // for now, we don't allow more than one identity in the principal/cookie
             if (principal.Identities.Count() != 1) throw new InvalidOperationException("only a single identity supported");
-            if (principal.FindFirst(JwtClaimTypes.Subject) == null) throw new InvalidOperationException("sub claim is missing");
+            if (principal.FindFirst(JwtClaimTypes.Subject) == null && principal.FindFirst(ClaimTypes.NameIdentifier) == null) throw new InvalidOperationException("sub claim is missing");
         }
 
         private void AugmentMissingClaims(ClaimsPrincipal principal, DateTime authTime)
         {
             var identity = principal.Identities.First();
+
+            var sub = principal.FindFirst(JwtClaimTypes.Subject);
+            if (sub == null)
+            {
+                var nameIdentifier = identity.FindFirst(ClaimTypes.NameIdentifier);
+                identity.AddClaim(new Claim(JwtClaimTypes.Subject, nameIdentifier.Value));
+            }
 
             // ASP.NET Identity issues this claim type and uses the authentication middleware name
             // such as "Google" for the value. this code is trying to correct/convert that for
