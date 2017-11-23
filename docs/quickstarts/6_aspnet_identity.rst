@@ -159,7 +159,7 @@ Creating the user database
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Given that this is a new ASP.NET Identity project, you will need to create the database.
-You can do this by running a command prompt from the project directory and running ``dotnet ef database update``, like this:
+You can do this by running a command prompt from the project directory and running ``dotnet ef database update -c ApplicationDbContext``, like this:
 
 .. image:: images/6_ef_database_update.png
 
