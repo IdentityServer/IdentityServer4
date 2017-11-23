@@ -15,7 +15,7 @@ namespace IdentityServer4.Services
     /// <seealso cref="IdentityServer4.Services.IProfileService" />
     public class DefaultProfileService : IProfileService
     {
-        private readonly ILogger _logger;
+        protected readonly ILogger Logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultProfileService"/> class.
@@ -23,7 +23,7 @@ namespace IdentityServer4.Services
         /// <param name="logger">The logger.</param>
         public DefaultProfileService(ILogger<DefaultProfileService> logger)
         {
-            _logger = logger;
+            Logger = logger;
         }
 
         /// <summary>

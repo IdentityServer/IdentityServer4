@@ -18,18 +18,18 @@ namespace IdentityServer4.Services
         internal const string SessionIdKey = "session_id";
         internal const string ClientListKey = "client_list";
 
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IAuthenticationSchemeProvider _schemes;
-        private readonly IAuthenticationHandlerProvider _handlers;
-        private readonly IdentityServerOptions _options;
-        private readonly ISystemClock _clock;
-        private readonly ILogger _logger;
+        protected readonly IHttpContextAccessor HttpContextAccessor;
+        protected readonly IAuthenticationSchemeProvider Schemes;
+        protected readonly IAuthenticationHandlerProvider Handlers;
+        protected readonly IdentityServerOptions Options;
+        protected readonly ISystemClock Clock;
+        protected readonly ILogger Logger;
 
-        private HttpContext HttpContext => _httpContextAccessor.HttpContext;
-        private string CheckSessionCookieName => _options.Authentication.CheckSessionCookieName;
+        protected HttpContext HttpContext => _httpContextAccessor.HttpContext;
+        protected string CheckSessionCookieName => _options.Authentication.CheckSessionCookieName;
 
-        private ClaimsPrincipal _principal;
-        private AuthenticationProperties _properties;
+        protected ClaimsPrincipal _principal;
+        protected AuthenticationProperties _properties;
 
         public DefaultUserSession(
             IHttpContextAccessor httpContextAccessor,
@@ -39,12 +39,12 @@ namespace IdentityServer4.Services
             ISystemClock clock,
             ILogger<IUserSession> logger)
         {
-            _httpContextAccessor = httpContextAccessor;
-            _schemes = schemes;
-            _handlers = handlers;
-            _options = options;
-            _clock = clock;
-            _logger = logger;
+            HttpContextAccessor = httpContextAccessor;
+            Schemes = schemes;
+            Handlers = handlers;
+            Options = options;
+            Clock = clock;
+            Logger = logger;
         }
 
         private async Task<string> GetCookieSchemeAsync()
