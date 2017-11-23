@@ -47,7 +47,7 @@ namespace IdentityServer4.Services
             _logger = logger;
         }
 
-        private virtual async Task<string> GetCookieSchemeAsync()
+        private async Task<string> GetCookieSchemeAsync()
         {
             var defaultScheme = await _schemes.GetDefaultAuthenticateSchemeAsync();
             if (defaultScheme == null)
@@ -67,7 +67,7 @@ namespace IdentityServer4.Services
         // just reading the incoming cookie
         // 
         // this design requires this to be in DI as scoped
-        private virtual async Task AuthenticateAsync()
+        private async Task AuthenticateAsync()
         {
             if (_principal == null || _properties == null)
             {
