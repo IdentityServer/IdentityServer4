@@ -47,7 +47,7 @@ namespace IdentityServer4.Services
             _logger = logger;
         }
 
-        private async Task<string> GetCookieSchemeAsync()
+        private virtual async Task<string> GetCookieSchemeAsync()
         {
             var defaultScheme = await _schemes.GetDefaultAuthenticateSchemeAsync();
             if (defaultScheme == null)
@@ -67,7 +67,7 @@ namespace IdentityServer4.Services
         // just reading the incoming cookie
         // 
         // this design requires this to be in DI as scoped
-        private async Task AuthenticateAsync()
+        private virtual async Task AuthenticateAsync()
         {
             if (_principal == null || _properties == null)
             {
@@ -88,7 +88,7 @@ namespace IdentityServer4.Services
             }
         }
 
-        public async Task CreateSessionIdAsync(ClaimsPrincipal principal, AuthenticationProperties properties)
+        public virtual async Task CreateSessionIdAsync(ClaimsPrincipal principal, AuthenticationProperties properties)
         {
             if (principal == null) throw new ArgumentNullException(nameof(principal));
             if (properties == null) throw new ArgumentNullException(nameof(properties));
@@ -107,14 +107,14 @@ namespace IdentityServer4.Services
             _properties = properties;
         }
 
-        public async Task<ClaimsPrincipal> GetUserAsync()
+        public virtual async Task<ClaimsPrincipal> GetUserAsync()
         {
             await AuthenticateAsync();
 
             return _principal;
         }
 
-        public async Task<string> GetSessionIdAsync()
+        public virtual async Task<string> GetSessionIdAsync()
         {
             await AuthenticateAsync();
 
@@ -126,7 +126,7 @@ namespace IdentityServer4.Services
             return null;
         }
 
-        public async Task EnsureSessionIdCookieAsync()
+        public virtual async Task EnsureSessionIdCookieAsync()
         {
             var sid = await GetSessionIdAsync();
             if (sid != null)
@@ -139,7 +139,7 @@ namespace IdentityServer4.Services
             }
         }
 
-        public Task RemoveSessionIdCookieAsync()
+        public virtual Task RemoveSessionIdCookieAsync()
         {
             if (HttpContext.Request.Cookies.ContainsKey(CheckSessionCookieName))
             {
@@ -153,7 +153,7 @@ namespace IdentityServer4.Services
             return Task.CompletedTask;
         }
 
-        public async Task AddClientIdAsync(string clientId)
+        public virtual async Task AddClientIdAsync(string clientId)
         {
             if (clientId == null) throw new ArgumentNullException(nameof(clientId));
 
@@ -167,7 +167,7 @@ namespace IdentityServer4.Services
             }
         }
 
-        public async Task<IEnumerable<string>> GetClientListAsync()
+        public virtual async Task<IEnumerable<string>> GetClientListAsync()
         {
             var value = await GetClientListPropertyValueAsync();
             try
