@@ -8,12 +8,14 @@ using System.Linq;
 using System;
 using IdentityModel;
 using System.Collections;
+using System.Diagnostics;
 
 namespace IdentityServer4.Models
 {
     /// <summary>
     /// Models an OpenID Connect or OAuth2 client
     /// </summary>
+    [DebuggerDisplay("{ClientId}")]
     public class Client
     {
         // setting grant types should be atomic
