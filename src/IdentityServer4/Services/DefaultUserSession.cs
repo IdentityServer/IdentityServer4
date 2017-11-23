@@ -25,8 +25,8 @@ namespace IdentityServer4.Services
         protected readonly ISystemClock Clock;
         protected readonly ILogger Logger;
 
-        protected HttpContext HttpContext => _httpContextAccessor.HttpContext;
-        protected string CheckSessionCookieName => _options.Authentication.CheckSessionCookieName;
+        protected HttpContext HttpContext => HttpContextAccessor.HttpContext;
+        protected string CheckSessionCookieName => Options.Authentication.CheckSessionCookieName;
 
         protected ClaimsPrincipal _principal;
         protected AuthenticationProperties _properties;
@@ -49,7 +49,7 @@ namespace IdentityServer4.Services
 
         private async Task<string> GetCookieSchemeAsync()
         {
-            var defaultScheme = await _schemes.GetDefaultAuthenticateSchemeAsync();
+            var defaultScheme = await Schemes.GetDefaultAuthenticateSchemeAsync();
             if (defaultScheme == null)
             {
                 throw new InvalidOperationException("No DefaultAuthenticateScheme found.");
@@ -73,7 +73,7 @@ namespace IdentityServer4.Services
             {
                 var scheme = await GetCookieSchemeAsync();
 
-                var handler = await _handlers.GetHandlerAsync(HttpContext, scheme);
+                var handler = await Handlers.GetHandlerAsync(HttpContext, scheme);
                 if (handler == null)
                 {
                     throw new InvalidOperationException($"No authentication handler is configured to authenticate for the scheme: {scheme}");
@@ -145,7 +145,7 @@ namespace IdentityServer4.Services
             {
                 // only remove it if we have it in the request
                 var options = CreateSessionIdCookieOptions();
-                options.Expires = _clock.UtcNow.UtcDateTime.AddYears(-1);
+                options.Expires = Clock.UtcNow.UtcDateTime.AddYears(-1);
 
                 HttpContext.Response.Cookies.Append(CheckSessionCookieName, ".", options);
             }
@@ -176,7 +176,7 @@ namespace IdentityServer4.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error decoding client list: {0}", ex.Message);
+                Logger.LogError("Error decoding client list: {0}", ex.Message);
                 // clear so we don't keep failing
                 await SetClientsAsync(null);
             }
@@ -258,7 +258,7 @@ namespace IdentityServer4.Services
             if (GetSessionIdCookieValue() != sid)
             {
                 HttpContext.Response.Cookies.Append(
-                    _options.Authentication.CheckSessionCookieName,
+                    Options.Authentication.CheckSessionCookieName,
                     sid,
                     CreateSessionIdCookieOptions());
             }

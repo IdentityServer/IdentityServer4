@@ -33,9 +33,9 @@ namespace IdentityServer4.Services
         /// <returns></returns>
         public virtual Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
-            context.LogProfileRequest(_logger);
+            context.LogProfileRequest(Logger);
             context.AddRequestedClaims(context.Subject.Claims);
-            context.LogIssuedClaims(_logger);
+            context.LogIssuedClaims(Logger);
 
             return Task.CompletedTask;
         }
@@ -48,7 +48,7 @@ namespace IdentityServer4.Services
         /// <returns></returns>
         public virtual Task IsActiveAsync(IsActiveContext context)
         {
-            _logger.LogDebug("IsActive called from: {caller}", context.Caller);
+            Logger.LogDebug("IsActive called from: {caller}", context.Caller);
 
             context.IsActive = true;
             return Task.CompletedTask;
