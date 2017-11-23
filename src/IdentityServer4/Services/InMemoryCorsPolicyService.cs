@@ -17,7 +17,7 @@ namespace IdentityServer4.Services
     /// </summary>
     public class InMemoryCorsPolicyService : ICorsPolicyService
     {
-        private readonly ILogger _logger;
+        private readonly ILogger Logger;
         private readonly IEnumerable<Client> _clients;
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace IdentityServer4.Services
         /// <param name="clients">The clients.</param>
         public InMemoryCorsPolicyService(ILogger<InMemoryCorsPolicyService> logger, IEnumerable<Client> clients)
         {
-            _logger = logger;
+            Logger = logger;
             _clients = clients ?? Enumerable.Empty<Client>();
         }
 
@@ -36,7 +36,7 @@ namespace IdentityServer4.Services
         /// </summary>
         /// <param name="origin">The origin.</param>
         /// <returns></returns>
-        public Task<bool> IsOriginAllowedAsync(string origin)
+        public virtual Task<bool> IsOriginAllowedAsync(string origin)
         {
             var query =
                 from client in _clients
@@ -47,13 +47,13 @@ namespace IdentityServer4.Services
 
             if (result)
             {
-                _logger.LogDebug("Client list checked and origin: {0} is allowed", origin);
+                Logger.LogDebug("Client list checked and origin: {0} is allowed", origin);
             }
             else
             {
-                _logger.LogDebug("Client list checked and origin: {0} is not allowed", origin);
+                Logger.LogDebug("Client list checked and origin: {0} is not allowed", origin);
             }
-            
+
             return Task.FromResult(result);
         }
     }
