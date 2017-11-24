@@ -15,6 +15,9 @@ namespace IdentityServer4.Services
     /// </summary>
     public class DefaultCorsPolicyService : ICorsPolicyService
     {
+        /// <summary>
+        /// Logger
+        /// </summary>
         protected readonly ILogger Logger;
 
         /// <summary>

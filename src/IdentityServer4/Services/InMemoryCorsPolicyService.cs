@@ -17,8 +17,14 @@ namespace IdentityServer4.Services
     /// </summary>
     public class InMemoryCorsPolicyService : ICorsPolicyService
     {
-        private readonly ILogger Logger;
-        private readonly IEnumerable<Client> _clients;
+        /// <summary>
+        /// Logger
+        /// </summary>
+        protected readonly ILogger Logger;
+        /// <summary>
+        /// Clients applications list
+        /// </summary>
+        protected readonly IEnumerable<Client> Clients;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InMemoryCorsPolicyService"/> class.
@@ -28,7 +34,7 @@ namespace IdentityServer4.Services
         public InMemoryCorsPolicyService(ILogger<InMemoryCorsPolicyService> logger, IEnumerable<Client> clients)
         {
             Logger = logger;
-            _clients = clients ?? Enumerable.Empty<Client>();
+            Clients = clients ?? Enumerable.Empty<Client>();
         }
 
         /// <summary>
@@ -39,7 +45,7 @@ namespace IdentityServer4.Services
         public virtual Task<bool> IsOriginAllowedAsync(string origin)
         {
             var query =
-                from client in _clients
+                from client in Clients
                 from url in client.AllowedCorsOrigins
                 select url.GetOrigin();
 
