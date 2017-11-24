@@ -28,8 +28,8 @@ namespace IdentityServer4.Services
         protected HttpContext HttpContext => HttpContextAccessor.HttpContext;
         protected string CheckSessionCookieName => Options.Authentication.CheckSessionCookieName;
 
-        protected ClaimsPrincipal _principal;
-        protected AuthenticationProperties _properties;
+        protected ClaimsPrincipal Principal;
+        protected AuthenticationProperties Properties;
 
         public DefaultUserSession(
             IHttpContextAccessor httpContextAccessor,
@@ -69,7 +69,7 @@ namespace IdentityServer4.Services
         // this design requires this to be in DI as scoped
         private async Task AuthenticateAsync()
         {
-            if (_principal == null || _properties == null)
+            if (Principal == null || Properties == null)
             {
                 var scheme = await GetCookieSchemeAsync();
 
@@ -82,8 +82,8 @@ namespace IdentityServer4.Services
                 var result = await handler.AuthenticateAsync();
                 if (result != null && result.Succeeded)
                 {
-                    _principal = result.Principal;
-                    _properties = result.Properties;
+                    Principal = result.Principal;
+                    Properties = result.Properties;
                 }
             }
         }
@@ -103,24 +103,24 @@ namespace IdentityServer4.Services
 
             IssueSessionIdCookie(properties.Items[SessionIdKey]);
 
-            _principal = principal;
-            _properties = properties;
+            Principal = principal;
+            Properties = properties;
         }
 
         public virtual async Task<ClaimsPrincipal> GetUserAsync()
         {
             await AuthenticateAsync();
 
-            return _principal;
+            return Principal;
         }
 
         public virtual async Task<string> GetSessionIdAsync()
         {
             await AuthenticateAsync();
 
-            if (_properties?.Items.ContainsKey(SessionIdKey) == true)
+            if (Properties?.Items.ContainsKey(SessionIdKey) == true)
             {
-                return _properties.Items[SessionIdKey];
+                return Properties.Items[SessionIdKey];
             }
 
             return null;
@@ -189,9 +189,9 @@ namespace IdentityServer4.Services
         {
             await AuthenticateAsync();
 
-            if (_properties?.Items.ContainsKey(ClientListKey) == true)
+            if (Properties?.Items.ContainsKey(ClientListKey) == true)
             {
-                return _properties.Items[ClientListKey];
+                return Properties.Items[ClientListKey];
             }
 
             return null;
@@ -207,19 +207,19 @@ namespace IdentityServer4.Services
         {
             await AuthenticateAsync();
 
-            if (_principal == null || _properties == null) throw new InvalidOperationException("User is not currently authenticated");
+            if (Principal == null || Properties == null) throw new InvalidOperationException("User is not currently authenticated");
 
             if (value == null)
             {
-                _properties.Items.Remove(ClientListKey);
+                Properties.Items.Remove(ClientListKey);
             }
             else
             {
-                _properties.Items[ClientListKey] = value;
+                Properties.Items[ClientListKey] = value;
             }
 
             var scheme = await GetCookieSchemeAsync();
-            await HttpContext.SignInAsync(scheme, _principal, _properties);
+            await HttpContext.SignInAsync(scheme, Principal, Properties);
         }
 
         private IEnumerable<string> DecodeList(string value)
