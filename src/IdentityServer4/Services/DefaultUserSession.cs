@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.Services
 {
-    internal class DefaultUserSession : IUserSession
+    public class DefaultUserSession : IUserSession
     {
         internal const string SessionIdKey = "session_id";
         internal const string ClientListKey = "client_list";
