@@ -28,15 +28,10 @@ namespace IdentityServer4.Models
         /// <param name="requestedClaimTypes">The requested claim types.</param>
         public ProfileDataRequestContext(ClaimsPrincipal subject, Client client, string caller, IEnumerable<string> requestedClaimTypes)
         {
-            if (subject == null) throw new ArgumentNullException(nameof(subject));
-            if (client == null) throw new ArgumentNullException(nameof(client));
-            if (caller == null) throw new ArgumentNullException(nameof(caller));
-            if (requestedClaimTypes == null) throw new ArgumentNullException(nameof(requestedClaimTypes));
-
-            Subject = subject;
-            Client = client;
-            Caller = caller;
-            RequestedClaimTypes = requestedClaimTypes;
+            Subject = subject ?? throw new ArgumentNullException(nameof(subject));
+            Client = client ?? throw new ArgumentNullException(nameof(client));
+            Caller = caller ?? throw new ArgumentNullException(nameof(caller));
+            RequestedClaimTypes = requestedClaimTypes ?? throw new ArgumentNullException(nameof(requestedClaimTypes));
         }
 
         /// <summary>
@@ -70,6 +65,14 @@ namespace IdentityServer4.Models
         /// The caller.
         /// </value>
         public string Caller { get; set; }
+
+        /// <summary>
+        /// Gets or sets the requested resources (if available).
+        /// </summary>
+        /// <value>
+        /// The resources.
+        /// </value>
+        public Resources RequestedResources { get; set; }
 
         /// <summary>
         /// Gets or sets the issued claims.

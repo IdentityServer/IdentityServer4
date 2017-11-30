@@ -80,6 +80,7 @@ namespace IdentityServer4.Services
                     request.Client,
                     IdentityServerConstants.ProfileDataCallers.ClaimsProviderIdentityToken,
                     additionalClaimTypes);
+                context.RequestedResources = resources;
 
                 await Profile.GetProfileDataAsync(context);
 
@@ -192,6 +193,7 @@ namespace IdentityServer4.Services
                     request.Client,
                     IdentityServerConstants.ProfileDataCallers.ClaimsProviderAccessToken,
                     additionalClaimTypes.Distinct());
+                context.RequestedResources = resources;
 
                 await Profile.GetProfileDataAsync(context);
 
