@@ -183,10 +183,14 @@ namespace Host.Configuration
                     AllowedGrantTypes = GrantTypes.Implicit,
 
                     RedirectUris = { "http://localhost:44078/home/callback" },
-                    FrontChannelLogoutUri = "http://localhost:44078/signout-oidc",
                     PostLogoutRedirectUris = { "http://localhost:44078/" },
+                    FrontChannelLogoutUri = "http://localhost:44078/home/FrontChannelLogout",
+                    BackChannelLogoutUri = "http://localhost:44078/home/BackChannelLogout",
 
-                    AllowedScopes = { IdentityServerConstants.StandardScopes.OpenId }
+                    AllowedScopes = {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                    }
                 },
 
                 ///////////////////////////////////////////
