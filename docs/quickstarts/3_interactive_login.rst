@@ -17,12 +17,42 @@ While the look & feel as well as the exact workflows will probably always differ
 IdentityServer implementation, we provide an MVC-based sample UI that you can use as a starting point.
 
 This UI can be found in the `Quickstart UI repo <https://github.com/IdentityServer/IdentityServer4.Quickstart.UI/tree/release>`_.
-You can either clone or download this repo and drop the controllers, views, models and CSS into your web application.
+You can either clone or download this repo and drop the controllers, views, models and CSS into your IdentityServer web application.
 
-Alternatively you can run this command from the command line in your web application to
+Alternatively you can run this command from the command line in the same directory as your IdentityServer web application to
 automate the download::
 
     iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/release/get.ps1'))
+
+Once you have added the MVC UI assets, you will also need to add MVC to the hosting application, both in the DI system and in the pipeline.
+Add MVC to ``ConfigureServices`` with the ``AddMvc`` extension method::
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddMvc();
+
+        // configure identity server with in-memory stores, keys, clients and scopes
+        services.AddIdentityServer()
+            .AddDeveloperSigningCredential()
+            .AddInMemoryApiResources(Config.GetApiResources())
+            .AddInMemoryClients(Config.GetClients())
+            .AddTestUsers(Config.GetUsers());
+    }
+
+Add MVC as the last middleware in the pipeline in ``Configure`` with the ``UseMvc`` extension method::
+
+    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+    {
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+        }
+
+        app.UseIdentityServer();
+
+        app.UseStaticFiles();
+        app.UseMvcWithDefaultRoute();
+    }
 
 See the `readme <https://github.com/IdentityServer/IdentityServer4.Quickstart.UI/blob/release/README.md>`_ for the quickstart UI for more information. 
 
