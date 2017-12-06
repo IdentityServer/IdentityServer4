@@ -36,6 +36,14 @@ namespace IdentityServer4.Validation
         public string State { get; set; }
 
         /// <summary>
+        /// Gets or sets the UI locales.
+        /// </summary>
+        /// <value>
+        /// The UI locales.
+        /// </value>
+        public string UiLocales { get; set; }
+        
+        /// <summary>
         ///  Ids of clients known to have an authentication session for user at end session time
         /// </summary>
         public IEnumerable<string> ClientIds { get; set; }

@@ -40,11 +40,13 @@ namespace IdentityServer4.Models
                 Parameters.Remove(OidcConstants.EndSessionRequest.IdTokenHint);
                 Parameters.Remove(OidcConstants.EndSessionRequest.PostLogoutRedirectUri);
                 Parameters.Remove(OidcConstants.EndSessionRequest.State);
+                Parameters.Remove(OidcConstants.AuthorizeRequest.UiLocales);
 
                 ClientId = request.Client?.ClientId;
                 SubjectId = request.Subject?.GetSubjectId();
                 SessionId = request.SessionId;
                 ClientIds = request.ClientIds;
+                UiLocales = request.UiLocales;
 
                 if (request.PostLogOutUri != null)
                 {
@@ -71,11 +73,16 @@ namespace IdentityServer4.Models
         /// Gets or sets the subject identifier for the user at logout time.
         /// </summary>
         public string SubjectId { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the session identifier for the user at logout time.
         /// </summary>
         public string SessionId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the UI locales.
+        /// </summary>
+        public string UiLocales { get; set; }
 
         /// <summary>
         ///  Ids of clients known to have an authentication session for user at end session time
@@ -112,6 +119,7 @@ namespace IdentityServer4.Models
                 SubjectId = message.SubjectId;
                 SessionId = message.SessionId;
                 ClientIds = message.ClientIds;
+                UiLocales = message.UiLocales;
                 Parameters = message.Parameters;
             }
 
@@ -137,6 +145,11 @@ namespace IdentityServer4.Models
         /// Gets or sets the session identifier for the user at logout time.
         /// </summary>
         public string SessionId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the UI locales.
+        /// </summary>
+        public string UiLocales { get; set; }
 
         /// <summary>
         ///  Ids of clients known to have an authentication session for user at end session time

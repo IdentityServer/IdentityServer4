@@ -79,6 +79,7 @@ namespace IdentityServer4.UnitTests.Validation.EndSessionRequestValidation
             parameters.Add("post_logout_redirect_uri", "http://client/signout-cb");
             parameters.Add("client_id", "client1");
             parameters.Add("state", "foo");
+            parameters.Add("ui_locales", "fr-FR");
 
             var result = await _subject.ValidateAsync(parameters, _user);
             result.IsError.Should().BeFalse();
@@ -86,7 +87,97 @@ namespace IdentityServer4.UnitTests.Validation.EndSessionRequestValidation
             result.ValidatedRequest.Client.ClientId.Should().Be("client");
             result.ValidatedRequest.PostLogOutUri.Should().Be("http://client/signout-cb");
             result.ValidatedRequest.State.Should().Be("foo");
+            result.ValidatedRequest.UiLocales.Should().Be("fr-FR");
             result.ValidatedRequest.Subject.GetSubjectId().Should().Be(_user.GetSubjectId());
+        }
+
+        //[Fact]
+        //public async Task id_token_hint_too_long_should_return_failure()
+        //{
+        //    _stubTokenValidator.IdentityTokenValidationResult = new TokenValidationResult()
+        //    {
+        //        IsError = false,
+        //        Claims = new Claim[] { new Claim("sub", _user.GetSubjectId()) },
+        //        Client = new Client() { ClientId = "client" }
+        //    };
+        //    _stubRedirectUriValidator.IsPostLogoutRedirectUriValid = true;
+
+        //    var parameters = new NameValueCollection();
+        //    parameters.Add("id_token_hint", "id_token".Repeat(100));
+        //    parameters.Add("post_logout_redirect_uri", "http://client/signout-cb");
+        //    parameters.Add("client_id", "client1");
+        //    parameters.Add("state", "foo");
+        //    parameters.Add("ui_locales", "fr-FR");
+
+        //    var result = await _subject.ValidateAsync(parameters, _user);
+        //    result.IsError.Should().BeTrue();
+        //}
+
+        //[Fact]
+        //public async Task post_logout_redirect_uri_too_long_should_return_failure()
+        //{
+        //    _stubTokenValidator.IdentityTokenValidationResult = new TokenValidationResult()
+        //    {
+        //        IsError = false,
+        //        Claims = new Claim[] { new Claim("sub", _user.GetSubjectId()) },
+        //        Client = new Client() { ClientId = "client" }
+        //    };
+        //    _stubRedirectUriValidator.IsPostLogoutRedirectUriValid = true;
+
+        //    var parameters = new NameValueCollection();
+        //    parameters.Add("id_token_hint", "id_token");
+        //    parameters.Add("post_logout_redirect_uri", "http://client/signout-cb".Repeat(100));
+        //    parameters.Add("client_id", "client1");
+        //    parameters.Add("state", "foo");
+        //    parameters.Add("ui_locales", "fr-FR");
+
+        //    var result = await _subject.ValidateAsync(parameters, _user);
+        //    result.IsError.Should().BeTrue();
+        //}
+
+
+        //[Fact]
+        //public async Task state_too_long_should_return_failure()
+        //{
+        //    _stubTokenValidator.IdentityTokenValidationResult = new TokenValidationResult()
+        //    {
+        //        IsError = false,
+        //        Claims = new Claim[] { new Claim("sub", _user.GetSubjectId()) },
+        //        Client = new Client() { ClientId = "client" }
+        //    };
+        //    _stubRedirectUriValidator.IsPostLogoutRedirectUriValid = true;
+
+        //    var parameters = new NameValueCollection();
+        //    parameters.Add("id_token_hint", "id_token");
+        //    parameters.Add("post_logout_redirect_uri", "http://client/signout-cb");
+        //    parameters.Add("client_id", "client1");
+        //    parameters.Add("state", "foo".Repeat(1000));
+        //    parameters.Add("ui_locales", "fr-FR");
+
+        //    var result = await _subject.ValidateAsync(parameters, _user);
+        //    result.IsError.Should().BeTrue();
+        //}
+
+        [Fact]
+        public async Task ui_locales_too_long_should_return_failure()
+        {
+            _stubTokenValidator.IdentityTokenValidationResult = new TokenValidationResult()
+            {
+                IsError = false,
+                Claims = new Claim[] { new Claim("sub", _user.GetSubjectId()) },
+                Client = new Client() { ClientId = "client" }
+            };
+            _stubRedirectUriValidator.IsPostLogoutRedirectUriValid = true;
+
+            var parameters = new NameValueCollection();
+            parameters.Add("id_token_hint", "id_token");
+            parameters.Add("post_logout_redirect_uri", "http://client/signout-cb");
+            parameters.Add("client_id", "client1");
+            parameters.Add("state", "foo");
+            parameters.Add("ui_locales", "fr-FR".Repeat(100));
+
+            var result = await _subject.ValidateAsync(parameters, _user);
+            result.IsError.Should().BeTrue();
         }
 
         [Fact]

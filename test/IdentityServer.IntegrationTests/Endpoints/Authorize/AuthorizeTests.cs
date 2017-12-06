@@ -730,5 +730,47 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("acr_values");
         }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task ui_locales_should_be_passed_to_error_page()
+        {
+            await _mockPipeline.LoginAsync("bob");
+
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: "client1",
+                responseType: "id_token",
+                scope: "openid",
+                redirectUri: "https://client1/callback",
+                state: "123_state",
+                nonce: "123_nonce",
+                acrValues: new string('x', 500),
+                extra:new { ui_locales="fr-FR" });
+            await _mockPipeline.BrowserClient.GetAsync(url);
+
+            _mockPipeline.ErrorWasCalled.Should().BeTrue();
+            _mockPipeline.ErrorMessage.UiLocales.Should().Be("fr-FR");
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task display_mode_should_be_passed_to_error_page()
+        {
+            await _mockPipeline.LoginAsync("bob");
+
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: "client1",
+                responseType: "id_token",
+                scope: "openid",
+                redirectUri: "https://client1/callback",
+                state: "123_state",
+                nonce: "123_nonce",
+                acrValues: new string('x', 500),
+                extra: new { display = "popup" });
+            await _mockPipeline.BrowserClient.GetAsync(url);
+
+            _mockPipeline.ErrorWasCalled.Should().BeTrue();
+            _mockPipeline.ErrorMessage.DisplayMode.Should().Be("popup");
+        }
     }
 }
