@@ -35,7 +35,7 @@ See [here](https://identityserver4.readthedocs.io/en/release/intro/support.html)
 If you are a fan of the project or a company that relies on IdentityServer4, you might want to consider sponsoring IdentityServer4.
 This will help us devote more time to answering questions and doing feature development. If you are interested please head to our [Patreon](https://www.patreon.com/identityserver) pages which has further details.
 
-You can see a list of our current sponsors [here](sponsors.md) - and for companies we have some nice advertisement options as well.
+You can see a list of our current sponsors [here](https://github.com/IdentityServer/IdentityServer4/blob/release/SPONSORS.md) - and for companies we have some nice advertisement options as well.
 
 ### Acknowledgements
 IdentityServer4 is built using the following great open source projects
