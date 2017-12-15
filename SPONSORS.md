@@ -6,6 +6,8 @@ We thank those who [support](https://www.patreon.com/identityserver) IdentitySer
 
 Khalid Abuhakmeh
 
+Rasika Weliwita
+
 ## Corporate
 
-None as of yet -- be the [first corporate sponsor](https://www.patreon.com/identityserver)!
+Green Elephant IT Consulting
