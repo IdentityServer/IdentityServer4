@@ -9,5 +9,5 @@ Green Elephant IT Consulting
 ## Individuals
 
 Khalid Abuhakmeh  
-Rasika Weliwita
-Arun David Shelly
+Rasika Weliwita  
+Arun David Shelly  
