@@ -9,7 +9,7 @@ It is part of the [.NET Foundation](https://www.dotnetfoundation.org/), and oper
 For project documentation, please visit [readthedocs](https://identityserver4.readthedocs.io).
 
 ### Overview
-IdentityServer4 consists of multiple repositories:
+IdentityServer4 consists of multiple repositories (in addition to this repository):
 
 * [Samples](https://github.com/IdentityServer/IdentityServer4.Samples)
 * [Access token validation handler for ASP.NET Core](https://github.com/IdentityServer/IdentityServer4.AccessTokenValidation)
@@ -28,12 +28,12 @@ IdentityServer is built against the latest ASP.NET Core 2.
 **note** For using IdentityServer with ASP.NET Core 1.x, you can use the 1.x packages of IdentityServer and [this branch](https://github.com/IdentityServer/IdentityServer4/tree/aspnetcore1). Documentation for 1.x can be found [here](http://docs.identityserver.io/en/aspnetcore1/).
 
 ### Commercial and Community Support
-If you need help with implementing IdentityServer4 or your security architecture in general, we have a couple of free and commercial support options.
+If you need help with implementing IdentityServer4 or your security architecture in general, there are both free and commercial support options.
 See [here](https://identityserver4.readthedocs.io/en/release/intro/support.html) for more details.
 
 ### Sponsorship
-If you are a fan of the project or a company that relies on IdentityServer4, you might want to consider sponsoring IdentityServer4.
-This will help us devote more time to answering questions and doing feature development. If you are interested please head to our [Patreon](https://www.patreon.com/identityserver) pages which has further details.
+If you are a fan of the project or a company that relies on IdentityServer, you might want to consider sponsoring.
+This will help us devote more time to answering questions and doing feature development. If you are interested please head to our [Patreon](https://www.patreon.com/identityserver) page which has further details.
 
 You can see a list of our current sponsors [here](https://github.com/IdentityServer/IdentityServer4/blob/release/SPONSORS.md) - and for companies we have some nice advertisement options as well.
 
