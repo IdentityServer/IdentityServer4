@@ -13,7 +13,7 @@ For project documentation, please visit [readthedocs](https://identityserver4.re
 IdentityServer4 consists of multiple repositories:
 
 * [Samples](https://github.com/IdentityServer/IdentityServer4.Samples)
-* [Access token validation](https://github.com/IdentityServer/IdentityServer4.AccessTokenValidation)
+* [Access token validation handler for ASP.NET Core](https://github.com/IdentityServer/IdentityServer4.AccessTokenValidation)
 * [Quickstart UI](https://github.com/IdentityServer/IdentityServer4.Quickstart.UI)
 * [ASP.NET Identity integration](https://github.com/IdentityServer/IdentityServer4.AspNetIdentity)
 * [EntityFramework integration](https://github.com/IdentityServer/IdentityServer4.EntityFramework)
@@ -33,7 +33,7 @@ If you need help with implementing IdentityServer4 or your security architecture
 See [here](https://identityserver4.readthedocs.io/en/release/intro/support.html) for more details.
 
 ### Sponsorship
-If you are a fan of the project or a company that relies on IdentityServer4, you might want to consider sponsoring the project.
+If you are a fan of the project or a company that relies on IdentityServer4, you might want to consider sponsoring IdentityServer4.
 This will help us devote more time to answering questions and doing feature development. If you are interested please head to our [Patreon](https://www.patreon.com/identityserver) pages which has further details.
 
 You can see a list of our current sponsors [here](sponsors.md) - and for companies we have some nice advertisement options as well.
