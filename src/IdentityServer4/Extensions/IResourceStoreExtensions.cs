@@ -27,7 +27,7 @@ namespace IdentityServer4.Stores
             var apiResources = await store.FindApiResourcesByScopeAsync(scopeNames);
 
             // attempt to detect invalid configuration. this is about the only place
-            // we can do this, since it's hard to vet the values in the store.
+            // we can do this, since it's hard to get the values in the store.
             var identityScopeNames = identity.Select(x => x.Name);
             var apiScopeNames = from api in apiResources
                                 from scope in api.Scopes
