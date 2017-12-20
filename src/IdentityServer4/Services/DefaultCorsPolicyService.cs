@@ -15,14 +15,17 @@ namespace IdentityServer4.Services
     /// </summary>
     public class DefaultCorsPolicyService : ICorsPolicyService
     {
-        private readonly ILogger _logger;
+        /// <summary>
+        /// Logger
+        /// </summary>
+        protected readonly ILogger Logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultCorsPolicyService"/> class.
         /// </summary>
         public DefaultCorsPolicyService(ILogger<DefaultCorsPolicyService> logger)
         {
-            _logger = logger;
+            Logger = logger;
             AllowedOrigins = new HashSet<string>();
         }
 
@@ -47,11 +50,11 @@ namespace IdentityServer4.Services
         /// </summary>
         /// <param name="origin">The origin.</param>
         /// <returns></returns>
-        public Task<bool> IsOriginAllowedAsync(string origin)
+        public virtual Task<bool> IsOriginAllowedAsync(string origin)
         {
             if (AllowAll)
             {
-                _logger.LogDebug("AllowAll true, so origin: {0} is allowed", origin);
+                Logger.LogDebug("AllowAll true, so origin: {0} is allowed", origin);
                 return Task.FromResult(true);
             }
 
@@ -59,16 +62,16 @@ namespace IdentityServer4.Services
             {
                 if (AllowedOrigins.Contains(origin, StringComparer.OrdinalIgnoreCase))
                 {
-                    _logger.LogDebug("AllowedOrigins configured and origin {0} is allowed", origin);
+                    Logger.LogDebug("AllowedOrigins configured and origin {0} is allowed", origin);
                     return Task.FromResult(true);
                 }
                 else
                 {
-                    _logger.LogDebug("AllowedOrigins configured and origin {0} is not allowed", origin);
+                    Logger.LogDebug("AllowedOrigins configured and origin {0} is not allowed", origin);
                 }
             }
 
-            _logger.LogDebug("Exiting; origin {0} is not allowed", origin);
+            Logger.LogDebug("Exiting; origin {0} is not allowed", origin);
 
             return Task.FromResult(false);
         }
