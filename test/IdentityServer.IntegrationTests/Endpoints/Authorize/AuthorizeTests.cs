@@ -13,6 +13,7 @@ using IdentityServer4.IntegrationTests.Common;
 using IdentityServer4.Test;
 using System.Net.Http;
 using IdentityModel;
+using System;
 
 namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 {
@@ -729,6 +730,29 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
             _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("acr_values");
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task overlapping_identity_scopes_and_api_scopes_should_show_error_page()
+        {
+            _mockPipeline.IdentityScopes.Add(new IdentityResource("foo", "Foo", new string[] { "name" }));
+            _mockPipeline.IdentityScopes.Add(new IdentityResource("bar", "Bar", new string[] { "name" }));
+            _mockPipeline.ApiScopes.Add(new ApiResource("foo", "Foo"));
+            _mockPipeline.ApiScopes.Add(new ApiResource("bar", "Bar"));
+
+            await _mockPipeline.LoginAsync("bob");
+
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: "client1",
+                responseType: "id_token",
+                scope: "openid foo bar",
+                redirectUri: "https://client1/callback",
+                state: "123_state",
+                nonce: "123_nonce");
+
+            Func<Task> a = () => _mockPipeline.BrowserClient.GetAsync(url);
+            a.ShouldThrow<Exception>();
         }
     }
 }
