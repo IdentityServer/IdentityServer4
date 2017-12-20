@@ -169,6 +169,7 @@ namespace IdentityServer4.ResponseHandling
                 {
                     scopes.AddRange(resources.IdentityResources.Where(x => x.ShowInDiscoveryDocument).Select(x => x.Name));
                 }
+
                 if (Options.Discovery.ShowApiScopes)
                 {
                     var apiScopes = from api in resources.ApiResources
@@ -190,8 +191,22 @@ namespace IdentityServer4.ResponseHandling
                 {
                     var claims = new List<string>();
 
-                    claims.AddRange(resources.IdentityResources.SelectMany(x => x.UserClaims));
-                    claims.AddRange(resources.ApiResources.SelectMany(x => x.UserClaims));
+                    // add non-hidden identity scopes related claims
+                    claims.AddRange(resources.IdentityResources.Where(x => x.ShowInDiscoveryDocument).SelectMany(x => x.UserClaims));
+
+                    // add non-hidden api scopes related claims
+                    foreach (var resource in resources.ApiResources)
+                    {
+                        claims.AddRange(resource.UserClaims);
+
+                        foreach (var scope in resource.Scopes)
+                        {
+                            if (scope.ShowInDiscoveryDocument)
+                            {
+                                claims.AddRange(scope.UserClaims);
+                            }
+                        }
+                    }
 
                     entries.Add(OidcConstants.Discovery.ClaimsSupported, claims.Distinct().ToArray());
                 }

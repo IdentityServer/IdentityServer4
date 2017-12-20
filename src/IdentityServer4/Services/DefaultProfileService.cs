@@ -15,7 +15,7 @@ namespace IdentityServer4.Services
     /// <seealso cref="IdentityServer4.Services.IProfileService" />
     public class DefaultProfileService : IProfileService
     {
-        private readonly ILogger _logger;
+        protected readonly ILogger Logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultProfileService"/> class.
@@ -23,7 +23,7 @@ namespace IdentityServer4.Services
         /// <param name="logger">The logger.</param>
         public DefaultProfileService(ILogger<DefaultProfileService> logger)
         {
-            _logger = logger;
+            Logger = logger;
         }
 
         /// <summary>
@@ -31,11 +31,11 @@ namespace IdentityServer4.Services
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns></returns>
-        public Task GetProfileDataAsync(ProfileDataRequestContext context)
+        public virtual Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
-            context.LogProfileRequest(_logger);
+            context.LogProfileRequest(Logger);
             context.AddRequestedClaims(context.Subject.Claims);
-            context.LogIssuedClaims(_logger);
+            context.LogIssuedClaims(Logger);
 
             return Task.CompletedTask;
         }
@@ -46,9 +46,9 @@ namespace IdentityServer4.Services
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns></returns>
-        public Task IsActiveAsync(IsActiveContext context)
+        public virtual Task IsActiveAsync(IsActiveContext context)
         {
-            _logger.LogDebug("IsActive called from: {caller}", context.Caller);
+            Logger.LogDebug("IsActive called from: {caller}", context.Caller);
 
             context.IsActive = true;
             return Task.CompletedTask;

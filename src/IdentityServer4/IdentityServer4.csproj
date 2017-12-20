@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Description>OpenID Connect and OAuth 2.0 Framework for ASP.NET Core</Description>
-    <VersionPrefix>2.0.3</VersionPrefix>
+    <VersionPrefix>2.1.0</VersionPrefix>
     <!--<VersionSuffix>rc1-update1</VersionSuffix>-->
     <Authors>Brock Allen;Dominick Baier</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -12,28 +12,20 @@
     <PackageIconUrl>https://raw.githubusercontent.com/IdentityServer/Artwork/master/Logos/IDserver_icon128.jpg</PackageIconUrl>
     <PackageProjectUrl>https://github.com/IdentityServer/IdentityServer4</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/IdentityServer/IdentityServer4/blob/release/LICENSE</PackageLicenseUrl>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netstandard2.0\IdentityServer4.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netstandard2.0\IdentityServer4.xml</DocumentationFile>
+    <GenerateDocumentationFile Condition=" '$(Configuration)' == 'Release' ">true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="2.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.0" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.1.4" />
-    <PackageReference Include="IdentityModel" Version="2.15.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.1.5" />
+    <PackageReference Include="IdentityModel" Version="2.16.1" />
     <PackageReference Include="System.Security.Cryptography.Cng" Version="4.4.0" />
-    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
-    <PackageReference Include="SourceLink.Embed.AllSourceFiles" Version="2.5.0" PrivateAssets="all" />
+    <PackageReference Include="SourceLink.Embed.AllSourceFiles" Version="2.6.0" PrivateAssets="all" />
   </ItemGroup>
 </Project>

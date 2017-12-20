@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -114,7 +114,7 @@ namespace IdentityServer4.Endpoints.Results
             else if (Response.Request.ResponseMode == OidcConstants.ResponseModes.FormPost)
             {
                 context.Response.SetNoCache();
-                AddCspHeaders(context);
+                AddSecurityHeaders(context);
                 await context.Response.WriteHtmlAsync(GetFormPostHtml());
             }
             else
@@ -124,20 +124,25 @@ namespace IdentityServer4.Endpoints.Results
             }
         }
 
-        private void AddCspHeaders(HttpContext context)
+        private void AddSecurityHeaders(HttpContext context)
         {
             var formOrigin = Response.Request.RedirectUri.GetOrigin();
-            // 'unsafe-inline' for edge
-            var value = $"default-src 'none'; frame-ancestors {formOrigin}; script-src 'unsafe-inline' 'sha256-VuNUSJ59bpCpw62HM2JG/hCyGiqoPN3NqGvNXQPU+rY=';";
+            var csp = $"default-src 'none'; frame-ancestors {formOrigin}; script-src 'sha256-VuNUSJ59bpCpw62HM2JG/hCyGiqoPN3NqGvNXQPU+rY='; ";
 
             if (!context.Response.Headers.ContainsKey("Content-Security-Policy"))
             {
-                context.Response.Headers.Add("Content-Security-Policy", value);
+                context.Response.Headers.Add("Content-Security-Policy", csp);
             }
 
             if (!context.Response.Headers.ContainsKey("X-Content-Security-Policy"))
             {
-                context.Response.Headers.Add("X-Content-Security-Policy", value);
+                context.Response.Headers.Add("X-Content-Security-Policy", csp);
+            }
+
+            var referrer_policy = "no-referrer";
+            if (!context.Response.Headers.ContainsKey("Referrer-Policy"))
+            {
+                context.Response.Headers.Add("Referrer-Policy", referrer_policy);
             }
         }
 
@@ -164,7 +169,7 @@ namespace IdentityServer4.Endpoints.Results
             return uri;
         }
 
-        private const string FormPostHtml = "<form method='post' action='{uri}'>{body}</form><script>(function(){document.forms[0].submit();})();</script>";
+        private const string FormPostHtml = "<form method='post' action='{uri}'>{body}<noscript><button>Click to continue</button></noscript></form><script>(function(){document.forms[0].submit();})();</script>";
 
         private string GetFormPostHtml()
         {
@@ -182,7 +187,9 @@ namespace IdentityServer4.Endpoints.Results
             {
                 RequestId = context.TraceIdentifier,
                 Error = Response.Error,
-                ErrorDescription = Response.ErrorDescription
+                ErrorDescription = Response.ErrorDescription,
+                UiLocales = Response.Request?.UiLocales,
+                DisplayMode = Response.Request?.DisplayMode
             };
 
             if (Response.RedirectUri != null && Response.Request?.ResponseMode != null)

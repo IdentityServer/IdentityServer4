@@ -66,28 +66,25 @@ namespace IdentityServer4.Endpoints
                     _logger.LogDebug("No client back-channel iframe urls");
                 }
 
-                InvokeBackChannelClients(result);
+                await InvokeBackChannelClientsAsync(result);
             }
 
             return new EndSessionCallbackResult(result);
         }
 
-        private void InvokeBackChannelClients(EndSessionCallbackValidationResult result)
+        private async Task InvokeBackChannelClientsAsync(EndSessionCallbackValidationResult result)
         {
             if (result.BackChannelLogouts?.Any() == true)
             {
                 // best-effort, and async to not block the response to the browser
-                Task.Run(async () =>
+                try
                 {
-                    try
-                    {
-                        await _backChannelClient.SendLogoutsAsync(result.BackChannelLogouts);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Error calling backchannel sign-out urls");
-                    }
-                });
+                    await _backChannelClient.SendLogoutsAsync(result.BackChannelLogouts);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error calling backchannel sign-out urls");
+                }
             }
         }
     }

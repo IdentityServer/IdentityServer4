@@ -3,6 +3,7 @@
 
 
 using System.Net.Http;
+using IdentityServer4.Configuration;
 
 namespace IdentityServer4.Infrastructure
 {
@@ -17,6 +18,15 @@ namespace IdentityServer4.Infrastructure
         /// </summary>
         public BackChannelHttpClient()
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BackChannelHttpClient"/> class.
+        /// </summary>
+        /// <param name="options">The options.</param>
+        public BackChannelHttpClient(IdentityServerOptions options)
+        {
+            Timeout = options.Authentication.BackChannelLogoutTimeOut;
         }
 
         /// <summary>
