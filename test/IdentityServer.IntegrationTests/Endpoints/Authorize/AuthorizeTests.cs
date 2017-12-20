@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -121,7 +121,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
         {
             var response = await _mockPipeline.BrowserClient.PostAsync(IdentityServerPipeline.AuthorizeEndpoint,
                 new FormUrlEncodedContent(
-                    new Dictionary<string, string>{ }));
+                    new Dictionary<string, string> { }));
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
@@ -162,12 +162,13 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                 redirectUri: "https://client1/callback",
                 state: "123_state",
                 nonce: "123_nonce",
-                loginHint:"login_hint_value",
-                acrValues:"acr_1 acr_2 tenant:tenant_value idp:idp_value",
-                extra: new {
+                loginHint: "login_hint_value",
+                acrValues: "acr_1 acr_2 tenant:tenant_value idp:idp_value",
+                extra: new
+                {
                     display = "popup", // must use a valid value from the spec for display
-                    ui_locales ="ui_locale_value",
-                    custom_foo ="foo_value"
+                    ui_locales = "ui_locale_value",
+                    custom_foo = "foo_value"
                 });
             var response = await _mockPipeline.BrowserClient.GetAsync(url + "&foo=bar");
 
@@ -233,7 +234,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             authorization.IdentityToken.Should().NotBeNull();
             authorization.State.Should().Be("123_state");
         }
-        
+
         [Fact]
         [Trait("Category", Category)]
         public async Task login_response_and_consent_response_should_receive_authorization_response()
@@ -277,7 +278,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                 scope: "openid profile",
                 redirectUri: "https://client3/callback",
                 state: "123_state",
-                nonce: "123_nonce", 
+                nonce: "123_nonce",
                 acrValues: "idp:google");
             var response = await _mockPipeline.BrowserClient.GetAsync(url);
 
@@ -472,7 +473,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             var url = _mockPipeline.CreateAuthorizeUrl(
                 clientId: "client1",
                 responseType: "id_token",
-                responseMode:"query",
+                responseMode: "query",
                 scope: "openid",
                 redirectUri: "https://client1/callback",
                 state: "123_state",
@@ -493,7 +494,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             var url = _mockPipeline.CreateAuthorizeUrl(
                 clientId: "client1",
                 responseType: "id_token",
-                responseMode:"invalid",
+                responseMode: "invalid",
                 scope: "openid",
                 redirectUri: "https://client1/callback",
                 state: "123_state",
@@ -639,8 +640,8 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                 scope: "openid",
                 redirectUri: "https://client1/callback",
                 state: "123_state",
-                nonce: "123_nonce", 
-                extra:new { ui_locales = new string('x', 500) });
+                nonce: "123_nonce",
+                extra: new { ui_locales = new string('x', 500) });
             await _mockPipeline.BrowserClient.GetAsync(url);
 
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
@@ -753,6 +754,48 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 
             Func<Task> a = () => _mockPipeline.BrowserClient.GetAsync(url);
             a.ShouldThrow<Exception>();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task ui_locales_should_be_passed_to_error_page()
+        {
+            await _mockPipeline.LoginAsync("bob");
+
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: "client1",
+                responseType: "id_token",
+                scope: "openid",
+                redirectUri: "https://client1/callback",
+                state: "123_state",
+                nonce: "123_nonce",
+                acrValues: new string('x', 500),
+                extra: new { ui_locales = "fr-FR" });
+            await _mockPipeline.BrowserClient.GetAsync(url);
+
+            _mockPipeline.ErrorWasCalled.Should().BeTrue();
+            _mockPipeline.ErrorMessage.UiLocales.Should().Be("fr-FR");
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task display_mode_should_be_passed_to_error_page()
+        {
+            await _mockPipeline.LoginAsync("bob");
+
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: "client1",
+                responseType: "id_token",
+                scope: "openid",
+                redirectUri: "https://client1/callback",
+                state: "123_state",
+                nonce: "123_nonce",
+                acrValues: new string('x', 500),
+                extra: new { display = "popup" });
+            await _mockPipeline.BrowserClient.GetAsync(url);
+
+            _mockPipeline.ErrorWasCalled.Should().BeTrue();
+            _mockPipeline.ErrorMessage.DisplayMode.Should().Be("popup");
         }
     }
 }
