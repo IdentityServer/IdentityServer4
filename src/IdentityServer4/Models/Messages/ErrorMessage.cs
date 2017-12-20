@@ -53,5 +53,10 @@ namespace IdentityServer4.Models
         /// The redirect URI.
         /// </summary>
         public string RedirectUri { get; set; }
+        
+        /// <summary>
+        /// The response mode.
+        /// </summary>
+        public string ResponseMode { get; set; }
     }
 }

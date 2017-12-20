@@ -358,6 +358,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
             _mockPipeline.ErrorMessage.RedirectUri.Should().BeNull();
+            _mockPipeline.ErrorMessage.ResponseMode.Should().BeNull();
         }
 
         [Fact]
@@ -396,6 +397,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
             _mockPipeline.ErrorMessage.RedirectUri.Should().BeNull();
+            _mockPipeline.ErrorMessage.ResponseMode.Should().BeNull();
         }
 
         [Fact]
@@ -435,6 +437,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
             _mockPipeline.ErrorMessage.RedirectUri.Should().BeNull();
+            _mockPipeline.ErrorMessage.ResponseMode.Should().BeNull();
         }
 
         [Fact]
@@ -497,6 +500,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
             _mockPipeline.ErrorMessage.RedirectUri.Should().BeNull();
+            _mockPipeline.ErrorMessage.ResponseMode.Should().BeNull();
         }
 
         [Fact]
@@ -540,6 +544,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
             _mockPipeline.ErrorMessage.RedirectUri.Should().BeNull();
+            _mockPipeline.ErrorMessage.ResponseMode.Should().BeNull();
         }
 
         [Fact]
@@ -563,7 +568,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task invalid_response_type_should_pass_return_url_to_error_page()
+        public async Task invalid_response_type_should_not_pass_return_url_to_error_page()
         {
             await _mockPipeline.LoginAsync("bob");
 
@@ -577,7 +582,8 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             await _mockPipeline.BrowserClient.GetAsync(url);
 
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
-            _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
+            _mockPipeline.ErrorMessage.RedirectUri.Should().BeNull();
+            _mockPipeline.ErrorMessage.ResponseMode.Should().BeNull();
         }
 
         [Fact]
@@ -619,6 +625,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
             _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
+            _mockPipeline.ErrorMessage.ResponseMode.Should().Be("fragment");
         }
 
         [Fact]
@@ -660,6 +667,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
             _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
+            _mockPipeline.ErrorMessage.ResponseMode.Should().Be("fragment");
         }
 
         [Fact]
@@ -699,6 +707,28 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
             _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
+            _mockPipeline.ErrorMessage.ResponseMode.Should().Be("fragment");
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task explicit_response_mode_should_be_passed_to_error_page()
+        {
+            await _mockPipeline.LoginAsync("bob");
+
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: "client1",
+                responseType: "id_token",
+                responseMode: "form_post",
+                //scope: "openid", // this will cause the error
+                redirectUri: "https://client1/callback",
+                state: "123_state",
+                nonce: "123_nonce");
+            await _mockPipeline.BrowserClient.GetAsync(url);
+
+            _mockPipeline.ErrorWasCalled.Should().BeTrue();
+            _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
+            _mockPipeline.ErrorMessage.ResponseMode.Should().Be("form_post");
         }
 
         [Fact]
@@ -720,6 +750,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("scope");
             _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
+            _mockPipeline.ErrorMessage.ResponseMode.Should().Be("fragment");
         }
 
         [Fact]
@@ -742,6 +773,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("scope");
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("openid");
             _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
+            _mockPipeline.ErrorMessage.ResponseMode.Should().Be("fragment");
         }
 
         [Fact]
@@ -763,6 +795,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.UnauthorizedClient);
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("scope");
             _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
+            _mockPipeline.ErrorMessage.ResponseMode.Should().Be("fragment");
         }
 
         [Fact]
@@ -785,6 +818,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("nonce");
             _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
+            _mockPipeline.ErrorMessage.ResponseMode.Should().Be("fragment");
         }
 
         [Fact]
@@ -806,6 +840,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("nonce");
             _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
+            _mockPipeline.ErrorMessage.ResponseMode.Should().Be("fragment");
         }
 
         [Fact]
@@ -828,6 +863,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("ui_locales");
             _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
+            _mockPipeline.ErrorMessage.ResponseMode.Should().Be("fragment");
         }
 
         [Fact]
@@ -850,6 +886,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("max_age");
             _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
+            _mockPipeline.ErrorMessage.ResponseMode.Should().Be("fragment");
         }
 
         [Fact]
@@ -872,6 +909,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("max_age");
             _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
+            _mockPipeline.ErrorMessage.ResponseMode.Should().Be("fragment");
         }
 
         [Fact]
@@ -894,6 +932,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("login_hint");
             _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
+            _mockPipeline.ErrorMessage.ResponseMode.Should().Be("fragment");
         }
 
         [Fact]
@@ -916,6 +955,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("acr_values");
             _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
+            _mockPipeline.ErrorMessage.ResponseMode.Should().Be("fragment");
         }
     }
 }
