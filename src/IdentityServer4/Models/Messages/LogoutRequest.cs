@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -42,6 +42,7 @@ namespace IdentityServer4.Models
                 Parameters.Remove(OidcConstants.EndSessionRequest.State);
 
                 ClientId = request.Client?.ClientId;
+                ClientName = request.Client?.ClientName;
                 SubjectId = request.Subject?.GetSubjectId();
                 SessionId = request.SessionId;
                 ClientIds = request.ClientIds;
@@ -61,7 +62,12 @@ namespace IdentityServer4.Models
         /// Gets or sets the client identifier.
         /// </summary>
         public string ClientId { get; set; }
-        
+
+        /// <summary>
+        /// Gets or sets the client name.
+        /// </summary>
+        public string ClientName { get; set; }
+
         /// <summary>
         /// Gets or sets the post logout redirect URI.
         /// </summary>
@@ -108,6 +114,7 @@ namespace IdentityServer4.Models
             if (message != null)
             {
                 ClientId = message.ClientId;
+                ClientName = message.ClientName;
                 PostLogoutRedirectUri = message.PostLogoutRedirectUri;
                 SubjectId = message.SubjectId;
                 SessionId = message.SessionId;
@@ -122,6 +129,11 @@ namespace IdentityServer4.Models
         /// Gets or sets the client identifier.
         /// </summary>
         public string ClientId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the client name.
+        /// </summary>
+        public string ClientName { get; set; }
 
         /// <summary>
         /// Gets or sets the post logout redirect URI.
