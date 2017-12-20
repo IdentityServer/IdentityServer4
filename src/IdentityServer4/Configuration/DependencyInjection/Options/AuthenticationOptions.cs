@@ -34,6 +34,10 @@ namespace IdentityServer4.Configuration
         /// </summary>
         public string CheckSessionCookieName { get; set; } = IdentityServerConstants.DefaultCheckSessionCookieName;
 
+        /// Gets or sets the timeout on the back channel logout HTTP call.
+        /// </summary>
+        public TimeSpan BackChannelLogoutTimeOut { get; set; } = TimeSpan.FromSeconds(30);
+
         /// <summary>
         /// If set, will prevent frame-src CSP headers being emitting on the end session callback endpoint which renders iframes to clients for front-channel signout notification.
         /// </summary>

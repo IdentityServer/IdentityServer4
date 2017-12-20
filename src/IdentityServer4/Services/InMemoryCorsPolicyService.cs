@@ -17,8 +17,14 @@ namespace IdentityServer4.Services
     /// </summary>
     public class InMemoryCorsPolicyService : ICorsPolicyService
     {
-        private readonly ILogger _logger;
-        private readonly IEnumerable<Client> _clients;
+        /// <summary>
+        /// Logger
+        /// </summary>
+        protected readonly ILogger Logger;
+        /// <summary>
+        /// Clients applications list
+        /// </summary>
+        protected readonly IEnumerable<Client> Clients;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InMemoryCorsPolicyService"/> class.
@@ -27,8 +33,8 @@ namespace IdentityServer4.Services
         /// <param name="clients">The clients.</param>
         public InMemoryCorsPolicyService(ILogger<InMemoryCorsPolicyService> logger, IEnumerable<Client> clients)
         {
-            _logger = logger;
-            _clients = clients ?? Enumerable.Empty<Client>();
+            Logger = logger;
+            Clients = clients ?? Enumerable.Empty<Client>();
         }
 
         /// <summary>
@@ -36,10 +42,10 @@ namespace IdentityServer4.Services
         /// </summary>
         /// <param name="origin">The origin.</param>
         /// <returns></returns>
-        public Task<bool> IsOriginAllowedAsync(string origin)
+        public virtual Task<bool> IsOriginAllowedAsync(string origin)
         {
             var query =
-                from client in _clients
+                from client in Clients
                 from url in client.AllowedCorsOrigins
                 select url.GetOrigin();
 
@@ -47,13 +53,13 @@ namespace IdentityServer4.Services
 
             if (result)
             {
-                _logger.LogDebug("Client list checked and origin: {0} is allowed", origin);
+                Logger.LogDebug("Client list checked and origin: {0} is allowed", origin);
             }
             else
             {
-                _logger.LogDebug("Client list checked and origin: {0} is not allowed", origin);
+                Logger.LogDebug("Client list checked and origin: {0} is not allowed", origin);
             }
-            
+
             return Task.FromResult(result);
         }
     }

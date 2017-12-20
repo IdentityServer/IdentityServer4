@@ -42,7 +42,7 @@ namespace IdentityServer4.Infrastructure
         public virtual Task SendLogoutsAsync(IEnumerable<BackChannelLogoutModel> clients)
         {
             clients = clients ?? Enumerable.Empty<BackChannelLogoutModel>();
-            var tasks = clients.Select(x => SendLogoutAsync(x));
+            var tasks = clients.Select(x => SendLogoutAsync(x)).ToArray();
             return Task.WhenAll(tasks);
         }
 

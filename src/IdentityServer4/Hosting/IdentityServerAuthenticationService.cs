@@ -132,13 +132,19 @@ namespace IdentityServer4.Hosting
                 identity.FindFirst(JwtClaimTypes.IdentityProvider) == null &&
                 identity.FindFirst(JwtClaimTypes.AuthenticationMethod) == null)
             {
+                _logger.LogDebug("Removing amr claim with value: {value}", amr.Value);
                 identity.RemoveClaim(amr);
+
+                _logger.LogDebug("Adding idp claim with value: {value}", amr.Value);
                 identity.AddClaim(new Claim(JwtClaimTypes.IdentityProvider, amr.Value));
+
+                _logger.LogDebug("Adding amr claim with value: {value}", Constants.ExternalAuthenticationMethod);
                 identity.AddClaim(new Claim(JwtClaimTypes.AuthenticationMethod, Constants.ExternalAuthenticationMethod));
             }
 
             if (identity.FindFirst(JwtClaimTypes.IdentityProvider) == null)
             {
+                _logger.LogDebug("Adding idp claim with value: {value}", IdentityServerConstants.LocalIdentityProvider);
                 identity.AddClaim(new Claim(JwtClaimTypes.IdentityProvider, IdentityServerConstants.LocalIdentityProvider));
             }
 
@@ -146,17 +152,22 @@ namespace IdentityServer4.Hosting
             {
                 if (identity.FindFirst(JwtClaimTypes.IdentityProvider).Value == IdentityServerConstants.LocalIdentityProvider)
                 {
+                    _logger.LogDebug("Adding amr claim with value: {value}", OidcConstants.AuthenticationMethods.Password);
                     identity.AddClaim(new Claim(JwtClaimTypes.AuthenticationMethod, OidcConstants.AuthenticationMethods.Password));
                 }
                 else
                 {
+                    _logger.LogDebug("Adding amr claim with value: {value}", Constants.ExternalAuthenticationMethod);
                     identity.AddClaim(new Claim(JwtClaimTypes.AuthenticationMethod, Constants.ExternalAuthenticationMethod));
                 }
             }
 
             if (identity.FindFirst(JwtClaimTypes.AuthenticationTime) == null)
             {
-                identity.AddClaim(new Claim(JwtClaimTypes.AuthenticationTime, authTime.ToEpochTime().ToString(), ClaimValueTypes.Integer));
+                var time = authTime.ToEpochTime().ToString();
+
+                _logger.LogDebug("Adding auth_time claim with value: {value}", time);
+                identity.AddClaim(new Claim(JwtClaimTypes.AuthenticationTime, time, ClaimValueTypes.Integer));
             }
         }
     }

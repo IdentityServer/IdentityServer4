@@ -8,12 +8,14 @@ using System.Linq;
 using System;
 using IdentityModel;
 using System.Collections;
+using System.Diagnostics;
 
 namespace IdentityServer4.Models
 {
     /// <summary>
     /// Models an OpenID Connect or OAuth2 client
     /// </summary>
+    [DebuggerDisplay("{ClientId}")]
     public class Client
     {
         // setting grant types should be atomic
@@ -73,7 +75,7 @@ namespace IdentityServer4.Models
         public bool AllowRememberConsent { get; set; } = true;
 
         /// <summary>
-        /// Specifies the allowed grant types (legal combinations of AuthorizationCode, Implicit, Hybrid, ResourceOwner, ClientCredentials). Defaults to Implicit.
+        /// Specifies the allowed grant types (legal combinations of AuthorizationCode, Implicit, Hybrid, ResourceOwner, ClientCredentials).
         /// </summary>
         public ICollection<string> AllowedGrantTypes
         {

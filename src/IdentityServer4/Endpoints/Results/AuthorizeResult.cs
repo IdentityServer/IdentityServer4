@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -127,7 +127,7 @@ namespace IdentityServer4.Endpoints.Results
         private void AddSecurityHeaders(HttpContext context)
         {
             var formOrigin = Response.Request.RedirectUri.GetOrigin();
-            var csp = $"default-src 'none'; frame-ancestors {formOrigin}; form-action {formOrigin}; script-src 'sha256-VuNUSJ59bpCpw62HM2JG/hCyGiqoPN3NqGvNXQPU+rY='; ";
+            var csp = $"default-src 'none'; frame-ancestors {formOrigin}; script-src 'sha256-VuNUSJ59bpCpw62HM2JG/hCyGiqoPN3NqGvNXQPU+rY='; ";
 
             if (!context.Response.Headers.ContainsKey("Content-Security-Policy"))
             {
@@ -169,7 +169,7 @@ namespace IdentityServer4.Endpoints.Results
             return uri;
         }
 
-        private const string FormPostHtml = "<form method='post' action='{uri}'>{body}</form><script>(function(){document.forms[0].submit();})();</script>";
+        private const string FormPostHtml = "<form method='post' action='{uri}'>{body}<noscript><button>Click to continue</button></noscript></form><script>(function(){document.forms[0].submit();})();</script>";
 
         private string GetFormPostHtml()
         {
@@ -187,8 +187,17 @@ namespace IdentityServer4.Endpoints.Results
             {
                 RequestId = context.TraceIdentifier,
                 Error = Response.Error,
-                ErrorDescription = Response.ErrorDescription
+                ErrorDescription = Response.ErrorDescription,
+                UiLocales = Response.Request?.UiLocales,
+                DisplayMode = Response.Request?.DisplayMode
             };
+
+            if (Response.RedirectUri != null && Response.Request?.ResponseMode != null)
+            {
+                // if we have a valid redirect uri, then include it to the error page
+                errorModel.RedirectUri = BuildRedirectUri();
+                errorModel.ResponseMode = Response.Request.ResponseMode;
+            }
 
             var message = new Message<ErrorMessage>(errorModel, _clock.UtcNow.UtcDateTime);
             var id = await _errorMessageStore.WriteAsync(message);
