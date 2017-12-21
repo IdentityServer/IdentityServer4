@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -87,7 +87,7 @@ namespace IdentityServer4.Extensions
         /// <param name="principal">The principal.</param>
         /// <returns></returns>
         [DebuggerStepThrough]
-        [Obsolete("This method will be removed in a future version")]
+        [Obsolete("This method will be removed in a future version. Use GetDisplayName instead.")]
         public static string GetName(this IPrincipal principal)
         {
             return principal.Identity.GetName();
@@ -117,7 +117,7 @@ namespace IdentityServer4.Extensions
         /// <returns></returns>
         /// <exception cref="System.InvalidOperationException">name claim is missing</exception>
         [DebuggerStepThrough]
-        [Obsolete("This method will be removed in a future version")]
+        [Obsolete("This method will be removed in a future version. Use GetDisplayName instead.")]
         public static string GetName(this IIdentity identity)
         {
             var id = identity as ClaimsIdentity;
