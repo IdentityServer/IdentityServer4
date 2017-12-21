@@ -255,12 +255,15 @@ namespace IdentityServer4.Services
 
         private void IssueSessionIdCookie(string sid)
         {
-            if (GetSessionIdCookieValue() != sid)
+            if (Options.Endpoints.EnableCheckSessionEndpoint)
             {
-                HttpContext.Response.Cookies.Append(
-                    Options.Authentication.CheckSessionCookieName,
-                    sid,
-                    CreateSessionIdCookieOptions());
+                if (GetSessionIdCookieValue() != sid)
+                {
+                    HttpContext.Response.Cookies.Append(
+                        Options.Authentication.CheckSessionCookieName,
+                        sid,
+                        CreateSessionIdCookieOptions());
+                }
             }
         }
 
