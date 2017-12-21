@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -62,7 +62,7 @@ namespace IdentityServer4.Endpoints.Results
             // the hash matches the embedded style element being used below
             var value = "default-src 'none'; style-src 'sha256-u+OupXgfekP+x/f6rMdoEAspPCYUtca912isERnoEjY='";
 
-            if (_options.Authentication.RelaxCspForSignout == false)
+            if (_options.Authentication.RequireCspFrameSrcForSignout)
             {
                 var origins = _result.FrontChannelLogoutUrls?.Select(x => x.GetOrigin());
                 if (origins != null && origins.Any())

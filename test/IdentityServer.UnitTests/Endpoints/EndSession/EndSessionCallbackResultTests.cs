@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -49,7 +49,7 @@ namespace IdentityServer.UnitTests.Endpoints.EndSession
         [Fact]
         public async Task relax_csp_options_should_prevent_frame_src_csp_headers()
         {
-            _options.Authentication.RelaxCspForSignout = true;
+            _options.Authentication.RequireCspFrameSrcForSignout = false;
             _validationResult.FrontChannelLogoutUrls = new[] { "http://foo" };
 
             var ctx = new DefaultHttpContext();
