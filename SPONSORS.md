@@ -21,3 +21,4 @@ Tobias Höft ([@tobiashoeft](https://twitter.com/tobiashoeft))
 Richard Simpson ([@RichardSimp](https://twitter.com/RichardSimp))  
 Gusztav Varga ([@gusztavvargadr](https://twitter.com/gusztavvargadr))  
 William Grow  
+Espen Medbø ([@emedbo](https://twitter.com/emedbo))  
