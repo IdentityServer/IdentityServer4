@@ -10,6 +10,10 @@ Green Elephant IT Consulting ([@Schwamster](https://twitter.com/Schwamster))
 Jacobus Roos  
 Tomer Dvir  
 
+### Gold
+
+Steve Hueners  
+
 ## Individuals
 
 Khalid Abuhakmeh ([@buhakmeh](https://twitter.com/buhakmeh))  
