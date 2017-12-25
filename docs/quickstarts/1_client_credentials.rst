@@ -41,7 +41,7 @@ Add the following code to your configuration::
                 ClientId = "client",
 
                 // no interactive user, use the clientid/secret for authentication
-                AllowedGrantTypes = GrantTypes.ClientCredentials,
+                AllowedGrantTypes = new[]{GrantTypes.ClientCredentials},
 
                 // secret for authentication
                 ClientSecrets =
