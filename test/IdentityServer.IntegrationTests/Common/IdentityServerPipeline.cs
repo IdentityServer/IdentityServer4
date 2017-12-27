@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -305,7 +305,7 @@ namespace IdentityServer4.IntegrationTests.Common
             string codeChallengeMethod = null,
             object extra = null)
         {
-            var url = new AuthorizeRequest(AuthorizeEndpoint).CreateAuthorizeUrl(
+            var url = new RequestUrl(AuthorizeEndpoint).CreateAuthorizeUrl(
                 clientId: clientId,
                 responseType: responseType,
                 scope: scope,

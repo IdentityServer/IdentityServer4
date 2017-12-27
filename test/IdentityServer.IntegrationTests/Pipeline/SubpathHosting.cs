@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -61,7 +61,7 @@ namespace IdentityServer4.IntegrationTests.Pipeline
         [Trait("Category", Category)]
         public async Task anonymous_user_should_be_redirected_to_login_page()
         {
-            var url = new AuthorizeRequest("https://server/subpath/connect/authorize").CreateAuthorizeUrl(
+            var url = new RequestUrl("https://server/subpath/connect/authorize").CreateAuthorizeUrl(
                 clientId: "client1",
                 responseType: "id_token",
                 scope: "openid",
