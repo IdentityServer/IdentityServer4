@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -143,55 +143,23 @@ namespace IdentityServer4.Quickstart.UI
         [HttpGet]
         public async Task<IActionResult> ExternalLogin(string provider, string returnUrl)
         {
-            var props = new AuthenticationProperties()
-            {
-                RedirectUri = Url.Action("ExternalLoginCallback"),
-                Items =
-                {
-                    { "returnUrl", returnUrl }
-                }
-            };
-
-            // windows authentication needs special handling
-            // since they don't support the redirect uri, 
-            // so this URL is re-triggered when we call challenge
             if (AccountOptions.WindowsAuthenticationSchemeName == provider)
             {
-                // see if windows auth has already been requested and succeeded
-                var result = await HttpContext.AuthenticateAsync(AccountOptions.WindowsAuthenticationSchemeName);
-                if (result?.Principal is WindowsPrincipal wp)
-                {
-                    props.Items.Add("scheme", AccountOptions.WindowsAuthenticationSchemeName);
-
-                    var id = new ClaimsIdentity(provider);
-                    id.AddClaim(new Claim(JwtClaimTypes.Subject, wp.Identity.Name));
-                    id.AddClaim(new Claim(JwtClaimTypes.Name, wp.Identity.Name));
-
-                    // add the groups as claims -- be careful if the number of groups is too large
-                    if (AccountOptions.IncludeWindowsGroups)
-                    {
-                        var wi = wp.Identity as WindowsIdentity;
-                        var groups = wi.Groups.Translate(typeof(NTAccount));
-                        var roles = groups.Select(x => new Claim(JwtClaimTypes.Role, x.Value));
-                        id.AddClaims(roles);
-                    }
-
-                    await HttpContext.SignInAsync(
-                        IdentityServer4.IdentityServerConstants.ExternalCookieAuthenticationScheme,
-                        new ClaimsPrincipal(id),
-                        props);
-                    return Redirect(props.RedirectUri);
-                }
-                else
-                {
-                    // challenge/trigger windows auth
-                    return Challenge(AccountOptions.WindowsAuthenticationSchemeName);
-                }
+                // windows authentication needs special handling
+                return await ProcessWindowsLoginAsync(returnUrl);
             }
             else
             {
-                // start challenge and roundtrip the return URL
-                props.Items.Add("scheme", provider);
+                // start challenge and roundtrip the return URL and 
+                var props = new AuthenticationProperties()
+                {
+                    RedirectUri = Url.Action("ExternalLoginCallback"),
+                    Items =
+                    {
+                        { "returnUrl", returnUrl },
+                        { "scheme", provider },
+                    }
+                };
                 return Challenge(props, provider);
             }
         }
@@ -209,63 +177,27 @@ namespace IdentityServer4.Quickstart.UI
                 throw new Exception("External authentication error");
             }
 
-            // retrieve claims of the external user
-            var externalUser = result.Principal;
-            var claims = externalUser.Claims.ToList();
-
-            // try to determine the unique id of the external user (issued by the provider)
-            // the most common claim type for that are the sub claim and the NameIdentifier
-            // depending on the external provider, some other claim type might be used
-            var userIdClaim = claims.FirstOrDefault(x => x.Type == JwtClaimTypes.Subject);
-            if (userIdClaim == null)
-            {
-                userIdClaim = claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
-            }
-            if (userIdClaim == null)
-            {
-                throw new Exception("Unknown userid");
-            }
-
-            // remove the user id claim from the claims collection and move to the userId property
-            // also set the name of the external authentication provider
-            claims.Remove(userIdClaim);
-            var provider = result.Properties.Items["scheme"];
-            var userId = userIdClaim.Value;
-
-            // this is where custom logic would most likely be needed to match your users from the
-            // external provider's authentication result, and provision the user as you see fit.
-            // 
-            // check if the external user is already provisioned
-            var user = _users.FindByExternalProvider(provider, userId);
+            // lookup our user and external provider info
+            var (user, provider, providerUserId) = FindUserFromExternalProvider(result);
             if (user == null)
             {
-                // this sample simply auto-provisions new external user
-                // another common approach is to start a registrations workflow first
-                user = _users.AutoProvisionUser(provider, userId, claims);
+                // this might be where you might initiate a custom workflow for user registration
+                // in this sample we don't show how that would be done, as our sample implementation
+                // in FindUserFromExternalProvider automatically provisions new users.
             }
 
-            var additionalClaims = new List<Claim>();
-
-            // if the external system sent a session id claim, copy it over
-            // so we can use it for single sign-out
-            var sid = claims.FirstOrDefault(x => x.Type == JwtClaimTypes.SessionId);
-            if (sid != null)
-            {
-                additionalClaims.Add(new Claim(JwtClaimTypes.SessionId, sid.Value));
-            }
-
-            // if the external provider issued an id_token, we'll keep it for signout
-            AuthenticationProperties props = null;
-            var id_token = result.Properties.GetTokenValue("id_token");
-            if (id_token != null)
-            {
-                props = new AuthenticationProperties();
-                props.StoreTokens(new[] { new AuthenticationToken { Name = "id_token", Value = id_token } });
-            }
+            // this allows us to collect any additonal claims or properties
+            // for the specific prtotocols used and store them in the local auth cookie.
+            // this is typically used to store data needed for signout from those protocols.
+            var additionalLocalClaims = new List<Claim>();
+            var localSignInProps = new AuthenticationProperties();
+            ProcessLoginCallbackForOidc(result, additionalLocalClaims, localSignInProps);
+            ProcessLoginCallbackForWsFed(result, additionalLocalClaims, localSignInProps);
+            ProcessLoginCallbackForSaml2p(result, additionalLocalClaims, localSignInProps);
 
             // issue authentication cookie for user
-            await _events.RaiseAsync(new UserLoginSuccessEvent(provider, userId, user.SubjectId, user.Username));
-            await HttpContext.SignInAsync(user.SubjectId, user.Username, provider, props, additionalClaims.ToArray());
+            await _events.RaiseAsync(new UserLoginSuccessEvent(provider, providerUserId, user.SubjectId, user.Username));
+            await HttpContext.SignInAsync(user.SubjectId, user.Username, provider, localSignInProps, additionalLocalClaims.ToArray());
 
             // delete temporary cookie used during external authentication
             await HttpContext.SignOutAsync(IdentityServer4.IdentityServerConstants.ExternalCookieAuthenticationScheme);
@@ -332,6 +264,117 @@ namespace IdentityServer4.Quickstart.UI
             }
 
             return View("LoggedOut", vm);
+        }
+
+        /*****************************************/
+        /* helper APIs for the AccountController */
+        /*****************************************/
+
+        private async Task<IActionResult> ProcessWindowsLoginAsync(string returnUrl)
+        {
+            // see if windows auth has already been requested and succeeded
+            var result = await HttpContext.AuthenticateAsync(AccountOptions.WindowsAuthenticationSchemeName);
+            if (result?.Principal is WindowsPrincipal wp)
+            {
+                // we will issue the external cookie and then redirect the
+                // user back to the external callback, in essence, tresting windows
+                // auth the same as any other external authentication mechanism
+                var props = new AuthenticationProperties()
+                {
+                    RedirectUri = Url.Action("ExternalLoginCallback"),
+                    Items =
+                    {
+                        { "returnUrl", returnUrl },
+                        { "scheme", AccountOptions.WindowsAuthenticationSchemeName },
+                    }
+                };
+
+                var id = new ClaimsIdentity(AccountOptions.WindowsAuthenticationSchemeName);
+                id.AddClaim(new Claim(JwtClaimTypes.Subject, wp.Identity.Name));
+                id.AddClaim(new Claim(JwtClaimTypes.Name, wp.Identity.Name));
+
+                // add the groups as claims -- be careful if the number of groups is too large
+                if (AccountOptions.IncludeWindowsGroups)
+                {
+                    var wi = wp.Identity as WindowsIdentity;
+                    var groups = wi.Groups.Translate(typeof(NTAccount));
+                    var roles = groups.Select(x => new Claim(JwtClaimTypes.Role, x.Value));
+                    id.AddClaims(roles);
+                }
+
+                await HttpContext.SignInAsync(
+                    IdentityServer4.IdentityServerConstants.ExternalCookieAuthenticationScheme,
+                    new ClaimsPrincipal(id),
+                    props);
+                return Redirect(props.RedirectUri);
+            }
+            else
+            {
+                // trigger windows auth
+                // since windows auth don't support the redirect uri,
+                // this URL is re-triggered when we call challenge
+                return Challenge(AccountOptions.WindowsAuthenticationSchemeName);
+            }
+        }
+
+        private (TestUser user, string provider, string providerUserId) FindUserFromExternalProvider(AuthenticateResult result)
+        {
+            var externalUser = result.Principal;
+
+            // try to determine the unique id of the external user (issued by the provider)
+            // the most common claim type for that are the sub claim and the NameIdentifier
+            // depending on the external provider, some other claim type might be used
+            var userIdClaim = externalUser.FindFirst(JwtClaimTypes.Subject) ??
+                              externalUser.FindFirst(ClaimTypes.NameIdentifier) ??
+                              throw new Exception("Unknown userid");
+
+            var provider = result.Properties.Items["scheme"];
+            var providerUserId = userIdClaim.Value;
+
+            // check if the external user is already provisioned
+            var user = _users.FindByExternalProvider(provider, providerUserId);
+            if (user == null)
+            {
+                // this is where custom logic would most likely be needed to match your users from the
+                // external provider's authentication result, and provision the user as you see fit.
+                // 
+                // this sample simply auto-provisions new external user
+                // another common approach is to start a registrations workflow first
+
+                // remove the user id claim so we don't include it as an extra claim if/when we provision the user
+                var claims = externalUser.Claims.ToList();
+                claims.Remove(userIdClaim);
+
+                user = _users.AutoProvisionUser(provider, providerUserId, claims);
+            }
+
+            return (user, provider, providerUserId);
+        }
+
+        private void ProcessLoginCallbackForOidc(AuthenticateResult externalResult, List<Claim> localClaims, AuthenticationProperties localSignInProps)
+        {
+            // if the external system sent a session id claim, copy it over
+            // so we can use it for single sign-out
+            var sid = externalResult.Principal.Claims.FirstOrDefault(x => x.Type == JwtClaimTypes.SessionId);
+            if (sid != null)
+            {
+                localClaims.Add(new Claim(JwtClaimTypes.SessionId, sid.Value));
+            }
+
+            // if the external provider issued an id_token, we'll keep it for signout
+            var id_token = externalResult.Properties.GetTokenValue("id_token");
+            if (id_token != null)
+            {
+                localSignInProps.StoreTokens(new[] { new AuthenticationToken { Name = "id_token", Value = id_token } });
+            }
+        }
+
+        private void ProcessLoginCallbackForWsFed(AuthenticateResult externalResult, List<Claim> localClaims, AuthenticationProperties localSignInProps)
+        {
+        }
+
+        private void ProcessLoginCallbackForSaml2p(AuthenticateResult externalResult, List<Claim> localClaims, AuthenticationProperties localSignInProps)
+        {
         }
     }
 }
