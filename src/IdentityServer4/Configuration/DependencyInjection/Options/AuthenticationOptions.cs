@@ -34,6 +34,7 @@ namespace IdentityServer4.Configuration
         /// </summary>
         public string CheckSessionCookieName { get; set; } = IdentityServerConstants.DefaultCheckSessionCookieName;
 
+        /// <summary>
         /// Gets or sets the timeout on the back channel logout HTTP call.
         /// </summary>
         public TimeSpan BackChannelLogoutTimeOut { get; set; } = TimeSpan.FromSeconds(30);
