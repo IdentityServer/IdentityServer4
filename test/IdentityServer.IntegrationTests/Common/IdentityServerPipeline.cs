@@ -24,6 +24,7 @@ using System.Net;
 using IdentityModel.Client;
 using FluentAssertions;
 using System.Threading;
+using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.IntegrationTests.Common
 {
@@ -70,7 +71,7 @@ namespace IdentityServer4.IntegrationTests.Common
 
         public Func<HttpContext, Task<bool>> OnFederatedSignout;
 
-        public void Initialize(string basePath = null)
+        public void Initialize(string basePath = null, bool enableLogging = false)
         {
             var builder = new WebHostBuilder();
             builder.ConfigureServices(ConfigureServices);
@@ -88,6 +89,11 @@ namespace IdentityServer4.IntegrationTests.Common
                     ConfigureApp(app);
                 }
             });
+
+            if (enableLogging)
+            {
+                builder.ConfigureLogging((ctx, b) => b.AddConsole());
+            }
 
             Server = new TestServer(builder);
             Handler = Server.CreateHandler();
