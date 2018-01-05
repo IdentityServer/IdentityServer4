@@ -24,7 +24,7 @@ namespace IdentityServer4.Extensions
         [DebuggerStepThrough]
         public static DateTime GetAuthenticationTime(this IPrincipal principal)
         {
-            return principal.GetAuthenticationTimeEpoch().ToDateTimeFromEpoch();
+            return ((int)principal.GetAuthenticationTimeEpoch()).ToDateTimeFromEpoch();
         }
 
         /// <summary>
