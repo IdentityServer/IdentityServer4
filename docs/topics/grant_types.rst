@@ -102,7 +102,7 @@ Refresh tokens allow requesting new access tokens without user interaction. Ever
 (authenticated) back-channel call to IdentityServer. This allows checking if the refresh token is still valid, or has been revoked in the meantime.
 
 Refresh tokens are supported in hybrid, authorization code and resource owner password flows. 
-To request a refresh token, the client needs to include the ``offline_access`` scope in the token request (and must be authorized to for that scope). 
+To request a refresh token, the client needs to include the ``offline_access`` scope in the token request (and must be authorized to request for that scope). 
 
 Extension grants
 ================
