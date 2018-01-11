@@ -4,6 +4,10 @@ We thank those who [support](https://www.patreon.com/identityserver) IdentitySer
 
 ## Corporate
 
+### Gold
+
+[Thinktecture AG](https://www.thinktecture.com)
+
 ### Silver
 
 Green Elephant IT Consulting ([@Schwamster](https://twitter.com/Schwamster))  
