@@ -1,9 +1,10 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
 using IdentityServer4.Extensions;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -23,6 +24,9 @@ namespace IdentityServer4.Models
         /// <returns></returns>
         public static List<Claim> FilterClaims(this ProfileDataRequestContext context, IEnumerable<Claim> claims)
         {
+            if (context == null) new ArgumentNullException(nameof(context));
+            if (claims == null) new ArgumentNullException(nameof(claims));
+
             return claims.Where(x => context.RequestedClaimTypes.Contains(x.Type)).ToList();
         }
 
