@@ -24,8 +24,8 @@ namespace IdentityServer4.Models
         /// <returns></returns>
         public static List<Claim> FilterClaims(this ProfileDataRequestContext context, IEnumerable<Claim> claims)
         {
-            if (context == null) new ArgumentNullException(nameof(context));
-            if (claims == null) new ArgumentNullException(nameof(claims));
+            if (context == null) throw new ArgumentNullException(nameof(context));
+            if (claims == null) throw new ArgumentNullException(nameof(claims));
 
             return claims.Where(x => context.RequestedClaimTypes.Contains(x.Type)).ToList();
         }
