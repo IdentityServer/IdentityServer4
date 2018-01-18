@@ -88,3 +88,4 @@ What's Next?
 One thing you might have noticed was that the template created above is different than that of Visual Studio when using ASP.NET Identity.
 The IdentityServer template for ASP.NET Identity is meant to match as close as possible to the other IdentityServer templates.
 If there are additional features that you want in your IdentityServer UI (such as user self-registration, password reset, etc.), then it would then be up to you to add these additional features to your IdentityServer project.
+Another approach would be to use the Visual Studio template for ASP.NET Identity, and then it would be necessary to add IdentityServer to that project.
