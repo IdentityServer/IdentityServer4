@@ -2,179 +2,63 @@
 Using ASP.NET Core Identity
 ===========================
 
+In the prior quickstarts, the users of the application were modeled with hard-coded, in-memory usernames and passwords.
 IdentityServer is designed for flexibility and part of that is allowing you to use any database you want for your users and their data (including passwords).
-If you are starting with a new user database, then ASP.NET Identity is one option you could choose.
+If you are starting with a new user database, then ASP.NET Identity is one option you could choose to manage your users' identity information.
 This quickstart shows how to use ASP.NET Identity with IdentityServer.
 
-This quickstart assumes you've been through all of the prior quickstarts. 
-The approach this quickstart takes to using ASP.NET Identity is to create a new project from the ASP.NET Identity template in Visual Studio.
-This new project will replace the prior IdentityServer project we built up from scratch in the previous quickstarts.
+To use ASP.NET Identity, a new project will be created to replace the "QuickstartIdentityServer" that was used in the prior quickstarts.
+You will use the "IdentityServer with ASP.NET Identity" template to create the new project.
 All the other projects in this solution (for the clients and the API) will remain the same.
 
-New Project for ASP.NET Identity
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Install the IdentityServer Templates
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The first step is to add a new project for ASP.NET Identity to your solution.
-Given that a lot of code is required for ASP.NET Identity, it makes sense to use the template from Visual Studio.
-You will eventually delete the old project for IdentityServer (assuming you were following the other quickstarts), but there are several items that you will need to migrate over (or rewrite from scratch as described in the prior quickstarts).
+If you haven't already, you will need to install the IdentityServer templates.
+They can be installed by running a ``dotnet`` command from the command line::
 
-Start by creating a new "ASP.NET Core Web Application" project.
+    dotnet new -i IdentityServer.Templates
 
-.. image:: images/6_new_web_project.png
+Once installed you should see the various templates when you run ``dotnet new`` from the command line:
 
-Then select the "Web Application Template (Model-View-Controller)" option.
+.. image:: images/6_dotnet_new_listing.png
 
-.. image:: images/6_web_app_template.png
+.. Note:: To reset your ``dotnet new`` back to the defaults you can run ``dotnet new --debug:reinit``.
 
-Then click the "Change Authentication" button, and choose "Individual User Accounts" (which means to use ASP.NET Identity):
+Create a new project for ASP.NET Identity
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. image:: images/6_change_authentication.png
+The first step to using ASP.NET Identity is to create a new project using the `IdentityServer4 with ASP.NET Core Identity` template.
+From the command line create an empty directory where you would like the project files to be located.
+Then from within that directory run ``dotnet new is4aspid`` to create the new project.
+When prompted if you want to seed the initial database, enter ``Y``.
+This will create the initial users `alice` and `bob` in the database with the password `Pass123$`.
 
-Finally, your new project dialog should look something like this. Once it does, click "OK" to create the project.
+.. image:: images/6_dotnet_new_listing.png
 
-.. image:: images/6_web_app_template_with_aspnet_identity.png
+Next, you will want to add this new project to the solution you have been working with.
+Finally, you can also remove the old `QuickstartIdentityServer` project that was using the in-memory users.
 
-Modify hosting
-^^^^^^^^^^^^^^^
+Inspect the new project
+^^^^^^^^^^^^^^^^^^^^^^^
 
-Don't forget to modify the hosting (`as described here <0_overview.html#modify-hosting>`_) to run on port 5000.
-This is important so the existing clients and api projects will continue to work.
+Take a look around the new project.
+First, notice the NuGet packages referened, specifically `IdentityServer4.AspNetIdentity`.
+This is the library that provides configuration for ASP.NET Identity to integrate into IdentityServer.
 
-Add IdentityServer packages
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Next, open `Startup.cs` and notice the configuration for ASP.NET Identity and IdentityServer.
+There is a call to ``AddAspNetIdentity<ApplicationUser>`` which is how ASP.NET Identity is integrated into IdentityServer.
 
-Add the ``IdentityServer4.AspNetIdentity`` NuGet package.
-This depends on the ``IdentityServer4`` package, so that's automatically added as a transitive dependency.
+.. note:: It's important when using ASP.NET Identity that IdentityServer be registered *after* ASP.NET Identity in the DI system because IdentityServer is overwriting some configuration from ASP.NET Identity.
 
-.. image:: images/6_nuget.png
+Finally, open `QuickStart/Account/AccountController.cs` and inspect how the login page interacts with ASP.NET Identity.
+If you're not already familiar with the programming model of ASP.NET Identity, consult the ASP.NET documentation.
 
-
-Scopes and Clients Configuration
+Scopes and Clients configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Despite this being a new project for IdentityServer, we still need the same scope and client configuration as the prior quickstarts.
 Copy the configuration class (in `Config.cs <https://github.com/IdentityServer/IdentityServer4.Samples/blob/release/Quickstarts/5_HybridFlowAuthenticationWithApiAccess/src/QuickstartIdentityServer/Config.cs>`_) you used for the previous quickstarts into this new project.
-
-One change to the configuration that is necessary (for now) is to disable consent for the MVC client.
-We've not yet copied over the consent code from the prior IdentityServer project, so for now make this one modification to the MVC client and set ``RequireConsent=false``::
-
-    new Client
-    {
-        ClientId = "mvc",
-        ClientName = "MVC Client",
-        AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
-
-        RequireConsent = false,
-
-        ClientSecrets = 
-        {
-            new Secret("secret".Sha256())
-        },
-
-        RedirectUris           = { "http://localhost:5002/signin-oidc" },
-        PostLogoutRedirectUris = { "http://localhost:5002/signout-callback-oidc" },
-
-        AllowedScopes =
-        {
-            IdentityServerConstants.StandardScopes.OpenId,
-            IdentityServerConstants.StandardScopes.Profile,
-            "api1"
-        },
-        AllowOfflineAccess = true
-    }
-
-Configure IdentityServer
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-As before, IdentityServer needs to be configured in both ``ConfigureServices`` and in ``Configure`` in `Startup.cs`. 
-
-**ConfigureServices**
-
-This shows both the template code generated for ASP.NET Identity, plus the additions needed for IdentityServer (at the end).
-In the previous quickstarts, the ``AddTestUsers`` extension method was used to register the users, but in this situation we replace that extension method with ``AddAspNetIdentity`` to use the ASP.NET Identity users instead.
-The ``AddAspNetIdentity`` extension method requires a generic parameter which is your ASP.NET Identity user type (the same one needed in the ``AddIdentity`` method from the template).
-
-::
-
-    public void ConfigureServices(IServiceCollection services)
-    {
-        services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-
-        services.AddIdentity<ApplicationUser, IdentityRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddDefaultTokenProviders();
-
-        // Add application services.
-        services.AddTransient<IEmailSender, EmailSender>();
-
-        services.AddMvc();
-
-        // configure identity server with in-memory stores, keys, clients and scopes
-        services.AddIdentityServer()
-            .AddDeveloperSigningCredential()
-            .AddInMemoryPersistedGrants()
-            .AddInMemoryIdentityResources(Config.GetIdentityResources())
-            .AddInMemoryApiResources(Config.GetApiResources())
-            .AddInMemoryClients(Config.GetClients())
-            .AddAspNetIdentity<ApplicationUser>();
-    }
-
-.. note:: It's important when using ASP.NET Identity that IdentityServer be registered *after* ASP.NET Identity in the DI system because IdentityServer is overwriting some configuration from ASP.NET Identity.
-    
-**Configure**
-
-This shows both the template code generated for ASP.NET Identity, plus the call to ``UseIdentityServer`` which replaces the call to ``UseIdentity``.
-
-::
-
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-    {
-        if (env.IsDevelopment())
-        {
-            app.UseDeveloperExceptionPage();
-            app.UseBrowserLink();
-            app.UseDatabaseErrorPage();
-        }
-        else
-        {
-            app.UseExceptionHandler("/Home/Error");
-        }
-
-        app.UseStaticFiles();
-
-        // app.UseAuthentication(); // not needed, since UseIdentityServer adds the authentication middleware
-        app.UseIdentityServer();
-
-        app.UseMvc(routes =>
-        {
-            routes.MapRoute(
-                name: "default",
-                template: "{controller=Home}/{action=Index}/{id?}");
-        });
-    }
-
-
-Creating the user database
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Given that this is a new ASP.NET Identity project, you will need to create the database.
-You can do this by running a command prompt from the project directory and running ``dotnet ef database update -c ApplicationDbContext``, like this:
-
-.. image:: images/6_ef_database_update.png
-
-Creating a user
-^^^^^^^^^^^^^^^
-At this point, you should be able to run the project and create/register a user in the database.
-Launch the application, and from the home page click the "Register" link:
-
-.. image:: images/6_home_page.png
-
-And on the register page create a new user account:
-
-.. image:: images/6_register_page.png
-
-Now that you have a user account, you should be able to login, use the clients, and invoke the APIs.
 
 Logging in with the MVC client
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -184,11 +68,11 @@ Launch the MVC client application, and you should be able to click the "Secure" 
 .. image:: images/6_mvc_client.png
 
 You should be redirected to the ASP.NET Identity login page.
-Login with your newly created user:
+Login with `alice` or `bob`:
 
 .. image:: images/6_login.png
 
-After login you should skip the consent page (given the change we made above), and be immediately redirected back to the MVC client application where your user's claims should be listed.
+After consent, you should be redirected back to the MVC client application where your user's claims should be listed.
 
 .. image:: images/6_claims.png
 
@@ -201,10 +85,6 @@ And now you've logged in with a user from ASP.NET Identity.
 What's Next?
 ^^^^^^^^^^^^
 
-The prior quickstart project for IdentityServer provided a consent page, an error page, and a logout page. 
-The code for these missing pieces can simply be copied over from the prior quickstart project into this one.
-Once you've done that, then you can finally delete/remove the old IdentityServer project. 
-Also, once you've done this don't forget to re-enable the ``RequireConsent=true`` flag on the MVC client configuration.
-
-The `sample code for this quickstart <https://github.com/IdentityServer/IdentityServer4.Samples/tree/dev/Quickstarts/6_AspNetIdentity>`_ has already done these steps for you, so you can get started quickly with all of these features.
-Enjoy!
+One thing you might have noticed was that the template created above is different than that of Visual Studio when using ASP.NET Identity.
+The IdentityServer template for ASP.NET Identity is meant to match as close as possible to the other IdentityServer templates.
+If there are additional features that you want in your IdentityServer UI (such as user self-registration, password reset, etc.), then it would then be up to you to add these additional features to your IdentityServer project.
