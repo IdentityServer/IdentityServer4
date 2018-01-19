@@ -87,7 +87,6 @@ namespace IdentityServer4.Extensions
                     return JsonConvert.DeserializeObject(claim.Value);
                 }
                 catch { }
-
             }
 
             return claim.Value;
