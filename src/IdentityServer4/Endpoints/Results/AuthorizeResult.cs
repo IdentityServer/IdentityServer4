@@ -127,18 +127,7 @@ namespace IdentityServer4.Endpoints.Results
 
         private void AddSecurityHeaders(HttpContext context)
         {
-            var formOrigin = Response.Request.RedirectUri.GetOrigin();
-            var csp = $"default-src 'none'; script-src 'sha256-VuNUSJ59bpCpw62HM2JG/hCyGiqoPN3NqGvNXQPU+rY='; ";
-
-            if (!context.Response.Headers.ContainsKey("Content-Security-Policy"))
-            {
-                context.Response.Headers.Add("Content-Security-Policy", csp);
-            }
-
-            if (!context.Response.Headers.ContainsKey("X-Content-Security-Policy"))
-            {
-                context.Response.Headers.Add("X-Content-Security-Policy", csp);
-            }
+            context.Response.AddScriptCspHeaders(_options.Csp, "sha256-VuNUSJ59bpCpw62HM2JG/hCyGiqoPN3NqGvNXQPU+rY=");
 
             var referrer_policy = "no-referrer";
             if (!context.Response.Headers.ContainsKey("Referrer-Policy"))

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -66,5 +66,21 @@ namespace IdentityServer4.Models
         /// Absolute token expiration
         /// </summary>
         Absolute = 1
+    }
+
+    /// <summary>
+    /// Content Security Policy Level
+    /// </summary>
+    public enum CspLevel
+    {
+        /// <summary>
+        /// Level 1
+        /// </summary>
+        One = 0,
+
+        /// <summary>
+        /// Level 2
+        /// </summary>
+        Two = 1
     }
 }

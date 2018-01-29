@@ -18,6 +18,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using IdentityServer.UnitTests.Common;
+using IdentityServer4.Models;
 
 namespace IdentityServer4.UnitTests.Endpoints.Results
 {
@@ -57,6 +58,28 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
                 var html = rdr.ReadToEnd();
                 html.Should().Contain("<script id='cookie-name' type='application/json'>foobar</script>");
             }
+        }
+
+        [Fact]
+        public async Task form_post_mode_should_add_unsafe_inline_for_csp_level_1()
+        {
+            _options.Csp.Level = CspLevel.One;
+
+            await _subject.ExecuteAsync(_context);
+
+            _context.Response.Headers["Content-Security-Policy"].First().Should().Contain("script-src 'unsafe-inline' 'sha256-VDXN0nOpFPQ102CIVz+eimHA5e+wTeoUUQj5ZYbtn8w='");
+            _context.Response.Headers["X-Content-Security-Policy"].First().Should().Contain("script-src 'unsafe-inline' 'sha256-VDXN0nOpFPQ102CIVz+eimHA5e+wTeoUUQj5ZYbtn8w='");
+        }
+
+        [Fact]
+        public async Task form_post_mode_should_not_add_deprecated_header_when_it_is_disabled()
+        {
+            _options.Csp.AddDeprecatedHeader = false;
+
+            await _subject.ExecuteAsync(_context);
+
+            _context.Response.Headers["Content-Security-Policy"].First().Should().Contain("script-src 'sha256-VDXN0nOpFPQ102CIVz+eimHA5e+wTeoUUQj5ZYbtn8w='");
+            _context.Response.Headers["X-Content-Security-Policy"].Should().BeEmpty();
         }
     }
 }
