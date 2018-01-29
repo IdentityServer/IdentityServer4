@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -57,6 +57,12 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
             _context.Response.Headers["Cache-Control"].First().Should().Contain("no-store");
             _context.Response.Headers["Cache-Control"].First().Should().Contain("no-cache");
             _context.Response.Headers["Cache-Control"].First().Should().Contain("max-age=0");
+            _context.Response.Headers["Content-Security-Policy"].First().Should().Contain("default-src 'none';");
+            _context.Response.Headers["Content-Security-Policy"].First().Should().Contain("style-src 'sha256-u+OupXgfekP+x/f6rMdoEAspPCYUtca912isERnoEjY=';");
+            _context.Response.Headers["Content-Security-Policy"].First().Should().Contain("frame-src http://foo.com http://bar.com");
+            _context.Response.Headers["X-Content-Security-Policy"].First().Should().Contain("default-src 'none';");
+            _context.Response.Headers["X-Content-Security-Policy"].First().Should().Contain("style-src 'sha256-u+OupXgfekP+x/f6rMdoEAspPCYUtca912isERnoEjY=';");
+            _context.Response.Headers["X-Content-Security-Policy"].First().Should().Contain("frame-src http://foo.com http://bar.com");
             _context.Response.Body.Seek(0, SeekOrigin.Begin);
             using (var rdr = new StreamReader(_context.Response.Body))
             {

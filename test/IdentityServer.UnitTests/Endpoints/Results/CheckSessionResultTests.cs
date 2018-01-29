@@ -1,0 +1,62 @@
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+
+using FluentAssertions;
+using IdentityModel;
+using IdentityServer4.Configuration;
+using IdentityServer4.Endpoints.Results;
+using IdentityServer4.Extensions;
+using IdentityServer4.ResponseHandling;
+using IdentityServer4.UnitTests.Common;
+using IdentityServer4.Validation;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.WebUtilities;
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Xunit;
+using IdentityServer.UnitTests.Common;
+
+namespace IdentityServer4.UnitTests.Endpoints.Results
+{
+    public class CheckSessionResultTests
+    {
+        private CheckSessionResult _subject;
+
+        private IdentityServerOptions _options = new IdentityServerOptions();
+
+        private DefaultHttpContext _context = new DefaultHttpContext();
+
+        public CheckSessionResultTests()
+        {
+            _context.SetIdentityServerOrigin("https://server");
+            _context.SetIdentityServerBasePath("/");
+            _context.Response.Body = new MemoryStream();
+
+            _options.Authentication.CheckSessionCookieName = "foobar";
+
+            _subject = new CheckSessionResult(_options);
+        }
+
+        [Fact]
+        public async Task should_pass_results_in_body()
+        {
+            await _subject.ExecuteAsync(_context);
+
+            _context.Response.StatusCode.Should().Be(200);
+            _context.Response.ContentType.Should().StartWith("text/html");
+            _context.Response.Headers["Content-Security-Policy"].First().Should().Contain("default-src 'none';");
+            _context.Response.Headers["Content-Security-Policy"].First().Should().Contain("script-src 'sha256-VDXN0nOpFPQ102CIVz+eimHA5e+wTeoUUQj5ZYbtn8w='");
+            _context.Response.Headers["X-Content-Security-Policy"].First().Should().Contain("default-src 'none';");
+            _context.Response.Headers["X-Content-Security-Policy"].First().Should().Contain("script-src 'sha256-VDXN0nOpFPQ102CIVz+eimHA5e+wTeoUUQj5ZYbtn8w='");
+            _context.Response.Body.Seek(0, SeekOrigin.Begin);
+            using (var rdr = new StreamReader(_context.Response.Body))
+            {
+                var html = rdr.ReadToEnd();
+                html.Should().Contain("<script id='cookie-name' type='application/json'>foobar</script>");
+            }
+        }
+    }
+}

@@ -177,6 +177,10 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
             _context.Response.Headers["Cache-Control"].First().Should().Contain("no-store");
             _context.Response.Headers["Cache-Control"].First().Should().Contain("no-cache");
             _context.Response.Headers["Cache-Control"].First().Should().Contain("max-age=0");
+            _context.Response.Headers["Content-Security-Policy"].First().Should().Contain("default-src 'none';");
+            _context.Response.Headers["Content-Security-Policy"].First().Should().Contain("script-src 'sha256-VuNUSJ59bpCpw62HM2JG/hCyGiqoPN3NqGvNXQPU+rY='");
+            _context.Response.Headers["X-Content-Security-Policy"].First().Should().Contain("default-src 'none';");
+            _context.Response.Headers["X-Content-Security-Policy"].First().Should().Contain("script-src 'sha256-VuNUSJ59bpCpw62HM2JG/hCyGiqoPN3NqGvNXQPU+rY='");
             _context.Response.Body.Seek(0, SeekOrigin.Begin);
             using (var rdr = new StreamReader(_context.Response.Body))
             {
