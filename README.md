@@ -8,7 +8,7 @@ It is part of the [.NET Foundation](https://www.dotnetfoundation.org/), and oper
 
 For project documentation, please visit [readthedocs](https://identityserver4.readthedocs.io).
 
-### Overview
+## Overview
 IdentityServer4 consists of multiple repositories (in addition to this repository):
 
 * [Samples](https://github.com/IdentityServer/IdentityServer4.Samples)
@@ -19,29 +19,30 @@ IdentityServer4 consists of multiple repositories (in addition to this repositor
 
 If you encounter issues or find bugs, please open an issue in this repo here first.
 
-### How to build
+## How to build
 IdentityServer is built against the latest ASP.NET Core 2.
 
 * [Install](https://www.microsoft.com/net/download/core#/current) the latest .NET Core 2 SDK
-* Run build.ps1 from Powershell
+* Run `build.ps1` (Powershell) or `build.sh` (bash)
 
-**note** For using IdentityServer with ASP.NET Core 1.x, you can use the 1.x packages of IdentityServer and [this branch](https://github.com/IdentityServer/IdentityServer4/tree/aspnetcore1). Documentation for 1.x can be found [here](http://docs.identityserver.io/en/aspnetcore1/).
+## ASP.NET Core 1.x
+For using IdentityServer with ASP.NET Core 1.x, you can use the 1.x packages of IdentityServer and [this branch](https://github.com/IdentityServer/IdentityServer4/tree/aspnetcore1). Documentation for 1.x can be found [here](http://docs.identityserver.io/en/aspnetcore1/).
 
-### Commercial and Community Support
+## Commercial and Community Support
 If you need help with implementing IdentityServer4 or your security architecture in general, there are both free and commercial support options.
 See [here](https://identityserver4.readthedocs.io/en/release/intro/support.html) for more details.
 
-### Sponsorship
+## Sponsorship
 If you are a fan of the project or a company that relies on IdentityServer, you might want to consider sponsoring.
 This will help us devote more time to answering questions and doing feature development. If you are interested please head to our [Patreon](https://www.patreon.com/identityserver) page which has further details.
 
-### Current corporate sponsors
+## Current corporate sponsors
 
 [Thinktecture AG](https://www.thinktecture.com)
 
 You can see a list of our current sponsors [here](https://github.com/IdentityServer/IdentityServer4/blob/release/SPONSORS.md) - and for companies we have some nice advertisement options as well.
 
-### Acknowledgements
+## Acknowledgements
 IdentityServer4 is built using the following great open source projects
 
 * [ASP.NET Core](https://github.com/aspnet)
