@@ -106,15 +106,17 @@ namespace IdentityServer4.Services
             {
                 _logger.LogDebug("Refresh token expiration is sliding - extending lifetime");
 
-                // make sure we don't exceed absolute exp
-                // cap it at absolute exp
+                // if absolute exp > 0, make sure we don't exceed absolute exp
+                // if absolute exp = 0, allow indefinite slide
                 var currentLifetime = refreshToken.CreationTime.GetLifetimeInSeconds();
                 _logger.LogDebug("Current lifetime: " + currentLifetime.ToString());
 
                 var newLifetime = currentLifetime + client.SlidingRefreshTokenLifetime;
                 _logger.LogDebug("New lifetime: " + newLifetime.ToString());
 
-                if (newLifetime > client.AbsoluteRefreshTokenLifetime)
+                // zero absolute refresh token lifetime represents unbounded absolute lifetime
+                // if absolute lifetime > 0, cap at absolute lifetime
+                if (client.AbsoluteRefreshTokenLifetime > 0 && newLifetime > client.AbsoluteRefreshTokenLifetime)
                 {
                     newLifetime = client.AbsoluteRefreshTokenLifetime;
                     _logger.LogDebug("New lifetime exceeds absolute lifetime, capping it to " + newLifetime.ToString());
