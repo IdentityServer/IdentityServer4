@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -105,8 +105,8 @@ namespace IdentityServer4.Validation
 
                 var parsedSecret = new ParsedSecret
                 {
-                    Id = clientId,
-                    Credential = secret,
+                    Id = Decode(clientId),
+                    Credential = Decode(secret),
                     Type = IdentityServerConstants.ParsedSecretTypes.SharedSecret
                 };
 
@@ -115,6 +115,15 @@ namespace IdentityServer4.Validation
 
             _logger.LogDebug("No Basic Authentication secret found");
             return notfound;
+        }
+
+        // RFC6749 says individual values must be application/x-www-form-urlencoded
+        // 2.3.1
+        private string Decode(string value)
+        {
+            if (value.IsMissing()) return "";
+
+            return Uri.UnescapeDataString(value.Replace("+", "%20"));
         }
     }
 }
