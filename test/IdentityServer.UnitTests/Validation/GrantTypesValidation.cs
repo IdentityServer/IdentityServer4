@@ -57,7 +57,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             Action act = () => client.AllowedGrantTypes = new[] { type1, type2 };
 
-            act.ShouldThrow<InvalidOperationException>();            
+            act.Should().Throw<InvalidOperationException>();            
         }
 
         [Theory]
@@ -71,7 +71,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             Action act = () => client.AllowedGrantTypes = new[] { "custom1", type2, "custom2", type1 };
 
-            act.ShouldThrow<InvalidOperationException>();
+            act.Should().Throw<InvalidOperationException>();
         }
 
         [Fact]
@@ -81,7 +81,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             Action act = () => client.AllowedGrantTypes = new[] { "custom1", "custom2", "custom1" };
 
-            act.ShouldThrow<InvalidOperationException>();
+            act.Should().Throw<InvalidOperationException>();
         }
 
         [Fact]
@@ -91,7 +91,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             Action act = () => client.AllowedGrantTypes = null;
 
-            act.ShouldThrow<ArgumentNullException>();
+            act.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
@@ -101,7 +101,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             Action act = () => client.AllowedGrantTypes = new[] { "custo m2" };
 
-            act.ShouldThrow<InvalidOperationException>();
+            act.Should().Throw<InvalidOperationException>();
         }
 
         [Fact]
@@ -111,7 +111,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             Action act = () => client.AllowedGrantTypes = new[] { "custom1", "custo m2", "custom1" };
 
-            act.ShouldThrow<InvalidOperationException>();
+            act.Should().Throw<InvalidOperationException>();
         }
 
         [Fact]
@@ -124,7 +124,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             Action act = () => client.AllowedGrantTypes.Add("authorization_code");
 
-            act.ShouldThrow<InvalidOperationException>();
+            act.Should().Throw<InvalidOperationException>();
         }
 
         [Fact]

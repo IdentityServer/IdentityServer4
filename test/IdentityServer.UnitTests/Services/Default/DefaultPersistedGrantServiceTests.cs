@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -215,12 +215,12 @@ namespace IdentityServer4.UnitTests.Services.Default
             var grant1 = grants.First(x => x.ClientId == "client1");
             grant1.SubjectId.Should().Be("123");
             grant1.ClientId.Should().Be("client1");
-            grant1.Scopes.ShouldBeEquivalentTo(new string[] { "foo1", "foo2", "bar1", "bar2", "baz1", "baz2", "quux1", "quux2" });
+            grant1.Scopes.Should().BeEquivalentTo(new string[] { "foo1", "foo2", "bar1", "bar2", "baz1", "baz2", "quux1", "quux2" });
 
             var grant2 = grants.First(x => x.ClientId == "client2");
             grant2.SubjectId.Should().Be("123");
             grant2.ClientId.Should().Be("client2");
-            grant2.Scopes.ShouldBeEquivalentTo(new string[] { "foo3", "bar3", "baz3", "quux3" });
+            grant2.Scopes.Should().BeEquivalentTo(new string[] { "foo3", "bar3", "baz3", "quux3" });
         }
 
         [Fact]

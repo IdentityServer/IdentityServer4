@@ -20,7 +20,7 @@ namespace IdentityServer.UnitTests.Stores
             };
 
             Action act = () => new InMemoryClientStore(clients);
-            act.ShouldThrow<ArgumentException>();
+            act.Should().Throw<ArgumentException>();
         }
 
         [Fact]

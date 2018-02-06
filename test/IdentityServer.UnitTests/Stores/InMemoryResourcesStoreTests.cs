@@ -27,10 +27,10 @@ namespace IdentityServer.UnitTests.Stores
             };
 
             Action act = () => new InMemoryResourcesStore(identityResources, null);
-            act.ShouldThrow<ArgumentException>();
+            act.Should().Throw<ArgumentException>();
 
             act = () => new InMemoryResourcesStore(null, apiResources);
-            act.ShouldThrow<ArgumentException>();
+            act.Should().Throw<ArgumentException>();
         }
 
         [Fact]

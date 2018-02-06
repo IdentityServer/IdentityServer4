@@ -171,7 +171,7 @@ namespace IdentityServer4.UnitTests.Services.Default
 
             var scopes = claims.Where(x => x.Type == JwtClaimTypes.Scope).Select(x => x.Value);
             scopes.Count().Should().Be(4);
-            scopes.ToArray().ShouldBeEquivalentTo(new string[] { "api1", "api2", "id1", "id2" });
+            scopes.ToArray().Should().BeEquivalentTo(new string[] { "api1", "api2", "id1", "id2" });
         }
 
         [Fact]
