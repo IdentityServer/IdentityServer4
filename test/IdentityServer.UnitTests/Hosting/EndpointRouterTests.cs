@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -34,7 +34,7 @@ namespace IdentityServer4.UnitTests.Hosting
         public void Endpoint_ctor_requires_path_to_start_with_slash()
         {
             Action a = () => new Endpoint("ep1", "ep1", typeof(MyEndpointHandler));
-            a.ShouldThrow<ArgumentException>();
+            a.Should().Throw<ArgumentException>();
         }
 
         [Fact]

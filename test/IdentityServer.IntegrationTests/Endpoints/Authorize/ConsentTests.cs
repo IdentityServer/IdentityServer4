@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -137,7 +137,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.ConsentRequest.ClientId.Should().Be("client2");
             _mockPipeline.ConsentRequest.DisplayMode.Should().Be("popup");
             _mockPipeline.ConsentRequest.UiLocales.Should().Be("ui_locale_value");
-            _mockPipeline.ConsentRequest.ScopesRequested.ShouldAllBeEquivalentTo(new string[] { "api2", "openid", "api1" });
+            _mockPipeline.ConsentRequest.ScopesRequested.Should().BeEquivalentTo(new string[] { "api2", "openid", "api1" });
         }
 
         [Fact]
@@ -169,7 +169,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             authorization.IdentityToken.Should().NotBeNull();
             authorization.State.Should().Be("123_state");
             var scopes = authorization.Scope.Split(' ');
-            scopes.ShouldAllBeEquivalentTo(new string[] { "api2", "openid" });
+            scopes.Should().BeEquivalentTo(new string[] { "api2", "openid" });
         }
 
         [Fact()]

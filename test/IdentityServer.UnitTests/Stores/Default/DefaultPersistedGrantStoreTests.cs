@@ -73,7 +73,7 @@ namespace IdentityServer4.UnitTests.Stores.Default
             code1.CodeChallenge.Should().Be(code2.CodeChallenge);
             code1.RedirectUri.Should().Be(code2.RedirectUri);
             code1.Nonce.Should().Be(code2.Nonce);
-            code1.RequestedScopes.ShouldBeEquivalentTo(code2.RequestedScopes);
+            code1.RequestedScopes.Should().BeEquivalentTo(code2.RequestedScopes);
         }
 
         [Fact]
@@ -291,7 +291,7 @@ namespace IdentityServer4.UnitTests.Stores.Default
 
             consent2.ClientId.Should().Be(consent1.ClientId);
             consent2.SubjectId.Should().Be(consent1.SubjectId);
-            consent2.Scopes.ShouldBeEquivalentTo(new string[] { "bar", "foo" });
+            consent2.Scopes.Should().BeEquivalentTo(new string[] { "bar", "foo" });
         }
 
         [Fact]

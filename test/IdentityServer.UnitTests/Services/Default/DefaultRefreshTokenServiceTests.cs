@@ -63,7 +63,7 @@ namespace IdentityServer.UnitTests.Services.Default
             var refreshToken = (await _store.GetRefreshTokenAsync(handle));
 
             refreshToken.Should().NotBeNull();
-            refreshToken.Lifetime.ShouldBeEquivalentTo(client.AbsoluteRefreshTokenLifetime);
+            refreshToken.Lifetime.Should().Be(client.AbsoluteRefreshTokenLifetime);
         }
 
         [Fact]
