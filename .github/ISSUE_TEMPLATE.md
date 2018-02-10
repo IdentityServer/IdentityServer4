@@ -2,7 +2,7 @@ Please only use the issue tracker for bug reports and/or feature requests. For g
 
 For bug reports,  include the relevant log files related to your issue. See here how to enable [logging](https://identityserver4.readthedocs.io/en/release/topics/logging.html). Delete this line once you have.
 
-Finally, if you paste in more code than the text for the issue you are reporting then we will most likely not read it. 
+Finally, please keep the issue concise and to the point. If you paste in more code than the text for the issue you are reporting then we will most likely not read it. 
 
 ### Issue / Steps to reproduce the problem
 
