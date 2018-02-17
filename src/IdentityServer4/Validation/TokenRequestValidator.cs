@@ -34,7 +34,7 @@ namespace IdentityServer4.Validation
         private readonly IProfileService _profile;
         private readonly ISystemClock _clock;
         private readonly ILogger _logger;
-        
+
         private ValidatedTokenRequest _validatedRequest;
 
         /// <summary>
@@ -96,7 +96,8 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             if (_validatedRequest.Client.ProtocolType != IdentityServerConstants.ProtocolTypes.OpenIdConnect)
             {
-                LogError("Client {clientId} has invalid protocol type for token endpoint: {protocolType}", _validatedRequest.Client.ClientId, _validatedRequest.Client.ProtocolType);
+                LogError("Client {clientId} has invalid protocol type for token endpoint: expect {expectedProtocolType} but {protocolType}", _validatedRequest.Client.ClientId,
+                    IdentityServerConstants.ProtocolTypes.OpenIdConnect, _validatedRequest.Client.ProtocolType);
                 return Invalid(OidcConstants.TokenErrors.InvalidClient);
             }
 
@@ -253,7 +254,7 @@ namespace IdentityServer4.Validation
 
             if (redirectUri.Equals(_validatedRequest.AuthorizationCode.RedirectUri, StringComparison.Ordinal) == false)
             {
-                LogError("Invalid redirect_uri: {redirectUri}", redirectUri);
+                LogError("Invalid redirect_uri: {redirectUri}, expect {exceptRedirectUri}", redirectUri, _validatedRequest.AuthorizationCode.RedirectUri);
                 return Invalid(OidcConstants.TokenErrors.UnauthorizedClient);
             }
 
@@ -291,7 +292,7 @@ namespace IdentityServer4.Validation
                     return Invalid(OidcConstants.TokenErrors.InvalidGrant);
                 }
             }
-        
+
             /////////////////////////////////////////////
             // make sure user is enabled
             /////////////////////////////////////////////
@@ -318,7 +319,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             if (!_validatedRequest.Client.AllowedGrantTypes.ToList().Contains(GrantType.ClientCredentials))
             {
-                LogError("{clientId} not authorized for client credentials flow", _validatedRequest.Client.ClientId);
+                LogError("{clientId} not authorized for client credentials flow, check the AllowedGrantTypes of the client", _validatedRequest.Client.ClientId);
                 return Invalid(OidcConstants.TokenErrors.UnauthorizedClient);
             }
 
@@ -355,7 +356,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             if (!_validatedRequest.Client.AllowedGrantTypes.Contains(GrantType.ResourceOwnerPassword))
             {
-                LogError("{clientId} not authorized for resource owner flow", _validatedRequest.Client.ClientId);
+                LogError("{clientId} not authorized for resource owner flow, check the AllowedGrantTypes of client", _validatedRequest.Client.ClientId);
                 return Invalid(OidcConstants.TokenErrors.UnauthorizedClient);
             }
 
@@ -416,7 +417,7 @@ namespace IdentityServer4.Validation
                 {
                     errorDescription = resourceOwnerContext.Result.ErrorDescription;
                 }
-               
+
                 LogInfo("User authentication failed: {error}", errorDescription ?? resourceOwnerContext.Result.Error);
                 await RaiseFailedResourceOwnerAuthenticationEventAsync(userName, errorDescription);
 
@@ -472,7 +473,7 @@ namespace IdentityServer4.Validation
             }
 
             var result = await _tokenValidator.ValidateRefreshTokenAsync(refreshTokenHandle, _validatedRequest.Client);
-            
+
             if (result.IsError)
             {
                 LogError("Refresh token validation failed. aborting.");
@@ -548,8 +549,8 @@ namespace IdentityServer4.Validation
                 // make sure user is enabled
                 /////////////////////////////////////////////
                 var isActiveCtx = new IsActiveContext(
-                    result.Subject, 
-                    _validatedRequest.Client, 
+                    result.Subject,
+                    _validatedRequest.Client,
                     IdentityServerConstants.ProfileIsActiveCallers.ExtensionGrantValidation);
 
                 await _profile.IsActiveAsync(isActiveCtx);
@@ -576,7 +577,7 @@ namespace IdentityServer4.Validation
             if (scopes.IsMissing())
             {
                 _logger.LogTrace("Client provided no scopes - checking allowed scopes list");
-                
+
                 if (!_validatedRequest.Client.AllowedScopes.IsNullOrEmpty())
                 {
                     var clientAllowedScopes = new List<string>(_validatedRequest.Client.AllowedScopes);
