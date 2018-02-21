@@ -316,6 +316,7 @@ namespace IdentityServer4.Validation
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "JWT token validation error: {exception}", ex.Message);
                 return Invalid(OidcConstants.ProtectedResourceErrors.InvalidToken);
             }
         }
