@@ -316,7 +316,7 @@ namespace IdentityServer4.Validation
             }
             catch (Exception ex)
             {
-                _logger.LogError("JWT token validation error: {exception}", ex.ToString());
+                _logger.LogError(ex, "JWT token validation error: {exception}", ex.Message);
                 return Invalid(OidcConstants.ProtectedResourceErrors.InvalidToken);
             }
         }
@@ -468,7 +468,7 @@ namespace IdentityServer4.Validation
             }
             catch (Exception ex)
             {
-                _logger.LogError("Malformed JWT token: {exception}", ex.ToString());
+                _logger.LogError(ex, "Malformed JWT token: {exception}", ex.Message);
                 return null;
             }
         }
