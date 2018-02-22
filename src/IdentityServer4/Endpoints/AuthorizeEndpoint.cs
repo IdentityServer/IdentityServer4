@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using System.Collections.Specialized;
@@ -33,11 +33,11 @@ namespace IdentityServer4.Endpoints
 
             NameValueCollection values;
 
-            if (context.Request.Method == "GET")
+            if (HttpMethods.IsGet(context.Request.Method))
             {
                 values = context.Request.Query.AsNameValueCollection();
             }
-            else if (context.Request.Method == "POST")
+            else if (HttpMethods.IsPost(context.Request.Method))
             {
                 if (!context.Request.HasFormContentType)
                 {

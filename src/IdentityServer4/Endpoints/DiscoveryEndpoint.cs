@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using System.Net;
@@ -36,7 +36,7 @@ namespace IdentityServer4.Endpoints
             _logger.LogTrace("Processing discovery request.");
 
             // validate HTTP
-            if (context.Request.Method != "GET")
+            if (!HttpMethods.IsGet(context.Request.Method))
             {
                 _logger.LogWarning("Discovery endpoint only supports GET requests");
                 return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
