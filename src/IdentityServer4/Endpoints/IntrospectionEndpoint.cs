@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -53,7 +53,7 @@ namespace IdentityServer4.Endpoints
             _logger.LogTrace("Processing introspection request.");
 
             // validate HTTP
-            if (context.Request.Method != "POST")
+            if (!HttpMethods.IsPost(context.Request.Method))
             {
                 _logger.LogWarning("Introspection endpoint only supports POST requests");
                 return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);

@@ -60,7 +60,7 @@ namespace IdentityServer4.Endpoints
         {
             _logger.LogTrace("Processing revocation request.");
 
-            if (context.Request.Method != "POST")
+            if (!HttpMethods.IsPost(context.Request.Method))
             {
                 _logger.LogWarning("Invalid HTTP method");
                 return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);

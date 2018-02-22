@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -51,7 +51,7 @@ namespace IdentityServer4.Endpoints
         /// <returns></returns>
         public async Task<IEndpointResult> ProcessAsync(HttpContext context)
         {
-            if (context.Request.Method != "GET" && context.Request.Method != "POST")
+            if (!HttpMethods.IsGet(context.Request.Method) && !HttpMethods.IsPost(context.Request.Method))
             {
                 _logger.LogWarning("Invalid HTTP method for userinfo endpoint.");
                 return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
