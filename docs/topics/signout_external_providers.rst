@@ -14,7 +14,7 @@ The only way to then complete the normal sign-out and cleanup process at Identit
 Not all external providers support post-logout redirects, as it depends on the protocol and features they support.
 
 The workflow at sign-out is then to revoke IdentityServer's authentication cookie, and then redirect to the external provider requesting a post-logout redirect.
-The post-logout redirect shoud maintain the necessary sign-out state described :ref:`here <refSignOut>` (i.e. the ``logoutId`` parameter value).
+The post-logout redirect should maintain the necessary sign-out state described :ref:`here <refSignOut>` (i.e. the ``logoutId`` parameter value).
 To redirect back to IdentityServer after the external provider sign-out, the ``RedirectUri`` should be used on the ``AuthenticationProperties`` when using ASP.NET Core's ``SignOutAsync`` API, for example::
 
     [HttpPost]

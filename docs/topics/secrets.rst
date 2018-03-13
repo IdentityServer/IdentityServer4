@@ -80,7 +80,7 @@ Secret extensibility typically consists of three things:
 * a secret parser that knows how to extract the secret from the incoming request
 * a secret validator that knows how to validate the parsed secret based on the definition
 
-Secret parsers and validators are implementatios of the ``ISecretParser`` and ``ISecretValidator`` interfaces. 
+Secret parsers and validators are implementations of the ``ISecretParser`` and ``ISecretValidator`` interfaces. 
 To make them available to IdentityServer, you need to register them with the DI container, e.g.::
 
     builder.AddSecretParser<ClientAssertionSecretParser>()

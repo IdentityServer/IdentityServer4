@@ -34,5 +34,5 @@ When you add a custom value that starts with ~/ it will be expanded to an absolu
 
     options.Discovery.CustomEntries.Add("my_custom_endpoint", "~/custom");
 
-If you wan to take full control over the rendering of the discovery (and jwks) document, you can implement the ``IDiscoveryResponseGenerator``
+If you want to take full control over the rendering of the discovery (and jwks) document, you can implement the ``IDiscoveryResponseGenerator``
 interface (or derive from our default implementation).
