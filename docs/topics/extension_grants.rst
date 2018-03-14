@@ -43,7 +43,7 @@ This middle tier API (API 1) now wants to call a back end API (API 2) on behalf 
 
 In other words, the middle tier API (API 1) needs an access token containing the user's identity, but with the scope of the back end API (API 2).
 
-.. note:: You might have heard of the term *poor man's delegation* where the access token from the front end is simply forwarded to the back end. This has some short comings, e.g. *API 2* must now accept the *API 1* scope which would allow the user to call *API 2* directly. Also - you might want to add some delegation specific claims into the token, e.g. the fact that the call path is via *API 1*.
+.. note:: You might have heard of the term *poor man's delegation* where the access token from the front end is simply forwarded to the back end. This has some shortcomings, e.g. *API 2* must now accept the *API 1* scope which would allow the user to call *API 2* directly. Also - you might want to add some delegation specific claims into the token, e.g. the fact that the call path is via *API 1*.
 
 **Implementing the extension grant**
 

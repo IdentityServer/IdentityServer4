@@ -23,7 +23,7 @@ IIdentityServerInteractionService APIs
 ``CreateLogoutContextAsync``
     Used to create a ``logoutId`` if there is not one presently.
     This creates a cookie capturing all the current state needed for signout and the ``logoutId`` identifies that cookie.
-    This is typically used when there is no current ``logoutId`` and the logout page must capture the current user's state needed for singout prior to redirecting to an external identity provider for signout.
+    This is typically used when there is no current ``logoutId`` and the logout page must capture the current user's state needed for sign-out prior to redirecting to an external identity provider for signout.
     The newly created ``logoutId`` would need to be round-tripped to the external identity provider at signout time, and then used on the signout callback page in the same way it would be on the normal logout page.
 
 ``GrantConsentAsync``

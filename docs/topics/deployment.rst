@@ -1,6 +1,6 @@
 Deployment
 ==========
-Your identity server is `just` a standard ASP.NET Core appplication including the IdentityServer middleware.
+Your identity server is `just` a standard ASP.NET Core application including the IdentityServer middleware.
 Read the official Microsoft `documentation <https://docs.microsoft.com/en-us/aspnet/core/publishing>`_ on publishing and deployment first.
 
 Typical architecture

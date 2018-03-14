@@ -27,7 +27,7 @@ ASP.NET Core Identity
 `nuget <https://www.nuget.org/packages/IdentityServer4.AspNetIdentity>`_ | `github <https://github.com/IdentityServer/IdentityServer4.AspNetIdentity>`_
 
 ASP.NET Core Identity integration package for IdentityServer. 
-This package provides a simple configuration API to use the ASP.NET Identity managament library for your IdentityServer users.
+This package provides a simple configuration API to use the ASP.NET Identity management library for your IdentityServer users.
 
 EntityFramework Core
 ^^^^^^^^^^^^^^^^^^^^

@@ -97,7 +97,7 @@ This options class contains properties to control the operational store and ``Pe
 Database creation and schema changes across different versions of IdentityServer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-It is very likely that across different versions of IdentityServer (and the EF support) that the database schema will change to accomodate new and changing features.
+It is very likely that across different versions of IdentityServer (and the EF support) that the database schema will change to accommodate new and changing features.
 
 We do not provide any support for creating your database or migrating your data from one version to another. 
 You are expected to manage the database creation, schema changes, and data migration in any way your organization sees fit.
