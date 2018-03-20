@@ -13,6 +13,7 @@ using System;
 using IdentityServer4.Services;
 using IdentityServer4.Configuration;
 using IdentityServer4.Stores;
+using System.Text.Encodings.Web;
 
 namespace IdentityServer4.Endpoints.Results
 {
@@ -166,7 +167,9 @@ namespace IdentityServer4.Endpoints.Results
         {
             var html = _formPostHtml;
 
-            html = html.Replace("{uri}", Response.Request.RedirectUri);
+            var url = Response.Request.RedirectUri;
+            url = HtmlEncoder.Default.Encode(url);
+            html = html.Replace("{uri}", url);
             html = html.Replace("{body}", Response.ToNameValueCollection().ToFormPost());
 
             return html;
