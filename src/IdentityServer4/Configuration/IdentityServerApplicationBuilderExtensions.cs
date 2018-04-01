@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -95,7 +95,16 @@ namespace Microsoft.AspNetCore.Builder
         private static void ValidateOptions(IdentityServerOptions options, ILogger logger)
         {
             if (options.IssuerUri.IsPresent()) logger.LogDebug("Custom IssuerUri set to {0}", options.IssuerUri);
-            if (options.PublicOrigin.IsPresent()) logger.LogDebug("PublicOrigin explicitly set to {0}", options.PublicOrigin);
+
+            if (options.PublicOrigin.IsPresent())
+            {
+                if (!Uri.TryCreate(options.PublicOrigin, UriKind.Absolute, out var uri))
+                {
+                    throw new InvalidOperationException($"PublicOrigin is not valid: {options.PublicOrigin}");
+                }
+
+                logger.LogDebug("PublicOrigin explicitly set to {0}", options.PublicOrigin);
+            }
 
             if (options.UserInteraction.LoginUrl.IsMissing()) throw new InvalidOperationException("LoginUrl is not configured");
             if (options.UserInteraction.LoginReturnUrlParameter.IsMissing()) throw new InvalidOperationException("LoginReturnUrlParameter is not configured");

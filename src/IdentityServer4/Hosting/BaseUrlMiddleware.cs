@@ -28,7 +28,9 @@ namespace IdentityServer4.Hosting
         {
             var request = context.Request;
 
-            var origin = _options.PublicOrigin ?? request.Scheme + "://" + request.Host.Value;
+            var origin = _options.PublicOrigin;
+            if (!origin.IsPresent()) origin = request.Scheme + "://" + request.Host.Value;
+
             context.SetIdentityServerOrigin(origin);
             context.SetIdentityServerBasePath(request.PathBase.Value.RemoveTrailingSlash());
 
