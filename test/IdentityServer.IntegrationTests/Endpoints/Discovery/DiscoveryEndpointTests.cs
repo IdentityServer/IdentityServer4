@@ -1,8 +1,9 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
 using FluentAssertions;
+using IdentityModel.Client;
 using IdentityServer4.IntegrationTests.Common;
 using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
@@ -52,6 +53,20 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Discovery
             alg.Should().NotBeNull();
 
             alg.Value<string>().Should().Be(Constants.SigningAlgorithms.RSA_SHA_256);
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task unicode_values_in_url_should_be_processed_correctly()
+        {
+            var pipeline = new IdentityServerPipeline();
+            pipeline.Initialize();
+
+            var discoClient = new DiscoveryClient("https://грант.рф", pipeline.Handler);
+            discoClient.Policy.ValidateIssuerName = false;
+
+            var result = await discoClient.GetAsync();
+            result.Issuer.Should().Be("https://грант.рф");
         }
     }
 }

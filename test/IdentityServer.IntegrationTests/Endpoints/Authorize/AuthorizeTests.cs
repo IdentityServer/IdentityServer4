@@ -1024,5 +1024,22 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
             _mockPipeline.ErrorMessage.DisplayMode.Should().Be("popup");
         }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task unicode_values_in_url_should_be_processed_correctly()
+        {
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: "client1",
+                responseType: "id_token",
+                scope: "openid",
+                redirectUri: "https://client1/callback",
+                state: "123_state",
+                nonce: "123_nonce");
+            url = url.Replace(IdentityServerPipeline.BaseUrl, "https://грант.рф");
+
+            var result = await _mockPipeline.Client.GetAsync(url);
+            result.Headers.Location.Authority.Should().Be("грант.рф");
+        }
     }
 }
