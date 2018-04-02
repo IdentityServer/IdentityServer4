@@ -1039,7 +1039,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             url = url.Replace(IdentityServerPipeline.BaseUrl, "https://грант.рф");
 
             var result = await _mockPipeline.Client.GetAsync(url);
-            result.Headers.Location.Authority.Should().Be("грант.рф");
+            result.Headers.Location.Authority.Should().Be("xn--80af5akm.xn--p1ai");
         }
     }
 }

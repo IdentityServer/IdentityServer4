@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -29,8 +29,13 @@ namespace IdentityServer4.Extensions
         public static void SetIdentityServerOrigin(this HttpContext context, string value)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
+            if (value == null) throw new ArgumentNullException(nameof(value));
 
-            context.Items[Constants.EnvironmentKeys.IdentityServerOrigin] = value;
+            var split = value.Split(new[] { "://" }, StringSplitOptions.RemoveEmptyEntries);
+
+            var request = context.Request;
+            request.Scheme = split.First();
+            request.Host = new HostString(split.Last());
         }
 
         public static void SetIdentityServerBasePath(this HttpContext context, string value)
@@ -42,7 +47,8 @@ namespace IdentityServer4.Extensions
 
         public static string GetIdentityServerOrigin(this HttpContext context)
         {
-            return context.Items[Constants.EnvironmentKeys.IdentityServerOrigin] as string;
+            var request = context.Request;
+            return request.Scheme + "://" + request.Host.Value;
         }
 
         internal static void SetSignOutCalled(this HttpContext context)
@@ -57,7 +63,18 @@ namespace IdentityServer4.Extensions
         }
 
         /// <summary>
-        /// Gets the base path of IdentityServer. Can be used inside of Katana <c>Map</c>ped middleware.
+        /// Gets the host name of IdentityServer.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <returns></returns>
+        public static string GetIdentityServerHost(this HttpContext context)
+        {
+            var request = context.Request;
+            return request.Scheme + "://" + request.Host.ToUriComponent();
+        }
+
+        /// <summary>
+        /// Gets the base path of IdentityServer.
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns></returns>
@@ -73,7 +90,7 @@ namespace IdentityServer4.Extensions
         /// <returns></returns>
         public static string GetIdentityServerBaseUrl(this HttpContext context)
         {
-            return context.GetIdentityServerOrigin() + context.GetIdentityServerBasePath();
+            return context.GetIdentityServerHost() + context.GetIdentityServerBasePath();
         }
 
         /// <summary>
@@ -110,7 +127,7 @@ namespace IdentityServer4.Extensions
             var uri = options.IssuerUri;
             if (uri.IsMissing())
             {
-                uri = context.GetIdentityServerBaseUrl();
+                uri = context.GetIdentityServerOrigin() + context.GetIdentityServerBasePath();
                 if (uri.EndsWith("/")) uri = uri.Substring(0, uri.Length - 1);
                 uri = uri.ToLowerInvariant();
             }

@@ -28,19 +28,12 @@ namespace IdentityServer4.Hosting
         {
             var request = context.Request;
 
-            var origin = _options.PublicOrigin;
-            if (!origin.IsPresent()) origin = request.Scheme + "://" + request.Host.Value;
-
-            context.SetIdentityServerOrigin(origin);
-            context.SetIdentityServerBasePath(request.PathBase.Value.RemoveTrailingSlash());
-
             if (_options.PublicOrigin.IsPresent())
             {
-                var split = _options.PublicOrigin.Split(new[] { "://" }, StringSplitOptions.RemoveEmptyEntries);
-
-                context.Request.Scheme = split.First();
-                context.Request.Host = new HostString(split.Skip(1).First());
+                context.SetIdentityServerOrigin(_options.PublicOrigin);
             }
+
+            context.SetIdentityServerBasePath(request.PathBase.Value.RemoveTrailingSlash());
 
             await _next(context);
         }

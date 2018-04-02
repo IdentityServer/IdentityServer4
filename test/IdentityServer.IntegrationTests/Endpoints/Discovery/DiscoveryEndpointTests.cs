@@ -64,6 +64,9 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Discovery
 
             var discoClient = new DiscoveryClient("https://грант.рф", pipeline.Handler);
             discoClient.Policy.ValidateIssuerName = false;
+            discoClient.Policy.ValidateEndpoints = false;
+            discoClient.Policy.RequireHttps = false;
+            discoClient.Policy.RequireKeySet = false;
 
             var result = await discoClient.GetAsync();
             result.Issuer.Should().Be("https://грант.рф");
