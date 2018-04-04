@@ -16,6 +16,56 @@ namespace IdentityServer.UnitTests.Extensions
     public class IResourceStoreExtensionsTests
     {
         [Fact]
+        public void GetAllEnabledResourcesAsync_on_duplicate_identity_scopes_should_fail()
+        {
+            var store = new MockResourceStore()
+            {
+                IdentityResources = {
+                    new IdentityResource { Name = "A" },
+                    new IdentityResource { Name = "A" } }
+            };
+
+            Func<Task> a = () => store.GetAllEnabledResourcesAsync();
+            a.Should().Throw<Exception>().And.Message.ToLowerInvariant().Should().Contain("duplicate").And.Contain("identity scopes");
+        }
+
+        [Fact]
+        public async Task GetAllEnabledResourcesAsync_without_duplicate_identity_scopes_should_succeed()
+        {
+            var store = new MockResourceStore()
+            {
+                IdentityResources = {
+                    new IdentityResource { Name = "A" },
+                    new IdentityResource { Name = "B" } }
+            };
+
+            await store.GetAllEnabledResourcesAsync();
+        }
+
+        [Fact]
+        public void GetAllEnabledResourcesAsync_on_duplicate_api_scopes_should_fail()
+        {
+            var store = new MockResourceStore()
+            {
+                ApiResources = { new ApiResource("A"), new ApiResource("A") }
+            };
+
+            Func<Task> a = () => store.GetAllEnabledResourcesAsync();
+            a.Should().Throw<Exception>().And.Message.ToLowerInvariant().Should().Contain("duplicate").And.Contain("api scopes");
+        }
+
+        [Fact]
+        public async Task GetAllEnabledResourcesAsync_without_duplicate_api_scopes_should_succeed()
+        {
+            var store = new MockResourceStore()
+            {
+                ApiResources = { new ApiResource("A"), new ApiResource("B") }
+            };
+
+            await store.GetAllEnabledResourcesAsync();
+        }
+
+        [Fact]
         public void FindResourcesByScopeAsync_on_duplicate_identity_scopes_should_fail()
         {
             var store = new MockResourceStore()
