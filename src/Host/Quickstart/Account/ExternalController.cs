@@ -47,6 +47,12 @@ namespace Host.Quickstart.Account
         [HttpGet]
         public async Task<IActionResult> Challenge(string provider, string returnUrl)
         {
+            // validate returnUrl - either it is a valid OIDC URL or back to a local page
+            if (Url.IsLocalUrl(returnUrl) == false && _interaction.IsValidReturnUrl(returnUrl) == false)
+            {
+                throw new Exception("invalid return URL");
+            }
+
             if (AccountOptions.WindowsAuthenticationSchemeName == provider)
             {
                 // windows authentication needs special handling
@@ -54,7 +60,7 @@ namespace Host.Quickstart.Account
             }
             else
             {
-                // start challenge and roundtrip the return URL and 
+                // start challenge and roundtrip the return URL and scheme 
                 var props = new AuthenticationProperties
                 {
                     RedirectUri = Url.Action(nameof(Callback)),
@@ -64,6 +70,7 @@ namespace Host.Quickstart.Account
                         { "scheme", provider },
                     }
                 };
+
                 return Challenge(props, provider);
             }
         }
@@ -107,8 +114,10 @@ namespace Host.Quickstart.Account
             // delete temporary cookie used during external authentication
             await HttpContext.SignOutAsync(IdentityServer4.IdentityServerConstants.ExternalCookieAuthenticationScheme);
 
-            // validate return URL and redirect back to authorization endpoint or a local page
-            var returnUrl = result.Properties.Items["returnUrl"];
+            // retrieve return URL
+            var returnUrl = result.Properties.Items["returnUrl"] ?? "~/";
+
+            // check if external login is in the context of an OIDC request
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
             if (context != null)
             {
@@ -118,10 +127,9 @@ namespace Host.Quickstart.Account
                     // return the response is for better UX for the end user.
                     return View("Redirect", new RedirectViewModel { RedirectUrl = returnUrl });
                 }
-                return Redirect(returnUrl);
             }
 
-            return Redirect("~/");
+            return Redirect(returnUrl);
         }
 
         private async Task<IActionResult> ProcessWindowsLoginAsync(string returnUrl)

@@ -52,7 +52,7 @@ namespace IdentityServer4.Quickstart.UI
         }
 
         /// <summary>
-        /// Show login page
+        /// Entry point into the login workflow
         /// </summary>
         [HttpGet]
         public async Task<IActionResult> Login(string returnUrl)
@@ -63,9 +63,7 @@ namespace IdentityServer4.Quickstart.UI
             if (vm.IsExternalLoginOnly)
             {
                 // we only have one option for logging in and it's an external provider
-
-                // todo
-                //return await ExternalLogin(vm.ExternalLoginScheme, returnUrl);
+                return RedirectToAction("Challenge", "External", new { provider = vm.ExternalLoginScheme, returnUrl });
             }
 
             return View(vm);
@@ -78,10 +76,12 @@ namespace IdentityServer4.Quickstart.UI
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginInputModel model, string button)
         {
+            // check if we are in the context of an authorization request
             var context = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl);
+
+            // the user clicked the "cancel" button
             if (button != "login")
             {
-                // the user clicked the "cancel" button
                 if (context != null)
                 {
                     // if the user cancels, send a result back into IdentityServer as if they 
@@ -129,9 +129,7 @@ namespace IdentityServer4.Quickstart.UI
                     // issue authentication cookie with subject ID and username
                     await HttpContext.SignInAsync(user.SubjectId, user.Username, props);
 
-                    // make sure the returnUrl is still valid, and if so redirect back to authorize endpoint or a local page
-                    // the IsLocalUrl check is only necessary if you want to support additional local pages, otherwise IsValidReturnUrl is more strict
-                    if (_interaction.IsValidReturnUrl(model.ReturnUrl) || Url.IsLocalUrl(model.ReturnUrl))
+                    if (context != null)
                     {
                         if (await _clientStore.IsPkceClientAsync(context.ClientId))
                         {
@@ -139,10 +137,20 @@ namespace IdentityServer4.Quickstart.UI
                             // return the response is for better UX for the end user.
                             return View("Redirect", new RedirectViewModel { RedirectUrl = model.ReturnUrl });
                         }
+
+                        // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
                         return Redirect(model.ReturnUrl);
                     }
 
-                    return Redirect("~/");
+                    // request for a local page
+                    if (Url.IsLocalUrl(model.ReturnUrl))
+                    {
+                        return Redirect(model.ReturnUrl);
+                    }
+                    else
+                    {
+                        throw new Exception("invalid return URL");
+                    }
                 }
 
                 await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials"));
