@@ -41,6 +41,7 @@ namespace IdentityServer4.Events
         private const int ErrorEventsStart = 3000;
 
         public const int UnhandledException = ErrorEventsStart + 0;
+        public const int InvalidClientConfiguration = ErrorEventsStart + 1;
 
         //////////////////////////////////////////////////////
         /// Consent related events
