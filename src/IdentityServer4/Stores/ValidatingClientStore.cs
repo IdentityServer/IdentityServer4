@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using IdentityServer4.Events;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Validation;
@@ -59,8 +60,10 @@ namespace IdentityServer4.Stores
                 }
                 else
                 {
-                    // todo: logging, eventing, throw
-                    throw new InvalidOperationException($"Invalid configuration for client {clientId}: {context.ErrorMessage}");
+                    _logger.LogError($"Invalid client configuration for client {client.ClientId}: {context.ErrorMessage}");
+                    await _events.RaiseAsync(new InvalidClientConfigurationEvent(client, context.ErrorMessage));
+                    
+                    return null;
                 }
             }
 

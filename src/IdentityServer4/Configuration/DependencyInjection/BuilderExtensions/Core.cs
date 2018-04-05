@@ -190,7 +190,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IResourceOwnerPasswordValidator, NotSupportedResourceOwnerPasswordValidator>();
             builder.Services.TryAddTransient<ICustomTokenRequestValidator, DefaultCustomTokenRequestValidator>();
             builder.Services.TryAddTransient<IUserInfoRequestValidator, UserInfoRequestValidator>();
-            builder.Services.TryAddTransient<IClientConfigurationValidator, DefaultClientConfigurationValidator>();
+            builder.Services.TryAddTransient<IClientConfigurationValidator, NopClientConfigurationValidator>();
 
             // optional
             builder.Services.TryAddTransient<ICustomTokenValidator, DefaultCustomTokenValidator>();
