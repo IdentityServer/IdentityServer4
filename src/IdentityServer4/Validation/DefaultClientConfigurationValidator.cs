@@ -38,7 +38,7 @@ namespace IdentityServer4.Validation
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns></returns>
-        protected Task ValidateGrantTypesAsync(ClientConfigurationValidationContext context)
+        protected virtual Task ValidateGrantTypesAsync(ClientConfigurationValidationContext context)
         {
             if (!context.Client.AllowedGrantTypes.Any())
             {
@@ -53,7 +53,7 @@ namespace IdentityServer4.Validation
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns></returns>
-        protected Task ValidateLifetimesAsync(ClientConfigurationValidationContext context)
+        protected virtual Task ValidateLifetimesAsync(ClientConfigurationValidationContext context)
         {
             if (context.Client.AccessTokenLifetime <= 0)
             {
@@ -89,7 +89,7 @@ namespace IdentityServer4.Validation
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns></returns>
-        protected Task ValidateRedirectUriAsync(ClientConfigurationValidationContext context)
+        protected virtual Task ValidateRedirectUriAsync(ClientConfigurationValidationContext context)
         {
             if (context.Client.AllowedGrantTypes.Contains(GrantType.AuthorizationCode) ||
                 context.Client.AllowedGrantTypes.Contains(GrantType.Hybrid) ||
@@ -109,7 +109,7 @@ namespace IdentityServer4.Validation
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns></returns>
-        protected Task ValidateSecretsAsync(ClientConfigurationValidationContext context)
+        protected virtual Task ValidateSecretsAsync(ClientConfigurationValidationContext context)
         {
             foreach (var grantType in context.Client.AllowedGrantTypes)
             {
@@ -131,7 +131,7 @@ namespace IdentityServer4.Validation
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns></returns>
-        protected Task ValidatePropertiesAsync(ClientConfigurationValidationContext context)
+        protected virtual Task ValidatePropertiesAsync(ClientConfigurationValidationContext context)
         {
             return Task.CompletedTask;
         }
