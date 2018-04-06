@@ -20,9 +20,9 @@ namespace IdentityServer4.Events
         public const string Token = "Token";
 
         /// <summary>
-        /// Consent related events
+        /// Grants related events
         /// </summary>
-        public const string Consent = "Consent";
+        public const string Grants = "Grants";
 
         /// <summary>
         /// Error related events

@@ -21,7 +21,7 @@ namespace IdentityServer4.Events
         /// <param name="grantedScopes">The granted scopes.</param>
         /// <param name="consentRemembered">if set to <c>true</c> consent was remembered.</param>
         public ConsentGrantedEvent(string subjectId, string clientId, IEnumerable<string> requestedScopes, IEnumerable<string> grantedScopes, bool consentRemembered)
-            : base(EventCategories.Consent,
+            : base(EventCategories.Grants,
                   "Consent granted",
                   EventTypes.Information,
                   EventIds.ConsentGranted)

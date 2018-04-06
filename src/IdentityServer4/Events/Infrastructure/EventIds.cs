@@ -44,11 +44,12 @@ namespace IdentityServer4.Events
         public const int InvalidClientConfiguration = ErrorEventsStart + 1;
 
         //////////////////////////////////////////////////////
-        /// Consent related events
+        /// Grants related events
         //////////////////////////////////////////////////////
-        private const int ConsentEventsStart = 4000;
+        private const int GrantsEventsStart = 4000;
 
-        public const int ConsentGranted = ConsentEventsStart + 0;
-        public const int ConsentDenied = ConsentEventsStart + 1;
+        public const int ConsentGranted = GrantsEventsStart + 0;
+        public const int ConsentDenied = GrantsEventsStart + 1;
+        public const int GrantsRevoked = GrantsEventsStart + 2;
     }
 }
