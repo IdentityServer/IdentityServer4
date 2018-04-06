@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Hosting;
 using System;
-using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
 using Microsoft.AspNetCore;

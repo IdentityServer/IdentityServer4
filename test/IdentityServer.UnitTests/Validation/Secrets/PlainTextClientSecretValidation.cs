@@ -7,7 +7,6 @@ using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Threading.Tasks;
 using Xunit;
 

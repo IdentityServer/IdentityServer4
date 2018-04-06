@@ -11,9 +11,6 @@ using IdentityServer4.Models;
 using System.Security.Claims;
 using IdentityServer4.IntegrationTests.Common;
 using IdentityServer4.Test;
-using System.Net.Http;
-using IdentityModel;
-using System;
 
 namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 {

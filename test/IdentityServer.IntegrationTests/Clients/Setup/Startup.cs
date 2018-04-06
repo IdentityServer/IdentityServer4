@@ -6,7 +6,6 @@ using IdentityServer4.Configuration;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 
 namespace IdentityServer4.IntegrationTests.Clients
 {
