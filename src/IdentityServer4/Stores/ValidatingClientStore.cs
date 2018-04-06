@@ -22,6 +22,7 @@ namespace IdentityServer4.Stores
         private readonly IClientConfigurationValidator _validator;
         private readonly IEventService _events;
         private readonly ILogger<ValidatingClientStore<T>> _logger;
+        private readonly string _validatorType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ValidatingClientStore{T}" /> class.
@@ -36,6 +37,8 @@ namespace IdentityServer4.Stores
             _validator = validator;
             _events = events;
             _logger = logger;
+
+            _validatorType = validator.GetType().FullName;
         }
 
         /// <summary>
@@ -51,16 +54,19 @@ namespace IdentityServer4.Stores
 
             if (client != null)
             {
+                _logger.LogTrace("Calling into client configuration validator: {validatorType}", _validatorType);
+
                 var context = new ClientConfigurationValidationContext(client);
                 await _validator.ValidateAsync(context);
 
                 if (context.IsValid)
                 {
+                    _logger.LogDebug("client configuration validation for client {clientId} succeeded.", client.ClientId);
                     return client;
                 }
                 else
                 {
-                    _logger.LogError($"Invalid client configuration for client {client.ClientId}: {context.ErrorMessage}");
+                    _logger.LogError("Invalid client configuration for client {clientId}: {errorMessage}", client.ClientId, context.ErrorMessage);
                     await _events.RaiseAsync(new InvalidClientConfigurationEvent(client, context.ErrorMessage));
                     
                     return null;
