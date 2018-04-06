@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace IdentityServer4.Events
 {
     /// <summary>
-    /// Event for successful user authentication
+    /// Event for granted consent.
     /// </summary>
     /// <seealso cref="IdentityServer4.Events.Event" />
     public class ConsentGrantedEvent : Event
@@ -19,6 +19,7 @@ namespace IdentityServer4.Events
         /// <param name="clientId">The client identifier.</param>
         /// <param name="requestedScopes">The requested scopes.</param>
         /// <param name="grantedScopes">The granted scopes.</param>
+        /// <param name="consentRemembered">if set to <c>true</c> consent was remembered.</param>
         public ConsentGrantedEvent(string subjectId, string clientId, IEnumerable<string> requestedScopes, IEnumerable<string> grantedScopes, bool consentRemembered)
             : base(EventCategories.Consent,
                   "Consent granted",
