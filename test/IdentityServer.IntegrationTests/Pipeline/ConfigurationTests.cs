@@ -33,7 +33,7 @@ namespace IdentityServer.IntegrationTests.Pipeline
         }
 
         [Fact]
-        public async Task invalid_origin_should_throw_at_load_time()
+        public void invalid_origin_should_throw_at_load_time()
         {
             _pipeline.OnPostConfigureServices += s =>
             {
