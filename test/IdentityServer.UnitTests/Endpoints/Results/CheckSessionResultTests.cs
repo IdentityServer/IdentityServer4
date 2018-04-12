@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -49,9 +49,9 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
             _context.Response.StatusCode.Should().Be(200);
             _context.Response.ContentType.Should().StartWith("text/html");
             _context.Response.Headers["Content-Security-Policy"].First().Should().Contain("default-src 'none';");
-            _context.Response.Headers["Content-Security-Policy"].First().Should().Contain("script-src 'sha256-VDXN0nOpFPQ102CIVz+eimHA5e+wTeoUUQj5ZYbtn8w='");
+            _context.Response.Headers["Content-Security-Policy"].First().Should().Contain("script-src 'sha256-ZT3q7lL9GXNGhPTB1Vvrvds2xw/kOV0zoeok2tiV23I='");
             _context.Response.Headers["X-Content-Security-Policy"].First().Should().Contain("default-src 'none';");
-            _context.Response.Headers["X-Content-Security-Policy"].First().Should().Contain("script-src 'sha256-VDXN0nOpFPQ102CIVz+eimHA5e+wTeoUUQj5ZYbtn8w='");
+            _context.Response.Headers["X-Content-Security-Policy"].First().Should().Contain("script-src 'sha256-ZT3q7lL9GXNGhPTB1Vvrvds2xw/kOV0zoeok2tiV23I='");
             _context.Response.Body.Seek(0, SeekOrigin.Begin);
             using (var rdr = new StreamReader(_context.Response.Body))
             {
@@ -67,8 +67,8 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
 
             await _subject.ExecuteAsync(_context);
 
-            _context.Response.Headers["Content-Security-Policy"].First().Should().Contain("script-src 'unsafe-inline' 'sha256-VDXN0nOpFPQ102CIVz+eimHA5e+wTeoUUQj5ZYbtn8w='");
-            _context.Response.Headers["X-Content-Security-Policy"].First().Should().Contain("script-src 'unsafe-inline' 'sha256-VDXN0nOpFPQ102CIVz+eimHA5e+wTeoUUQj5ZYbtn8w='");
+            _context.Response.Headers["Content-Security-Policy"].First().Should().Contain("script-src 'unsafe-inline' 'sha256-ZT3q7lL9GXNGhPTB1Vvrvds2xw/kOV0zoeok2tiV23I='");
+            _context.Response.Headers["X-Content-Security-Policy"].First().Should().Contain("script-src 'unsafe-inline' 'sha256-ZT3q7lL9GXNGhPTB1Vvrvds2xw/kOV0zoeok2tiV23I='");
         }
 
         [Fact]
@@ -78,7 +78,7 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
 
             await _subject.ExecuteAsync(_context);
 
-            _context.Response.Headers["Content-Security-Policy"].First().Should().Contain("script-src 'sha256-VDXN0nOpFPQ102CIVz+eimHA5e+wTeoUUQj5ZYbtn8w='");
+            _context.Response.Headers["Content-Security-Policy"].First().Should().Contain("script-src 'sha256-ZT3q7lL9GXNGhPTB1Vvrvds2xw/kOV0zoeok2tiV23I='");
             _context.Response.Headers["X-Content-Security-Policy"].Should().BeEmpty();
         }
     }
