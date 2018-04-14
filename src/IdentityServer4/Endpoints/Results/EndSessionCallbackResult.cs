@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -59,18 +59,18 @@ namespace IdentityServer4.Endpoints.Results
 
         private void AddCspHeaders(HttpContext context)
         {
-            string frameSources = null;
             if (_options.Authentication.RequireCspFrameSrcForSignout)
             {
+                string frameSources = null;
                 var origins = _result.FrontChannelLogoutUrls?.Select(x => x.GetOrigin());
                 if (origins != null && origins.Any())
                 {
                     frameSources = origins.Distinct().Aggregate((x, y) => $"{x} {y}");
                 }
-            }
 
-            // the hash matches the embedded style element being used below
-            context.Response.AddStyleCspHeaders(_options.Csp, "sha256-u+OupXgfekP+x/f6rMdoEAspPCYUtca912isERnoEjY=", frameSources);
+                // the hash matches the embedded style element being used below
+                context.Response.AddStyleCspHeaders(_options.Csp, "sha256-u+OupXgfekP+x/f6rMdoEAspPCYUtca912isERnoEjY=", frameSources);
+            }
         }
 
         private string GetHtml()

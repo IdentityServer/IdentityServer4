@@ -55,7 +55,7 @@ namespace IdentityServer.UnitTests.Endpoints.EndSession
 
             await _subject.ExecuteAsync(ctx);
 
-            ctx.Response.Headers["Content-Security-Policy"].First().Should().NotContain("frame-src");
+            ctx.Response.Headers["Content-Security-Policy"].FirstOrDefault().Should().BeNull();
         }
     }
 }
