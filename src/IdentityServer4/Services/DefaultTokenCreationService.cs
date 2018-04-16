@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -92,7 +92,7 @@ namespace IdentityServer4.Services
                     Logger.LogWarning("Certificate {subjectName} has expired on {expiration}", cert.Subject, cert.NotAfter.ToString(CultureInfo.InvariantCulture));
                 }
 
-                header.Add("x5t", Base64Url.Encode(cert.GetCertHash()));
+                header["x5t"] = Base64Url.Encode(cert.GetCertHash());
             }
 
             return header;
