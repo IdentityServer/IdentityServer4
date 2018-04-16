@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -47,6 +47,9 @@ namespace Microsoft.AspNetCore.Http
             if (!response.Headers.ContainsKey("Cache-Control"))
             {
                 response.Headers.Add("Cache-Control", "no-store, no-cache, max-age=0");
+            } else
+            {
+                response.Headers["Cache-Control"] = "no-store, no-cache, max-age=0";
             }
             if (!response.Headers.ContainsKey("Pragma"))
             {
