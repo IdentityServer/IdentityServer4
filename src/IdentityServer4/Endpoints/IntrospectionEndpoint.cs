@@ -10,6 +10,8 @@ using IdentityServer4.Hosting;
 using IdentityServer4.Endpoints.Results;
 using Microsoft.AspNetCore.Http;
 using System.Net;
+using IdentityServer4.Services;
+using IdentityServer4.Events;
 
 namespace IdentityServer4.Endpoints
 {
@@ -20,26 +22,30 @@ namespace IdentityServer4.Endpoints
     internal class IntrospectionEndpoint : IEndpointHandler
     {
         private readonly IIntrospectionResponseGenerator _responseGenerator;
+        private readonly IEventService _events;
         private readonly ILogger _logger;
         private readonly IIntrospectionRequestValidator _requestValidator;
         private readonly IApiSecretValidator _apiSecretValidator;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IntrospectionEndpoint"/> class.
+        /// Initializes a new instance of the <see cref="IntrospectionEndpoint" /> class.
         /// </summary>
         /// <param name="apiSecretValidator">The API secret validator.</param>
         /// <param name="requestValidator">The request validator.</param>
         /// <param name="responseGenerator">The generator.</param>
+        /// <param name="events">The events.</param>
         /// <param name="logger">The logger.</param>
         public IntrospectionEndpoint(
-            IApiSecretValidator apiSecretValidator, 
-            IIntrospectionRequestValidator requestValidator, 
-            IIntrospectionResponseGenerator responseGenerator,  
+            IApiSecretValidator apiSecretValidator,
+            IIntrospectionRequestValidator requestValidator,
+            IIntrospectionResponseGenerator responseGenerator,
+            IEventService events,
             ILogger<IntrospectionEndpoint> logger)
         {
             _apiSecretValidator = apiSecretValidator;
             _requestValidator = requestValidator;
             _responseGenerator = responseGenerator;
+            _events = events;
             _logger = logger;
         }
 
@@ -84,6 +90,8 @@ namespace IdentityServer4.Endpoints
             if (body == null)
             {
                 _logger.LogError("Malformed request body. aborting.");
+                await _events.RaiseAsync(new TokenIntrospectionFailureEvent(apiResult.Resource.Name, "Malformed request body"));
+
                 return new StatusCodeResult(HttpStatusCode.BadRequest);
             }
 
@@ -93,6 +101,8 @@ namespace IdentityServer4.Endpoints
             if (validationResult.IsError)
             {
                 LogFailure(validationResult.Error, apiResult.Resource.Name);
+                await _events.RaiseAsync(new TokenIntrospectionFailureEvent(apiResult.Resource.Name, validationResult.Error));
+
                 return new BadRequestResult(validationResult.Error);
             }
 
