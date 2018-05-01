@@ -207,6 +207,7 @@ namespace IdentityServer4.Quickstart.UI
                 ReturnUrl = returnUrl,
 
                 ClientName = client.ClientName ?? client.ClientId,
+                Description = client.Description,
                 ClientUrl = client.ClientUri,
                 ClientLogoUrl = client.LogoUri,
                 AllowRememberConsent = client.AllowRememberConsent
