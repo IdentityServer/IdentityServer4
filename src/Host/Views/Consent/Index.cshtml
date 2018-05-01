@@ -7,20 +7,12 @@
             {
                 <div class="client-logo"><img src="@Model.ClientLogoUrl"></div>
             }
-            <h1>
-                @if (string.IsNullOrWhiteSpace(Model.ClientUrl))
-                {
-                    @Model.ClientName <small>is requesting your permission</small>
-                }
-                else
-                {
-                    <a href="@Model.ClientUrl">@Model.ClientName</a>
-                }
-            </h1>
+            <h1>@Html.Raw((string.IsNullOrWhiteSpace(Model.ClientUrl))? $"{@Model.ClientName}" : $"<a href='{@Model.ClientUrl}'>{@Model.ClientName}</a>")                </h1>
             @if (!string.IsNullOrWhiteSpace(Model.Description))
             {
                 <pre>@Model.Description</pre>
             }
+           <h3>This App would like to:</h3>
         </div>
     </div>
 
