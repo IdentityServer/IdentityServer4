@@ -1,4 +1,4 @@
-﻿@model ConsentViewModel
+@model ConsentViewModel
 
 <div class="page-consent">
     <div class="row page-header">
@@ -8,9 +8,19 @@
                 <div class="client-logo"><img src="@Model.ClientLogoUrl"></div>
             }
             <h1>
-                @Model.ClientName
-                <small>is requesting your permission</small>
+                @if (string.IsNullOrWhiteSpace(Model.ClientUrl))
+                {
+                    @Model.ClientName <small>is requesting your permission</small>
+                }
+                else
+                {
+                    <a href="@Model.ClientUrl">@Model.ClientName</a>
+                }
             </h1>
+            @if (!string.IsNullOrWhiteSpace(Model.Description))
+            {
+                <pre>@Model.Description</pre>
+            }
         </div>
     </div>
 
@@ -22,7 +32,7 @@
                 <input type="hidden" asp-for="ReturnUrl" />
 
                 <div>Uncheck the permissions you do not wish to grant.</div>
-                
+
                 @if (Model.IdentityScopes.Any())
                 {
                     <div class="panel panel-default consent-buttons">
