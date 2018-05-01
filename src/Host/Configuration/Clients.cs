@@ -20,6 +20,7 @@ namespace Host.Configuration
                 new Client
                 {
                     ClientId = "client",
+                    Description = "Client Credentials",
                     ClientSecrets =
                     {
                         new Secret("secret".Sha256())
@@ -35,6 +36,7 @@ namespace Host.Configuration
                 new Client
                 {
                     ClientId = "client.jwt",
+                    Description = "JWT client",
                     ClientSecrets =
                     {
                         new Secret
@@ -54,6 +56,7 @@ namespace Host.Configuration
                 new Client
                 {
                     ClientId = "client.custom",
+                    Description = "Custom grant type",
                     ClientSecrets = 
                     {
                         new Secret("secret".Sha256())
@@ -69,6 +72,7 @@ namespace Host.Configuration
                 new Client
                 {
                     ClientId = "roclient",
+                    Description = "resource owner password client",
                     ClientSecrets = 
                     {
                         new Secret("secret".Sha256())
@@ -91,6 +95,7 @@ namespace Host.Configuration
                 new Client
                 {
                     ClientId = "roclient.public",
+                    Description = "resource owner password client",
                     RequireClientSecret = false,
 
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
@@ -135,6 +140,7 @@ namespace Host.Configuration
                 new Client
                 {
                     ClientId = "roclient.reference",
+                    Description = "resource owner password client",
                     ClientSecrets = 
                     {
                         new Secret("secret".Sha256())
@@ -153,6 +159,7 @@ namespace Host.Configuration
                 {
                     ClientId = "mvc.implicit",
                     ClientName = "MVC Implicit",
+                    Description = "MVC Implicit client",
                     ClientUri = "http://identityserver.io",
 
                     AllowedGrantTypes = GrantTypes.Implicit,
@@ -178,6 +185,7 @@ namespace Host.Configuration
                 {
                     ClientId = "mvc.manual",
                     ClientName = "MVC Manual",
+                    Description = "MVC Implicit client",
                     ClientUri = "http://identityserver.io",
 
                     AllowedGrantTypes = GrantTypes.Implicit,
@@ -200,6 +208,7 @@ namespace Host.Configuration
                 {
                     ClientId = "mvc.hybrid",
                     ClientName = "MVC Hybrid",
+                    Description = "MVC Hybrid client",
                     ClientUri = "http://identityserver.io",
                     //LogoUri = "https://pbs.twimg.com/profile_images/1612989113/Ki-hanja_400x400.png",
 
