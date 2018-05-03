@@ -16,6 +16,7 @@ Jacobus Roos
 Tomer Dvir  
 Steinar	Noem  
 Effectory ([@effectory](https://twitter.com/effectory))  
+Real Page ([@RealPage](https://twitter.com/RealPage))  
 
 ## Individuals
 
@@ -45,3 +46,5 @@ Hugo Biarge ([@hbiarge](https://twitter.com/hbiarge))
 Jacob Johnson  
 Ibrahim Šuta ([@ibrahimsuta](https://twitter.com/ibrahimsuta))  
 Dave Noderer  ([@davenoderer](https://twitter.com/davenoderer))  
+VIJAYA PAL NALLALA  
+Martijn Boland  
