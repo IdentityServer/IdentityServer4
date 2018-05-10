@@ -18,6 +18,6 @@ namespace IdentityServer4.Validation
         /// <param name="parameters"></param>
         /// <param name="clientValidationResult"></param>
         /// <returns></returns>
-        Task<DeviceAuthorizationRequestValidationResult> ValidateRequestAsync(NameValueCollection parameters, ClientSecretValidationResult clientValidationResult);
+        Task<DeviceAuthorizationRequestValidationResult> ValidateAsync(NameValueCollection parameters, ClientSecretValidationResult clientValidationResult);
     }
 }
