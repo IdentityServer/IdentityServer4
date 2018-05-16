@@ -172,7 +172,7 @@ Add this code to implement those three functions in our application::
 
     function api() {
         mgr.getUser().then(function (user) {
-            var url = "http://localhost:5000/connect/userinfo";
+            var url = "http://localhost:5001/identity";
 
             var xhr = new XMLHttpRequest();
             xhr.open("GET", url);
@@ -187,6 +187,8 @@ Add this code to implement those three functions in our application::
     function logout() {
         mgr.signoutRedirect();
     }
+
+See: `Protecting an API using Client Credentials <http://docs.identityserver.io/en/release/quickstarts/1_client_credentials.html?highlight=http%3A%2F%2Flocalhost%3A5001%2Fidentity>` for information on how to create the api used in the code above.
 
 **callback.html**
 
