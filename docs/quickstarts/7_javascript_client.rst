@@ -188,6 +188,8 @@ Add this code to implement those three functions in our application::
         mgr.signoutRedirect();
     }
 
+See: `Protecting an API using Client Credentials <http://docs.identityserver.io/en/release/quickstarts/1_client_credentials.html>` for information on how to create the api used in the code above.
+
 **callback.html**
 
 This HTML file is the designated ``redirect_uri`` page once the user has logged into IdentityServer.
