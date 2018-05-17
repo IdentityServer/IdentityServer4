@@ -217,7 +217,9 @@ Add the following to your clients configuration::
                 {
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile
-                }
+                },
+
+                AllowAccessTokensViaBrowser = true
             }
         };
     }
