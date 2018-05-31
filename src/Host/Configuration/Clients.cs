@@ -258,6 +258,40 @@ namespace Host.Configuration
                 },
 
                 ///////////////////////////////////////////
+                // MVC Hybrid Flow Sample (Automatic Refresh)
+                //////////////////////////////////////////
+                new Client
+                {
+                    ClientId = "mvc.hybrid.autorefresh",
+                    ClientName = "MVC Hybrid (with automatic refresh)",
+                    ClientUri = "http://identityserver.io",
+
+                    ClientSecrets =
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    AllowedGrantTypes = GrantTypes.Hybrid,
+                    AllowAccessTokensViaBrowser = false,
+
+                    AccessTokenLifetime = 75,
+
+                    RedirectUris = { "http://localhost:21404/signin-oidc" },
+                    FrontChannelLogoutUri = "http://localhost:21404/signout-oidc",
+                    PostLogoutRedirectUris = { "http://localhost:21404/signout-callback-oidc" },
+
+                    AllowOfflineAccess = true,
+
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
+                        "api1", "api2.read_only"
+                    }
+                },
+
+                ///////////////////////////////////////////
                 // JS OAuth 2.0 Sample
                 //////////////////////////////////////////
                 new Client
