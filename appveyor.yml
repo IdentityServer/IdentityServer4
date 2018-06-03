@@ -19,13 +19,14 @@ test: off
 artifacts:
 - path: artifacts/packages/*.nupkg
 
+deploy:
+
 for:
 -
   matrix:
     only:
       - image Visual Studio 2017
-      
-  deploy:
+
   - provider: NuGet
     server: https://www.myget.org/F/identity/
     api_key:
@@ -33,6 +34,8 @@ for:
     skip_symbols: true
     on:
       branch: dev
+
+
 
 #---------------------------------#
 #  Skip builds for doc changes    #
