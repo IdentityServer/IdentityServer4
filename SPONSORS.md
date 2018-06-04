@@ -4,6 +4,10 @@ We thank those who [support](https://www.patreon.com/identityserver) IdentitySer
 
 ## Corporate
 
+### Platinum 
+
+[Auth0](https://auth0.com/)  
+
 ### Gold
 
 [Thinktecture AG](https://www.thinktecture.com)  
@@ -48,3 +52,7 @@ Ibrahim Šuta ([@ibrahimsuta](https://twitter.com/ibrahimsuta))
 Dave Noderer  ([@davenoderer](https://twitter.com/davenoderer))  
 VIJAYA PAL NALLALA  
 Martijn Boland  
+Janardhan  
+Gary Ewan Park  ([@gep13](https://twitter.com/gep13))  
+Clinton Rocksmith  
+Giuseppe Turitto  
