@@ -314,6 +314,11 @@ namespace IdentityServer4.Validation
                     Jwt = jwt
                 };
             }
+            catch (SecurityTokenExpiredException expiredException)
+            {
+                _logger.LogInformation(expiredException, "JWT token validation error: {exception}", expiredException.Message);
+                return Invalid(OidcConstants.ProtectedResourceErrors.InvalidToken);
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "JWT token validation error: {exception}", ex.Message);
