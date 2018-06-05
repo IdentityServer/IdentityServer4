@@ -584,6 +584,14 @@ namespace IdentityServer4.Validation
                 if (!_validatedRequest.Client.AllowedScopes.IsNullOrEmpty())
                 {
                     var clientAllowedScopes = new List<string>(_validatedRequest.Client.AllowedScopes);
+                    var grantType = parameters.Get(OidcConstants.TokenRequest.GrantType);
+                    if (GrantTypes.ClientCredentials.Any(a => a.Equals(grantType)) && clientAllowedScopes.Any(s => s.Equals("openid") || s.Equals("profile")))
+                    {
+                        _logger.LogDebug("Client credentials grant type does not support open id scopes removed.");
+                        clientAllowedScopes.Remove("openid");
+                        clientAllowedScopes.Remove("profile");
+                    }
+
                     if (_validatedRequest.Client.AllowOfflineAccess)
                     {
                         clientAllowedScopes.Add(IdentityServerConstants.StandardScopes.OfflineAccess);
