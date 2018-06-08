@@ -3,7 +3,6 @@
 
 
 using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,9 +20,7 @@ namespace IdentityServer4.Validation
         private readonly IdentityServerOptions _options;
         private readonly ScopeValidator _scopeValidator;
         private readonly ILogger<DeviceAuthorizationRequestValidator> _logger;
-
-        private ValidatedDeviceAuthorizationRequest validatedRequest;
-
+        
         public DeviceAuthorizationRequestValidator(
             IdentityServerOptions options,
             ScopeValidator scopeValidator,
@@ -38,114 +35,129 @@ namespace IdentityServer4.Validation
         {
             _logger.LogDebug("Start device authorization request validation");
 
-            validatedRequest = new ValidatedDeviceAuthorizationRequest
+            var request = new ValidatedDeviceAuthorizationRequest
             {
                 Raw = parameters ?? throw new ArgumentNullException(nameof(parameters)),
                 Options = _options
             };
 
+            var clientResult = ValidateClient(request, clientValidationResult);
+            if (clientResult.IsError)
+            {
+                return clientResult;
+            }
+
+            var scopeResult = await ValidateScopeAsync(request);
+            if (scopeResult.IsError)
+            {
+                return scopeResult;
+            }
+
+            _logger.LogDebug("{clientId} device authorization request validation success", request.Client.ClientId);
+            return Valid(request);
+        }
+
+        private DeviceAuthorizationRequestValidationResult Valid(ValidatedDeviceAuthorizationRequest request)
+        {
+            return new DeviceAuthorizationRequestValidationResult(request);
+        }
+
+        private DeviceAuthorizationRequestValidationResult Invalid(ValidatedDeviceAuthorizationRequest request, string error = OidcConstants.AuthorizeErrors.InvalidRequest, string description = null)
+        {
+            return new DeviceAuthorizationRequestValidationResult(request, error, description);
+        }
+
+        private void LogError(string message, ValidatedDeviceAuthorizationRequest request)
+        {
+            var requestDetails = new DeviceAuthorizationRequestValidationLog(request);
+            _logger.LogError(message + "\n{requestDetails}", requestDetails);
+        }
+
+        private void LogError(string message, string detail, ValidatedDeviceAuthorizationRequest request)
+        {
+            var requestDetails = new DeviceAuthorizationRequestValidationLog(request);
+            _logger.LogError(message + ": {detail}\n{requestDetails}", detail, requestDetails);
+        }
+
+        private DeviceAuthorizationRequestValidationResult ValidateClient(ValidatedDeviceAuthorizationRequest request, ClientSecretValidationResult clientValidationResult)
+        {
+            //////////////////////////////////////////////////////////
+            // set client & secret
+            //////////////////////////////////////////////////////////
             if (clientValidationResult == null) throw new ArgumentNullException(nameof(clientValidationResult));
-            validatedRequest.SetClient(clientValidationResult.Client, clientValidationResult.Secret);
+            request.SetClient(clientValidationResult.Client, clientValidationResult.Secret);
 
-            // check if client Authorized for device flow
-            if (!validatedRequest.Client.AllowedGrantTypes.ToList().Contains(GrantType.DeviceFlow))
+            //////////////////////////////////////////////////////////
+            // check if client protocol type is oidc
+            //////////////////////////////////////////////////////////
+            if (request.Client.ProtocolType != IdentityServerConstants.ProtocolTypes.OpenIdConnect)
             {
-                LogError("Client not authorized for device flow");
-                return Invalid(OidcConstants.TokenErrors.UnauthorizedClient);
+                LogError("Invalid protocol type for OIDC authorize endpoint", request.Client.ProtocolType, request);
+                return Invalid(request, OidcConstants.AuthorizeErrors.UnauthorizedClient, "Invalid protocol");
             }
 
-            if (!await ValidateRequestedScopesAsync(parameters))
+            //////////////////////////////////////////////////////////
+            // check if client allows device flow
+            //////////////////////////////////////////////////////////
+            if (!request.Client.AllowedGrantTypes.Contains(GrantType.DeviceFlow))
             {
-                return Invalid(OidcConstants.TokenErrors.InvalidScope);
+                LogError("Client not configured for device flow", GrantType.DeviceFlow, request);
+                return Invalid(request, OidcConstants.AuthorizeErrors.UnauthorizedClient);
             }
 
-            _logger.LogDebug("{clientId} device authorization request validation success", validatedRequest.Client.ClientId);
-            return Valid();
+            return Valid(request);
         }
 
-        private DeviceAuthorizationRequestValidationResult Valid()
+        private async Task<DeviceAuthorizationRequestValidationResult> ValidateScopeAsync(ValidatedDeviceAuthorizationRequest request)
         {
-            return new DeviceAuthorizationRequestValidationResult(validatedRequest);
-        }
-
-        private DeviceAuthorizationRequestValidationResult Invalid(string error, string errorDescription = null)
-        {
-            return new DeviceAuthorizationRequestValidationResult(validatedRequest, error, errorDescription);
-        }
-
-        private void LogError(string message = null, params object[] values)
-        {
-            if (!string.IsNullOrWhiteSpace(message))
+            //////////////////////////////////////////////////////////
+            // scope must be present
+            //////////////////////////////////////////////////////////
+            var scope = request.Raw.Get(OidcConstants.AuthorizeRequest.Scope);
+            if (scope.IsMissing())
             {
-                try
-                {
-                    _logger.LogError(message, values);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError("Error logging {exception}", ex.Message);
-                }
+                LogError("scope is missing", request);
+                return Invalid(request, description: "Invalid scope");
             }
 
-            var details = new DeviceAuthorizationRequestValidationLog(validatedRequest);
-            _logger.LogError("{details}", details);
-        }
-
-        // HACK: Copied from TokenRequestValidator
-        private async Task<bool> ValidateRequestedScopesAsync(NameValueCollection parameters)
-        {
-            var scopes = parameters.Get(OidcConstants.TokenRequest.Scope);
-
-            if (scopes.IsMissing())
+            if (scope.Length > _options.InputLengthRestrictions.Scope)
             {
-                _logger.LogTrace("Client provided no scopes - checking allowed scopes list");
-
-                if (!validatedRequest.Client.AllowedScopes.IsNullOrEmpty())
-                {
-                    var clientAllowedScopes = new List<string>(validatedRequest.Client.AllowedScopes);
-                    if (validatedRequest.Client.AllowOfflineAccess)
-                    {
-                        clientAllowedScopes.Add(IdentityServerConstants.StandardScopes.OfflineAccess);
-                    }
-                    scopes = clientAllowedScopes.ToSpaceSeparatedString();
-                    _logger.LogTrace("Defaulting to: {scopes}", scopes);
-                }
-                else
-                {
-                    LogError("No allowed scopes configured for {clientId}", validatedRequest.Client.ClientId);
-                    return false;
-                }
+                LogError("scopes too long.", request);
+                return Invalid(request, description: "Invalid scope");
             }
 
-            if (scopes.Length > _options.InputLengthRestrictions.Scope)
+            request.RequestedScopes = scope.FromSpaceSeparatedString().Distinct().ToList();
+
+            if (request.RequestedScopes.Contains(IdentityServerConstants.StandardScopes.OpenId))
             {
-                LogError("Scope parameter exceeds max allowed length");
-                return false;
+                request.IsOpenIdRequest = true;
             }
 
-            var requestedScopes = scopes.ParseScopesString();
-
-            if (requestedScopes == null)
+            //////////////////////////////////////////////////////////
+            // check if scopes are valid/supported
+            //////////////////////////////////////////////////////////
+            if (await _scopeValidator.AreScopesValidAsync(request.RequestedScopes) == false)
             {
-                LogError("No scopes found in request");
-                return false;
+                return Invalid(request, OidcConstants.AuthorizeErrors.InvalidScope);
             }
 
-            if (!await _scopeValidator.AreScopesAllowedAsync(validatedRequest.Client, requestedScopes))
+            if (_scopeValidator.ContainsOpenIdScopes && !request.IsOpenIdRequest)
             {
-                LogError();
-                return false;
+                LogError("Identity related scope requests, but no openid scope", request);
+                return Invalid(request, OidcConstants.AuthorizeErrors.InvalidScope);
             }
 
-            if (!(await _scopeValidator.AreScopesValidAsync(requestedScopes)))
+            //////////////////////////////////////////////////////////
+            // check scopes and scope restrictions
+            //////////////////////////////////////////////////////////
+            if (await _scopeValidator.AreScopesAllowedAsync(request.Client, request.RequestedScopes) == false)
             {
-                LogError();
-                return false;
+                return Invalid(request, OidcConstants.AuthorizeErrors.UnauthorizedClient, description: "Invalid scope");
             }
 
-            validatedRequest.Scopes = requestedScopes;
-            validatedRequest.ValidatedScopes = _scopeValidator;
-            return true;
+            request.ValidatedScopes = _scopeValidator;
+            
+            return Valid(request);
         }
     }
 }
