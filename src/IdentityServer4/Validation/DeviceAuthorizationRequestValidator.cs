@@ -18,9 +18,9 @@ namespace IdentityServer4.Validation
 {
     internal class DeviceAuthorizationRequestValidator : IDeviceAuthorizationRequestValidator
     {
-        private readonly IdentityServerOptions options;
-        private readonly ScopeValidator scopeValidator;
-        private readonly ILogger<DeviceAuthorizationRequestValidator> logger;
+        private readonly IdentityServerOptions _options;
+        private readonly ScopeValidator _scopeValidator;
+        private readonly ILogger<DeviceAuthorizationRequestValidator> _logger;
 
         private ValidatedDeviceAuthorizationRequest validatedRequest;
 
@@ -29,19 +29,19 @@ namespace IdentityServer4.Validation
             ScopeValidator scopeValidator,
             ILogger<DeviceAuthorizationRequestValidator> logger)
         {
-            this.options = options;
-            this.scopeValidator = scopeValidator;
-            this.logger = logger;
+            _options = options;
+            _scopeValidator = scopeValidator;
+            _logger = logger;
         }
 
         public async Task<DeviceAuthorizationRequestValidationResult> ValidateAsync(NameValueCollection parameters, ClientSecretValidationResult clientValidationResult)
         {
-            logger.LogDebug("Start device authorization request validation");
+            _logger.LogDebug("Start device authorization request validation");
 
             validatedRequest = new ValidatedDeviceAuthorizationRequest
             {
                 Raw = parameters ?? throw new ArgumentNullException(nameof(parameters)),
-                Options = options
+                Options = _options
             };
 
             if (clientValidationResult == null) throw new ArgumentNullException(nameof(clientValidationResult));
@@ -59,7 +59,7 @@ namespace IdentityServer4.Validation
                 return Invalid(OidcConstants.TokenErrors.InvalidScope);
             }
 
-            logger.LogDebug("{clientId} device authorization request validation success", validatedRequest.Client.ClientId);
+            _logger.LogDebug("{clientId} device authorization request validation success", validatedRequest.Client.ClientId);
             return Valid();
         }
 
@@ -79,16 +79,16 @@ namespace IdentityServer4.Validation
             {
                 try
                 {
-                    logger.LogError(message, values);
+                    _logger.LogError(message, values);
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError("Error logging {exception}", ex.Message);
+                    _logger.LogError("Error logging {exception}", ex.Message);
                 }
             }
 
             var details = new DeviceAuthorizationRequestValidationLog(validatedRequest);
-            logger.LogError("{details}", details);
+            _logger.LogError("{details}", details);
         }
 
         // HACK: Copied from TokenRequestValidator
@@ -98,7 +98,7 @@ namespace IdentityServer4.Validation
 
             if (scopes.IsMissing())
             {
-                logger.LogTrace("Client provided no scopes - checking allowed scopes list");
+                _logger.LogTrace("Client provided no scopes - checking allowed scopes list");
 
                 if (!validatedRequest.Client.AllowedScopes.IsNullOrEmpty())
                 {
@@ -108,7 +108,7 @@ namespace IdentityServer4.Validation
                         clientAllowedScopes.Add(IdentityServerConstants.StandardScopes.OfflineAccess);
                     }
                     scopes = clientAllowedScopes.ToSpaceSeparatedString();
-                    logger.LogTrace("Defaulting to: {scopes}", scopes);
+                    _logger.LogTrace("Defaulting to: {scopes}", scopes);
                 }
                 else
                 {
@@ -117,7 +117,7 @@ namespace IdentityServer4.Validation
                 }
             }
 
-            if (scopes.Length > options.InputLengthRestrictions.Scope)
+            if (scopes.Length > _options.InputLengthRestrictions.Scope)
             {
                 LogError("Scope parameter exceeds max allowed length");
                 return false;
@@ -131,20 +131,20 @@ namespace IdentityServer4.Validation
                 return false;
             }
 
-            if (!await scopeValidator.AreScopesAllowedAsync(validatedRequest.Client, requestedScopes))
+            if (!await _scopeValidator.AreScopesAllowedAsync(validatedRequest.Client, requestedScopes))
             {
                 LogError();
                 return false;
             }
 
-            if (!(await scopeValidator.AreScopesValidAsync(requestedScopes)))
+            if (!(await _scopeValidator.AreScopesValidAsync(requestedScopes)))
             {
                 LogError();
                 return false;
             }
 
             validatedRequest.Scopes = requestedScopes;
-            validatedRequest.ValidatedScopes = scopeValidator;
+            validatedRequest.ValidatedScopes = _scopeValidator;
             return true;
         }
     }
