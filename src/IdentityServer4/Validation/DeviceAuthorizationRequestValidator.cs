@@ -152,7 +152,7 @@ namespace IdentityServer4.Validation
             //////////////////////////////////////////////////////////
             if (await _scopeValidator.AreScopesAllowedAsync(request.Client, request.RequestedScopes) == false)
             {
-                return Invalid(request, OidcConstants.AuthorizeErrors.UnauthorizedClient, description: "Invalid scope");
+                return Invalid(request, OidcConstants.AuthorizeErrors.UnauthorizedClient, "Invalid scope");
             }
 
             request.ValidatedScopes = _scopeValidator;
