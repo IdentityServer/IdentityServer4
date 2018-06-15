@@ -15,7 +15,7 @@ namespace IdentityServer4.Configuration
         /// <value>
         /// The default type of the user code.
         /// </value>
-        public string DefaultUserCodeType { get; set; }
+        public string DefaultUserCodeType { get; set; } = IdentityServerConstants.UserCodeTypes.Numeric;
 
         /// <summary>
         /// Gets or sets the polling interval in seconds.

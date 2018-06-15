@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using IdentityServer4.Configuration;
+using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
@@ -92,9 +93,9 @@ namespace IdentityServer4.ResponseHandling
             response.UserCode = await userCodeGenerator.GenerateAsync();
 
             // generate verification URIs
-            response.VerificationUri = baseUrl + Options.UserInteraction.DeviceVerificationUrl;
+            response.VerificationUri = baseUrl.RemoveTrailingSlash() + Options.UserInteraction.DeviceVerificationUrl;
             if (!string.IsNullOrWhiteSpace(Options.UserInteraction.DeviceVerificationUserCodeParameter))
-                response.VerificationUriComplete = $"{baseUrl}{Options.UserInteraction.DeviceVerificationUserCodeParameter}?{Options.UserInteraction.DeviceVerificationUserCodeParameter}={response.UserCode}";
+                response.VerificationUriComplete = $"{response.VerificationUri}?{Options.UserInteraction.DeviceVerificationUserCodeParameter}={response.UserCode}";
 
             // expiration
             response.DeviceCodeLifetime = validationResult.ValidatedRequest.Client.DeviceCodeLifetime;
