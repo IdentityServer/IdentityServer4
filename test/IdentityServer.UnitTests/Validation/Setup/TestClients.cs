@@ -497,7 +497,11 @@ namespace IdentityServer4.UnitTests.Validation
                         ClientName = "Device Flow Client",
                         AllowedGrantTypes = GrantTypes.DeviceFlow,
                         AllowedScopes = { "openid", "profile", "resource" },
-                        AllowOfflineAccess = true
+                        AllowOfflineAccess = true,
+                        ClientSecrets = new List<Secret>
+                        {
+                            new Secret("secret".Sha256())
+                        },
                     }
             };
         }
