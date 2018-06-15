@@ -12,7 +12,7 @@ namespace IdentityServer4.Services
         /// <value>
         /// The type of the user code.
         /// </value>
-        public string UserCodeType => "Numeric";
+        public string UserCodeType => IdentityServerConstants.UserCodeTypes.Numeric;
 
         /// <summary>
         /// Generates the user code.

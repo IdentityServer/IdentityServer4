@@ -4,60 +4,59 @@
 
 using System.Threading.Tasks;
 using IdentityServer4.Models;
+using IdentityServer4.Services;
 using IdentityServer4.Stores.Serialization;
 using Microsoft.Extensions.Logging;
-using IdentityServer4.Extensions;
-using IdentityServer4.Services;
 
 namespace IdentityServer4.Stores
 {
     /// <summary>
-    /// Default authorization code store.
+    /// Default device code store.
     /// </summary>
-    public class DefaultAuthorizationCodeStore : DefaultGrantStore<AuthorizationCode>, IAuthorizationCodeStore
+    public class DefaultDeviceCodeStore : DefaultGrantStore<DeviceCode>, IDeviceCodeStore
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultAuthorizationCodeStore"/> class.
+        /// Initializes a new instance of the <see cref="DefaultDeviceCodeStore"/> class.
         /// </summary>
         /// <param name="store">The store.</param>
         /// <param name="serializer">The serializer.</param>
         /// <param name="handleGenerationService">The handle generation service.</param>
         /// <param name="logger">The logger.</param>
-        public DefaultAuthorizationCodeStore(
+        protected DefaultDeviceCodeStore(
             IPersistedGrantStore store,
             IPersistentGrantSerializer serializer,
             IHandleGenerationService handleGenerationService,
-            ILogger<DefaultAuthorizationCodeStore> logger)
-            : base(IdentityServerConstants.PersistedGrantTypes.AuthorizationCode, store, serializer, handleGenerationService, logger)
+            ILogger logger)
+            : base(IdentityServerConstants.PersistedGrantTypes.DeviceCode, store, serializer, handleGenerationService, logger)
         {
         }
 
         /// <summary>
-        /// Stores the authorization code asynchronous.
+        /// Stores the device code.
         /// </summary>
         /// <param name="code">The code.</param>
         /// <returns></returns>
-        public Task<string> StoreAuthorizationCodeAsync(AuthorizationCode code)
+        public Task<string> StoreDeviceCodeAsync(DeviceCode code)
         {
-            return CreateItemAsync(code, code.ClientId, code.Subject.GetSubjectId(), code.CreationTime, code.Lifetime);
+            return CreateItemAsync(code, code.ClientId, null, code.CreationTime, code.Lifetime);
         }
 
         /// <summary>
-        /// Gets the authorization code asynchronous.
+        /// Gets the device code.
         /// </summary>
         /// <param name="code">The code.</param>
         /// <returns></returns>
-        public Task<AuthorizationCode> GetAuthorizationCodeAsync(string code)
+        public Task<DeviceCode> GetDeviceCodeAsync(string code)
         {
             return GetItemAsync(code);
         }
 
         /// <summary>
-        /// Removes the authorization code asynchronous.
+        /// Removes the device code.
         /// </summary>
         /// <param name="code">The code.</param>
         /// <returns></returns>
-        public Task RemoveAuthorizationCodeAsync(string code)
+        public Task RemoveDeviceCodeAsync(string code)
         {
             return RemoveItemAsync(code);
         }
