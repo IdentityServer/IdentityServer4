@@ -32,9 +32,9 @@ namespace IdentityServer4.Logging
                 ClientName = request.Client.ClientName;
             }
 
-            if (request.Scopes != null)
+            if (request.RequestedScopes != null)
             {
-                Scopes = request.Scopes.ToSpaceSeparatedString();
+                Scopes = request.RequestedScopes.ToSpaceSeparatedString();
             }
         }
 
