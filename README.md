@@ -22,7 +22,7 @@ If you encounter issues or find bugs, please open an issue in this repo here fir
 ## How to build
 IdentityServer is built against the latest ASP.NET Core 2.
 
-* [Install](https://www.microsoft.com/net/download/core#/current) the latest .NET Core 2 SDK
+* [Install](https://www.microsoft.com/net/download/core#/current) the latest .NET Core 2.x SDK
 * Run `build.ps1` (Powershell) or `build.sh` (bash)
 
 ## ASP.NET Core 1.x
@@ -36,7 +36,13 @@ See [here](https://identityserver4.readthedocs.io/en/release/intro/support.html)
 If you are a fan of the project or a company that relies on IdentityServer, you might want to consider sponsoring.
 This will help us devote more time to answering questions and doing feature development. If you are interested please head to our [Patreon](https://www.patreon.com/identityserver) page which has further details.
 
-## Current corporate sponsors
+### Platinum Sponsors
+
+**Auth0 <span><img src="https://user-images.githubusercontent.com/1801923/31792116-d4fca9ec-b512-11e7-92eb-56e8d3df8e70.png" height="28" align="top"></span>**
+
+Auth0 is an easy to implement authentication and identity management SaaS based on OpenID Connect/OAuth 2.0. Check out their quickstarts [here](https://auth0.com/docs?utm_source=GHsponsor&utm_medium=GHsponsor&utm_campaign=identityserver).
+
+### Corporate Sponsors
 
 [Thinktecture AG](https://www.thinktecture.com)  
 [Ritter Insurance Marketing](https://www.ritterim.com)  

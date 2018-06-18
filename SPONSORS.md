@@ -4,10 +4,14 @@ We thank those who [support](https://www.patreon.com/identityserver) IdentitySer
 
 ## Corporate
 
+### Platinum 
+
+[Auth0](https://auth0.com/) ([@Auth0](https://twitter.com/Auth0))
+
 ### Gold
 
-[Thinktecture AG](https://www.thinktecture.com)  
-[Ritter Insurance Marketing](https://www.ritterim.com)
+[Thinktecture AG](https://www.thinktecture.com)   ([@Thinktecture](https://twitter.com/thinktecture))  
+[Ritter Insurance Marketing](https://www.ritterim.com) ([@RitterIM](https://twitter.com/ritterim))
 
 ### Silver
 
@@ -48,3 +52,7 @@ Ibrahim Šuta ([@ibrahimsuta](https://twitter.com/ibrahimsuta))
 Dave Noderer  ([@davenoderer](https://twitter.com/davenoderer))  
 VIJAYA PAL NALLALA  
 Martijn Boland  
+Janardhan  
+Gary Ewan Park  ([@gep13](https://twitter.com/gep13))  
+Clinton Rocksmith  
+Giuseppe Turitto  
