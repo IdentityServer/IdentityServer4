@@ -36,23 +36,6 @@ namespace IdentityServer4.Models
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ProfileDataRequestContext" /> class.
-        /// </summary>
-        /// <param name="validatedRequest">The ValidatedRequest.</param>
-        /// <param name="subject">The subject.</param>
-        /// <param name="client">The client.</param>
-        /// <param name="caller">The caller.</param>
-        /// <param name="requestedClaimTypes">The requested claim types.</param>
-        public ProfileDataRequestContext(ValidatedRequest validatedRequest, ClaimsPrincipal subject, Client client, string caller, IEnumerable<string> requestedClaimTypes)
-        {
-            ValidatedRequest = validatedRequest ?? throw new ArgumentNullException(nameof(validatedRequest));
-            Subject = subject ?? throw new ArgumentNullException(nameof(subject));
-            Client = client ?? throw new ArgumentNullException(nameof(client));
-            Caller = caller ?? throw new ArgumentNullException(nameof(caller));
-            RequestedClaimTypes = requestedClaimTypes ?? throw new ArgumentNullException(nameof(requestedClaimTypes));
-        }
-
-        /// <summary>
         /// Gets or sets the validatedRequest.
         /// </summary>
         /// <value>

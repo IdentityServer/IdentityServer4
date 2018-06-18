@@ -76,12 +76,14 @@ namespace IdentityServer4.Services
                 additionalClaimTypes = FilterRequestedClaimTypes(additionalClaimTypes).ToList();
 
                 var context = new ProfileDataRequestContext(
-                    request,
                     subject,
                     request.Client,
                     IdentityServerConstants.ProfileDataCallers.ClaimsProviderIdentityToken,
-                    additionalClaimTypes);
-                context.RequestedResources = resources;
+                    additionalClaimTypes)
+                {
+                    RequestedResources = resources,
+                    ValidatedRequest = request
+                };
 
                 await Profile.GetProfileDataAsync(context);
 
@@ -190,12 +192,14 @@ namespace IdentityServer4.Services
                 additionalClaimTypes = FilterRequestedClaimTypes(additionalClaimTypes).ToList();
 
                 var context = new ProfileDataRequestContext(
-                    request,
                     subject,
                     request.Client,
                     IdentityServerConstants.ProfileDataCallers.ClaimsProviderAccessToken,
-                    additionalClaimTypes.Distinct());
-                context.RequestedResources = resources;
+                    additionalClaimTypes.Distinct())
+                {
+                    RequestedResources = resources,
+                    ValidatedRequest = request
+                };
 
                 await Profile.GetProfileDataAsync(context);
 
