@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace IdentityServer4.Models
 {
@@ -63,6 +64,6 @@ namespace IdentityServer4.Models
         /// <value>
         /// The subject.
         /// </value>
-        public string Subject { get; set; }
+        public ClaimsPrincipal Subject { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -24,6 +24,8 @@ namespace IdentityServer4.UnitTests.Stores.Default
         private IRefreshTokenStore _refreshTokens;
         private IReferenceTokenStore _referenceTokens;
         private IUserConsentStore _userConsent;
+        private IDeviceCodeStore _deviceCodes;
+        private IUserCodeStore _userCodes;
         private StubHandleGenerationService _stubHandleGenerationService = new StubHandleGenerationService();
 
         private ClaimsPrincipal _user = new IdentityServerUser("123").CreatePrincipal();
@@ -46,6 +48,102 @@ namespace IdentityServer4.UnitTests.Stores.Default
                 new PersistentGrantSerializer(),
                 _stubHandleGenerationService,
                 TestLogger.Create<DefaultUserConsentStore>());
+            _deviceCodes = new DefaultDeviceCodeStore(_store,
+                new PersistentGrantSerializer(),
+                _stubHandleGenerationService,
+                TestLogger.Create<DefaultDeviceCodeStore>());
+            _userCodes = new DefaultUserCodeStore(_store,
+                new PersistentGrantSerializer(),
+                _stubHandleGenerationService,
+                TestLogger.Create<DefaultUserCodeStore>());
+        }
+
+        [Fact]
+        public async Task StoreDeviceCodeAsync_should_persist_grant()
+        {
+            var code = new DeviceCode
+            {
+                ClientId = "test",
+                CreationTime = DateTime.UtcNow,
+                Lifetime = 300,
+                IsAuthorized = true,
+                IsOpenId = true,
+                Subject = _user,
+                AuthorizedScopes = new[] {"scope1", "scope2"}
+            };
+
+            var generatedCode = await _deviceCodes.StoreDeviceCodeAsync(code);
+            var retrievedCode = await _deviceCodes.GetDeviceCodeAsync(generatedCode);
+
+            retrievedCode.ClientId.Should().Be(code.ClientId);
+            retrievedCode.CreationTime.Should().Be(code.CreationTime);
+            retrievedCode.Lifetime.Should().Be(code.Lifetime);
+            retrievedCode.IsAuthorized.Should().Be(code.IsAuthorized);
+            retrievedCode.IsOpenId.Should().Be(code.IsOpenId);
+            retrievedCode.Subject.GetSubjectId().Should().Be(code.Subject.GetSubjectId());
+            retrievedCode.AuthorizedScopes.Should().BeEquivalentTo(code.AuthorizedScopes);
+        }
+
+        [Fact]
+        public async Task RemoveDeviceCodeAsync_should_remove_grant()
+        {
+            var code = new DeviceCode
+            {
+                ClientId = "test",
+                CreationTime = DateTime.UtcNow,
+                Lifetime = 300,
+                IsAuthorized = true,
+                IsOpenId = true,
+                Subject = _user,
+                AuthorizedScopes = new[] { "scope1", "scope2" }
+            };
+
+            var generatedCode = await _deviceCodes.StoreDeviceCodeAsync(code);
+            await _deviceCodes.RemoveDeviceCodeAsync(generatedCode);
+            var retrievedCode = await _deviceCodes.GetDeviceCodeAsync(generatedCode);
+            retrievedCode.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task StoreUserCodeAsync_should_persist_grant()
+        {
+            var code = Guid.NewGuid().ToString();
+            var data = new UserCode
+            {
+                DeviceCode = Guid.NewGuid().ToString(),
+                ClientId = "test",
+                CreationTime = DateTime.UtcNow,
+                Lifetime = 300,
+                RequestedScopes = new[] {"scope1", "scope2"}
+            };
+
+            await _userCodes.StoreUserCodeAsync(code, data);
+            var retievedData = await _userCodes.GetUserCodeAsync(code);
+
+            retievedData.DeviceCode.Should().Be(data.DeviceCode);
+            retievedData.ClientId.Should().Be(data.ClientId);
+            retievedData.CreationTime.Should().Be(data.CreationTime);
+            retievedData.Lifetime.Should().Be(data.Lifetime);
+            retievedData.RequestedScopes.Should().BeEquivalentTo(data.RequestedScopes);
+        }
+
+        [Fact]
+        public async Task RemoveUserCodeAsync_should_remove_grant()
+        {
+            var code = Guid.NewGuid().ToString();
+            var data = new UserCode
+            {
+                DeviceCode = Guid.NewGuid().ToString(),
+                ClientId = "test",
+                CreationTime = DateTime.UtcNow,
+                Lifetime = 300,
+                RequestedScopes = new[] { "scope1", "scope2" }
+            };
+
+            await _userCodes.StoreUserCodeAsync(code, data);
+            await _userCodes.RemoveUserCodeAsync(code);
+            var retrievedCode = await _userCodes.GetUserCodeAsync(code);
+            retrievedCode.Should().BeNull();
         }
 
         [Fact]

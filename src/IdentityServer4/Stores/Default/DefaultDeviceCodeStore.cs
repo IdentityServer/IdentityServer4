@@ -22,7 +22,7 @@ namespace IdentityServer4.Stores
         /// <param name="serializer">The serializer.</param>
         /// <param name="handleGenerationService">The handle generation service.</param>
         /// <param name="logger">The logger.</param>
-        protected DefaultDeviceCodeStore(
+        public DefaultDeviceCodeStore(
             IPersistedGrantStore store,
             IPersistentGrantSerializer serializer,
             IHandleGenerationService handleGenerationService,
