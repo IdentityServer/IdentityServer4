@@ -12,12 +12,12 @@ namespace IdentityServer4.Validation
     public class ValidatedDeviceAuthorizationRequest : ValidatedRequest
     {
         /// <summary>
-        /// Gets or sets the scopes.
+        /// Gets or sets the requested scopes.
         /// </summary>
         /// <value>
         /// The scopes.
         /// </value>
-        public IEnumerable<string> Scopes { get; set; }
+        public IEnumerable<string> RequestedScopes { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is open identifier request.

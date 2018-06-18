@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -111,6 +111,32 @@ namespace IdentityServer4.UnitTests.Validation
             return new DefaultTokenCreationService(
                 new StubClock(),
                 new DefaultKeyMaterialService(new IValidationKeysStore[] { }, new DefaultSigningCredentialsStore(TestCert.LoadSigningCredentials())), TestLogger.Create<DefaultTokenCreationService>());
+        }
+
+        public static DeviceAuthorizationRequestValidator CreateDeviceAuthorizationRequestValidator(
+            IdentityServerOptions options = null,
+            IResourceStore resourceStore = null,
+            ScopeValidator scopeValidator = null)
+        {
+            if (options == null)
+            {
+                options = TestIdentityServerOptions.Create();
+            }
+            
+            if (resourceStore == null)
+            {
+                resourceStore = new InMemoryResourcesStore(TestScopes.GetIdentity(), TestScopes.GetApis());
+            }
+
+            if (scopeValidator == null)
+            {
+                scopeValidator = new ScopeValidator(resourceStore, new LoggerFactory().CreateLogger<ScopeValidator>());
+            }
+
+            return new DeviceAuthorizationRequestValidator(
+                options,
+                scopeValidator,
+                TestLogger.Create<DeviceAuthorizationRequestValidator>());
         }
 
         public static AuthorizeRequestValidator CreateAuthorizeRequestValidator(
