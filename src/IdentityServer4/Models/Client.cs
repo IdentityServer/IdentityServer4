@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -274,6 +274,22 @@ namespace IdentityServer4.Models
         /// The properties.
         /// </value>
         public IDictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
+
+        /// <summary>
+        /// Gets or sets the type of the device flow user code.
+        /// </summary>
+        /// <value>
+        /// The type of the device flow user code.
+        /// </value>
+        public string UserCodeType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the device code lifetime.
+        /// </summary>
+        /// <value>
+        /// The device code lifetime.
+        /// </value>
+        public int DeviceCodeLifetime { get; set; } = 300;
 
         /// <summary>
         /// Validates the grant types.

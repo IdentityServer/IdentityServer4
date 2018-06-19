@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 #pragma warning disable 1591
@@ -88,6 +88,13 @@ namespace IdentityServer4
             public const string ReferenceToken = "reference_token";
             public const string RefreshToken = "refresh_token";
             public const string UserConsent = "user_consent";
+            public const string DeviceCode = "device_code";
+            public const string UserCode = "user_code";
+        }
+
+        public static class UserCodeTypes
+        {
+            public const string Numeric = "Numeric";
         }
     }
 }

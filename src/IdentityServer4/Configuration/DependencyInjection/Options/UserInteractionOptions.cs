@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -90,5 +90,21 @@ namespace IdentityServer4.Configuration
         /// The cookie message threshold.
         /// </value>
         public int CookieMessageThreshold { get; set; } = Constants.UIConstants.CookieMessageThreshold;
+
+        /// <summary>
+        /// Gets or sets the device verification URL.  If a local URL, the value must start with a leading slash.
+        /// </summary>
+        /// <value>
+        /// The device verification URL.
+        /// </value>
+        public string DeviceVerificationUrl { get; set; } = Constants.UIConstants.DefaultRoutePaths.DeviceVerification;
+
+        /// <summary>
+        /// Gets or sets the device verification user code paramater.
+        /// </summary>
+        /// <value>
+        /// The device verification user code parameter.
+        /// </value>
+        public string DeviceVerificationUserCodeParameter { get; set; } = Constants.UIConstants.DefaultRoutePathParams.UserCode;
     }
 }

@@ -182,6 +182,7 @@ namespace IdentityServer4
                 public const string Logout = "logoutId";
                 public const string EndSessionCallback = "endSessionId";
                 public const string Custom = "returnUrl";
+                public const string UserCode = "userCode";
             }
 
             public static class DefaultRoutePaths
@@ -190,6 +191,7 @@ namespace IdentityServer4
                 public const string Logout = "/account/logout";
                 public const string Consent = "/consent";
                 public const string Error = "/home/error";
+                public const string DeviceVerification = "/device";
             }
         }
 

@@ -2,35 +2,36 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityServer4.Models;
 using System.Threading.Tasks;
+using IdentityServer4.Models;
 
 namespace IdentityServer4.Stores
 {
     /// <summary>
-    /// Interface for the authorization code store
+    /// Interface for the user code store
     /// </summary>
-    public interface IAuthorizationCodeStore
+    public interface IUserCodeStore
     {
         /// <summary>
-        /// Stores the authorization code.
+        /// Stores the user code.
         /// </summary>
         /// <param name="code">The code.</param>
+        /// <param name="data">The data.</param>
         /// <returns></returns>
-        Task<string> StoreAuthorizationCodeAsync(AuthorizationCode code);
+        Task StoreUserCodeAsync(string code, UserCode data);
 
         /// <summary>
-        /// Gets the authorization code.
+        /// Gets the user code.
         /// </summary>
         /// <param name="code">The code.</param>
         /// <returns></returns>
-        Task<AuthorizationCode> GetAuthorizationCodeAsync(string code);
+        Task<UserCode> GetUserCodeAsync(string code);
 
         /// <summary>
-        /// Removes the authorization code.
+        /// Removes the user code.
         /// </summary>
         /// <param name="code">The code.</param>
         /// <returns></returns>
-        Task RemoveAuthorizationCodeAsync(string code);
-   }
+        Task RemoveUserCodeAsync(string code);
+    }
 }
