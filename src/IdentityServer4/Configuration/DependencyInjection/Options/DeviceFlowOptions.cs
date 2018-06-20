@@ -23,6 +23,6 @@ namespace IdentityServer4.Configuration
         /// <value>
         /// The interval in seconds.
         /// </value>
-        public int Interval { get; set; }
+        public int Interval { get; set; } = 5;
     }
 }

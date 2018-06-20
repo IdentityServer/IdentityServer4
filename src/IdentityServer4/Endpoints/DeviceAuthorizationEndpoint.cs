@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using IdentityModel;
 using IdentityServer4.Endpoints.Results;
+using IdentityServer4.Events;
 using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
 using IdentityServer4.ResponseHandling;
@@ -76,7 +77,7 @@ namespace IdentityServer4.Endpoints
 
             if (requestResult.IsError)
             {
-                // TODO: await _events.RaiseAsync(new TokenIssuedFailureEvent(requestResult));
+                await _events.RaiseAsync(new DeviceAuthorizationFailureEvent(requestResult));
                 return Error(requestResult.Error, requestResult.ErrorDescription);
             }
 
@@ -86,8 +87,7 @@ namespace IdentityServer4.Endpoints
             _logger.LogTrace("Calling into device authorize response generator: {type}", _responseGenerator.GetType().FullName);
             var response = await _responseGenerator.ProcessAsync(requestResult, baseUrl);
 
-            // TODO: await _events.RaiseAsync(new TokenIssuedSuccessEvent(response, requestResult));
-            // TODO: LogTokens(response, requestResult);
+            await _events.RaiseAsync(new DeviceAuthorizationSuccessEvent(response, requestResult));
 
             // return result
             _logger.LogDebug("Device authorize request success.");
