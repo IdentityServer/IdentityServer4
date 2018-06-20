@@ -3,6 +3,7 @@
 
 
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
@@ -116,9 +117,23 @@ namespace IdentityServer4.Validation
             var scope = request.Raw.Get(OidcConstants.AuthorizeRequest.Scope);
             if (scope.IsMissing())
             {
-                // TODO: Get all scopes for client, don't error (scope param is optional for device flow)
-                LogError("scope is missing", request);
-                return Invalid(request, description: "Invalid scope");
+                _logger.LogTrace("Client provided no scopes - checking allowed scopes list");
+
+                if (!request.Client.AllowedScopes.IsNullOrEmpty())
+                {
+                    var clientAllowedScopes = new List<string>(request.Client.AllowedScopes);
+                    if (request.Client.AllowOfflineAccess)
+                    {
+                        clientAllowedScopes.Add(IdentityServerConstants.StandardScopes.OfflineAccess);
+                    }
+                    scope = clientAllowedScopes.ToSpaceSeparatedString();
+                    _logger.LogTrace("Defaulting to: {scopes}", scope);
+                }
+                else
+                {
+                    LogError("No allowed scopes configured for client", request);
+                    return Invalid(request, OidcConstants.AuthorizeErrors.InvalidScope);
+                }
             }
 
             if (scope.Length > _options.InputLengthRestrictions.Scope)
