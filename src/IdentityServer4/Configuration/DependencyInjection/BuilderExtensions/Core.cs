@@ -80,6 +80,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.AddEndpoint<AuthorizeCallbackEndpoint>(EndpointNames.Authorize, ProtocolRoutePaths.AuthorizeCallback.EnsureLeadingSlash());
             builder.AddEndpoint<AuthorizeEndpoint>(EndpointNames.Authorize, ProtocolRoutePaths.Authorize.EnsureLeadingSlash());
             builder.AddEndpoint<CheckSessionEndpoint>(EndpointNames.CheckSession, ProtocolRoutePaths.CheckSession.EnsureLeadingSlash());
+            builder.AddEndpoint<DeviceAuthorizationEndpoint>(EndpointNames.DeviceAuthorization, ProtocolRoutePaths.DeviceAuthorization.EnsureLeadingSlash());
             builder.AddEndpoint<DiscoveryKeyEndpoint>(EndpointNames.Discovery, ProtocolRoutePaths.DiscoveryWebKeys.EnsureLeadingSlash());
             builder.AddEndpoint<DiscoveryEndpoint>(EndpointNames.Discovery, ProtocolRoutePaths.DiscoveryConfiguration.EnsureLeadingSlash());
             builder.AddEndpoint<EndSessionCallbackEndpoint>(EndpointNames.EndSession, ProtocolRoutePaths.EndSessionCallback.EnsureLeadingSlash());
@@ -162,12 +163,16 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IRefreshTokenStore, DefaultRefreshTokenStore>();
             builder.Services.TryAddTransient<IReferenceTokenStore, DefaultReferenceTokenStore>();
             builder.Services.TryAddTransient<IUserConsentStore, DefaultUserConsentStore>();
+            builder.Services.TryAddTransient<IDeviceCodeStore, DefaultDeviceCodeStore>();
+            builder.Services.TryAddTransient<IUserCodeStore, DefaultUserCodeStore>();
             builder.Services.TryAddTransient<IHandleGenerationService, DefaultHandleGenerationService>();
             builder.Services.TryAddTransient<IPersistentGrantSerializer, PersistentGrantSerializer>();
             builder.Services.TryAddTransient<IEventService, DefaultEventService>();
             builder.Services.TryAddTransient<IEventSink, DefaultEventSink>();
             builder.Services.AddTransient<IClientSecretValidator, ClientSecretValidator>();
             builder.Services.AddTransient<IApiSecretValidator, ApiSecretValidator>();
+            builder.Services.AddTransient<IUserCodeService, DefaultUserCodeService>();
+            builder.Services.AddTransient<IUserCodeGenerator, NumericUserCodeService>();
 
             return builder;
         }
@@ -191,6 +196,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<ICustomTokenRequestValidator, DefaultCustomTokenRequestValidator>();
             builder.Services.TryAddTransient<IUserInfoRequestValidator, UserInfoRequestValidator>();
             builder.Services.TryAddTransient<IClientConfigurationValidator, NopClientConfigurationValidator>();
+            builder.Services.TryAddTransient<IDeviceAuthorizationRequestValidator, DeviceAuthorizationRequestValidator>();
 
             // optional
             builder.Services.TryAddTransient<ICustomTokenValidator, DefaultCustomTokenValidator>();
@@ -213,6 +219,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IAuthorizeResponseGenerator, AuthorizeResponseGenerator>();
             builder.Services.TryAddTransient<IDiscoveryResponseGenerator, DiscoveryResponseGenerator>();
             builder.Services.TryAddTransient<ITokenRevocationResponseGenerator, TokenRevocationResponseGenerator>();
+            builder.Services.TryAddTransient<IDeviceAuthorizationResponseGenerator, DeviceAuthorizationResponseGenerator>();
 
             return builder;
         }

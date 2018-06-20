@@ -116,6 +116,7 @@ namespace IdentityServer4.Validation
             var scope = request.Raw.Get(OidcConstants.AuthorizeRequest.Scope);
             if (scope.IsMissing())
             {
+                // TODO: Get all scopes for client, don't error (scope param is optional for device flow)
                 LogError("scope is missing", request);
                 return Invalid(request, description: "Invalid scope");
             }

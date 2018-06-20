@@ -199,6 +199,7 @@ namespace IdentityServer4
         {
             public const string Authorize = "Authorize";
             public const string Token = "Token";
+            public const string DeviceAuthorization = "DeviceAuthorization";
             public const string Discovery = "Discovery";
             public const string Introspection = "Introspection";
             public const string Revocation = "Revocation";
@@ -220,7 +221,7 @@ namespace IdentityServer4
             public const string EndSession             = "connect/endsession";
             public const string EndSessionCallback     = EndSession + "/callback";
             public const string CheckSession           = "connect/checksession";
-            public const string DeviceAuthorization    = "connect/device_authorization";
+            public const string DeviceAuthorization    = "connect/deviceauthorization";
 
             public static readonly string[] CorsPaths =
             {

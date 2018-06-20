@@ -26,7 +26,7 @@ namespace IdentityServer4.Stores
             IPersistedGrantStore store,
             IPersistentGrantSerializer serializer,
             IHandleGenerationService handleGenerationService,
-            ILogger logger)
+            ILogger<DefaultDeviceCodeStore> logger)
             : base(IdentityServerConstants.PersistedGrantTypes.DeviceCode, store, serializer, handleGenerationService, logger)
         {
         }
