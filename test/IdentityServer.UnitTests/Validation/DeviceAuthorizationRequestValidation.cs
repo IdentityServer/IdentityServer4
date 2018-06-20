@@ -41,20 +41,6 @@ namespace IdentityServer.UnitTests.Validation
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task Empty_Parameters()
-        {
-            var validator = Factory.CreateDeviceAuthorizationRequestValidator();
-
-            var result = await validator.ValidateAsync(
-                new NameValueCollection(),
-                new ClientSecretValidationResult {Client = testClient});
-
-            result.IsError.Should().BeTrue();
-            result.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
-        }
-
-        [Fact]
-        [Trait("Category", Category)]
         public async Task Invalid_Protocol_Client()
         {
             testClient.ProtocolType = IdentityServerConstants.ProtocolTypes.WsFederation;
@@ -171,6 +157,36 @@ namespace IdentityServer.UnitTests.Validation
             result.ValidatedRequest.ValidatedScopes.ContainsOpenIdScopes.Should().BeTrue();
             result.ValidatedRequest.ValidatedScopes.ContainsApiResourceScopes.Should().BeTrue();
             result.ValidatedRequest.ValidatedScopes.ContainsOfflineAccessScope.Should().BeTrue();
+        }
+
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task Missing_Scopes_Expect_Client_Scopes()
+        {
+            var validator = Factory.CreateDeviceAuthorizationRequestValidator();
+
+            var result = await validator.ValidateAsync(
+                new NameValueCollection(),
+                new ClientSecretValidationResult { Client = testClient });
+
+            result.IsError.Should().BeFalse();
+            result.ValidatedRequest.RequestedScopes.Should().Contain(testClient.AllowedScopes);
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task Missing_Scopes_And_Client_Scopes_Empty()
+        {
+            testClient.AllowedScopes.Clear();
+            var validator = Factory.CreateDeviceAuthorizationRequestValidator();
+
+            var result = await validator.ValidateAsync(
+                new NameValueCollection(),
+                new ClientSecretValidationResult { Client = testClient });
+
+            result.IsError.Should().BeTrue();
+            result.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidScope);
         }
     }
 }
