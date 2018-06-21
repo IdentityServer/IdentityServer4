@@ -18,17 +18,20 @@ namespace IdentityServer4.Validation
     {
         private readonly IDeviceCodeStore _devices;
         private readonly IProfileService _profile;
+        private readonly IDeviceFlowThrottlingService _throttlingService;
         private readonly ISystemClock _systemClock;
         private readonly ILogger<DeviceCodeValidator> _logger;
 
         public DeviceCodeValidator(
             IDeviceCodeStore devices,
             IProfileService profile,
+            IDeviceFlowThrottlingService throttlingService,
             ISystemClock systemClock,
             ILogger<DeviceCodeValidator> logger)
         {
             _devices = devices;
             _profile = profile;
+            _throttlingService = throttlingService;
             _systemClock = systemClock;
             _logger = logger;
         }
@@ -43,14 +46,20 @@ namespace IdentityServer4.Validation
                 context.Result = new TokenRequestValidationResult(context.Request, OidcConstants.TokenErrors.InvalidGrant);
                 return;
             }
-
-            // TODO: slow_down
             
             // validate client binding
             if (deviceCode.ClientId != context.Request.Client.ClientId)
             {
                 _logger.LogError("Client {0} is trying to use a device code from client {1}", context.Request.Client.ClientId, deviceCode.ClientId);
                 context.Result = new TokenRequestValidationResult(context.Request, OidcConstants.TokenErrors.InvalidGrant);
+                return;
+            }
+
+            // TODO: slow_down
+            if (await _throttlingService.ShouldSlowDown(context.DeviceCode, deviceCode))
+            {
+                _logger.LogError("Client {0} is polling too fast", deviceCode.ClientId);
+                context.Result = new TokenRequestValidationResult(context.Request, "slow_down");
                 return;
             }
 

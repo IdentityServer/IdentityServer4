@@ -169,10 +169,11 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IPersistentGrantSerializer, PersistentGrantSerializer>();
             builder.Services.TryAddTransient<IEventService, DefaultEventService>();
             builder.Services.TryAddTransient<IEventSink, DefaultEventSink>();
+            builder.Services.TryAddTransient<IApiSecretValidator, ApiSecretValidator>();
+            builder.Services.TryAddTransient<IUserCodeService, DefaultUserCodeService>();
+            builder.Services.TryAddTransient<IUserCodeGenerator, NumericUserCodeService>();
+            builder.Services.TryAddTransient<IDeviceFlowThrottlingService, DistributedDeviceFlowThrottlingService>();
             builder.Services.AddTransient<IClientSecretValidator, ClientSecretValidator>();
-            builder.Services.AddTransient<IApiSecretValidator, ApiSecretValidator>();
-            builder.Services.AddTransient<IUserCodeService, DefaultUserCodeService>();
-            builder.Services.AddTransient<IUserCodeGenerator, NumericUserCodeService>();
 
             return builder;
         }

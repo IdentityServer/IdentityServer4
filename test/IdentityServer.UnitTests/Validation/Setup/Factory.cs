@@ -11,6 +11,7 @@ using IdentityServer4.Stores;
 using IdentityServer4.UnitTests.Common;
 using IdentityServer4.Stores.Serialization;
 using IdentityServer.UnitTests.Common;
+using IdentityServer.UnitTests.Validation.Setup;
 using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.UnitTests.Validation
@@ -256,14 +257,15 @@ namespace IdentityServer4.UnitTests.Validation
         public static IDeviceCodeValidator CreateDeviceCodeValidator(
             IDeviceCodeStore store = null,
             IProfileService profile = null,
+            IDeviceFlowThrottlingService throttlingService = null,
             ISystemClock clock = null)
         {
             store = store ?? CreateDeviceCodeStore();
             profile = profile ?? new TestProfileService();
+            throttlingService = throttlingService ?? new TestDeviceFlowThrottlingService();
             clock = clock ?? new StubClock();
-
-
-            var validator = new DeviceCodeValidator(store, profile, clock, TestLogger.Create<DeviceCodeValidator>());
+            
+            var validator = new DeviceCodeValidator(store, profile, throttlingService, clock, TestLogger.Create<DeviceCodeValidator>());
 
             return validator;
         }
