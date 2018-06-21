@@ -71,7 +71,7 @@ namespace IdentityServer4.Validation
             }
 
             // make sure code is authorized
-            if (!deviceCode.IsAuthorized && deviceCode.Subject != null)
+            if (!deviceCode.IsAuthorized || deviceCode.Subject == null)
             {
                 context.Result = new TokenRequestValidationResult(context.Request, "authorization_pending");
                 return;

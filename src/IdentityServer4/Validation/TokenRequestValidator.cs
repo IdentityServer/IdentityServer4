@@ -39,16 +39,17 @@ namespace IdentityServer4.Validation
         private ValidatedTokenRequest _validatedRequest;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TokenRequestValidator"/> class.
+        /// Initializes a new instance of the <see cref="TokenRequestValidator" /> class.
         /// </summary>
         /// <param name="options">The options.</param>
         /// <param name="authorizationCodeStore">The authorization code store.</param>
         /// <param name="resourceOwnerValidator">The resource owner validator.</param>
         /// <param name="profile">The profile.</param>
+        /// <param name="deviceCodeValidator">The device code validator.</param>
         /// <param name="extensionGrantValidator">The extension grant validator.</param>
         /// <param name="customRequestValidator">The custom request validator.</param>
         /// <param name="scopeValidator">The scope validator.</param>
-        /// <param name="tokenValidator"></param>
+        /// <param name="tokenValidator">The token validator.</param>
         /// <param name="events">The events.</param>
         /// <param name="clock">The clock.</param>
         /// <param name="logger">The logger.</param>
@@ -509,15 +510,7 @@ namespace IdentityServer4.Validation
             }
 
             /////////////////////////////////////////////
-            // check if client is allowed to request scopes
-            /////////////////////////////////////////////
-            if (!(await ValidateRequestedScopesAsync(parameters)))
-            {
-                return Invalid(OidcConstants.TokenErrors.InvalidScope);
-            }
-            
-            /////////////////////////////////////////////
-            // validate device code
+            // validate device code parameter
             /////////////////////////////////////////////
             var deviceCode = parameters.Get("device_code"); // TODO: Update to const
             if (deviceCode.IsMissing())
@@ -535,21 +528,9 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // validate device code
             /////////////////////////////////////////////
-            var deviceCodeContext = new DeviceCodeValidationContext {DeviceCode = deviceCode};
+            var deviceCodeContext = new DeviceCodeValidationContext {DeviceCode = deviceCode, Request = _validatedRequest};
             await _deviceCodeValidator.ValidateAsync(deviceCodeContext);
-
-            /////////////////////////////////////////////
-            // make sure user is enabled
-            /////////////////////////////////////////////
-            var isActiveCtx = new IsActiveContext(_validatedRequest.DeviceCode.Subject, _validatedRequest.Client, IdentityServerConstants.ProfileIsActiveCallers.AuthorizationCodeValidation);
-            await _profile.IsActiveAsync(isActiveCtx);
-
-            if (isActiveCtx.IsActive == false)
-            {
-                LogError("User has been disabled: {subjectId}", _validatedRequest.AuthorizationCode.Subject.GetSubjectId());
-                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
-            }
-
+            
             _logger.LogDebug("Validation of authorization code token request success");
 
             return Valid();

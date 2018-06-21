@@ -34,6 +34,7 @@ namespace IdentityServer4.UnitTests.Validation
             IRefreshTokenStore refreshTokenStore = null,
             IResourceOwnerPasswordValidator resourceOwnerValidator = null,
             IProfileService profile = null,
+            IDeviceCodeStore deviceCodeStore = null,
             IDeviceCodeValidator deviceCodeValidator = null,
             IEnumerable<IExtensionGrantValidator> extensionGrantValidators = null,
             ICustomTokenRequestValidator customRequestValidator = null,
@@ -60,9 +61,14 @@ namespace IdentityServer4.UnitTests.Validation
                 profile = new TestProfileService();
             }
 
+            if (deviceCodeStore == null)
+            {
+                deviceCodeStore = CreateDeviceCodeStore();
+            }
+
             if (deviceCodeValidator == null)
             {
-                deviceCodeValidator = CreateDeviceCodeValidator(profile: profile);
+                deviceCodeValidator = CreateDeviceCodeValidator(profile: profile, store: deviceCodeStore);
             }
 
             if (customRequestValidator == null)
