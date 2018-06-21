@@ -197,6 +197,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IUserInfoRequestValidator, UserInfoRequestValidator>();
             builder.Services.TryAddTransient<IClientConfigurationValidator, NopClientConfigurationValidator>();
             builder.Services.TryAddTransient<IDeviceAuthorizationRequestValidator, DeviceAuthorizationRequestValidator>();
+            builder.Services.TryAddTransient<IDeviceCodeValidator, DeviceCodeValidator>();
 
             // optional
             builder.Services.TryAddTransient<ICustomTokenValidator, DefaultCustomTokenValidator>();

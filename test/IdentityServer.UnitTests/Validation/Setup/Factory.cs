@@ -34,6 +34,7 @@ namespace IdentityServer4.UnitTests.Validation
             IRefreshTokenStore refreshTokenStore = null,
             IResourceOwnerPasswordValidator resourceOwnerValidator = null,
             IProfileService profile = null,
+            IDeviceCodeValidator deviceCodeValidator = null,
             IEnumerable<IExtensionGrantValidator> extensionGrantValidators = null,
             ICustomTokenRequestValidator customRequestValidator = null,
             ITokenValidator tokenValidator = null,
@@ -57,6 +58,11 @@ namespace IdentityServer4.UnitTests.Validation
             if (profile == null)
             {
                 profile = new TestProfileService();
+            }
+
+            if (deviceCodeValidator == null)
+            {
+                deviceCodeValidator = CreateDeviceCodeValidator(profile: profile);
             }
 
             if (customRequestValidator == null)
@@ -99,6 +105,7 @@ namespace IdentityServer4.UnitTests.Validation
                 authorizationCodeStore,
                 resourceOwnerValidator,
                 profile,
+                deviceCodeValidator,
                 aggregateExtensionGrantValidator,
                 customRequestValidator,
                 scopeValidator,
@@ -240,6 +247,21 @@ namespace IdentityServer4.UnitTests.Validation
             return validator;
         }
 
+        public static IDeviceCodeValidator CreateDeviceCodeValidator(
+            IDeviceCodeStore store = null,
+            IProfileService profile = null,
+            ISystemClock clock = null)
+        {
+            store = store ?? CreateDeviceCodeStore();
+            profile = profile ?? new TestProfileService();
+            clock = clock ?? new StubClock();
+
+
+            var validator = new DeviceCodeValidator(store, profile, clock, TestLogger.Create<DeviceCodeValidator>());
+
+            return validator;
+        }
+
         public static IClientSecretValidator CreateClientSecretValidator(IClientStore clients = null, SecretParser parser = null, SecretValidator validator = null, IdentityServerOptions options = null)
         {
             options = options ?? TestIdentityServerOptions.Create();
@@ -293,6 +315,14 @@ namespace IdentityServer4.UnitTests.Validation
                 new PersistentGrantSerializer(),
                 new DefaultHandleGenerationService(),
                 TestLogger.Create<DefaultReferenceTokenStore>());
+        }
+
+        public static IDeviceCodeStore CreateDeviceCodeStore()
+        {
+            return new DefaultDeviceCodeStore(new InMemoryPersistedGrantStore(),
+                new PersistentGrantSerializer(),
+                new DefaultHandleGenerationService(),
+                TestLogger.Create<DefaultDeviceCodeStore>());
         }
         
         public static IUserConsentStore CreateUserConsentStore()
