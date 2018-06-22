@@ -11,6 +11,7 @@ Team posts
 * `Announcing IdentityServer4 RC1 <https://leastprivilege.com/2016/09/06/identityserver4-rc1/>`_
 * `Getting Started with IdentityServer 4 <https://www.scottbrady91.com/Identity-Server/Getting-Started-with-IdentityServer-4>`_
 * `IdentityServer 4 SharePoint Integration using WS-Federation <https://www.scottbrady91.com/Identity-Server/IdentityServer-4-SharePoint-Integration-using-WS-Federation>`_
+* `IdentityServer and Swagger <https://www.scottbrady91.com/Identity-Server/ASPNET-Core-Swagger-UI-Authorization-using-IdentityServer4>`__
 
 What's new posts
 ^^^^^^^^^^^^^^^^
