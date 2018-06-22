@@ -55,7 +55,6 @@ namespace IdentityServer4.Validation
                 return;
             }
 
-            // TODO: slow_down
             if (await _throttlingService.ShouldSlowDown(context.DeviceCode, deviceCode))
             {
                 _logger.LogError("Client {0} is polling too fast", deviceCode.ClientId);

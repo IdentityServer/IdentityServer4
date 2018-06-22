@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityModel;
+using IdentityServer.UnitTests.Validation.Setup;
 using IdentityServer4;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
@@ -187,6 +188,27 @@ namespace IdentityServer.UnitTests.Validation
 
             context.Result.IsError.Should().BeTrue();
             context.Result.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task DeviceCode_Polling_Too_Fast()
+        {
+            var client = await _clients.FindClientByIdAsync("device_flow");
+            var store = Factory.CreateDeviceCodeStore();
+            var handle = await store.StoreDeviceCodeAsync(deviceCode);
+
+            var validator = Factory.CreateDeviceCodeValidator(store, throttlingService: new TestDeviceFlowThrottlingService(true));
+
+            var request = new ValidatedTokenRequest();
+            request.SetClient(client);
+
+            var context = new DeviceCodeValidationContext { DeviceCode = handle, Request = request };
+
+            await validator.ValidateAsync(context);
+
+            context.Result.IsError.Should().BeTrue();
+            context.Result.Error.Should().Be("slow_down");
         }
 
         [Fact]

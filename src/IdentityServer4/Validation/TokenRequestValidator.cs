@@ -530,6 +530,8 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             var deviceCodeContext = new DeviceCodeValidationContext {DeviceCode = deviceCode, Request = _validatedRequest};
             await _deviceCodeValidator.ValidateAsync(deviceCodeContext);
+
+            if (deviceCodeContext.Result.IsError) return deviceCodeContext.Result;
             
             _logger.LogDebug("Validation of authorization code token request success");
 

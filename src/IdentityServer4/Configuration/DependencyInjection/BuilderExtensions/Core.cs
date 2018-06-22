@@ -172,8 +172,10 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IApiSecretValidator, ApiSecretValidator>();
             builder.Services.TryAddTransient<IUserCodeService, DefaultUserCodeService>();
             builder.Services.TryAddTransient<IUserCodeGenerator, NumericUserCodeService>();
-            builder.Services.TryAddTransient<IDeviceFlowThrottlingService, DistributedDeviceFlowThrottlingService>();
             builder.Services.AddTransient<IClientSecretValidator, ClientSecretValidator>();
+
+            builder.Services.TryAddTransient<IDeviceFlowThrottlingService, DistributedDeviceFlowThrottlingService>();
+            builder.Services.AddDistributedMemoryCache();
 
             return builder;
         }

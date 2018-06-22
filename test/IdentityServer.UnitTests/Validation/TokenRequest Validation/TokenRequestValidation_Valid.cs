@@ -319,15 +319,13 @@ namespace IdentityServer4.UnitTests.Validation.TokenRequest
             };
 
             var client = await _clients.FindClientByIdAsync("device_flow");
-            var store = Factory.CreateDeviceCodeStore();
-            var handle = await store.StoreDeviceCodeAsync(deviceCode);
 
-            var validator = Factory.CreateTokenRequestValidator(deviceCodeStore: store);
+            var validator = Factory.CreateTokenRequestValidator();
 
             var parameters = new NameValueCollection
             {
                 {OidcConstants.TokenRequest.GrantType, OidcConstants.GrantTypes.DeviceCode},
-                {"device_code", handle}
+                {"device_code", Guid.NewGuid().ToString()}
             };
 
             var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
