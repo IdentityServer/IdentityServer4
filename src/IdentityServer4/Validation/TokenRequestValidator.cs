@@ -706,7 +706,7 @@ namespace IdentityServer4.Validation
             {
                 try
                 {
-                    _logger.LogError(message + ", , request details: {details}", values, details);
+                    _logger.LogError(message + ", request details: {details}", values, details);
                 }
                 catch (Exception ex)
                 {
