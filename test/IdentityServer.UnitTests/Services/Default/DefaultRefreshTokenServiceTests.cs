@@ -16,11 +16,11 @@ namespace IdentityServer.UnitTests.Services.Default
 {
     public class DefaultRefreshTokenServiceTests
     {
-        private DefaultRefreshTokenService _subject;
-        private DefaultRefreshTokenStore _store;
+        private readonly DefaultRefreshTokenService _subject;
+        private readonly DefaultRefreshTokenStore _store;
 
-        private ClaimsPrincipal _user = new IdentityServerUser("123").CreatePrincipal();
-        private StubClock _clock = new StubClock();
+        private readonly ClaimsPrincipal _user = new IdentityServerUser("123").CreatePrincipal();
+        private readonly StubClock _clock = new StubClock();
 
         public DefaultRefreshTokenServiceTests()
         {
@@ -280,6 +280,128 @@ namespace IdentityServer.UnitTests.Services.Default
 
             newRefreshToken.Should().NotBeNull();
             newRefreshToken.Lifetime.Should().Be((int)(now - newRefreshToken.CreationTime).TotalSeconds + client.SlidingRefreshTokenLifetime);
+        }
+
+        [Fact]
+        public void SetRefreshToken_for_onetime_and_sliding_with_zero_absolute_should_update_lifetime()
+        {
+            
+            var client = new Client
+            {
+                ClientId = "client1",
+                RefreshTokenUsage = TokenUsage.OneTimeOnly,
+                RefreshTokenExpiration = TokenExpiration.Sliding,
+                SlidingRefreshTokenLifetime = 10,
+                AbsoluteRefreshTokenLifetime = 0
+            };
+
+            var now = DateTime.UtcNow;
+            _clock.UtcNowFunc = () => now;
+
+            var refreshToken = new RefreshToken
+            {
+                CreationTime = now.AddSeconds(-1000),
+                AccessToken = new Token
+                {
+                    ClientId = client.ClientId,
+                    Audiences = { "aud" },
+                    CreationTime = DateTime.UtcNow,
+                    Claims = new List<Claim>()
+                    {
+                        new Claim("sub", "123")
+                    }
+                }
+            };
+
+            var slideResult = _subject.SetNewLifeTimeForRefreshToken(refreshToken, client);
+            slideResult.Should().BeTrue();
+            refreshToken.Lifetime.Should().Be((int)(now - refreshToken.CreationTime).TotalSeconds + client.SlidingRefreshTokenLifetime);
+        }
+
+        [Fact]
+        public void RefreshToken_for_onetime_and_sliding_with_non_zero_absolute_should_update_lifetime()
+        {
+
+            var client = new Client
+            {
+                ClientId = "client1",
+                RefreshTokenUsage = TokenUsage.OneTimeOnly,
+                RefreshTokenExpiration = TokenExpiration.Sliding,
+                SlidingRefreshTokenLifetime = 10,
+                AbsoluteRefreshTokenLifetime = 1000
+            };
+
+            var now = DateTime.UtcNow;
+            _clock.UtcNowFunc = () => now;
+
+            var refreshToken = new RefreshToken
+            {
+                CreationTime = now.AddSeconds(-1000),
+                AccessToken = new Token
+                {
+                    ClientId = client.ClientId,
+                    Audiences = { "aud" },
+                    CreationTime = DateTime.UtcNow,
+                    Claims = new List<Claim>()
+                    {
+                        new Claim("sub", "123")
+                    }
+                }
+            };
+
+            var slideResult = _subject.SetNewLifeTimeForRefreshToken(refreshToken, client);
+            slideResult.Should().BeTrue();
+            refreshToken.Lifetime.Should().Be(client.AbsoluteRefreshTokenLifetime);
+        }
+
+        [Fact]
+        public async Task RefreshToken_for_onetime_and_sliding_with_non_zero_absolute_should_be_removed()
+        {
+
+            var client = new Client
+            {
+                ClientId = "client1",
+                RefreshTokenUsage = TokenUsage.OneTimeOnly,
+                RefreshTokenExpiration = TokenExpiration.Sliding,
+                SlidingRefreshTokenLifetime = 10,
+                AbsoluteRefreshTokenLifetime = 1000
+            };
+
+            var now = DateTime.UtcNow;
+            _clock.UtcNowFunc = () => now;
+
+            var refreshToken = new RefreshToken
+            {
+                CreationTime = now.AddSeconds(-1000),
+                AccessToken = new Token
+                {
+                    ClientId = client.ClientId,
+                    Audiences = { "aud" },
+                    CreationTime = DateTime.UtcNow,
+                    Claims = new List<Claim>()
+                    {
+                        new Claim("sub", "123")
+                    }
+                }
+            };
+
+            var handle = await _store.StoreRefreshTokenAsync(new RefreshToken
+            {
+                CreationTime = now.AddSeconds(-1000),
+                AccessToken = new Token
+                {
+                    ClientId = client.ClientId,
+                    Audiences = { "aud" },
+                    CreationTime = DateTime.UtcNow,
+                    Claims = new List<Claim>()
+                    {
+                        new Claim("sub", "123")
+                    }
+                }
+            });
+
+            var removeResult = await _subject.RemoveRefreshToken(handle);
+            removeResult.Should().BeTrue();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -34,5 +34,20 @@ namespace IdentityServer4.Services
         /// The refresh token handle
         /// </returns>
         Task<string> UpdateRefreshTokenAsync(string handle, RefreshToken refreshToken, Client client);
+
+        /// <summary>
+        /// Sets new life time for RefreshToken
+        /// </summary>
+        /// <param name="refreshToken">The refresh token.</param>
+        /// <param name="client">The client.</param>
+        /// <returns></returns>
+        bool SetNewLifeTimeForRefreshToken(RefreshToken refreshToken, Client client);
+
+        /// <summary>
+        /// Removes Refresh token
+        /// </summary>
+        /// <param name="handle">The handle.</param>
+        /// <returns>bool</returns>
+        Task<bool> RemoveRefreshToken(string handle);
     }
 }

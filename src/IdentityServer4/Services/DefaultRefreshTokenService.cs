@@ -99,55 +99,71 @@ namespace IdentityServer4.Services
 
             if (client.RefreshTokenUsage == TokenUsage.OneTimeOnly)
             {
-                _logger.LogDebug("Token usage is one-time only. Generating new handle");
-
-                // delete old one
-                await RefreshTokenStore.RemoveRefreshTokenAsync(handle);
-
-                // create new one
-                needsCreate = true;
+                needsCreate = await RemoveRefreshToken(handle);
+                handle = await RefreshTokenStore.StoreRefreshTokenAsync(refreshToken);
+                _logger.LogDebug("Created refresh token in store");
             }
 
             if (client.RefreshTokenExpiration == TokenExpiration.Sliding)
             {
-                _logger.LogDebug("Refresh token expiration is sliding - extending lifetime");
-
-                // if absolute exp > 0, make sure we don't exceed absolute exp
-                // if absolute exp = 0, allow indefinite slide
-                var currentLifetime = refreshToken.CreationTime.GetLifetimeInSeconds(Clock.UtcNow.UtcDateTime);
-                _logger.LogDebug("Current lifetime: " + currentLifetime.ToString());
-
-                var newLifetime = currentLifetime + client.SlidingRefreshTokenLifetime;
-                _logger.LogDebug("New lifetime: " + newLifetime.ToString());
-
-                // zero absolute refresh token lifetime represents unbounded absolute lifetime
-                // if absolute lifetime > 0, cap at absolute lifetime
-                if (client.AbsoluteRefreshTokenLifetime > 0 && newLifetime > client.AbsoluteRefreshTokenLifetime)
-                {
-                    newLifetime = client.AbsoluteRefreshTokenLifetime;
-                    _logger.LogDebug("New lifetime exceeds absolute lifetime, capping it to " + newLifetime.ToString());
-                }
-
-                refreshToken.Lifetime = newLifetime;
-                needsUpdate = true;
-            }
-
-            if (needsCreate)
-            {
-                handle = await RefreshTokenStore.StoreRefreshTokenAsync(refreshToken);
-                _logger.LogDebug("Created refresh token in store");
-            }
-            else if (needsUpdate)
-            {
+                needsUpdate = SetNewLifeTimeForRefreshToken(refreshToken, client);
                 await RefreshTokenStore.UpdateRefreshTokenAsync(handle, refreshToken);
                 _logger.LogDebug("Updated refresh token in store");
             }
-            else
+
+            if (!needsCreate && !needsUpdate)
             {
                 _logger.LogDebug("No updates to refresh token done");
             }
 
             return handle;
+        }
+
+        /// <summary>
+        /// Sets new life time for RefreshToken
+        /// </summary>
+        /// <param name="refreshToken">The refresh token.</param>
+        /// <param name="client">The client.</param>
+        /// <returns></returns>
+        public virtual bool SetNewLifeTimeForRefreshToken(RefreshToken refreshToken, Client client)
+        {
+            _logger.LogDebug("Refresh token expiration is sliding - extending lifetime");
+
+            // if absolute exp > 0, make sure we don't exceed absolute exp
+            // if absolute exp = 0, allow indefinite slide
+            var currentLifetime = refreshToken.CreationTime.GetLifetimeInSeconds(Clock.UtcNow.UtcDateTime);
+            _logger.LogDebug("Current lifetime: " + currentLifetime);
+
+            var newLifetime = currentLifetime + client.SlidingRefreshTokenLifetime;
+            _logger.LogDebug("New lifetime: " + newLifetime);
+
+            // zero absolute refresh token lifetime represents unbounded absolute lifetime
+            // if absolute lifetime > 0, cap at absolute lifetime
+            if (client.AbsoluteRefreshTokenLifetime > 0 && newLifetime > client.AbsoluteRefreshTokenLifetime)
+            {
+                newLifetime = client.AbsoluteRefreshTokenLifetime;
+                _logger.LogDebug("New lifetime exceeds absolute lifetime, capping it to " + newLifetime);
+            }
+
+            refreshToken.Lifetime = newLifetime;
+           
+            return true;
+        }
+
+        /// <summary>
+        /// Removes Refresh token
+        /// </summary>
+        /// <param name="handle">The handle.</param>
+        /// <returns>bool</returns>
+        public virtual async Task<bool> RemoveRefreshToken(string handle)
+        {
+            _logger.LogDebug("Token usage is one-time only. Generating new handle");
+
+            // delete old one
+            await RefreshTokenStore.RemoveRefreshTokenAsync(handle);
+
+            // create new one
+            return  true;
         }
     }
 }
