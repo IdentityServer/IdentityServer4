@@ -13,7 +13,7 @@ namespace IdentityServer4.Services
     public interface IDeviceFlowThrottlingService
     {
         /// <summary>
-        /// Shoulds the slow down.
+        /// Decides if the requesting client and device code needs to slow down.
         /// </summary>
         /// <param name="deviceCode">The device code.</param>
         /// <param name="details">The device code details.</param>

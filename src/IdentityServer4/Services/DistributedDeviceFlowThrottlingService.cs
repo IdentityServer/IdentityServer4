@@ -1,3 +1,7 @@
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+
 using System;
 using System.Threading.Tasks;
 using IdentityServer4.Configuration;
@@ -7,6 +11,10 @@ using Microsoft.Extensions.Caching.Distributed;
 
 namespace IdentityServer4.Services
 {
+    /// <summary>
+    /// The default device flow throttling service using IDistributedCache.
+    /// </summary>
+    /// <seealso cref="IdentityServer4.Services.IDeviceFlowThrottlingService" />
     public class DistributedDeviceFlowThrottlingService : IDeviceFlowThrottlingService
     {
         private readonly IDistributedCache _cache;
@@ -15,6 +23,12 @@ namespace IdentityServer4.Services
 
         private const string _keyPrefix = "devicecode_";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DistributedDeviceFlowThrottlingService"/> class.
+        /// </summary>
+        /// <param name="cache">The cache.</param>
+        /// <param name="clock">The clock.</param>
+        /// <param name="options">The options.</param>
         public DistributedDeviceFlowThrottlingService(
             IDistributedCache cache,
             ISystemClock clock,
@@ -25,6 +39,13 @@ namespace IdentityServer4.Services
             _options = options;
         }
 
+        /// <summary>
+        /// Decides if the requesting client and device code needs to slow down.
+        /// </summary>
+        /// <param name="deviceCode">The device code.</param>
+        /// <param name="details">The device code details.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">deviceCode</exception>
         public async Task<bool> ShouldSlowDown(string deviceCode, DeviceCode details)
         {
             if (deviceCode == null) throw new ArgumentNullException(nameof(deviceCode));
@@ -44,7 +65,7 @@ namespace IdentityServer4.Services
             // check interval
             if (DateTime.TryParse(lastSeenAsString, out var lastSeen))
             {
-                if (lastSeen.AddSeconds(_options.DeviceFlow.Interval) < _clock.UtcNow)
+                if (_clock.UtcNow < lastSeen.AddSeconds(_options.DeviceFlow.Interval))
                 {
                     await _cache.SetStringAsync(key, _clock.UtcNow.ToString("O"), options);
                     return true;
