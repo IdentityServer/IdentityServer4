@@ -89,7 +89,7 @@ namespace IdentityServer4.Validation
 
             if (clientValidationResult == null) throw new ArgumentNullException(nameof(clientValidationResult));
 
-            _validatedRequest.SetClient(clientValidationResult.Client, clientValidationResult.Secret);
+            _validatedRequest.SetClient(clientValidationResult.Client, clientValidationResult.Secret, clientValidationResult.Confirmation);
 
             /////////////////////////////////////////////
             // check client protocol type
