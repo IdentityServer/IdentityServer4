@@ -22,7 +22,13 @@ namespace Host.Configuration
                     ClientId = "client",
                     ClientSecrets =
                     {
-                        new Secret("secret".Sha256())
+                        new Secret
+                        {
+                            Type = "confirmation.test",
+                            Value = "foo"
+                        }
+
+                        //new Secret("secret".Sha256())
                     },
 
                     AllowedGrantTypes = GrantTypes.ClientCredentials,

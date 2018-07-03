@@ -51,7 +51,8 @@ namespace Host
                 .AddJwtBearerClientAuthentication()
                 .AddAppAuthRedirectUriValidator()
                 .AddClientConfigurationValidator<DefaultClientConfigurationValidator>()
-                .AddTestUsers(TestUsers.Users);
+                .AddTestUsers(TestUsers.Users)
+                .AddSecretValidator<ConfirmationSecretValidator>();
 
             services.AddExternalIdentityProviders();
 
