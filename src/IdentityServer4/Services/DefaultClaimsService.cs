@@ -122,9 +122,9 @@ namespace IdentityServer4.Services
             };
 
             // add cnf if present
-            if (request.Confirmation != null)
+            if (request.Confirmation.IsPresent())
             {
-                outputClaims.Add(new Claim(JwtClaimTypes.Confirmation, JsonConvert.SerializeObject(request.Confirmation), IdentityServerConstants.ClaimValueTypes.Json));
+                outputClaims.Add(new Claim(JwtClaimTypes.Confirmation, request.Confirmation, IdentityServerConstants.ClaimValueTypes.Json));
             }
 
             // check for client claims

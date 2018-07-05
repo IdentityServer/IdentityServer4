@@ -98,7 +98,7 @@ namespace IdentityServer4.Validation
         /// <value>
         /// The confirmation.
         /// </value>
-        public object Confirmation { get; set; }
+        public string Confirmation { get; set; }
 
         /// <summary>
         /// Sets the client and the appropriate request specific settings.
@@ -107,7 +107,7 @@ namespace IdentityServer4.Validation
         /// <param name="secret">The client secret (optional).</param>
         /// <param name="confirmation">The confirmation.</param>
         /// <exception cref="ArgumentNullException">client</exception>
-        public void SetClient(Client client, ParsedSecret secret = null, object confirmation = null)
+        public void SetClient(Client client, ParsedSecret secret = null, string confirmation = "")
         {
             Client = client ?? throw new ArgumentNullException(nameof(client));
             Secret = secret;

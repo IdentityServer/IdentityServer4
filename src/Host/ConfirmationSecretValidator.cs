@@ -1,5 +1,6 @@
 using IdentityServer4.Models;
 using IdentityServer4.Validation;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,13 +14,15 @@ namespace Host
         {
             if (secrets.First().Type == "confirmation.test")
             {
+                var cnf = new Dictionary<string, string>
+                    {
+                        { "x5t#S256", "foo" }
+                    };
+
                 var result = new SecretValidationResult
                 {
                     Success = true,
-                    Confirmation = new Dictionary<string, string>
-                    {
-                        { "x5t#S256", "foo" }
-                    }
+                    Confirmation = JsonConvert.SerializeObject(cnf)
                 };
 
                 return Task.FromResult(result);

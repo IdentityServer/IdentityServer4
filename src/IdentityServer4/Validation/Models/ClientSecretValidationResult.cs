@@ -33,6 +33,6 @@ namespace IdentityServer4.Validation
         /// <value>
         /// The confirmation.
         /// </value>
-        public object Confirmation { get; set; }
+        public string Confirmation { get; set; }
     }
 }
