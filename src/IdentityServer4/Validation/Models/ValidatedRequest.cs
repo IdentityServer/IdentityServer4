@@ -93,7 +93,7 @@ namespace IdentityServer4.Validation
         public ScopeValidator ValidatedScopes { get; set; }
 
         /// <summary>
-        /// Gets or sets the value of the confirmation method (will become the cnf claim).
+        /// Gets or sets the value of the confirmation method (will become the cnf claim). Must be a JSON object.
         /// </summary>
         /// <value>
         /// The confirmation.
