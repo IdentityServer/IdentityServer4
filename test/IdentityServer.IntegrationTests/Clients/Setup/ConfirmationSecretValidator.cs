@@ -11,20 +11,23 @@ namespace IdentityServer4.IntegrationTests.Clients
     {
         public Task<SecretValidationResult> ValidateAsync(IEnumerable<Secret> secrets, ParsedSecret parsedSecret)
         {
-            if (secrets.First().Type == "confirmation.test")
+            if (secrets.Any())
             {
-                var cnf = new Dictionary<string, string>
+                if (secrets.First().Type == "confirmation.test")
+                {
+                    var cnf = new Dictionary<string, string>
                     {
                         { "x5t#S256", "foo" }
                     };
 
-                var result = new SecretValidationResult
-                {
-                    Success = true,
-                    Confirmation = JsonConvert.SerializeObject(cnf)
-                };
+                    var result = new SecretValidationResult
+                    {
+                        Success = true,
+                        Confirmation = JsonConvert.SerializeObject(cnf)
+                    };
 
-                return Task.FromResult(result);
+                    return Task.FromResult(result);
+                }
             }
 
             return Task.FromResult(new SecretValidationResult { Success = false });

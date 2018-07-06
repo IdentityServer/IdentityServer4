@@ -37,6 +37,27 @@ namespace IdentityServer4.IntegrationTests.Clients
                 },
                 new Client
                 {
+                    ClientId = "client.cnf",
+                    ClientSecrets =
+                    {
+                        new Secret
+                        {
+                            Type = "confirmation.test",
+                            Description = "Test for cnf claim",
+                            Value = "foo"
+                        }
+                    },
+
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+                    AllowOfflineAccess = true,
+
+                    AllowedScopes =
+                    {
+                        "api1", "api2"
+                    }
+                },
+                new Client
+                {
                     ClientId = "client.and.ro",
                     ClientSecrets =
                     {
