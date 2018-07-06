@@ -20,16 +20,7 @@ namespace Host.Configuration
                 new Client
                 {
                     ClientId = "client",
-                    ClientSecrets =
-                    {
-                        new Secret
-                        {
-                            Type = "confirmation.test",
-                            Value = "foo"
-                        }
-
-                        //new Secret("secret".Sha256())
-                    },
+                    ClientSecrets = { new Secret("secret".Sha256()) },
 
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
                     AllowedScopes = { "api1", "api2.read_only" }
