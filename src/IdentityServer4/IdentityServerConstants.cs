@@ -64,6 +64,7 @@ namespace IdentityServer4
             public const string RefreshTokenValidation = "RefreshTokenValidation";
             public const string AuthorizationCodeValidation = "AuthorizationCodeValidation";
             public const string UserInfoRequestValidation = "UserInfoRequestValidation";
+            public const string DeviceCodeValidation = "DeviceCodeValidation";
         }
 
         public static class StandardScopes
