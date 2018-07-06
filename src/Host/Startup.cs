@@ -52,7 +52,6 @@ namespace Host
                 .AddAppAuthRedirectUriValidator()
                 .AddClientConfigurationValidator<DefaultClientConfigurationValidator>()
                 .AddTestUsers(TestUsers.Users);
-                //.AddSecretValidator<ConfirmationSecretValidator>();
 
             services.AddExternalIdentityProviders();
 
