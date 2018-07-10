@@ -71,7 +71,7 @@ namespace IdentityServer4.Validation
             }
 
             // denied
-            if (!deviceCode.AuthorizedScopes.Any())
+            if (!deviceCode.AuthorizedScopes?.Any() == true)
             {
                 _logger.LogError("No scopes authorized for device authorization. Access denied");
                 context.Result = new TokenRequestValidationResult(context.Request, "access_denied");
