@@ -20,6 +20,14 @@ namespace IdentityServer4.Stores
         Task<string> StoreDeviceCodeAsync(DeviceCode code);
 
         /// <summary>
+        /// Stores the authorized device code asynchronous.
+        /// </summary>
+        /// <param name="code">The code.</param>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
+        Task StoreAuthorizedDeviceCodeAsync(string code, DeviceCode data);
+
+        /// <summary>
         /// Gets the device code.
         /// </summary>
         /// <param name="code">The code.</param>

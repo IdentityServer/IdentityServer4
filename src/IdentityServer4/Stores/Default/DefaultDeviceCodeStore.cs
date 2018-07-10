@@ -15,6 +15,8 @@ namespace IdentityServer4.Stores
     /// </summary>
     public class DefaultDeviceCodeStore : DefaultGrantStore<DeviceCode>, IDeviceCodeStore
     {
+        private const string AuthorizedPrefix = "COMPLETED_";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultDeviceCodeStore"/> class.
         /// </summary>
@@ -42,13 +44,25 @@ namespace IdentityServer4.Stores
         }
 
         /// <summary>
+        /// Stores the authorized device code asynchronous.
+        /// </summary>
+        /// <param name="code">The code.</param>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
+        public Task StoreAuthorizedDeviceCodeAsync(string code, DeviceCode data)
+        {
+            return StoreItemAsync(AuthorizedCode(code), data, data.ClientId, null, data.CreationTime, data.Lifetime);
+        }
+
+        /// <summary>
         /// Gets the device code.
         /// </summary>
         /// <param name="code">The code.</param>
         /// <returns></returns>
-        public Task<DeviceCode> GetDeviceCodeAsync(string code)
+        public async Task<DeviceCode> GetDeviceCodeAsync(string code)
         {
-            return GetItemAsync(code);
+            return await GetItemAsync(AuthorizedCode(code))
+                   ?? await GetItemAsync(code);
         }
 
         /// <summary>
@@ -56,9 +70,12 @@ namespace IdentityServer4.Stores
         /// </summary>
         /// <param name="code">The code.</param>
         /// <returns></returns>
-        public Task RemoveDeviceCodeAsync(string code)
+        public async Task RemoveDeviceCodeAsync(string code)
         {
-            return RemoveItemAsync(code);
+            await RemoveItemAsync(code);
+            await RemoveItemAsync(AuthorizedCode(code));
         }
+
+        private string AuthorizedCode(string code) => AuthorizedPrefix + code;
     }
 }

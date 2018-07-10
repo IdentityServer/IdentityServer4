@@ -21,6 +21,12 @@ namespace IdentityServer.UnitTests.Common
             return Task.FromResult(id);
         }
 
+        public Task StoreAuthorizedDeviceCodeAsync(string code, DeviceCode data)
+        {
+            Codes[code] = data;
+            return Task.CompletedTask;
+        }
+
         public Task<DeviceCode> GetDeviceCodeAsync(string code)
         {
             DeviceCode val = null;

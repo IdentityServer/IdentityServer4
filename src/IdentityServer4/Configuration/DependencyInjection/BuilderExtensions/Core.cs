@@ -159,6 +159,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IMessageStore<EndSession>, ProtectedDataMessageStore<EndSession>>();
             builder.Services.TryAddTransient<IMessageStore<ErrorMessage>, ProtectedDataMessageStore<ErrorMessage>>();
             builder.Services.TryAddTransient<IIdentityServerInteractionService, DefaultIdentityServerInteractionService>();
+            builder.Services.TryAddTransient<IDeviceFlowInteractionService, DefaultDeviceFlowInteractionService>();
             builder.Services.TryAddTransient<IAuthorizationCodeStore, DefaultAuthorizationCodeStore>();
             builder.Services.TryAddTransient<IRefreshTokenStore, DefaultRefreshTokenStore>();
             builder.Services.TryAddTransient<IReferenceTokenStore, DefaultReferenceTokenStore>();
