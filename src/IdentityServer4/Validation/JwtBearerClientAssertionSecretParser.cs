@@ -72,7 +72,7 @@ namespace IdentityServer4.Validation
                 {
                     if (clientAssertion.Length > _options.InputLengthRestrictions.Jwt)
                     {
-                        _logger.LogError("Client assertion token exceeds maximum lenght.");
+                        _logger.LogError("Client assertion token exceeds maximum length.");
                         return null;
                     }
 
@@ -84,7 +84,7 @@ namespace IdentityServer4.Validation
 
                     if (clientId.Length > _options.InputLengthRestrictions.ClientId)
                     {
-                        _logger.LogError("Client ID exceeds maximum lenght.");
+                        _logger.LogError("Client ID exceeds maximum length.");
                         return null;
                     }
 
