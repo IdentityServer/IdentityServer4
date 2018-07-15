@@ -7,6 +7,7 @@ using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -119,6 +120,12 @@ namespace IdentityServer4.Services
             {
                 new Claim(JwtClaimTypes.ClientId, request.Client.ClientId)
             };
+
+            // add cnf if present
+            if (request.Confirmation.IsPresent())
+            {
+                outputClaims.Add(new Claim(JwtClaimTypes.Confirmation, request.Confirmation, IdentityServerConstants.ClaimValueTypes.Json));
+            }
 
             // check for client claims
             if (request.ClientClaims != null && request.ClientClaims.Any())

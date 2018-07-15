@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -73,14 +73,15 @@ namespace IdentityServer4.Validation
                 return fail;
             }
 
+            SecretValidationResult secretValidationResult = null;
             if (!client.RequireClientSecret || client.IsImplicitOnly())
             {
                 _logger.LogDebug("Public Client - skipping secret validation success");
             }
             else
             {
-                var result = await _validator.ValidateAsync(parsedSecret, client.ClientSecrets);
-                if (result.Success == false)
+                secretValidationResult = await _validator.ValidateAsync(parsedSecret, client.ClientSecrets);
+                if (secretValidationResult.Success == false)
                 {
                     await RaiseFailureEventAsync(client.ClientId, "Invalid client secret");
                     _logger.LogError("Client secret validation failed for client: {clientId}.", client.ClientId);
@@ -95,7 +96,8 @@ namespace IdentityServer4.Validation
             {
                 IsError = false,
                 Client = client,
-                Secret = parsedSecret
+                Secret = parsedSecret,
+                Confirmation = secretValidationResult?.Confirmation
             };
 
             await RaiseSuccessEventAsync(client.ClientId, parsedSecret.Type);
