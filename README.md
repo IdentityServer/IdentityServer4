@@ -16,6 +16,7 @@ IdentityServer4 consists of multiple repositories (in addition to this repositor
 * [Quickstart UI](https://github.com/IdentityServer/IdentityServer4.Quickstart.UI)
 * [ASP.NET Identity integration](https://github.com/IdentityServer/IdentityServer4.AspNetIdentity)
 * [EntityFramework integration](https://github.com/IdentityServer/IdentityServer4.EntityFramework)
+* [Templates](https://github.com/IdentityServer/IdentityServer4.Templates)
 
 If you encounter issues or find bugs, please open an issue in this repo here first.
 
