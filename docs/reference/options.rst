@@ -38,6 +38,11 @@ Authentication
 * ``RequireCspFrameSrcForSignout``
     If set, will require frame-src CSP headers being emitting on the end session callback endpoint which renders iframes to clients for front-channel signout notification. Defaults to true.
 
+AccessToken
+^^^^^^^^^^^
+* ``IncludeIssuerResourcesInAudienceClaim``
+    Specifies whether JWT access tokens issued by IdentityServer will include '~/resources' in the 'aud' claim.
+
 Events
 ^^^^^^
 Allows configuring if and which events should be submitted to a registered event sink. See :ref:`here <refEvents>` for more information on events.
@@ -63,7 +68,7 @@ UserInteraction
     Sets the name of the return URL parameter passed to a custom redirect from the authorization endpoint. Defaults to *returnUrl*.
 * ``CookieMessageThreshold``
     Certain interactions between IdentityServer and some UI pages require a cookie to pass state and context (any of the pages above that have a configurable "message id" parameter).
-    Since browsers have limits on the number of cookies and their size, this setting is used to prevent too many cookies being created. 
+    Since browsers have limits on the number of cookies and their size, this setting is used to prevent too many cookies being created.
     The value sets the maximum number of message cookies of any type that will be created.
     The oldest message cookies will be purged once the limit has been reached.
     This effectively indicates how many tabs can be opened by a user when using IdentityServer.
@@ -89,7 +94,7 @@ The underlying CORS implementation is provided from ASP.NET Core, and as such it
     If you wish to customize the set of CORS origins allowed to connect, then it is recommended that you provide a custom implementation of ``ICorsPolicyService``.
 
 * ``CorsPaths``
-    The endpoints within IdentityServer where CORS is supported. 
+    The endpoints within IdentityServer where CORS is supported.
     Defaults to the discovery, user info, token, and revocation endpoints.
 
 * ``PreflightCacheDuration``

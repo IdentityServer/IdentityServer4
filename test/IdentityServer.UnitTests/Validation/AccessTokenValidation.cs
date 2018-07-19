@@ -22,7 +22,7 @@ namespace IdentityServer4.UnitTests.Validation
         private const string Category = "Access token validation";
 
         private IClientStore _clients = Factory.CreateClientStore();
-        private IdentityServerOptions _options = new IdentityServerOptions();
+        private IdentityServerOptions _options = TestIdentityServerOptions.Create();
         private StubClock _clock = new StubClock();
 
         static AccessTokenValidation()
@@ -191,7 +191,7 @@ namespace IdentityServer4.UnitTests.Validation
         {
             var signer = Factory.CreateDefaultTokenCreator();
             var jwt = await signer.CreateTokenAsync(TokenFactory.CreateAccessTokenLong(new Client { ClientId = "roclient" }, "valid", 600, 1000, "read", "write"));
-            
+
             var validator = Factory.CreateTokenValidator(null);
             var result = await validator.ValidateAccessTokenAsync(jwt);
 
@@ -214,6 +214,23 @@ namespace IdentityServer4.UnitTests.Validation
 
             result.IsError.Should().BeTrue();
             result.Error.Should().Be(OidcConstants.ProtectedResourceErrors.InvalidToken);
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task JWT_Token_without_IssuerUri_in_Audience()
+        {
+            var signer = Factory.CreateDefaultTokenCreator();
+            var token = TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "valid", 600, "read", "write");
+            token.Audiences.Clear();
+            var jwt = await signer.CreateTokenAsync(token);
+
+            _options.AccessToken.IncludeIssuerResourcesInAudienceClaim = false;
+
+            var validator = Factory.CreateTokenValidator(null, options: _options);
+            var result = await validator.ValidateAccessTokenAsync(jwt);
+
+            result.IsError.Should().BeFalse();
         }
 
         [Fact]

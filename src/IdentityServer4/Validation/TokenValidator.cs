@@ -169,9 +169,14 @@ namespace IdentityServer4.Validation
                 }
 
                 _log.AccessTokenType = AccessTokenType.Jwt.ToString();
+
+                var validAudience = _options.AccessToken.IncludeIssuerResourcesInAudienceClaim
+                    ? string.Format(Constants.AccessTokenAudience, _context.HttpContext.GetIdentityServerIssuerUri().EnsureTrailingSlash())
+                    : null;
+
                 result = await ValidateJwtAsync(
                     token,
-                    string.Format(Constants.AccessTokenAudience, _context.HttpContext.GetIdentityServerIssuerUri().EnsureTrailingSlash()),
+                    validAudience,
                     await _keys.GetValidationKeysAsync());
             }
             else
@@ -279,6 +284,7 @@ namespace IdentityServer4.Validation
                 ValidIssuer = _context.HttpContext.GetIdentityServerIssuerUri(),
                 IssuerSigningKeys = validationKeys,
                 ValidateLifetime = validateLifetime,
+                ValidateAudience = audience.IsPresent(),
                 ValidAudience = audience
             };
 

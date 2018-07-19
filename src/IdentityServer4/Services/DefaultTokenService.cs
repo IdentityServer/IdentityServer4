@@ -3,6 +3,7 @@
 
 
 using IdentityModel;
+using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
@@ -55,6 +56,11 @@ namespace IdentityServer4.Services
         protected readonly ISystemClock Clock;
 
         /// <summary>
+        /// The options
+        /// </summary>
+        protected readonly IdentityServerOptions Options;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="DefaultTokenService" /> class. This overloaded constructor is deprecated and will be removed in 3.0.0.
         /// </summary>
         /// <param name="claimsProvider">The claims provider.</param>
@@ -63,20 +69,23 @@ namespace IdentityServer4.Services
         /// <param name="contextAccessor">The HTTP context accessor.</param>
         /// <param name="clock">The clock.</param>
         /// <param name="logger">The logger.</param>
+        /// <param name="options">The options.</param>
         public DefaultTokenService(
-            IClaimsService claimsProvider, 
-            IReferenceTokenStore referenceTokenStore, 
-            ITokenCreationService creationService,  
-            IHttpContextAccessor contextAccessor, 
-            ISystemClock clock, 
-            ILogger<DefaultTokenService> logger)
+            IClaimsService claimsProvider,
+            IReferenceTokenStore referenceTokenStore,
+            ITokenCreationService creationService,
+            IHttpContextAccessor contextAccessor,
+            ISystemClock clock,
+            ILogger<DefaultTokenService> logger,
+            IdentityServerOptions options)
         {
             Context = contextAccessor;
             ClaimsProvider = claimsProvider;
             ReferenceTokenStore = referenceTokenStore;
             CreationService = creationService;
             Clock = clock;
-            Logger = logger;            
+            Logger = logger;
+            Options = options;
         }
 
         /// <summary>
@@ -170,13 +179,17 @@ namespace IdentityServer4.Services
             var token = new Token(OidcConstants.TokenTypes.AccessToken)
             {
                 CreationTime = Clock.UtcNow.UtcDateTime,
-                Audiences = { string.Format(Constants.AccessTokenAudience, issuer.EnsureTrailingSlash()) },
                 Issuer = issuer,
                 Lifetime = request.ValidatedRequest.AccessTokenLifetime,
                 Claims = claims,
                 ClientId = request.ValidatedRequest.Client.ClientId,
                 AccessTokenType = request.ValidatedRequest.AccessTokenType
             };
+
+            if (Options.AccessToken.IncludeIssuerResourcesInAudienceClaim)
+            {
+                token.Audiences.Add(string.Format(Constants.AccessTokenAudience, issuer.EnsureTrailingSlash()));
+            }
 
             foreach(var api in request.Resources.ApiResources)
             {

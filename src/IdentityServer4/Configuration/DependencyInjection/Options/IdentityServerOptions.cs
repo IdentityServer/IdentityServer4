@@ -96,5 +96,10 @@ namespace IdentityServer4.Configuration
         /// Gets or sets the Content Security Policy options.
         /// </summary>
         public CspOptions Csp { get; set; } = new CspOptions();
+
+        /// <summary>
+        /// Gets or sets the access token options.
+        /// </summary>
+        public AccessTokenOptions AccessToken { get; set; } = new AccessTokenOptions();
     }
 }
