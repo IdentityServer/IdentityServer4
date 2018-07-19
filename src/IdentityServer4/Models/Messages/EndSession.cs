@@ -8,7 +8,7 @@ namespace IdentityServer4.Models
     /// <summary>
     /// Models the data necessary for end session to trigger single signout.
     /// </summary>
-    internal class EndSession
+    public class EndSession
     {
         public string SubjectId { get; set; }
         public string SessionId { get; set; }
