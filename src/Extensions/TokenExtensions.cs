@@ -25,6 +25,7 @@ namespace IdentityServer4.Extensions
         /// </summary>
         /// <param name="token">The token.</param>
         /// <param name="clock">The clock.</param>
+        /// <param name="logger">The logger.</param>
         /// <returns></returns>
         /// <exception cref="Exception">
         /// </exception>
