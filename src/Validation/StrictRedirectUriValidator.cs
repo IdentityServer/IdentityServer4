@@ -1,7 +1,8 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using System;
@@ -17,6 +18,25 @@ namespace IdentityServer4.Validation
     /// </summary>
     public class StrictRedirectUriValidator : IRedirectUriValidator
     {
+        private readonly IdentityServerOptions _options;
+
+        // todo: default ctor for backwards compat; remove in 3.0
+        /// <summary>
+        /// Constructor for StrictRedirectUriValidator.
+        /// </summary>
+        public StrictRedirectUriValidator()
+        {
+        }
+
+        /// <summary>
+        /// Constructor for StrictRedirectUriValidator.
+        /// </summary>
+        /// <param name="options">The options.</param>
+        public StrictRedirectUriValidator(IdentityServerOptions options)
+        {
+            _options = options;
+        }
+
         /// <summary>
         /// Checks if a given URI string is in a collection of strings (using ordinal ignore case comparison)
         /// </summary>
@@ -31,6 +51,26 @@ namespace IdentityServer4.Validation
         }
 
         /// <summary>
+        /// Checks if the URI scheme requestedUri uses is in the list of invalid URI scheme prefixes, as controlled by the ValidationOptions.
+        /// </summary>
+        /// <param name="requestedUri"></param>
+        /// <returns></returns>
+        protected bool IsInvalidScheme(string requestedUri)
+        {
+            // todo: null check for backwards compat; remove in 3.0
+            if (_options != null)
+            {
+                if (_options.Validation.InvalidRedirectUriPrefixes
+                        .Any(scheme => requestedUri.StartsWith(scheme, StringComparison.OrdinalIgnoreCase)))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Determines whether a redirect URI is valid for a client.
         /// </summary>
         /// <param name="requestedUri">The requested URI.</param>
@@ -40,6 +80,11 @@ namespace IdentityServer4.Validation
         /// </returns>
         public virtual Task<bool> IsRedirectUriValidAsync(string requestedUri, Client client)
         {
+            if (IsInvalidScheme(requestedUri))
+            {
+                return Task.FromResult(false);
+            }
+
             return Task.FromResult(StringCollectionContainsString(client.RedirectUris, requestedUri));
         }
 
@@ -53,6 +98,11 @@ namespace IdentityServer4.Validation
         /// </returns>
         public virtual Task<bool> IsPostLogoutRedirectUriValidAsync(string requestedUri, Client client)
         {
+            if (IsInvalidScheme(requestedUri))
+            {
+                return Task.FromResult(false);
+            }
+
             return Task.FromResult(StringCollectionContainsString(client.PostLogoutRedirectUris, requestedUri));
         }
     }
