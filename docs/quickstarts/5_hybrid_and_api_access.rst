@@ -57,7 +57,8 @@ The modifications at the MVC client are also minimal - the ASP.NET Core OpenID C
 handler has built-in support for the hybrid flow, so we only need to change some configuration values.
 
 We configure the ``ClientSecret`` to match the secret at IdentityServer. Add the ``offline_access`` and ``api1`` scopes, 
-and set the ``ResponseType`` to ``code id_token`` (which basically means "use hybrid flow")
+and set the ``ResponseType`` to ``code id_token`` (which basically means "use hybrid flow").
+To keep the ``website`` claim in our mvc client identity we need to explicitly map the claim using ClaimActions.
 
 ::
 
@@ -77,6 +78,7 @@ and set the ``ResponseType`` to ``code id_token`` (which basically means "use hy
 
         options.Scope.Add("api1");
         options.Scope.Add("offline_access");
+        options.ClaimActions.MapJsonKey("website", "website");
     });
 
 When you run the MVC client, there will be no big differences, besides that the consent
