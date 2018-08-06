@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -36,7 +36,7 @@ namespace IdentityServer4.UnitTests.Validation.AuthorizeRequest
             var result = await validator.ValidateAsync(parameters);
 
             result.IsError.Should().Be(true);
-            result.ErrorDescription.Should().Be("transform algorithm not supported");
+            result.ErrorDescription.Should().Be("Transform algorithm not supported");
         }
 
         [Theory]
@@ -95,7 +95,7 @@ namespace IdentityServer4.UnitTests.Validation.AuthorizeRequest
             var result = await validator.ValidateAsync(parameters);
 
             result.IsError.Should().Be(true);
-            result.ErrorDescription.Should().Be("transform algorithm not supported");
+            result.ErrorDescription.Should().Be("Transform algorithm not supported");
         }
 
 
@@ -156,7 +156,7 @@ namespace IdentityServer4.UnitTests.Validation.AuthorizeRequest
 
             result.IsError.Should().Be(true);
             result.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
-            result.ErrorDescription.Should().Be("transform algorithm not supported");
+            result.ErrorDescription.Should().Be("Transform algorithm not supported");
         }
 
         [Theory]

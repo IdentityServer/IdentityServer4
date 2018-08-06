@@ -148,7 +148,7 @@ namespace IdentityServer4.Validation
             if (client == null)
             {
                 LogError("Unknown client or not enabled", request.ClientId, request);
-                return Invalid(request, OidcConstants.AuthorizeErrors.UnauthorizedClient);
+                return Invalid(request, OidcConstants.AuthorizeErrors.UnauthorizedClient, "Unknown client or client not enabled");
             }
 
             request.SetClient(client);
@@ -194,7 +194,7 @@ namespace IdentityServer4.Validation
             if (responseType.IsMissing())
             {
                 LogError("Missing response_type", request);
-                return Invalid(request, OidcConstants.AuthorizeErrors.UnsupportedResponseType);
+                return Invalid(request, OidcConstants.AuthorizeErrors.UnsupportedResponseType, "Missing response_type");
             }
 
             // The responseType may come in in an unconventional order.  
@@ -209,7 +209,7 @@ namespace IdentityServer4.Validation
             if (!Constants.SupportedResponseTypes.Contains(responseType, _responseTypeEqualityComparer))
             {
                 LogError("Response type not supported", responseType, request);
-                return Invalid(request, OidcConstants.AuthorizeErrors.UnsupportedResponseType);
+                return Invalid(request, OidcConstants.AuthorizeErrors.UnsupportedResponseType, "Response type not supported");
             }
 
             // Even though the responseType may have come in in an unconventional order,
@@ -287,7 +287,7 @@ namespace IdentityServer4.Validation
             if (!request.Client.AllowedGrantTypes.Contains(request.GrantType))
             {
                 LogError("Invalid grant type for client", request.GrantType, request);
-                return Invalid(request, OidcConstants.AuthorizeErrors.UnauthorizedClient);
+                return Invalid(request, OidcConstants.AuthorizeErrors.UnauthorizedClient, "Invalid grant type for client");
             }
 
             //////////////////////////////////////////////////////////
@@ -300,7 +300,7 @@ namespace IdentityServer4.Validation
                 if (!request.Client.AllowAccessTokensViaBrowser)
                 {
                     LogError("Client requested access token - but client is not configured to receive access tokens via browser", request);
-                    return Invalid(request);
+                    return Invalid(request, description: "Client not configured to receive access tokens via browser");
                 }
             }
 
@@ -332,6 +332,7 @@ namespace IdentityServer4.Validation
                 codeChallenge.Length > _options.InputLengthRestrictions.CodeChallengeMaxLength)
             {
                 LogError("code_challenge is either too short or too long", request);
+                fail.ErrorDescription = "Invalid code_challenge";
                 return fail;
             }
 
@@ -347,7 +348,7 @@ namespace IdentityServer4.Validation
             if (!Constants.SupportedCodeChallengeMethods.Contains(codeChallengeMethod))
             {
                 LogError("Unsupported code_challenge_method", codeChallengeMethod, request);
-                fail.ErrorDescription = "transform algorithm not supported";
+                fail.ErrorDescription = "Transform algorithm not supported";
                 return fail;
             }
 
@@ -357,7 +358,7 @@ namespace IdentityServer4.Validation
                 if (!request.Client.AllowPlainTextPkce)
                 {
                     LogError("code_challenge_method of plain is not allowed", request);
-                    fail.ErrorDescription = "transform algorithm not supported";
+                    fail.ErrorDescription = "Transform algorithm not supported";
                     return fail;
                 }
             }
@@ -411,13 +412,13 @@ namespace IdentityServer4.Validation
             //////////////////////////////////////////////////////////
             if (await _scopeValidator.AreScopesValidAsync(request.RequestedScopes) == false)
             {
-                return Invalid(request, OidcConstants.AuthorizeErrors.InvalidScope);
+                return Invalid(request, OidcConstants.AuthorizeErrors.InvalidScope, "Invalid scope");
             }
 
             if (_scopeValidator.ContainsOpenIdScopes && !request.IsOpenIdRequest)
             {
                 LogError("Identity related scope requests, but no openid scope", request);
-                return Invalid(request, OidcConstants.AuthorizeErrors.InvalidScope);
+                return Invalid(request, OidcConstants.AuthorizeErrors.InvalidScope, "Identity scopes requested, but openid scope is missing");
             }
 
             if (_scopeValidator.ContainsApiResourceScopes)
@@ -430,7 +431,7 @@ namespace IdentityServer4.Validation
             //////////////////////////////////////////////////////////
             if (await _scopeValidator.AreScopesAllowedAsync(request.Client, request.RequestedScopes) == false)
             {
-                return Invalid(request, OidcConstants.AuthorizeErrors.UnauthorizedClient, description: "Invalid scope");
+                return Invalid(request, OidcConstants.AuthorizeErrors.UnauthorizedClient, description: "Invalid scope for client");
             }
 
             request.ValidatedScopes = _scopeValidator;
@@ -440,7 +441,7 @@ namespace IdentityServer4.Validation
             //////////////////////////////////////////////////////////
             if (!_scopeValidator.IsResponseTypeValid(request.ResponseType))
             {
-                return Invalid(request, OidcConstants.AuthorizeErrors.InvalidScope);
+                return Invalid(request, OidcConstants.AuthorizeErrors.InvalidScope, "Invalid scope for response type");
             }
 
             return Valid(request);
