@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -202,10 +202,7 @@ namespace IdentityServer4.UnitTests.Validation
                 profile: profile,
                 referenceTokenStore: store,
                 refreshTokenStore: refreshTokenStore,
-                customValidator: new DefaultCustomTokenValidator(
-                    profile: profile,
-                    clients: clients,
-                    logger: TestLogger.Create<DefaultCustomTokenValidator>()),
+                customValidator: new DefaultCustomTokenValidator(),
                     keys: new DefaultKeyMaterialService(new[] { new DefaultValidationKeysStore(new[] { TestCert.LoadSigningCredentials().Key }) }),
                 logger: logger,
                 options: options,
