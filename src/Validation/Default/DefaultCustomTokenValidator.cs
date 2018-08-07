@@ -13,7 +13,6 @@ namespace IdentityServer4.Validation
     /// <summary>
     /// Default custom token validator
     /// </summary>
-    [Obsolete("Deriving from/using this type is not recommended. It will change in the next version")]
     public class DefaultCustomTokenValidator : ICustomTokenValidator
     {
         /// <summary>
@@ -34,16 +33,11 @@ namespace IdentityServer4.Validation
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultCustomTokenValidator"/> class.
         /// </summary>
-        /// <param name="profile">The profile service</param>
-        /// <param name="clients">The client store.</param>
-        /// <param name="logger">The logger</param>
-        public DefaultCustomTokenValidator(IProfileService profile, IClientStore clients, ILogger<DefaultCustomTokenValidator> logger)
+        public DefaultCustomTokenValidator()
         {
-            Logger = logger;
-            Profile = profile;
-            Clients = clients;
-        }
 
+        }
+        
         /// <summary>
         /// Custom validation logic for access tokens.
         /// </summary>
