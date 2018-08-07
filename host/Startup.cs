@@ -50,7 +50,6 @@ namespace Host
                 .AddExtensionGrantValidator<Extensions.NoSubjectExtensionGrantValidator>()
                 .AddJwtBearerClientAuthentication()
                 .AddAppAuthRedirectUriValidator()
-                .AddClientConfigurationValidator<DefaultClientConfigurationValidator>()
                 .AddTestUsers(TestUsers.Users);
 
             services.AddExternalIdentityProviders();

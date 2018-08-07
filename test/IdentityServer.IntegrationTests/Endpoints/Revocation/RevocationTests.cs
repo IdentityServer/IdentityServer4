@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -58,6 +58,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
             {
                 ClientId = "implicit_and_client_creds",
                 AllowedGrantTypes = GrantTypes.ImplicitAndClientCredentials,
+                ClientSecrets = { new Secret("secret".Sha256()) },
                 RequireConsent = false,
                 AllowedScopes = new List<string> { "api" },
                 RedirectUris = new List<string> { redirect_uri },

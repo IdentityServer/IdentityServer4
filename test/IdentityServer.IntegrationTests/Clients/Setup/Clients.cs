@@ -237,13 +237,15 @@ namespace IdentityServer4.IntegrationTests.Clients
                 {
                     ClientId = "implicit",
                     AllowedGrantTypes = GrantTypes.Implicit,
-                    AllowedScopes = {"api1"}
+                    AllowedScopes = {"api1"},
+                    RedirectUris = { "http://implicit" }
                 },
                 new Client
                 {
                     ClientId = "implicit_and_client_creds",
                     AllowedGrantTypes = GrantTypes.ImplicitAndClientCredentials,
-                    AllowedScopes = {"api1"}
+                    AllowedScopes = {"api1"},
+                    RedirectUris = { "http://implicit_and_client_creds" }
                 }
             };
         }
