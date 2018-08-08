@@ -309,5 +309,5 @@ middleware is where you configure which scopes will be sent to IdentityServer du
 
 It is also noteworthy, that the retrieval of claims for tokens is an extensibility point - ``IProfileService``.
 Since we are using ``AddTestUsers``, the ``TestUserProfileService`` is used by default.
-You can inspect the source code `here <https://github.com/IdentityServer/IdentityServer4/blob/dev/src/IdentityServer4/Test/TestUserProfileService.cs>`_
+You can inspect the source code `here <https://github.com/IdentityServer/IdentityServer4/blob/dev/src/Test/TestUserProfileService.cs>`_
 to see how it works.
