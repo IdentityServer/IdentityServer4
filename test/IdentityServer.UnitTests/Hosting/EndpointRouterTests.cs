@@ -80,7 +80,7 @@ namespace IdentityServer4.UnitTests.Hosting
         }
 
         [Fact]
-        public void Find_should_find_first_registered_mapping()
+        public void Find_should_find_last_registered_mapping()
         {
             _endpoints.Add(new Endpoint("ep1", "/ep1", typeof(MyEndpointHandler)));
             _endpoints.Add(new Endpoint("ep1", "/ep1", typeof(MyOtherEndpointHandler)));
@@ -90,7 +90,7 @@ namespace IdentityServer4.UnitTests.Hosting
             ctx.RequestServices = new StubServiceProvider();
 
             var result = _subject.Find(ctx);
-            result.Should().BeOfType<MyEndpointHandler>();
+            result.Should().BeOfType<MyOtherEndpointHandler>();
         }
 
         [Fact]
