@@ -1,4 +1,4 @@
-﻿using IdentityServer4.Extensions;
+using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
@@ -26,9 +26,13 @@ namespace IdentityServer4.Configuration
                 options.ExpireTimeSpan = _idsrv.Authentication.CookieLifetime;
                 options.Cookie.Name = IdentityServerConstants.DefaultCookieAuthenticationScheme;
                 options.Cookie.SameSite = SameSiteMode.None;
+
                 options.LoginPath = ExtractLocalUrl(_idsrv.UserInteraction.LoginUrl);
                 options.LogoutPath = ExtractLocalUrl(_idsrv.UserInteraction.LogoutUrl);
-                options.ReturnUrlParameter = _idsrv.UserInteraction.LoginReturnUrlParameter;
+                if (_idsrv.UserInteraction.LoginReturnUrlParameter != null)
+                {
+                    options.ReturnUrlParameter = _idsrv.UserInteraction.LoginReturnUrlParameter;
+                }
             }
 
             if (name == IdentityServerConstants.ExternalCookieAuthenticationScheme)
@@ -58,7 +62,9 @@ namespace IdentityServer4.Configuration
         private readonly IdentityServerOptions _idsrv;
         private readonly IOptions<Microsoft.AspNetCore.Authentication.AuthenticationOptions> _authOptions;
 
-        public PostConfigureInternalCookieOptions(IdentityServerOptions idsrv, IOptions<Microsoft.AspNetCore.Authentication.AuthenticationOptions> authOptions)
+        public PostConfigureInternalCookieOptions(
+            IdentityServerOptions idsrv,
+            IOptions<Microsoft.AspNetCore.Authentication.AuthenticationOptions> authOptions)
         {
             _idsrv = idsrv;
             _authOptions = authOptions;
@@ -66,31 +72,16 @@ namespace IdentityServer4.Configuration
 
         public void PostConfigure(string name, CookieAuthenticationOptions options)
         {
-            var scheme = _authOptions.Value.DefaultAuthenticateScheme ??
+            var scheme = _idsrv.Authentication.CookieAuthenticationScheme ??
+                _authOptions.Value.DefaultAuthenticateScheme ??
                 _authOptions.Value.DefaultScheme;
 
             if (name == scheme)
             {
-                options.LoginPath = ExtractLocalUrl(_idsrv.UserInteraction.LoginUrl);
-                options.LogoutPath = ExtractLocalUrl(_idsrv.UserInteraction.LogoutUrl);
-                options.ReturnUrlParameter = _idsrv.UserInteraction.LoginReturnUrlParameter;
+                _idsrv.UserInteraction.LoginUrl = _idsrv.UserInteraction.LoginUrl ?? options.LoginPath;
+                _idsrv.UserInteraction.LoginReturnUrlParameter = _idsrv.UserInteraction.LoginReturnUrlParameter ?? options.ReturnUrlParameter;
+                _idsrv.UserInteraction.LogoutUrl = _idsrv.UserInteraction.LogoutUrl ?? options.LogoutPath;
             }
-        }
-
-        private static string ExtractLocalUrl(string url)
-        {
-            if (url.IsLocalUrl())
-            {
-                if (url.StartsWith("~/"))
-                {
-                    url = url.Substring(1);
-                }
-
-                return url;
-            }
-
-            return null;
         }
     }
-
 }
