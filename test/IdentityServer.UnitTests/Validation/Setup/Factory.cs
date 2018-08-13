@@ -236,10 +236,7 @@ namespace IdentityServer4.UnitTests.Validation
                 profile: profile,
                 referenceTokenStore: store,
                 refreshTokenStore: refreshTokenStore,
-                customValidator: new DefaultCustomTokenValidator(
-                    profile: profile,
-                    clients: clients,
-                    logger: TestLogger.Create<DefaultCustomTokenValidator>()),
+                customValidator: new DefaultCustomTokenValidator(),
                     keys: new DefaultKeyMaterialService(new[] { new DefaultValidationKeysStore(new[] { TestCert.LoadSigningCredentials().Key }) }),
                 logger: logger,
                 options: options,
