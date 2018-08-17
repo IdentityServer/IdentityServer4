@@ -24,7 +24,6 @@ namespace IdentityServer4.IntegrationTests.Clients
         private const string TokenEndpoint = "https://server/connect/token";
 
         private readonly HttpClient _client;
-        private readonly HttpMessageHandler _handler;
 
         public CustomTokenResponseClients()
         {
@@ -32,7 +31,6 @@ namespace IdentityServer4.IntegrationTests.Clients
                 .UseStartup<StartupWithCustomTokenResponses>();
             var server = new TestServer(builder);
 
-            _handler = server.CreateHandler();
             _client = server.CreateClient();
         }
 
