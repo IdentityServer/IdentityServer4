@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -19,7 +19,6 @@ namespace IdentityServer.IntegrationTests.Clients
         private const string DiscoveryEndpoint = "https://server/.well-known/openid-configuration";
 
         private readonly HttpClient _client;
-        private readonly HttpMessageHandler _handler;
 
         public DiscoveryClientTests()
         {
@@ -27,24 +26,20 @@ namespace IdentityServer.IntegrationTests.Clients
                 .UseStartup<Startup>();
             var server = new TestServer(builder);
 
-            _handler = server.CreateHandler();
             _client = server.CreateClient();
-        }
-
-        [Fact]
-        public async Task Retrieving_discovery_document_should_succeed()
-        {
-            var client = new DiscoveryClient(DiscoveryEndpoint, _handler);
-            var doc = await client.GetAsync();
         }
 
         [Fact]
         public async Task Discovery_document_should_have_expected_values()
         {
-            var client = new DiscoveryClient(DiscoveryEndpoint, _handler);
-            client.Policy.ValidateIssuerName = false;
-
-            var doc = await client.GetAsync();
+            var doc = await _client.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest
+            {
+                Address = DiscoveryEndpoint,
+                Policy =
+                {
+                    ValidateIssuerName = false
+                }
+            });
 
             // endpoints
             doc.TokenEndpoint.Should().Be("https://server/connect/token");
