@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -25,7 +25,6 @@ namespace IdentityServer4.IntegrationTests.Clients
         private const string UserInfoEndpoint = "https://server/connect/userinfo";
 
         private readonly HttpClient _client;
-        private readonly HttpMessageHandler _handler;
 
         public UserInfoEndpointClient()
         {
@@ -33,27 +32,30 @@ namespace IdentityServer4.IntegrationTests.Clients
                 .UseStartup<Startup>();
             var server = new TestServer(builder);
 
-            _handler = server.CreateHandler();
             _client = server.CreateClient();
         }
 
         [Fact]
-        public async Task Valid_Client()
+        public async Task Valid_client_with_GET_should_succeed()
         {
-            var tokenClient = new TokenClient(
-                TokenEndpoint,
-                "roclient",
-                "secret",
-                innerHttpMessageHandler: _handler);
+            var response = await _client.RequestPasswordTokenAsync(new PasswordTokenRequest
+            {
+                Address = TokenEndpoint,
+                ClientId = "roclient",
+                ClientSecret = "secret",
 
-            var response = await tokenClient.RequestResourceOwnerPasswordAsync("bob", "bob", "openid email api1");
+                Scope = "openid email api1",
+                UserName = "bob",
+                Password = "bob"
+            });
+
             response.IsError.Should().BeFalse();
 
-            var userInfoclient = new UserInfoClient(
-                UserInfoEndpoint,
-                _handler);
-
-            var userInfo = await userInfoclient.GetAsync(response.AccessToken);
+            var userInfo = await _client.GetUserInfoAsync(new UserInfoRequest
+            {
+                Address = UserInfoEndpoint,
+                Token = response.AccessToken
+            });
 
             userInfo.IsError.Should().BeFalse();
             userInfo.Claims.Count().Should().Be(3);
@@ -64,83 +66,99 @@ namespace IdentityServer4.IntegrationTests.Clients
         }
 
         [Fact]
-        public async Task Address_Scope()
+        public async Task Request_address_scope_should_return_expected_response()
         {
-            var tokenClient = new TokenClient(
-                TokenEndpoint,
-                "roclient",
-                "secret",
-                innerHttpMessageHandler: _handler);
+            var response = await _client.RequestPasswordTokenAsync(new PasswordTokenRequest
+            {
+                Address = TokenEndpoint,
+                ClientId = "roclient",
+                ClientSecret = "secret",
 
-            var response = await tokenClient.RequestResourceOwnerPasswordAsync("bob", "bob", "openid address");
+                Scope = "openid address",
+                UserName = "bob",
+                Password = "bob"
+            });
+
             response.IsError.Should().BeFalse();
 
-            var userInfoclient = new UserInfoClient(
-                UserInfoEndpoint,
-                _handler);
-
-            var userInfo = await userInfoclient.GetAsync(response.AccessToken);
+            var userInfo = await _client.GetUserInfoAsync(new UserInfoRequest
+            {
+                Address = UserInfoEndpoint,
+                Token = response.AccessToken
+            });
 
             userInfo.IsError.Should().BeFalse();
             userInfo.Raw.Should().Be("{\"address\":{\"street_address\":\"One Hacker Way\",\"locality\":\"Heidelberg\",\"postal_code\":69118,\"country\":\"Germany\"},\"sub\":\"88421113\"}");
         }
 
         [Fact]
-        public async Task No_Identity_Scope()
+        public async Task Using_a_token_with_no_identity_scope_should_fail()
         {
-            var tokenClient = new TokenClient(
-                TokenEndpoint,
-                "roclient",
-                "secret",
-                innerHttpMessageHandler: _handler);
+            var response = await _client.RequestPasswordTokenAsync(new PasswordTokenRequest
+            {
+                Address = TokenEndpoint,
+                ClientId = "roclient",
+                ClientSecret = "secret",
 
-            var response = await tokenClient.RequestResourceOwnerPasswordAsync("bob", "bob", "api1");
+                Scope = "api1",
+                UserName = "bob",
+                Password = "bob"
+            });
+
             response.IsError.Should().BeFalse();
 
-            var userInfoclient = new UserInfoClient(
-                UserInfoEndpoint,
-                _handler);
-
-            var userInfo = await userInfoclient.GetAsync(response.AccessToken);
+            var userInfo = await _client.GetUserInfoAsync(new UserInfoRequest
+            {
+                Address = UserInfoEndpoint,
+                Token = response.AccessToken
+            });
 
             userInfo.IsError.Should().BeTrue();
             userInfo.HttpStatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
         [Fact]
-        public async Task Identity_Scope_No_OpenID()
+        public async Task Using_a_token_with_an_identity_scope_but_no_openid_should_fail()
         {
-            var tokenClient = new TokenClient(
-                TokenEndpoint,
-                "roclient",
-                "secret",
-                innerHttpMessageHandler: _handler);
+            var response = await _client.RequestPasswordTokenAsync(new PasswordTokenRequest
+            {
+                Address = TokenEndpoint,
+                ClientId = "roclient",
+                ClientSecret = "secret",
 
-            var response = await tokenClient.RequestResourceOwnerPasswordAsync("bob", "bob", "email api1");
+                Scope = "email api1",
+                UserName = "bob",
+                Password = "bob"
+            });
+
             response.IsError.Should().BeFalse();
 
-            var userInfoclient = new UserInfoClient(
-                UserInfoEndpoint,
-                _handler);
-
-            var userInfo = await userInfoclient.GetAsync(response.AccessToken);
+            var userInfo = await _client.GetUserInfoAsync(new UserInfoRequest
+            {
+                Address = UserInfoEndpoint,
+                Token = response.AccessToken
+            });
 
             userInfo.IsError.Should().BeTrue();
             userInfo.HttpStatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
         [Fact]
-        public async Task json_should_be_correct()
+        public async Task Complex_json_should_be_correct()
         {
-            var tokenClient = new TokenClient(
-                TokenEndpoint,
-                "roclient",
-                "secret",
-                innerHttpMessageHandler: _handler);
+            var response = await _client.RequestPasswordTokenAsync(new PasswordTokenRequest
+            {
+                Address = TokenEndpoint,
+                ClientId = "roclient",
+                ClientSecret = "secret",
 
-            var response = await tokenClient.RequestResourceOwnerPasswordAsync("bob", "bob", "openid email api1 api4.with.roles roles");
+                Scope = "openid email api1 api4.with.roles roles",
+                UserName = "bob",
+                Password = "bob"
+            });
+
             response.IsError.Should().BeFalse();
-
+            
             var payload = GetPayload(response);
 
             var scopes = ((JArray)payload["scope"]).Select(x => x.ToString()).ToArray();
@@ -156,11 +174,11 @@ namespace IdentityServer4.IntegrationTests.Clients
             roles.Should().Contain("Geek");
             roles.Should().Contain("Developer");
 
-            var userInfoclient = new UserInfoClient(
-                UserInfoEndpoint,
-                _handler);
-
-            var userInfo = await userInfoclient.GetAsync(response.AccessToken);
+            var userInfo = await _client.GetUserInfoAsync(new UserInfoRequest
+            {
+                Address = UserInfoEndpoint,
+                Token = response.AccessToken
+            });
 
             roles = ((JArray)userInfo.Json["role"]).Select(x => x.ToString()).ToArray();
             roles.Length.Should().Be(2);
