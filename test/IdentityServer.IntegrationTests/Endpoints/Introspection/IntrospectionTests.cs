@@ -88,19 +88,17 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
         [Trait("Category", Category)]
         public async Task Invalid_token_should_fail()
         {
-            var introspectionClient = new IntrospectionClient(
-                IntrospectionEndpoint,
-                "api1",
-                "secret",
-                _handler);
-
-            var response = await introspectionClient.SendAsync(new IntrospectionRequest
+            var introspectionResponse = await _client.IntrospectTokenAsync(new TokenIntrospectionRequest
             {
+                Address = IntrospectionEndpoint,
+                ClientId = "api1",
+                ClientSecret = "secret",
+
                 Token = "invalid"
             });
 
-            response.IsActive.Should().Be(false);
-            response.IsError.Should().Be(false);
+            introspectionResponse.IsActive.Should().Be(false);
+            introspectionResponse.IsError.Should().Be(false);
         }
 
         [Fact]
