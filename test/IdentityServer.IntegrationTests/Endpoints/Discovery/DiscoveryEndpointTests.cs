@@ -22,7 +22,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Discovery
             IdentityServerPipeline pipeline = new IdentityServerPipeline();
             pipeline.Initialize("/ROOT");
 
-            var result = await pipeline.Client.GetAsync("HTTPS://SERVER/ROOT/.WELL-KNOWN/OPENID-CONFIGURATION");
+            var result = await pipeline.BackChannelClient.GetAsync("HTTPS://SERVER/ROOT/.WELL-KNOWN/OPENID-CONFIGURATION");
 
             var json = await result.Content.ReadAsStringAsync();
             var data = JObject.Parse(json);
@@ -38,7 +38,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Discovery
             IdentityServerPipeline pipeline = new IdentityServerPipeline();
             pipeline.Initialize("/ROOT");
 
-            var result = await pipeline.Client.GetAsync("https://server/root/.well-known/openid-configuration/jwks");
+            var result = await pipeline.BackChannelClient.GetAsync("https://server/root/.well-known/openid-configuration/jwks");
 
             var json = await result.Content.ReadAsStringAsync();
             var data = JObject.Parse(json);

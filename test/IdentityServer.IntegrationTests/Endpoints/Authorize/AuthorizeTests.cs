@@ -1038,7 +1038,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                 nonce: "123_nonce");
             url = url.Replace(IdentityServerPipeline.BaseUrl, "https://грант.рф");
 
-            var result = await _mockPipeline.Client.GetAsync(url);
+            var result = await _mockPipeline.BackChannelClient.GetAsync(url);
             result.Headers.Location.Authority.Should().Be("xn--80af5akm.xn--p1ai");
         }
     }

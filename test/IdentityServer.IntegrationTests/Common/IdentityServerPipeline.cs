@@ -60,7 +60,7 @@ namespace IdentityServer4.IntegrationTests.Common
         public HttpMessageHandler Handler { get; set; }
 
         public BrowserClient BrowserClient { get; set; }
-        public HttpClient Client { get; set; }
+        public HttpClient BackChannelClient { get; set; }
 
         public BackChannelMessageHandler BackChannelMessageHandler { get; set; } = new BackChannelMessageHandler();
 
@@ -99,7 +99,7 @@ namespace IdentityServer4.IntegrationTests.Common
             Handler = Server.CreateHandler();
             
             BrowserClient = new BrowserClient(new BrowserHandler(Handler));
-            Client = new HttpClient(Handler);
+            BackChannelClient = new HttpClient(Handler);
         }
 
         public void ConfigureServices(IServiceCollection services)

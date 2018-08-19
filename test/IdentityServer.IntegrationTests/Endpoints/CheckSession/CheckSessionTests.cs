@@ -25,7 +25,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.CheckSession
         [Trait("Category", Category)]
         public async Task get_request_should_not_return_404()
         {
-            var response = await _mockPipeline.Client.GetAsync(IdentityServerPipeline.CheckSessionEndpoint);
+            var response = await _mockPipeline.BackChannelClient.GetAsync(IdentityServerPipeline.CheckSessionEndpoint);
 
             response.StatusCode.Should().NotBe(HttpStatusCode.NotFound);
         }

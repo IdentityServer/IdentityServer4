@@ -104,7 +104,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
         [Trait("Category", Category)]
         public async Task get_request_should_not_return_404()
         {
-            var response = await _mockPipeline.Client.GetAsync(IdentityServerPipeline.EndSessionEndpoint);
+            var response = await _mockPipeline.BackChannelClient.GetAsync(IdentityServerPipeline.EndSessionEndpoint);
 
             response.StatusCode.Should().NotBe(HttpStatusCode.NotFound);
         }
@@ -250,7 +250,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
         [Trait("Category", Category)]
         public async Task signout_callback_without_params_should_return_400()
         {
-            var response = await _mockPipeline.Client.GetAsync(IdentityServerPipeline.EndSessionCallbackEndpoint);
+            var response = await _mockPipeline.BackChannelClient.GetAsync(IdentityServerPipeline.EndSessionCallbackEndpoint);
 
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
