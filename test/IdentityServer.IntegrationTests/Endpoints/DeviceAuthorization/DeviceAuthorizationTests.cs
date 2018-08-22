@@ -41,7 +41,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.DeviceAuthorization
         [Trait("Category", Category)]
         public async Task get_should_return_InvalidRequest()
         {
-            var response = await _mockPipeline.Client.GetAsync(IdentityServerPipeline.DeviceAuthorization);
+            var response = await _mockPipeline.BackChannelClient.GetAsync(IdentityServerPipeline.DeviceAuthorization);
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
             var resultDto = ParseJsonBody<ErrorResultDto>(await response.Content.ReadAsStreamAsync());
@@ -58,7 +58,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.DeviceAuthorization
             {
                 {"client_id", Guid.NewGuid().ToString()}
             };
-            var response = await _mockPipeline.Client.PostAsync(IdentityServerPipeline.DeviceAuthorization,
+            var response = await _mockPipeline.BackChannelClient.PostAsync(IdentityServerPipeline.DeviceAuthorization,
                 new StringContent(@"{""client_id"": ""client1""}", Encoding.UTF8, "application/json"));
 
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -73,7 +73,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.DeviceAuthorization
         [Trait("Category", Category)]
         public async Task empty_request_should_return_InvalidClient()
         {
-            var response = await _mockPipeline.Client.PostAsync(IdentityServerPipeline.DeviceAuthorization,
+            var response = await _mockPipeline.BackChannelClient.PostAsync(IdentityServerPipeline.DeviceAuthorization,
                 new FormUrlEncodedContent(new Dictionary<string, string>()));
 
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -92,7 +92,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.DeviceAuthorization
             {
                 {"client_id", "client1"}
             };
-            var response = await _mockPipeline.Client.PostAsync(IdentityServerPipeline.DeviceAuthorization, new FormUrlEncodedContent(form));
+            var response = await _mockPipeline.BackChannelClient.PostAsync(IdentityServerPipeline.DeviceAuthorization, new FormUrlEncodedContent(form));
 
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
@@ -111,7 +111,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.DeviceAuthorization
                 {"client_id", "client1"},
                 {"client_secret", "secret" }
             };
-            var response = await _mockPipeline.Client.PostAsync(IdentityServerPipeline.DeviceAuthorization, new FormUrlEncodedContent(form));
+            var response = await _mockPipeline.BackChannelClient.PostAsync(IdentityServerPipeline.DeviceAuthorization, new FormUrlEncodedContent(form));
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             response.Content.Headers.ContentType.MediaType.Should().Be("application/json");
