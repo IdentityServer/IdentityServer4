@@ -16,14 +16,14 @@ namespace IdentityServer4.Validation
 {
     internal class DeviceCodeValidator : IDeviceCodeValidator
     {
-        private readonly IDeviceCodeStore _devices;
+        private readonly IDeviceFlowStore _devices;
         private readonly IProfileService _profile;
         private readonly IDeviceFlowThrottlingService _throttlingService;
         private readonly ISystemClock _systemClock;
         private readonly ILogger<DeviceCodeValidator> _logger;
 
         public DeviceCodeValidator(
-            IDeviceCodeStore devices,
+            IDeviceFlowStore devices,
             IProfileService profile,
             IDeviceFlowThrottlingService throttlingService,
             ISystemClock systemClock,
@@ -38,7 +38,7 @@ namespace IdentityServer4.Validation
 
         public async Task ValidateAsync(DeviceCodeValidationContext context)
         {
-            var deviceCode = await _devices.GetDeviceCodeAsync(context.DeviceCode);
+            var deviceCode = await _devices.FindByDeviceCodeAsync(context.DeviceCode);
 
             if (deviceCode == null)
             {
@@ -98,7 +98,7 @@ namespace IdentityServer4.Validation
 
             context.Request.DeviceCode = deviceCode;
             context.Result = new TokenRequestValidationResult(context.Request);
-            await _devices.RemoveDeviceCodeAsync(context.DeviceCode);
+            await _devices.RemoveByDeviceCodeAsync(context.DeviceCode);
 
         }
     }

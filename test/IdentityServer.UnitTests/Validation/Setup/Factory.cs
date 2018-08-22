@@ -246,7 +246,7 @@ namespace IdentityServer4.UnitTests.Validation
         }
 
         public static IDeviceCodeValidator CreateDeviceCodeValidator(
-            IDeviceCodeStore store = null,
+            IDeviceFlowStore store = null,
             IProfileService profile = null,
             IDeviceFlowThrottlingService throttlingService = null,
             ISystemClock clock = null)
@@ -316,12 +316,9 @@ namespace IdentityServer4.UnitTests.Validation
                 TestLogger.Create<DefaultReferenceTokenStore>());
         }
 
-        public static IDeviceCodeStore CreateDeviceCodeStore()
+        public static IDeviceFlowStore CreateDeviceCodeStore()
         {
-            return new DefaultDeviceCodeStore(new InMemoryPersistedGrantStore(),
-                new PersistentGrantSerializer(),
-                new DefaultHandleGenerationService(),
-                TestLogger.Create<DefaultDeviceCodeStore>());
+            return new InMemoryDeviceFlowStore(new DefaultHandleGenerationService());
         }
         
         public static IUserConsentStore CreateUserConsentStore()

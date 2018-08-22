@@ -32,14 +32,9 @@ namespace IdentityServer4.ResponseHandling
         protected readonly IUserCodeService UserCodeService;
 
         /// <summary>
-        /// The device code store
+        /// The device flow store
         /// </summary>
-        protected readonly IDeviceCodeStore DeviceCodeStore;
-
-        /// <summary>
-        /// The user code store
-        /// </summary>
-        protected readonly IUserCodeStore UserCodeStore;
+        protected readonly IDeviceFlowStore DeviceFlowStore;
 
         /// <summary>
         /// The clock
@@ -56,16 +51,14 @@ namespace IdentityServer4.ResponseHandling
         /// </summary>
         /// <param name="options">The options.</param>
         /// <param name="userCodeService">The user code service.</param>
-        /// <param name="deviceCodeStore">The device code store.</param>
-        /// <param name="userCodeStore">The user code store.</param>
+        /// <param name="deviceFlowStore">The device flow store.</param>
         /// <param name="clock">The clock.</param>
         /// <param name="logger">The logger.</param>
-        public DeviceAuthorizationResponseGenerator(IdentityServerOptions options, IUserCodeService userCodeService, IDeviceCodeStore deviceCodeStore, IUserCodeStore userCodeStore, ISystemClock clock, ILogger<DeviceAuthorizationResponseGenerator> logger)
+        public DeviceAuthorizationResponseGenerator(IdentityServerOptions options, IUserCodeService userCodeService, IDeviceFlowStore deviceFlowStore, ISystemClock clock, ILogger<DeviceAuthorizationResponseGenerator> logger)
         {
             Options = options;
             UserCodeService = userCodeService;
-            DeviceCodeStore = deviceCodeStore;
-            UserCodeStore = userCodeStore;
+            DeviceFlowStore = deviceFlowStore;
             Clock = clock;
             Logger = logger;
         }
@@ -87,7 +80,7 @@ namespace IdentityServer4.ResponseHandling
             Logger.LogTrace("Creating response for device authorization request");
 
             var response = new DeviceAuthorizationResponse();
-
+            
             // generate user_code
             var userCodeGenerator = await UserCodeService.GetGenerator(validationResult.ValidatedRequest.Client.UserCodeType ?? Options.DeviceFlow.DefaultUserCodeType);
             response.UserCode = await userCodeGenerator.GenerateAsync();
@@ -104,21 +97,13 @@ namespace IdentityServer4.ResponseHandling
             response.Interval = Options.DeviceFlow.Interval;
 
             // store device request (device code & user code)
-            response.DeviceCode = await DeviceCodeStore.StoreDeviceCodeAsync(new DeviceCode
+            response.DeviceCode = await DeviceFlowStore.StoreDeviceAuthorizationAsync(response.UserCode, new DeviceCode
             {
                 ClientId = validationResult.ValidatedRequest.Client.ClientId,
                 IsOpenId = validationResult.ValidatedRequest.IsOpenIdRequest,
                 Lifetime = response.DeviceCodeLifetime,
-                CreationTime = Clock.UtcNow.UtcDateTime
-            });
-
-            await UserCodeStore.StoreUserCodeAsync(response.UserCode, new UserCode
-            {
-                ClientId = validationResult.ValidatedRequest.Client.ClientId,
-                DeviceCode = response.DeviceCode,
-                RequestedScopes = validationResult.ValidatedRequest.RequestedScopes,
-                Lifetime = response.DeviceCodeLifetime,
                 CreationTime = Clock.UtcNow.UtcDateTime,
+                RequestedScopes = validationResult.ValidatedRequest.RequestedScopes
             });
 
             return response;

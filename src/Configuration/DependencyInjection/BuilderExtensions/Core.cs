@@ -164,8 +164,6 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IRefreshTokenStore, DefaultRefreshTokenStore>();
             builder.Services.TryAddTransient<IReferenceTokenStore, DefaultReferenceTokenStore>();
             builder.Services.TryAddTransient<IUserConsentStore, DefaultUserConsentStore>();
-            builder.Services.TryAddTransient<IDeviceCodeStore, DefaultDeviceCodeStore>();
-            builder.Services.TryAddTransient<IUserCodeStore, DefaultUserCodeStore>();
             builder.Services.TryAddTransient<IHandleGenerationService, DefaultHandleGenerationService>();
             builder.Services.TryAddTransient<IPersistentGrantSerializer, PersistentGrantSerializer>();
             builder.Services.TryAddTransient<IEventService, DefaultEventService>();
@@ -175,6 +173,8 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddTransient<IClientSecretValidator, ClientSecretValidator>();
             builder.Services.AddTransient<IApiSecretValidator, ApiSecretValidator>();
 
+            builder.Services.TryAddTransient<IDeviceFlowStore, InMemoryDeviceFlowStore>();
+            
             builder.Services.TryAddTransient<IDeviceFlowThrottlingService, DistributedDeviceFlowThrottlingService>();
             builder.Services.AddDistributedMemoryCache();
 

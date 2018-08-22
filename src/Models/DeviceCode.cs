@@ -51,6 +51,14 @@ namespace IdentityServer4.Models
         public bool IsAuthorized { get; set; }
 
         /// <summary>
+        /// Gets or sets the requested scopes.
+        /// </summary>
+        /// <value>
+        /// The authorized scopes.
+        /// </value>
+        public IEnumerable<string> RequestedScopes { get; set; }
+
+        /// <summary>
         /// Gets or sets the authorized scopes.
         /// </summary>
         /// <value>

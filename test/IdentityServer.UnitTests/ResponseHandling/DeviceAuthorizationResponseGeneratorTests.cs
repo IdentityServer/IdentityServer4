@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityServer.UnitTests.Common;
@@ -18,8 +19,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
     {
         private readonly List<IdentityResource> identityResources = new List<IdentityResource> {new IdentityResources.OpenId(), new IdentityResources.Profile()};
         private readonly List<ApiResource> apiResources = new List<ApiResource> {new ApiResource("resource") {Scopes = new List<Scope> {new Scope("api1")}}};
-        private readonly MockDeviceCodeStore deviceCodeStore = new MockDeviceCodeStore();
-        private readonly MockUserCodeStore userCodeStore = new MockUserCodeStore();
+        private readonly MockDeviceFlowStore deviceFlowStore = new MockDeviceFlowStore();
         private readonly IdentityServerOptions options = new IdentityServerOptions();
         private readonly StubClock clock = new StubClock();
         
@@ -40,7 +40,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             });
 
             generator = new DeviceAuthorizationResponseGenerator(options, new DefaultUserCodeService(new[] {new NumericUserCodeService()}),
-                deviceCodeStore, userCodeStore, clock, new NullLogger<DeviceAuthorizationResponseGenerator>());
+                deviceFlowStore, clock, new NullLogger<DeviceAuthorizationResponseGenerator>());
         }
 
         [Fact]
@@ -77,14 +77,14 @@ namespace IdentityServer4.UnitTests.ResponseHandling
 
             response.UserCode.Should().NotBeNullOrWhiteSpace();
 
-            var userCode = userCodeStore.Codes[response.UserCode];
+            var userCode = deviceFlowStore.Data.FirstOrDefault(x => x.UserCode == response.UserCode);
             userCode.Should().NotBeNull();
             userCode.DeviceCode.Should().Be(response.DeviceCode);
-            userCode.ClientId.Should().Be(testResult.ValidatedRequest.Client.ClientId);
-            userCode.Lifetime.Should().Be(testResult.ValidatedRequest.Client.DeviceCodeLifetime);
-            userCode.CreationTime.Should().Be(creationTime);
+            userCode.Data.ClientId.Should().Be(testResult.ValidatedRequest.Client.ClientId);
+            userCode.Data.Lifetime.Should().Be(testResult.ValidatedRequest.Client.DeviceCodeLifetime);
+            userCode.Data.CreationTime.Should().Be(creationTime);
 
-            userCode.RequestedScopes.Should().Contain(testResult.ValidatedRequest.RequestedScopes);
+            userCode.Data.RequestedScopes.Should().Contain(testResult.ValidatedRequest.RequestedScopes);
         }
 
         [Fact]
@@ -98,16 +98,16 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             response.DeviceCode.Should().NotBeNullOrWhiteSpace();
             response.Interval.Should().Be(options.DeviceFlow.Interval);
             
-            var deviceCode = deviceCodeStore.Codes[response.DeviceCode];
+            var deviceCode = deviceFlowStore.Data.FirstOrDefault(x => x.DeviceCode == response.DeviceCode);
             deviceCode.Should().NotBeNull();
-            deviceCode.ClientId.Should().Be(testResult.ValidatedRequest.Client.ClientId);
-            deviceCode.IsOpenId.Should().Be(testResult.ValidatedRequest.IsOpenIdRequest);
-            deviceCode.Lifetime.Should().Be(testResult.ValidatedRequest.Client.DeviceCodeLifetime);
-            deviceCode.CreationTime.Should().Be(creationTime);
-            deviceCode.Subject.Should().BeNull();
-            deviceCode.AuthorizedScopes.Should().BeNull();
+            deviceCode.Data.ClientId.Should().Be(testResult.ValidatedRequest.Client.ClientId);
+            deviceCode.Data.IsOpenId.Should().Be(testResult.ValidatedRequest.IsOpenIdRequest);
+            deviceCode.Data.Lifetime.Should().Be(testResult.ValidatedRequest.Client.DeviceCodeLifetime);
+            deviceCode.Data.CreationTime.Should().Be(creationTime);
+            deviceCode.Data.Subject.Should().BeNull();
+            deviceCode.Data.AuthorizedScopes.Should().BeNull();
 
-            response.DeviceCodeLifetime.Should().Be(deviceCode.Lifetime);
+            response.DeviceCodeLifetime.Should().Be(deviceCode.Data.Lifetime);
         }
 
         [Fact]
