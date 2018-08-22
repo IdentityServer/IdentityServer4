@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -24,7 +24,6 @@ namespace IdentityServer4.IntegrationTests.Clients
         private const string TokenEndpoint = "https://server/connect/token";
 
         private readonly HttpClient _client;
-        private readonly HttpMessageHandler _handler;
 
         public CustomTokenResponseClients()
         {
@@ -32,21 +31,22 @@ namespace IdentityServer4.IntegrationTests.Clients
                 .UseStartup<StartupWithCustomTokenResponses>();
             var server = new TestServer(builder);
 
-            _handler = server.CreateHandler();
             _client = server.CreateClient();
         }
 
         [Fact]
-        public async Task resource_owner_success_should_return_custom_response()
+        public async Task Resource_owner_success_should_return_custom_response()
         {
-            var client = new TokenClient(
-                TokenEndpoint,
-                "roclient",
-                "secret",
-                innerHttpMessageHandler: _handler);
+            var response = await _client.RequestPasswordTokenAsync(new PasswordTokenRequest
+            {
+                Address = TokenEndpoint,
+                ClientId = "roclient",
+                ClientSecret = "secret",
 
-            var response = await client.RequestResourceOwnerPasswordAsync("bob", "bob", "api1");
-
+                UserName = "bob",
+                Password = "bob",
+                Scope = "api1"
+            });
 
             // raw fields
             var fields = GetFields(response);
@@ -103,16 +103,18 @@ namespace IdentityServer4.IntegrationTests.Clients
         }
 
         [Fact]
-        public async Task resource_owner_failure_should_return_custom_error_response()
+        public async Task Resource_owner_failure_should_return_custom_error_response()
         {
-            var client = new TokenClient(
-                TokenEndpoint,
-                "roclient",
-                "secret",
-                innerHttpMessageHandler: _handler);
+            var response = await _client.RequestPasswordTokenAsync(new PasswordTokenRequest
+            {
+                Address = TokenEndpoint,
+                ClientId = "roclient",
+                ClientSecret = "secret",
 
-            var response = await client.RequestResourceOwnerPasswordAsync("bob", "invalid", "api1");
-
+                UserName = "bob",
+                Password = "invalid",
+                Scope = "api1"
+            });
 
             // raw fields
             var fields = GetFields(response);
@@ -150,20 +152,23 @@ namespace IdentityServer4.IntegrationTests.Clients
         }
 
         [Fact]
-        public async Task extension_grant_success_should_return_custom_response()
+        public async Task Extension_grant_success_should_return_custom_response()
         {
-            var client = new TokenClient(
-                TokenEndpoint,
-                "client.custom",
-                "secret",
-                innerHttpMessageHandler: _handler);
+            var response = await _client.RequestTokenAsync(new TokenRequest
+            {
+                Address = TokenEndpoint,
+                GrantType = "custom",
 
-            var customParameters = new Dictionary<string, string>
+                ClientId = "client.custom",
+                ClientSecret = "secret",
+
+                Parameters =
                 {
+                    { "scope", "api1" },
                     { "outcome", "succeed"}
-                };
+                }
+            });
 
-            var response = await client.RequestCustomGrantAsync("custom", "api1", customParameters);
 
             // raw fields
             var fields = GetFields(response);
@@ -221,20 +226,23 @@ namespace IdentityServer4.IntegrationTests.Clients
         }
 
         [Fact]
-        public async Task extension_grant_failure_should_return_custom_error_response()
+        public async Task Extension_grant_failure_should_return_custom_error_response()
         {
-            var client = new TokenClient(
-                TokenEndpoint,
-                "client.custom",
-                "secret",
-                innerHttpMessageHandler: _handler);
+            var response = await _client.RequestTokenAsync(new TokenRequest
+            {
+                Address = TokenEndpoint,
+                GrantType = "custom",
 
-            var customParameters = new Dictionary<string, string>
+                ClientId = "client.custom",
+                ClientSecret = "secret",
+
+                Parameters =
                 {
+                    { "scope", "api1" },
                     { "outcome", "fail"}
-                };
+                }
+            });
 
-            var response = await client.RequestCustomGrantAsync("custom", "api1", customParameters);
 
             // raw fields
             var fields = GetFields(response);

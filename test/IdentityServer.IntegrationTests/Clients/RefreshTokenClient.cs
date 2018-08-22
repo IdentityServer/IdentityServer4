@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -17,7 +17,6 @@ namespace IdentityServer4.IntegrationTests.Clients
         private const string TokenEndpoint = "https://server/connect/token";
 
         private readonly HttpClient _client;
-        private readonly HttpMessageHandler _handler;
 
         public RefreshTokenClient()
         {
@@ -25,20 +24,22 @@ namespace IdentityServer4.IntegrationTests.Clients
                 .UseStartup<Startup>();
             var server = new TestServer(builder);
 
-            _handler = server.CreateHandler();
             _client = server.CreateClient();
         }
 
         [Fact]
-        public async Task requesting_a_refresh_token_without_identity_scopes_should_return_expected_results()
+        public async Task Requesting_a_refresh_token_without_identity_scopes_should_return_expected_results()
         {
-            var client = new TokenClient(
-                TokenEndpoint,
-                "roclient",
-                "secret",
-                innerHttpMessageHandler: _handler);
+            var response = await _client.RequestPasswordTokenAsync(new PasswordTokenRequest
+            {
+                Address = TokenEndpoint,
+                ClientId = "roclient",
+                ClientSecret = "secret",
 
-            var response = await client.RequestResourceOwnerPasswordAsync("bob", "bob", "api1 offline_access");
+                Scope = "api1 offline_access",
+                UserName = "bob",
+                Password = "bob"
+            });
 
             response.IsError.Should().BeFalse();
             response.ExpiresIn.Should().Be(3600);
@@ -46,7 +47,14 @@ namespace IdentityServer4.IntegrationTests.Clients
             response.IdentityToken.Should().BeNull();
             response.RefreshToken.Should().NotBeNull();
 
-            response = await client.RequestRefreshTokenAsync(response.RefreshToken);
+            response = await _client.RequestRefreshTokenAsync(new RefreshTokenRequest
+            {
+                Address = TokenEndpoint,
+                ClientId = "roclient",
+                ClientSecret = "secret",
+
+                RefreshToken = response.RefreshToken
+            });
 
             response.IsError.Should().BeFalse();
             response.ExpiresIn.Should().Be(3600);
@@ -56,15 +64,18 @@ namespace IdentityServer4.IntegrationTests.Clients
         }
 
         [Fact]
-        public async Task requesting_a_refresh_token_with_identity_scopes_should_return_expected_results()
+        public async Task Requesting_a_refresh_token_with_identity_scopes_should_return_expected_results()
         {
-            var client = new TokenClient(
-                TokenEndpoint,
-                "roclient",
-                "secret",
-                innerHttpMessageHandler: _handler);
+            var response = await _client.RequestPasswordTokenAsync(new PasswordTokenRequest
+            {
+                Address = TokenEndpoint,
+                ClientId = "roclient",
+                ClientSecret = "secret",
 
-            var response = await client.RequestResourceOwnerPasswordAsync("bob", "bob", "openid api1 offline_access");
+                Scope = "openid api1 offline_access",
+                UserName = "bob",
+                Password = "bob"
+            });
 
             response.IsError.Should().BeFalse();
             response.ExpiresIn.Should().Be(3600);
@@ -72,7 +83,14 @@ namespace IdentityServer4.IntegrationTests.Clients
             response.IdentityToken.Should().BeNull();
             response.RefreshToken.Should().NotBeNull();
 
-            response = await client.RequestRefreshTokenAsync(response.RefreshToken);
+            response = await _client.RequestRefreshTokenAsync(new RefreshTokenRequest
+            {
+                Address = TokenEndpoint,
+                ClientId = "roclient",
+                ClientSecret = "secret",
+
+                RefreshToken = response.RefreshToken
+            });
 
             response.IsError.Should().BeFalse();
             response.ExpiresIn.Should().Be(3600);
@@ -82,15 +100,18 @@ namespace IdentityServer4.IntegrationTests.Clients
         }
 
         [Fact]
-        public async Task refreshing_a_refresh_token_with_reuse_should_return_same_refresh_token()
+        public async Task Refreshing_a_refresh_token_with_reuse_should_return_same_refresh_token()
         {
-            var client = new TokenClient(
-                TokenEndpoint,
-                "roclient.reuse",
-                "secret",
-                innerHttpMessageHandler: _handler);
+            var response = await _client.RequestPasswordTokenAsync(new PasswordTokenRequest
+            {
+                Address = TokenEndpoint,
+                ClientId = "roclient.reuse",
+                ClientSecret = "secret",
 
-            var response = await client.RequestResourceOwnerPasswordAsync("bob", "bob", "openid api1 offline_access");
+                Scope = "openid api1 offline_access",
+                UserName = "bob",
+                Password = "bob"
+            });
 
             response.IsError.Should().BeFalse();
             response.ExpiresIn.Should().Be(3600);
@@ -100,7 +121,14 @@ namespace IdentityServer4.IntegrationTests.Clients
 
             var rt1 = response.RefreshToken;
 
-            response = await client.RequestRefreshTokenAsync(response.RefreshToken);
+            response = await _client.RequestRefreshTokenAsync(new RefreshTokenRequest
+            {
+                Address = TokenEndpoint,
+                ClientId = "roclient.reuse",
+                ClientSecret = "secret",
+
+                RefreshToken = response.RefreshToken
+            });
 
             response.IsError.Should().BeFalse();
             response.ExpiresIn.Should().Be(3600);
@@ -112,6 +140,5 @@ namespace IdentityServer4.IntegrationTests.Clients
 
             rt1.Should().BeEquivalentTo(rt2);
         }
-
     }
 }

@@ -84,11 +84,11 @@ namespace IdentityServer4.IntegrationTests.Pipeline
         [Trait("Category", Category)]
         public async Task cors_request_to_allowed_endpoints_should_succeed(string url)
         {
-            _pipeline.Client.DefaultRequestHeaders.Add("Origin", "https://client");
-            _pipeline.Client.DefaultRequestHeaders.Add("Access-Control-Request-Method", "GET");
+            _pipeline.BackChannelClient.DefaultRequestHeaders.Add("Origin", "https://client");
+            _pipeline.BackChannelClient.DefaultRequestHeaders.Add("Access-Control-Request-Method", "GET");
             
             var message = new HttpRequestMessage(HttpMethod.Options, url);
-            var response = await _pipeline.Client.SendAsync(message);
+            var response = await _pipeline.BackChannelClient.SendAsync(message);
 
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
             response.Headers.Contains("Access-Control-Allow-Origin").Should().BeTrue();
@@ -104,11 +104,11 @@ namespace IdentityServer4.IntegrationTests.Pipeline
         [Trait("Category", Category)]
         public async Task cors_request_to_restricted_endpoints_should_not_succeed(string url)
         {
-            _pipeline.Client.DefaultRequestHeaders.Add("Origin", "https://client");
-            _pipeline.Client.DefaultRequestHeaders.Add("Access-Control-Request-Method", "GET");
+            _pipeline.BackChannelClient.DefaultRequestHeaders.Add("Origin", "https://client");
+            _pipeline.BackChannelClient.DefaultRequestHeaders.Add("Access-Control-Request-Method", "GET");
 
             var message = new HttpRequestMessage(HttpMethod.Options, url);
-            var response = await _pipeline.Client.SendAsync(message);
+            var response = await _pipeline.BackChannelClient.SendAsync(message);
 
             response.Headers.Contains("Access-Control-Allow-Origin").Should().BeFalse();
         }
@@ -124,11 +124,11 @@ namespace IdentityServer4.IntegrationTests.Pipeline
             };
             _pipeline.Initialize();
 
-            _pipeline.Client.DefaultRequestHeaders.Add("Origin", "https://client");
-            _pipeline.Client.DefaultRequestHeaders.Add("Access-Control-Request-Method", "GET");
+            _pipeline.BackChannelClient.DefaultRequestHeaders.Add("Origin", "https://client");
+            _pipeline.BackChannelClient.DefaultRequestHeaders.Add("Access-Control-Request-Method", "GET");
 
             var message = new HttpRequestMessage(HttpMethod.Options, IdentityServerPipeline.DiscoveryEndpoint);
-            var response = await _pipeline.Client.SendAsync(message);
+            var response = await _pipeline.BackChannelClient.SendAsync(message);
 
             policy.WasCalled.Should().BeTrue();
         }
