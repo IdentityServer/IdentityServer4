@@ -33,7 +33,6 @@ namespace IdentityServer4.Stores
         /// </summary>
         /// <param name="userCode">The user code.</param>
         /// <param name="data">The data.</param>
-        /// <returns></returns>
         public async Task<string> StoreDeviceAuthorizationAsync(string userCode, DeviceCode data)
         {
             var deviceCode = await _handleGenerationService.GenerateAsync();
@@ -45,7 +44,6 @@ namespace IdentityServer4.Stores
         /// Finds device authorization by user code.
         /// </summary>
         /// <param name="userCode">The user code.</param>
-        /// <returns></returns>
         public Task<DeviceCode> FindByUserCodeAsync(string userCode)
         {
             return Task.FromResult(_repository.FirstOrDefault(x => x.UserCode == userCode)?.Data);
@@ -55,7 +53,6 @@ namespace IdentityServer4.Stores
         /// Finds device authorization by device code.
         /// </summary>
         /// <param name="deviceCode">The device code.</param>
-        /// <returns></returns>
         public Task<DeviceCode> FindByDeviceCodeAsync(string deviceCode)
         {
             return Task.FromResult(_repository.FirstOrDefault(x => x.DeviceCode == deviceCode)?.Data);
@@ -66,7 +63,6 @@ namespace IdentityServer4.Stores
         /// </summary>
         /// <param name="userCode">The user code.</param>
         /// <param name="data">The data.</param>
-        /// <returns></returns>
         public Task UpdateByUserCodeAsync(string userCode, DeviceCode data)
         {
             var foundData = _repository.FirstOrDefault(x => x.UserCode == userCode);

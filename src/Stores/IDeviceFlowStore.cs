@@ -13,40 +13,36 @@ namespace IdentityServer4.Stores
     public interface IDeviceFlowStore
     {
         /// <summary>
-        /// Stores the device authorization asynchronous.
+        /// Stores the device authorization request.
         /// </summary>
         /// <param name="userCode">The user code.</param>
         /// <param name="data">The data.</param>
-        /// <returns></returns>
         Task<string> StoreDeviceAuthorizationAsync(string userCode, DeviceCode data);
 
         /// <summary>
-        /// Finds the by user code.
+        /// Finds device authorization by user code.
         /// </summary>
         /// <param name="userCode">The user code.</param>
         /// <returns></returns>
         Task<DeviceCode> FindByUserCodeAsync(string userCode);
 
         /// <summary>
-        /// Finds the by device code.
+        /// Finds device authorization by device code.
         /// </summary>
         /// <param name="deviceCode">The device code.</param>
-        /// <returns></returns>
         Task<DeviceCode> FindByDeviceCodeAsync(string deviceCode);
 
         /// <summary>
-        /// Updates the by user code asynchronous.
+        /// Updates device authorization, searching by user code.
         /// </summary>
         /// <param name="userCode">The user code.</param>
         /// <param name="data">The data.</param>
-        /// <returns></returns>
         Task UpdateByUserCodeAsync(string userCode, DeviceCode data);
 
         /// <summary>
-        /// Removes the by device code asynchronous.
+        /// Removes the device authorization, searching by device code.
         /// </summary>
         /// <param name="deviceCode">The device code.</param>
-        /// <returns></returns>
         Task RemoveByDeviceCodeAsync(string deviceCode);
     }
 }
