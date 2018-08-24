@@ -44,6 +44,7 @@ There are several ways we can help you out.
 
 Documentation
 ^^^^^^^^^^^^^
+
 .. toctree::
    :maxdepth: 3
    :hidden:
@@ -59,7 +60,7 @@ Documentation
    intro/contributing
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :hidden:
    :caption: Quickstarts
 
@@ -75,7 +76,7 @@ Documentation
    quickstarts/community
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :hidden:
    :caption: Configuration
 
@@ -86,7 +87,7 @@ Documentation
    configuration/apis
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :hidden:
    :caption: Topics
 
@@ -119,7 +120,7 @@ Documentation
    topics/tools
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :hidden:
    :caption: Endpoints
 
@@ -132,7 +133,7 @@ Documentation
    endpoints/endsession
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :hidden:
    :caption: Reference
 
@@ -147,7 +148,7 @@ Documentation
    reference/aspnet_identity
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :hidden:
    :caption: Misc
 
