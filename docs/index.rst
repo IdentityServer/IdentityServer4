@@ -42,8 +42,10 @@ Free and Commercial Support
 If you need help building or running your identity platform, :ref:`let us know <refSupport>`.
 There are several ways we can help you out.
 
+Documentation
+^^^^^^^^^^^^^
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :hidden:
    :caption: Introduction
 
