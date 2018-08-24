@@ -1,6 +1,8 @@
 Welcome to IdentityServer4
 ==========================
-v3
+
+v4
+
 .. toctree::
    :maxdepth: 3
    :hidden:
