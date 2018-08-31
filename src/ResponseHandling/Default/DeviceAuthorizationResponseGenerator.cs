@@ -8,7 +8,6 @@ using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
-using IdentityServer4.Stores;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
@@ -32,9 +31,9 @@ namespace IdentityServer4.ResponseHandling
         protected readonly IUserCodeService UserCodeService;
 
         /// <summary>
-        /// The device flow store
+        /// The device flow code service
         /// </summary>
-        protected readonly IDeviceFlowStore DeviceFlowStore;
+        protected readonly IDeviceFlowCodeService DeviceFlowCodeService;
 
         /// <summary>
         /// The clock
@@ -51,14 +50,14 @@ namespace IdentityServer4.ResponseHandling
         /// </summary>
         /// <param name="options">The options.</param>
         /// <param name="userCodeService">The user code service.</param>
-        /// <param name="deviceFlowStore">The device flow store.</param>
+        /// <param name="deviceFlowCodeService">The device flow code service.</param>
         /// <param name="clock">The clock.</param>
         /// <param name="logger">The logger.</param>
-        public DeviceAuthorizationResponseGenerator(IdentityServerOptions options, IUserCodeService userCodeService, IDeviceFlowStore deviceFlowStore, ISystemClock clock, ILogger<DeviceAuthorizationResponseGenerator> logger)
+        public DeviceAuthorizationResponseGenerator(IdentityServerOptions options, IUserCodeService userCodeService, IDeviceFlowCodeService deviceFlowCodeService, ISystemClock clock, ILogger<DeviceAuthorizationResponseGenerator> logger)
         {
             Options = options;
             UserCodeService = userCodeService;
-            DeviceFlowStore = deviceFlowStore;
+            DeviceFlowCodeService = deviceFlowCodeService;
             Clock = clock;
             Logger = logger;
         }
@@ -97,7 +96,7 @@ namespace IdentityServer4.ResponseHandling
             response.Interval = Options.DeviceFlow.Interval;
 
             // store device request (device code & user code)
-            response.DeviceCode = await DeviceFlowStore.StoreDeviceAuthorizationAsync(response.UserCode, new DeviceCode
+            response.DeviceCode = await DeviceFlowCodeService.StoreDeviceAuthorizationAsync(response.UserCode, new DeviceCode
             {
                 ClientId = validationResult.ValidatedRequest.Client.ClientId,
                 IsOpenId = validationResult.ValidatedRequest.IsOpenIdRequest,

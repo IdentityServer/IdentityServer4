@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
-using IdentityServer4.Services;
 
 namespace IdentityServer4.Stores
 {
@@ -16,28 +15,19 @@ namespace IdentityServer4.Stores
     /// <seealso cref="IdentityServer4.Stores.IDeviceFlowStore" />
     public class InMemoryDeviceFlowStore : IDeviceFlowStore
     {
-        private readonly IHandleGenerationService _handleGenerationService;
         private readonly List<InMemoryDeviceAuthorization> _repository = new List<InMemoryDeviceAuthorization>();
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="InMemoryDeviceFlowStore"/> class.
-        /// </summary>
-        /// <param name="handleGenerationService">The handle generation service.</param>
-        public InMemoryDeviceFlowStore(IHandleGenerationService handleGenerationService)
-        {
-            _handleGenerationService = handleGenerationService;
-        }
 
         /// <summary>
         /// Stores the device authorization request.
         /// </summary>
+        /// <param name="deviceCode">The device code.</param>
         /// <param name="userCode">The user code.</param>
         /// <param name="data">The data.</param>
-        public async Task<string> StoreDeviceAuthorizationAsync(string userCode, DeviceCode data)
+        /// <returns></returns>
+        public Task StoreDeviceAuthorizationAsync(string deviceCode, string userCode, DeviceCode data)
         {
-            var deviceCode = await _handleGenerationService.GenerateAsync();
             _repository.Add(new InMemoryDeviceAuthorization(deviceCode, userCode, data));
-            return deviceCode;
+            return Task.CompletedTask;
         }
 
         /// <summary>

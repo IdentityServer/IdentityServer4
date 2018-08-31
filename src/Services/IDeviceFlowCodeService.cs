@@ -1,25 +1,19 @@
-// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-
-
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 
-namespace IdentityServer4.Stores
+namespace IdentityServer4.Services
 {
     /// <summary>
-    /// Interface for the device flow store
+    /// Wrapper service for IDeviceFlowStore.
     /// </summary>
-    public interface IDeviceFlowStore
+    public interface IDeviceFlowCodeService
     {
         /// <summary>
         /// Stores the device authorization request.
         /// </summary>
-        /// <param name="deviceCode">The device code.</param>
         /// <param name="userCode">The user code.</param>
         /// <param name="data">The data.</param>
-        /// <returns></returns>
-        Task StoreDeviceAuthorizationAsync(string deviceCode, string userCode, DeviceCode data);
+        Task<string> StoreDeviceAuthorizationAsync(string userCode, DeviceCode data);
 
         /// <summary>
         /// Finds device authorization by user code.

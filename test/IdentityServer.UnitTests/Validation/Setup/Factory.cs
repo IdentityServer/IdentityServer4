@@ -318,7 +318,7 @@ namespace IdentityServer4.UnitTests.Validation
 
         public static IDeviceFlowStore CreateDeviceCodeStore()
         {
-            return new InMemoryDeviceFlowStore(new DefaultHandleGenerationService());
+            return new InMemoryDeviceFlowStore();
         }
         
         public static IUserConsentStore CreateUserConsentStore()

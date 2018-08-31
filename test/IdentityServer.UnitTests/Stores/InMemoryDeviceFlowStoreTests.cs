@@ -5,18 +5,18 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
-using IdentityServer4.UnitTests.Common;
 using Xunit;
 
 namespace IdentityServer.UnitTests.Stores
 {
     public class InMemoryDeviceFlowStoreTests
     {
-        private InMemoryDeviceFlowStore _store = new InMemoryDeviceFlowStore(new StubHandleGenerationService());
+        private InMemoryDeviceFlowStore _store = new InMemoryDeviceFlowStore();
 
         [Fact]
         public async Task StoreDeviceAuthorizationAsync_should_persist_data_by_user_code()
         {
+            var deviceCode = Guid.NewGuid().ToString();
             var userCode = Guid.NewGuid().ToString();
             var data = new DeviceCode
             {
@@ -29,7 +29,7 @@ namespace IdentityServer.UnitTests.Stores
                 RequestedScopes = new[] {"scope1", "scope2"}
             };
 
-            await _store.StoreDeviceAuthorizationAsync(userCode, data);
+            await _store.StoreDeviceAuthorizationAsync(deviceCode, userCode, data);
             var foundData = await _store.FindByUserCodeAsync(userCode);
 
             foundData.ClientId.Should().Be(data.ClientId);
@@ -44,6 +44,7 @@ namespace IdentityServer.UnitTests.Stores
         [Fact]
         public async Task StoreDeviceAuthorizationAsync_should_persist_data_by_device_code()
         {
+            var deviceCode = Guid.NewGuid().ToString();
             var userCode = Guid.NewGuid().ToString();
             var data = new DeviceCode
             {
@@ -56,7 +57,7 @@ namespace IdentityServer.UnitTests.Stores
                 RequestedScopes = new[] {"scope1", "scope2"}
             };
 
-            var deviceCode = await _store.StoreDeviceAuthorizationAsync(userCode, data);
+            await _store.StoreDeviceAuthorizationAsync(deviceCode, userCode, data);
             var foundData = await _store.FindByDeviceCodeAsync(deviceCode);
 
             foundData.ClientId.Should().Be(data.ClientId);
@@ -71,6 +72,7 @@ namespace IdentityServer.UnitTests.Stores
         [Fact]
         public async Task UpdateByUserCodeAsync_should_update_data()
         {
+            var deviceCode = Guid.NewGuid().ToString();
             var userCode = Guid.NewGuid().ToString();
             var initialData = new DeviceCode
             {
@@ -83,7 +85,7 @@ namespace IdentityServer.UnitTests.Stores
                 RequestedScopes = new[] {"scope1", "scope2"}
             };
 
-            await _store.StoreDeviceAuthorizationAsync(userCode, initialData);
+            await _store.StoreDeviceAuthorizationAsync(deviceCode, userCode, initialData);
 
             var updatedData = new DeviceCode
             {
@@ -112,6 +114,7 @@ namespace IdentityServer.UnitTests.Stores
         [Fact]
         public async Task RemoveByDeviceCodeAsync_should_update_data()
         {
+            var deviceCode = Guid.NewGuid().ToString();
             var userCode = Guid.NewGuid().ToString();
             var data = new DeviceCode
             {
@@ -124,7 +127,7 @@ namespace IdentityServer.UnitTests.Stores
                 RequestedScopes = new[] { "scope1", "scope2" }
             };
 
-            var deviceCode = await _store.StoreDeviceAuthorizationAsync(userCode, data);
+            await _store.StoreDeviceAuthorizationAsync(deviceCode, userCode, data);
             await _store.RemoveByDeviceCodeAsync(deviceCode);
             var foundData = await _store.FindByUserCodeAsync(userCode);
 

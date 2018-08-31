@@ -26,6 +26,7 @@ using Microsoft.AspNetCore.Authentication;
 using static IdentityServer4.Constants;
 using IdentityServer4.Extensions;
 using IdentityServer4.Hosting.FederatedSignOut;
+using IdentityServer4.Services.Default;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -151,6 +152,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<ITokenCreationService, DefaultTokenCreationService>();
             builder.Services.TryAddTransient<IClaimsService, DefaultClaimsService>();
             builder.Services.TryAddTransient<IRefreshTokenService, DefaultRefreshTokenService>();
+            builder.Services.TryAddTransient<IDeviceFlowCodeService, DefaultDeviceFlowCodeService>();
             builder.Services.TryAddTransient<IConsentService, DefaultConsentService>();
             builder.Services.TryAddTransient<ICorsPolicyService, DefaultCorsPolicyService>();
             builder.Services.TryAddTransient<IProfileService, DefaultProfileService>();
