@@ -30,7 +30,8 @@
 
   <ItemGroup>
     <PackageReference Include="IdentityModel" Version="3.10.0-arran" />
-    <PackageReference Include="IdentityServer4.Storage" Version="2.3.0-preview1-update1" />
+    <PackageReference Include="IdentityServer4.Storage" Version="2.3.0-preview1-update2" />
+    
     
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.1.0" />
