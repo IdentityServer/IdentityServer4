@@ -2,8 +2,12 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.1;net461</TargetFrameworks>
-
     <IsPackable>false</IsPackable>
+
+    <!-- strong naming fml -->
+    <AssemblyOriginatorKeyFile>../../key.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
+    <PublicSign Condition="'$(OS)' != 'Windows_NT'">true</PublicSign>
   </PropertyGroup>
 
   <ItemGroup>
