@@ -343,6 +343,23 @@ namespace IdentityServer4.ResponseHandling
 
                     webKeys.Add(webKey);
                 }
+
+                if (key is JsonWebKey jsonWebKey)
+                {
+                    var webKey = new Models.JsonWebKey
+                    {
+                        kty = jsonWebKey.Kty,
+                        use = jsonWebKey.Use ?? "sig",
+                        kid = jsonWebKey.Kid,
+                        x5t = jsonWebKey.X5t,
+                        e = jsonWebKey.E,
+                        n = jsonWebKey.N,
+                        x5c = jsonWebKey.X5c?.Count == 0 ? null : jsonWebKey.X5c.ToArray(),
+                        alg = jsonWebKey.Alg
+                    };
+
+                    webKeys.Add(webKey);
+                }
             }
 
             return webKeys;
