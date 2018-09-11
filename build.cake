@@ -49,8 +49,7 @@ Task("Test")
 {
     var settings = new DotNetCoreTestSettings
     {
-        Configuration = configuration,
-        NoBuild = true
+        Configuration = configuration
     };
 
     if (!isWindows)
