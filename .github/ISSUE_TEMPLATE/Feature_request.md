@@ -1,15 +1,17 @@
-Please only use the issue tracker for bug reports and/or feature requests. For general security questions, or free or commercial support options do __not__ use the issue tracker and instead see [here](https://identityserver4.readthedocs.io/en/release/intro/support.html) for more details.
+---
+name: Feature request
+about: Suggest an idea for this project
 
-For bug reports,  include the relevant log files related to your issue. See here how to enable [logging](https://identityserver4.readthedocs.io/en/release/topics/logging.html). Delete this line once you have.
+---
 
-Finally, please keep the issue concise and to the point. If you paste in more code than the text for the issue you are reporting then we will most likely not read it. 
+**Is your feature request related to a problem? Please describe.**
+A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
 
-### Issue / Steps to reproduce the problem
+**Describe the solution you'd like**
+A clear and concise description of what you want to happen.
 
+**Describe alternatives you've considered**
+A clear and concise description of any alternative solutions or features you've considered.
 
-
-### Relevant parts of the log file
-
-```
-<log goes here>
-```
+**Additional context**
+Add any other context or screenshots about the feature request here.
