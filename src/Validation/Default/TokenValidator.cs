@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -317,7 +317,7 @@ namespace IdentityServer4.Validation
             catch (SecurityTokenExpiredException expiredException)
             {
                 _logger.LogInformation(expiredException, "JWT token validation error: {exception}", expiredException.Message);
-                return Invalid(OidcConstants.ProtectedResourceErrors.InvalidToken);
+                return Invalid(OidcConstants.ProtectedResourceErrors.ExpiredToken);
             }
             catch (Exception ex)
             {
