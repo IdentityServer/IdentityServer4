@@ -93,6 +93,7 @@ Add a new controller to your API project::
 
     [Route("identity")]
     [Authorize]
+    [ApiController]
     public class IdentityController : ControllerBase
     {
         [HttpGet]
