@@ -77,7 +77,7 @@ Task("Pack")
     {
         Configuration = configuration,
         OutputDirectory = buildArtifacts,
-        //ArgumentCustomization = args => args.Append("--include-symbols")
+        NoBuild = true
     };
 
     // add build suffix for CI builds
