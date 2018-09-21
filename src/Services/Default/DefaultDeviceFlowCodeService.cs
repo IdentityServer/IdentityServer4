@@ -78,7 +78,7 @@ namespace IdentityServer4.Services.Default
         /// <returns></returns>
         public Task RemoveByDeviceCodeAsync(string deviceCode)
         {
-            return RemoveByDeviceCodeAsync(deviceCode.Sha256());
+            return _store.RemoveByDeviceCodeAsync(deviceCode.Sha256());
         }
     }
 }
