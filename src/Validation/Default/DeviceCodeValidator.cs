@@ -8,7 +8,6 @@ using IdentityModel;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
-using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 
@@ -16,14 +15,14 @@ namespace IdentityServer4.Validation
 {
     internal class DeviceCodeValidator : IDeviceCodeValidator
     {
-        private readonly IDeviceFlowStore _devices;
+        private readonly IDeviceFlowCodeService _devices;
         private readonly IProfileService _profile;
         private readonly IDeviceFlowThrottlingService _throttlingService;
         private readonly ISystemClock _systemClock;
         private readonly ILogger<DeviceCodeValidator> _logger;
 
         public DeviceCodeValidator(
-            IDeviceFlowStore devices,
+            IDeviceFlowCodeService devices,
             IProfileService profile,
             IDeviceFlowThrottlingService throttlingService,
             ISystemClock systemClock,

@@ -15,6 +15,7 @@ namespace IdentityServer4.Stores
     /// <seealso cref="IdentityServer4.Stores.IDeviceFlowStore" />
     public class InMemoryDeviceFlowStore : IDeviceFlowStore
     {
+        // TODO: Thread safe?
         private readonly List<InMemoryDeviceAuthorization> _repository = new List<InMemoryDeviceAuthorization>();
 
         /// <summary>
