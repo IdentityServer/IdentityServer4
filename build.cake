@@ -1,4 +1,4 @@
-#tool "nuget:https://api.nuget.org/v3/index.json?package=GitVersion.CommandLine"
+#tool "nuget:https://api.nuget.org/v3/index.json?package=GitVersion.CommandLine&version=3.6.2"
 
 var target          = Argument("target", "Default");
 var configuration   = Argument<string>("configuration", "Release");
@@ -36,55 +36,76 @@ class VersionInfo
 
 Setup(context =>
 {
-    // only calculate versions if on Windows
-    // due to problems with GitVersion in the current setup - but also since Windows is our release platform anyways
-    if (isWindows)
+    Cake.Common.Tools.GitVersion.GitVersion gitVersions;
+
+    if (context.Environment.Runtime.IsCoreClr && context.Environment.Platform.IsUnix())
     {
-        var gitVersions = Context.GitVersion();
-        
-        versions = new VersionInfo
+        var mono = context.Tools.Resolve("mono");
+        var gitversionPath = context.Tools.Resolve("GitVersion.exe").FullPath;
+        if (isAppVeyor)
         {
-            InformationalVersion = gitVersions.InformationalVersion,
-            BranchName = gitVersions.BranchName,
-            PreReleaseLabel = gitVersions.PreReleaseLabel
-        };
-
-        // explicit version has been passed in as argument
-        if (!string.IsNullOrEmpty(versionOverride))
-        {
-            versions.AssemblyVersion = versionOverride;
-            versions.FileVersion = versionOverride;
-
-            if (!string.IsNullOrEmpty(suffixOverride))
-            {
-                versions.VersionSuffix = suffixOverride;
-            }
-        }
-        else
-        {
-            versions.AssemblyVersion = gitVersions.AssemblySemVer;
-            versions.FileVersion = gitVersions.AssemblySemVer;
-
-            if (!string.IsNullOrEmpty(versions.PreReleaseLabel))
-            {
-                versions.VersionSuffix = gitVersions.PreReleaseLabel + gitVersions.CommitsSinceVersionSourcePadded;      
-            }
-            
+            context.GitVersion(new GitVersionSettings{
+                    OutputType = GitVersionOutput.BuildServer,
+                    ToolPath = mono,
+                    ArgumentCustomization = args => args.PrependQuoted(gitversionPath)
+                });
         }
 
-        Information("branch            : " + versions.BranchName);
-        Information("pre-release label : " + versions.PreReleaseLabel);
-        Information("version           : " + versions.AssemblyVersion);
-        Information("version suffix    : " + versions.VersionSuffix);
-        Information("informational     : " + versions.InformationalVersion);
-        
-        msBuildSettings = GetMSBuildSettings();
+        gitVersions =  context.GitVersion(
+                            new GitVersionSettings {
+                                    ToolPath = mono,
+                                    ArgumentCustomization = args => args.PrependQuoted(gitversionPath)
+                                });
     }
     else
     {
-        Information("Skipping version calculation because not on Windows.");
-        msBuildSettings = null;
+        if (isAppVeyor)
+        {
+            context.GitVersion(new GitVersionSettings{
+                    OutputType = GitVersionOutput.BuildServer
+                });
+        }
+
+        gitVersions = context.GitVersion();
     }
+     
+    versions = new VersionInfo
+    {
+        InformationalVersion = gitVersions.InformationalVersion,
+        BranchName = gitVersions.BranchName,
+        PreReleaseLabel = gitVersions.PreReleaseLabel
+    };
+
+    // explicit version has been passed in as argument
+    if (!string.IsNullOrEmpty(versionOverride))
+    {
+        versions.AssemblyVersion = versionOverride;
+        versions.FileVersion = versionOverride;
+
+        if (!string.IsNullOrEmpty(suffixOverride))
+        {
+            versions.VersionSuffix = suffixOverride;
+        }
+    }
+    else
+    {
+        versions.AssemblyVersion = gitVersions.AssemblySemVer;
+        versions.FileVersion = gitVersions.AssemblySemVer;
+
+        if (!string.IsNullOrEmpty(versions.PreReleaseLabel))
+        {
+            versions.VersionSuffix = gitVersions.PreReleaseLabel + gitVersions.CommitsSinceVersionSourcePadded;      
+        }
+        
+    }
+
+    Information("branch            : " + versions.BranchName);
+    Information("pre-release label : " + versions.PreReleaseLabel);
+    Information("version           : " + versions.AssemblyVersion);
+    Information("version suffix    : " + versions.VersionSuffix);
+    Information("informational     : " + versions.InformationalVersion);
+    
+    msBuildSettings = GetMSBuildSettings();
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -108,7 +129,7 @@ Task("Build")
         Configuration = configuration,
         MSBuildSettings = msBuildSettings
     };
-
+    
     var projects = GetFiles("./src/**/*.csproj");
     foreach(var project in projects)
 	{
@@ -161,10 +182,9 @@ Task("Test")
 Task("Pack")
     .IsDependentOn("Clean")
     .IsDependentOn("Build")
+    .WithCriteria(() => !SkipPack())
     .Does(() =>
 {
-    if (SkipPack()) return;
-
     var settings = new DotNetCorePackSettings
     {
         Configuration = configuration,
@@ -183,7 +203,7 @@ private bool SkipPack()
         Information("Skipping pack because not on Windows.");
         return true;
     }
-    
+
     if (String.IsNullOrEmpty(versions.PreReleaseLabel) && versions.BranchName != "master") 
     {
         Information("Skipping pack of release version, because not on master.");
