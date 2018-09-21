@@ -351,6 +351,8 @@ namespace Host.Configuration
                     AllowedGrantTypes = GrantTypes.DeviceFlow,
                     RequireClientSecret = false,
 
+                    AllowOfflineAccess = true,
+
                     AllowedCorsOrigins = { "http://localhost:5001" }, // JS test client only
 
                     AllowedScopes =

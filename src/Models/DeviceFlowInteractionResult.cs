@@ -8,7 +8,6 @@ namespace IdentityServer4.Models
         public string ErrorDescription { get; set; }
         public bool IsError { get; private set; }
 
-        public bool IsConsent { get; set; }
         public bool IsAccessDenied { get; set; }
 
         public static DeviceFlowInteractionResult Failure(string errorDescription = null)
