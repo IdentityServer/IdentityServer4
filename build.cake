@@ -82,6 +82,7 @@ Setup(context =>
     }
     else
     {
+        Information("Skipping version calculation because not on Windows.");
         msBuildSettings = null;
     }
 });
@@ -108,6 +109,11 @@ Task("Build")
         MSBuildSettings = msBuildSettings
     };
 
+    if (!isWindows)
+    {
+        Information("Not running on Windows - skipping builds for .NET Framework");
+        settings.Framework = "netcoreapp2.1";
+    }
     
     var projects = GetFiles("./src/**/*.csproj");
     foreach(var project in projects)
@@ -135,12 +141,6 @@ Task("Test")
         Configuration = configuration,
         NoBuild = true
     };
-
-    if (!isWindows)
-    {
-        Information("Not running on Windows - skipping tests for .NET Framework");
-        settings.Framework = "netcoreapp2.0";
-    }
 
     var projects = GetFiles("./test/**/*.csproj");
     foreach(var project in projects)
