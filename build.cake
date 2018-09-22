@@ -109,16 +109,16 @@ Task("Build")
         MSBuildSettings = msBuildSettings
     };
 
-    if (!isWindows)
-    {
-        Information("Not running on Windows - skipping builds for .NET Framework");
-        settings.Framework = "netcoreapp2.1";
-    }
-    
     var projects = GetFiles("./src/**/*.csproj");
     foreach(var project in projects)
 	{
 	    DotNetCoreBuild(project.GetDirectory().FullPath, settings);
+    }
+
+    if (!isWindows)
+    {
+        Information("Not running on Windows - skipping building tests for .NET Framework");
+        settings.Framework = "netcoreapp2.1";
     }
 
     var tests = GetFiles("./test/**/*.csproj");
