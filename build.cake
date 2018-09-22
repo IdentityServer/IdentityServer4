@@ -142,6 +142,12 @@ Task("Test")
         NoBuild = true
     };
 
+    if (!isWindows)
+    {
+        Information("Not running on Windows - skipping tests for .NET Framework");
+        settings.Framework = "netcoreapp2.1";
+    }
+
     var projects = GetFiles("./test/**/*.csproj");
     foreach(var project in projects)
     {
