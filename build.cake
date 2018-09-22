@@ -178,6 +178,12 @@ Task("Pack")
 
 private bool SkipPack()
 {
+    if (!isWindows)
+    {
+        Information("Skipping pack because not on Windows.");
+        return true;
+    }
+    
     if (String.IsNullOrEmpty(versions.PreReleaseLabel) && versions.BranchName != "master") 
     {
         Information("Skipping pack of release version, because not on master.");
@@ -187,12 +193,6 @@ private bool SkipPack()
     if (versions.PreReleaseLabel == "PullRequest")
     {
         Information("Skipping pack for pull requests.");
-        return true;
-    }
-
-    if (!isWindows)
-    {
-        Information("Skipping pack because not on Windows.");
         return true;
     }
 
