@@ -9,4 +9,4 @@ The discovery endpoint is available via `/.well-known/openid-configuration` rela
 
     https://demo.identityserver.io/.well-known/openid-configuration
 
-.. Note:: You can use the ´IdentityModel <https://github.com/IdentityModel/IdentityModel2>`_ client library to programmatically access the discovery endpoint from .NET code. For more information check the IdentityModel `docs <https://identitymodel.readthedocs.io/en/latest/client/discovery.html>`_.
+.. Note:: You can use the `IdentityModel <https://github.com/IdentityModel/IdentityModel2>`_ client library to programmatically access the discovery endpoint from .NET code. For more information check the IdentityModel `docs <https://identitymodel.readthedocs.io/en/latest/client/discovery.html>`_.

@@ -21,4 +21,4 @@ Example
 
     token=45ghiukldjahdnhzdauz&token_type_hint=refresh_token
 
-.. Note:: You can use the ´IdentityModel <https://github.com/IdentityModel/IdentityModel2>`_ client library to programmatically access the revocation endpoint from .NET code. For more information check the IdentityModel `docs <https://identitymodel.readthedocs.io/en/latest/client/revocation.html>`_.
+.. Note:: You can use the `IdentityModel <https://github.com/IdentityModel/IdentityModel2>`_ client library to programmatically access the revocation endpoint from .NET code. For more information check the IdentityModel `docs <https://identitymodel.readthedocs.io/en/latest/client/revocation.html>`_.

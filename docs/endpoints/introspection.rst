@@ -37,4 +37,4 @@ Unknown or expired tokens will be marked as inactive::
 
 An invalid request will return a 400, an unauthorized request 401.
 
-.. Note:: You can use the ´IdentityModel <https://github.com/IdentityModel/IdentityModel2>`_ client library to programmatically access the introspection endpoint from .NET code. For more information check the IdentityModel `docs <https://identitymodel.readthedocs.io/en/latest/client/introspection.html>`_.
+.. Note:: You can use the `IdentityModel <https://github.com/IdentityModel/IdentityModel2>`_ client library to programmatically access the introspection endpoint from .NET code. For more information check the IdentityModel `docs <https://identitymodel.readthedocs.io/en/latest/client/introspection.html>`_.

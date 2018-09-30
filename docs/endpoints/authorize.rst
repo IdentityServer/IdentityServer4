@@ -70,4 +70,4 @@ This process typically involves authentication of the end-user and optionally co
 
 (URL encoding removed, and line breaks added for readability)
 
-.. Note:: You can use the ´IdentityModel <https://github.com/IdentityModel/IdentityModel2>`_ client library to programmatically authorize requests .NET code. For more information check the IdentityModel `docs <https://identitymodel.readthedocs.io/en/latest/client/authorize.html>`_.
+.. Note:: You can use the `IdentityModel <https://github.com/IdentityModel/IdentityModel2>`_ client library to programmatically create authorize requests .NET code. For more information check the IdentityModel `docs <https://identitymodel.readthedocs.io/en/latest/client/authorize.html>`_.
