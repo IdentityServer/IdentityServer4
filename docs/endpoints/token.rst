@@ -49,14 +49,4 @@ Example
 
 (Form-encoding removed and line breaks added for readability)
 
-IdentityModel
-^^^^^^^^^^^^^
-You can programmatically access the token endpoint using the `IdentityModel <https://github.com/IdentityModel/IdentityModel2>`_ library::
-
-    var client = new TokenClient(
-        doc.TokenEndpoint,
-        "client_id",
-        "secret");
-
-    var response = await client.RequestAuthorizationCodeAsync("hdh922", "https://myapp.com/callback");
-    var token = response.AccessToken;
+.. Note:: You can use the `IdentityModel <https://github.com/IdentityModel/IdentityModel2>`_ client library to programmatically access the token endpoint from .NET code. For more information check the IdentityModel `docs <https://identitymodel.readthedocs.io/en/latest/client/token.html>`_.

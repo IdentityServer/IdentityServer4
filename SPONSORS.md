@@ -63,3 +63,5 @@ Henning Støverud  ([@henningst](https://twitter.com/henningst))
 Ryan Mendoza  ([@elryry](https://twitter.com/elryry))  
 Colin Blair  
 Erik Gulbrandsen  
+Olga Klimova  
+Alexandru Puiu  
