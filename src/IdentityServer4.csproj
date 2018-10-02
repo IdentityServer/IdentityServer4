@@ -28,7 +28,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="IdentityModel" Version="3.10.0-arran" />
+    <PackageReference Include="IdentityModel" Version="3.10.0" />
     <PackageReference Include="IdentityServer4.Storage" Version="2.3.0-preview1-update2" />
     
     
