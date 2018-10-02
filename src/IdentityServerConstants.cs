@@ -12,7 +12,6 @@ namespace IdentityServer4
         public const string SignoutScheme = "idsrv";
         public const string ExternalCookieAuthenticationScheme = "idsrv.external";
         public const string DefaultCheckSessionCookieName = "idsrv.session";
-        public const string AccessTokenAudience = "{0}resources";
 
         public static class ProtocolTypes
         {
