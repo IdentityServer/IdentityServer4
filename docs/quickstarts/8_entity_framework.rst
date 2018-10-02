@@ -68,9 +68,17 @@ Configuring the stores
 ^^^^^^^^^^^^^^^^^^^^^^
 
 The next step is to replace the current calls to ``AddInMemoryClients``, ``AddInMemoryIdentityResources``, and ``AddInMemoryApiResources`` in the ``ConfigureServices`` method in `Startup.cs`.
+
+Check if your appsettings.json has ConnectionStrings:DefaultConnection setting.
+If not, add following setting::
+
+    "ConnectionStrings": {
+    "DefaultConnection": "Server=(localdb)\\MSSQLLocalDB;database=IdentityServer4.Quickstart.EntityFramework-2.0.0;trusted_connection=yes;"
+  }
+
+
 We will replace them with this code::
 
-    const string connectionString = @"Data Source=(LocalDb)\MSSQLLocalDB;database=IdentityServer4.Quickstart.EntityFramework-2.0.0;trusted_connection=yes;";
     var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
 
     // configure identity server with in-memory stores, keys, clients and scopes
@@ -81,14 +89,14 @@ We will replace them with this code::
         .AddConfigurationStore(options =>
         {
             options.ConfigureDbContext = builder =>
-                builder.UseSqlServer(connectionString,
+                builder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
                     sql => sql.MigrationsAssembly(migrationsAssembly));
         })
         // this adds the operational data from DB (codes, tokens, consents)
         .AddOperationalStore(options =>
         {
             options.ConfigureDbContext = builder =>
-                builder.UseSqlServer(connectionString,
+                builder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
                     sql => sql.MigrationsAssembly(migrationsAssembly));
 
             // this enables automatic token cleanup. this is optional.
