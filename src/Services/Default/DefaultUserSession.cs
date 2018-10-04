@@ -129,6 +129,10 @@ namespace IdentityServer4.Services
         // just reading the incoming cookie
         //
         // this design requires this to be in DI as scoped
+
+        /// <summary>
+        /// Authenticates the authentication cookie for the current HTTP request and caches the user and properties results.
+        /// </summary>
         protected virtual async Task AuthenticateAsync()
         {
             if (Principal == null || Properties == null)

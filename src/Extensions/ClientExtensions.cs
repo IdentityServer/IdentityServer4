@@ -6,8 +6,14 @@ using System.Linq;
 
 namespace IdentityServer4.Models
 {
+    /// <summary>
+    /// Extension methods for client.
+    /// </summary>
     public static class ClientExtensions
     {
+        /// <summary>
+        /// Returns true if the client is an implicit-only client.
+        /// </summary>
         public static bool IsImplicitOnly(this Client client)
         {
             return client != null &&
