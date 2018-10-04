@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -198,6 +198,20 @@ namespace IdentityServer4.ResponseHandling
             {
                 Logger.LogInformation("Showing login: User is logged in with idp: {idp}, but idp not in client restriction list.", currentIdp);
                 return new InteractionResponse { IsLogin = true };
+            }
+
+            // check client's user SSO timeout
+            if (request.Client.UserSsoLifetime.HasValue)
+            {
+                var authTimeEpoch = request.Subject.GetAuthenticationTimeEpoch();
+                var nowEpoch = Clock.UtcNow.ToEpochTime();
+
+                var diff = nowEpoch - authTimeEpoch;
+                if (diff > request.Client.UserSsoLifetime.Value)
+                {
+                    Logger.LogInformation("Showing login: User's auth session duration: {sessionDuration} exceeds client's user SSO lifetime: {userSsoLifetime}.", diff, request.Client.UserSsoLifetime);
+                    return new InteractionResponse { IsLogin = true };
+                }
             }
 
             return new InteractionResponse();
