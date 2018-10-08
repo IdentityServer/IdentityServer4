@@ -59,7 +59,7 @@ namespace IdentityServer4.Services
             deviceAuth.Subject = subject;
             deviceAuth.AuthorizedScopes = consent.ScopesConsented;
 
-            // TODO: Record consented template
+            // TODO: Device Flow - Record consent template
             if (consent.RememberConsent)
             {
                 //var consentRequest = new ConsentRequest(request, subject);

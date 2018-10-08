@@ -512,7 +512,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // validate device code parameter
             /////////////////////////////////////////////
-            var deviceCode = parameters.Get("device_code"); // TODO: Update to const
+            var deviceCode = parameters.Get(OidcConstants.TokenRequest.DeviceCode);
             if (deviceCode.IsMissing())
             {
                 LogError("Device code is missing");
