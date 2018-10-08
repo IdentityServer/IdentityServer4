@@ -479,7 +479,7 @@ namespace IdentityServer4.Validation
 
             if (result.IsError)
             {
-                LogError("Refresh token validation failed. aborting.");
+                LogWarning("Refresh token validation failed. aborting.");
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
@@ -716,6 +716,26 @@ namespace IdentityServer4.Validation
             else
             {
                 _logger.LogError("{details}", details);
+            }
+        }
+
+        private void LogWarning(string message = null, params object[] values)
+        {
+            var details = new TokenRequestValidationLog(_validatedRequest);
+            if (message.IsPresent())
+            {
+                try
+                {
+                    _logger.LogWarning(message + ", request details: {details}", values, details);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError("Error logging {exception}, request details: {details}", ex.Message, details);
+                }
+            }
+            else
+            {
+                _logger.LogWarning("{details}", details);
             }
         }
 
