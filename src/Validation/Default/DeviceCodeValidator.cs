@@ -13,6 +13,9 @@ using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.Validation
 {
+    /// <summary>
+    /// Validates an incoming token request using the device flow
+    /// </summary>
     internal class DeviceCodeValidator : IDeviceCodeValidator
     {
         private readonly IDeviceFlowCodeService _devices;
@@ -21,6 +24,14 @@ namespace IdentityServer4.Validation
         private readonly ISystemClock _systemClock;
         private readonly ILogger<DeviceCodeValidator> _logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DeviceCodeValidator"/> class.
+        /// </summary>
+        /// <param name="devices">The devices.</param>
+        /// <param name="profile">The profile.</param>
+        /// <param name="throttlingService">The throttling service.</param>
+        /// <param name="systemClock">The system clock.</param>
+        /// <param name="logger">The logger.</param>
         public DeviceCodeValidator(
             IDeviceFlowCodeService devices,
             IProfileService profile,
@@ -35,6 +46,11 @@ namespace IdentityServer4.Validation
             _logger = logger;
         }
 
+        /// <summary>
+        /// Validates the device code.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <returns></returns>
         public async Task ValidateAsync(DeviceCodeValidationContext context)
         {
             var deviceCode = await _devices.FindByDeviceCodeAsync(context.DeviceCode);
@@ -57,7 +73,7 @@ namespace IdentityServer4.Validation
             if (await _throttlingService.ShouldSlowDown(context.DeviceCode, deviceCode))
             {
                 _logger.LogError("Client {0} is polling too fast", deviceCode.ClientId);
-                context.Result = new TokenRequestValidationResult(context.Request, "slow_down");
+                context.Result = new TokenRequestValidationResult(context.Request, OidcConstants.TokenErrors.SlowDown);
                 return;
             }
 
@@ -65,22 +81,23 @@ namespace IdentityServer4.Validation
             if (deviceCode.CreationTime.AddSeconds(deviceCode.Lifetime) < _systemClock.UtcNow)
             {
                 _logger.LogError("Expired device code");
-                context.Result = new TokenRequestValidationResult(context.Request, "expired_token");
+                context.Result = new TokenRequestValidationResult(context.Request, OidcConstants.TokenErrors.ExpiredToken);
                 return;
             }
 
             // denied
-            if (!deviceCode.AuthorizedScopes?.Any() == true)
+            if (deviceCode.IsAuthorized
+                && (deviceCode.AuthorizedScopes == null || deviceCode.AuthorizedScopes.Any() == false))
             {
                 _logger.LogError("No scopes authorized for device authorization. Access denied");
-                context.Result = new TokenRequestValidationResult(context.Request, "access_denied");
+                context.Result = new TokenRequestValidationResult(context.Request, OidcConstants.TokenErrors.AccessDenied);
                 return;
             }
 
             // make sure code is authorized
             if (!deviceCode.IsAuthorized || deviceCode.Subject == null)
             {
-                context.Result = new TokenRequestValidationResult(context.Request, "authorization_pending");
+                context.Result = new TokenRequestValidationResult(context.Request, OidcConstants.TokenErrors.AuthorizationPending);
                 return;
             }
 
@@ -98,7 +115,6 @@ namespace IdentityServer4.Validation
             context.Request.DeviceCode = deviceCode;
             context.Result = new TokenRequestValidationResult(context.Request);
             await _devices.RemoveByDeviceCodeAsync(context.DeviceCode);
-
         }
     }
 }

@@ -98,7 +98,7 @@ namespace IdentityServer.UnitTests.Validation
             await validator.ValidateAsync(context);
 
             context.Result.IsError.Should().BeTrue();
-            context.Result.Error.Should().Be("expired_token");
+            context.Result.Error.Should().Be(OidcConstants.TokenErrors.ExpiredToken);
         }
 
         [Fact]
@@ -122,7 +122,7 @@ namespace IdentityServer.UnitTests.Validation
             await validator.ValidateAsync(context);
 
             context.Result.IsError.Should().BeTrue();
-            context.Result.Error.Should().Be("access_denied");
+            context.Result.Error.Should().Be(OidcConstants.TokenErrors.AccessDenied);
         }
 
         [Fact]
@@ -146,7 +146,7 @@ namespace IdentityServer.UnitTests.Validation
             await validator.ValidateAsync(context);
 
             context.Result.IsError.Should().BeTrue();
-            context.Result.Error.Should().Be("authorization_pending");
+            context.Result.Error.Should().Be(OidcConstants.TokenErrors.AuthorizationPending);
         }
 
         [Fact]
@@ -170,7 +170,7 @@ namespace IdentityServer.UnitTests.Validation
             await validator.ValidateAsync(context);
 
             context.Result.IsError.Should().BeTrue();
-            context.Result.Error.Should().Be("authorization_pending");
+            context.Result.Error.Should().Be(OidcConstants.TokenErrors.AuthorizationPending);
         }
 
 
@@ -215,7 +215,7 @@ namespace IdentityServer.UnitTests.Validation
             await validator.ValidateAsync(context);
 
             context.Result.IsError.Should().BeTrue();
-            context.Result.Error.Should().Be("slow_down");
+            context.Result.Error.Should().Be(OidcConstants.TokenErrors.SlowDown);
         }
 
         [Fact]
