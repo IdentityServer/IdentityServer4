@@ -12,6 +12,7 @@ namespace IdentityServer4
         public const string SignoutScheme = "idsrv";
         public const string ExternalCookieAuthenticationScheme = "idsrv.external";
         public const string DefaultCheckSessionCookieName = "idsrv.session";
+        public const string AccessTokenAudience = "{0}resources";
 
         public static class ProtocolTypes
         {
@@ -36,7 +37,7 @@ namespace IdentityServer4
             public const string NoSecret = "NoSecret";
             public const string SharedSecret = "SharedSecret";
             public const string X509Certificate = "X509Certificate";
-            public const string JwtBearer = "urn:ietf:params:oauth:grant-type:jwt-bearer";
+            public const string JwtBearer = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
         }
 
         public static class SecretTypes

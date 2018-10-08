@@ -30,11 +30,4 @@ Example
         ]
     }
 
-IdentityModel
-^^^^^^^^^^^^^
-You can programmatically access the userinfo endpoint using the `IdentityModel <https://github.com/IdentityModel/IdentityModel2>`_ library::
-
-    var userInfoClient = new UserInfoClient(doc.UserInfoEndpoint, token);
-
-    var response = await userInfoClient.GetAsync();
-    var claims = response.Claims;
+.. Note:: You can use the `IdentityModel <https://github.com/IdentityModel/IdentityModel2>`_ client library to programmatically access the userinfo endpoint from .NET code. For more information check the IdentityModel `docs <https://identitymodel.readthedocs.io/en/latest/client/userinfo.html>`_.

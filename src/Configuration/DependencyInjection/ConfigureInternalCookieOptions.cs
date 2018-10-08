@@ -26,6 +26,7 @@ namespace IdentityServer4.Configuration
                 options.SlidingExpiration = _idsrv.Authentication.CookieSlidingExpiration;
                 options.ExpireTimeSpan = _idsrv.Authentication.CookieLifetime;
                 options.Cookie.Name = IdentityServerConstants.DefaultCookieAuthenticationScheme;
+                options.Cookie.IsEssential = true;
                 options.Cookie.SameSite = SameSiteMode.None;
 
                 options.LoginPath = ExtractLocalUrl(_idsrv.UserInteraction.LoginUrl);
@@ -39,6 +40,13 @@ namespace IdentityServer4.Configuration
             if (name == IdentityServerConstants.ExternalCookieAuthenticationScheme)
             {
                 options.Cookie.Name = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                options.Cookie.IsEssential = true;
+                // https://github.com/IdentityServer/IdentityServer4/issues/2595
+                // need to set None because iOS 12 safari considers the POST back to the client from the 
+                // IdP as not safe, so cookies issued from response (with lax) then should not be honored.
+                // so we need to make those cookies issued without same-site, thus the browser will
+                // hold onto them and send on the next redirect to the callback page.
+                options.Cookie.SameSite = SameSiteMode.None;
             }
         }
 

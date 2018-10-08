@@ -120,16 +120,20 @@ namespace IdentityServer4.Services
             return defaultScheme.Name;
         }
 
-        // we need this helper (and can't call HttpContext.AuthenticateAsync) so we don't run 
+        // we need this helper (and can't call HttpContext.AuthenticateAsync) so we don't run
         // claims transformation when we get the principal. this also ensures that we don't
         // re-issue a cookie that includes the claims from claims transformation.
-        // 
+        //
         // also, by caching the _principal/_properties it allows someone to issue a new
         // cookie (via HttpContext.SignInAsync) and we'll use those new values, rather than
         // just reading the incoming cookie
-        // 
+        //
         // this design requires this to be in DI as scoped
-        private async Task AuthenticateAsync()
+
+        /// <summary>
+        /// Authenticates the authentication cookie for the current HTTP request and caches the user and properties results.
+        /// </summary>
+        protected virtual async Task AuthenticateAsync()
         {
             if (Principal == null || Properties == null)
             {
@@ -376,6 +380,7 @@ namespace IdentityServer4.Services
                 HttpOnly = false,
                 Secure = secure,
                 Path = path,
+                IsEssential = true,
                 SameSite = SameSiteMode.None
             };
 
