@@ -79,7 +79,7 @@ namespace IdentityServer4.UnitTests.Validation.Secrets
         {
             var context = new DefaultHttpContext();
 
-            context.Request.Headers.Add("Authorization", new StringValues(""));
+            context.Request.Headers.Add("Authorization", new StringValues(string.Empty));
 
             var secret = await _parser.ParseAsync(context);
 

@@ -32,7 +32,7 @@ namespace IdentityServer4.Quickstart.UI
             IIdentityServerInteractionService interaction,
             IClientStore clientStore,
             IResourceStore resourceStore,
-            IEventService events, 
+            IEventService events,
             ILogger<ConsentController> logger)
         {
             _interaction = interaction;
@@ -82,7 +82,7 @@ namespace IdentityServer4.Quickstart.UI
 
             if (result.HasValidationError)
             {
-                ModelState.AddModelError("", result.ValidationError);
+                ModelState.AddModelError(string.Empty, result.ValidationError);
             }
 
             if (result.ShowView)
