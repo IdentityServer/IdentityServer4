@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityServer4.Services;
@@ -10,20 +8,15 @@ namespace IdentityServer.UnitTests.Services.Default
     public class NumericUserCodeGeneratorTests
     {
         [Fact]
-        public async Task GenerateAsync_should_have_minimal_duplicates()
+        public async Task GenerateAsync_should_return_expected_code()
         {
-            const int count = 500000;
-            var taks = new List<Task<string>>(count);
             var sut = new NumericUserCodeGenerator();
 
-            for (var i = 0; i < count; i++) taks.Add(sut.GenerateAsync());
+            var userCode = await sut.GenerateAsync();
+            var userCodeInt = int.Parse(userCode);
 
-            var codes = await Task.WhenAll(taks);
-
-            // ~ 1 duplicate per 25000 is acceptable
-            var duplicates = codes.GroupBy(x => x).Where(x => 2 < x.Count()).Select(x => x.Key).ToList();
-            duplicates.Should().BeEmpty();
-
+            userCodeInt.Should().BeGreaterOrEqualTo(100000000);
+            userCodeInt.Should().BeLessOrEqualTo(999999999);
         }
     }
 }
