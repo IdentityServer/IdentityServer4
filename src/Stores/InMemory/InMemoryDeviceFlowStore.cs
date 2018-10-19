@@ -15,7 +15,6 @@ namespace IdentityServer4.Stores
     /// <seealso cref="IdentityServer4.Stores.IDeviceFlowStore" />
     public class InMemoryDeviceFlowStore : IDeviceFlowStore
     {
-        // TODO: Device Flow - Thread safe?
         private readonly List<InMemoryDeviceAuthorization> _repository = new List<InMemoryDeviceAuthorization>();
 
         /// <summary>
@@ -27,7 +26,11 @@ namespace IdentityServer4.Stores
         /// <returns></returns>
         public Task StoreDeviceAuthorizationAsync(string deviceCode, string userCode, DeviceCode data)
         {
-            _repository.Add(new InMemoryDeviceAuthorization(deviceCode, userCode, data));
+            lock (_repository)
+            {
+                _repository.Add(new InMemoryDeviceAuthorization(deviceCode, userCode, data));
+            }
+            
             return Task.CompletedTask;
         }
 
@@ -37,7 +40,14 @@ namespace IdentityServer4.Stores
         /// <param name="userCode">The user code.</param>
         public Task<DeviceCode> FindByUserCodeAsync(string userCode)
         {
-            return Task.FromResult(_repository.FirstOrDefault(x => x.UserCode == userCode)?.Data);
+            DeviceCode foundDeviceCode;
+
+            lock (_repository)
+            {
+                foundDeviceCode = _repository.FirstOrDefault(x => x.UserCode == userCode)?.Data;
+            }
+
+            return Task.FromResult(foundDeviceCode);
         }
 
         /// <summary>
@@ -46,7 +56,14 @@ namespace IdentityServer4.Stores
         /// <param name="deviceCode">The device code.</param>
         public Task<DeviceCode> FindByDeviceCodeAsync(string deviceCode)
         {
-            return Task.FromResult(_repository.FirstOrDefault(x => x.DeviceCode == deviceCode)?.Data);
+            DeviceCode foundDeviceCode;
+
+            lock (_repository)
+            {
+                foundDeviceCode = _repository.FirstOrDefault(x => x.DeviceCode == deviceCode)?.Data;
+            }
+
+            return Task.FromResult(foundDeviceCode);
         }
 
         /// <summary>
@@ -56,11 +73,14 @@ namespace IdentityServer4.Stores
         /// <param name="data">The data.</param>
         public Task UpdateByUserCodeAsync(string userCode, DeviceCode data)
         {
-            var foundData = _repository.FirstOrDefault(x => x.UserCode == userCode);
-
-            if (foundData != null)
+            lock (_repository)
             {
-                foundData.Data = data;
+                var foundData = _repository.FirstOrDefault(x => x.UserCode == userCode);
+
+                if (foundData != null)
+                {
+                    foundData.Data = data;
+                }
             }
 
             return Task.CompletedTask;
@@ -73,12 +93,16 @@ namespace IdentityServer4.Stores
         /// <returns></returns>
         public Task RemoveByDeviceCodeAsync(string deviceCode)
         {
-            var foundData = _repository.FirstOrDefault(x => x.DeviceCode == deviceCode);
-
-            if (foundData != null)
+            lock (_repository)
             {
-                _repository.Remove(foundData);
+                var foundData = _repository.FirstOrDefault(x => x.DeviceCode == deviceCode);
+
+                if (foundData != null)
+                {
+                    _repository.Remove(foundData);
+                }
             }
+
 
             return Task.CompletedTask;
         }
