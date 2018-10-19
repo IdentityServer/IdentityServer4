@@ -146,10 +146,9 @@ namespace IdentityServer4.ResponseHandling
                     entries.Add(OidcConstants.Discovery.IntrospectionEndpoint, baseUrl + Constants.ProtocolRoutePaths.Introspection);
                 }
 
-                // todo: replace with constant from IdentityModel
                 if (Options.Endpoints.EnableDeviceAuthorizationEndpoint)
                 {
-                    entries.Add("device_authorization_endpoint", baseUrl + Constants.ProtocolRoutePaths.DeviceAuthorization);
+                    entries.Add(OidcConstants.Discovery.DeviceAuthorizationEndpoint, baseUrl + Constants.ProtocolRoutePaths.DeviceAuthorization);
                 }
             }
 
@@ -234,10 +233,9 @@ namespace IdentityServer4.ResponseHandling
                     standardGrantTypes.Add(OidcConstants.GrantTypes.Password);
                 }
 
-                // todo: replace with constant from IdentityModel
                 if (Options.Endpoints.EnableDeviceAuthorizationEndpoint)
                 {
-                    standardGrantTypes.Add("urn:ietf:params:oauth:grant-type:device_code");
+                    standardGrantTypes.Add(OidcConstants.GrantTypes.DeviceCode);
                 }
 
                 var showGrantTypes = new List<string>(standardGrantTypes);
