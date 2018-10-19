@@ -1,6 +1,9 @@
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityServer.UnitTests.Common;
@@ -42,8 +45,12 @@ namespace IdentityServer4.UnitTests.ResponseHandling
                 ValidatedScopes = scopeValidator
             });
 
-            generator = new DeviceAuthorizationResponseGenerator(options, new DefaultUserCodeService(new[] {new NumericUserCodeService()}),
-                deviceFlowCodeService, clock, new NullLogger<DeviceAuthorizationResponseGenerator>());
+            generator = new DeviceAuthorizationResponseGenerator(
+                options,
+                new DefaultUserCodeService(new IUserCodeGenerator[] {new NumericUserCodeGenerator(), new FakeUserCodeGenerator()}),
+                deviceFlowCodeService,
+                clock,
+                new NullLogger<DeviceAuthorizationResponseGenerator>());
         }
 
         [Fact]
@@ -69,12 +76,12 @@ namespace IdentityServer4.UnitTests.ResponseHandling
         }
 
         [Fact]
-        public async Task ProcessAsync_when_generated_expect_user_code_stored()
+        public async Task ProcessAsync_when_user_code_collision_expect_retry()
         {
             var creationTime = DateTime.UtcNow;
             clock.UtcNowFunc = () => creationTime;
 
-            testResult.ValidatedRequest.RequestedScopes = new List<string> {"openid", "resource"};
+            testResult.ValidatedRequest.RequestedScopes = new List<string> { "openid", "resource" };
 
             var response = await generator.ProcessAsync(testResult, TestBaseUrl);
 
@@ -89,6 +96,20 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             userCode.AuthorizedScopes.Should().BeNull();
 
             userCode.RequestedScopes.Should().Contain(testResult.ValidatedRequest.RequestedScopes);
+        }
+
+        [Fact]
+        public async Task ProcessAsync_when_generated_expect_user_code_stored()
+        {
+            var creationTime = DateTime.UtcNow;
+            clock.UtcNowFunc = () => creationTime;
+
+            testResult.ValidatedRequest.Client.UserCodeType = FakeUserCodeGenerator.UserCodeTypeValue;
+            await deviceFlowCodeService.StoreDeviceAuthorizationAsync(FakeUserCodeGenerator.TestCollisionUserCode, new DeviceCode());
+
+            var response = await generator.ProcessAsync(testResult, TestBaseUrl);
+
+            response.UserCode.Should().Be(FakeUserCodeGenerator.TestUniqueUserCode);
         }
 
         [Fact]
@@ -125,6 +146,29 @@ namespace IdentityServer4.UnitTests.ResponseHandling
 
             response.VerificationUri.Should().Be("http://localhost:5000/device");
             response.VerificationUriComplete.Should().StartWith("http://localhost:5000/device?userCode=");
+        }
+    }
+
+    internal class FakeUserCodeGenerator : IUserCodeGenerator
+    {
+        public const string UserCodeTypeValue = "Collider";
+        public const string TestUniqueUserCode = "123";
+        public const string TestCollisionUserCode = "321";
+        private int tryCount = 0;
+        
+
+        public string UserCodeType => UserCodeTypeValue;
+
+        public Task<string> GenerateAsync()
+        {
+            if (tryCount == 0)
+            {
+                tryCount++;
+                return Task.FromResult(TestCollisionUserCode);
+            }
+
+            tryCount++;
+            return Task.FromResult(TestUniqueUserCode);
         }
     }
 }

@@ -7,14 +7,14 @@ using Xunit;
 
 namespace IdentityServer.UnitTests.Services.Default
 {
-    public class NumericUserCodeServiceTests
+    public class NumericUserCodeGeneratorTests
     {
         [Fact]
         public async Task GenerateAsync_should_have_minimal_duplicates()
         {
             const int count = 500000;
             var taks = new List<Task<string>>(count);
-            var sut = new NumericUserCodeService();
+            var sut = new NumericUserCodeGenerator();
 
             for (var i = 0; i < count; i++) taks.Add(sut.GenerateAsync());
 

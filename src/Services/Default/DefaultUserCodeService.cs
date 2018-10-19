@@ -1,3 +1,7 @@
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +12,7 @@ namespace IdentityServer4.Services
     /// <summary>
     /// Default user code service implementation.
     /// </summary>
-    /// <seealso cref="IdentityServer4.Services.IProfileService" />
+    /// <seealso cref="IdentityServer4.Services.IUserCodeService" />
     public class DefaultUserCodeService : IUserCodeService
     {
         private readonly IEnumerable<IUserCodeGenerator> _generators;
@@ -30,6 +34,5 @@ namespace IdentityServer4.Services
         /// <returns></returns>
         public Task<IUserCodeGenerator> GetGenerator(string userCodeType) =>
             Task.FromResult(_generators.FirstOrDefault(x => x.UserCodeType == userCodeType));
-
     }
 }

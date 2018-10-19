@@ -81,13 +81,34 @@ namespace IdentityServer4.ResponseHandling
             var response = new DeviceAuthorizationResponse();
             
             // generate user_code
-            var userCodeGenerator = await UserCodeService.GetGenerator(validationResult.ValidatedRequest.Client.UserCodeType ?? Options.DeviceFlow.DefaultUserCodeType);
+            var userCodeGenerator = await UserCodeService.GetGenerator(
+                validationResult.ValidatedRequest.Client.UserCodeType ??
+                Options.DeviceFlow.DefaultUserCodeType);
+
             response.UserCode = await userCodeGenerator.GenerateAsync();
+
+            var isUnique = false;
+            
+            while (!isUnique)
+            {
+                var deviceCode = await DeviceFlowCodeService.FindByUserCodeAsync(response.UserCode);
+                if (deviceCode == null)
+                {
+                    isUnique = true;
+                }
+                else
+                {
+                    response.UserCode = await userCodeGenerator.GenerateAsync();
+                }
+            }
 
             // generate verification URIs
             response.VerificationUri = baseUrl.RemoveTrailingSlash() + Options.UserInteraction.DeviceVerificationUrl;
             if (!string.IsNullOrWhiteSpace(Options.UserInteraction.DeviceVerificationUserCodeParameter))
-                response.VerificationUriComplete = $"{response.VerificationUri}?{Options.UserInteraction.DeviceVerificationUserCodeParameter}={response.UserCode}";
+            {
+                response.VerificationUriComplete =
+                    $"{response.VerificationUri}?{Options.UserInteraction.DeviceVerificationUserCodeParameter}={response.UserCode}";
+            } 
 
             // expiration
             response.DeviceCodeLifetime = validationResult.ValidatedRequest.Client.DeviceCodeLifetime;
