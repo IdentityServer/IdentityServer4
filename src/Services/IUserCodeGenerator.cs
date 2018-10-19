@@ -20,6 +20,14 @@ namespace IdentityServer4.Services
         string UserCodeType { get; }
 
         /// <summary>
+        /// Gets the retry limit.
+        /// </summary>
+        /// <value>
+        /// The retry limit for getting a unique value.
+        /// </value>
+        int RetryLimit { get; }
+
+        /// <summary>
         /// Generates the user code.
         /// </summary>
         /// <returns></returns>

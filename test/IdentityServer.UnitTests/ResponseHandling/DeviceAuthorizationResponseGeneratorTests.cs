@@ -25,6 +25,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
         private readonly List<IdentityResource> identityResources = new List<IdentityResource> {new IdentityResources.OpenId(), new IdentityResources.Profile()};
         private readonly List<ApiResource> apiResources = new List<ApiResource> {new ApiResource("resource") {Scopes = new List<Scope> {new Scope("api1")}}};
 
+        private readonly FakeUserCodeGenerator fakeUserCodeGenerator = new FakeUserCodeGenerator();
         private readonly IDeviceFlowCodeService deviceFlowCodeService = new DefaultDeviceFlowCodeService(new InMemoryDeviceFlowStore(), new StubHandleGenerationService());
         private readonly IdentityServerOptions options = new IdentityServerOptions();
         private readonly StubClock clock = new StubClock();
@@ -47,7 +48,7 @@ namespace IdentityServer4.UnitTests.ResponseHandling
 
             generator = new DeviceAuthorizationResponseGenerator(
                 options,
-                new DefaultUserCodeService(new IUserCodeGenerator[] {new NumericUserCodeGenerator(), new FakeUserCodeGenerator()}),
+                new DefaultUserCodeService(new IUserCodeGenerator[] {new NumericUserCodeGenerator(), fakeUserCodeGenerator }),
                 deviceFlowCodeService,
                 clock,
                 new NullLogger<DeviceAuthorizationResponseGenerator>());
@@ -81,6 +82,33 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             var creationTime = DateTime.UtcNow;
             clock.UtcNowFunc = () => creationTime;
 
+            testResult.ValidatedRequest.Client.UserCodeType = FakeUserCodeGenerator.UserCodeTypeValue;
+            await deviceFlowCodeService.StoreDeviceAuthorizationAsync(FakeUserCodeGenerator.TestCollisionUserCode, new DeviceCode());
+
+            var response = await generator.ProcessAsync(testResult, TestBaseUrl);
+
+            response.UserCode.Should().Be(FakeUserCodeGenerator.TestUniqueUserCode);
+        }
+
+        [Fact]
+        public async Task ProcessAsync_when_user_code_collision_retry_limit_reached_expect_error()
+        {
+            var creationTime = DateTime.UtcNow;
+            clock.UtcNowFunc = () => creationTime;
+
+            fakeUserCodeGenerator.RetryLimit = 1;
+            testResult.ValidatedRequest.Client.UserCodeType = FakeUserCodeGenerator.UserCodeTypeValue;
+            await deviceFlowCodeService.StoreDeviceAuthorizationAsync(FakeUserCodeGenerator.TestCollisionUserCode, new DeviceCode());
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() => generator.ProcessAsync(testResult, TestBaseUrl));
+        }
+
+        [Fact]
+        public async Task ProcessAsync_when_generated_expect_user_code_stored()
+        {
+            var creationTime = DateTime.UtcNow;
+            clock.UtcNowFunc = () => creationTime;
+
             testResult.ValidatedRequest.RequestedScopes = new List<string> { "openid", "resource" };
 
             var response = await generator.ProcessAsync(testResult, TestBaseUrl);
@@ -96,20 +124,6 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             userCode.AuthorizedScopes.Should().BeNull();
 
             userCode.RequestedScopes.Should().Contain(testResult.ValidatedRequest.RequestedScopes);
-        }
-
-        [Fact]
-        public async Task ProcessAsync_when_generated_expect_user_code_stored()
-        {
-            var creationTime = DateTime.UtcNow;
-            clock.UtcNowFunc = () => creationTime;
-
-            testResult.ValidatedRequest.Client.UserCodeType = FakeUserCodeGenerator.UserCodeTypeValue;
-            await deviceFlowCodeService.StoreDeviceAuthorizationAsync(FakeUserCodeGenerator.TestCollisionUserCode, new DeviceCode());
-
-            var response = await generator.ProcessAsync(testResult, TestBaseUrl);
-
-            response.UserCode.Should().Be(FakeUserCodeGenerator.TestUniqueUserCode);
         }
 
         [Fact]
@@ -155,9 +169,16 @@ namespace IdentityServer4.UnitTests.ResponseHandling
         public const string TestUniqueUserCode = "123";
         public const string TestCollisionUserCode = "321";
         private int tryCount = 0;
-        
+        private int retryLimit = 2;
+
 
         public string UserCodeType => UserCodeTypeValue;
+
+        public int RetryLimit
+        {
+            get => retryLimit;
+            set => retryLimit = value;
+        }
 
         public Task<string> GenerateAsync()
         {

@@ -19,6 +19,14 @@ namespace IdentityServer4.Services
         public string UserCodeType => IdentityServerConstants.UserCodeTypes.Numeric;
 
         /// <summary>
+        /// Gets the retry limit.
+        /// </summary>
+        /// <value>
+        /// The retry limit for getting a unique value.
+        /// </value>
+        public int RetryLimit => 5;
+
+        /// <summary>
         /// Generates the user code.
         /// </summary>
         /// <returns></returns>

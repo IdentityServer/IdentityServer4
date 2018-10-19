@@ -84,22 +84,26 @@ namespace IdentityServer4.ResponseHandling
             var userCodeGenerator = await UserCodeService.GetGenerator(
                 validationResult.ValidatedRequest.Client.UserCodeType ??
                 Options.DeviceFlow.DefaultUserCodeType);
-
-            response.UserCode = await userCodeGenerator.GenerateAsync();
-
-            var isUnique = false;
             
-            while (!isUnique)
+            var retryCount = 0;
+
+            while (retryCount < userCodeGenerator.RetryLimit)
             {
-                var deviceCode = await DeviceFlowCodeService.FindByUserCodeAsync(response.UserCode);
+                var userCode = await userCodeGenerator.GenerateAsync();
+                
+                var deviceCode = await DeviceFlowCodeService.FindByUserCodeAsync(userCode);
                 if (deviceCode == null)
                 {
-                    isUnique = true;
+                    response.UserCode = userCode;
+                    break;
                 }
-                else
-                {
-                    response.UserCode = await userCodeGenerator.GenerateAsync();
-                }
+
+                retryCount++;
+            }
+
+            if (response.UserCode == null)
+            {
+                throw new InvalidOperationException("Unable to create unique device flow user code");
             }
 
             // generate verification URIs
