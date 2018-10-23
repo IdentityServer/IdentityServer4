@@ -252,7 +252,6 @@ namespace IdentityServer4.UnitTests.Validation
             IDeviceFlowThrottlingService throttlingService = null,
             ISystemClock clock = null)
         {
-            service = service;
             profile = profile ?? new TestProfileService();
             throttlingService = throttlingService ?? new TestDeviceFlowThrottlingService();
             clock = clock ?? new StubClock();

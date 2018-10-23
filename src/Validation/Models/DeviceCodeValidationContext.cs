@@ -4,6 +4,9 @@
 
 namespace IdentityServer4.Validation
 {
+    /// <summary>
+    /// Validation result for device code validation request.
+    /// </summary>
     public class DeviceCodeValidationContext
     {
         /// <summary>

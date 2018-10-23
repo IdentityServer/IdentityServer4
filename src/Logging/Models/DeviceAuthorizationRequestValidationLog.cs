@@ -9,7 +9,7 @@ using IdentityServer4.Validation;
 
 namespace IdentityServer4.Logging
 {
-    public class DeviceAuthorizationRequestValidationLog
+    internal class DeviceAuthorizationRequestValidationLog
     {
         public string ClientId { get; set; }
         public string ClientName { get; set; }

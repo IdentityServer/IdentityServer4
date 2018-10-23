@@ -1,3 +1,7 @@
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+
 using System.Collections.Generic;
 using IdentityModel;
 using IdentityServer4.Extensions;
@@ -7,8 +11,17 @@ using IdentityServer4.Validation;
 
 namespace IdentityServer4.Events
 {
+    /// <summary>
+    /// Event for device authorization failure
+    /// </summary>
+    /// <seealso cref="IdentityServer4.Events.Event" />
     public class DeviceAuthorizationSuccessEvent : Event
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DeviceAuthorizationSuccessEvent"/> class.
+        /// </summary>
+        /// <param name="response">The response.</param>
+        /// <param name="request">The request.</param>
         public DeviceAuthorizationSuccessEvent(DeviceAuthorizationResponse response, DeviceAuthorizationRequestValidationResult request)
             : this()
         {
