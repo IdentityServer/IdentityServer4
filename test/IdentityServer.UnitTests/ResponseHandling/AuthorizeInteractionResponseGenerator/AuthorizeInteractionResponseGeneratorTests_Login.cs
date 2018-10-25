@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -14,6 +14,7 @@ using System.Collections.Specialized;
 using System.Threading.Tasks;
 using Xunit;
 using IdentityServer.UnitTests.Common;
+using System;
 
 namespace IdentityServer4.UnitTests.ResponseHandling
 {
@@ -22,11 +23,12 @@ namespace IdentityServer4.UnitTests.ResponseHandling
         private IdentityServerOptions _options = new IdentityServerOptions();
         private AuthorizeInteractionResponseGenerator _subject;
         private MockConsentService _mockConsentService = new MockConsentService();
+        private StubClock _clock = new StubClock();
 
         public AuthorizeInteractionResponseGeneratorTests_Login()
         {
             _subject = new AuthorizeInteractionResponseGenerator(
-                new StubClock(),
+                _clock,
                 TestLogger.Create<AuthorizeInteractionResponseGenerator>(),
                 _mockConsentService,
                 new MockProfileService());
@@ -146,6 +148,49 @@ namespace IdentityServer4.UnitTests.ResponseHandling
                 Subject = new IdentityServerUser("123")
                 {
                     IdentityProvider = IdentityServerConstants.LocalIdentityProvider
+                }.CreatePrincipal()
+            };
+
+            var result = await _subject.ProcessLoginAsync(request);
+
+            result.IsLogin.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task Authenticated_User_within_client_user_sso_lifetime_should_not_signin()
+        {
+            var request = new ValidatedAuthorizeRequest
+            {
+                ClientId = "foo",
+                Client = new Client() {
+                    UserSsoLifetime = 3600 // 1h
+                },
+                Subject = new IdentityServerUser("123")
+                {
+                    IdentityProvider = "local",
+                    AuthenticationTime = _clock.UtcNow.UtcDateTime.Subtract(TimeSpan.FromSeconds(10))
+                }.CreatePrincipal()
+            };
+
+            var result = await _subject.ProcessLoginAsync(request);
+
+            result.IsLogin.Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task Authenticated_User_beyond_client_user_sso_lifetime_should_signin()
+        {
+            var request = new ValidatedAuthorizeRequest
+            {
+                ClientId = "foo",
+                Client = new Client()
+                {
+                    UserSsoLifetime = 3600 // 1h
+                },
+                Subject = new IdentityServerUser("123")
+                {
+                    IdentityProvider = "local",
+                    AuthenticationTime = _clock.UtcNow.UtcDateTime.Subtract(TimeSpan.FromSeconds(3700))
                 }.CreatePrincipal()
             };
 

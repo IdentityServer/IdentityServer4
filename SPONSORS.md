@@ -11,11 +11,13 @@ We thank those who [support](https://www.patreon.com/identityserver) IdentitySer
 ### Gold
 
 [Thinktecture AG](https://www.thinktecture.com)   ([@Thinktecture](https://twitter.com/thinktecture))  
-[Ritter Insurance Marketing](https://www.ritterim.com) ([@RitterIM](https://twitter.com/ritterim))
+[Ritter Insurance Marketing](https://www.ritterim.com) ([@RitterIM](https://twitter.com/ritterim))   
+[Alcidion Corporation](https://www.alcidion.com) ([@Alcidion](https://twitter.com/alcidion))  
+[Intuit](https://www.intuit.com) ([@IntuitDev](https://twitter.com/IntuitDev))  
+
 
 ### Silver
 
-Green Elephant IT Consulting ([@Schwamster](https://twitter.com/Schwamster))  
 Jacobus Roos  
 Tomer Dvir  
 Steinar	Noem  
@@ -39,7 +41,6 @@ James Roberts
 Chris Simmons ([@netchrisdotcom](https://twitter.com/netchrisdotcom))  
 Shawn Wildermuth  
 Thomas C  
-黃嘉華  
 David Christiansen ([@dotnetopenauth](https://twitter.com/dotnetopenauth))  
 Christian Riedl  
 Ben	Cull  
@@ -58,3 +59,9 @@ Clinton Rocksmith
 Giuseppe Turitto  
 Mauricio Schneider  
 Norman L Covington  
+Henning Støverud  ([@henningst](https://twitter.com/henningst))  
+Ryan Mendoza  ([@elryry](https://twitter.com/elryry))  
+Colin Blair  
+Erik Gulbrandsen  
+Olga Klimova  
+Alexandru Puiu  

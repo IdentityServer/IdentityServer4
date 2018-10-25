@@ -70,24 +70,4 @@ This process typically involves authentication of the end-user and optionally co
 
 (URL encoding removed, and line breaks added for readability)
 
-
-IdentityModel
-^^^^^^^^^^^^^
-You can programmatically create URLs for the authorize endpoint using the `IdentityModel <https://github.com/IdentityModel/IdentityModel2>`_ library::
-
-    var request = new RequestUrl(doc.AuthorizeEndpoint);
-    var url = request.CreateAuthorizeUrl(
-        clientId:     "client",
-        responseType: OidcConstants.ResponseTypes.CodeIdToken,
-        responseMode: OidcConstants.ResponseModes.FormPost,
-        redirectUri: "https://myapp.com/callback",
-        state:       CryptoRandom.CreateUniqueId(),
-        nonce:       CryptoRandom.CreateUniqueId());
-
-..and parse the response::
-
-    var response = new AuthorizeResponse(callbackUrl);
-
-    var accessToken = response.AccessToken;
-    var idToken = response.IdentityToken;
-    var state = response.State;
+.. Note:: You can use the `IdentityModel <https://github.com/IdentityModel/IdentityModel2>`_ client library to programmatically create authorize requests .NET code. For more information check the IdentityModel `docs <https://identitymodel.readthedocs.io/en/latest/client/authorize.html>`_.

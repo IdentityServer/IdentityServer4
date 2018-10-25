@@ -39,9 +39,9 @@ namespace IdentityServer.UnitTests.Validation
         public async Task DeviceCode_Missing()
         {
             var client = await _clients.FindClientByIdAsync("device_flow");
-            var store = Factory.CreateDeviceCodeStore();
+            var service = Factory.CreateDeviceCodeService();
 
-            var validator = Factory.CreateDeviceCodeValidator(store);
+            var validator = Factory.CreateDeviceCodeValidator(service);
 
             var request = new ValidatedTokenRequest();
             request.SetClient(client);
@@ -59,10 +59,11 @@ namespace IdentityServer.UnitTests.Validation
         public async Task DeviceCode_From_Different_Client()
         {
             var badActor = await _clients.FindClientByIdAsync("codeclient");
-            var store = Factory.CreateDeviceCodeStore();
-            var handle = await store.StoreDeviceCodeAsync(deviceCode);
+            var service = Factory.CreateDeviceCodeService();
 
-            var validator = Factory.CreateDeviceCodeValidator(store);
+            var handle = await service.StoreDeviceAuthorizationAsync(Guid.NewGuid().ToString(), deviceCode);
+
+            var validator = Factory.CreateDeviceCodeValidator(service);
 
             var request = new ValidatedTokenRequest();
             request.SetClient(badActor);
@@ -83,10 +84,11 @@ namespace IdentityServer.UnitTests.Validation
             deviceCode.Lifetime = 300;
 
             var client = await _clients.FindClientByIdAsync("device_flow");
-            var store = Factory.CreateDeviceCodeStore();
-            var handle = await store.StoreDeviceCodeAsync(deviceCode);
+            var service = Factory.CreateDeviceCodeService();
 
-            var validator = Factory.CreateDeviceCodeValidator(store);
+            var handle = await service.StoreDeviceAuthorizationAsync(Guid.NewGuid().ToString(), deviceCode);
+
+            var validator = Factory.CreateDeviceCodeValidator(service);
 
             var request = new ValidatedTokenRequest();
             request.SetClient(client);
@@ -96,7 +98,7 @@ namespace IdentityServer.UnitTests.Validation
             await validator.ValidateAsync(context);
 
             context.Result.IsError.Should().BeTrue();
-            context.Result.Error.Should().Be("expired_token");
+            context.Result.Error.Should().Be(OidcConstants.TokenErrors.ExpiredToken);
         }
 
         [Fact]
@@ -106,10 +108,11 @@ namespace IdentityServer.UnitTests.Validation
             deviceCode.AuthorizedScopes = new List<string>();
 
             var client = await _clients.FindClientByIdAsync("device_flow");
-            var store = Factory.CreateDeviceCodeStore();
-            var handle = await store.StoreDeviceCodeAsync(deviceCode);
+            var service = Factory.CreateDeviceCodeService();
 
-            var validator = Factory.CreateDeviceCodeValidator(store);
+            var handle = await service.StoreDeviceAuthorizationAsync(Guid.NewGuid().ToString(), deviceCode);
+
+            var validator = Factory.CreateDeviceCodeValidator(service);
 
             var request = new ValidatedTokenRequest();
             request.SetClient(client);
@@ -119,7 +122,7 @@ namespace IdentityServer.UnitTests.Validation
             await validator.ValidateAsync(context);
 
             context.Result.IsError.Should().BeTrue();
-            context.Result.Error.Should().Be("access_denied");
+            context.Result.Error.Should().Be(OidcConstants.TokenErrors.AccessDenied);
         }
 
         [Fact]
@@ -129,10 +132,11 @@ namespace IdentityServer.UnitTests.Validation
             deviceCode.IsAuthorized = false;
 
             var client = await _clients.FindClientByIdAsync("device_flow");
-            var store = Factory.CreateDeviceCodeStore();
-            var handle = await store.StoreDeviceCodeAsync(deviceCode);
+            var service = Factory.CreateDeviceCodeService();
 
-            var validator = Factory.CreateDeviceCodeValidator(store);
+            var handle = await service.StoreDeviceAuthorizationAsync(Guid.NewGuid().ToString(), deviceCode);
+
+            var validator = Factory.CreateDeviceCodeValidator(service);
 
             var request = new ValidatedTokenRequest();
             request.SetClient(client);
@@ -142,7 +146,7 @@ namespace IdentityServer.UnitTests.Validation
             await validator.ValidateAsync(context);
 
             context.Result.IsError.Should().BeTrue();
-            context.Result.Error.Should().Be("authorization_pending");
+            context.Result.Error.Should().Be(OidcConstants.TokenErrors.AuthorizationPending);
         }
 
         [Fact]
@@ -152,10 +156,11 @@ namespace IdentityServer.UnitTests.Validation
             deviceCode.Subject = null;
 
             var client = await _clients.FindClientByIdAsync("device_flow");
-            var store = Factory.CreateDeviceCodeStore();
-            var handle = await store.StoreDeviceCodeAsync(deviceCode);
+            var service = Factory.CreateDeviceCodeService();
 
-            var validator = Factory.CreateDeviceCodeValidator(store);
+            var handle = await service.StoreDeviceAuthorizationAsync(Guid.NewGuid().ToString(), deviceCode);
+
+            var validator = Factory.CreateDeviceCodeValidator(service);
 
             var request = new ValidatedTokenRequest();
             request.SetClient(client);
@@ -165,7 +170,7 @@ namespace IdentityServer.UnitTests.Validation
             await validator.ValidateAsync(context);
 
             context.Result.IsError.Should().BeTrue();
-            context.Result.Error.Should().Be("authorization_pending");
+            context.Result.Error.Should().Be(OidcConstants.TokenErrors.AuthorizationPending);
         }
 
 
@@ -174,10 +179,11 @@ namespace IdentityServer.UnitTests.Validation
         public async Task User_Disabled()
         {
             var client = await _clients.FindClientByIdAsync("device_flow");
-            var store = Factory.CreateDeviceCodeStore();
-            var handle = await store.StoreDeviceCodeAsync(deviceCode);
+            var service = Factory.CreateDeviceCodeService();
 
-            var validator = Factory.CreateDeviceCodeValidator(store, new TestProfileService(false));
+            var handle = await service.StoreDeviceAuthorizationAsync(Guid.NewGuid().ToString(), deviceCode);
+
+            var validator = Factory.CreateDeviceCodeValidator(service, new TestProfileService(false));
 
             var request = new ValidatedTokenRequest();
             request.SetClient(client);
@@ -195,10 +201,11 @@ namespace IdentityServer.UnitTests.Validation
         public async Task DeviceCode_Polling_Too_Fast()
         {
             var client = await _clients.FindClientByIdAsync("device_flow");
-            var store = Factory.CreateDeviceCodeStore();
-            var handle = await store.StoreDeviceCodeAsync(deviceCode);
+            var service = Factory.CreateDeviceCodeService();
 
-            var validator = Factory.CreateDeviceCodeValidator(store, throttlingService: new TestDeviceFlowThrottlingService(true));
+            var handle = await service.StoreDeviceAuthorizationAsync(Guid.NewGuid().ToString(), deviceCode);
+
+            var validator = Factory.CreateDeviceCodeValidator(service, throttlingService: new TestDeviceFlowThrottlingService(true));
 
             var request = new ValidatedTokenRequest();
             request.SetClient(client);
@@ -208,7 +215,7 @@ namespace IdentityServer.UnitTests.Validation
             await validator.ValidateAsync(context);
 
             context.Result.IsError.Should().BeTrue();
-            context.Result.Error.Should().Be("slow_down");
+            context.Result.Error.Should().Be(OidcConstants.TokenErrors.SlowDown);
         }
 
         [Fact]
@@ -216,10 +223,11 @@ namespace IdentityServer.UnitTests.Validation
         public async Task Valid_DeviceCode()
         {
             var client = await _clients.FindClientByIdAsync("device_flow");
-            var store = Factory.CreateDeviceCodeStore();
-            var handle = await store.StoreDeviceCodeAsync(deviceCode);
+            var service = Factory.CreateDeviceCodeService();
 
-            var validator = Factory.CreateDeviceCodeValidator(store);
+            var handle = await service.StoreDeviceAuthorizationAsync(Guid.NewGuid().ToString(), deviceCode);
+
+            var validator = Factory.CreateDeviceCodeValidator(service);
 
             var request = new ValidatedTokenRequest();
             request.SetClient(client);

@@ -40,7 +40,7 @@ namespace IdentityServer4.IntegrationTests.Clients
         }
 
         [Fact]
-        public async Task Valid_Client()
+        public async Task Valid_client_with_manual_payload_should_succeed()
         {
             var token = CreateToken(ClientId);
             var requestBody = new FormUrlEncodedContent(new Dictionary<string, string>
@@ -58,57 +58,92 @@ namespace IdentityServer4.IntegrationTests.Clients
         }
 
         [Fact]
-        public async Task Valid_Client_Implicit_ClientId()
+        public async Task Valid_client_should_succeed()
         {
             var token = CreateToken(ClientId);
-            var requestBody = new FormUrlEncodedContent(new Dictionary<string, string>
-                {
-                    { "client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer" },
-                    { "client_assertion", token },
-                    { "grant_type", "client_credentials" },
-                    { "scope", "api1" }
-                });
 
-            var response = await GetToken(requestBody);
+            var response = await _client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+            {
+                Address = TokenEndpoint,
+
+                ClientId = ClientId,
+                ClientAssertion =
+                {
+                    Type = OidcConstants.ClientAssertionTypes.JwtBearer,
+                    Value = token
+                },
+
+                Scope = "api1"
+            });
 
             AssertValidToken(response);
         }
 
         [Fact]
-        public async Task Invalid_Client_Secret()
+        public async Task Valid_client_with_implicit_clientId_should_succeed()
         {
-            var requestBody = new FormUrlEncodedContent(new Dictionary<string, string>
-                {
-                    { "client_id", ClientId },
-                    { "client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer" },
-                    { "client_assertion", "invalid" },
-                    { "grant_type", "client_credentials" },
-                    { "scope", "api1" }
-                });
+            var token = CreateToken(ClientId);
 
-            var response = await GetToken(requestBody);
+            var response = await _client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+            {
+                Address = TokenEndpoint,
+
+                ClientAssertion =
+                {
+                    Type = OidcConstants.ClientAssertionTypes.JwtBearer,
+                    Value = token
+                },
+
+                Scope = "api1"
+            });
+
+            AssertValidToken(response);
+        }
+
+        [Fact]
+        public async Task Client_with_invalid_secret_should_fail()
+        {
+            var response = await _client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+            {
+                Address = TokenEndpoint,
+
+                ClientId = ClientId,
+                ClientAssertion =
+                {
+                    Type = OidcConstants.ClientAssertionTypes.JwtBearer,
+                    Value = "invalid"
+                },
+
+                Scope = "api1"
+            });
 
             response.IsError.Should().Be(true);
+            response.Error.Should().Be(OidcConstants.TokenErrors.InvalidClient);
             response.ErrorType.Should().Be(ResponseErrorType.Protocol);
         }
 
         [Fact]
-        public async Task Invalid_Client()
+        public async Task Invalid_client_should_fail()
         {
             const string clientId = "certificate_base64_invalid";
             var token = CreateToken(clientId);
-            var requestBody = new FormUrlEncodedContent(new Dictionary<string, string>
-                {
-                    { "client_id", clientId },
-                    { "client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer" },
-                    { "client_assertion", token },
-                    { "grant_type", "client_credentials" },
-                    { "scope", "api1" }
-                });
 
-            var response = await GetToken(requestBody);
+            var response = await _client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+            {
+                Address = TokenEndpoint,
+
+                ClientId = clientId,
+                ClientAssertion =
+                {
+                    Type = OidcConstants.ClientAssertionTypes.JwtBearer,
+                    Value = token
+                },
+
+                Scope = "api1"
+            });
 
             response.IsError.Should().Be(true);
+            response.Error.Should().Be(OidcConstants.TokenErrors.InvalidClient);
             response.ErrorType.Should().Be(ResponseErrorType.Protocol);
         }
 

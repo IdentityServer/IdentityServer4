@@ -16,6 +16,7 @@ IdentityServer4 consists of multiple repositories (in addition to this repositor
 * [Quickstart UI](https://github.com/IdentityServer/IdentityServer4.Quickstart.UI)
 * [ASP.NET Identity integration](https://github.com/IdentityServer/IdentityServer4.AspNetIdentity)
 * [EntityFramework integration](https://github.com/IdentityServer/IdentityServer4.EntityFramework)
+* [Templates](https://github.com/IdentityServer/IdentityServer4.Templates)
 
 If you encounter issues or find bugs, please open an issue in this repo here first.
 
@@ -46,6 +47,8 @@ Auth0 is an easy to implement authentication and identity management SaaS based 
 
 [Thinktecture AG](https://www.thinktecture.com)  
 [Ritter Insurance Marketing](https://www.ritterim.com)  
+[Alcidion Corporation](https://www.alcidion.com)  
+[Intuit](https://www.intuit.com)  
 
 You can see a list of our current sponsors [here](https://github.com/IdentityServer/IdentityServer4/blob/release/SPONSORS.md) - and for companies we have some nice advertisement options as well.
 

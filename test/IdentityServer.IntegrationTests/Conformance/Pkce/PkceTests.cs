@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -183,8 +183,16 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
 
             var code = authorizeResponse.Code;
 
-            var tokenClient = new TokenClient(IdentityServerPipeline.TokenEndpoint, clientId, client_secret, _pipeline.Handler);
-            var tokenResponse = await tokenClient.RequestAuthorizationCodeAsync(code, redirect_uri, code_verifier);
+            var tokenResponse = await _pipeline.BackChannelClient.RequestAuthorizationCodeTokenAsync(new AuthorizationCodeTokenRequest
+            {
+                Address = IdentityServerPipeline.TokenEndpoint,
+                ClientId = clientId,
+                ClientSecret = client_secret,
+
+                Code = code,
+                RedirectUri = redirect_uri,
+                CodeVerifier = code_verifier
+            });
 
             tokenResponse.IsError.Should().BeFalse();
             tokenResponse.TokenType.Should().Be("Bearer");
@@ -215,8 +223,16 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
 
             var code = authorizeResponse.Code;
 
-            var tokenClient = new TokenClient(IdentityServerPipeline.TokenEndpoint, clientId, client_secret, _pipeline.Handler);
-            var tokenResponse = await tokenClient.RequestAuthorizationCodeAsync(code, redirect_uri, code_verifier);
+            var tokenResponse = await _pipeline.BackChannelClient.RequestAuthorizationCodeTokenAsync(new AuthorizationCodeTokenRequest
+            {
+                Address = IdentityServerPipeline.TokenEndpoint,
+                ClientId = clientId,
+                ClientSecret = client_secret,
+
+                Code = code,
+                RedirectUri = redirect_uri,
+                CodeVerifier = code_verifier
+            });
 
             tokenResponse.IsError.Should().BeFalse();
             tokenResponse.TokenType.Should().Be("Bearer");
@@ -336,8 +352,15 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
 
             var code = authorizeResponse.Code;
 
-            var tokenClient = new TokenClient(IdentityServerPipeline.TokenEndpoint, clientId, client_secret, _pipeline.Handler);
-            var tokenResponse = await tokenClient.RequestAuthorizationCodeAsync(code, redirect_uri);
+            var tokenResponse = await _pipeline.BackChannelClient.RequestAuthorizationCodeTokenAsync(new AuthorizationCodeTokenRequest
+            {
+                Address = IdentityServerPipeline.TokenEndpoint,
+                ClientId = clientId,
+                ClientSecret = client_secret,
+
+                Code = code,
+                RedirectUri = redirect_uri,
+            });
 
             tokenResponse.IsError.Should().BeTrue();
             tokenResponse.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
@@ -365,9 +388,16 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
 
             var code = authorizeResponse.Code;
 
-            var tokenClient = new TokenClient(IdentityServerPipeline.TokenEndpoint, clientId, client_secret, _pipeline.Handler);
-            var tokenResponse = await tokenClient.RequestAuthorizationCodeAsync(code, redirect_uri,
-                "a");
+            var tokenResponse = await _pipeline.BackChannelClient.RequestAuthorizationCodeTokenAsync(new AuthorizationCodeTokenRequest
+            {
+                Address = IdentityServerPipeline.TokenEndpoint,
+                ClientId = clientId,
+                ClientSecret = client_secret,
+
+                Code = code,
+                RedirectUri = redirect_uri,
+                CodeVerifier = "a"
+            });
 
             tokenResponse.IsError.Should().BeTrue();
             tokenResponse.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
@@ -395,9 +425,16 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
 
             var code = authorizeResponse.Code;
 
-            var tokenClient = new TokenClient(IdentityServerPipeline.TokenEndpoint, clientId, client_secret, _pipeline.Handler);
-            var tokenResponse = await tokenClient.RequestAuthorizationCodeAsync(code, redirect_uri,
-                new string('a', _pipeline.Options.InputLengthRestrictions.CodeVerifierMaxLength + 1));
+            var tokenResponse = await _pipeline.BackChannelClient.RequestAuthorizationCodeTokenAsync(new AuthorizationCodeTokenRequest
+            {
+                Address = IdentityServerPipeline.TokenEndpoint,
+                ClientId = clientId,
+                ClientSecret = client_secret,
+
+                Code = code,
+                RedirectUri = redirect_uri,
+                CodeVerifier = new string('a', _pipeline.Options.InputLengthRestrictions.CodeVerifierMaxLength + 1)
+            });
 
             tokenResponse.IsError.Should().BeTrue();
             tokenResponse.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);
@@ -425,9 +462,16 @@ namespace IdentityServer4.IntegrationTests.Conformance.Pkce
 
             var code = authorizeResponse.Code;
 
-            var tokenClient = new TokenClient(IdentityServerPipeline.TokenEndpoint, clientId, client_secret, _pipeline.Handler);
-            var tokenResponse = await tokenClient.RequestAuthorizationCodeAsync(code, redirect_uri,
-                "mismatched_code_verifier");
+            var tokenResponse = await _pipeline.BackChannelClient.RequestAuthorizationCodeTokenAsync(new AuthorizationCodeTokenRequest
+            {
+                Address = IdentityServerPipeline.TokenEndpoint,
+                ClientId = clientId,
+                ClientSecret = client_secret,
+
+                Code = code,
+                RedirectUri = redirect_uri,
+                CodeVerifier = "mismatched_code_verifier"
+            });
 
             tokenResponse.IsError.Should().BeTrue();
             tokenResponse.Error.Should().Be(OidcConstants.TokenErrors.InvalidGrant);

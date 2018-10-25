@@ -37,6 +37,27 @@ namespace IdentityServer4.IntegrationTests.Clients
                 },
                 new Client
                 {
+                    ClientId = "client.cnf",
+                    ClientSecrets =
+                    {
+                        new Secret
+                        {
+                            Type = "confirmation.test",
+                            Description = "Test for cnf claim",
+                            Value = "foo"
+                        }
+                    },
+
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+                    AllowOfflineAccess = true,
+
+                    AllowedScopes =
+                    {
+                        "api1", "api2"
+                    }
+                },
+                new Client
+                {
                     ClientId = "client.and.ro",
                     ClientSecrets =
                     {
@@ -216,13 +237,15 @@ namespace IdentityServer4.IntegrationTests.Clients
                 {
                     ClientId = "implicit",
                     AllowedGrantTypes = GrantTypes.Implicit,
-                    AllowedScopes = {"api1"}
+                    AllowedScopes = {"api1"},
+                    RedirectUris = { "http://implicit" }
                 },
                 new Client
                 {
                     ClientId = "implicit_and_client_creds",
                     AllowedGrantTypes = GrantTypes.ImplicitAndClientCredentials,
-                    AllowedScopes = {"api1"}
+                    AllowedScopes = {"api1"},
+                    RedirectUris = { "http://implicit_and_client_creds" }
                 }
             };
         }
