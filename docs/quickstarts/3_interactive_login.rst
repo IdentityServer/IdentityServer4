@@ -24,6 +24,11 @@ automate the download::
 
     iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/release/get.ps1'))
 
+
+For Unix/Linux::
+
+    \curl -L https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/release/get.sh | bash
+
 Once you have added the MVC UI assets, you will also need to add MVC to the hosting application, both in the DI system and in the pipeline.
 Add MVC to ``ConfigureServices`` with the ``AddMvc`` extension method::
 
