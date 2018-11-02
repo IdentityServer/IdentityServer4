@@ -42,7 +42,6 @@ Chris Simmons ([@netchrisdotcom](https://twitter.com/netchrisdotcom))
 Shawn Wildermuth  
 Thomas C  
 David Christiansen ([@dotnetopenauth](https://twitter.com/dotnetopenauth))  
-Christian Riedl  
 Ben	Cull  
 Johan Boström ([@zarx](https://twitter.com/zarx))  
 Chris White  
@@ -65,3 +64,4 @@ Colin Blair
 Erik Gulbrandsen  
 Olga Klimova  
 Alexandru Puiu  
+Michael Calasanz  
