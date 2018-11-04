@@ -16,6 +16,7 @@ using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System;
+using IdentityServer4.Logging.Models;
 using IdentityServer4.Models;
 using static IdentityServer4.IdentityServerConstants;
 
@@ -193,7 +194,7 @@ namespace IdentityServer4.Validation
             if (request != null)
             {
                 var log = new EndSessionRequestValidationLog(request);
-                Logger.LogInformation(message + Environment.NewLine + "{details}", log);
+                Logger.LogInformation(message + Environment.NewLine + "{@details}", log);
             }
             else
             {
@@ -215,7 +216,7 @@ namespace IdentityServer4.Validation
         protected virtual void LogSuccess(ValidatedEndSessionRequest request)
         {
             var log = new EndSessionRequestValidationLog(request);
-            Logger.LogInformation("End session request validation success" + Environment.NewLine + "{details}", log);
+            Logger.LogInformation("End session request validation success" + Environment.NewLine + "{@details}", log);
         }
 
         /// <inheritdoc />

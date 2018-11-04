@@ -17,6 +17,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using IdentityServer4.Stores;
 using IdentityServer4.Configuration;
+using IdentityServer4.Logging.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authentication;
 
@@ -489,12 +490,12 @@ namespace IdentityServer4.Validation
 
         private void LogError(string message)
         {
-            _logger.LogError(message + "\n{logMessage}", _log);
+            _logger.LogError(message + "\n{@logMessage}", _log);
         }
 
         private void LogSuccess()
         {
-            _logger.LogDebug("Token validation success\n{logMessage}", _log);
+            _logger.LogDebug("Token validation success\n{@logMessage}", _log);
         }
     }
 }

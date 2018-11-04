@@ -17,6 +17,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using IdentityServer4.Logging.Models;
 using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.Validation
@@ -623,7 +624,7 @@ namespace IdentityServer4.Validation
         private async Task<bool> ValidateRequestedScopesAsync(NameValueCollection parameters, bool ignoreImplicitIdentityScopes = false, bool ignoreImplicitOfflineAccess = false)
         {
             var ignoreIdentityScopes = false;
-            
+
             var scopes = parameters.Get(OidcConstants.TokenRequest.Scope);
             if (scopes.IsMissing())
             {
@@ -631,7 +632,7 @@ namespace IdentityServer4.Validation
                 {
                     ignoreIdentityScopes = true;
                 }
-                
+
                 _logger.LogTrace("Client provided no scopes - checking allowed scopes list");
 
                 if (!_validatedRequest.Client.AllowedScopes.IsNullOrEmpty())
@@ -753,16 +754,16 @@ namespace IdentityServer4.Validation
             {
                 try
                 {
-                    _logger.LogError(message + ", request details: {details}", values, details);
+                    _logger.LogError(message + ", request details: {@details}", values, details);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError("Error logging {exception}, request details: {details}", ex.Message, details);
+                    _logger.LogError("Error logging {exception}, request details: {@details}", ex.Message, details);
                 }
             }
             else
             {
-                _logger.LogError("{details}", details);
+                _logger.LogError("{@details}", details);
             }
         }
 
@@ -773,7 +774,7 @@ namespace IdentityServer4.Validation
             {
                 try
                 {
-                    _logger.LogInformation(message + ", request details: {details}", values, details);
+                    _logger.LogInformation(message + ", request details: {@details}", values, details);
                 }
                 catch (Exception ex)
                 {
@@ -782,14 +783,14 @@ namespace IdentityServer4.Validation
             }
             else
             {
-                _logger.LogInformation("{details}", details);
+                _logger.LogInformation("{@details}", details);
             }
         }
 
         private void LogSuccess()
         {
             var details = new TokenRequestValidationLog(_validatedRequest);
-            _logger.LogInformation("Token request validation success\n{details}", details);
+            _logger.LogInformation("Token request validation success\n{@details}", details);
         }
 
         private Task RaiseSuccessfulResourceOwnerAuthenticationEventAsync(string userName, string subjectId)
