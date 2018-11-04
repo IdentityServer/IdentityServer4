@@ -118,7 +118,7 @@ namespace IdentityServer4.Validation
                 var isActiveCtx = new IsActiveContext(principal, result.Client, IdentityServerConstants.ProfileIsActiveCallers.IdentityTokenValidation);
                 await _profile.IsActiveAsync(isActiveCtx);
 
-                if (isActiveCtx.IsActive == false)
+                if (!isActiveCtx.IsActive)
                 {
                     _logger.LogError("User marked as not active: {subject}", subClaim.Value);
 
@@ -230,7 +230,7 @@ namespace IdentityServer4.Validation
                 var isActiveCtx = new IsActiveContext(principal, result.Client, IdentityServerConstants.ProfileIsActiveCallers.AccessTokenValidation);
                 await _profile.IsActiveAsync(isActiveCtx);
 
-                if (isActiveCtx.IsActive == false)
+                if (!isActiveCtx.IsActive)
                 {
                     _logger.LogError("User marked as not active: {subject}", subClaim.Value);
 
@@ -427,7 +427,7 @@ namespace IdentityServer4.Validation
                 IdentityServerConstants.ProfileIsActiveCallers.RefreshTokenValidation);
             await _profile.IsActiveAsync(isActiveCtx);
 
-            if (isActiveCtx.IsActive == false)
+            if (!isActiveCtx.IsActive)
             {
                 _logger.LogError("{subjectId} has been disabled", refreshToken.Subject.GetSubjectId());
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);

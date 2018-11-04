@@ -60,7 +60,7 @@ namespace IdentityServer4.ResponseHandling
             };
 
             // token is invalid
-            if (validationResult.IsActive == false)
+            if (!validationResult.IsActive)
             {
                 Logger.LogDebug("Creating introspection response for inactive token.");
                 await Events.RaiseAsync(new TokenIntrospectionSuccessEvent(validationResult));
@@ -69,7 +69,7 @@ namespace IdentityServer4.ResponseHandling
             }
 
             // expected scope not present
-            if (await AreExpectedScopesPresentAsync(validationResult) == false)
+            if (!await AreExpectedScopesPresentAsync(validationResult))
             {
                 return response;
             }

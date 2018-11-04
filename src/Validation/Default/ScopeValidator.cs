@@ -77,7 +77,7 @@ namespace IdentityServer4.Validation
         /// <returns></returns>
         public bool ValidateRequiredScopes(IEnumerable<string> consentedScopes)
         {
-            var identity = RequestedResources.IdentityResources.Where(x => x.Required).Select(x=>x.Name);
+            var identity = RequestedResources.IdentityResources.Where(x => x.Required).Select(x => x.Name);
             var apiQuery = from api in RequestedResources.ApiResources
                            where api.Scopes != null
                            from scope in api.Scopes
@@ -106,7 +106,7 @@ namespace IdentityServer4.Validation
             var apisToKeep = from api in GrantedResources.ApiResources
                              where api.Scopes != null
                              let scopesToKeep = (from scope in api.Scopes
-                                                 where scope.Required == true || consentedScopes.Contains(scope.Name)
+                                                 where scope.Required || consentedScopes.Contains(scope.Name)
                                                  select scope)
                              where scopesToKeep.Any()
                              select api.CloneWithScopes(scopesToKeep);
@@ -138,7 +138,7 @@ namespace IdentityServer4.Validation
                 var identity = resources.IdentityResources.FirstOrDefault(x => x.Name == requestedScope);
                 if (identity != null)
                 {
-                    if (identity.Enabled == false)
+                    if (!identity.Enabled)
                     {
                         _logger.LogError("Scope disabled: {requestedScope}", requestedScope);
                         return false;
@@ -158,7 +158,7 @@ namespace IdentityServer4.Validation
                         return false;
                     }
 
-                    if (api.Enabled == false)
+                    if (!api.Enabled)
                     {
                         _logger.LogError("API {api} that contains scope is disabled: {requestedScope}", api.Name, requestedScope);
                         return false;
@@ -203,7 +203,7 @@ namespace IdentityServer4.Validation
         {
             if (requestedScopes.Contains(IdentityServerConstants.StandardScopes.OfflineAccess))
             {
-                if (client.AllowOfflineAccess == false)
+                if (!client.AllowOfflineAccess)
                 {
                     _logger.LogError("offline_access is not allowed for this client: {client}", client.ClientId);
                     return false;
@@ -258,6 +258,7 @@ namespace IdentityServer4.Validation
                         return false;
                     }
                     break;
+
                 case Constants.ScopeRequirement.IdentityOnly:
                     if (!ContainsOpenIdScopes || ContainsApiResourceScopes)
                     {
@@ -265,6 +266,7 @@ namespace IdentityServer4.Validation
                         return false;
                     }
                     break;
+
                 case Constants.ScopeRequirement.ResourceOnly:
                     if (ContainsOpenIdScopes || !ContainsApiResourceScopes)
                     {

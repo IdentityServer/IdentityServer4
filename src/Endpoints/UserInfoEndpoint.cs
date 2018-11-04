@@ -2,15 +2,15 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using System.Threading.Tasks;
-using IdentityServer4.Validation;
-using IdentityServer4.ResponseHandling;
-using Microsoft.Extensions.Logging;
-using IdentityServer4.Hosting;
-using IdentityServer4.Endpoints.Results;
-using IdentityModel;
-using Microsoft.AspNetCore.Http;
 using System.Net;
+using System.Threading.Tasks;
+using IdentityModel;
+using IdentityServer4.Endpoints.Results;
+using IdentityServer4.Hosting;
+using IdentityServer4.ResponseHandling;
+using IdentityServer4.Validation;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.Endpoints
 {
@@ -33,9 +33,9 @@ namespace IdentityServer4.Endpoints
         /// <param name="responseGenerator">The response generator.</param>
         /// <param name="logger">The logger.</param>
         public UserInfoEndpoint(
-            BearerTokenUsageValidator tokenUsageValidator, 
-            IUserInfoRequestValidator requestValidator, 
-            IUserInfoResponseGenerator responseGenerator, 
+            BearerTokenUsageValidator tokenUsageValidator,
+            IUserInfoRequestValidator requestValidator,
+            IUserInfoResponseGenerator responseGenerator,
             ILogger<UserInfoEndpoint> logger)
         {
             _tokenUsageValidator = tokenUsageValidator;
@@ -66,7 +66,7 @@ namespace IdentityServer4.Endpoints
 
             // userinfo requires an access token on the request
             var tokenUsageResult = await _tokenUsageValidator.ValidateAsync(context);
-            if (tokenUsageResult.TokenFound == false)
+            if (!tokenUsageResult.TokenFound)
             {
                 var error = "No access token found.";
 

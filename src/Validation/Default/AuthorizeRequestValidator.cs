@@ -123,7 +123,6 @@ namespace IdentityServer4.Validation
 
             request.ClientId = clientId;
 
-
             //////////////////////////////////////////////////////////
             // redirect_uri must be present, and a valid uri
             //////////////////////////////////////////////////////////
@@ -132,7 +131,7 @@ namespace IdentityServer4.Validation
             if (redirectUri.IsMissingOrTooLong(_options.InputLengthRestrictions.RedirectUri))
             {
                 LogError("redirect_uri is missing or too long", request);
-                return Invalid(request, description:"Invalid redirect_uri");
+                return Invalid(request, description: "Invalid redirect_uri");
             }
 
             if (!Uri.TryCreate(redirectUri, UriKind.Absolute, out var _))
@@ -165,7 +164,7 @@ namespace IdentityServer4.Validation
             //////////////////////////////////////////////////////////
             // check if redirect_uri is valid
             //////////////////////////////////////////////////////////
-            if (await _uriValidator.IsRedirectUriValidAsync(redirectUri, request.Client) == false)
+            if (!await _uriValidator.IsRedirectUriValidAsync(redirectUri, request.Client))
             {
                 LogError("Invalid redirect_uri", redirectUri, request);
                 return Invalid(request, OidcConstants.AuthorizeErrors.UnauthorizedClient, "Invalid redirect_uri");
@@ -279,7 +278,6 @@ namespace IdentityServer4.Validation
                     return Invalid(request, OidcConstants.AuthorizeErrors.UnsupportedResponseType, description: "Invalid response_mode");
                 }
             }
-
 
             //////////////////////////////////////////////////////////
             // check if grant type is allowed for client
@@ -400,7 +398,7 @@ namespace IdentityServer4.Validation
             if (requirement == Constants.ScopeRequirement.Identity ||
                 requirement == Constants.ScopeRequirement.IdentityOnly)
             {
-                if (request.IsOpenIdRequest == false)
+                if (!request.IsOpenIdRequest)
                 {
                     LogError("response_type requires the openid scope", request);
                     return Invalid(request, description: "Missing openid scope");
@@ -410,7 +408,7 @@ namespace IdentityServer4.Validation
             //////////////////////////////////////////////////////////
             // check if scopes are valid/supported and check for resource scopes
             //////////////////////////////////////////////////////////
-            if (await _scopeValidator.AreScopesValidAsync(request.RequestedScopes) == false)
+            if (!await _scopeValidator.AreScopesValidAsync(request.RequestedScopes))
             {
                 return Invalid(request, OidcConstants.AuthorizeErrors.InvalidScope, "Invalid scope");
             }
@@ -429,7 +427,7 @@ namespace IdentityServer4.Validation
             //////////////////////////////////////////////////////////
             // check scopes and scope restrictions
             //////////////////////////////////////////////////////////
-            if (await _scopeValidator.AreScopesAllowedAsync(request.Client, request.RequestedScopes) == false)
+            if (!await _scopeValidator.AreScopesAllowedAsync(request.Client, request.RequestedScopes))
             {
                 return Invalid(request, OidcConstants.AuthorizeErrors.UnauthorizedClient, description: "Invalid scope for client");
             }
@@ -476,7 +474,6 @@ namespace IdentityServer4.Validation
                     }
                 }
             }
-
 
             //////////////////////////////////////////////////////////
             // check prompt
@@ -557,7 +554,7 @@ namespace IdentityServer4.Validation
                 if (loginHint.Length > _options.InputLengthRestrictions.LoginHint)
                 {
                     LogError("Login hint too long", request);
-                    return Invalid(request, description:"Invalid login_hint");
+                    return Invalid(request, description: "Invalid login_hint");
                 }
 
                 request.LoginHint = loginHint;

@@ -21,7 +21,7 @@ namespace IdentityServer4.Validation
         private readonly IdentityServerOptions _options;
         private readonly ScopeValidator _scopeValidator;
         private readonly ILogger<DeviceAuthorizationRequestValidator> _logger;
-        
+
         public DeviceAuthorizationRequestValidator(
             IdentityServerOptions options,
             ScopeValidator scopeValidator,
@@ -152,7 +152,7 @@ namespace IdentityServer4.Validation
             //////////////////////////////////////////////////////////
             // check if scopes are valid/supported
             //////////////////////////////////////////////////////////
-            if (await _scopeValidator.AreScopesValidAsync(request.RequestedScopes) == false)
+            if (!await _scopeValidator.AreScopesValidAsync(request.RequestedScopes))
             {
                 return Invalid(request, OidcConstants.AuthorizeErrors.InvalidScope);
             }
@@ -166,13 +166,13 @@ namespace IdentityServer4.Validation
             //////////////////////////////////////////////////////////
             // check scopes and scope restrictions
             //////////////////////////////////////////////////////////
-            if (await _scopeValidator.AreScopesAllowedAsync(request.Client, request.RequestedScopes) == false)
+            if (!await _scopeValidator.AreScopesAllowedAsync(request.Client, request.RequestedScopes))
             {
                 return Invalid(request, OidcConstants.AuthorizeErrors.UnauthorizedClient, "Invalid scope");
             }
 
             request.ValidatedScopes = _scopeValidator;
-            
+
             return Valid(request);
         }
     }

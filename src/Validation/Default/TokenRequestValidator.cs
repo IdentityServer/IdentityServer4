@@ -128,14 +128,19 @@ namespace IdentityServer4.Validation
             {
                 case OidcConstants.GrantTypes.AuthorizationCode:
                     return await RunValidationAsync(ValidateAuthorizationCodeRequestAsync, parameters);
+
                 case OidcConstants.GrantTypes.ClientCredentials:
                     return await RunValidationAsync(ValidateClientCredentialsRequestAsync, parameters);
+
                 case OidcConstants.GrantTypes.Password:
                     return await RunValidationAsync(ValidateResourceOwnerCredentialRequestAsync, parameters);
+
                 case OidcConstants.GrantTypes.RefreshToken:
                     return await RunValidationAsync(ValidateRefreshTokenRequestAsync, parameters);
+
                 case OidcConstants.GrantTypes.DeviceCode:
                     return await RunValidationAsync(ValidateDeviceCodeRequestAsync, parameters);
+
                 default:
                     return await RunValidationAsync(ValidateExtensionGrantRequestAsync, parameters);
             }
@@ -259,7 +264,7 @@ namespace IdentityServer4.Validation
                 return Invalid(OidcConstants.TokenErrors.UnauthorizedClient);
             }
 
-            if (redirectUri.Equals(_validatedRequest.AuthorizationCode.RedirectUri, StringComparison.Ordinal) == false)
+            if (!redirectUri.Equals(_validatedRequest.AuthorizationCode.RedirectUri, StringComparison.Ordinal))
             {
                 LogError("Invalid redirect_uri: {redirectUri}, expected {exceptRedirectUri}",
                     redirectUri, _validatedRequest.AuthorizationCode.RedirectUri);
@@ -307,7 +312,7 @@ namespace IdentityServer4.Validation
             var isActiveCtx = new IsActiveContext(_validatedRequest.AuthorizationCode.Subject, _validatedRequest.Client, IdentityServerConstants.ProfileIsActiveCallers.AuthorizationCodeValidation);
             await _profile.IsActiveAsync(isActiveCtx);
 
-            if (isActiveCtx.IsActive == false)
+            if (!isActiveCtx.IsActive)
             {
                 LogError("User has been disabled: {subjectId}", _validatedRequest.AuthorizationCode.Subject.GetSubjectId());
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
@@ -397,7 +402,6 @@ namespace IdentityServer4.Validation
 
             _validatedRequest.UserName = userName;
 
-
             /////////////////////////////////////////////
             // authenticate user
             /////////////////////////////////////////////
@@ -447,7 +451,7 @@ namespace IdentityServer4.Validation
             var isActiveCtx = new IsActiveContext(resourceOwnerContext.Result.Subject, _validatedRequest.Client, IdentityServerConstants.ProfileIsActiveCallers.ResourceOwnerValidation);
             await _profile.IsActiveAsync(isActiveCtx);
 
-            if (isActiveCtx.IsActive == false)
+            if (!isActiveCtx.IsActive)
             {
                 LogError("User has been disabled: {subjectId}", resourceOwnerContext.Result.Subject.GetSubjectId());
                 await RaiseFailedResourceOwnerAuthenticationEventAsync(userName, "user is inactive");
@@ -499,7 +503,7 @@ namespace IdentityServer4.Validation
         private async Task<TokenRequestValidationResult> ValidateDeviceCodeRequestAsync(NameValueCollection parameters)
         {
             _logger.LogDebug("Start validation of device code request");
-            
+
             /////////////////////////////////////////////
             // check if client is authorized for grant type
             /////////////////////////////////////////////
@@ -528,11 +532,11 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // validate device code
             /////////////////////////////////////////////
-            var deviceCodeContext = new DeviceCodeValidationContext {DeviceCode = deviceCode, Request = _validatedRequest};
+            var deviceCodeContext = new DeviceCodeValidationContext { DeviceCode = deviceCode, Request = _validatedRequest };
             await _deviceCodeValidator.ValidateAsync(deviceCodeContext);
 
             if (deviceCodeContext.Result.IsError) return deviceCodeContext.Result;
-            
+
             _logger.LogDebug("Validation of authorization code token request success");
 
             return Valid();
@@ -605,7 +609,7 @@ namespace IdentityServer4.Validation
 
                 await _profile.IsActiveAsync(isActiveCtx);
 
-                if (isActiveCtx.IsActive == false)
+                if (!isActiveCtx.IsActive)
                 {
                     // todo: raise event?
 
@@ -707,13 +711,13 @@ namespace IdentityServer4.Validation
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
-            if (Constants.SupportedCodeChallengeMethods.Contains(authZcode.CodeChallengeMethod) == false)
+            if (!Constants.SupportedCodeChallengeMethods.Contains(authZcode.CodeChallengeMethod))
             {
                 LogError("Unsupported code challenge method: {codeChallengeMethod}", authZcode.CodeChallengeMethod);
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
-            if (ValidateCodeVerifierAgainstCodeChallenge(codeVerifier, authZcode.CodeChallenge, authZcode.CodeChallengeMethod) == false)
+            if (!ValidateCodeVerifierAgainstCodeChallenge(codeVerifier, authZcode.CodeChallenge, authZcode.CodeChallengeMethod))
             {
                 LogError("Transformed code verifier does not match code challenge");
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);

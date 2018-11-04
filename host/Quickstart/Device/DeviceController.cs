@@ -98,7 +98,7 @@ namespace IdentityServer4.Quickstart.UI.Device
                 if (model.ScopesConsented != null && model.ScopesConsented.Any())
                 {
                     var scopes = model.ScopesConsented;
-                    if (ConsentOptions.EnableOfflineAccess == false)
+                    if (!ConsentOptions.EnableOfflineAccess)
                     {
                         scopes = scopes.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess);
                     }
@@ -175,7 +175,7 @@ namespace IdentityServer4.Quickstart.UI.Device
 
                 RememberConsent = model?.RememberConsent ?? true,
                 ScopesConsented = model?.ScopesConsented ?? Enumerable.Empty<string>(),
-                
+
                 ClientName = client.ClientName ?? client.ClientId,
                 ClientUrl = client.ClientUri,
                 ClientLogoUrl = client.LogoUri,
@@ -220,6 +220,7 @@ namespace IdentityServer4.Quickstart.UI.Device
                 Checked = check || scope.Required
             };
         }
+
         private ScopeViewModel GetOfflineAccessScope(bool check)
         {
             return new ScopeViewModel

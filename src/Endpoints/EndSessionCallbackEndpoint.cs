@@ -43,7 +43,7 @@ namespace IdentityServer4.Endpoints
             var parameters = context.Request.Query.AsNameValueCollection();
             var result = await _endSessionRequestValidator.ValidateCallbackAsync(parameters);
 
-            if (result.IsError == false)
+            if (!result.IsError)
             {
                 _logger.LogInformation("Successful signout callback.");
 
@@ -58,8 +58,7 @@ namespace IdentityServer4.Endpoints
 
                 if (result.BackChannelLogouts?.Any() == true)
                 {
-
-                    _logger.LogDebug("Client back-channel iframe urls: {urls}", result.BackChannelLogouts.Select(x=>x.LogoutUri));
+                    _logger.LogDebug("Client back-channel iframe urls: {urls}", result.BackChannelLogouts.Select(x => x.LogoutUri));
                 }
                 else
                 {

@@ -51,7 +51,7 @@ namespace IdentityServer4.ResponseHandling
         public AuthorizeInteractionResponseGenerator(
             ISystemClock clock,
             ILogger<AuthorizeInteractionResponseGenerator> logger,
-            IConsentService consent, 
+            IConsentService consent,
             IProfileService profile)
         {
             Clock = clock;
@@ -70,7 +70,7 @@ namespace IdentityServer4.ResponseHandling
         {
             Logger.LogTrace("ProcessInteractionAsync");
 
-            if (consent != null && consent.Granted == false && request.Subject.IsAuthenticated() == false)
+            if (consent != null && !consent.Granted && !request.Subject.IsAuthenticated())
             {
                 // special case when anonymous user has issued a deny prior to authenticating
                 Logger.LogInformation("Error: User denied consent");
@@ -112,7 +112,7 @@ namespace IdentityServer4.ResponseHandling
 
             // unauthenticated user
             var isAuthenticated = request.Subject.IsAuthenticated();
-            
+
             // user de-activated
             bool isActive = false;
 
@@ -120,7 +120,7 @@ namespace IdentityServer4.ResponseHandling
             {
                 var isActiveCtx = new IsActiveContext(request.Subject, request.Client, IdentityServerConstants.ProfileIsActiveCallers.AuthorizeEndpoint);
                 await Profile.IsActiveAsync(isActiveCtx);
-                
+
                 isActive = isActiveCtx.IsActive;
             }
 
@@ -192,7 +192,7 @@ namespace IdentityServer4.ResponseHandling
                 }
             }
             // check external idp restrictions if user not using local idp
-            else if (request.Client.IdentityProviderRestrictions != null && 
+            else if (request.Client.IdentityProviderRestrictions != null &&
                 request.Client.IdentityProviderRestrictions.Any() &&
                 !request.Client.IdentityProviderRestrictions.Contains(currentIdp))
             {
@@ -266,7 +266,7 @@ namespace IdentityServer4.ResponseHandling
                     Logger.LogTrace("Consent was shown to user");
 
                     // user was shown consent -- did they say yes or no
-                    if (consent.Granted == false)
+                    if (!consent.Granted)
                     {
                         // no need to show consent screen again
                         // build access denied error to return to client
@@ -277,7 +277,7 @@ namespace IdentityServer4.ResponseHandling
                     {
                         // double check that required scopes are in the list of consented scopes
                         var valid = request.ValidatedScopes.ValidateRequiredScopes(consent.ScopesConsented);
-                        if (valid == false)
+                        if (!valid)
                         {
                             response.Error = OidcConstants.AuthorizeErrors.AccessDenied;
                             Logger.LogInformation("Error: User denied consent to required scopes");

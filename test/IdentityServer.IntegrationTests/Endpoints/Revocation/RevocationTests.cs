@@ -175,7 +175,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
                 TokenTypeHint = IdentityModel.OidcConstants.TokenTypes.AccessToken
             });
 
-            return response.IsError == false && response.IsActive;
+            return !response.IsError && response.IsActive;
         }
 
         private async Task<bool> UseRefreshTokenAsync(Tokens tokens)

@@ -43,7 +43,7 @@ namespace IdentityServer4.Endpoints
 
             _logger.LogDebug("Start key discovery request");
 
-            if (_options.Discovery.ShowKeySet == false)
+            if (!_options.Discovery.ShowKeySet)
             {
                 _logger.LogInformation("Key discovery disabled. 404.");
                 return new StatusCodeResult(HttpStatusCode.NotFound);

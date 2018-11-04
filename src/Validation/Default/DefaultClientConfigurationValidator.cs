@@ -39,22 +39,22 @@ namespace IdentityServer4.Validation
         public async Task ValidateAsync(ClientConfigurationValidationContext context)
         {
             await ValidateGrantTypesAsync(context);
-            if (context.IsValid == false) return;
+            if (!context.IsValid) return;
 
             await ValidateLifetimesAsync(context);
-            if (context.IsValid == false) return;
+            if (!context.IsValid) return;
 
             await ValidateRedirectUriAsync(context);
-            if (context.IsValid == false) return;
+            if (!context.IsValid) return;
 
             await ValidateUriSchemesAsync(context);
-            if (context.IsValid == false) return;
+            if (!context.IsValid) return;
 
             await ValidateSecretsAsync(context);
-            if (context.IsValid == false) return;
+            if (!context.IsValid) return;
 
             await ValidatePropertiesAsync(context);
-            if (context.IsValid == false) return;
+            if (!context.IsValid) return;
         }
 
         /// <summary>
@@ -171,7 +171,7 @@ namespace IdentityServer4.Validation
             {
                 if (!string.Equals(grantType, GrantType.Implicit))
                 {
-                    if (context.Client.RequireClientSecret  && context.Client.ClientSecrets.Count == 0)
+                    if (context.Client.RequireClientSecret && context.Client.ClientSecrets.Count == 0)
                     {
                         context.SetError($"Client secret is required for {grantType}, but no client secret is configured.");
                         return Task.CompletedTask;

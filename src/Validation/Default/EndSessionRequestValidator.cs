@@ -143,7 +143,7 @@ namespace IdentityServer4.Validation
                 var redirectUri = parameters.Get(OidcConstants.EndSessionRequest.PostLogoutRedirectUri);
                 if (redirectUri.IsPresent())
                 {
-                    if (await UriValidator.IsPostLogoutRedirectUriValidAsync(redirectUri, validatedRequest.Client) == false)
+                    if (!await UriValidator.IsPostLogoutRedirectUriValidAsync(redirectUri, validatedRequest.Client))
                     {
                         return Invalid("Invalid post logout URI", validatedRequest);
                     }
