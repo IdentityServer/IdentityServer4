@@ -34,7 +34,7 @@ As you use `IdentityServer4.EntityFramework` and upgrade over time, you are resp
 One approach for managing those changes is to use EF migrations, and this quickstart will show how that can be done.
 If migrations are not your preference, then you can manage the schema changes in any way you see fit.
 
-.. Note:: SQL scripts for SqlServer are maintained for the entities in `IdentityServer4.EntityFramework`. They are located `here <https://github.com/IdentityServer/IdentityServer4.EntityFramework/tree/dev/src/Host/Migrations/IdentityServer>`_.
+.. Note:: SQL scripts for SqlServer are maintained for the entities in `IdentityServer4.EntityFramework`. They are located `here <https://github.com/IdentityServer/IdentityServer4.EntityFramework/tree/release/src/Host/Migrations/IdentityServer>`_.
 
 EF Tooling for Migrations
 ^^^^^^^^^^^^^^^^^^^^^^^^^

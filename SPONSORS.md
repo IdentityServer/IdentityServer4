@@ -19,7 +19,7 @@ We thank those who [support](https://www.patreon.com/identityserver) IdentitySer
 ### Silver
 
 Jacobus Roos  
-Tomer Dvir  
+Soluto ([@SolutoEng](https://twitter.com/SolutoEng))  
 Steinar	Noem  
 Effectory ([@effectory](https://twitter.com/effectory))  
 Real Page ([@RealPage](https://twitter.com/RealPage))  
@@ -42,7 +42,6 @@ Chris Simmons ([@netchrisdotcom](https://twitter.com/netchrisdotcom))
 Shawn Wildermuth  
 Thomas C  
 David Christiansen ([@dotnetopenauth](https://twitter.com/dotnetopenauth))  
-Christian Riedl  
 Ben	Cull  
 Johan Boström ([@zarx](https://twitter.com/zarx))  
 Chris White  
@@ -65,3 +64,4 @@ Colin Blair
 Erik Gulbrandsen  
 Olga Klimova  
 Alexandru Puiu  
+Michael Calasanz  
