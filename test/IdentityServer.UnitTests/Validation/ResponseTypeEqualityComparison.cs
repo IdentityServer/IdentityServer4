@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -41,7 +41,7 @@ namespace IdentityServer4.UnitTests.Validation
             {
                 ResponseTypeEqualityComparer comparer = new ResponseTypeEqualityComparer();
                 string x = null;
-                string y = "";
+                string y = string.Empty;
                 var result = comparer.Equals(x, y);
                 var expected = (x == y);
                 result.Should().Be(expected);
@@ -51,7 +51,7 @@ namespace IdentityServer4.UnitTests.Validation
             public void Right_null_other_not()
             {
                 ResponseTypeEqualityComparer comparer = new ResponseTypeEqualityComparer();
-                string x = "";
+                string x = string.Empty;
                 string y = null;
                 var result = comparer.Equals(x, y);
                 var expected = (x == y);

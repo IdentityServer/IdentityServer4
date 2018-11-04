@@ -22,7 +22,7 @@ namespace IdentityServer.IntegrationTests.Pipeline
             {
                 s.Configure<IdentityServerOptions>(opts=>
                 {
-                    opts.PublicOrigin = "";
+                    opts.PublicOrigin = string.Empty;
                 });
             };
             _pipeline.Initialize();
