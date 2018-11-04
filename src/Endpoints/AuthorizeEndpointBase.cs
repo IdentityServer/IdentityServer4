@@ -10,7 +10,6 @@ using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
-using IdentityServer4.Logging;
 using IdentityServer4.Logging.Models;
 using IdentityServer4.Models;
 using IdentityServer4.ResponseHandling;

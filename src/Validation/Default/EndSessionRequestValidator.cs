@@ -3,7 +3,6 @@
 
 
 using IdentityModel;
-using IdentityServer4.Logging;
 using IdentityServer4.Extensions;
 using Microsoft.Extensions.Logging;
 using System.Collections.Specialized;

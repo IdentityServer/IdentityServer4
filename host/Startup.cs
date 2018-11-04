@@ -10,7 +10,6 @@ using Microsoft.IdentityModel.Tokens;
 using IdentityServer4;
 using IdentityServer4.Quickstart.UI;
 using Microsoft.Extensions.Configuration;
-using IdentityServer4.Validation;
 
 namespace Host
 {

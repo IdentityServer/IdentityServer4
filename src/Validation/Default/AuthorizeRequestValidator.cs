@@ -5,7 +5,6 @@
 using IdentityModel;
 using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
-using IdentityServer4.Logging;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
