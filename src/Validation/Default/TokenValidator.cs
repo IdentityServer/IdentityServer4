@@ -379,7 +379,7 @@ namespace IdentityServer4.Validation
             var refreshToken = await _refreshTokenStore.GetRefreshTokenAsync(tokenHandle);
             if (refreshToken == null)
             {
-                _logger.LogError("Invalid refresh token");
+                _logger.LogWarning("Invalid refresh token");
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
@@ -388,7 +388,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             if (refreshToken.CreationTime.HasExceeded(refreshToken.Lifetime, _clock.UtcNow.DateTime))
             {
-                _logger.LogError("Refresh token has expired. Removing from store.");
+                _logger.LogWarning("Refresh token has expired. Removing from store.");
 
                 await _refreshTokenStore.RemoveRefreshTokenAsync(tokenHandle);
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
