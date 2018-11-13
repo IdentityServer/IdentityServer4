@@ -121,6 +121,7 @@ It enables the following features in your applications:
    reference/grant_validation_result
    reference/profileservice
    reference/interactionservice
+   reference/deviceflow_interactionservice
    reference/options
    reference/ef
    reference/aspnet_identity
