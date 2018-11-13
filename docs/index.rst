@@ -105,6 +105,7 @@ It enables the following features in your applications:
    endpoints/authorize
    endpoints/token
    endpoints/userinfo
+   endpoints/device_authorization
    endpoints/introspection
    endpoints/revocation
    endpoints/endsession
