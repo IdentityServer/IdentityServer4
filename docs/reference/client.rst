@@ -54,6 +54,8 @@ Authentication/Logout
     Specifies if this client can use local accounts, or external IdPs only. Defaults to `true`.
 ``IdentityProviderRestrictions``
     Specifies which external IdPs can be used with this client (if list is empty all IdPs are allowed). Defaults to empty.
+``UserSsoLifetime`` `added in 2.3`
+    The maximum duration (in seconds) since the last time the user authenticated. Defaults to ``null``.
 
 Token
 ^^^^^
