@@ -153,6 +153,24 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 
         [Fact]
         [Trait("Category", Category)]
+        public async Task anonymous_xhr_user_should_receive_unauthorized()
+        {
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: "client1",
+                responseType: "id_token",
+                scope: "openid",
+                redirectUri: "https://client1/callback",
+                state: "123_state",
+                nonce: "123_nonce");
+            _mockPipeline.BrowserClient.DefaultRequestHeaders.Add("X-Requested-With", "XMLHttpRequest");
+            var response = await _mockPipeline.BrowserClient.GetAsync(url);
+
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            _mockPipeline.LoginWasCalled.Should().BeFalse();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
         public async Task signin_request_should_have_authorization_params()
         {
             var url = _mockPipeline.CreateAuthorizeUrl(
