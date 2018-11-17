@@ -194,5 +194,8 @@ namespace IdentityServer4.Extensions
             // no sessions, so nothing to cleanup
             return null;
         }
+
+        internal static bool IsAjax(this HttpContext context)
+            => string.Equals(context?.Request?.Headers?["X-Requested-With"], "XMLHttpRequest", StringComparison.InvariantCultureIgnoreCase);
     }
 }

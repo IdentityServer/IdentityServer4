@@ -53,6 +53,12 @@ namespace IdentityServer4.Endpoints.Results
         /// <returns></returns>
         public Task ExecuteAsync(HttpContext context)
         {
+            if (context.IsAjax())
+            {
+                context.Response.StatusCode = (int) System.Net.HttpStatusCode.Unauthorized;
+                return Task.CompletedTask;
+            }
+            
             Init(context);
 
             var returnUrl = context.GetIdentityServerBasePath().EnsureTrailingSlash() + Constants.ProtocolRoutePaths.AuthorizeCallback;
