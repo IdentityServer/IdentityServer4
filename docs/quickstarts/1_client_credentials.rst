@@ -17,7 +17,7 @@ First create a directory for the application - then use our template to create a
     md src
     cd src
 
-    dotnet new is4empty -n IdentityServer -o .
+    dotnet new is4empty -n IdentityServer
 
 This will create the following files:
 
@@ -31,9 +31,9 @@ If you want to add Visual Studio support, you can add a solution file like this:
 
     cd ..
     dotnet new sln -n Quickstarts
-    dotnet sln add .\src\IdentityServerQuickstart.csproj
+    dotnet sln add .\src\IdentityServer.csproj
 
-.. note:: When you are using the template, the port for your ASP.NET Core applicatio will default to 5000. You can change that in the ``Properties\LaunchSettings.json`` file. However, all of the quickstart instructions will assume you use the default.
+.. note:: When you are using the template, the port for your ASP.NET Core application will be set to 5000. You can change that in the ``Properties\LaunchSettings.json`` file. However, all of the quickstart instructions will assume you use the default.
 
 
 Defining an API Resource
