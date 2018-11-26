@@ -7,11 +7,6 @@ image:
 environment:
   APPVEYOR_YML_DISABLE_PS_LINUX: true
 
-branches:
-  only:
-  - dev
-  - releases/*
-  
 build_script:
 - ps: .\build.ps1
 - sh: ./build.sh
