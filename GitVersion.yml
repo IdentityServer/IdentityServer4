@@ -4,5 +4,7 @@ branches:
     increment: none
   develop:
     tag: 'dev'
+  releases?[/-]:
+    tag: 'dev'
 ignore:
   sha: []
