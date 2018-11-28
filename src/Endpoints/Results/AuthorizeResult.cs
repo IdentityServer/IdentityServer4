@@ -127,7 +127,7 @@ namespace IdentityServer4.Endpoints.Results
 
         private void AddSecurityHeaders(HttpContext context)
         {
-            context.Response.AddScriptCspHeaders(_options.Csp, "sha256-VuNUSJ59bpCpw62HM2JG/hCyGiqoPN3NqGvNXQPU+rY=");
+            context.Response.AddScriptCspHeaders(_options.Csp, "sha256-qVoI0C254Vi3s3Iwsa3nl2rir6x9eGaSW3YUjo7k7Ms="); 
 
             var referrer_policy = "no-referrer";
             if (!context.Response.Headers.ContainsKey("Referrer-Policy"))
@@ -159,7 +159,7 @@ namespace IdentityServer4.Endpoints.Results
             return uri;
         }
 
-        private const string FormPostHtml = "<html><head><base target='_self'/></head><body><form method='post' action='{uri}'>{body}<noscript><button>Click to continue</button></noscript></form><script>(function(){document.forms[0].submit();})();</script></body></html>";
+        private const string FormPostHtml = "<html><head><base target='_self'/></head><body><form method='post' action='{uri}'>{body}<noscript><button>Click to continue</button></noscript></form><script>window.onload=function(){document.forms[0].submit();};</script></body></html>";
 
         private string GetFormPostHtml()
         {
