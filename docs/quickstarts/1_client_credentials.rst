@@ -117,8 +117,8 @@ Run from within the ``src`` folder the following command::
 
 Configure the API application to run on ``http://localhost:5001``.
 
-**The controller**
-
+The controller
+--------------
 Add a new controller to your API project::
 
     [Route("identity")]
@@ -135,8 +135,8 @@ Add a new controller to your API project::
 This controller will be used later to test the authorization requirement, as well
 as visualize the claims identity through the eyes of the API.
 
-**Configuration**
-
+Configuration
+-------------
 The last step is to add the authentication services to DI and the authentication middleware to the pipeline.
 These will:
 
@@ -235,7 +235,6 @@ Next you can use the information from the discovery document to request a token:
 
 Calling the API
 ^^^^^^^^^^^^^^^
-
 To send the access token to the API you typically use the HTTP Authorization header.
 This is done using the ``SetBearerToken`` extension method::
 
@@ -262,7 +261,6 @@ The output should look like this:
 
 Further experiments
 ^^^^^^^^^^^^^^^^^^^
-
 This walkthrough focused on the success path so far
 
 * client was able to request token

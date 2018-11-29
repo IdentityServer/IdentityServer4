@@ -19,7 +19,7 @@ IdentityServer implementation, we provide an MVC-based sample UI that you can us
 This UI can be found in the `Quickstart UI repo <https://github.com/IdentityServer/IdentityServer4.Quickstart.UI/tree/master>`_.
 You can clone or download this repo and drop the controllers, views, models and CSS into your IdentityServer web application.
 
-Alternatively you can use the .NET CLI to (run from within the ``src/IdentityServer`` folder::
+Alternatively you can use the .NET CLI (run from within the ``src/IdentityServer`` folder)::
 
     dotnet new is4ui
 
@@ -205,6 +205,8 @@ Here the user can decide if he wants to release his identity information to the 
 
 After that, IdentityServer will redirect back to the MVC client, where the OpenID Connect authentication handler processes the response and signs-in the user locally by setting a cookie.
 Finally the MVC view will show the contents of the cookie.
+
+
 
 As you can see, the cookie has two parts, the claims of the user, and some metadata. This metadata also contains the original token that was issued by IdentityServer.
 Feel free to copy this token to `jwt.io <https://jwt.io>`_ to inspect its content.
