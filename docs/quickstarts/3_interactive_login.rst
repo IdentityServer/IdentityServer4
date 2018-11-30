@@ -59,7 +59,7 @@ Add MVC as the last middleware in the pipeline in ``Configure`` with the ``UseMv
         app.UseMvcWithDefaultRoute();
     }
 
-See the `readme <https://github.com/IdentityServer/IdentityServer4.Quickstart.UI/blob/release/README.md>`_ for the quickstart UI for more information. 
+See the `readme <https://github.com/IdentityServer/IdentityServer4.Quickstart.UI/blob/master/README.md>`_ for the quickstart UI for more information. 
 
 .. note:: The ``release`` branch of the UI repo has the UI that matches the latest stable release. The ``dev`` branch goes along with the current dev build of IdentityServer4. If you are looking for a specific version of the UI - check the tags.
 
