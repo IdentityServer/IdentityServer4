@@ -10,7 +10,7 @@ https://github.com/leastprivilege/AspNetCoreSecuritySamples
 
 IdentityServer4 EF and ASP.NET Identity
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-`This <https://github.com/IdentityServer/IdentityServer4.Samples/tree/release/Quickstarts/Combined_AspNetIdentity_and_EntityFrameworkStorage>`_ sample combines the EF and ASP.NET Identity quickstarts (#6 and #8).
+`This <https://github.com/IdentityServer/IdentityServer4.Samples/tree/master/Quickstarts/Combined_AspId_and_EFStorage>`_ sample combines the EF and ASP.NET Identity quickstarts (#6 and #8).
 
 Co-hosting IdentityServer4 and a Web API
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -22,7 +22,7 @@ IdentityServer4 samples for MongoDB
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 * IdentityServer4-mongo: Similar to Quickstart #8 EntityFramework configuration but using MongoDB for the configuration data.
 * IdentityServer4-mongo-AspIdentity: More elaborated sample based on uses ASP.NET Identity for identity management that uses using MongoDB for the configuration data
-  
+
 https://github.com/souzartn/IdentityServer4.Samples.Mongo
 
 Exchanging external tokens from Facebook, Google and Twitter
