@@ -16,18 +16,18 @@ You need to provide the necessary UI parts for login, logout, consent and error.
 While the look & feel as well as the exact workflows will probably always differ in every
 IdentityServer implementation, we provide an MVC-based sample UI that you can use as a starting point.
 
-This UI can be found in the `Quickstart UI repo <https://github.com/IdentityServer/IdentityServer4.Quickstart.UI/tree/release>`_.
+This UI can be found in the `Quickstart UI repo <https://github.com/IdentityServer/IdentityServer4.Quickstart.UI/tree/master>`_.
 You can either clone or download this repo and drop the controllers, views, models and CSS into your IdentityServer web application.
 
 Alternatively you can run this command from the command line in the same directory as your IdentityServer web application to
 automate the download::
 
-    iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/release/get.ps1'))
+    iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/master/getmaster.ps1'))
 
 
 For Unix/Linux::
 
-    \curl -L https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/release/get.sh | bash
+    \curl -L https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/master/getmaster.sh | bash
 
 Once you have added the MVC UI assets, you will also need to add MVC to the hosting application, both in the DI system and in the pipeline.
 Add MVC to ``ConfigureServices`` with the ``AddMvc`` extension method::
@@ -59,7 +59,7 @@ Add MVC as the last middleware in the pipeline in ``Configure`` with the ``UseMv
         app.UseMvcWithDefaultRoute();
     }
 
-See the `readme <https://github.com/IdentityServer/IdentityServer4.Quickstart.UI/blob/release/README.md>`_ for the quickstart UI for more information. 
+See the `readme <https://github.com/IdentityServer/IdentityServer4.Quickstart.UI/blob/master/README.md>`_ for the quickstart UI for more information. 
 
 .. note:: The ``release`` branch of the UI repo has the UI that matches the latest stable release. The ``dev`` branch goes along with the current dev build of IdentityServer4. If you are looking for a specific version of the UI - check the tags.
 
