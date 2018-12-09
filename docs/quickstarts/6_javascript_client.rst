@@ -2,38 +2,37 @@
 Adding a JavaScript client
 ==========================
 
-This quickstart will show how to build a JavaScript client application. 
-The user will login to IdentityServer, invoke the web API with an access token issued by IdentityServer, and logout of IdentityServer.
+This quickstart will show how to build a browser-based JavaScript client application (aka `SPA`).
+
+The user will login to IdentityServer, invoke the web API with an access token issued by IdentityServer, and logout of IdentityServer. All of this will be driven from the JavaScript running in the browser.
 
 New Project for the JavaScript client
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Create a new project for the JavaScript application.
-It can simply be an empty web project, or an empty ASP.NET Core application.
-This quickstart will use an empty ASP.NET Core application.
+It can simply be an empty web project, an empty ASP.NET Core application, or something else like a Node.js application.
+This quickstart will use an ASP.NET Core application.
 
-Create a new ASP.NET Core web application:
+Create a new "Empty" ASP.NET Core web application in the `~/src` directory.
+You can use Visual Studio or do this from the command line::
 
-.. image:: images/7_new_project.png
+    md JavaScriptClient
+    cd JavaScriptClient
+    dotnet new web
 
-Choose the "Empty" template:
-
-.. image:: images/7_empty_template.png
-
-Click the "OK" button to create the project.
 
 Modify hosting
 ^^^^^^^^^^^^^^^
 
-Modify the hosting (`as described here <0_overview.html#modify-hosting>`_) to run on port 5003.
+Modify the `JavaScriptClient` project to run on port 5003.
 
 Add the static file middleware
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Given that this project is designed to mainly run client-side, we need ASP.NET Core to serve up the static HTML and JavaScript files that will make up our application.
+Given that this project is designed to run client-side, all we need ASP.NET Core to do is to serve up the static HTML and JavaScript files that will make up our application.
 The static file middleware is designed to do this.
 
-Register the static file middleware in `Startup.cs` in the ``Configure`` method::
+Register the static file middleware in `Startup.cs` in the ``Configure`` method (and at the same time remove everything else)::
 
     public void Configure(IApplicationBuilder app)
     {
@@ -54,24 +53,16 @@ It is available via `NPM <https://github.com/IdentityModel/oidc-client-js>`_, `B
 
 **NPM**
 
-If you want to use NPM to download `oidc-client`, then follow these steps:
+If you want to use NPM to download `oidc-client`, then run these commands from your `JavaScriptClient` project directory::
 
-Add a new NPM package file to your project and name it `package.json`:
+    npm i oidc-client
+    copy node_modules\oidc-client\dist\* wwwroot
 
-.. image:: images/7_add_package_json.png
+This downloads the latest `oidc-client` package locally, and then copies the relevant JavaScript files into `~/wwwroot` so they can be served up by your application.
 
-In `package.json` add a ``dependency`` to ``oidc-client``::
+**Manual download**
 
-  "dependencies": {
-    "oidc-client": "1.4.1"
-  }
-
-Once you have saved this file, Visual Studio should automatically restore these packages into a folder called `node_modules`:
-
-.. image:: images/7_node_modules.png
-
-Locate the file called `oidc-client.js` in the `~/node_modules/oidc-client/dist` folder and copy it into your application's `~/wwwroot` folder.
-There are more sophisticated ways of copying your NPM packages into `~/wwwroot`, but those techniques are beyond the scope of this quickstart.
+If you want to simply download the `oidc-client` JavaScript files manually, browse to `the GitHub repository <https://github.com/IdentityModel/oidc-client-js/tree/master/dist>`_  and download the JavaScript files. Once downloaded, copy them into `~/wwwroot` so they can be served up by your application.
 
 Add your HTML and JavaScript files
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -188,7 +179,7 @@ Add this code to implement those three functions in our application::
         mgr.signoutRedirect();
     }
 
-See: `Protecting an API using Client Credentials <http://docs.identityserver.io/en/release/quickstarts/1_client_credentials.html>` for information on how to create the api used in the code above.
+See the :ref:`client credentials quickstart <refClientCredentialsQuickstart>` for information on how to create the api used in the code above.
 
 **callback.html**
 
