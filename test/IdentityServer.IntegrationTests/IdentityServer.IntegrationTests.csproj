@@ -1,20 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
 
   <PropertyGroup Condition=" '$(OS)' != 'Windows_NT' ">
-    <TargetFramework>netcoreapp22</TargetFramework>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
-    <TargetFrameworks>netcoreapp22;net461</TargetFrameworks>
+      <TargetFramework>netcoreapp22</TargetFramework>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
+      <TargetFrameworks>netcoreapp22;net461</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
-    <IsPackable>false</IsPackable>
-
-    <!-- strong naming fml -->
     <AssemblyOriginatorKeyFile>../../key.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
     <PublicSign Condition="'$(OS)' != 'Windows_NT'">true</PublicSign>
-
   </PropertyGroup>
 
   <ItemGroup>
@@ -45,6 +44,5 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\IdentityServer4.csproj" />
   </ItemGroup>
-
 
 </Project>
