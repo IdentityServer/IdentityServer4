@@ -172,30 +172,35 @@ IdentityModel includes a client library to use with the discovery endpoint.
 This way you only need to know the base-address of IdentityServer - the actual
 endpoint addresses can be read from the metadata::
 
+    var client = new HttpClient();
+
     // discover endpoints from metadata
-    var disco = await DiscoveryClient.GetAsync("http://localhost:5000");
-    if (disco.IsError)
+    var disco = await client.GetDiscoveryDocumentAsync( "http://localhost:5000" );
+    if ( disco.IsError )
     {
         Console.WriteLine(disco.Error);
         return;
     }
 
-Next you can use the ``TokenClient`` class to request the token.
-To create an instance you need to pass in the token endpoint address, client id and secret.
-
-Next you can use the ``RequestClientCredentialsAsync`` method to request a token for your API::
+Next you can use the ``RequestClientCredentialsAsync`` method to request a token for you API.
+To get a token you must specify the token endpoint address, client id and secret:
 
     // request token
-    var tokenClient = new TokenClient(disco.TokenEndpoint, "client", "secret");
-    var tokenResponse = await tokenClient.RequestClientCredentialsAsync("api1");
-
-    if (tokenResponse.IsError)
+    var tokenResponse = await client.RequestClientCredentialsTokenAsync( new ClientCredentialsTokenRequest
     {
-        Console.WriteLine(tokenResponse.Error);
-        return;
+    	Address = disco.TokenEndpoint,    
+    	ClientId = "client",
+    	ClientSecret = "secret",
+    	Scope = "api1"
+    } );
+	
+    if ( tokenResponse.IsError )
+    {
+    	Console.WriteLine( tokenResponse.Error );
+    	return;
     }
 
-    Console.WriteLine(tokenResponse.Json);
+    Console.WriteLine( tokenResponse.Json );
 
 
 .. note:: Copy and paste the access token from the console to `jwt.io <https://jwt.io>`_ to inspect the raw token.
