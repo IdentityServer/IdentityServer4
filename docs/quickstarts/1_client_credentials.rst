@@ -172,22 +172,29 @@ IdentityModel includes a client library to use with the discovery endpoint.
 This way you only need to know the base-address of IdentityServer - the actual
 endpoint addresses can be read from the metadata::
 
+    var client = new HttpClient();
     // discover endpoints from metadata
-    var disco = await DiscoveryClient.GetAsync("http://localhost:5000");
+    var disco = await client.GetDiscoveryDocumentAsync("http://localhost:5000");
     if (disco.IsError)
     {
         Console.WriteLine(disco.Error);
         return;
     }
 
-Next you can use the ``TokenClient`` class to request the token.
-To create an instance you need to pass in the token endpoint address, client id and secret.
+Next you can use the ``ClientCredentialsTokenRequest`` class to request the token.
+To create an instance you need to pass in the token endpoint address, client id, secret and scope.
 
-Next you can use the ``RequestClientCredentialsAsync`` method to request a token for your API::
+Next you can use the ``RequestClientCredentialsTokenAsync`` method to request a token for your API::
 
     // request token
-    var tokenClient = new TokenClient(disco.TokenEndpoint, "client", "secret");
-    var tokenResponse = await tokenClient.RequestClientCredentialsAsync("api1");
+    var tokenRequest = new ClientCredentialsTokenRequest
+    {
+        Address = disco.TokenEndpoint,
+        ClientId = "client",
+        ClientSecret = "secret",
+        Scope = "api1"
+    };
+    var tokenResponse = await client.RequestClientCredentialsTokenAsync(tokenRequest);
 
     if (tokenResponse.IsError)
     {
