@@ -44,7 +44,7 @@ This requires the use of the EF Core tooling (more details `here <https://docs.m
 We will add those now, and unfortunately this must be done by hand-editing your `.csproj` file.
 To edit the `.csproj` by right-click the project and select "Edit projectname.csproj":
 
-.. Note:: Depending on how you created your initial project for the IdentityServer host, you might already have these tools configured in your `csproj` file. If they are, you can skip to the next section.
+.. Note:: Depending on how you created your initial project for the IdentityServer host, you might already have these tools configured in your `csproj` file. If they are, you can skip to the next section. This is also not necessary if aou are already using .net Core 2.1 (more details `here <https://docs.microsoft.com/de-de/dotnet/core/migration/20-21>`_).
 
 .. image:: images/8_edit_csproj.png
 
