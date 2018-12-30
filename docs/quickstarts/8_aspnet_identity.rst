@@ -29,6 +29,8 @@ When prompted to "seed" the user database, choose "Y" for "yes".
 This populates the user database with our "alice" and "bob" users. 
 Their passwords are "Pass123$".
 
+.. Note:: The template uses Sqlite as the database for the users, and EF migrations are pre-created in the template. If you wish to use a different database provider, you will need to change the provider used in the code and re-create the EF migrations.
+
 Inspect the new project
 ^^^^^^^^^^^^^^^^^^^^^^^
 
