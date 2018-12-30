@@ -6,205 +6,210 @@ IdentityServer is designed for flexibility and part of that is allowing you to u
 If you are starting with a new user database, then ASP.NET Identity is one option you could choose.
 This quickstart shows how to use ASP.NET Identity with IdentityServer.
 
-This quickstart assumes you've been through all of the prior quickstarts. 
-The approach this quickstart takes to using ASP.NET Identity is to create a new project from the ASP.NET Identity template in Visual Studio.
-This new project will replace the prior IdentityServer project we built up from scratch in the previous quickstarts.
+The approach this quickstart takes to using ASP.NET Identity is to create a new project for the IdentityServer host.
+This new project will replace the prior IdentityServer project we built up in the previous quickstarts.
+The reason for this new project is due to the differences in UI assets when using ASP.NET Identity (mainly around the differences in login and logout).
 All the other projects in this solution (for the clients and the API) will remain the same.
+
+.. Note:: This quickstart assumes you are familiar with how ASP.NET Identity works. If you are not, it is recommended that you first `learn about it <https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity>`_.
 
 New Project for ASP.NET Identity
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The first step is to add a new project for ASP.NET Identity to your solution.
-Given that a lot of code is required for ASP.NET Identity, it makes sense to use the template from Visual Studio.
-You will eventually delete the old project for IdentityServer (assuming you were following the other quickstarts), but there are several items that you will need to migrate over (or rewrite from scratch as described in the prior quickstarts).
+We provide a template that contains the minimal UI assets needed to ASP.NET Identity with IdentityServer.
+You will eventually delete the old project for IdentityServer, but there are some items that you will need to migrate over.
 
-Start by creating a new "ASP.NET Core Web Application" project.
-
-.. image:: images/6_new_web_project.png
-
-Then select the "Web Application Template (Model-View-Controller)" option.
-
-.. image:: images/6_web_app_template.png
-
-Then click the "Change Authentication" button, and choose "Individual User Accounts" (which means to use ASP.NET Identity):
-
-.. image:: images/6_change_authentication.png
-
-Finally, your new project dialog should look something like this. Once it does, click "OK" to create the project.
-
-.. image:: images/6_web_app_template_with_aspnet_identity.png
-
-Modify hosting
-^^^^^^^^^^^^^^^
-
-Don't forget to modify the hosting (`as described here <0_overview.html#modify-hosting>`_) to run on port 5000.
-This is important so the existing clients and api projects will continue to work.
-
-Add IdentityServer packages
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Add the ``IdentityServer4.AspNetIdentity`` NuGet package.
-This depends on the ``IdentityServer4`` package, so that's automatically added as a transitive dependency.
-
-.. image:: images/6_nuget.png
-
-
-Scopes and Clients Configuration
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Despite this being a new project for IdentityServer, we still need the same scope and client configuration as the prior quickstarts.
-Copy the configuration class (in `Config.cs <https://github.com/IdentityServer/IdentityServer4.Samples/blob/release/Quickstarts/5_HybridFlowAuthenticationWithApiAccess/src/QuickstartIdentityServer/Config.cs>`_) you used for the previous quickstarts into this new project.
-
-One change to the configuration that is necessary (for now) is to disable consent for the MVC client.
-We've not yet copied over the consent code from the prior IdentityServer project, so for now make this one modification to the MVC client and set ``RequireConsent=false``::
-
-    new Client
-    {
-        ClientId = "mvc",
-        ClientName = "MVC Client",
-        AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
-
-        RequireConsent = false,
-
-        ClientSecrets = 
-        {
-            new Secret("secret".Sha256())
-        },
-
-        RedirectUris           = { "http://localhost:5002/signin-oidc" },
-        PostLogoutRedirectUris = { "http://localhost:5002/signout-callback-oidc" },
-
-        AllowedScopes =
-        {
-            IdentityServerConstants.StandardScopes.OpenId,
-            IdentityServerConstants.StandardScopes.Profile,
-            "api1"
-        },
-        AllowOfflineAccess = true
-    }
-
-Configure IdentityServer
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-As before, IdentityServer needs to be configured in both ``ConfigureServices`` and in ``Configure`` in `Startup.cs`. 
-
-**ConfigureServices**
-
-This shows both the template code generated for ASP.NET Identity, plus the additions needed for IdentityServer (at the end).
-In the previous quickstarts, the ``AddTestUsers`` extension method was used to register the users, but in this situation we replace that extension method with ``AddAspNetIdentity`` to use the ASP.NET Identity users instead.
-The ``AddAspNetIdentity`` extension method requires a generic parameter which is your ASP.NET Identity user type (the same one needed in the ``AddIdentity`` method from the template).
-
-::
-
-    public void ConfigureServices(IServiceCollection services)
-    {
-        services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-
-        services.AddIdentity<ApplicationUser, IdentityRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddDefaultTokenProviders();
-
-        // Add application services.
-        services.AddTransient<IEmailSender, EmailSender>();
-
-        services.AddMvc();
-
-        // configure identity server with in-memory stores, keys, clients and scopes
-        services.AddIdentityServer()
-            .AddDeveloperSigningCredential()
-            .AddInMemoryPersistedGrants()
-            .AddInMemoryIdentityResources(Config.GetIdentityResources())
-            .AddInMemoryApiResources(Config.GetApiResources())
-            .AddInMemoryClients(Config.GetClients())
-            .AddAspNetIdentity<ApplicationUser>();
-    }
-
-.. note:: It's important when using ASP.NET Identity that IdentityServer be registered *after* ASP.NET Identity in the DI system because IdentityServer is overwriting some configuration from ASP.NET Identity.
+Start by creating a the new IdentityServer project that will use ASP.NET Identity::
     
-**Configure**
+    cd quickstart/src
+    dotnet new is4aspid -n IdentityServerAspNetIdentity
 
-This shows both the template code generated for ASP.NET Identity, plus the call to ``UseIdentityServer`` which replaces the call to ``UseAuthentication``.
+When prompted to "seed" the user database, choose "Y" for "yes".
+This populates the user database with our "alice" and "bob" users. 
+Their passwords are "Pass123$".
 
-::
+Inspect the new project
+^^^^^^^^^^^^^^^^^^^^^^^
 
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+Open the new project in the editor of your choice, and inspect the generated code.
+Be sure to look at:
+
+IdentityServerAspNetIdentity.csproj
+-----------------------------------
+
+Notice the reference to `IdentityServer4.AspNetIdentity`. 
+This NuGet package contains the ASP.NET Identity integration components for IdentityServer.
+
+Startup.cs
+----------
+
+In `ConfigureServices` notice the necessary ``AddDbContext<ApplicationDbContext>`` and ``AddIdentity<ApplicationUser, IdentityRole>`` calls are done to configure ASP.NET Identity.
+
+Also notice that much of the same IdentityServer configuration you did in the previous quickstarts is already done.
+The template uses the in-memory style for clients and resources, and those are sourced from `Config.cs`.
+
+Finally, notice the addition of the new call to ``AddAspNetIdentity<ApplicationUser>``.
+``AddAspNetIdentity`` adds the integration layer to allow IdentityServer to access the user data for the ASP.NET Identity user database.
+This is needed when IdentityServer must add claims for the users into tokens.
+
+Config.cs
+-----------
+
+`Config.cs` contains the hard-coded in-memory clients and resource definitions.
+To keep the same clients and API working as the prior quickstarts, we need to copy over the configuration data from the old IdentityServer project into this one.
+Do that now, and afterwards `Config.cs` should look like this::
+
+    public static class Config
     {
-        if (env.IsDevelopment())
+        public static IEnumerable<IdentityResource> GetIdentityResources()
         {
-            app.UseDeveloperExceptionPage();
-            app.UseBrowserLink();
-            app.UseDatabaseErrorPage();
-        }
-        else
-        {
-            app.UseExceptionHandler("/Home/Error");
+            return new List<IdentityResource>
+            {
+                new IdentityResources.OpenId(),
+                new IdentityResources.Profile(),
+            };
         }
 
-        app.UseStaticFiles();
-
-        // app.UseAuthentication(); // not needed, since UseIdentityServer adds the authentication middleware
-        app.UseIdentityServer();
-
-        app.UseMvc(routes =>
+        public static IEnumerable<ApiResource> GetApis()
         {
-            routes.MapRoute(
-                name: "default",
-                template: "{controller=Home}/{action=Index}/{id?}");
-        });
+            return new List<ApiResource>
+            {
+                new ApiResource("api1", "My API")
+            };
+        }
+
+        public static IEnumerable<Client> GetClients()
+        {
+            return new List<Client>
+            {
+                new Client
+                {
+                    ClientId = "client",
+
+                    // no interactive user, use the clientid/secret for authentication
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+
+                    // secret for authentication
+                    ClientSecrets =
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    // scopes that client has access to
+                    AllowedScopes = { "api1" }
+                },
+                // resource owner password grant client
+                new Client
+                {
+                    ClientId = "ro.client",
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+
+                    ClientSecrets =
+                    {
+                        new Secret("secret".Sha256())
+                    },
+                    AllowedScopes = { "api1" }
+                },
+                // OpenID Connect hybrid flow client (MVC)
+                new Client
+                {
+                    ClientId = "mvc",
+                    ClientName = "MVC Client",
+                    AllowedGrantTypes = GrantTypes.Hybrid,
+
+                    ClientSecrets =
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    RedirectUris           = { "http://localhost:5002/signin-oidc" },
+                    PostLogoutRedirectUris = { "http://localhost:5002/signout-callback-oidc" },
+
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        "api1"
+                    },
+
+                    AllowOfflineAccess = true
+                },
+                // JavaScript Client
+                new Client
+                {
+                    ClientId = "js",
+                    ClientName = "JavaScript Client",
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RequirePkce = true,
+                    RequireClientSecret = false,
+
+                    RedirectUris =           { "http://localhost:5003/callback.html" },
+                    PostLogoutRedirectUris = { "http://localhost:5003/index.html" },
+                    AllowedCorsOrigins =     { "http://localhost:5003" },
+
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        "api1"
+                    }
+                }
+            };
+        }
     }
 
+At this point, you no longer need the old IdentityServer project.
 
-Creating the user database
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+Program.cs and SeedData.cs
+--------------------------
 
-Given that this is a new ASP.NET Identity project, you will need to create the database.
-You can do this by running a command prompt from the project directory and running ``dotnet ef database update -c ApplicationDbContext``, like this:
+`Program.cs`'s ``Main`` is a little different than most ASP.NET Core projects.
+Notice how this looks for a command line argument called `/seed` which is used as a flag to seed the users in the ASP.NET Identity database.
 
-.. image:: images/6_ef_database_update.png
+Look at the ``SeedData`` class' code to see how the database is created and the first users are created.
 
-Creating a user
-^^^^^^^^^^^^^^^
-At this point, you should be able to run the project and create/register a user in the database.
-Launch the application, and from the home page click the "Register" link:
+AccountController
+-----------------
 
-.. image:: images/6_home_page.png
+The last code to inspect in this template is the ``AccountController``. 
+This contains a slightly different login and logout code than the prior quickstart and templates.
+Notice the use of the ``SignInManager<ApplicationUser>`` and ``UserManager<ApplicationUser>`` from ASP.NET Identity to validate credentials and manage the authentication session.
 
-And on the register page create a new user account:
-
-.. image:: images/6_register_page.png
-
-Now that you have a user account, you should be able to login, use the clients, and invoke the APIs.
+Much of the rest of the code is the same from the prior quickstarts and templates.
 
 Logging in with the MVC client
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+At this point, you should be albe to run all of the existing clients and samples.
+One exception is the `ResourceOwnerClient` -- the password will need to be updated to ``Pass123$`` from ``password``.
+
 Launch the MVC client application, and you should be able to click the "Secure" link to get logged in.
 
-.. image:: images/6_mvc_client.png
+.. image:: images/8_mvc_client.png
 
 You should be redirected to the ASP.NET Identity login page.
 Login with your newly created user:
 
-.. image:: images/6_login.png
+.. image:: images/8_login.png
 
-After login you should skip the consent page (given the change we made above), and be immediately redirected back to the MVC client application where your user's claims should be listed.
+After login you see the normal consent page. 
+After consent you will be redirected back to the MVC client application where your user's claims should be listed.
 
-.. image:: images/6_claims.png
+.. image:: images/8_claims.png
 
 You should also be able to click "Call API using application identity" to invoke the API on behalf of the user:
 
-.. image:: images/6_api_claims.png
+.. image:: images/8_api_claims.png
 
-And now you've logged in with a user from ASP.NET Identity.
+And now you're using users from ASP.NET Identity in IdentityServer.
 
-What's Next?
-^^^^^^^^^^^^
+What's Missing?
+^^^^^^^^^^^^^^^
 
-The prior quickstart project for IdentityServer provided a consent page, an error page, and a logout page. 
-The code for these missing pieces can simply be copied over from the prior quickstart project into this one.
-Once you've done that, then you can finally delete/remove the old IdentityServer project. 
-Also, once you've done this don't forget to re-enable the ``RequireConsent=true`` flag on the MVC client configuration.
+Much of the rest of the code in this template is similar to the other quickstart and templates we provide.
+The one thing you will notice that is missing from this template is UI code for user registration, password reset, and the other things you might expect from the Visual Studio ASP.NET Identity template.
 
-The `sample code for this quickstart <https://github.com/IdentityServer/IdentityServer4.Samples/tree/dev/Quickstarts/6_AspNetIdentity>`_ has already done these steps for you, so you can get started quickly with all of these features.
-Enjoy!
+Given the variety of requirements and different approaches to using ASP.NET Identity, our template deliberatly does not provide those features.
+You are expected to know how ASP.NET Identity works sufficiently well to add those features to your project.
+Alternatively, you can create a new project based on the Visual Studio ASP.NET Identity template and add the IdentityServer features you have learned about in these quickstarts to that project.

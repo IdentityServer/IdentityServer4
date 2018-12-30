@@ -22,7 +22,7 @@ These stores are modeled with interfaces, and we provide an EF implementation of
 The extension methods to register our EF implementation are contained in the `IdentityServer4.EntityFramework` Nuget package (which references `IdentityServer4.EntityFramework.Storage`).
 Add a reference to the `IdentityServer4.EntityFramework` Nuget package from you IdentityServer project now::
 
-    cd IdentityServer
+    cd quickstart/src/IdentityServer
     dotnet add package IdentityServer4.EntityFramework
 
 Using SqlServer
