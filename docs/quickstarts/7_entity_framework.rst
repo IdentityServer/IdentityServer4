@@ -169,7 +169,7 @@ And then we can invoke this from the ``Configure`` method::
 Now if you run the IdentityServer project, the database should be created and seeded with the quickstart configuration data.
 You should be able to use SQL Server Management Studio or Visual Studio to connect and inspect the data.
 
-.. image:: images/8_database.png
+.. image:: images/7_database.png
 
 .. Note:: The above ``InitializeDatabase`` helper API is convenient to seed the database, but this approach is not ideal to leave in to execute each time the applicaion runs. Once your database is populated, consider removing the call to the API.
 

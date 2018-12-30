@@ -291,19 +291,19 @@ Run the JavaScript application
 
 Now you should be able to run the JavaScript client application:
 
-.. image:: images/7_not_logged_in.png
+.. image:: images/6_not_logged_in.png
 
 Click the "Login" button to sign the user in.
 Once the user is returned back to the JavaScript application, you should see their profile information:
  
-.. image:: images/7_logged_in.png
+.. image:: images/6_logged_in.png
 
 And click the "API" button to invoke the web API:
 
-.. image:: images/7_api_results.png
+.. image:: images/6_api_results.png
 
 And finally click "Logout" to sign the user out.
 
-.. image:: images/7_signed_out.png
+.. image:: images/6_signed_out.png
 
 You now have the start of a JavaScript client application that uses IdentityServer for sign-in, sign-out, and authenticating calls to web APIs.
