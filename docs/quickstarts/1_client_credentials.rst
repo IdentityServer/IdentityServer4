@@ -154,7 +154,7 @@ Update `Startup` to look like this::
                 .AddJsonFormatters();
 
             services.AddAuthentication("Bearer")
-                .AddJwtBearer("Bearer", options =>
+                .AddIdentityServerAuthentication("Bearer", options =>
                 {
                     options.Authority = "http://localhost:5000";
                     options.RequireHttpsMetadata = false;
@@ -171,6 +171,10 @@ Update `Startup` to look like this::
         }
     }
 
+
+Add the IdentityServer4.AccessTokenValidation NuGet package to your API project. This can be done either via Visual Studio’s NuGet dialog, by adding it manually to the .csproj file, or by using the CLI:
+
+    dotnet add package IdentityServer4.AccessTokenValidation
 
 ``AddAuthentication`` adds the authentication services to DI and configures ``"Bearer"`` as the default scheme.
 ``AddIdentityServerAuthentication`` adds the IdentityServer access token validation handler into DI for use by the authentication services.
@@ -193,7 +197,7 @@ raw HTTP to access it. However, we have a client library called IdentityModel, t
 encapsulates the protocol interaction in an easy to use API.
 
 Add the `IdentityModel` NuGet package to your client. 
-This can be done either via Visual Studio's nuget dialog, by adding it manually to the .csproj file, or by using the CLI::
+This can be done either via Visual Studio's NuGet dialog, by adding it manually to the .csproj file, or by using the CLI::
 
     dotnet add package IdentityModel
 
@@ -213,7 +217,7 @@ endpoint addresses can be read from the metadata::
 Next you can use the information from the discovery document to request a token::
 
     // request token
-    var response = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+    var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
     {
         Address = disco.TokenEndpoint,
 
