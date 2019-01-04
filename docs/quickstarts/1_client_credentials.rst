@@ -159,7 +159,7 @@ Update `Startup` to look like this::
                     options.Authority = "http://localhost:5000";
                     options.RequireHttpsMetadata = false;
 
-                    options.ApiName = "api1";
+                    options.Audience = "api1";
                 });
         }
 
