@@ -37,6 +37,16 @@ namespace IdentityServer4.Models
         /// <summary>
         /// invalid_scope
         /// </summary>
-        InvalidScope
+        InvalidScope,
+        
+        /// <summary>
+        /// server_error
+        /// </summary>
+        ServerError,
+        
+        /// <summary>
+        /// temporarily_unavailable
+        /// </summary>
+        TemporarilyUnavailable
     }
 }
