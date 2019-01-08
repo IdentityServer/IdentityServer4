@@ -10,6 +10,8 @@ using Microsoft.IdentityModel.Tokens;
 using IdentityServer4;
 using IdentityServer4.Quickstart.UI;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authentication;
+using System.Security.Claims;
 
 namespace Host
 {
@@ -82,6 +84,17 @@ namespace Host
 
                     options.ClientId = "708996912208-9m4dkjb5hscn7cjrn5u0r4tbgkbj1fko.apps.googleusercontent.com";
                     options.ClientSecret = "wdfPY6t8H8cecgjlxud__4Gh";
+
+                    options.UserInformationEndpoint = "https://www.googleapis.com/oauth2/v2/userinfo";
+                    options.ClaimActions.Clear();
+
+                    options.ClaimActions.MapJsonKey("sub", "id");
+                    options.ClaimActions.MapJsonKey("name", "name");
+                    options.ClaimActions.MapJsonKey("given_name", "given_name");
+                    options.ClaimActions.MapJsonKey("family_name", "family_name");
+                    options.ClaimActions.MapJsonKey("urn:google:profile", "link");
+                    options.ClaimActions.MapJsonKey("email", "email");
+                    options.ClaimActions.MapJsonKey("urn:google:image", "picture");
                 })
                 .AddOpenIdConnect("demoidsrv", "IdentityServer", options =>
                 {

@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace Host.Quickstart.Account
 {
@@ -24,12 +25,14 @@ namespace Host.Quickstart.Account
         private readonly TestUserStore _users;
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IClientStore _clientStore;
+        private readonly ILogger<ExternalController> _logger;
         private readonly IEventService _events;
 
         public ExternalController(
             IIdentityServerInteractionService interaction,
             IClientStore clientStore,
             IEventService events,
+            ILogger<ExternalController> logger,
             TestUserStore users = null)
         {
             // if the TestUserStore is not in DI, then we'll just use the global users collection
@@ -38,6 +41,7 @@ namespace Host.Quickstart.Account
 
             _interaction = interaction;
             _clientStore = clientStore;
+            _logger = logger;
             _events = events;
         }
 
@@ -89,6 +93,12 @@ namespace Host.Quickstart.Account
             if (result?.Succeeded != true)
             {
                 throw new Exception("External authentication error");
+            }
+
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                var externalClaims = result.Principal.Claims.Select(c => $"{c.Type}: {c.Value}");
+                _logger.LogDebug("External claims: {@claims}", externalClaims);
             }
 
             // lookup our user and external provider info
