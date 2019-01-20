@@ -11,6 +11,7 @@ using IdentityServer4.Validation;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using IdentityServer4.Services.Default;
 using Xunit;
 
 namespace IdentityServer4.UnitTests.Services.Default
@@ -48,7 +49,7 @@ namespace IdentityServer4.UnitTests.Services.Default
                 }
             }.CreatePrincipal();
 
-            _subject = new DefaultClaimsService(_mockMockProfileService, TestLogger.Create<DefaultClaimsService>());
+            _subject = new DefaultClaimsService(_mockMockProfileService, new DefaultPairWiseSubjectService(), TestLogger.Create<DefaultClaimsService>());
 
             _validatedRequest = new ValidatedRequest();
             _validatedRequest.SetClient(_client);
@@ -293,6 +294,26 @@ namespace IdentityServer4.UnitTests.Services.Default
 
             _mockMockProfileService.ProfileContext.RequestedClaimTypes.Should().Contain("foo");
             _mockMockProfileService.ProfileContext.RequestedClaimTypes.Should().Contain("bar");
+        }
+
+        [Fact]
+        public async Task GetIdentityTokenClaimsAsync_should_return_pair_wise_subject_when_client_configured_for_pair_wise_subject()
+        {
+            _client.PairWiseSubjectSalt = "foo";
+
+            var claims = await _subject.GetAccessTokenClaimsAsync(_user, _resources, _validatedRequest);
+
+            claims.First(x => x.Type == JwtClaimTypes.Subject).Value.Should().Be("bobfoo".Sha256());
+        }
+
+        [Fact]
+        public async Task GetAccessTokenClaimsAsync_should_return_pair_wise_subject_when_client_configured_for_pair_wise_subject()
+        {
+            _client.PairWiseSubjectSalt = "foo";
+
+            var claims = await _subject.GetAccessTokenClaimsAsync(_user, _resources, _validatedRequest);
+
+            claims.First(x => x.Type == JwtClaimTypes.Subject).Value.Should().Be("bobfoo".Sha256());
         }
     }
 }

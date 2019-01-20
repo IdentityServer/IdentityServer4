@@ -30,14 +30,21 @@ namespace IdentityServer4.Services
         protected readonly IProfileService Profile;
 
         /// <summary>
+        /// The pair wise subject service
+        /// </summary>
+        protected readonly IPairWiseSubjectService Subject;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="DefaultClaimsService"/> class.
         /// </summary>
         /// <param name="profile">The profile service</param>
+        /// <param name="subject">The pair wise subject service</param>
         /// <param name="logger">The logger</param>
-        public DefaultClaimsService(IProfileService profile, ILogger<DefaultClaimsService> logger)
+        public DefaultClaimsService(IProfileService profile, IPairWiseSubjectService subject, ILogger<DefaultClaimsService> logger)
         {
             Logger = logger;
             Profile = profile;
+            Subject = subject;
         }
 
         /// <summary>
@@ -56,7 +63,7 @@ namespace IdentityServer4.Services
                 subject.GetSubjectId(),
                 request.Client.ClientId);
 
-            var outputClaims = new List<Claim>(GetStandardSubjectClaims(subject));
+            var outputClaims = new List<Claim>(GetStandardSubjectClaims(subject, request.Client));
             outputClaims.AddRange(GetOptionalClaims(subject));
 
             // fetch all identity claims that need to go into the id token
@@ -165,7 +172,7 @@ namespace IdentityServer4.Services
 
                 Logger.LogDebug("Getting claims for access token for subject: {subject}", subject.GetSubjectId());
 
-                outputClaims.AddRange(GetStandardSubjectClaims(subject));
+                outputClaims.AddRange(GetStandardSubjectClaims(subject, request.Client));
                 outputClaims.AddRange(GetOptionalClaims(subject));
 
                 // fetch all resource claims that need to go into the access token
@@ -223,12 +230,13 @@ namespace IdentityServer4.Services
         /// Gets the standard subject claims.
         /// </summary>
         /// <param name="subject">The subject.</param>
+        /// <param name="client">The client.</param>
         /// <returns>A list of standard claims</returns>
-        protected virtual IEnumerable<Claim> GetStandardSubjectClaims(ClaimsPrincipal subject)
+        protected virtual IEnumerable<Claim> GetStandardSubjectClaims(ClaimsPrincipal subject, Client client)
         {
             var claims = new List<Claim>
             {
-                new Claim(JwtClaimTypes.Subject, subject.GetSubjectId()),
+                new Claim(JwtClaimTypes.Subject, Subject.GetPairWiseSubject(subject.GetSubjectId(), client)),
                 new Claim(JwtClaimTypes.AuthenticationTime, subject.GetAuthenticationTimeEpoch().ToString(), ClaimValueTypes.Integer),
                 new Claim(JwtClaimTypes.IdentityProvider, subject.GetIdentityProvider())
             };

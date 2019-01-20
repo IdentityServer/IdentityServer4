@@ -67,6 +67,11 @@ namespace IdentityServer4.Validation
         protected readonly IHttpContextAccessor Context;
 
         /// <summary>
+        /// The pair wise subject service
+        /// </summary>
+        protected readonly IPairWiseSubjectService Subject;
+
+        /// <summary>
         /// Creates a new instance of the EndSessionRequestValidator.
         /// </summary>
         /// <param name="context"></param>
@@ -76,6 +81,7 @@ namespace IdentityServer4.Validation
         /// <param name="userSession"></param>
         /// <param name="clientStore"></param>
         /// <param name="endSessionMessageStore"></param>
+        /// <param name="subject"></param>
         /// <param name="logger"></param>
         public EndSessionRequestValidator(
             IHttpContextAccessor context,
@@ -85,6 +91,7 @@ namespace IdentityServer4.Validation
             IUserSession userSession,
             IClientStore clientStore,
             IMessageStore<EndSession> endSessionMessageStore,
+            IPairWiseSubjectService subject,
             ILogger<EndSessionRequestValidator> logger)
         {
             Context = context;
@@ -94,6 +101,7 @@ namespace IdentityServer4.Validation
             UserSession = userSession;
             ClientStore = clientStore;
             EndSessionMessageStore = endSessionMessageStore;
+            Subject = subject;
             Logger = logger;
         }
 
@@ -130,7 +138,7 @@ namespace IdentityServer4.Validation
                 var subClaim = tokenValidationResult.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject);
                 if (subClaim != null && isAuthenticated)
                 {
-                    if (subject.GetSubjectId() != subClaim.Value)
+                    if (Subject.GetPairWiseSubject(subject.GetSubjectId(), validatedRequest.Client) != subClaim.Value)
                     {
                         return Invalid("Current user does not match identity token", validatedRequest);
                     }

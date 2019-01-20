@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using IdentityServer4.Services.Default;
 using Xunit;
 
 namespace IdentityServer4.UnitTests.Validation.EndSessionRequestValidation
@@ -44,6 +45,7 @@ namespace IdentityServer4.UnitTests.Validation.EndSessionRequestValidation
                 _userSession,
                 _clientStore,
                 _mockEndSessionMessageStore,
+                new DefaultPairWiseSubjectService(),
                 TestLogger.Create<EndSessionRequestValidator>());
         }
 
