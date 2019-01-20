@@ -15,15 +15,15 @@ namespace Microsoft.AspNetCore.Http
 {
     public static class HttpResponseExtensions
     {
-        public static async Task WriteJsonAsync(this HttpResponse response, object o, string contentType = null)
+        public static async Task WriteJsonAsync(this HttpResponse response, object o)
         {
             var json = ObjectSerializer.ToString(o);
-            await response.WriteJsonAsync(json, contentType);
+            await response.WriteJsonAsync(json);
         }
 
-        public static async Task WriteJsonAsync(this HttpResponse response, string json, string contentType = null)
+        public static async Task WriteJsonAsync(this HttpResponse response, string json)
         {
-            response.ContentType = contentType ?? "application/json; charset=UTF-8";
+            response.ContentType = "application/json; charset=UTF-8";
             await response.WriteAsync(json);
         }
 

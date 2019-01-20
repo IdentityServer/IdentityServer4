@@ -56,7 +56,7 @@ namespace IdentityServer4.Endpoints.Results
                 context.Response.SetCache(MaxAge.Value);
             }
 
-            return context.Response.WriteJsonAsync(new { keys = WebKeys }, "application/jwk-set+json; charset=UTF-8");
+            return context.Response.WriteJsonAsync(new { keys = WebKeys });
         }
     }
 }
