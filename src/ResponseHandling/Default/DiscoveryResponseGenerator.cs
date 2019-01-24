@@ -18,6 +18,8 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.ResponseHandling
 {
+    using System.Security.Cryptography.X509Certificates;
+
     /// <summary>
     /// Default implementation of the discovery endpoint response generator
     /// </summary>
@@ -267,7 +269,13 @@ namespace IdentityServer4.ResponseHandling
             }
 
             entries.Add(OidcConstants.Discovery.SubjectTypesSupported, new[] { "public" });
-            entries.Add(OidcConstants.Discovery.IdTokenSigningAlgorithmsSupported, new[] { Constants.SigningAlgorithms.RSA_SHA_256 });
+            entries.Add(OidcConstants.Discovery.IdTokenSigningAlgorithmsSupported, new[]
+            {
+                IdentityServerConstants.SigningAlgorithms.RS256,
+                IdentityServerConstants.SigningAlgorithms.ES256,
+                IdentityServerConstants.SigningAlgorithms.ES384,
+                IdentityServerConstants.SigningAlgorithms.ES512,
+            });
             entries.Add(OidcConstants.Discovery.CodeChallengeMethodsSupported, new[] { OidcConstants.CodeChallengeMethods.Plain, OidcConstants.CodeChallengeMethods.Sha256 });
 
             // custom entries
@@ -305,7 +313,7 @@ namespace IdentityServer4.ResponseHandling
         {
             var webKeys = new List<Models.JsonWebKey>();
             var signingCredentials = await Keys.GetSigningCredentialsAsync();
-            var algorithm = signingCredentials?.Algorithm ?? Constants.SigningAlgorithms.RSA_SHA_256;
+            var algorithm = signingCredentials?.Algorithm ?? IdentityServerConstants.SigningAlgorithms.RS256;
 
             foreach (var key in await Keys.GetValidationKeysAsync())
             {
@@ -314,24 +322,49 @@ namespace IdentityServer4.ResponseHandling
                     var cert64 = Convert.ToBase64String(x509Key.Certificate.RawData);
                     var thumbprint = Base64Url.Encode(x509Key.Certificate.GetCertHash());
 
-                    var pubKey = x509Key.PublicKey as RSA;
-                    var parameters = pubKey.ExportParameters(false);
-                    var exponent = Base64Url.Encode(parameters.Exponent);
-                    var modulus = Base64Url.Encode(parameters.Modulus);
-
-                    var webKey = new Models.JsonWebKey
+                    if (x509Key.PublicKey is RSA rsa)
                     {
-                        kty = "RSA",
-                        use = "sig",
-                        kid = x509Key.KeyId,
-                        x5t = thumbprint,
-                        e = exponent,
-                        n = modulus,
-                        x5c = new[] { cert64 },
-                        alg = algorithm
-                    };
+                        var parameters = rsa.ExportParameters(false);
+                        var exponent = Base64Url.Encode(parameters.Exponent);
+                        var modulus = Base64Url.Encode(parameters.Modulus);
 
-                    webKeys.Add(webKey);
+                        var rsaJsonWebKey = new Models.RsaJsonWebKey
+                        {
+                            kty = "RSA",
+                            use = "sig",
+                            kid = x509Key.KeyId,
+                            x5t = thumbprint,
+                            e = exponent,
+                            n = modulus,
+                            x5c = new[] { cert64 },
+                            alg = algorithm
+                        };
+                        webKeys.Add(rsaJsonWebKey);
+                    }
+                    else if (x509Key.PublicKey is ECDsa ecdsa)
+                    {
+                        var parameters = ecdsa.ExportParameters(false);
+                        var x = Base64Url.Encode(parameters.Q.X);
+                        var y = Base64Url.Encode(parameters.Q.Y);
+
+                        var ecdsaJsonWebKey = new Models.EcdsaWebKey
+                        {
+                            kty = "EC",
+                            use = "sig",
+                            kid = x509Key.KeyId,
+                            x5t = thumbprint,
+                            x = x,
+                            y = y,
+                            x5c = new[] { cert64 },
+                            alg = algorithm
+                        };
+                        webKeys.Add(ecdsaJsonWebKey);
+                    }
+                    else
+                    {
+                        // uh oh.
+                    }
+
                     continue;
                 }
 
@@ -341,7 +374,7 @@ namespace IdentityServer4.ResponseHandling
                     var exponent = Base64Url.Encode(parameters.Exponent);
                     var modulus = Base64Url.Encode(parameters.Modulus);
 
-                    var webKey = new Models.JsonWebKey
+                    var webKey = new Models.RsaJsonWebKey
                     {
                         kty = "RSA",
                         use = "sig",
@@ -354,9 +387,27 @@ namespace IdentityServer4.ResponseHandling
                     webKeys.Add(webKey);
                 }
 
+                if (key is ECDsaSecurityKey ecdsaKey)
+                {
+                    var parameters = ecdsaKey.ECDsa.ExportParameters(false);
+                    var x = Base64Url.Encode(parameters.Q.X);
+                    var y = Base64Url.Encode(parameters.Q.Y);
+
+                    var ecdsaJsonWebKey = new Models.EcdsaWebKey
+                    {
+                        kty = "EC",
+                        use = "sig",
+                        kid = ecdsaKey.KeyId,
+                        x = x,
+                        y = y,
+                        alg = algorithm
+                    };
+                    webKeys.Add(ecdsaJsonWebKey);
+                }
+
                 if (key is JsonWebKey jsonWebKey)
                 {
-                    var webKey = new Models.JsonWebKey
+                    var webKey = new Models.RsaJsonWebKey
                     {
                         kty = jsonWebKey.Kty,
                         use = jsonWebKey.Use ?? "sig",

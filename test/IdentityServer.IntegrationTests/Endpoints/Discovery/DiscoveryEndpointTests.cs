@@ -11,6 +11,8 @@ using Xunit;
 
 namespace IdentityServer4.IntegrationTests.Endpoints.Discovery
 {
+    using System.Linq;
+
     public class DiscoveryEndpointTests
     {
         private const string Category = "Discovery endpoint";
@@ -52,7 +54,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Discovery
             var alg = key["alg"];
             alg.Should().NotBeNull();
 
-            alg.Value<string>().Should().Be(Constants.SigningAlgorithms.RSA_SHA_256);
+            alg.Value<string>().Should().Be(IdentityServerConstants.SigningAlgorithms.RS256);
         }
 
         [Fact]

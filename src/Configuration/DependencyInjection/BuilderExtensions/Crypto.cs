@@ -17,6 +17,8 @@ using CryptoRandom = IdentityModel.CryptoRandom;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
+    using IdentityServer4;
+
     /// <summary>
     /// Builder extension methods for registering crypto services
     /// </summary>
@@ -84,18 +86,50 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Sets the signing credential.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        /// <param name="rsaKey">The RSA key.</param>
+        /// <param name="securityKey">The RSA key.</param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException">RSA key does not have a private key.</exception>
-        public static IIdentityServerBuilder AddSigningCredential(this IIdentityServerBuilder builder, RsaSecurityKey rsaKey)
+        public static IIdentityServerBuilder AddSigningCredential(this IIdentityServerBuilder builder, AsymmetricSecurityKey securityKey)
         {
-            if (rsaKey.PrivateKeyStatus == PrivateKeyStatus.DoesNotExist)
+            SigningCredentials credential = null;
+            if (securityKey.PrivateKeyStatus == PrivateKeyStatus.DoesNotExist)
             {
                 throw new InvalidOperationException("RSA key does not have a private key.");
             }
 
-            var credential = new SigningCredentials(rsaKey, "RS256");
+            string algorithm = null;
+            if (securityKey is RsaSecurityKey)
+            {
+                algorithm = IdentityServerConstants.SigningAlgorithms.RS256;
+            }
+            else if (securityKey is ECDsaSecurityKey ecDsaSecurityKey)
+            {
+                switch (ecDsaSecurityKey.KeySize)
+                {
+                    case 256:
+                        algorithm = IdentityServerConstants.SigningAlgorithms.ES256;
+                        break;
+                    case 384:
+                        algorithm = IdentityServerConstants.SigningAlgorithms.ES256;
+                        break;
+                    case 521:
+                        algorithm = IdentityServerConstants.SigningAlgorithms.ES256;
+                        break;
+                }
+            }
+            else
+            {
+                throw new ArgumentException("The securityKey argument must either be an instance of RsaSecurityKey or EcDsaSecurityKey.", nameof(securityKey));
+            }
+
+            credential = new SigningCredentials(securityKey, algorithm);
             return builder.AddSigningCredential(credential);
+        }
+
+        private class DeveloperSigningKeyFileNameExtensions
+        {
+            public const string Rsa = "rsa";
+            public const string EcDsa = "ecdsa";
         }
 
         /// <summary>
@@ -103,21 +137,53 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <param name="persistKey">Specifies if the temporary key should be persisted to disk.</param>
+        /// <param name="ecdsa">Specifies if the generated key pair should be ECDSA-based instead of RSA.</param>
         /// <param name="filename">The filename.</param>
         /// <returns></returns>
-        public static IIdentityServerBuilder AddDeveloperSigningCredential(this IIdentityServerBuilder builder, bool persistKey = true, string filename = null)
+        public static IIdentityServerBuilder AddDeveloperSigningCredential(this IIdentityServerBuilder builder, bool persistKey = true, string intendedSigningAlgorithm = IdentityServerConstants.SigningAlgorithms.RS256, string filename = null)
         {
+            var isEcDsa = intendedSigningAlgorithm != IdentityServerConstants.SigningAlgorithms.RS256;
             if (filename == null)
             {
-                filename = Path.Combine(Directory.GetCurrentDirectory(), "tempkey.rsa");
+                var extension = isEcDsa 
+                    ? DeveloperSigningKeyFileNameExtensions.EcDsa
+                    : DeveloperSigningKeyFileNameExtensions.Rsa;
+                filename = Path.Combine(Directory.GetCurrentDirectory(), $"tempkey.{extension}");
             }
 
-            if (File.Exists(filename))
+            var fileInfo = new FileInfo(filename);
+
+            if (fileInfo.Exists)
             {
                 var keyFile = File.ReadAllText(filename);
-                var tempKey = JsonConvert.DeserializeObject<TemporaryRsaKey>(keyFile, new JsonSerializerSettings { ContractResolver = new RsaKeyContractResolver() });
+                if (fileInfo.Extension.ToLowerInvariant() == DeveloperSigningKeyFileNameExtensions.EcDsa)
+                {
+                    var tempKey = JsonConvert.DeserializeObject<TemporaryEcDsaKey>(keyFile, new JsonSerializerSettings { ContractResolver = new SecurityKeyContractResolver() });
+                    return builder.AddSigningCredential(CreateEcDsaSecurityKey(tempKey.Parameters, tempKey.KeyId));
+                }
+                else // assume RSA
+                {
+                    var tempKey = JsonConvert.DeserializeObject<TemporaryRsaKey>(keyFile, new JsonSerializerSettings { ContractResolver = new SecurityKeyContractResolver() });
+                    return builder.AddSigningCredential(CreateRsaSecurityKey(tempKey.Parameters, tempKey.KeyId));
+                }
+            }
 
-                return builder.AddSigningCredential(CreateRsaSecurityKey(tempKey.Parameters, tempKey.KeyId));
+            if (isEcDsa)
+            {
+                var key = CreateEcDsaSecurityKey();
+                var parameters = key.ECDsa.ExportParameters(true);
+                var tempKey = new TemporaryEcDsaKey
+                {
+                    Parameters = parameters,
+                    KeyId = key.KeyId
+                };
+                if (persistKey)
+                {
+                    File.WriteAllText(filename,
+                        JsonConvert.SerializeObject(tempKey,
+                            new JsonSerializerSettings { ContractResolver = new SecurityKeyContractResolver() }));
+                }
+                return builder.AddSigningCredential(key);
             }
             else
             {
@@ -138,9 +204,10 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 if (persistKey)
                 {
-                    File.WriteAllText(filename, JsonConvert.SerializeObject(tempKey, new JsonSerializerSettings { ContractResolver = new RsaKeyContractResolver() }));
+                    File.WriteAllText(filename,
+                        JsonConvert.SerializeObject(tempKey,
+                            new JsonSerializerSettings { ContractResolver = new SecurityKeyContractResolver() }));
                 }
-                
                 return builder.AddSigningCredential(key);
             }
         }
@@ -158,6 +225,21 @@ namespace Microsoft.Extensions.DependencyInjection
                 KeyId = id
             };
 
+            return key;
+        }
+
+        /// <summary>
+        /// Creates an ECDSA security key.
+        /// </summary>
+        /// <param name="parameters">The parameters.</param>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
+        public static ECDsaSecurityKey CreateEcDsaSecurityKey(ECParameters parameters, string id)
+        {
+            var key = new ECDsaSecurityKey(ECDsa.Create(parameters))
+            {
+                KeyId = id
+            };
             return key;
         }
 
@@ -185,6 +267,23 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             key.KeyId = CryptoRandom.CreateUniqueId(16);
+            return key;
+        }
+
+        /// <summary>
+        /// Creates a new ECDSA security key.
+        /// </summary>
+        /// <param name="curveName">The elliptic curve domain parameters to use. Defaults to "ECDSA_P256". Other valid parameters are "ECDSA_P384" and "ECDSA_P521"</param>
+        /// <returns></returns>
+        public static ECDsaSecurityKey CreateEcDsaSecurityKey(string curveName = "ECDSA_P256")
+        {
+            var curve = ECCurve.CreateFromFriendlyName(curveName);
+            var ecdsa = ECDsa.Create(curve);
+
+            var key = new ECDsaSecurityKey(ecdsa)
+            {
+                KeyId = CryptoRandom.CreateUniqueId(16)
+            };
             return key;
         }
 
@@ -261,14 +360,21 @@ namespace Microsoft.Extensions.DependencyInjection
             return certificate;
         }
 
-        // used for serialization to temporary RSA key
+        // used for serialization to temporary security key files
         private class TemporaryRsaKey
         {
             public string KeyId { get; set; }
             public RSAParameters Parameters { get; set; }
         }
 
-        private class RsaKeyContractResolver : DefaultContractResolver
+        private class TemporaryEcDsaKey
+        {
+            public string KeyId { get; set; }
+            public ECParameters Parameters { get; set; }
+        }
+
+
+        private class SecurityKeyContractResolver : DefaultContractResolver
         {
             protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
             {

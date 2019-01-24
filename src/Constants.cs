@@ -9,6 +9,8 @@ using System.Collections.Generic;
 
 namespace IdentityServer4
 {
+    using System.Security.Cryptography;
+
     internal static class Constants
     {
         public const string IdentityServerName               = "IdentityServer4";
@@ -91,11 +93,6 @@ namespace IdentityServer4
         {
             "pairwise", "public"
         };
-
-        public static class SigningAlgorithms
-        {
-            public const string RSA_SHA_256 = "RS256";
-        }
 
         public static readonly List<string> SupportedDisplayModes = new List<string>
         {

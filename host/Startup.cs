@@ -46,7 +46,7 @@ namespace Host
                 //.AddInMemoryClients(_config.GetSection("Clients"))
                 .AddInMemoryIdentityResources(Resources.GetIdentityResources())
                 .AddInMemoryApiResources(Resources.GetApiResources())
-                .AddDeveloperSigningCredential()
+                .AddDeveloperSigningCredential() //(intendedSigningAlgorithm: IdentityServerConstants.SigningAlgorithms.ES256)
                 .AddExtensionGrantValidator<Extensions.ExtensionGrantValidator>()
                 .AddExtensionGrantValidator<Extensions.NoSubjectExtensionGrantValidator>()
                 .AddJwtBearerClientAuthentication()

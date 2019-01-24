@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 #pragma warning disable 1591
@@ -11,9 +11,19 @@ namespace IdentityServer4.Models
         public string use { get; set; }
         public string kid { get; set; }
         public string x5t { get; set; }
-        public string e { get; set; }
-        public string n { get; set; }
         public string[] x5c { get; set; }
         public string alg { get; set; }
+    }
+
+    public class RsaJsonWebKey : JsonWebKey
+    {
+        public string e { get; set; }
+        public string n { get; set; }
+    }
+
+    public class EcdsaWebKey : JsonWebKey
+    {
+        public string x { get; set; }
+        public string y { get; set; }
     }
 }

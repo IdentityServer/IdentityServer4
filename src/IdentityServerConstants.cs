@@ -48,6 +48,30 @@ namespace IdentityServer4
             public const string X509CertificateBase64 = "X509CertificateBase64";
         }
 
+        public static class SigningAlgorithms
+        {
+            /// <summary>
+            /// RSA 2048-bit + SHA-2 256
+            /// </summary>
+            public const string RS256 = "RS256";
+
+            /// <summary>
+            /// NIST P-256 + SHA-2 256
+            /// </summary>
+            public const string ES256 = "ES256";
+
+            /// <summary>
+            /// NIST P-384 + SHA-2 256
+            /// </summary>
+            public const string ES384 = "ES384";
+
+            /// <summary>
+            /// NIST P-521 + SHA-2 512.
+            /// No. '521' is not a typo.
+            /// </summary>
+            public const string ES512 = "ES512";
+        }
+
         public static class ProfileDataCallers
         {
             public const string UserInfoEndpoint = "UserInfoEndpoint";
