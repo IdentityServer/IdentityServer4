@@ -17,6 +17,8 @@ using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.UnitTests.Validation
 {
+    using Microsoft.AspNetCore.DataProtection.KeyManagement;
+
     internal static class Factory
     {
         public static IClientStore CreateClientStore()
@@ -122,6 +124,13 @@ namespace IdentityServer4.UnitTests.Validation
                 new DefaultKeyMaterialService(new IValidationKeysStore[] { }, new DefaultSigningCredentialsStore(TestCert.LoadSigningCredentials())), TestLogger.Create<DefaultTokenCreationService>());
         }
 
+        internal static ITokenCreationService CreateAlternateEcdsaTokenCreator()
+        {
+            return new DefaultTokenCreationService(
+                new StubClock(),
+                new DefaultKeyMaterialService(new IValidationKeysStore[] { }, new DefaultSigningCredentialsStore(TestKeyMaterial.Es256SigningCredentials)), TestLogger.Create<DefaultTokenCreationService>());
+        }
+
         public static DeviceAuthorizationRequestValidator CreateDeviceAuthorizationRequestValidator(
             IdentityServerOptions options = null,
             IResourceStore resourceStore = null,
@@ -203,7 +212,7 @@ namespace IdentityServer4.UnitTests.Validation
             IReferenceTokenStore store = null, 
             IRefreshTokenStore refreshTokenStore = null,
             IProfileService profile = null, 
-            IdentityServerOptions options = null, ISystemClock clock = null)
+            IdentityServerOptions options = null, ISystemClock clock = null, IKeyMaterialService keyMaterialService = null)
         {
             if (options == null)
             {
@@ -219,6 +228,9 @@ namespace IdentityServer4.UnitTests.Validation
             {
                 store = CreateReferenceTokenStore();
             }
+
+            keyMaterialService = keyMaterialService ?? new DefaultKeyMaterialService(new[]
+                                     {new DefaultValidationKeysStore(new[] {TestCert.LoadSigningCredentials().Key})});
 
             clock = clock ?? new StubClock();
 
@@ -238,7 +250,7 @@ namespace IdentityServer4.UnitTests.Validation
                 referenceTokenStore: store,
                 refreshTokenStore: refreshTokenStore,
                 customValidator: new DefaultCustomTokenValidator(),
-                    keys: new DefaultKeyMaterialService(new[] { new DefaultValidationKeysStore(new[] { TestCert.LoadSigningCredentials().Key }) }),
+                    keys: keyMaterialService,
                 logger: logger,
                 options: options,
                 context: context);

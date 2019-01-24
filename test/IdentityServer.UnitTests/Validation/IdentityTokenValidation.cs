@@ -1,9 +1,11 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-
 
 using FluentAssertions;
 using IdentityModel;
+using IdentityServer4.Services;
+using IdentityServer4.Stores;
+using IdentityServer4.UnitTests.Common;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 using Xunit;
@@ -28,6 +30,23 @@ namespace IdentityServer4.UnitTests.Validation
             var jwt = await creator.CreateTokenAsync(token);
 
             var validator = Factory.CreateTokenValidator();
+            var result = await validator.ValidateIdentityTokenAsync(jwt, "roclient");
+
+            result.IsError.Should().BeFalse();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task Valid_IdentityToken_EcdsaSha256KeyType()
+        {
+            var creator = Factory.CreateAlternateEcdsaTokenCreator();
+            var token = TokenFactory.CreateIdentityToken("roclient", "valid");
+            var jwt = await creator.CreateTokenAsync(token);
+            var ecdsaKeyMaterialService = new DefaultKeyMaterialService(new [] {new DefaultValidationKeysStore(new []
+            {
+                TestKeyMaterial.Es256SigningCredentials.Key
+            }), });
+            var validator = Factory.CreateTokenValidator(keyMaterialService: ecdsaKeyMaterialService);
             var result = await validator.ValidateIdentityTokenAsync(jwt, "roclient");
 
             result.IsError.Should().BeFalse();

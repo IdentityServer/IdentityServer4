@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -32,6 +32,28 @@ namespace IdentityServer4.UnitTests.Extensions
                 ""dp"" :  ""GlYJ6o6wgawxCEQ5z5uWwETau5CS/Fk7kI2ceI14SZVHzlJQC2WglAcnQcqhmQCk57Xsy5iLM6vKyi8sdMJPh+nvR2HlyNA+w7YBy4L7odqn01VmLgv7zVVjZpNq4ZXEoDC1Q+xjtF1LoYaUt7wsRLp+a7znuPyHBXj1sAAeBwk="",
                 ""dq"" :  ""W8OK3S83T8VCTBzq1Ap6cb3XLcQq11yBaJpYaj0zXr/IKsbUW+dnFeBAFWEWS3gAX3Bod1tAFB3rs0D3FjhO1XE1ruHUT520iAEAwGiDaj+JLh994NzqELo3GW2PoIM/BtFNeKYgHd9UgQsgPnQJCzOb6Aev/z3yHeW9RRQPVbE="",
                 ""qi"" :  ""w4KdmiDN1GtK71JxaasqmEKPNfV3v2KZDXKnfyhUsdx/idKbdTVjvMOkxFPJ4FqV4yIVn06f3QHTm4NEG18Diqxsrzd6kXQIHOa858tLsCcmt9FoGfrgCFgVceh3K/Zah/r8rl9Y61u0Z1kZumwMvFpFE+mVU01t9HgTEAVkHTc="",
+            }";
+
+            JsonWebKey jsonWebKey = new JsonWebKey(json);
+            SigningCredentials credentials = new SigningCredentials(jsonWebKey, jsonWebKey.Alg);
+            identityServerBuilder.AddSigningCredential(credentials);
+        }
+
+        [Fact]
+        public void AddSigningCredential_ES256_with_json_web_key_containing_asymmetric_key_should_succeed()
+        {
+            IServiceCollection services = new ServiceCollection();
+            IIdentityServerBuilder identityServerBuilder = new IdentityServerBuilder(services);
+
+            String json =
+            @"{
+                ""kty"":""EC"",
+                ""alg"":""ES256"",
+                ""x"":""MKBCTNIcKUSDii11ySs3526iDZ8AiTo7Tu6KPAqv7D4"",
+                ""y"":""4Etl6SRW2YiLUrN5vfvVHuhp7x8PxltmWWlbbM4IFyM"",
+                ""d"":""870MB6gfuTJ4HtUnUvYMyJpr5eUZNP4Bk43bVdj3eAE"",
+                ""use"":""enc"",
+                ""kid"":""1""
             }";
 
             JsonWebKey jsonWebKey = new JsonWebKey(json);
