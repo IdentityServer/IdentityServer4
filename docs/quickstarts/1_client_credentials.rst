@@ -170,8 +170,7 @@ Update `Startup` to look like this::
     }
 
 
-``AddAuthentication`` adds the authentication services to DI and configures ``"Bearer"`` as the default scheme. The Api now recognizes the IdentityServer token service as the ``Authority``, requires communication through ``http`` and presents itself as ``api1``.
-``AddIdentityServerAuthentication`` adds the IdentityServer access token validation handler into DI for use by the authentication services.
+``AddAuthentication`` adds the authentication services to DI and configures ``"Bearer"`` as the default scheme. ``AddIdentityServerAuthentication`` adds the IdentityServer access token validation handler into DI for use by the authentication services.
 ``UseAuthentication`` adds the authentication middleware to the pipeline so authentication will be performed automatically on every call into the host.
 
 Navigating to the controller ``http://localhost:5001/identity`` on a browser should return a 401 status code. This means your API requires a credential and is now protected by IdentityServer.
