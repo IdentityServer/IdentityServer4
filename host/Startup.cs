@@ -3,15 +3,15 @@
 
 
 using Host.Configuration;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using Microsoft.IdentityModel.Tokens;
 using IdentityServer4;
 using IdentityServer4.Quickstart.UI;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Authentication;
-using System.Security.Claims;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Threading.Tasks;
 
 namespace Host
 {
@@ -78,23 +78,29 @@ namespace Host
             services.AddOidcStateDataFormatterCache("aad", "demoidsrv");
 
             services.AddAuthentication()
-                .AddGoogle("Google", options =>
+                .AddOpenIdConnect("Google","Google", options =>
                 {
                     options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                    options.SignOutScheme = IdentityServerConstants.SignoutScheme;
 
+                    options.Authority = "https://accounts.google.com/";
                     options.ClientId = "708996912208-9m4dkjb5hscn7cjrn5u0r4tbgkbj1fko.apps.googleusercontent.com";
-                    options.ClientSecret = "wdfPY6t8H8cecgjlxud__4Gh";
 
-                    options.UserInformationEndpoint = "https://www.googleapis.com/oauth2/v2/userinfo";
-                    options.ClaimActions.Clear();
+                    options.CallbackPath = "/signin-google";
+                    options.SignedOutCallbackPath = "/signout-callback-google";
+                    options.RemoteSignOutPath = "/signout-google";
 
-                    options.ClaimActions.MapJsonKey("sub", "id");
-                    options.ClaimActions.MapJsonKey("name", "name");
-                    options.ClaimActions.MapJsonKey("given_name", "given_name");
-                    options.ClaimActions.MapJsonKey("family_name", "family_name");
-                    options.ClaimActions.MapJsonKey("urn:google:profile", "link");
-                    options.ClaimActions.MapJsonKey("email", "email");
-                    options.ClaimActions.MapJsonKey("urn:google:image", "picture");
+                    options.Scope.Add("email");
+
+                    options.Events = new OpenIdConnectEvents
+                    {
+                        OnRedirectToIdentityProviderForSignOut = e =>
+                        {
+                            e.Response.Redirect(e.Properties.RedirectUri);
+                            e.HandleResponse();
+                            return Task.CompletedTask;
+                        }
+                    };
                 })
                 .AddOpenIdConnect("demoidsrv", "IdentityServer", options =>
                 {
