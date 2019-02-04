@@ -5,6 +5,7 @@
 using IdentityServer4;
 using IdentityServer4.Models;
 using System.Collections.Generic;
+using static IdentityServer4.IdentityServerConstants;
 
 namespace Host.Configuration
 {
@@ -22,6 +23,28 @@ namespace Host.Configuration
                     ClientId = "client",
                     ClientSecrets = { new Secret("secret".Sha256()) },
 
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+                    AllowedScopes = { "api1", "api2.read_only" }
+                },
+
+                ///////////////////////////////////////////
+                // X509 mTLS Client
+                //////////////////////////////////////////
+                new Client
+                {
+                    ClientId = "mtls",
+                    ClientSecrets = {
+                        new Secret(@"CN=mtls.test, OU=ROO\ballen@roo, O=mkcert development certificate", "mtls.test")
+                        {
+                            Type = SecretTypes.X509CertificateName
+                        },
+                        //new Secret("bca0d040847f843c5ee0fa6eb494837470155868", "mtls.test")
+                        //{
+                        //    Type = SecretTypes.X509CertificateThumbprint
+                        //},
+                    },
+
+                    AccessTokenType = AccessTokenType.Reference,
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
                     AllowedScopes = { "api1", "api2.read_only" }
                 },

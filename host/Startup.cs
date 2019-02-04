@@ -3,9 +3,11 @@
 
 
 using Host.Configuration;
+using Host.Mtls;
+using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Quickstart.UI;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using idunno.Authentication.Certificate;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -51,9 +53,30 @@ namespace Host
                 .AddExtensionGrantValidator<Extensions.NoSubjectExtensionGrantValidator>()
                 .AddJwtBearerClientAuthentication()
                 .AddAppAuthRedirectUriValidator()
-                .AddTestUsers(TestUsers.Users);
+                .AddTestUsers(TestUsers.Users)
+                .AddSecretParser<MtlsSecretParser>()
+                .AddSecretValidator<X509ThumbprintSecretValidator>()
+                .AddSecretValidator<X509NameSecretValidator>();
 
             services.AddExternalIdentityProviders();
+
+            services.AddAuthentication()
+               .AddCertificate("x509", options =>
+               {
+                   options.RevocationMode = System.Security.Cryptography.X509Certificates.X509RevocationMode.NoCheck;
+                   
+                   options.Events = new CertificateAuthenticationEvents
+                   {
+                       OnValidateCertificate = context =>
+                       {
+                           context.Principal = Principal.CreateFromCertificate(context.ClientCertificate, includeAllClaims:true);
+                           context.Success();
+
+                           return Task.CompletedTask;
+                       }
+                   };
+               });
+
 
             return services.BuildServiceProvider(validateScopes: true);
         }
@@ -63,6 +86,7 @@ namespace Host
             app.UseMiddleware<Logging.RequestLoggerMiddleware>();
             app.UseDeveloperExceptionPage();
 
+            app.UseMiddleware<MtlsTokenEndpointMiddleware>("x509");
             app.UseIdentityServer();
 
             app.UseStaticFiles();

@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="idunno.Authentication.Certificate" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     
     <PackageReference Include="Serilog" Version="2.7.1" />
