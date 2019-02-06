@@ -34,17 +34,17 @@ namespace Host.Configuration
                 {
                     ClientId = "mtls",
                     ClientSecrets = {
-                        //new Secret(@"CN=mtls.test, OU=ROO\ballen@roo, O=mkcert development certificate", "mtls.test")
-                        //{
-                        //    Type = SecretTypes.X509CertificateName
-                        //},
-                        new Secret("bca0d040847f843c5ee0fa6eb494837470155868", "mtls.test")
+                        new Secret(@"CN=mtls.test, OU=ROO\ballen@roo, O=mkcert development certificate", "mtls.test")
                         {
-                            Type = SecretTypes.X509CertificateThumbprint
+                            Type = SecretTypes.X509CertificateName
                         },
+                        //new Secret("bca0d040847f843c5ee0fa6eb494837470155868", "mtls.test")
+                        //{
+                        //    Type = SecretTypes.X509CertificateThumbprint
+                        //},
                     },
 
-                    AccessTokenType = AccessTokenType.Jwt,
+                    AccessTokenType = AccessTokenType.Reference,
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
                     AllowedScopes = { "api1", "api2.read_only" }
                 },

@@ -3,7 +3,6 @@
 
 
 using Host.Configuration;
-using Host.Mtls;
 using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Quickstart.UI;
@@ -43,6 +42,9 @@ namespace Host
                     options.Events.RaiseFailureEvents = true;
                     options.Events.RaiseErrorEvents = true;
                     options.Events.RaiseInformationEvents = true;
+
+                    options.MutualTls.Enabled = true;
+                    options.MutualTls.ClientCertificateAuthenticationScheme = "x509";
                 })
                 .AddInMemoryClients(Clients.Get())
                 //.AddInMemoryClients(_config.GetSection("Clients"))
@@ -54,9 +56,7 @@ namespace Host
                 .AddJwtBearerClientAuthentication()
                 .AddAppAuthRedirectUriValidator()
                 .AddTestUsers(TestUsers.Users)
-                .AddSecretParser<MtlsSecretParser>()
-                .AddSecretValidator<X509ThumbprintSecretValidator>()
-                .AddSecretValidator<X509NameSecretValidator>();
+                .AddTokenEndpointMutualTls();
 
             services.AddExternalIdentityProviders();
 
@@ -86,7 +86,6 @@ namespace Host
             app.UseMiddleware<Logging.RequestLoggerMiddleware>();
             app.UseDeveloperExceptionPage();
 
-            app.UseMiddleware<MtlsTokenEndpointMiddleware>("x509");
             app.UseIdentityServer();
 
             app.UseStaticFiles();

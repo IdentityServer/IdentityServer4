@@ -2,14 +2,12 @@ using System;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using IdentityServer4;
 using IdentityServer4.Configuration;
 using IdentityServer4.Models;
-using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace Host.Mtls
+namespace IdentityServer4.Validation
 {
     public class MtlsSecretParser : ISecretParser
     {
@@ -22,7 +20,8 @@ namespace Host.Mtls
             _logger = logger;
         }
 
-        public string AuthenticationMethod => "mTLS";
+        // blank to suppress in discovery since we do special handling
+        public string AuthenticationMethod => String.Empty;
 
         public async Task<ParsedSecret> ParseAsync(HttpContext context)
         {
@@ -49,13 +48,13 @@ namespace Host.Mtls
                         return null;
                     }
 
-                    if (!context.Items.ContainsKey(MtlsConstants.X509CertificateItemKey))
+                    if (!context.Items.ContainsKey(IdentityServerConstants.Mtls.X509CertificateItemKey))
                     {
                         _logger.LogDebug("Client certificate not present");
                         return null;
                     }
 
-                    var cert = context.Items[MtlsConstants.X509CertificateItemKey] as X509Certificate2;
+                    var cert = context.Items[IdentityServerConstants.Mtls.X509CertificateItemKey] as X509Certificate2;
                     if (cert == null)
                     {
                         _logger.LogDebug("Client certificate invalid from items collection");

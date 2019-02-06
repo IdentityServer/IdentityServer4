@@ -221,6 +221,7 @@ namespace IdentityServer4
             public const string EndSessionCallback     = EndSession + "/callback";
             public const string CheckSession           = "connect/checksession";
             public const string DeviceAuthorization    = "connect/deviceauthorization";
+            public const string MtlsToken              = "connect/token/mtls";
 
             public static readonly string[] CorsPaths =
             {

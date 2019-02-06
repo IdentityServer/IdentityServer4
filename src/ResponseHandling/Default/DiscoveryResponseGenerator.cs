@@ -150,6 +150,12 @@ namespace IdentityServer4.ResponseHandling
                 {
                     entries.Add(OidcConstants.Discovery.DeviceAuthorizationEndpoint, baseUrl + Constants.ProtocolRoutePaths.DeviceAuthorization);
                 }
+
+                if (Options.MutualTls.Enabled)
+                {
+                    // todo: once IdentityModel has a constant
+                    entries.Add("token_endpoint_mtls", baseUrl + Constants.ProtocolRoutePaths.MtlsToken);
+                }
             }
 
             // logout
@@ -263,12 +269,24 @@ namespace IdentityServer4.ResponseHandling
             // misc
             if (Options.Discovery.ShowTokenEndpointAuthenticationMethods)
             {
-                entries.Add(OidcConstants.Discovery.TokenEndpointAuthenticationMethodsSupported, SecretParsers.GetAvailableAuthenticationMethods().ToArray());
+                var types = SecretParsers.GetAvailableAuthenticationMethods().ToList();
+                if (Options.MutualTls.Enabled)
+                {
+                    // todo: update once IdentityModel has constants
+                    types.Add("tls_client_auth");
+                    types.Add("self_signed_tls_client_auth");
+                }
+                entries.Add(OidcConstants.Discovery.TokenEndpointAuthenticationMethodsSupported, types);
             }
 
             entries.Add(OidcConstants.Discovery.SubjectTypesSupported, new[] { "public" });
             entries.Add(OidcConstants.Discovery.IdTokenSigningAlgorithmsSupported, new[] { Constants.SigningAlgorithms.RSA_SHA_256 });
             entries.Add(OidcConstants.Discovery.CodeChallengeMethodsSupported, new[] { OidcConstants.CodeChallengeMethods.Plain, OidcConstants.CodeChallengeMethods.Sha256 });
+            if (Options.MutualTls.Enabled)
+            {
+                // todo: update once IdentityModel has constants
+                entries.Add("tls_client_certificate_bound_access_tokens", true);
+            }
 
             // custom entries
             if (!Options.Discovery.CustomEntries.IsNullOrEmpty())

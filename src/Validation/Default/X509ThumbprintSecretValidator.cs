@@ -4,12 +4,11 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
-using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using static IdentityServer4.IdentityServerConstants;
 
-namespace Host.Mtls
+namespace IdentityServer4.Validation
 {
     public class X509ThumbprintSecretValidator : ISecretValidator
     {
