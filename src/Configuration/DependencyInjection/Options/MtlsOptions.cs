@@ -7,6 +7,7 @@ namespace IdentityServer4.Configuration
 {
     public class MtlsOptions
     {
+        // todo: reconcile this vs. DI services style
         public bool Enabled { get; set; }
 
         public string ClientCertificateAuthenticationScheme { get; set; } = "Certificate";
