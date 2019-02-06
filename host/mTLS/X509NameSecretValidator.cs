@@ -58,7 +58,7 @@ namespace Host.Mtls
                 {
                     var values = new Dictionary<string, string>
                     {
-                        { "x5t#S256", name }
+                        { "x5t#S256", cert.Thumbprint }
                     };
                     var cnf = JsonConvert.SerializeObject(values);
 
