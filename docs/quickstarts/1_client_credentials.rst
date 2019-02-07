@@ -40,7 +40,7 @@ Defining an API Resource
 ^^^^^^^^^^^^^^^^^^^^^^^^
 An API is a resource in your system that you want to protect.
 
-Resource definitions can be loaded in many ways, the template uses a "code as configuration" approach.
+Resource definitions can be loaded in many ways, the template uses a "code as configuration" appproach.
 In the ``Config.cs`` file you can find a method called ``GetApis``, define the API as follows::
 
     public static IEnumerable<ApiResource> GetApis()
@@ -96,9 +96,9 @@ Loading the resource and client definitions happens in ``Startup.cs`` - the temp
         // rest omitted
     }
 
-That's it - if you run the server and navigate the browser to
+That's it - if you run the server and navigate the browser to 
 ``http://localhost:5000/.well-known/openid-configuration``, you should see the so-called
-discovery document.
+discovery document. 
 This will be used by your clients and APIs to download the necessary configuration data.
 
 .. image:: images/1_discovery.png
@@ -108,7 +108,7 @@ You don't have to check that file into your source control, it will be re-create
 
 Adding an API
 ^^^^^^^^^^^^^
-Next, add an API to your solution.
+Next, add an API to your solution. 
 
 You can either use the ASP.NET Core Web API (or empty) template from Visual Studio or use the .NET CLI to create the API project.
 Run from within the ``src`` folder the following command::
@@ -176,7 +176,7 @@ Update `Startup` to look like this::
 ``AddJwtBearer`` adds the JWT validation handler into DI for use by the authentication services.
 ``UseAuthentication`` adds the authentication middleware to the pipeline so authentication will be performed automatically on every call into the host.
 
-If you use the browser to navigate to the controller (``http://localhost:5001/identity``),
+If you use the browser to navigate to the controller (``http://localhost:5001/identity``), 
 you should get a 401 status code in return. This means your API requires a credential.
 
 That's it, the API is now protected by IdentityServer.
@@ -188,11 +188,11 @@ token to access the API. For that, add a console project to your solution (see f
 
     dotnet new console -n Client
 
-The token endpoint at IdentityServer implements the OAuth 2.0 protocol, and you could use
+The token endpoint at IdentityServer implements the OAuth 2.0 protocol, and you could use 
 raw HTTP to access it. However, we have a client library called IdentityModel, that
 encapsulates the protocol interaction in an easy to use API.
 
-Add the `IdentityModel` NuGet package to your client.
+Add the `IdentityModel` NuGet package to your client. 
 This can be done either via Visual Studio's NuGet dialog, by adding it manually to the .csproj file, or by using the CLI::
 
     dotnet add package IdentityModel
@@ -221,7 +221,7 @@ Next you can use the information from the discovery document to request a token:
         ClientSecret = "secret",
         Scope = "api1"
     });
-
+    
     if (tokenResponse.IsError)
     {
         Console.WriteLine(tokenResponse.Error);
