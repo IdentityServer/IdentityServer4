@@ -153,7 +153,7 @@ namespace IdentityServer4.ResponseHandling
 
                 if (Options.MutualTls.Enabled)
                 {
-                    // todo: once IdentityModel has a constant
+                    // todo: find out if there will be a standard element
                     entries.Add("token_endpoint_mtls", baseUrl + Constants.ProtocolRoutePaths.MtlsToken);
                 }
             }
@@ -272,20 +272,20 @@ namespace IdentityServer4.ResponseHandling
                 var types = SecretParsers.GetAvailableAuthenticationMethods().ToList();
                 if (Options.MutualTls.Enabled)
                 {
-                    // todo: update once IdentityModel has constants
-                    types.Add("tls_client_auth");
-                    types.Add("self_signed_tls_client_auth");
+                    types.Add(OidcConstants.EndpointAuthenticationMethods.TlsClientAuth);
+                    types.Add(OidcConstants.EndpointAuthenticationMethods.SelfSignedTlsClientAuth);
                 }
+
                 entries.Add(OidcConstants.Discovery.TokenEndpointAuthenticationMethodsSupported, types);
             }
 
             entries.Add(OidcConstants.Discovery.SubjectTypesSupported, new[] { "public" });
             entries.Add(OidcConstants.Discovery.IdTokenSigningAlgorithmsSupported, new[] { Constants.SigningAlgorithms.RSA_SHA_256 });
             entries.Add(OidcConstants.Discovery.CodeChallengeMethodsSupported, new[] { OidcConstants.CodeChallengeMethods.Plain, OidcConstants.CodeChallengeMethods.Sha256 });
+
             if (Options.MutualTls.Enabled)
             {
-                // todo: update once IdentityModel has constants
-                entries.Add("tls_client_certificate_bound_access_tokens", true);
+                entries.Add(OidcConstants.Discovery.TlsClientCertificateBoundAccessTokens, true);
             }
 
             // custom entries
