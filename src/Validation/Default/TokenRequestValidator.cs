@@ -99,10 +99,14 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             if (_validatedRequest.Client.ProtocolType != IdentityServerConstants.ProtocolTypes.OpenIdConnect)
             {
-                LogError("Client {clientId} has invalid protocol type for token endpoint: expected {expectedProtocolType} but found {protocolType}",
-                    _validatedRequest.Client.ClientId,
-                    IdentityServerConstants.ProtocolTypes.OpenIdConnect,
-                    _validatedRequest.Client.ProtocolType);
+                LogError("Invalid protocol type for client",
+                    new
+                    {
+                        clientId = _validatedRequest.Client.ClientId,
+                        expectedProtocolType = IdentityServerConstants.ProtocolTypes.OpenIdConnect,
+                        actualProtocolType = _validatedRequest.Client.ProtocolType
+                    });
+
                 return Invalid(OidcConstants.TokenErrors.InvalidClient);
             }
 
@@ -160,7 +164,7 @@ namespace IdentityServer4.Validation
             {
                 if (customValidationContext.Result.Error.IsPresent())
                 {
-                    LogError("Custom token request validator error {error}", customValidationContext.Result.Error);
+                    LogError("Custom token request validator", new { error = customValidationContext.Result.Error });
                 }
                 else
                 {
@@ -209,7 +213,7 @@ namespace IdentityServer4.Validation
             var authZcode = await _authorizationCodeStore.GetAuthorizationCodeAsync(code);
             if (authZcode == null)
             {
-                LogError("Invalid authorization code: {code}", code);
+                LogError("Invalid authorization code", new { code });
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
@@ -217,7 +221,7 @@ namespace IdentityServer4.Validation
 
             if (authZcode.CreationTime.HasExceeded(authZcode.Lifetime, _clock.UtcNow.UtcDateTime))
             {
-                LogError("Authorization code expired: {code}", code);
+                LogError("Authorization code expired", new { code });
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
@@ -234,7 +238,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             if (authZcode.ClientId != _validatedRequest.Client.ClientId)
             {
-                LogError("Client {0} is trying to use a code from client {1}", _validatedRequest.Client.ClientId, authZcode.ClientId);
+                LogError("Client is trying to use a code from a different client", new { clientId = _validatedRequest.Client.ClientId, codeClient = authZcode.ClientId });
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
@@ -261,8 +265,7 @@ namespace IdentityServer4.Validation
 
             if (redirectUri.Equals(_validatedRequest.AuthorizationCode.RedirectUri, StringComparison.Ordinal) == false)
             {
-                LogError("Invalid redirect_uri: {redirectUri}, expected {exceptRedirectUri}",
-                    redirectUri, _validatedRequest.AuthorizationCode.RedirectUri);
+                LogError("Invalid redirect_uri", new { redirectUri, expectedRedirectUri = _validatedRequest.AuthorizationCode.RedirectUri });
                 return Invalid(OidcConstants.TokenErrors.UnauthorizedClient);
             }
 
@@ -309,7 +312,7 @@ namespace IdentityServer4.Validation
 
             if (isActiveCtx.IsActive == false)
             {
-                LogError("User has been disabled: {subjectId}", _validatedRequest.AuthorizationCode.Subject.GetSubjectId());
+                LogError("User has been disabled", new { subjectId = _validatedRequest.AuthorizationCode.Subject.GetSubjectId() });
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
@@ -327,7 +330,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             if (!_validatedRequest.Client.AllowedGrantTypes.ToList().Contains(GrantType.ClientCredentials))
             {
-                LogError("{clientId} not authorized for client credentials flow, check the AllowedGrantTypes of the client", _validatedRequest.Client.ClientId);
+                LogError("Client not authorized for client credentials flow, check the AllowedGrantTypes setting", new { clientId = _validatedRequest.Client.ClientId });
                 return Invalid(OidcConstants.TokenErrors.UnauthorizedClient);
             }
 
@@ -341,13 +344,13 @@ namespace IdentityServer4.Validation
 
             if (_validatedRequest.ValidatedScopes.ContainsOpenIdScopes)
             {
-                LogError("{clientId} cannot request OpenID scopes in client credentials flow", _validatedRequest.Client.ClientId);
+                LogError("Client cannot request OpenID scopes in client credentials flow", new { clientId = _validatedRequest.Client.ClientId });
                 return Invalid(OidcConstants.TokenErrors.InvalidScope);
             }
 
             if (_validatedRequest.ValidatedScopes.ContainsOfflineAccessScope)
             {
-                LogError("{clientId} cannot request a refresh token in client credentials flow", _validatedRequest.Client.ClientId);
+                LogError("Client cannot request a refresh token in client credentials flow", new { clientId = _validatedRequest.Client.ClientId });
                 return Invalid(OidcConstants.TokenErrors.InvalidScope);
             }
 
@@ -364,7 +367,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             if (!_validatedRequest.Client.AllowedGrantTypes.Contains(GrantType.ResourceOwnerPassword))
             {
-                LogError("{clientId} not authorized for resource owner flow, check the AllowedGrantTypes of client", _validatedRequest.Client.ClientId);
+                LogError("Client not authorized for resource owner flow, check the AllowedGrantTypes setting", new { client_id = _validatedRequest.Client.ClientId });
                 return Invalid(OidcConstants.TokenErrors.UnauthorizedClient);
             }
 
@@ -426,7 +429,7 @@ namespace IdentityServer4.Validation
                     errorDescription = resourceOwnerContext.Result.ErrorDescription;
                 }
 
-                LogInfo("User authentication failed: {error}", errorDescription ?? resourceOwnerContext.Result.Error);
+                _logger.LogInformation("User authentication failed: {error}", errorDescription ?? resourceOwnerContext.Result.Error);
                 await RaiseFailedResourceOwnerAuthenticationEventAsync(userName, errorDescription);
 
                 return Invalid(resourceOwnerContext.Result.Error, errorDescription, resourceOwnerContext.Result.CustomResponse);
@@ -449,7 +452,7 @@ namespace IdentityServer4.Validation
 
             if (isActiveCtx.IsActive == false)
             {
-                LogError("User has been disabled: {subjectId}", resourceOwnerContext.Result.Subject.GetSubjectId());
+                LogError("User has been disabled", new { subjectId = resourceOwnerContext.Result.Subject.GetSubjectId() });
                 await RaiseFailedResourceOwnerAuthenticationEventAsync(userName, "user is inactive");
 
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
@@ -484,7 +487,7 @@ namespace IdentityServer4.Validation
 
             if (result.IsError)
             {
-                LogWarning("Refresh token validation failed. aborting.");
+                _logger.LogWarning("Refresh token validation failed. aborting.");
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
@@ -547,7 +550,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             if (!_validatedRequest.Client.AllowedGrantTypes.Contains(_validatedRequest.GrantType))
             {
-                LogError("{clientId} does not have the custom grant type in the allowed list, therefore requested grant is not allowed", _validatedRequest.Client.ClientId);
+                LogError("Client does not have the custom grant type in the allowed list, therefore requested grant is not allowed", new { clientId = _validatedRequest.Client.ClientId });
                 return Invalid(OidcConstants.TokenErrors.UnsupportedGrantType);
             }
 
@@ -556,7 +559,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             if (!_extensionGrantValidator.GetAvailableGrantTypes().Contains(_validatedRequest.GrantType, StringComparer.Ordinal))
             {
-                LogError("No validator is registered for the grant type: {grantType}", _validatedRequest.GrantType);
+                LogError("No validator is registered for the grant type", new { grantType = _validatedRequest.GrantType });
                 return Invalid(OidcConstants.TokenErrors.UnsupportedGrantType);
             }
 
@@ -583,7 +586,7 @@ namespace IdentityServer4.Validation
             {
                 if (result.Error.IsPresent())
                 {
-                    LogError("Invalid extension grant: {error}", result.Error);
+                    LogError("Invalid extension grant", new { error = result.Error });
                     return Invalid(result.Error, result.ErrorDescription, result.CustomResponse);
                 }
                 else
@@ -609,7 +612,7 @@ namespace IdentityServer4.Validation
                 {
                     // todo: raise event?
 
-                    LogError("User has been disabled: {subjectId}", result.Subject.GetSubjectId());
+                    LogError("User has been disabled", new { subjectId = result.Subject.GetSubjectId() });
                     return Invalid(OidcConstants.TokenErrors.InvalidGrant);
                 }
 
@@ -650,7 +653,7 @@ namespace IdentityServer4.Validation
                 }
                 else
                 {
-                    LogError("No allowed scopes configured for {clientId}", _validatedRequest.Client.ClientId);
+                    LogError("No allowed scopes configured for client", new { clientId = _validatedRequest.Client.ClientId });
                     return false;
                 }
             }
@@ -690,7 +693,7 @@ namespace IdentityServer4.Validation
         {
             if (authZcode.CodeChallenge.IsMissing() || authZcode.CodeChallengeMethod.IsMissing())
             {
-                LogError("{clientId} is missing code challenge or code challenge method", _validatedRequest.Client.ClientId);
+                LogError("Client is missing code challenge or code challenge method", new { clientId = _validatedRequest.Client.ClientId });
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
@@ -709,7 +712,7 @@ namespace IdentityServer4.Validation
 
             if (Constants.SupportedCodeChallengeMethods.Contains(authZcode.CodeChallengeMethod) == false)
             {
-                LogError("Unsupported code challenge method: {codeChallengeMethod}", authZcode.CodeChallengeMethod);
+                LogError("Unsupported code challenge method", new { codeChallengeMethod = authZcode.CodeChallengeMethod });
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
@@ -746,14 +749,24 @@ namespace IdentityServer4.Validation
             return new TokenRequestValidationResult(_validatedRequest, error, errorDescription, customResponse);
         }
 
-        private void LogError(string message = null, params object[] values)
+        private void LogError(string message = null, object values = null)
         {
             var details = new TokenRequestValidationLog(_validatedRequest);
+
             if (message.IsPresent())
             {
+                
                 try
                 {
-                    _logger.LogError(message + ", request details: {@details}", values, details);
+                    if (values == null)
+                    {
+                        _logger.LogError(message + ", {@details}", details);
+                    }
+                    else
+                    {
+                        _logger.LogError(message + "{@values}, {@details}", values, details);
+                    }
+                    
                 }
                 catch (Exception ex)
                 {
@@ -763,46 +776,6 @@ namespace IdentityServer4.Validation
             else
             {
                 _logger.LogError("{@details}", details);
-            }
-        }
-
-        private void LogWarning(string message = null, params object[] values)
-        {
-            var details = new TokenRequestValidationLog(_validatedRequest);
-            if (message.IsPresent())
-            {
-                try
-                {
-                    _logger.LogWarning(message + ", request details: {details}", values, details);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError("Error logging {exception}, request details: {details}", ex.Message, details);
-                }
-            }
-            else
-            {
-                _logger.LogWarning("{details}", details);
-            }
-        }
-
-        private void LogInfo(string message = null, params object[] values)
-        {
-            var details = new TokenRequestValidationLog(_validatedRequest);
-            if (message.IsPresent())
-            {
-                try
-                {
-                    _logger.LogInformation(message + ", request details: {@details}", values, details);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError("Error logging {exception}", ex.Message);
-                }
-            }
-            else
-            {
-                _logger.LogInformation("{@details}", details);
             }
         }
 
