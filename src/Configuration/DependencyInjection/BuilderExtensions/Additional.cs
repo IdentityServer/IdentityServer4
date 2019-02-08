@@ -298,7 +298,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IIdentityServerBuilder AddTokenEndpointMutualTls(this IIdentityServerBuilder builder)
         {
-            builder.AddSecretParser<MtlsSecretParser>();
+            builder.AddSecretParser<MutualTlsSecretParser>();
             builder.AddSecretValidator<X509ThumbprintSecretValidator>();
             builder.AddSecretValidator<X509NameSecretValidator>();
 

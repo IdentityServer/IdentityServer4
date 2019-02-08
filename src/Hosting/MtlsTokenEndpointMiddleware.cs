@@ -6,12 +6,12 @@ using Microsoft.AspNetCore.Http;
 
 namespace IdentityServer4.Hosting
 {
-    public class MtlsTokenEndpointMiddleware
+    public class MutualTlsTokenEndpointMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly IdentityServerOptions _options;
 
-        public MtlsTokenEndpointMiddleware(RequestDelegate next, IdentityServerOptions options)
+        public MutualTlsTokenEndpointMiddleware(RequestDelegate next, IdentityServerOptions options)
         {
             _next = next;
             _options = options;
@@ -31,7 +31,7 @@ namespace IdentityServer4.Hosting
                 else
                 {
                     // todo: decide how to get cert from auth response above. for now, just get from the connection
-                    context.Items[IdentityServerConstants.Mtls.X509CertificateItemKey] = context.Connection.ClientCertificate;
+                    context.Items[IdentityServerConstants.MutualTls.X509CertificateItemKey] = context.Connection.ClientCertificate;
                     context.Request.Path = Constants.ProtocolRoutePaths.Token.EnsureLeadingSlash();
                 }
             }

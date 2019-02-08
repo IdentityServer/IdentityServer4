@@ -99,7 +99,7 @@ namespace IdentityServer4
             public const string Numeric = "Numeric";
         }
 
-        public class Mtls
+        public class MutualTls
         {
             public const string X509CertificateItemKey = "IdentityServer:MTLS:X509Certificate";
         }

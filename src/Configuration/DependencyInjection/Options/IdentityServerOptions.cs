@@ -110,6 +110,6 @@ namespace IdentityServer4.Configuration
         /// <summary>
         /// Gets or sets the mutual TLS options.
         /// </summary>
-        public MtlsOptions MutualTls { get; set; } = new MtlsOptions();
+        public MutualTlsOptions MutualTls { get; set; } = new MutualTlsOptions();
     }
 }
