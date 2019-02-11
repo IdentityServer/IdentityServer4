@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using IdentityServer4;
 using IdentityServer4.Extensions;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -30,7 +31,17 @@ namespace Microsoft.Extensions.DependencyInjection
                 .Transient<IConfigureOptions<JwtBearerOptions>, IdentityServerJwtBearerOptionsConfiguration>());
 
             services.AddAuthentication()
-                .AddJwtBearer("local", null, o => { });
+                .AddJwtBearer(IdentityServerConstants.LocalApiScheme, null, o => { });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(IdentityServerConstants.LocalApiPolicy, policy =>
+                {
+                    policy
+                        .AddAuthenticationSchemes(IdentityServerConstants.LocalApiScheme)
+                        .RequireAuthenticatedUser();
+                });
+            });
 
             return services;
         }
@@ -40,11 +51,11 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public void Configure(string name, JwtBearerOptions options)
         {
-            if (string.Equals(name, "local", StringComparison.Ordinal))
+            if (string.Equals(name, IdentityServerConstants.LocalApiScheme, StringComparison.Ordinal))
             {
                 options.Events = options.Events ?? new JwtBearerEvents();
                 options.Events.OnMessageReceived = ResolveAuthorityAndKeysAsync;
-                options.Audience = "IdentityServerApi";
+                options.Audience = IdentityServerConstants.LocalApiAudience;
 
                 var staticConfiguration = new OpenIdConnectConfiguration
                 {

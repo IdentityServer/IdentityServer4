@@ -23,7 +23,7 @@ namespace Host.Configuration
                     ClientSecrets = { new Secret("secret".Sha256()) },
 
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    AllowedScopes = { "api1", "api2.read_only" }
+                    AllowedScopes = { "api1", "api2.read_only", IdentityServerConstants.LocalApiName }
                 },
 
                 ///////////////////////////////////////////

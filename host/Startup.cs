@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Threading.Tasks;
@@ -22,6 +23,8 @@ namespace Host
         public Startup(IConfiguration config)
         {
             _config = config;
+
+            IdentityModelEventSource.ShowPII = true;
         }
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
