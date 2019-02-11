@@ -1,4 +1,5 @@
 using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityModel.Client;
@@ -16,7 +17,7 @@ namespace IdentityServer.IntegrationTests.Pipeline
         private IdentityServerPipeline _pipeline = new IdentityServerPipeline();
 
         [Fact]
-        public async Task empty_origin_should_be_ignored_in_discovery_document()
+        public async Task Empty_origin_should_be_ignored_in_discovery_document()
         {
             _pipeline.OnPostConfigureServices += s=>
             {
@@ -27,13 +28,13 @@ namespace IdentityServer.IntegrationTests.Pipeline
             };
             _pipeline.Initialize();
 
-            var discoClient = new DiscoveryClient(IdentityServerPipeline.BaseUrl, _pipeline.Handler);
-            var result = await discoClient.GetAsync();
+            var discoClient = new HttpClient(_pipeline.Handler);            
+            var result = await discoClient.GetDiscoveryDocumentAsync(IdentityServerPipeline.BaseUrl);
             result.Issuer.Should().Be(IdentityServerPipeline.BaseUrl);
         }
 
         [Fact]
-        public void invalid_origin_should_throw_at_load_time()
+        public void Invalid_origin_should_throw_at_load_time()
         {
             _pipeline.OnPostConfigureServices += s =>
             {
