@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PackageId>IdentityServer4</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -31,6 +31,7 @@
     
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="2.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.0" />

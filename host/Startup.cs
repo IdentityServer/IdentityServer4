@@ -54,6 +54,7 @@ namespace Host
                 .AddTestUsers(TestUsers.Users);
 
             services.AddExternalIdentityProviders();
+            services.AddLocalApi();
 
             return services.BuildServiceProvider(validateScopes: true);
         }
