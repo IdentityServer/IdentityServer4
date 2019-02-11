@@ -3,9 +3,10 @@
 
 
 using Host.Configuration;
+using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Quickstart.UI;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using idunno.Authentication.Certificate;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,6 +42,9 @@ namespace Host
                     options.Events.RaiseFailureEvents = true;
                     options.Events.RaiseErrorEvents = true;
                     options.Events.RaiseInformationEvents = true;
+
+                    options.MutualTls.Enabled = true;
+                    options.MutualTls.ClientCertificateAuthenticationScheme = "x509";
                 })
                 .AddInMemoryClients(Clients.Get())
                 //.AddInMemoryClients(_config.GetSection("Clients"))
@@ -51,9 +55,28 @@ namespace Host
                 .AddExtensionGrantValidator<Extensions.NoSubjectExtensionGrantValidator>()
                 .AddJwtBearerClientAuthentication()
                 .AddAppAuthRedirectUriValidator()
-                .AddTestUsers(TestUsers.Users);
+                .AddTestUsers(TestUsers.Users)
+                .AddTokenEndpointMutualTls();
 
             services.AddExternalIdentityProviders();
+
+            services.AddAuthentication()
+               .AddCertificate("x509", options =>
+               {
+                   options.RevocationMode = System.Security.Cryptography.X509Certificates.X509RevocationMode.NoCheck;
+                   
+                   options.Events = new CertificateAuthenticationEvents
+                   {
+                       OnValidateCertificate = context =>
+                       {
+                           context.Principal = Principal.CreateFromCertificate(context.ClientCertificate, includeAllClaims:true);
+                           context.Success();
+
+                           return Task.CompletedTask;
+                       }
+                   };
+               });
+
 
             return services.BuildServiceProvider(validateScopes: true);
         }

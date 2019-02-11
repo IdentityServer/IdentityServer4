@@ -150,6 +150,12 @@ namespace IdentityServer4.ResponseHandling
                 {
                     entries.Add(OidcConstants.Discovery.DeviceAuthorizationEndpoint, baseUrl + Constants.ProtocolRoutePaths.DeviceAuthorization);
                 }
+
+                if (Options.MutualTls.Enabled)
+                {
+                    // todo: find out if there will be a standard element
+                    entries.Add("token_endpoint_mtls", baseUrl + Constants.ProtocolRoutePaths.MtlsToken);
+                }
             }
 
             // logout
@@ -263,12 +269,24 @@ namespace IdentityServer4.ResponseHandling
             // misc
             if (Options.Discovery.ShowTokenEndpointAuthenticationMethods)
             {
-                entries.Add(OidcConstants.Discovery.TokenEndpointAuthenticationMethodsSupported, SecretParsers.GetAvailableAuthenticationMethods().ToArray());
+                var types = SecretParsers.GetAvailableAuthenticationMethods().ToList();
+                if (Options.MutualTls.Enabled)
+                {
+                    types.Add(OidcConstants.EndpointAuthenticationMethods.TlsClientAuth);
+                    types.Add(OidcConstants.EndpointAuthenticationMethods.SelfSignedTlsClientAuth);
+                }
+
+                entries.Add(OidcConstants.Discovery.TokenEndpointAuthenticationMethodsSupported, types);
             }
 
             entries.Add(OidcConstants.Discovery.SubjectTypesSupported, new[] { "public" });
             entries.Add(OidcConstants.Discovery.IdTokenSigningAlgorithmsSupported, new[] { Constants.SigningAlgorithms.RSA_SHA_256 });
             entries.Add(OidcConstants.Discovery.CodeChallengeMethodsSupported, new[] { OidcConstants.CodeChallengeMethods.Plain, OidcConstants.CodeChallengeMethods.Sha256 });
+
+            if (Options.MutualTls.Enabled)
+            {
+                entries.Add(OidcConstants.Discovery.TlsClientCertificateBoundAccessTokens, true);
+            }
 
             // custom entries
             if (!Options.Discovery.CustomEntries.IsNullOrEmpty())

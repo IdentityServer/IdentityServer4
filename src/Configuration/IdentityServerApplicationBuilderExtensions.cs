@@ -39,6 +39,7 @@ namespace Microsoft.AspNetCore.Builder
             // related: https://github.com/aspnet/Security/issues/1399
             app.UseAuthentication();
 
+            app.UseMiddleware<MutualTlsTokenEndpointMiddleware>();
             app.UseMiddleware<IdentityServerMiddleware>();
 
             return app;
