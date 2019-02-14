@@ -38,23 +38,26 @@ namespace IdentityServer4.Validation
         /// <returns></returns>
         public async Task ValidateAsync(ClientConfigurationValidationContext context)
         {
-            await ValidateGrantTypesAsync(context);
-            if (context.IsValid == false) return;
+            if (context.Client.ProtocolType == IdentityServerConstants.ProtocolTypes.OpenIdConnect)
+            {
+                await ValidateGrantTypesAsync(context);
+                if (context.IsValid == false) return;
 
-            await ValidateLifetimesAsync(context);
-            if (context.IsValid == false) return;
+                await ValidateLifetimesAsync(context);
+                if (context.IsValid == false) return;
 
-            await ValidateRedirectUriAsync(context);
-            if (context.IsValid == false) return;
+                await ValidateRedirectUriAsync(context);
+                if (context.IsValid == false) return;
 
-            await ValidateUriSchemesAsync(context);
-            if (context.IsValid == false) return;
+                await ValidateUriSchemesAsync(context);
+                if (context.IsValid == false) return;
 
-            await ValidateSecretsAsync(context);
-            if (context.IsValid == false) return;
+                await ValidateSecretsAsync(context);
+                if (context.IsValid == false) return;
 
-            await ValidatePropertiesAsync(context);
-            if (context.IsValid == false) return;
+                await ValidatePropertiesAsync(context);
+                if (context.IsValid == false) return;
+            }
         }
 
         /// <summary>
