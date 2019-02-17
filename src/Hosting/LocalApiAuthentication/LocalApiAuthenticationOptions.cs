@@ -4,13 +4,13 @@
 
 using Microsoft.AspNetCore.Authentication;
 
-namespace IdentityServer4.Hosting.LocalAccessTokenValidation
+namespace IdentityServer4.Hosting.LocalApiAuthentication
 {
     /// <summary>
-    /// Options for local access token authentication
+    /// Options for local API authentication
     /// </summary>
     /// <seealso cref="Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions" />
-    public class LocalAccessTokenValidationOptions : AuthenticationSchemeOptions
+    public class LocalApiAuthenticationOptions : AuthenticationSchemeOptions
     {
         /// <summary>
         /// Allows setting a specific required scope (optional)

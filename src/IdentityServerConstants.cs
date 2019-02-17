@@ -14,6 +14,8 @@ namespace IdentityServer4
         public const string DefaultCheckSessionCookieName = "idsrv.session";
         public const string AccessTokenAudience = "{0}resources";
 
+        public const string LocalApiPolicy = "IdentityServerLocalApi";
+
         public static class ProtocolTypes
         {
             public const string OpenIdConnect = "oidc";

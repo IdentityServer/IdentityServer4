@@ -12,28 +12,25 @@ using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
-namespace IdentityServer4.Hosting.LocalAccessTokenValidation
+namespace IdentityServer4.Hosting.LocalApiAuthentication
 {
     /// <summary>
-    /// Authentication handler for validating access token via ITokenValidator
+    /// Authentication handler for validating access token from the local IdentityServer
     /// </summary>
-    public class LocalAccessTokenValidationHandler : AuthenticationHandler<LocalAccessTokenValidationOptions>
+    public class LocalApiAuthenticationHandler : AuthenticationHandler<LocalApiAuthenticationOptions>
     {
         private readonly ITokenValidator _tokenValidator;
         private readonly ILogger _logger;
 
         /// <inheritdoc />
-        public LocalAccessTokenValidationHandler(IOptionsMonitor<LocalAccessTokenValidationOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock, ITokenValidator tokenValidator)
+        public LocalApiAuthenticationHandler(IOptionsMonitor<LocalApiAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock, ITokenValidator tokenValidator)
             : base(options, logger, encoder, clock)
         {
             _tokenValidator = tokenValidator;
-            _logger = logger.CreateLogger<LocalAccessTokenValidationHandler>();
+            _logger = logger.CreateLogger<LocalApiAuthenticationHandler>();
         }
 
-        /// <summary>
-        /// Tries to validate a token on the current request
-        /// </summary>
-        /// <returns></returns>
+        /// <inheritdoc />
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             _logger.LogTrace("HandleAuthenticateAsync called");

@@ -2,20 +2,16 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace IdentityServer4.Hosting.LocalAccessTokenValidation
+namespace IdentityServer4.Hosting.LocalApiAuthentication
 {
     /// <summary>
     /// Constants for IdentityServer authentication.
     /// </summary>
-    public static class LocalAccessTokenValidationDefaults
+    public static class LocalApiAuthenticationDefaults
     {
         /// <summary>
         /// The authentication scheme
         /// </summary>
-        public const string AuthenticationScheme = "LocalAccessTokenValidation";
+        public const string AuthenticationScheme = "LocalApiAuthentication";
     }
 }
