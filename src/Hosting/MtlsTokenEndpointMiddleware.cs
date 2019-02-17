@@ -6,17 +6,26 @@ using Microsoft.AspNetCore.Http;
 
 namespace IdentityServer4.Hosting
 {
+    /// <summary>
+    /// Middleware for re-writing the MTLS enabled endpoints to the standard protocol endpoints
+    /// </summary>
     public class MutualTlsTokenEndpointMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly IdentityServerOptions _options;
 
+        /// <summary>
+        /// ctor
+        /// </summary>
+        /// <param name="next"></param>
+        /// <param name="options"></param>
         public MutualTlsTokenEndpointMiddleware(RequestDelegate next, IdentityServerOptions options)
         {
             _next = next;
             _options = options;
         }
 
+        /// <inheritdoc/>
         public async Task Invoke(HttpContext context, IAuthenticationSchemeProvider schemes)
         {
             if (_options.MutualTls.Enabled &&

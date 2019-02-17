@@ -10,15 +10,23 @@ using static IdentityServer4.IdentityServerConstants;
 
 namespace IdentityServer4.Validation
 {
+    /// <summary>
+    /// Validator for an X.509 certificate based client secret using the common name
+    /// </summary>
     public class X509NameSecretValidator : ISecretValidator
     {
         private readonly ILogger<X509NameSecretValidator> _logger;
 
+        /// <summary>
+        /// ctor
+        /// </summary>
+        /// <param name="logger"></param>
         public X509NameSecretValidator(ILogger<X509NameSecretValidator> logger)
         {
             _logger = logger;
         }
 
+        /// <inheritdoc/>
         public Task<SecretValidationResult> ValidateAsync(IEnumerable<Secret> secrets, ParsedSecret parsedSecret)
         {
             var fail = Task.FromResult(new SecretValidationResult { Success = false });

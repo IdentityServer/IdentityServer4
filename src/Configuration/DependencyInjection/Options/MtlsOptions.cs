@@ -9,9 +9,14 @@ namespace IdentityServer4.Configuration
     /// </summary>
     public class MutualTlsOptions
     {
-        // todo: reconcile this vs. DI services style
+        /// <summary>
+        /// Specifies if MTLS support should be enabled
+        /// </summary>
         public bool Enabled { get; set; }
 
+        /// <summary>
+        /// Specifies the name of the authentication handler for X.509 client certificates
+        /// </summary>
         public string ClientCertificateAuthenticationScheme { get; set; } = "Certificate";
     }
 }
