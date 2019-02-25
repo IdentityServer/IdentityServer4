@@ -247,7 +247,8 @@ namespace IdentityServer4.Validation
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
-            _validatedRequest.AuthorizationCode = authZcode;
+            _validatedRequest.AuthorizationCode = authZcode;            
+            _validatedRequest.Subject = authZcode.Subject;
 
             /////////////////////////////////////////////
             // validate redirect_uri
