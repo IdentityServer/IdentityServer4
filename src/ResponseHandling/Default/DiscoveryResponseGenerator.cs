@@ -70,11 +70,11 @@ namespace IdentityServer4.ResponseHandling
         /// <param name="resourceOwnerValidator">The resource owner validator.</param>
         /// <param name="logger">The logger.</param>
         public DiscoveryResponseGenerator(
-            IdentityServerOptions options, 
-            IResourceStore resourceStore,  
-            IKeyMaterialService keys, 
-            ExtensionGrantValidator extensionGrants, 
-            SecretParser secretParsers, 
+            IdentityServerOptions options,
+            IResourceStore resourceStore,
+            IKeyMaterialService keys,
+            ExtensionGrantValidator extensionGrants,
+            SecretParser secretParsers,
             IResourceOwnerPasswordValidator resourceOwnerValidator,
             ILogger<DiscoveryResponseGenerator> logger)
         {
@@ -162,7 +162,7 @@ namespace IdentityServer4.ResponseHandling
 
                     if (mtlsEndpoints.Any())
                     {
-                        entries.Add("mtls_endpoints", mtlsEndpoints);
+                        entries.Add("mtls_endpoint_aliases", mtlsEndpoints);
                     }
                 }
             }
