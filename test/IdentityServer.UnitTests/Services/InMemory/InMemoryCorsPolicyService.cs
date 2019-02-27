@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -108,6 +108,31 @@ namespace IdentityServer4.UnitTests.Services.InMemory
                 }
             });
             _subject.IsOriginAllowedAsync("http://foo").Result.Should().BeTrue();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public void handle_invalid_cors_origin_format_exception()
+        {
+            _clients.AddRange(new Client[] {
+                new Client
+                {
+                    AllowedCorsOrigins = new List<string>
+                    {
+                        "http://foo",
+                        "http://ba z"
+                    }
+                },
+                new Client
+                {
+                    AllowedCorsOrigins = new List<string>
+                    {
+                        "http://foo",
+                        "http://bar"
+                    }
+                }
+            });
+            _subject.IsOriginAllowedAsync("http://bar").Result.Should().BeTrue();
         }
     }
 }
