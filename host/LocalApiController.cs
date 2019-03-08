@@ -10,7 +10,7 @@ using static IdentityServer4.IdentityServerConstants;
 namespace Host
 {
     [Route("localApi")]
-    [Authorize(LocalApiPolicy)]
+    [Authorize(LocalApi.PolicyName)]
     public class LocalApiController : ControllerBase
     {
         public IActionResult Get()

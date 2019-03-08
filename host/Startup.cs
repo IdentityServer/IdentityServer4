@@ -59,7 +59,7 @@ namespace Host
                 .AddTokenEndpointMutualTls();
 
             services.AddExternalIdentityProviders();
-            services.AddLocalApiAuthentication("IdentityServerApi");
+            services.AddLocalApiAuthentication();
 
             services.AddAuthentication()
                .AddCertificate("x509", options =>

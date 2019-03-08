@@ -18,21 +18,20 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Adds support for local APIs
         /// </summary>
         /// <param name="services"></param>
-        /// <param name="expectedScope"></param>
         /// <returns></returns>
-        public static IServiceCollection AddLocalApiAuthentication(this IServiceCollection services, string expectedScope = null)
+        public static IServiceCollection AddLocalApiAuthentication(this IServiceCollection services)
         {
             services.AddAuthentication()
                 .AddLocalApi(options =>
                 {
-                    options.ExpectedScope = expectedScope;
+                    options.ExpectedScope = IdentityServerConstants.LocalApi.ScopeName;
                 });
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(IdentityServerConstants.LocalApiPolicy, policy =>
+                options.AddPolicy(IdentityServerConstants.LocalApi.PolicyName, policy =>
                 {
-                    policy.AddAuthenticationSchemes(LocalApiAuthenticationDefaults.AuthenticationScheme);
+                    policy.AddAuthenticationSchemes(IdentityServerConstants.LocalApi.AuthenticationScheme);
                     policy.RequireAuthenticatedUser();
                 });
             });
@@ -46,7 +45,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="builder">The builder.</param>
         /// <returns></returns>
         public static AuthenticationBuilder AddLocalApi(this AuthenticationBuilder builder)
-            => builder.AddLocalApi(LocalApiAuthenticationDefaults.AuthenticationScheme, _ => { });
+            => builder.AddLocalApi(IdentityServerConstants.LocalApi.AuthenticationScheme, _ => { });
 
         /// <summary>
         /// Registers the the authentication handler for local APIs.
@@ -55,7 +54,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="configureOptions">The configure options.</param>
         /// <returns></returns>
         public static AuthenticationBuilder AddLocalApi(this AuthenticationBuilder builder, Action<LocalApiAuthenticationOptions> configureOptions)
-            => builder.AddLocalApi(LocalApiAuthenticationDefaults.AuthenticationScheme, configureOptions);
+            => builder.AddLocalApi(IdentityServerConstants.LocalApi.AuthenticationScheme, configureOptions);
 
         /// <summary>
         /// Registers the the authentication handler for local APIs.

@@ -14,7 +14,27 @@ namespace IdentityServer4
         public const string DefaultCheckSessionCookieName = "idsrv.session";
         public const string AccessTokenAudience = "{0}resources";
 
-        public const string LocalApiPolicy = "IdentityServerLocalApi";
+
+        /// <summary>
+        /// Constants for local IdentityServer access token authentication.
+        /// </summary>
+        public static class LocalApi
+        {
+            /// <summary>
+            /// The authentication scheme when using the AddLocalApi helper.
+            /// </summary>
+            public const string AuthenticationScheme = "IdentityServerAccessToken";
+
+            /// <summary>
+            /// The API scope name when using the AddLocalApiAuthentication helper.
+            /// </summary>
+            public const string ScopeName = "IdentityServerApi";
+
+            /// <summary>
+            /// The authorization policy name when using the AddLocalApiAuthentication helper.
+            /// </summary>
+            public const string PolicyName = AuthenticationScheme;
+        }
 
         public static class ProtocolTypes
         {

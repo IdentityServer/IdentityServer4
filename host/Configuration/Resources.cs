@@ -5,6 +5,7 @@
 using IdentityModel;
 using IdentityServer4.Models;
 using System.Collections.Generic;
+using static IdentityServer4.IdentityServerConstants;
 
 namespace Host.Configuration
 {
@@ -29,7 +30,7 @@ namespace Host.Configuration
             return new[]
             {
                 // local API
-                new ApiResource("IdentityServerApi"),
+                new ApiResource(LocalApi.ScopeName),
 
                 // simple version with ctor
                 new ApiResource("api1", "Some API 1")
