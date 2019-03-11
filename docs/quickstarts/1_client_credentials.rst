@@ -185,9 +185,14 @@ Navigating to the controller ``http://localhost:5001/identity`` on a browser sho
 Creating the client
 ^^^^^^^^^^^^^^^^^^^
 The last step is to write a client that requests an access token, and then uses this
-token to access the API. For that, add a console project to your solution::
+token to access the API. For that, add a console project to your solution, remember to create it in the ``src``::
 
     dotnet new console -n Client
+    
+Then as before, add it to your solution using:
+
+    cd ..
+    dotnet sln add .\src\Client\Client.csproj
     
 and copy the content from ``Program.cs`` `here <https://github.com/IdentityServer/IdentityServer4.Samples/blob/master/Quickstarts/1_ClientCredentials/src/Client/Program.cs>`_.
 
