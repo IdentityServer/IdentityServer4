@@ -57,6 +57,8 @@ We will replace them with this code::
         // this adds the config data from DB (clients, resources)
         .AddConfigurationStore(options =>
         {
+            // add below line if you need the Configuration in a different schema. If this line is omitted, the tables are created in the dbo schema, by default.
+            options.DefaultSchema = "myConfigurationSchema";
             options.ConfigureDbContext = b =>
                 b.UseSqlServer(connectionString,
                     sql => sql.MigrationsAssembly(migrationsAssembly));
@@ -79,6 +81,13 @@ You might need these namespaces added to the file::
 
 
 The above code is hard-coding a connection string, which you should feel free to change if you wish.
+
+If you need to change the schema for the Migration History Table, you can chain another action to the ``UserSqlServer``::
+
+options.ConfigureDbContext = b =>
+                    b.UseSqlServer(connectionString,
+                        sql => sql.MigrationsAssembly(migrationsAssembly).MigrationsHistoryTable("MyConfigurationMigrationTable", "myConfigurationSchema"));
+
 
 ``AddConfigurationStore`` and ``AddOperationalStore`` register the EF-backed store implementations.
 
