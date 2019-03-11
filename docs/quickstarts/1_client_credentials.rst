@@ -113,7 +113,14 @@ Run from within the ``src`` folder the following command::
 
     dotnet new web -n Api
 
-Configure the API application to run on ``http://localhost:5001`` only.
+Then add it to the solution by running the following commands::
+
+    cd ..
+    dotnet sln add .\src\Api\Api.csproj
+
+Configure the API application to run on ``http://localhost:5001`` only. You can do this by editing the `launchSettings.json` file inside the Properties folder. Change the application URL setting to be::
+
+    "applicationUrl": "http://localhost:5001"
 
 The controller
 --------------
