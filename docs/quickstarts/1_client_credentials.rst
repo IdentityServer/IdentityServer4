@@ -194,7 +194,7 @@ Then as before, add it to your solution using:
     cd ..
     dotnet sln add .\src\Client\Client.csproj
     
-and copy the content from ``Program.cs`` `here <https://github.com/IdentityServer/IdentityServer4.Samples/blob/master/Quickstarts/1_ClientCredentials/src/Client/Program.cs>`_.
+Open up ``Program.cs`` and copy the content from `here <https://github.com/IdentityServer/IdentityServer4.Samples/blob/master/Quickstarts/1_ClientCredentials/src/Client/Program.cs>`_ to it..
 
 The client program invokes the ``Main`` method asynchronously in order to run asynchronous http calls. This feature is possible since ``C# 7.1`` and will be available once you edit Client.csproj to add the following line as a ``PropertyGroup``::
 
