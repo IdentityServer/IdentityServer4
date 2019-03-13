@@ -1,5 +1,10 @@
 Videos
 ======
+2019
+^^^^
+* `January [NDC] -- Securing Web Applications and APIs with ASP.NET Core 2.2 and 3.0  <https://youtu.be/rh4fn2ZWFvo>`_
+* `January [NDC] -- Building Clients for OpenID Connect/OAuth 2-based Systems  <https://youtu.be/-T0arpzOcgw>`_
+
 2018
 ^^^^
 * `26/09 [DevConf] -- Authorization for modern Applications <https://www.youtube.com/watch?v=Dlrf85NTuAU&feature=youtu.be>`_
