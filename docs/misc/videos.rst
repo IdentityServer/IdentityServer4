@@ -2,6 +2,7 @@ Videos
 ======
 2018
 ^^^^
+* `26/09 [DevConf] -- Authorization for modern Applications <https://www.youtube.com/watch?v=Dlrf85NTuAU&feature=youtu.be>`_
 * `17/01 [NDC London] -- IdentityServer v2 on ASP.NET Core v2 - an Update <https://vimeo.com/254635632>`_
 * `17/01 [NDC London] -- Implementing authorization for web apps and APIs (aka PolicyServer announcement) <https://vimeo.com/254635640>`_
 * `17/01 [DotNetRocks] -- IdentityServer and PolicyServer on DotNetRocks <https://dotnetrocks.com/?show=1515>`_
