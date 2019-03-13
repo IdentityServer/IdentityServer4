@@ -51,3 +51,8 @@ Community posts
 * `Secure ASP.NET Core MVC with Angular using IdentityServer4 OpenID Connect Hybrid Flow <https://damienbod.com/2017/05/06/secure-asp-net-core-mvc-with-angular-using-identityserver4-openid-connect-hybrid-flow//>`_
 * `Adding an external Microsoft login to IdentityServer4 <https://damienbod.com/2017/07/11/adding-an-external-microsoft-login-to-identityserver4/>`_
 * `Implementing Two-factor authentication with IdentityServer4 and Twilio <https://damienbod.com/2017/07/14/implementing-two-factor-authentication-with-identityserver4-and-twilio/>`_
+* `Security Experiments with gRPC and ASP.NET Core 3.0 <https://damienbod.com/2019/03/06/security-experiments-with-grpc-and-asp-net-core-3-0/>`_
+* `ASP.NET Core OAuth Device Flow Client with IdentityServer4 <https://damienbod.com/2019/02/20/asp-net-core-oauth-device-flow-client-with-identityserver4/>`_
+* `Securing a Vue.js app using OpenID Connect Code Flow with PKCE and IdentityServer4 <https://damienbod.com/2019/01/29/securing-a-vue-js-app-using-openid-connect-code-flow-with-pkce-and-identityserver4/>`_
+* `Using an OData Client with an ASP.NET Core API <https://damienbod.com/2018/10/18/using-an-odata-client-with-an-asp-net-core-api/>`_
+* `OpenID Connect back-channel logout using Azure Redis Cache and IdentityServer4 <https://damienbod.com/2018/12/18/openid-connect-back-channel-logout-using-azure-redis-cache-and-identityserver4/>`_
