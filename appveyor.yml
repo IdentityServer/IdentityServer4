@@ -35,10 +35,16 @@ for:
       branch: dev
 
 services:
-  - mssql2016           # start SQL Server 2016 Developer with SP1
   - mysql               # start MySQL 5.7 x64 service
   - postgresql          # start PostgreSQL 9.6 service
-
+for:
+-
+  matrix:
+    only:
+      - image: Visual Studio 2017
+  services:
+    - mssql2016           # start SQL Server 2016 Developer with SP1
+    
 #---------------------------------#
 #  Skip builds for doc changes    #
 #---------------------------------#
