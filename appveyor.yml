@@ -34,6 +34,11 @@ for:
     on:
       branch: dev
 
+services:
+  - mssql2016           # start SQL Server 2016 Developer with SP1
+  - mysql               # start MySQL 5.7 x64 service
+  - postgresql          # start PostgreSQL 9.6 service
+
 #---------------------------------#
 #  Skip builds for doc changes    #
 #---------------------------------#
