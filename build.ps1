@@ -1,4 +1,5 @@
 New-Item -ItemType Directory -Force -Path ./nuget
+Remove-Item -Path ./nuget/*.*
 
 $cd = Get-Location
 
