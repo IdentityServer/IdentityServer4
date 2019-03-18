@@ -27,6 +27,8 @@ for:
       - image: Visual Studio 2017
   services:
     - mssql2016
+    - mysql
+    - postgresql
   deploy:
   - provider: NuGet
     server: https://www.myget.org/F/identity/
