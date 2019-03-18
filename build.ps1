@@ -5,7 +5,7 @@ $cd = Get-Location
 
 # storage
 set-location ./src/Storage
-& ./build.ps1
+& ./build.ps1 $args
 Set-Location $cd
 
 if ($LASTEXITCODE -ne 0)
@@ -17,7 +17,7 @@ Copy-Item -path .\src\Storage\artifacts\packages\*.nupkg -Destination .\nuget
 
 # EF storage
 set-location ./src/EntityFramework.Storage
-& ./build.ps1
+& ./build.ps1 $args
 Set-Location $cd
 
 if ($LASTEXITCODE -ne 0)
@@ -29,7 +29,7 @@ Copy-Item -path .\src\EntityFramework.Storage\artifacts\packages\*.nupkg -Destin
 
 # EF
 set-location ./src/EntityFramework
-& ./build.ps1
+& ./build.ps1 $args
 Set-Location $cd
 
 if ($LASTEXITCODE -ne 0)
@@ -41,7 +41,7 @@ Copy-Item -path .\src\EntityFramework\artifacts\packages\*.nupkg -Destination .\
 
 # core
 set-location ./src/IdentityServer4
-& ./build.ps1
+& ./build.ps1 $args
 Set-Location $cd
 
 if ($LASTEXITCODE -ne 0)
@@ -53,7 +53,7 @@ Copy-Item -path .\src\IdentityServer4\artifacts\packages\*.nupkg -Destination .\
 
 # aspid
 set-location ./src/AspNetIdentity
-& ./build.ps1
+& ./build.ps1 $args
 Set-Location $cd
 
 if ($LASTEXITCODE -ne 0)
