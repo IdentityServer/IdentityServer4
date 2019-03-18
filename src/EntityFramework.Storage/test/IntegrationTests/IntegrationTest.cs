@@ -33,10 +33,15 @@ namespace IdentityServer4.EntityFramework.IntegrationTests
                 {
                     DatabaseProviderBuilder.BuildInMemory<TDbContext>(typeof(TClass).Name),
                     DatabaseProviderBuilder.BuildSqlite<TDbContext>(typeof(TClass).Name),
-                    DatabaseProviderBuilder.BuildAppVeyorSqlServer2016<TDbContext>(typeof(TClass).Name),
+
                     //DatabaseProviderBuilder.BuildAppVeyorMySql<TDbContext>(typeof(TClass).Name),
                     //DatabaseProviderBuilder.BuildAppVeyorPostgreSql<TDbContext>(typeof(TClass).Name)
                 };
+
+                if (Environment.OSVersion.Platform != PlatformID.Unix)
+                {
+                    TestDatabaseProviders.Add(DatabaseProviderBuilder.BuildAppVeyorSqlServer2016<TDbContext>(typeof(TClass).Name));
+                }            
             }
             else
             {
