@@ -41,18 +41,21 @@ namespace IdentityServer4.EntityFramework.IntegrationTests
                 if (Environment.OSVersion.Platform != PlatformID.Unix)
                 {
                     TestDatabaseProviders.Add(DatabaseProviderBuilder.BuildAppVeyorSqlServer2016<TDbContext>(typeof(TClass).Name));
-                }            
+                }
             }
             else
             {
-                Console.WriteLine($"Running Local Tests for {typeof(TClass).Name}");
-
-                TestDatabaseProviders = new TheoryData<DbContextOptions<TDbContext>>
+                if (Environment.OSVersion.Platform != PlatformID.Unix)
                 {
-                    DatabaseProviderBuilder.BuildInMemory<TDbContext>(typeof(TClass).Name),
-                    DatabaseProviderBuilder.BuildSqlite<TDbContext>(typeof(TClass).Name),
-                    DatabaseProviderBuilder.BuildLocalDb<TDbContext>(typeof(TClass).Name)
-                };
+                    Console.WriteLine($"Running Local Tests for {typeof(TClass).Name}");
+
+                    TestDatabaseProviders = new TheoryData<DbContextOptions<TDbContext>>
+                    {
+                        DatabaseProviderBuilder.BuildInMemory<TDbContext>(typeof(TClass).Name),
+                        DatabaseProviderBuilder.BuildSqlite<TDbContext>(typeof(TClass).Name),
+                        DatabaseProviderBuilder.BuildLocalDb<TDbContext>(typeof(TClass).Name)
+                    };
+                }
             }
         }
 
