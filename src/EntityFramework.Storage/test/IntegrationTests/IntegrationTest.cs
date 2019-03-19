@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Xunit;
@@ -33,19 +34,20 @@ namespace IdentityServer4.EntityFramework.IntegrationTests
                 {
                     DatabaseProviderBuilder.BuildInMemory<TDbContext>(typeof(TClass).Name),
                     DatabaseProviderBuilder.BuildSqlite<TDbContext>(typeof(TClass).Name),
-
-                    //DatabaseProviderBuilder.BuildAppVeyorMySql<TDbContext>(typeof(TClass).Name),
-                    //DatabaseProviderBuilder.BuildAppVeyorPostgreSql<TDbContext>(typeof(TClass).Name)
                 };
 
-                if (Environment.OSVersion.Platform != PlatformID.Unix)
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
                     TestDatabaseProviders.Add(DatabaseProviderBuilder.BuildAppVeyorSqlServer2016<TDbContext>(typeof(TClass).Name));
+                }
+                else
+                {
+                    Console.WriteLine("Skipping some DB integration tests on non-Windows");
                 }
             }
             else
             {
-                if (Environment.OSVersion.Platform != PlatformID.Unix)
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
                     Console.WriteLine($"Running Local Tests for {typeof(TClass).Name}");
 
@@ -55,6 +57,10 @@ namespace IdentityServer4.EntityFramework.IntegrationTests
                         DatabaseProviderBuilder.BuildSqlite<TDbContext>(typeof(TClass).Name),
                         DatabaseProviderBuilder.BuildLocalDb<TDbContext>(typeof(TClass).Name)
                     };
+                }
+                else
+                {
+                    Console.WriteLine("Skipping DB integration tests on non-Windows");
                 }
             }
         }
