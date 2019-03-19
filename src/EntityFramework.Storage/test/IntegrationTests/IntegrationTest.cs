@@ -60,7 +60,7 @@ namespace IdentityServer4.EntityFramework.IntegrationTests
                 }
                 else
                 {
-                    TestDatabaseProviders = new TheoryData<DbContextOptions<TDbContext>>();
+                    TestDatabaseProviders.Add(DatabaseProviderBuilder.BuildInMemory<TDbContext>(typeof(TClass).Name));
                     Console.WriteLine("Skipping DB integration tests on non-Windows");
                 }
             }
