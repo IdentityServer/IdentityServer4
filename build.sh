@@ -9,7 +9,7 @@ if [ $? -ne 0 ]; then
 fi
 
 cd ../..
-cp ../src/Storage/artifacts/*.nupkg ./nuget
+cp ./src/Storage/artifacts/* ./nuget
 
 cd ./src/IdentityServer4
 ./build.sh
@@ -20,9 +20,9 @@ if [ $? -ne 0 ]; then
 fi
 
 cd ../..
-cp ../src/IdentityServer4/artifacts/*.nupkg ./nuget
+cp ./src/IdentityServer4/artifacts/* ./nuget
 
-cd ./src/
+cd ./src/EntityFramework.Storage
 ./build.sh
 
 if [ $? -ne 0 ]; then
@@ -31,7 +31,7 @@ if [ $? -ne 0 ]; then
 fi
 
 cd ../..
-cp ../src/EntityFramework.Storage/artifacts/*.nupkg ./nuget
+cp ./src/EntityFramework.Storage/artifacts/* ./nuget
 
 cd ./src/EntityFramework
 ./build.sh
@@ -42,7 +42,7 @@ if [ $? -ne 0 ]; then
 fi
 
 cd ../..
-cp ../src/EntityFramework/artifacts/*.nupkg ./nuget
+cp ./src/EntityFramework/artifacts/* ./nuget
 
 cd ./src/AspNetIdentity
 ./build.sh
@@ -53,4 +53,4 @@ if [ $? -ne 0 ]; then
 fi
 
 cd ../..
-cp ../src/AspNetIdentity/artifacts/*.nupkg ./nuget
+cp ./src/AspNetIdentity/artifacts/* ./nuget
