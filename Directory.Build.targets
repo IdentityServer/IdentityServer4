@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MinVer" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    
     <PackageReference Update="IdentityModel" Version="3.10.6" />
 
     <PackageReference Update="IdentityServer4" Version="$(IdentityServerVersion)" />
