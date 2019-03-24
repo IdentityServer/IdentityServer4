@@ -2,6 +2,7 @@ trigger:
 - master
 - dev
 - aspnetcore3
+- new-build-system
 - features/*
 
 pool:
