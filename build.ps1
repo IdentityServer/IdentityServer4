@@ -44,7 +44,7 @@ if ($LASTEXITCODE -ne 0)
     exit $LASTEXITCODE
 }
 
-Copy-Item -path .\src\EntityFramework.Storage\artifacts\packages\*.nupkg -Destination .\nuget
+Copy-Item -path .\src\EntityFramework.Storage\artifacts\*.nupkg -Destination .\nuget
 
 # EF
 "######### EntityFramework #########"
@@ -57,7 +57,7 @@ if ($LASTEXITCODE -ne 0)
     exit $LASTEXITCODE
 }
 
-Copy-Item -path .\src\EntityFramework\artifacts\packages\*.nupkg -Destination .\nuget
+Copy-Item -path .\src\EntityFramework\artifacts\*.nupkg -Destination .\nuget
 
 # aspid
 "######### ASP.NET Identity #########"
@@ -70,4 +70,4 @@ if ($LASTEXITCODE -ne 0)
     exit $LASTEXITCODE
 }
 
-Copy-Item -path .\src\AspNetIdentity\artifacts\packages\*.nupkg -Destination .\nuget
+Copy-Item -path .\src\AspNetIdentity\artifacts\*.nupkg -Destination .\nuget
