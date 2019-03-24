@@ -31,7 +31,7 @@ if ($LASTEXITCODE -ne 0)
 
 Copy-Item -path .\src\IdentityServer4\artifacts\*.nupkg -Destination .\nuget
 
-exit
+
 
 # EF storage
 "######### EntityFramework Storage #########"
