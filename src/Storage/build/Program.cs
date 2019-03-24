@@ -11,13 +11,9 @@ namespace build
         private const string Project = "IdentityServer4.Storage";
         private const string ArtifactsDir = "artifacts";
         private const string Build = "build";
-        
-        private const string SignBinaries = "signBinaries";
-        private const string SignNugets = "signNugets";
         private const string Test = "test";
         private const string Pack = "pack";
-        private const string Publish = "publish";
-
+        
         static void Main(string[] args)
         {
             var app = new CommandLineApplication(throwOnUnexpectedArg: false);
