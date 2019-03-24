@@ -8,7 +8,7 @@ namespace build
 {
     class Program
     {
-        private const string Project = "IdentityServer4.Storage";
+        private const string Project = "IdentityServer4";
         private const string ArtifactsDir = "artifacts";
         private const string Build = "build";
         private const string Test = "test";

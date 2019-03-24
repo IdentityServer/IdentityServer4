@@ -1,5 +1,5 @@
+dotnet tool install --tool-path tools SignClient
 New-Item -ItemType Directory -Force -Path ./nuget
-Remove-Item -Path ./nuget/*.*
 
 $cd = Get-Location
 
@@ -14,7 +14,9 @@ if ($LASTEXITCODE -ne 0)
     exit $LASTEXITCODE
 }
 
-Copy-Item -path .\src\Storage\artifacts\packages\*.nupkg -Destination .\nuget
+Copy-Item -path .\src\Storage\artifacts\*.nupkg -Destination .\nuget
+
+
 
 # core
 "######### IdentityServer4 #########"
@@ -27,7 +29,9 @@ if ($LASTEXITCODE -ne 0)
     exit $LASTEXITCODE
 }
 
-Copy-Item -path .\src\IdentityServer4\artifacts\packages\*.nupkg -Destination .\nuget
+Copy-Item -path .\src\IdentityServer4\artifacts\*.nupkg -Destination .\nuget
+
+exit
 
 # EF storage
 "######### EntityFramework Storage #########"
