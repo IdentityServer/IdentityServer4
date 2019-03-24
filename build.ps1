@@ -1,5 +1,5 @@
-dotnet tool install --tool-path tools SignClient
 New-Item -ItemType Directory -Force -Path ./nuget
+dotnet tool install --tool-path tools SignClient
 
 $cd = Get-Location
 
