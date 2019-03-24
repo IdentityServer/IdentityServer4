@@ -19,6 +19,7 @@ namespace build
             var app = new CommandLineApplication(throwOnUnexpectedArg: false);
             var sign = app.Option<(bool hasValue, int theValue)>("--sign", "Sign binaries and nuget package", CommandOptionType.SingleOrNoValue);
 
+            CleanArtifacts();
 
             app.OnExecute(() =>
             {
@@ -71,6 +72,16 @@ namespace build
             {
                 Console.WriteLine("  Signing " + file);
                 Run("../../tools/signclient", $"sign -c {signClientConfig} -i {file} -r sc-ids@dotnetfoundation.org -s \"{signClientSecret}\" -n 'IdentityServer4'", noEcho: true);
+            }
+        }
+
+        private static void CleanArtifacts()
+        {
+            Directory.CreateDirectory($"./{ArtifactsDir}");
+
+            foreach (var file in Directory.GetFiles($"./{ArtifactsDir}"))
+            {
+                File.Delete(file);
             }
         }
     }
