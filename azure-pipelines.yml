@@ -31,3 +31,4 @@ jobs:
       packagesToPush: 'nuget/*.nupkg'
       nuGetFeedType: external
       publishFeedCredentials: 'MyGet'
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
