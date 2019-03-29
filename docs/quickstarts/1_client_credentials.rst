@@ -39,7 +39,7 @@ Defining an API Resource
 An API is a resource in your system that you want to protect.
 
 Resource definitions can be loaded in many ways, the template uses a "code as configuration" appproach.
-In the ``Config.cs`` file you can find a method called ``GetApis``, define the API as follows::
+In the [``Config.cs``](https://github.com/IdentityServer/IdentityServer4.Samples/blob/master/Quickstarts/1_ClientCredentials/src/IdentityServer/Config.cs) file you can find a method called ``GetApis``, define the API as follows::
 
     public static IEnumerable<ApiResource> GetApis()
     {
@@ -55,7 +55,7 @@ The next step is to define a client that can access this API.
 
 For this scenario, the client will not have an interactive user, and will authenticate
 using the so called client secret with IdentityServer.
-Add the following code to your `Config.cs` file::
+Add the following code to your  [``Config.cs``](https://github.com/IdentityServer/IdentityServer4.Samples/blob/master/Quickstarts/1_ClientCredentials/src/IdentityServer/Config.cs)  file::
 
     public static IEnumerable<Client> GetClients()
     {
