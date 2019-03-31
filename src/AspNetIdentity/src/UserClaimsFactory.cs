@@ -11,7 +11,7 @@ using IdentityModel;
 
 namespace IdentityServer4.AspNetIdentity
 {
-    internal class UserClaimsFactory<TUser> : IUserClaimsPrincipalFactory<TUser>
+    public class UserClaimsFactory<TUser> : IUserClaimsPrincipalFactory<TUser>
         where TUser : class
     {
         private readonly Decorator<IUserClaimsPrincipalFactory<TUser>> _inner;
@@ -42,7 +42,7 @@ namespace IdentityServer4.AspNetIdentity
                 identity.AddClaim(new Claim(JwtClaimTypes.PreferredUserName, username));
             }
 
-            if (!identity.HasClaim(x=>x.Type == JwtClaimTypes.Name))
+            if (!identity.HasClaim(x => x.Type == JwtClaimTypes.Name))
             {
                 identity.AddClaim(new Claim(JwtClaimTypes.Name, username));
             }
