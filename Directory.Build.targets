@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <FrameworkVersion>2.1</FrameworkVersion>
-    <IdentityServerVersion>2.4.1-*</IdentityServerVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,12 +11,6 @@
     
     <PackageReference Update="IdentityModel" Version="3.10.6" />
 
-    <PackageReference Update="IdentityServer4" Version="$(IdentityServerVersion)" />
-    <PackageReference Update="IdentityServer4.AspNetIdentity" Version="$(IdentityServerVersion)" />
-    <PackageReference Update="IdentityServer4.Storage" Version="$(IdentityServerVersion)" />
-    <PackageReference Update="IdentityServer4.EntityFramework.Storage" Version="$(IdentityServerVersion)" />
-    <PackageReference Update="IdentityServer4.EntityFramework" Version="$(IdentityServerVersion)" />
-    
     <PackageReference Update="Microsoft.AspNetCore.Authentication" Version="$(FrameworkVersion)" />
     <PackageReference Update="Microsoft.AspNetCore.Authentication.Abstractions" Version="$(FrameworkVersion)" />
     <PackageReference Update="Microsoft.AspNetCore.Authentication.Cookies" Version="$(FrameworkVersion)" />
@@ -37,6 +30,27 @@
     
     <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-18618-05" PrivateAssets="All" />
   </ItemGroup>
+
+  <Target Name="UpdateIdentityServerPackageDependencies" AfterTargets="CollectPackageReferences">
+    <Exec Command="dotnet tool install --tool-path $(MSBuildThisFileDirectory)/tools minver-cli" StandardOutputImportance="Low" StandardErrorImportance="Low" IgnoreExitCode="true" />
+    <Exec Command="$(MSBuildThisFileDirectory)/tools/minver" ConsoleToMSBuild="true" StandardOutputImportance="Low" StandardErrorImportance="Low">
+      <Output TaskParameter="ConsoleOutput" ItemName="MinVerCliConsoleOutput" />
+    </Exec>
+    <ItemGroup>
+      <MinVerCliOutputVersion Include="@(MinVerCliConsoleOutput)" Condition="'$([System.String]::new(`%(Identity)`).StartsWith(`MinVer:`))' != 'true'" />
+    </ItemGroup>
+    <PropertyGroup>
+      <MinVerVersionOverride>@(MinVerCliOutputVersion)</MinVerVersionOverride>
+      <IdentityServerVersion>$(MinVerVersionOverride)</IdentityServerVersion>
+    </PropertyGroup>
+    <ItemGroup>
+      <PackageReference Condition="'%(PackageReference.Identity)' == 'IdentityServer4'" Update="IdentityServer4" Version="$(IdentityServerVersion)" />
+      <PackageReference Condition="'%(PackageReference.Identity)' == 'IdentityServer4.AspNetIdentity'" Update="IdentityServer4.AspNetIdentity" Version="$(IdentityServerVersion)" />
+      <PackageReference Condition="'%(PackageReference.Identity)' == 'IdentityServer4.Storage'" Update="IdentityServer4.Storage" Version="$(IdentityServerVersion)" />
+      <PackageReference Condition="'%(PackageReference.Identity)' == 'IdentityServer4.EntityFramework.Storage'" Update="IdentityServer4.EntityFramework.Storage" Version="$(IdentityServerVersion)" />
+      <PackageReference Condition="'%(PackageReference.Identity)' == 'IdentityServer4.EntityFramework'" Update="IdentityServer4.EntityFramework" Version="$(IdentityServerVersion)" />
+    </ItemGroup>
+  </Target>
 
   <Target Name="SetAssemblyVersion" AfterTargets="MinVer">
     <PropertyGroup>
