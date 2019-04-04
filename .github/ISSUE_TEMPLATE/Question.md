@@ -15,6 +15,9 @@ Finally, please keep the issue concise and to the point if your question does in
 
 ### Minimal working example
 
+```
+<code goes here>
+```
 
 ### Relevant parts of the log file
 
