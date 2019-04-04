@@ -44,12 +44,12 @@ You can see a list of our current sponsors [here](https://github.com/IdentitySer
 IdentityServer4 is built using the following great open source projects and free services:
 
 * [ASP.NET Core](https://github.com/aspnet)
+* [Bullseye](https://github.com/adamralph/bullseye)
+* [SimpleExec](https://github.com/adamralph/simple-exec)
+* [MinVer](https://github.com/adamralph/minver)
 * [Json.Net](http://www.newtonsoft.com/json)
-* [Cake](http://cakebuild.net/)
 * [XUnit](https://xunit.github.io/)
 * [Fluent Assertions](http://www.fluentassertions.com/)
-* [GitVersion](https://github.com/GitTools/GitVersion)
 * [GitReleaseManager](https://github.com/GitTools/GitReleaseManager)
-* [AppVeyor](https://github.com/appveyor/ci)
 
 ..and last but not least a big thanks to all our [contributors](https://github.com/IdentityServer/IdentityServer4/graphs/contributors)!
