@@ -2,7 +2,7 @@ Deployment
 ==========
 Your identity server is `just` a standard ASP.NET Core application including the IdentityServer middleware.
 Read the official Microsoft `documentation <https://docs.microsoft.com/en-us/aspnet/core/publishing>`_ on publishing and deployment first
-(and especially the `section <https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-2.2#scenarios-and-use-cases`_> about load balancers and proxies).
+(and especially the `section <https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-2.2#scenarios-and-use-cases>`_ about load balancers and proxies).
 
 Typical architecture
 ^^^^^^^^^^^^^^^^^^^^
