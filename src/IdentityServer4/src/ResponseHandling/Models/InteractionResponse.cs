@@ -44,6 +44,14 @@ namespace IdentityServer4.ResponseHandling
         public string Error { get; set; }
 
         /// <summary>
+        /// Gets or sets the error description.
+        /// </summary>
+        /// <value>
+        /// The error description.
+        /// </value>
+        public string ErrorDescription { get; set; }
+
+        /// <summary>
         /// Gets a value indicating whether the user must be redirected to a custom page.
         /// </summary>
         /// <value>

@@ -86,7 +86,10 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
         [Fact]
         public async Task access_denied_should_return_to_client()
         {
+            const string errorDescription = "some error description";
+
             _response.Error = OidcConstants.AuthorizeErrors.AccessDenied;
+            _response.ErrorDescription = errorDescription;
             _response.Request = new ValidatedAuthorizeRequest
             {
                 ResponseMode = OidcConstants.ResponseModes.Query,
@@ -99,6 +102,12 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
             _context.Response.StatusCode.Should().Be(302);
             var location = _context.Response.Headers["Location"].First();
             location.Should().StartWith("http://client/callback");
+
+            var queryString = new Uri(location).Query;
+            var queryParams = QueryHelpers.ParseQuery(queryString);
+
+            queryParams["error"].Should().Equal(OidcConstants.AuthorizeErrors.AccessDenied);
+            queryParams["error_description"].Should().Equal(errorDescription);
         }
 
         [Fact]
