@@ -62,7 +62,7 @@ namespace IdentityServer4.IntegrationTests.Clients
 
             var payload = GetPayload(response);
 
-            var unixNow = DateTime.UtcNow.ToEpochTime();
+            var unixNow = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             var exp = Int64.Parse(payload["exp"].ToString());
             exp.Should().BeLessThan(unixNow + 3605);
             exp.Should().BeGreaterThan(unixNow + 3595);
@@ -273,7 +273,7 @@ namespace IdentityServer4.IntegrationTests.Clients
 
             var payload = GetPayload(response);
 
-            var unixNow = DateTime.UtcNow.ToEpochTime();
+            var unixNow = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             var exp = Int64.Parse(payload["exp"].ToString());
             exp.Should().BeLessThan(unixNow + 5005);
             exp.Should().BeGreaterThan(unixNow + 4995);

@@ -76,7 +76,7 @@ namespace IdentityServer4.Infrastructure
                 //new Claim(JwtClaimTypes.Issuer, _httpContext.HttpContext.GetIdentityServerIssuerUri()),
                 new Claim(JwtClaimTypes.Subject, client.SubjectId),
                 new Claim(JwtClaimTypes.Audience, client.ClientId),
-                new Claim(JwtClaimTypes.IssuedAt, _clock.UtcNow.UtcDateTime.ToEpochTime().ToString(), ClaimValueTypes.Integer),
+                new Claim(JwtClaimTypes.IssuedAt, _clock.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer),
                 new Claim(JwtClaimTypes.JwtId, CryptoRandom.CreateUniqueId(16)),
                 new Claim(JwtClaimTypes.Events, json, IdentityServerConstants.ClaimValueTypes.Json)
             };
