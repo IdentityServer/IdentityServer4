@@ -19,5 +19,12 @@ namespace IdentityServer4.EntityFramework
         /// <param name="persistedGrants"></param>
         /// <returns></returns>
         Task PersistedGrantsRemovedAsync(IEnumerable<PersistedGrant> persistedGrants);
+
+        /// <summary>
+        /// Notification for device flow codes being removed.
+        /// </summary>
+        /// <param name="deviceFlowCodes"></param>
+        /// <returns></returns>
+        Task DeviceFlowCodesRemovedAsync(IEnumerable<DeviceFlowCodes> deviceFlowCodes);
     }
 }
