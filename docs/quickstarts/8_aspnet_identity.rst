@@ -17,7 +17,7 @@ New Project for ASP.NET Identity
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The first step is to add a new project for ASP.NET Identity to your solution.
-We provide a `template <https://github.com/IdentityServer/IdentityServer4.Templates>`_ that contains the minimal UI assets needed to ASP.NET Identity with IdentityServer.
+We provide a `template <http://docs.identityserver.io/en/latest/quickstarts/0_overview.html#preparation>`_ that contains the minimal UI assets needed to ASP.NET Identity with IdentityServer.
 You will eventually delete the old project for IdentityServer, but there are some items that you will need to migrate over.
 
 Start by creating a the new IdentityServer project that will use ASP.NET Identity::
