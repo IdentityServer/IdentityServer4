@@ -23,10 +23,25 @@ namespace IdentityServer4
         /// <param name="lifetime">The lifetime.</param>
         /// <param name="scopes">The scopes.</param>
         /// <param name="audiences">The audiences.</param>
+        /// <param name="additionalClaims">Additional claims</param>
         /// <returns></returns>
-        public static async Task<string> IssueClientJwtAsync(this IdentityServerTools tools, string clientId, int lifetime, IEnumerable<string> scopes = null, IEnumerable<string> audiences = null)
+        public static async Task<string> IssueClientJwtAsync(this IdentityServerTools tools,
+            string clientId,
+            int lifetime,
+            IEnumerable<string> scopes = null,
+            IEnumerable<string> audiences = null,
+            IEnumerable<Claim> additionalClaims = null)
         {
             var claims = new HashSet<Claim>(new ClaimComparer());
+            
+            if (additionalClaims != null)
+            {
+                foreach (var claim in additionalClaims)
+                {
+                    claims.Add(claim);
+                }
+            }
+
             claims.Add(new Claim(JwtClaimTypes.ClientId, clientId));
 
             if (!scopes.IsNullOrEmpty())
