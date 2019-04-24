@@ -2,6 +2,8 @@
 Using EntityFramework Core for configuration and operational data
 =================================================================
 
+.. note:: For any pre-requisites (like e.g. templates) have a look at the :ref:`overview <refQuickstartOverview>` first.
+
 IdentityServer is designed for extensibility, and one of the extensibility points is the storage mechanism used for data that IdentityServer needs.
 This quickstart shows how to configure IdentityServer to use EntityFramework Core (EF) as the storage mechanism for this data (rather than using the in-memory implementations we had been using up until now).
 

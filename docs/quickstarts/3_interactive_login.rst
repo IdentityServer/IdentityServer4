@@ -2,6 +2,8 @@
 Adding User Authentication with OpenID Connect
 ==============================================
 
+.. note:: For any pre-requisites (like e.g. templates) have a look at the :ref:`overview <refQuickstartOverview>` first.
+
 In this quickstart we want to add support for interactive user authentication via the
 OpenID Connect protocol to our IdentityServer.
 

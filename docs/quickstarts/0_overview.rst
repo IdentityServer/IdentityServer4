@@ -1,3 +1,4 @@
+.. _refQuickstartOverview:
 Overview
 ========
 The quickstarts provide step by step instructions for various common IdentityServer scenarios.

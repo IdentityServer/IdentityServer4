@@ -2,6 +2,8 @@
 Using ASP.NET Core Identity
 ===========================
 
+.. note:: For any pre-requisites (like e.g. templates) have a look at the :ref:`overview <refQuickstartOverview>` first.
+
 IdentityServer is designed for flexibility and part of that is allowing you to use any database you want for your users and their data (including passwords).
 If you are starting with a new user database, then ASP.NET Identity is one option you could choose.
 This quickstart shows how to use ASP.NET Identity with IdentityServer.
