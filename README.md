@@ -11,7 +11,7 @@ For project documentation, please visit [readthedocs](https://identityserver4.re
 ## How to build
 IdentityServer is built against the latest ASP.NET Core 2.
 
-* [Install](https://www.microsoft.com/net/download/core#/current) the latest .NET Core 2.x SDK
+* [Install](https://www.microsoft.com/net/download/core#/current) the [required](https://github.com/IdentityServer/IdentityServer4/blob/master/global.json) .NET Core SDK
 * Run `build.ps1` or `build.sh` in the root of the repo
 
 ## ASP.NET Core 1.x
