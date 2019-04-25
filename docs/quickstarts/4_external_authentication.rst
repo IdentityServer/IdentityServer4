@@ -12,9 +12,12 @@ In addition you can find implementations for many other authentication providers
 
 Adding Google support
 ^^^^^^^^^^^^^^^^^^^^^
+
+.. note:: Previous versions of the quickstart referenced the Google+ API. This is now deprecated by Google. Please update your existing code and use the People API if you use Google as an external authentication provider. The ASP.NET Core project provides `further detail on the changes required <https://github.com/aspnet/AspNetCore/issues/6486>`_, including nuget package updates.
+
 To be able to use Google for authentication, you first need to register with them.
 This is done at their developer `console <https://console.developers.google.com/>`_.
-Create a new project, enable the Google+ API and configure the callback address of your
+Create a new project, enable the People API and configure the callback address of your
 local IdentityServer by adding the */signin-google* path to your base-address (e.g. http://localhost:5000/signin-google).
 
 The developer console will show you a client ID and secret issued by Google - you will need that in the next step.
@@ -29,6 +32,12 @@ This is done by adding this snippet to ``ConfigureServices`` in ``Startup``::
 
             options.ClientId = "<insert here>";
             options.ClientSecret = "<insert here>";
+            options.UserInformationEndpoint = "https://www.googleapis.com/oauth2/v2/userinfo";
+            options.ClaimActions.Clear();
+            options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");
+            options.ClaimActions.MapJsonKey(ClaimTypes.Name, "name");
+            options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
+            options.ClaimActions.MapJsonKey("urn:google:profile", "link");
         });
     
 By default, IdentityServer configures a cookie handler specifically for the results of external authentication (with the scheme based on the constant ``IdentityServerConstants.ExternalCookieAuthenticationScheme``).
@@ -38,7 +47,7 @@ Now run the MVC client and try to authenticate - you will see a Google button on
 
 .. image:: images/4_login_page.png
 
-After authentication with the MVC client, you can see that the claims are now being sourced from Google data.
+After authentication with the MVC client, you can see that the claims are now being sourced from Google data. If you need other claims from Google, add extra claim mappings as required. For example, ``MapJsonKey("urn:google:image", "image");`` will map the claim for the profile picture.
 
 Further experiments
 ^^^^^^^^^^^^^^^^^^^
@@ -54,6 +63,12 @@ Add the OpenId Connect handler to DI::
 
             options.ClientId = "<insert here>";
             options.ClientSecret = "<insert here>";
+            options.UserInformationEndpoint = "https://www.googleapis.com/oauth2/v2/userinfo";
+            options.ClaimActions.Clear();
+            options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");
+            options.ClaimActions.MapJsonKey(ClaimTypes.Name, "name");
+            options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
+            options.ClaimActions.MapJsonKey("urn:google:profile", "link");
         })
         .AddOpenIdConnect("oidc", "OpenID Connect", options =>
         {
