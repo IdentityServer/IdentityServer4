@@ -125,7 +125,8 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddTransient<BearerTokenUsageValidator>();
             builder.Services.AddTransient<BackChannelLogoutClient>();
             builder.Services.AddTransient<BackChannelHttpClient>();
-            
+            builder.Services.AddTransient<JwtRequestValidator>();
+
             builder.Services.AddTransient<ReturnUrlParser>();
             builder.Services.AddTransient<IdentityServerTools>();
 

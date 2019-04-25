@@ -155,7 +155,8 @@ namespace IdentityServer4.UnitTests.Validation
             IProfileService profile = null,
             ICustomAuthorizeRequestValidator customValidator = null,
             IRedirectUriValidator uriValidator = null,
-            ScopeValidator scopeValidator = null)
+            ScopeValidator scopeValidator = null,
+            JwtRequestValidator jwtRequestValidator = null)
         {
             if (options == null)
             {
@@ -187,6 +188,11 @@ namespace IdentityServer4.UnitTests.Validation
                 scopeValidator = new ScopeValidator(resourceStore, new LoggerFactory().CreateLogger<ScopeValidator>());
             }
 
+            if (jwtRequestValidator == null)
+            {
+                jwtRequestValidator = new JwtRequestValidator("https://identityserver", new LoggerFactory().CreateLogger<JwtRequestValidator>());
+            }
+
             var userSession = new MockUserSession();
 
             return new AuthorizeRequestValidator(
@@ -195,6 +201,7 @@ namespace IdentityServer4.UnitTests.Validation
                 customValidator,
                 uriValidator,
                 scopeValidator,
+                jwtRequestValidator,
                 userSession,
                 TestLogger.Create<AuthorizeRequestValidator>());
         }

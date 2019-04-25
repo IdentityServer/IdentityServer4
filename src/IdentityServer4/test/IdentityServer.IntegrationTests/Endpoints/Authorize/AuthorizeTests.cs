@@ -418,8 +418,8 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             await _mockPipeline.BrowserClient.GetAsync(url);
 
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
-            _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
-            _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("redirect_uri");
+            _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.UnauthorizedClient);
+            _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("client");
         }
 
         [Fact]
@@ -458,8 +458,8 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             await _mockPipeline.BrowserClient.GetAsync(url);
 
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
-            _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
-            _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("redirect_uri");
+            _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.UnauthorizedClient);
+            _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("client");
         }
 
         [Fact]
