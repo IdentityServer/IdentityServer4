@@ -140,7 +140,7 @@ namespace IdentityServer4.EntityFramework
                                 .ToArray();
 
                             found = expired.Length;
-                            _logger.LogInformation("Removing {grantCount} grants", found);
+                            _logger.LogDebug("Removing {grantCount} grants", found);
 
                             if (found > 0)
                             {
