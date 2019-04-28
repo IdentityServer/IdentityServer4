@@ -123,7 +123,6 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddTransient<ScopeValidator>();
             builder.Services.AddTransient<ExtensionGrantValidator>();
             builder.Services.AddTransient<BearerTokenUsageValidator>();
-            builder.Services.AddTransient<BackChannelLogoutClient>();
             builder.Services.AddTransient<BackChannelHttpClient>();
             
             builder.Services.AddTransient<ReturnUrlParser>();
@@ -172,9 +171,10 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IEventSink, DefaultEventSink>();
             builder.Services.TryAddTransient<IUserCodeService, DefaultUserCodeService>();
             builder.Services.TryAddTransient<IUserCodeGenerator, NumericUserCodeGenerator>();
+            builder.Services.TryAddTransient<IBackChannelSignoutService, DefaultBackChannelSignoutService>();
             builder.Services.AddTransient<IClientSecretValidator, ClientSecretValidator>();
             builder.Services.AddTransient<IApiSecretValidator, ApiSecretValidator>();
-            
+
             builder.Services.TryAddTransient<IDeviceFlowThrottlingService, DistributedDeviceFlowThrottlingService>();
             builder.Services.AddDistributedMemoryCache();
 
