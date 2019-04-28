@@ -7,6 +7,7 @@ using IdentityServer4.Configuration;
 using IdentityServer4.Models;
 using IdentityServer4.UnitTests.Validation;
 using IdentityServer4.Validation;
+using System;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -275,6 +276,58 @@ namespace IdentityServer.UnitTests.Validation
                 AllowedScopes = { "foo" },
                 RedirectUris = { "http://callback" },
                 PostLogoutRedirectUris = { "http://postcallback", "custom://postcallback" }
+            };
+
+            var result = await ValidateAsync(client);
+            result.IsValid.Should().BeTrue();
+        }
+
+        [Theory]
+        [InlineData("bad")]
+        [InlineData("urn:foo")]
+        [InlineData("urn:foo:123")]
+        [InlineData("http://foo/")]
+        [InlineData("http://foo/path")]
+        [InlineData("http://foo:123/path")]
+        [InlineData("")]
+        [InlineData("   ")]
+        [InlineData((string)null)]
+        public async Task ValidateAllowedCorsOriginsAsync_should_report_invalid_URL_format(string origin)
+        {
+            var client = new Client
+            {
+                ClientId = "id",
+                AllowedGrantTypes = GrantTypes.Implicit,
+                RedirectUris = { "http://client" },
+                AllowedCorsOrigins = { origin }
+            };
+
+            var result = await ValidateAsync(client);
+            result.IsValid.Should().BeFalse();
+            result.ErrorMessage.Should().Contain("invalid origin");
+            if (!String.IsNullOrWhiteSpace(origin))
+            {
+                result.ErrorMessage.Should().Contain(origin);
+            }
+            else
+            {
+                result.ErrorMessage.Should().Contain("empty value");
+            }
+        }
+
+        [Theory]
+        [InlineData("http://foo")]
+        [InlineData("https://foo")]
+        [InlineData("http://foo:123")]
+        [InlineData("https://foo:456")]
+        public async Task ValidateAllowedCorsOriginsAsync_should_allow_valid_formats(string origin)
+        {
+            var client = new Client
+            {
+                ClientId = "id",
+                AllowedGrantTypes = GrantTypes.Implicit,
+                RedirectUris = { "http://client" },
+                AllowedCorsOrigins = { origin }
             };
 
             var result = await ValidateAsync(client);
