@@ -36,7 +36,7 @@ namespace Host
                 iis.AutomaticAuthentication = false;
             });
 
-            services.AddIdentityServer(options =>
+            var builder = services.AddIdentityServer(options =>
                 {
                     options.Events.RaiseSuccessEvents = true;
                     options.Events.RaiseFailureEvents = true;
@@ -58,6 +58,11 @@ namespace Host
                 .AddTestUsers(TestUsers.Users)
                 .AddMutualTlsSecretValidators();
 
+            builder.AddBackChannelHttpClient(client =>
+            {
+                client.Timeout = TimeSpan.FromSeconds(30);
+            });
+
             services.AddExternalIdentityProviders();
             services.AddLocalApiAuthentication();
 
@@ -77,12 +82,6 @@ namespace Host
                        }
                    };
                });
-
-            services.AddHttpClient()
-                .AddHttpClient(IdentityServerConstants.DefaultBackChannelHttpFactoryClientName, client =>
-                {
-                    client.Timeout = TimeSpan.FromSeconds(30);
-                });
 
             return services.BuildServiceProvider(validateScopes: true);
         }
