@@ -29,7 +29,7 @@ This allows the existing endpoints in IdentityServer to operate normally without
 In IdentityServer, the mutual TLS endpoints are expected to be located beneath the path ``~/connect/mtls``.
 This means your web server can be configured to require mutual TLS for all requests at and below that path.
 
-As such, IdentityServer's discover document reflect those paths:
+As such, IdentityServer's discovery document reflects those paths:
 
 .. image:: images/mtls_endpoints.png
 
