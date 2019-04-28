@@ -78,6 +78,11 @@ namespace Host
                    };
                });
 
+            services.AddHttpClient()
+                .AddHttpClient(IdentityServerConstants.DefaultBackChannelHttpFactoryClientName, client =>
+                {
+                    client.Timeout = TimeSpan.FromSeconds(30);
+                });
 
             return services.BuildServiceProvider(validateScopes: true);
         }

@@ -46,6 +46,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddOptions();
             builder.Services.AddSingleton(
                 resolver => resolver.GetRequiredService<IOptions<IdentityServerOptions>>().Value);
+            builder.Services.AddHttpClient();
 
             return builder;
         }
@@ -123,8 +124,12 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddTransient<ScopeValidator>();
             builder.Services.AddTransient<ExtensionGrantValidator>();
             builder.Services.AddTransient<BearerTokenUsageValidator>();
+
+            // todo: remove in 3.0
+#pragma warning disable CS0618 // Type or member is obsolete
             builder.Services.AddTransient<BackChannelHttpClient>();
-            
+#pragma warning restore CS0618 // Type or member is obsolete
+
             builder.Services.AddTransient<ReturnUrlParser>();
             builder.Services.AddTransient<IdentityServerTools>();
 

@@ -9,7 +9,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityModel;
-using IdentityServer4.Infrastructure;
+using IdentityServer4.Configuration;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
@@ -35,9 +35,9 @@ namespace IdentityServer4.Services
         /// </summary>
         protected IdentityServerTools Tools { get; }
         /// <summary>
-        /// The HttpClient for making the outbound HTTP calls.
+        /// HttpClient to make the outbound HTTP calls.
         /// </summary>
-        protected BackChannelHttpClient BackChannelClient { get; }
+        protected HttpClient HttpClient { get; }
         /// <summary>
         /// The logger.
         /// </summary>
@@ -46,20 +46,21 @@ namespace IdentityServer4.Services
         /// <summary>
         /// Constructor.
         /// </summary>
+        /// <param name="options"></param>
         /// <param name="clock"></param>
         /// <param name="tools"></param>
-        /// <param name="backChannelClient"></param>
+        /// <param name="httpClientFactory"></param>
         /// <param name="logger"></param>
         public DefaultBackChannelSignoutService(
+            IdentityServerOptions options,
             ISystemClock clock,
             IdentityServerTools tools,
-            BackChannelHttpClient backChannelClient,
+            IHttpClientFactory httpClientFactory,
             ILogger<IBackChannelSignoutService> logger)
         {
-            //_httpContext = httpContext;
             Clock = clock;
             Tools = tools;
-            BackChannelClient = backChannelClient;
+            HttpClient = httpClientFactory.CreateClient(options.Authentication.BackChannelHttpFactoryClientName);
             Logger = logger;
         }
 
@@ -77,16 +78,11 @@ namespace IdentityServer4.Services
         /// <param name="client"></param>
         protected virtual async Task SendSignoutNotificationAsync(BackChannelLogoutModel client)
         {
-            var token = await CreateTokenAsync(client);
-
-            var data = new Dictionary<string, string>
-            {
-                { OidcConstants.BackChannelLogoutRequest.LogoutToken, token }
-            };
-
             try
             {
-                var response = await BackChannelClient.PostAsync(client.LogoutUri, new FormUrlEncodedContent(data));
+                var data = await CreateFormPostPayloadAsync(client);
+
+                var response = await HttpClient.PostAsync(client.LogoutUri, new FormUrlEncodedContent(data));
 
                 Logger.LogDebug("Back channel logout for client id: {0} to URI: {1}, result: {2}",
                     client.ClientId, client.LogoutUri, (int)response.StatusCode);
@@ -95,6 +91,22 @@ namespace IdentityServer4.Services
             {
                 Logger.LogError(ex, "Exception invoking back channel logout for client id: {0} to URI: {1}", client.ClientId, client.LogoutUri);
             }
+        }
+
+        /// <summary>
+        /// Creates the form-url-encoded payload (as a dictionary) to send to the client.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <returns></returns>
+        protected async Task<Dictionary<string, string>> CreateFormPostPayloadAsync(BackChannelLogoutModel client)
+        {
+            var token = await CreateTokenAsync(client);
+
+            var data = new Dictionary<string, string>
+            {
+                { OidcConstants.BackChannelLogoutRequest.LogoutToken, token }
+            };
+            return data;
         }
 
         /// <summary>

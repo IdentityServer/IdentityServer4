@@ -43,7 +43,14 @@ namespace IdentityServer4.Configuration
         /// <summary>
         /// Gets or sets the timeout on the back channel logout HTTP call.
         /// </summary>
+        // todo: remove in 3.0
+        [Obsolete("Replaced by the use of IHttpClientFactory. Use the new BackChannelHttpFactoryClientName to configure the client.")]
         public TimeSpan BackChannelLogoutTimeOut { get; set; } = TimeSpan.FromSeconds(30);
+
+        /// <summary>
+        /// Gets or sets the name used with the IHttpClientFactory to create HttpClient instances for back-channel signout notification.
+        /// </summary>
+        public string BackChannelHttpFactoryClientName { get; set; } = IdentityServerConstants.DefaultBackChannelHttpFactoryClientName;
 
         /// <summary>
         /// If set, will require frame-src CSP headers being emitting on the end session callback endpoint which renders iframes to clients for front-channel signout notification.
