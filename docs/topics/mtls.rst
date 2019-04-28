@@ -226,6 +226,6 @@ Once the above middlware succeeds, then the caller has been authenticated with a
 
 Introspection and the confirmation claim
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-When the access token is a JWT, then the confirmation claim is conatined in the token as a claim.
+When the access token is a JWT, then the confirmation claim is contained in the token as a claim.
 When using reference tokens, the claims that the access token represents must be obtained via introspection.
 The introspection endpoint in IdentityServer will return a ``cnf`` claim for reference tokens obtained via mutual TLS.
