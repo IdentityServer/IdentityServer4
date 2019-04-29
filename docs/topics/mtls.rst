@@ -15,7 +15,7 @@ Clients can use a X.509 client certificate as an authentication mechanism to end
 
 Validating the X.509 client certificate in IdentityServer
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-It' the hosting layer's responsibility to do the actual validation of the client certificate, IdentityServer uses (and trusts) this result as part of the client authentication and validation at the application level.
+It's the hosting layer's responsibility to do the actual validation of the client certificate, and then IdentityServer uses (and trusts) this result as part of the client authentication and validation at the application level.
 This means to use this feature within IdentityServer you must first configure your web server (IIS, Kestrel, etc.) to accept and validate client certificates.
 
 Consult your web server documentation to learn how to do this.
