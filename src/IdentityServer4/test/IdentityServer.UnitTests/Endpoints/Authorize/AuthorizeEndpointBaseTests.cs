@@ -88,6 +88,23 @@ namespace IdentityServer4.UnitTests.Endpoints.Authorize
 
         [Fact]
         [Trait("Category", Category)]
+        public async Task interaction_produces_error_should_show_error_page_with_error_description_if_present()
+        {
+            var errorDescription = "some error description";
+
+             _stubInteractionGenerator.Response.Error = "error";
+            _stubInteractionGenerator.Response.ErrorDescription = errorDescription;
+
+             var result = await _subject.ProcessAuthorizeRequestAsync(_params, _user, null);
+
+             result.Should().BeOfType<AuthorizeResult>();
+            var authorizeResult = ((AuthorizeResult)result);
+            authorizeResult.Response.IsError.Should().BeTrue();
+            authorizeResult.Response.ErrorDescription.Should().Be(errorDescription);
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
         public async Task interaction_produces_login_result_should_trigger_login()
         {
             _stubInteractionGenerator.Response.IsLogin = true;

@@ -181,7 +181,8 @@ namespace IdentityServer4.Endpoints.Results
                 Error = Response.Error,
                 ErrorDescription = Response.ErrorDescription,
                 UiLocales = Response.Request?.UiLocales,
-                DisplayMode = Response.Request?.DisplayMode
+                DisplayMode = Response.Request?.DisplayMode,
+                ClientId = Response.Request?.ClientId
             };
 
             if (Response.RedirectUri != null && Response.Request?.ResponseMode != null)

@@ -4,6 +4,8 @@ Protecting an API using Client Credentials
 
 This quickstart presents the most basic scenario for protecting APIs using IdentityServer. We will define an API and a Client that wants to access it. The client will request an access token at IdentityServer by providing a ``ClientCredentials`` which acts as a secret known to both the client and IdentityServer and it will use the token to gain access to the API.
 
+.. note:: For any pre-requisites (like e.g. templates) have a look at the :ref:`overview <refQuickstartOverview>` first.
+
 Setting up the ASP.NET Core application
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 First create a directory for the application - then use our template to create an ASP.NET Core application that includes a basic IdentityServer setup, e.g.::

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <FrameworkVersion>2.1</FrameworkVersion>
-    <IdentityServerVersion>2.4.1-*</IdentityServerVersion>
+    <IdentityServerVersion>2.5.0-*</IdentityServerVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,6 +29,7 @@
     <PackageReference Update="Microsoft.EntityFrameworkCore.Relational" Version="$(FrameworkVersion)" />
 
     <PackageReference Update="Microsoft.Extensions.Caching.Memory" Version="$(FrameworkVersion)" />
+    <PackageReference Update="Microsoft.Extensions.Http" Version="$(FrameworkVersion)" />
     <PackageReference Update="Microsoft.Extensions.Logging" Version="$(FrameworkVersion)" />
     <PackageReference Update="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(FrameworkVersion)" />
     

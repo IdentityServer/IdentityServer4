@@ -247,6 +247,44 @@ namespace IdentityServer4.Services
         }
 
         /// <summary>
+        /// Creates the options for the session cookie.
+        /// </summary>
+        public virtual CookieOptions CreateSessionIdCookieOptions()
+        {
+            var secure = HttpContext.Request.IsHttps;
+            var path = HttpContext.GetIdentityServerBasePath().CleanUrlPath();
+
+            var options = new CookieOptions
+            {
+                HttpOnly = false,
+                Secure = secure,
+                Path = path,
+                IsEssential = true,
+                SameSite = SameSiteMode.None
+            };
+
+            return options;
+        }
+
+        /// <summary>
+        /// Issues the cookie that contains the session id.
+        /// </summary>
+        /// <param name="sid"></param>
+        public virtual void IssueSessionIdCookie(string sid)
+        {
+            if (Options.Endpoints.EnableCheckSessionEndpoint)
+            {
+                if (HttpContext.Request.Cookies[CheckSessionCookieName] != sid)
+                {
+                    HttpContext.Response.Cookies.Append(
+                        Options.Authentication.CheckSessionCookieName,
+                        sid,
+                        CreateSessionIdCookieOptions());
+                }
+            }
+        }
+
+        /// <summary>
         /// Adds a client to the list of clients the user has signed into during their session.
         /// </summary>
         /// <param name="clientId">The client identifier.</param>
@@ -348,43 +386,6 @@ namespace IdentityServer4.Services
             }
 
             return null;
-        }
-
-        // session id cookie helpers
-        private string GetSessionIdCookieValue()
-        {
-            return HttpContext.Request.Cookies[CheckSessionCookieName];
-        }
-
-        private void IssueSessionIdCookie(string sid)
-        {
-            if (Options.Endpoints.EnableCheckSessionEndpoint)
-            {
-                if (GetSessionIdCookieValue() != sid)
-                {
-                    HttpContext.Response.Cookies.Append(
-                        Options.Authentication.CheckSessionCookieName,
-                        sid,
-                        CreateSessionIdCookieOptions());
-                }
-            }
-        }
-
-        private CookieOptions CreateSessionIdCookieOptions()
-        {
-            var secure = HttpContext.Request.IsHttps;
-            var path = HttpContext.GetIdentityServerBasePath().CleanUrlPath();
-
-            var options = new CookieOptions
-            {
-                HttpOnly = false,
-                Secure = secure,
-                Path = path,
-                IsEssential = true,
-                SameSite = SameSiteMode.None
-            };
-
-            return options;
         }
     }
 }

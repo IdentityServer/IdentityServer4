@@ -2,6 +2,8 @@
 Switching to Hybrid Flow and adding API Access back
 ===================================================
 
+.. note:: For any pre-requisites (like e.g. templates) have a look at the :ref:`overview <refQuickstartOverview>` first.
+
 In the previous quickstarts we explored both API access and user authentication.
 Now we want to bring the two parts together.
 

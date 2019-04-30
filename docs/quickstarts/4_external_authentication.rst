@@ -2,6 +2,8 @@
 Adding Support for External Authentication
 ==========================================
 
+.. note:: For any pre-requisites (like e.g. templates) have a look at the :ref:`overview <refQuickstartOverview>` first.
+
 Next we will add support for external authentication.
 This is really easy, because all you really need is an ASP.NET Core compatible authentication handler.
 
