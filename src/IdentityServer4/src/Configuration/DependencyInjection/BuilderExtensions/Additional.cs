@@ -309,28 +309,28 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Adds a custom back-channel signout service.
+        /// Adds a custom back-channel logout service.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="builder">The builder.</param>
         /// <returns></returns>
-        public static IIdentityServerBuilder AddBackChannelSignoutService<T>(this IIdentityServerBuilder builder)
-            where T : class, IBackChannelSignoutService
+        public static IIdentityServerBuilder AddBackChannelLogoutService<T>(this IIdentityServerBuilder builder)
+            where T : class, IBackChannelLogoutService
         {
-            builder.Services.AddTransient<IBackChannelSignoutService, T>();
+            builder.Services.AddTransient<IBackChannelLogoutService, T>();
 
             return builder;
         }
 
         /// <summary>
-        /// Adds configuration for the HttpClient used for back-channel signout notifications.
+        /// Adds configuration for the HttpClient used for back-channel logout notifications.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <param name="configureClient">The configruation callback.</param>
         /// <returns></returns>
-        public static IHttpClientBuilder AddBackChannelHttpClient(this IIdentityServerBuilder builder, Action<HttpClient> configureClient)
+        public static IHttpClientBuilder AddBackChannelLogoutHttpClient(this IIdentityServerBuilder builder, Action<HttpClient> configureClient)
         {
-            return builder.Services.AddHttpClient(IdentityServerConstants.DefaultBackChannelHttpFactoryClientName, configureClient);
+            return builder.Services.AddHttpClient(IdentityServerConstants.DefaultBackChannelLogoutHttpFactoryClientName, configureClient);
         }
     }
 }

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Polly;
 using System;
 using System.Threading.Tasks;
 
@@ -58,10 +59,16 @@ namespace Host
                 .AddTestUsers(TestUsers.Users)
                 .AddMutualTlsSecretValidators();
 
-            builder.AddBackChannelHttpClient(client =>
-            {
-                client.Timeout = TimeSpan.FromSeconds(30);
-            });
+            builder.AddBackChannelLogoutHttpClient(client =>
+                {
+                    client.Timeout = TimeSpan.FromSeconds(30);
+                })
+                .AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(new[]
+                {
+                    TimeSpan.FromSeconds(1),
+                    TimeSpan.FromSeconds(2),
+                    TimeSpan.FromSeconds(3)
+                }));
 
             services.AddExternalIdentityProviders();
             services.AddLocalApiAuthentication();

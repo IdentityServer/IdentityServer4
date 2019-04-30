@@ -17,9 +17,9 @@ using Microsoft.Extensions.Logging;
 namespace IdentityServer4.Services
 {
     /// <summary>
-    /// Default back-channel signout notification implementation.
+    /// Default back-channel logout notification implementation.
     /// </summary>
-    public class DefaultBackChannelSignoutService : IBackChannelSignoutService
+    public class DefaultBackChannelLogoutService : IBackChannelLogoutService
     {
         /// <summary>
         /// Default value for the back-channel JWT lifetime.
@@ -41,7 +41,7 @@ namespace IdentityServer4.Services
         /// <summary>
         /// The logger.
         /// </summary>
-        protected ILogger<IBackChannelSignoutService> Logger { get; }
+        protected ILogger<IBackChannelLogoutService> Logger { get; }
 
         /// <summary>
         /// Constructor.
@@ -51,32 +51,32 @@ namespace IdentityServer4.Services
         /// <param name="tools"></param>
         /// <param name="httpClientFactory"></param>
         /// <param name="logger"></param>
-        public DefaultBackChannelSignoutService(
+        public DefaultBackChannelLogoutService(
             IdentityServerOptions options,
             ISystemClock clock,
             IdentityServerTools tools,
             IHttpClientFactory httpClientFactory,
-            ILogger<IBackChannelSignoutService> logger)
+            ILogger<IBackChannelLogoutService> logger)
         {
             Clock = clock;
             Tools = tools;
-            HttpClient = httpClientFactory.CreateClient(options.Authentication.BackChannelHttpFactoryClientName);
+            HttpClient = httpClientFactory.CreateClient(options.Authentication.BackChannelLogoutHttpFactoryClientName);
             Logger = logger;
         }
 
         /// <inheritdoc/>
-        public virtual Task SendSignoutNotificationsAsync(IEnumerable<BackChannelLogoutModel> clients)
+        public virtual Task SendLogoutNotificationsAsync(IEnumerable<BackChannelLogoutModel> clients)
         {
             clients = clients ?? Enumerable.Empty<BackChannelLogoutModel>();
-            var tasks = clients.Select(x => SendSignoutNotificationAsync(x)).ToArray();
+            var tasks = clients.Select(x => SendLogoutNotificationAsync(x)).ToArray();
             return Task.WhenAll(tasks);
         }
 
         /// <summary>
-        /// Performs the back-channel signout for a single client.
+        /// Performs the back-channel logout for a single client.
         /// </summary>
         /// <param name="client"></param>
-        protected virtual async Task SendSignoutNotificationAsync(BackChannelLogoutModel client)
+        protected virtual async Task SendLogoutNotificationAsync(BackChannelLogoutModel client)
         {
             try
             {
@@ -110,7 +110,7 @@ namespace IdentityServer4.Services
         }
 
         /// <summary>
-        /// Creates the JWT used for the back-channel signout notification.
+        /// Creates the JWT used for the back-channel logout notification.
         /// </summary>
         /// <param name="client"></param>
         /// <returns>The token.</returns>
@@ -126,7 +126,7 @@ namespace IdentityServer4.Services
         }
 
         /// <summary>
-        /// Create the claims to be used in the back-channel signout token.
+        /// Create the claims to be used in the back-channel logout token.
         /// </summary>
         /// <param name="client"></param>
         /// <returns>The claims to include in the token.</returns>

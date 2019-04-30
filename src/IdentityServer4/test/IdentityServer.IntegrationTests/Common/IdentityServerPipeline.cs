@@ -141,7 +141,7 @@ namespace IdentityServer4.IntegrationTests.Common
             .AddDeveloperSigningCredential(persistKey: false);
 
             services.AddHttpClient()
-                .AddHttpClient(IdentityServerConstants.DefaultBackChannelHttpFactoryClientName)
+                .AddHttpClient(IdentityServerConstants.DefaultBackChannelLogoutHttpFactoryClientName)
                 .AddHttpMessageHandler(() => BackChannelMessageHandler);
 
             OnPostConfigureServices(services);

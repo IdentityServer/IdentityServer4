@@ -11,12 +11,12 @@ namespace IdentityServer4.Services
     /// <summary>
     /// The service responsible for performing back-channel signout requests.
     /// </summary>
-    public interface IBackChannelSignoutService
+    public interface IBackChannelLogoutService
     {
         /// <summary>
-        /// Performs the http back-channel signout request notifications for the collection of clients.
+        /// Performs the http back-channel logout request notifications for the collection of clients.
         /// </summary>
         /// <param name="clients">The collection of clients that require back channel signout notifications for this session.</param>
-        Task SendSignoutNotificationsAsync(IEnumerable<BackChannelLogoutModel> clients);
+        Task SendLogoutNotificationsAsync(IEnumerable<BackChannelLogoutModel> clients);
     }
 }

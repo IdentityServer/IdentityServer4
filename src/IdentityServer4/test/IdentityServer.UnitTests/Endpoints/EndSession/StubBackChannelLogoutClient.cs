@@ -9,11 +9,11 @@ using IdentityServer4.Validation;
 
 namespace IdentityServer.UnitTests.Endpoints.EndSession
 {
-    internal class StubBackChannelLogoutClient : IBackChannelSignoutService
+    internal class StubBackChannelLogoutClient : IBackChannelLogoutService
     {
         public bool SendLogoutsWasCalled { get; set; }
 
-        public Task SendSignoutNotificationsAsync(IEnumerable<BackChannelLogoutModel> clients)
+        public Task SendLogoutNotificationsAsync(IEnumerable<BackChannelLogoutModel> clients)
         {
             SendLogoutsWasCalled = true;
             return Task.CompletedTask;

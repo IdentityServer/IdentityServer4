@@ -176,7 +176,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IEventSink, DefaultEventSink>();
             builder.Services.TryAddTransient<IUserCodeService, DefaultUserCodeService>();
             builder.Services.TryAddTransient<IUserCodeGenerator, NumericUserCodeGenerator>();
-            builder.Services.TryAddTransient<IBackChannelSignoutService, DefaultBackChannelSignoutService>();
+            builder.Services.TryAddTransient<IBackChannelLogoutService, DefaultBackChannelLogoutService>();
             builder.Services.AddTransient<IClientSecretValidator, ClientSecretValidator>();
             builder.Services.AddTransient<IApiSecretValidator, ApiSecretValidator>();
 

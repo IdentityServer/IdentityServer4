@@ -17,12 +17,12 @@ namespace IdentityServer4.Endpoints
     internal class EndSessionCallbackEndpoint : IEndpointHandler
     {
         private readonly IEndSessionRequestValidator _endSessionRequestValidator;
-        private readonly IBackChannelSignoutService _backChannelClient;
+        private readonly IBackChannelLogoutService _backChannelClient;
         private readonly ILogger _logger;
 
         public EndSessionCallbackEndpoint(
             IEndSessionRequestValidator endSessionRequestValidator,
-            IBackChannelSignoutService backChannelClient,
+            IBackChannelLogoutService backChannelClient,
             ILogger<EndSessionCallbackEndpoint> logger)
         {
             _endSessionRequestValidator = endSessionRequestValidator;
@@ -79,7 +79,7 @@ namespace IdentityServer4.Endpoints
                 // best-effort, and async to not block the response to the browser
                 try
                 {
-                    await _backChannelClient.SendSignoutNotificationsAsync(result.BackChannelLogouts);
+                    await _backChannelClient.SendLogoutNotificationsAsync(result.BackChannelLogouts);
                 }
                 catch (Exception ex)
                 {
