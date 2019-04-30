@@ -299,8 +299,8 @@ namespace IdentityServer4.IntegrationTests.Common
         }
 
         public string CreateAuthorizeUrl(
-            string clientId,
-            string responseType,
+            string clientId = null,
+            string responseType = null,
             string scope = null,
             string redirectUri = null,
             string state = null,
