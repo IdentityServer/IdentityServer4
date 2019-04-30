@@ -160,8 +160,7 @@ namespace IdentityServer4.Validation
             //////////////////////////////////////////////////////////
             // look for optional request param
             /////////////////////////////////////////////////////////
-            // todo: IdentityModel: fix constant
-            var jwtRequest = request.Raw.Get("request");
+            var jwtRequest = request.Raw.Get(OidcConstants.AuthorizeRequest.Request);
             if (jwtRequest.IsPresent())
             {
                 // check length restrictions

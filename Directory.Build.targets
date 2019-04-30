@@ -10,7 +10,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     
-    <PackageReference Update="IdentityModel" Version="3.10.7" />
+    <PackageReference Update="IdentityModel" Version="3.10.10" />
 
     <PackageReference Update="IdentityServer4" Version="$(IdentityServerVersion)" />
     <PackageReference Update="IdentityServer4.AspNetIdentity" Version="$(IdentityServerVersion)" />
