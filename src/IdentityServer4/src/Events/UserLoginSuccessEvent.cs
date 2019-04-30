@@ -12,6 +12,8 @@ namespace IdentityServer4.Events
     /// <seealso cref="IdentityServer4.Events.Event" />
     public class UserLoginSuccessEvent : Event
     {
+        // todo: consolidate ctors in 3.0
+
         /// <summary>
         /// Initializes a new instance of the <see cref="UserLoginSuccessEvent"/> class.
         /// </summary>
@@ -19,15 +21,23 @@ namespace IdentityServer4.Events
         /// <param name="providerUserId">The provider user identifier.</param>
         /// <param name="subjectId">The subject identifier.</param>
         /// <param name="name">The name.</param>
+        /// <param name="interactive">if set to <c>true</c> [interactive].</param>
         /// <param name="clientId">The client id.</param>
-        public UserLoginSuccessEvent(string provider, string providerUserId, string subjectId, string name, string clientId)
+        public UserLoginSuccessEvent(string provider, string providerUserId, string subjectId, string name, bool interactive = true, string clientId = null)
             : this()
         {
             Provider = provider;
             ProviderUserId = providerUserId;
             SubjectId = subjectId;
             DisplayName = name;
-            Endpoint = "UI";
+            if (interactive)
+            {
+                Endpoint = "UI";
+            }
+            else
+            {
+                Endpoint = EndpointNames.Token;
+            }
             ClientId = clientId;
         }
 
