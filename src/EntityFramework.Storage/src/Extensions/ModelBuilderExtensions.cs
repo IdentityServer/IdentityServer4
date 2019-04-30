@@ -142,7 +142,7 @@ namespace IdentityServer4.EntityFramework.Extensions
 
                 grant.HasKey(x => x.Key);
 
-                grant.HasIndex(x => new { x.SubjectId, x.ClientId, x.Type });
+                grant.HasIndex(x => new { x.SubjectId, x.ClientId, x.Type, x.Expiration });
             });
 
             modelBuilder.Entity<DeviceFlowCodes>(codes =>
@@ -162,6 +162,7 @@ namespace IdentityServer4.EntityFramework.Extensions
                 codes.HasKey(x => new {x.UserCode});
 
                 codes.HasIndex(x => x.DeviceCode).IsUnique();
+                codes.HasIndex(x => x.Expiration);
             });
         }
 
