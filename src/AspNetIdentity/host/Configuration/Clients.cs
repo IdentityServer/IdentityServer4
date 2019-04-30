@@ -5,6 +5,7 @@
 using IdentityServer4;
 using IdentityServer4.Models;
 using System.Collections.Generic;
+using static IdentityServer4.IdentityServerConstants;
 
 namespace Host.Configuration
 {
@@ -22,6 +23,28 @@ namespace Host.Configuration
                     ClientId = "client",
                     ClientSecrets = { new Secret("secret".Sha256()) },
 
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+                    AllowedScopes = { "api1", "api2.read_only", LocalApi.ScopeName }
+                },
+
+                ///////////////////////////////////////////
+                // X509 mTLS Client
+                //////////////////////////////////////////
+                new Client
+                {
+                    ClientId = "mtls",
+                    ClientSecrets = {
+                        new Secret(@"CN=mtls.test, OU=ROO\ballen@roo, O=mkcert development certificate", "mtls.test")
+                        {
+                            Type = SecretTypes.X509CertificateName
+                        },
+                        //new Secret("bca0d040847f843c5ee0fa6eb494837470155868", "mtls.test")
+                        //{
+                        //    Type = SecretTypes.X509CertificateThumbprint
+                        //},
+                    },
+
+                    AccessTokenType = AccessTokenType.Jwt,
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
                     AllowedScopes = { "api1", "api2.read_only" }
                 },
@@ -315,8 +338,8 @@ namespace Host.Configuration
                     ClientUri = "http://identityserver.io",
                     //LogoUri = "https://pbs.twimg.com/profile_images/1612989113/Ki-hanja_400x400.png",
 
-                    AllowedGrantTypes = GrantTypes.Implicit,
-                    AllowAccessTokensViaBrowser = true,
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RequirePkce = true,
                     RequireClientSecret = false,
                     AccessTokenType = AccessTokenType.Jwt,
 
