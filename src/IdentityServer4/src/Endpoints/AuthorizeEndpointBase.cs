@@ -81,7 +81,7 @@ namespace IdentityServer4.Endpoints
             var interactionResult = await _interactionGenerator.ProcessInteractionAsync(request, consent);
             if (interactionResult.IsError)
             {
-                return await CreateErrorResultAsync("Interaction generator error", request, interactionResult.Error, logError: false);
+                return await CreateErrorResultAsync("Interaction generator error", request, interactionResult.Error, interactionResult.ErrorDescription, false);
             }
             if (interactionResult.IsLogin)
             {

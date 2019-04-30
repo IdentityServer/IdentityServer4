@@ -12,6 +12,8 @@ namespace IdentityServer4.Events
     /// <seealso cref="IdentityServer4.Events.Event" />
     public class UserLoginSuccessEvent : Event
     {
+        // todo: consolidate ctors in 3.0
+
         /// <summary>
         /// Initializes a new instance of the <see cref="UserLoginSuccessEvent"/> class.
         /// </summary>
@@ -19,14 +21,24 @@ namespace IdentityServer4.Events
         /// <param name="providerUserId">The provider user identifier.</param>
         /// <param name="subjectId">The subject identifier.</param>
         /// <param name="name">The name.</param>
-        public UserLoginSuccessEvent(string provider, string providerUserId, string subjectId, string name)
+        /// <param name="interactive">if set to <c>true</c> [interactive].</param>
+        /// <param name="clientId">The client id.</param>
+        public UserLoginSuccessEvent(string provider, string providerUserId, string subjectId, string name, bool interactive = true, string clientId = null)
             : this()
         {
             Provider = provider;
             ProviderUserId = providerUserId;
             SubjectId = subjectId;
             DisplayName = name;
-            Endpoint = "UI";
+            if (interactive)
+            {
+                Endpoint = "UI";
+            }
+            else
+            {
+                Endpoint = EndpointNames.Token;
+            }
+            ClientId = clientId;
         }
 
         /// <summary>
@@ -36,12 +48,14 @@ namespace IdentityServer4.Events
         /// <param name="subjectId">The subject identifier.</param>
         /// <param name="name">The name.</param>
         /// <param name="interactive">if set to <c>true</c> [interactive].</param>
-        public UserLoginSuccessEvent(string username, string subjectId, string name, bool interactive = true)
+        /// <param name="clientId">The client id.</param>
+        public UserLoginSuccessEvent(string username, string subjectId, string name, bool interactive = true, string clientId = null)
             : this()
         {
             Username = username;
             SubjectId = subjectId;
             DisplayName = name;
+            ClientId = clientId;
 
             if (interactive)
             {
@@ -111,5 +125,13 @@ namespace IdentityServer4.Events
         /// The endpoint.
         /// </value>
         public string Endpoint { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the client id.
+        /// </summary>
+        /// <value>
+        /// The client id.
+        /// </value>
+        public string ClientId { get; set; }
     }
 }
