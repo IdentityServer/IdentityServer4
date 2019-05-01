@@ -123,7 +123,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                 issuer: _client.ClientId,
                 audience: IdentityServerPipeline.BaseUrl,
                 credential: new X509SigningCredentials(TestCert.Load()),
-                new[] {
+                claims: new[] {
                     new Claim("client_id", _client.ClientId),
                     new Claim("response_type", "id_token"),
                     new Claim("scope", "openid profile"),
@@ -166,7 +166,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                 issuer: _client.ClientId,
                 audience: IdentityServerPipeline.BaseUrl,
                 credential: new SigningCredentials(new Microsoft.IdentityModel.Tokens.JsonWebKey(_symmetricJwk), "HS256"),
-                new[] {
+                claims: new[] {
                     new Claim("client_id", _client.ClientId),
                     new Claim("response_type", "id_token"),
                     new Claim("scope", "openid profile"),
@@ -209,7 +209,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                 issuer: _client.ClientId,
                 audience: IdentityServerPipeline.BaseUrl,
                 credential: new X509SigningCredentials(TestCert.Load()),
-                new[] {
+                claims: new[] {
                     new Claim("response_type", "id_token"),
                     new Claim("scope", "openid profile"),
                     new Claim("state", "123state"),
@@ -243,7 +243,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                 issuer: _client.ClientId,
                 audience: "invalid",
                 credential: new X509SigningCredentials(TestCert.Load()),
-                new[] {
+                claims: new[] {
                     new Claim("client_id", _client.ClientId),
                     new Claim("response_type", "id_token"),
                     new Claim("scope", "openid profile"),
@@ -280,7 +280,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                 issuer: "invalid",
                 audience: IdentityServerPipeline.BaseUrl,
                 credential: new X509SigningCredentials(TestCert.Load()),
-                new[] {
+                claims: new[] {
                     new Claim("client_id", _client.ClientId),
                     new Claim("response_type", "id_token"),
                     new Claim("scope", "openid profile"),
@@ -317,7 +317,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                 issuer: _client.ClientId,
                 audience: IdentityServerPipeline.BaseUrl,
                 credential: new X509SigningCredentials(TestCert.Load()),
-                new[] {
+                claims: new[] {
                     new Claim("response_type", "id_token"),
                     new Claim("scope", "openid profile"),
                     new Claim("state", "123state"),
@@ -354,7 +354,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                 issuer: _client.ClientId,
                 audience: IdentityServerPipeline.BaseUrl,
                 credential: new X509SigningCredentials(TestCert.Load()),
-                new[] {
+                claims: new[] {
                     new Claim("response_type", "id_token"),
                     new Claim("scope", "openid profile"),
                     new Claim("state", "123state"),
@@ -391,7 +391,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                 issuer: _client.ClientId,
                 audience: IdentityServerPipeline.BaseUrl,
                 credential: new X509SigningCredentials(TestCert.Load()),
-                new[] {
+                claims: new[] {
                     new Claim("response_type", "id_token token"),
                     new Claim("scope", "openid profile"),
                     new Claim("state", "123state"),
@@ -427,7 +427,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                 issuer: _client.ClientId,
                 audience: IdentityServerPipeline.BaseUrl,
                 credential: new X509SigningCredentials(TestCert.Load()),
-                new[] {
+                claims: new[] {
                     new Claim("response_type", "id_token"),
                     new Claim("client_id", "invalid"),
                     new Claim("scope", "openid profile"),
