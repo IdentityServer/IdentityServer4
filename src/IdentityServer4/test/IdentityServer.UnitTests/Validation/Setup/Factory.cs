@@ -14,6 +14,9 @@ using IdentityServer.UnitTests.Common;
 using IdentityServer.UnitTests.Validation.Setup;
 using IdentityServer4.Services.Default;
 using Microsoft.AspNetCore.Authentication;
+using System.Net;
+using System;
+using System.Net.Http;
 
 namespace IdentityServer4.UnitTests.Validation
 {
@@ -196,7 +199,7 @@ namespace IdentityServer4.UnitTests.Validation
 
             if (jwtRequestUriHttpClient == null)
             {
-                jwtRequestUriHttpClient = new JwtRequestUriHttpClient(null, new LoggerFactory().CreateLogger<JwtRequestUriHttpClient>());
+                jwtRequestUriHttpClient = new JwtRequestUriHttpClient(new HttpClient(new NetworkHandler(new Exception("no jwt request uri response configured"))), new LoggerFactory().CreateLogger<JwtRequestUriHttpClient>());
             }
 
             var userSession = new MockUserSession();
