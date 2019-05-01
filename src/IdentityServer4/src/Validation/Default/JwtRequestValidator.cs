@@ -13,6 +13,8 @@ using IdentityServer4.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace IdentityServer4.Validation
 {
@@ -106,7 +108,14 @@ namespace IdentityServer4.Validation
                         {
                             payload.Add(key, s);
                         }
-                        // todo: handle other types (convert arrays, JSON, etc.)
+                        else if (value is JObject jobj)
+                        {
+                            payload.Add(key, jobj.ToString(Formatting.None));
+                        }
+                        else if (value is JArray jarr)
+                        {
+                            payload.Add(key, jarr.ToString(Formatting.None));
+                        }
                     }
                 }
 
