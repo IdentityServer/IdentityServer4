@@ -52,7 +52,7 @@ namespace IdentityServer4.Validation
             List<SecurityKey> trustedKeys; 
             try
             {
-                trustedKeys = GetTrustedKeys(enumeratedSecrets);
+                trustedKeys = GetKeys(enumeratedSecrets);
             }
             catch (Exception e)
             {
@@ -126,22 +126,25 @@ namespace IdentityServer4.Validation
             }
         }
 
-        private List<SecurityKey> GetTrustedKeys(IReadOnlyCollection<Secret> secrets)
+        private List<SecurityKey> GetKeys(IReadOnlyCollection<Secret> secrets)
         {
-            var trustedKeys = GetAllTrustedCertificates(secrets)
+            var keys = new List<SecurityKey>();
+
+            var certificates = GetCertificates(secrets)
                                 .Select(c => (SecurityKey)new X509SecurityKey(c))
                                 .ToList();
+            keys.AddRange(certificates);
 
-            if (!trustedKeys.Any()
-                && secrets.Any(s => s.Type == IdentityServerConstants.SecretTypes.X509CertificateThumbprint))
-            {
-                _logger.LogWarning("Client must be configured with X509CertificateBase64 secret.");
-            }
+            var jwks = secrets
+                        .Where(s => s.Type == IdentityServerConstants.SecretTypes.JsonWebKey)
+                        .Select(s => new Microsoft.IdentityModel.Tokens.JsonWebKey(s.Value))
+                        .ToList();
+            keys.AddRange(jwks);
 
-            return trustedKeys;
+            return keys;
         }
 
-        private List<X509Certificate2> GetAllTrustedCertificates(IEnumerable<Secret> secrets)
+        private List<X509Certificate2> GetCertificates(IEnumerable<Secret> secrets)
         {
             return secrets
                 .Where(s => s.Type == IdentityServerConstants.SecretTypes.X509CertificateBase64)
