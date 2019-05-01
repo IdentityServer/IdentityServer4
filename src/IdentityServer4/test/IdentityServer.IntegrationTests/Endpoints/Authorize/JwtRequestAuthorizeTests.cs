@@ -19,6 +19,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Microsoft.IdentityModel.Logging;
 
 namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 {
@@ -34,6 +35,8 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 
         public JwtRequestAuthorizeTests()
         {
+            IdentityModelEventSource.ShowPII = true;
+
             _rsaKey = IdentityServerBuilderExtensionsCrypto.CreateRsaSecurityKey();
 
             _mockPipeline.Clients.AddRange(new Client[] {
@@ -61,7 +64,13 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                         {
                             Type = IdentityServerConstants.SecretTypes.JsonWebKey,
                             Value = JsonConvert.SerializeObject(JsonWebKeyConverter.ConvertFromRSASecurityKey(_rsaKey))
-                        }
+                        },
+                        // turning a x509 JWK into an X509 security key does not seem to work... (KeySize = 0)
+                        //new Secret
+                        //{
+                        //    Type = IdentityServerConstants.SecretTypes.JsonWebKey,
+                        //    Value = JsonConvert.SerializeObject(JsonWebKeyConverter.ConvertFromX509SecurityKey(new X509SecurityKey(TestCert.Load())))
+                        //}
                     },
 
                     AllowedGrantTypes = GrantTypes.Implicit,
