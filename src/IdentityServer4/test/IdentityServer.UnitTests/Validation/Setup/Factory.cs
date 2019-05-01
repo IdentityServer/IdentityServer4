@@ -14,7 +14,6 @@ using IdentityServer.UnitTests.Common;
 using IdentityServer.UnitTests.Validation.Setup;
 using IdentityServer4.Services.Default;
 using Microsoft.AspNetCore.Authentication;
-using System.Net;
 using System;
 using System.Net.Http;
 

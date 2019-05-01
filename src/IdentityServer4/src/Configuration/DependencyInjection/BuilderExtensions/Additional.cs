@@ -328,9 +328,16 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="builder">The builder.</param>
         /// <param name="configureClient">The configruation callback.</param>
         /// <returns></returns>
-        public static IHttpClientBuilder AddBackChannelLogoutHttpClient(this IIdentityServerBuilder builder, Action<HttpClient> configureClient)
+        public static IHttpClientBuilder AddBackChannelLogoutHttpClient(this IIdentityServerBuilder builder, Action<HttpClient> configureClient = null)
         {
-            return builder.Services.AddHttpClient(IdentityServerConstants.DefaultBackChannelLogoutHttpFactoryClientName, configureClient);
+            if (configureClient != null)
+            {
+                return builder.Services.AddHttpClient<BackChannelLogoutHttpClient>(configureClient);
+            }
+            else
+            {
+                return builder.Services.AddHttpClient<BackChannelLogoutHttpClient>();
+            }
         }
 
 

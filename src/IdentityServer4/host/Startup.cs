@@ -6,7 +6,6 @@ using Host.Configuration;
 using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Quickstart.UI;
-using IdentityServer4.Services;
 using idunno.Authentication.Certificate;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;

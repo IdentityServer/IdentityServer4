@@ -27,7 +27,6 @@ using static IdentityServer4.Constants;
 using IdentityServer4.Extensions;
 using IdentityServer4.Hosting.FederatedSignOut;
 using IdentityServer4.Services.Default;
-using System.Net.Http;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -180,7 +179,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IUserCodeGenerator, NumericUserCodeGenerator>();
             builder.Services.TryAddTransient<IBackChannelLogoutService, DefaultBackChannelLogoutService>();
 
-            builder.Services.TryAddTransient<JwtRequestUriHttpClient>();
+            builder.Services.AddHttpClient<BackChannelLogoutHttpClient>();
             builder.Services.AddHttpClient<JwtRequestUriHttpClient>();
 
             builder.Services.AddTransient<IClientSecretValidator, ClientSecretValidator>();

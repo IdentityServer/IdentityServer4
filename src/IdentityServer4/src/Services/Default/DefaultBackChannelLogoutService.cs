@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityModel;
@@ -37,7 +36,7 @@ namespace IdentityServer4.Services
         /// <summary>
         /// HttpClient to make the outbound HTTP calls.
         /// </summary>
-        protected HttpClient HttpClient { get; }
+        protected BackChannelLogoutHttpClient HttpClient { get; }
         /// <summary>
         /// The logger.
         /// </summary>
@@ -46,21 +45,19 @@ namespace IdentityServer4.Services
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="options"></param>
         /// <param name="clock"></param>
         /// <param name="tools"></param>
-        /// <param name="httpClientFactory"></param>
+        /// <param name="backChannelLogoutHttpClient"></param>
         /// <param name="logger"></param>
         public DefaultBackChannelLogoutService(
-            IdentityServerOptions options,
             ISystemClock clock,
             IdentityServerTools tools,
-            IHttpClientFactory httpClientFactory,
+            BackChannelLogoutHttpClient backChannelLogoutHttpClient,
             ILogger<IBackChannelLogoutService> logger)
         {
             Clock = clock;
             Tools = tools;
-            HttpClient = httpClientFactory.CreateClient(options.Authentication.BackChannelLogoutHttpFactoryClientName);
+            HttpClient = backChannelLogoutHttpClient;
             Logger = logger;
         }
 
@@ -68,7 +65,7 @@ namespace IdentityServer4.Services
         public virtual Task SendLogoutNotificationsAsync(IEnumerable<BackChannelLogoutModel> clients)
         {
             clients = clients ?? Enumerable.Empty<BackChannelLogoutModel>();
-            var tasks = clients.Select(x => SendLogoutNotificationAsync(x)).ToArray();
+            var tasks = clients.Select(SendLogoutNotificationAsync).ToArray();
             return Task.WhenAll(tasks);
         }
 
@@ -78,19 +75,8 @@ namespace IdentityServer4.Services
         /// <param name="client"></param>
         protected virtual async Task SendLogoutNotificationAsync(BackChannelLogoutModel client)
         {
-            try
-            {
-                var data = await CreateFormPostPayloadAsync(client);
-
-                var response = await HttpClient.PostAsync(client.LogoutUri, new FormUrlEncodedContent(data));
-
-                Logger.LogDebug("Back channel logout for client id: {0} to URI: {1}, result: {2}",
-                    client.ClientId, client.LogoutUri, (int)response.StatusCode);
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, "Exception invoking back channel logout for client id: {0} to URI: {1}", client.ClientId, client.LogoutUri);
-            }
+            var data = await CreateFormPostPayloadAsync(client);
+            await HttpClient.PostAsync(client.LogoutUri, data);
         }
 
         /// <summary>
