@@ -25,8 +25,9 @@ namespace IdentityServer4.Validation
         private readonly ICustomAuthorizeRequestValidator _customValidator;
         private readonly IRedirectUriValidator _uriValidator;
         private readonly ScopeValidator _scopeValidator;
-        private readonly JwtRequestValidator _jwtRequestValidator;
         private readonly IUserSession _userSession;
+        private readonly JwtRequestValidator _jwtRequestValidator;
+        private readonly JwtRequestUriHttpClient _jwtRequestUriHttpClient;
         private readonly ILogger _logger;
 
         private readonly ResponseTypeEqualityComparer
@@ -38,8 +39,9 @@ namespace IdentityServer4.Validation
             ICustomAuthorizeRequestValidator customValidator,
             IRedirectUriValidator uriValidator,
             ScopeValidator scopeValidator,
-            JwtRequestValidator jwtRequestValidator,
             IUserSession userSession,
+            JwtRequestValidator jwtRequestValidator,
+            JwtRequestUriHttpClient jwtRequestUriHttpClient,
             ILogger<AuthorizeRequestValidator> logger)
         {
             _options = options;
@@ -49,6 +51,7 @@ namespace IdentityServer4.Validation
             _scopeValidator = scopeValidator;
             _jwtRequestValidator = jwtRequestValidator;
             _userSession = userSession;
+            _jwtRequestUriHttpClient = jwtRequestUriHttpClient;
             _logger = logger;
         }
 
@@ -161,6 +164,35 @@ namespace IdentityServer4.Validation
             // look for optional request param
             /////////////////////////////////////////////////////////
             var jwtRequest = request.Raw.Get(OidcConstants.AuthorizeRequest.Request);
+            var jwtRequestUri = request.Raw.Get(OidcConstants.AuthorizeRequest.RequestUri);
+            if (jwtRequest.IsPresent() && jwtRequestUri.IsPresent())
+            {
+                LogError("Both request and request_uri are present", request);
+                return Invalid(request, description: "Only one request parameter is allowed");
+            }
+
+            if (jwtRequestUri.IsPresent())
+            {
+                // 512 is from the spec
+                if (jwtRequestUri.Length > 512)
+                {
+                    LogError("request_uri is too long", request);
+                    return Invalid(request, description: "request_uri is too long");
+                }
+
+                var jwt = await _jwtRequestUriHttpClient.GetJwtAsync(jwtRequestUri);
+                if (jwt.IsMissing())
+                {
+                    LogError("no value returned from request_uri", request);
+                    return Invalid(request, description: "no value returned from request_uri");
+                }
+
+                jwtRequest = jwt;
+            }
+
+            //////////////////////////////////////////////////////////
+            // validate request JWT
+            /////////////////////////////////////////////////////////
             if (jwtRequest.IsPresent())
             {
                 // check length restrictions

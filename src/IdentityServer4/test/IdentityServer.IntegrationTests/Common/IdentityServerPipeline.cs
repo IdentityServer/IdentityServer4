@@ -13,7 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using IdentityServer4.Infrastructure;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Services;
