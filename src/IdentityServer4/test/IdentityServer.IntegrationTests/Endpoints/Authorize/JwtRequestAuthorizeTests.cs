@@ -265,6 +265,58 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 
         [Fact]
         [Trait("Category", Category)]
+        public async Task jwt_values_should_have_precedence_over_query_params()
+        {
+            var requestJwt = CreateRequestJwt(
+                issuer: _client.ClientId,
+                audience: IdentityServerPipeline.BaseUrl,
+                credential: new SigningCredentials(_rsaKey, "RS256"),
+                claims: new[] {
+                    new Claim("client_id", _client.ClientId),
+                    new Claim("response_type", "id_token"),
+                    new Claim("scope", "openid profile"),
+                    new Claim("state", "123state"),
+                    new Claim("nonce", "123nonce"),
+                    new Claim("redirect_uri", "https://client/callback"),
+                    new Claim("acr_values", "acr_1 acr_2 tenant:tenant_value idp:idp_value"),
+                    new Claim("login_hint", "login_hint_value"),
+                    new Claim("display", "popup"),
+                    new Claim("ui_locales", "ui_locale_value"),
+                    new Claim("foo", "123foo"),
+            });
+
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: _client.ClientId,
+                responseType: "id_token",
+                scope: "bad",
+                state: "bad",
+                nonce: "bad",
+                redirectUri: "bad",
+                acrValues: "bad",
+                loginHint: "bad",
+                extra: new
+                {
+                    display = "bad",
+                    ui_locales = "bad",
+                    foo = "bad",
+                    request = requestJwt
+                });
+            var response = await _mockPipeline.BrowserClient.GetAsync(url);
+
+            _mockPipeline.LoginRequest.Should().NotBeNull();
+            _mockPipeline.LoginRequest.ClientId.Should().Be(_client.ClientId);
+            _mockPipeline.LoginRequest.DisplayMode.Should().Be("popup");
+            _mockPipeline.LoginRequest.UiLocales.Should().Be("ui_locale_value");
+            _mockPipeline.LoginRequest.IdP.Should().Be("idp_value");
+            _mockPipeline.LoginRequest.Tenant.Should().Be("tenant_value");
+            _mockPipeline.LoginRequest.LoginHint.Should().Be("login_hint_value");
+            _mockPipeline.LoginRequest.AcrValues.Should().BeEquivalentTo(new string[] { "acr_2", "acr_1" });
+            _mockPipeline.LoginRequest.Parameters.AllKeys.Should().Contain("foo");
+            _mockPipeline.LoginRequest.Parameters["foo"].Should().Be("123foo");
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
         public async Task authorize_should_reject_jwt_request_without_client_id()
         {
             var requestJwt = CreateRequestJwt(
