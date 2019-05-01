@@ -63,6 +63,7 @@ namespace IdentityServer4.IntegrationTests.Common
         public HttpClient BackChannelClient { get; set; }
 
         public BackChannelMessageHandler BackChannelMessageHandler { get; set; } = new BackChannelMessageHandler();
+        public BackChannelMessageHandler JwtRequestMessageHandler { get; set; } = new BackChannelMessageHandler();
 
         public event Action<IServiceCollection> OnPreConfigureServices = services => { };
         public event Action<IServiceCollection> OnPostConfigureServices = services => { };
@@ -142,6 +143,9 @@ namespace IdentityServer4.IntegrationTests.Common
             services.AddHttpClient()
                 .AddHttpClient(IdentityServerConstants.DefaultBackChannelLogoutHttpFactoryClientName)
                 .AddHttpMessageHandler(() => BackChannelMessageHandler);
+
+            services.AddHttpClient<JwtRequestUriHttpClient>()
+                .AddHttpMessageHandler(() => JwtRequestMessageHandler);
 
             OnPostConfigureServices(services);
         }
