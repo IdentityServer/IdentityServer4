@@ -111,9 +111,10 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task authorize_should_accept_JWT_request_object_parameters()
+        public async Task authorize_should_accept_valid_JWT_request_object_parameters()
         {
             var requestJwt = CreateRequestJwt(new[] {
+                new Claim("client_id", _client.ClientId),
                 new Claim("response_type", "id_token"),
                 new Claim("scope", "openid profile"),
                 new Claim("state", "123state"),
@@ -174,6 +175,137 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 
             _mockPipeline.ErrorMessage.Error.Should().Be("invalid_request");
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Be("Invalid client_id");
+            _mockPipeline.LoginRequest.Should().BeNull();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task authorize_should_reject_jwt_request_that_includes_request_param()
+        {
+            var requestJwt = CreateRequestJwt(new[] {
+                new Claim("response_type", "id_token"),
+                new Claim("scope", "openid profile"),
+                new Claim("state", "123state"),
+                new Claim("nonce", "123nonce"),
+                new Claim("redirect_uri", "https://client/callback"),
+                new Claim("acr_values", "acr_1 acr_2 tenant:tenant_value idp:idp_value"),
+                new Claim("login_hint", "login_hint_value"),
+                new Claim("display", "popup"),
+                new Claim("ui_locales", "ui_locale_value"),
+                new Claim("foo", "123foo"),
+                new Claim("request", "request")
+            });
+
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: _client.ClientId,
+                responseType: "id_token",
+                extra: new
+                {
+                    request = requestJwt
+                });
+
+            var response = await _mockPipeline.BrowserClient.GetAsync(url);
+
+            _mockPipeline.ErrorMessage.Error.Should().Be("invalid_request");
+            _mockPipeline.ErrorMessage.ErrorDescription.Should().Be("Invalid JWT request");
+            _mockPipeline.LoginRequest.Should().BeNull();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task authorize_should_reject_jwt_request_that_includes_request_uri_param()
+        {
+            var requestJwt = CreateRequestJwt(new[] {
+                new Claim("response_type", "id_token"),
+                new Claim("scope", "openid profile"),
+                new Claim("state", "123state"),
+                new Claim("nonce", "123nonce"),
+                new Claim("redirect_uri", "https://client/callback"),
+                new Claim("acr_values", "acr_1 acr_2 tenant:tenant_value idp:idp_value"),
+                new Claim("login_hint", "login_hint_value"),
+                new Claim("display", "popup"),
+                new Claim("ui_locales", "ui_locale_value"),
+                new Claim("foo", "123foo"),
+                new Claim("request_uri", "request_uri")
+            });
+
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: _client.ClientId,
+                responseType: "id_token",
+                extra: new
+                {
+                    request = requestJwt
+                });
+
+            var response = await _mockPipeline.BrowserClient.GetAsync(url);
+
+            _mockPipeline.ErrorMessage.Error.Should().Be("invalid_request");
+            _mockPipeline.ErrorMessage.ErrorDescription.Should().Be("Invalid JWT request");
+            _mockPipeline.LoginRequest.Should().BeNull();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task authorize_should_reject_jwt_request_if_response_type_does_not_match()
+        {
+            var requestJwt = CreateRequestJwt(new[] {
+                new Claim("response_type", "id_token token"),
+                new Claim("scope", "openid profile"),
+                new Claim("state", "123state"),
+                new Claim("nonce", "123nonce"),
+                new Claim("redirect_uri", "https://client/callback"),
+                new Claim("acr_values", "acr_1 acr_2 tenant:tenant_value idp:idp_value"),
+                new Claim("login_hint", "login_hint_value"),
+                new Claim("display", "popup"),
+                new Claim("ui_locales", "ui_locale_value"),
+                new Claim("foo", "123foo")
+            });
+
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: _client.ClientId,
+                responseType: "id_token",
+                extra: new
+                {
+                    request = requestJwt
+                });
+
+            var response = await _mockPipeline.BrowserClient.GetAsync(url);
+
+            _mockPipeline.ErrorMessage.Error.Should().Be("invalid_request");
+            _mockPipeline.ErrorMessage.ErrorDescription.Should().Be("Invalid JWT request");
+            _mockPipeline.LoginRequest.Should().BeNull();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task authorize_should_reject_jwt_request_if_client_id_does_not_match()
+        {
+            var requestJwt = CreateRequestJwt(new[] {
+                new Claim("response_type", "id_token"),
+                new Claim("client_id", "invalid"),
+                new Claim("scope", "openid profile"),
+                new Claim("state", "123state"),
+                new Claim("nonce", "123nonce"),
+                new Claim("redirect_uri", "https://client/callback"),
+                new Claim("acr_values", "acr_1 acr_2 tenant:tenant_value idp:idp_value"),
+                new Claim("login_hint", "login_hint_value"),
+                new Claim("display", "popup"),
+                new Claim("ui_locales", "ui_locale_value"),
+                new Claim("foo", "123foo")
+            });
+
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: _client.ClientId,
+                responseType: "id_token",
+                extra: new
+                {
+                    request = requestJwt
+                });
+
+            var response = await _mockPipeline.BrowserClient.GetAsync(url);
+
+            _mockPipeline.ErrorMessage.Error.Should().Be("invalid_request");
+            _mockPipeline.ErrorMessage.ErrorDescription.Should().Be("Invalid JWT request");
             _mockPipeline.LoginRequest.Should().BeNull();
         }
     }
