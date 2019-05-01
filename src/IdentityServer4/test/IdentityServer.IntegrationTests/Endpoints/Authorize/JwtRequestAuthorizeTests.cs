@@ -17,6 +17,8 @@ using System;
 using System.Security.Cryptography.X509Certificates;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 
 namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 {
@@ -27,10 +29,13 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
         private readonly IdentityServerPipeline _mockPipeline = new IdentityServerPipeline();
         private readonly Client _client;
 
-        private string _symmetricJwk = @"{ 'kty': 'oct', 'use': 'sig', 'kid': '1', 'k': 'nYA-IFt8xTsdBHe9hunvizcp3Dt7f6qGqudq18kZHNtvqEGjJ9Ud-9x3kbQ-LYfLHS3xM2MpFQFg1JzT_0U_F8DI40oby4TvBDGszP664UgA8_5GjB7Flnrlsap1NlitvNpgQX3lpyTvC2zVuQ-UVsXbBDAaSBUSlnw7SE4LM8Ye2WYZrdCCXL8yAX9vIR7vf77yvNTEcBCI6y4JlvZaqMB4YKVSfygs8XqGGCHjLpE5bvI-A4ESbAUX26cVFvCeDg9pR6HK7BmwPMlO96krgtKZcXEJtUELYPys6-rbwAIdmxJxKxpgRpt0FRv_9fm6YPwG7QivYBX-vRwaodL1TA', 'alg': 'HS256'}";
+        private readonly string _symmetricJwk = @"{ 'kty': 'oct', 'use': 'sig', 'kid': '1', 'k': 'nYA-IFt8xTsdBHe9hunvizcp3Dt7f6qGqudq18kZHNtvqEGjJ9Ud-9x3kbQ-LYfLHS3xM2MpFQFg1JzT_0U_F8DI40oby4TvBDGszP664UgA8_5GjB7Flnrlsap1NlitvNpgQX3lpyTvC2zVuQ-UVsXbBDAaSBUSlnw7SE4LM8Ye2WYZrdCCXL8yAX9vIR7vf77yvNTEcBCI6y4JlvZaqMB4YKVSfygs8XqGGCHjLpE5bvI-A4ESbAUX26cVFvCeDg9pR6HK7BmwPMlO96krgtKZcXEJtUELYPys6-rbwAIdmxJxKxpgRpt0FRv_9fm6YPwG7QivYBX-vRwaodL1TA', 'alg': 'HS256'}";
+        private readonly RsaSecurityKey _rsaKey;
 
         public JwtRequestAuthorizeTests()
         {
+            _rsaKey = IdentityServerBuilderExtensionsCrypto.CreateRsaSecurityKey();
+
             _mockPipeline.Clients.AddRange(new Client[] {
                 _client = new Client
                 {
@@ -51,6 +56,11 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                         {
                             Type = IdentityServerConstants.SecretTypes.JsonWebKey,
                             Value = _symmetricJwk
+                        },
+                        new Secret
+                        {
+                            Type = IdentityServerConstants.SecretTypes.JsonWebKey,
+                            Value = JsonConvert.SerializeObject(JsonWebKeyConverter.ConvertFromRSASecurityKey(_rsaKey))
                         }
                     },
 
@@ -166,6 +176,49 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                 issuer: _client.ClientId,
                 audience: IdentityServerPipeline.BaseUrl,
                 credential: new SigningCredentials(new Microsoft.IdentityModel.Tokens.JsonWebKey(_symmetricJwk), "HS256"),
+                claims: new[] {
+                    new Claim("client_id", _client.ClientId),
+                    new Claim("response_type", "id_token"),
+                    new Claim("scope", "openid profile"),
+                    new Claim("state", "123state"),
+                    new Claim("nonce", "123nonce"),
+                    new Claim("redirect_uri", "https://client/callback"),
+                    new Claim("acr_values", "acr_1 acr_2 tenant:tenant_value idp:idp_value"),
+                    new Claim("login_hint", "login_hint_value"),
+                    new Claim("display", "popup"),
+                    new Claim("ui_locales", "ui_locale_value"),
+                    new Claim("foo", "123foo"),
+            });
+
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: _client.ClientId,
+                responseType: "id_token",
+                extra: new
+                {
+                    request = requestJwt
+                });
+            var response = await _mockPipeline.BrowserClient.GetAsync(url);
+
+            _mockPipeline.LoginRequest.Should().NotBeNull();
+            _mockPipeline.LoginRequest.ClientId.Should().Be(_client.ClientId);
+            _mockPipeline.LoginRequest.DisplayMode.Should().Be("popup");
+            _mockPipeline.LoginRequest.UiLocales.Should().Be("ui_locale_value");
+            _mockPipeline.LoginRequest.IdP.Should().Be("idp_value");
+            _mockPipeline.LoginRequest.Tenant.Should().Be("tenant_value");
+            _mockPipeline.LoginRequest.LoginHint.Should().Be("login_hint_value");
+            _mockPipeline.LoginRequest.AcrValues.Should().BeEquivalentTo(new string[] { "acr_2", "acr_1" });
+            _mockPipeline.LoginRequest.Parameters.AllKeys.Should().Contain("foo");
+            _mockPipeline.LoginRequest.Parameters["foo"].Should().Be("123foo");
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task authorize_should_accept_valid_JWT_request_object_parameters_using_rsa_jwk()
+        {
+            var requestJwt = CreateRequestJwt(
+                issuer: _client.ClientId,
+                audience: IdentityServerPipeline.BaseUrl,
+                credential: new SigningCredentials(_rsaKey, "RS256"),
                 claims: new[] {
                     new Claim("client_id", _client.ClientId),
                     new Claim("response_type", "id_token"),
