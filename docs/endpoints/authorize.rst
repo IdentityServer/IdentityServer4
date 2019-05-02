@@ -8,6 +8,10 @@ This process typically involves authentication of the end-user and optionally co
 
 ``client_id``
     identifier of the client (required).
+``request``
+    instead of providing all parameters as individual query string parameters, you can provide a subset or all of them as a JWT
+``request_uri``
+    URL of a pre-packaged JWT containing request parameters
 ``scope``
     one or more registered scopes (required)
 ``redirect_uri`` 
