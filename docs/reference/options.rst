@@ -15,6 +15,9 @@ Allows enabling/disabling individual endpoints, e.g. token, authorize, userinfo 
 
 By default all endpoints are enabled, but you can lock down your server by disabling endpoint that you don't need.
 
+* ``EnableJwtRequestUri``
+    JWT request_uri processing is enabled on the authorize endpoint. Defaults to ``false``.
+
 Discovery
 ^^^^^^^^^
 Allows enabling/disabling various sections of the discovery document, e.g. endpoints, scopes, claims, grant types etc.

@@ -52,3 +52,5 @@ You can customize the HTTP client used for this outgoing connection, e.g. to add
             TimeSpan.FromSeconds(2),
             TimeSpan.FromSeconds(3)
         }));
+
+.. note:: Request URI processing is disabled by default. Enable on the :ref:`IdentityServer Options <refOptions>` under ``Endpoints``.
