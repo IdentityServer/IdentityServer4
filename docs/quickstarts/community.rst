@@ -10,7 +10,7 @@ https://github.com/leastprivilege/AspNetCoreSecuritySamples
 
 IdentityServer4 EF and ASP.NET Identity
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-`This <https://github.com/IdentityServer/IdentityServer4.Samples/tree/master/Quickstarts/Combined_AspId_and_EFStorage>`_ sample combines the EF and ASP.NET Identity quickstarts.
+`This <https://github.com/IdentityServer/IdentityServer4/tree/master/samples/Quickstarts/Combined_AspId_and_EFStorage>`_ sample combines the EF and ASP.NET Identity quickstarts.
 
 Co-hosting IdentityServer4 and a Web API
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -46,6 +46,6 @@ https://github.com/BenjaminAbt/Samples.AspNetCore-IdentityServer4
 Securing a Node API with tokens from IdentityServer4 using JWKS
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 * Shows how to secure a Node (Express) API using the JWKS endpoint and RS256 algorithm from IdentityServer4.
-* Provides an alternative to the NodeJsApi sample from IdentityServer4.Samples using higher quality - production ready modules.
+* Provides an alternative to the NodeJsApi sample from IdentityServer samples using higher quality - production ready modules.
 
 https://github.com/lyphtec/idsvr4-node-jwks

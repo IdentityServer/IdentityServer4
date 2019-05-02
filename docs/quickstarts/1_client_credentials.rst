@@ -41,7 +41,7 @@ Defining an API Resource
 An API is a resource in your system that you want to protect.
 
 Resource definitions can be loaded in many ways, the template uses a "code as configuration" appproach.
-In the [``Config.cs``](https://github.com/IdentityServer/IdentityServer4.Samples/blob/master/Quickstarts/1_ClientCredentials/src/IdentityServer/Config.cs) file you can find a method called ``GetApis``, define the API as follows::
+In the [``Config.cs``](https://github.com/IdentityServer/IdentityServer4/blob/master/samples/Quickstarts/1_ClientCredentials/src/IdentityServer/Config.cs) file you can find a method called ``GetApis``, define the API as follows::
 
     public static IEnumerable<ApiResource> GetApis()
     {
@@ -57,7 +57,7 @@ The next step is to define a client that can access this API.
 
 For this scenario, the client will not have an interactive user, and will authenticate
 using the so called client secret with IdentityServer.
-Add the following code to your  [``Config.cs``](https://github.com/IdentityServer/IdentityServer4.Samples/blob/master/Quickstarts/1_ClientCredentials/src/IdentityServer/Config.cs)  file::
+Add the following code to your  [``Config.cs``](https://github.com/IdentityServer/IdentityServer4/blob/master/samples/Quickstarts/1_ClientCredentials/src/IdentityServer/Config.cs)  file::
 
     public static IEnumerable<Client> GetClients()
     {
@@ -196,7 +196,7 @@ Then as before, add it to your solution using::
     cd ..
     dotnet sln add .\src\Client\Client.csproj
     
-Open up ``Program.cs`` and copy the content from `here <https://github.com/IdentityServer/IdentityServer4.Samples/blob/master/Quickstarts/1_ClientCredentials/src/Client/Program.cs>`_ to it..
+Open up ``Program.cs`` and copy the content from `here <https://github.com/IdentityServer/IdentityServer4/blob/master/samples/Quickstarts/1_ClientCredentials/src/Client/Program.cs>`_ to it..
 
 The client program invokes the ``Main`` method asynchronously in order to run asynchronous http calls. This feature is possible since ``C# 7.1`` and will be available once you edit Client.csproj to add the following line as a ``PropertyGroup``::
 
