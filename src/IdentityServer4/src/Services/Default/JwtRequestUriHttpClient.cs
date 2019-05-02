@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using IdentityServer4.Models;
 using Microsoft.Extensions.Logging;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -31,10 +32,13 @@ namespace IdentityServer4.Services
         /// Gets a JWT from the url.
         /// </summary>
         /// <param name="url"></param>
+        /// <param name="client"></param>
         /// <returns></returns>
-        public async Task<string> GetJwtAsync(string url)
+        public async Task<string> GetJwtAsync(string url, Client client)
         {
             var req = new HttpRequestMessage(HttpMethod.Get, url);
+            req.Properties.Add(IdentityServerConstants.JwtRequestClientKey, client);
+
             var response = await _client.SendAsync(req);
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {

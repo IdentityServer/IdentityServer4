@@ -622,8 +622,52 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 
         [Fact]
         [Trait("Category", Category)]
+        public async Task authorize_should_ignore_request_uri_when_feature_is_disabled()
+        {
+            _mockPipeline.Options.Endpoints.EnableJwtRequestUri = false;
+
+            var requestJwt = CreateRequestJwt(
+                issuer: _client.ClientId,
+                audience: IdentityServerPipeline.BaseUrl,
+                credential: new X509SigningCredentials(TestCert.Load()),
+                claims: new[] {
+                    new Claim("client_id", _client.ClientId),
+                    new Claim("response_type", "id_token"),
+                    new Claim("scope", "openid profile"),
+                    new Claim("state", "123state"),
+                    new Claim("nonce", "123nonce"),
+                    new Claim("redirect_uri", "https://client/callback"),
+                    new Claim("acr_values", "acr_1 acr_2 tenant:tenant_value idp:idp_value"),
+                    new Claim("login_hint", "login_hint_value"),
+                    new Claim("display", "popup"),
+                    new Claim("ui_locales", "ui_locale_value"),
+                    new Claim("foo", "123foo"),
+            });
+            _mockPipeline.JwtRequestMessageHandler.OnInvoke = req =>
+            {
+                req.RequestUri.Should().Be(new Uri("http://client_jwt"));
+                return Task.CompletedTask;
+            };
+            _mockPipeline.JwtRequestMessageHandler.Response.Content = new StringContent(requestJwt);
+
+
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: _client.ClientId,
+                responseType: "id_token",
+                extra: new
+                {
+                    request_uri = "http://client_jwt"
+                });
+            var response = await _mockPipeline.BrowserClient.GetAsync(url);
+            _mockPipeline.ErrorWasCalled.Should().BeTrue();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
         public async Task authorize_should_accept_request_uri_with_valid_jwt()
         {
+            _mockPipeline.Options.Endpoints.EnableJwtRequestUri = true;
+
             var requestJwt = CreateRequestJwt(
                 issuer: _client.ClientId,
                 audience: IdentityServerPipeline.BaseUrl,
@@ -674,6 +718,8 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task request_uri_response_returns_500_should_fail()
         {
+            _mockPipeline.Options.Endpoints.EnableJwtRequestUri = true;
+
             _mockPipeline.JwtRequestMessageHandler.Response = new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError);
 
             var url = _mockPipeline.CreateAuthorizeUrl(
@@ -692,6 +738,8 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task request_uri_response_returns_404_should_fail()
         {
+            _mockPipeline.Options.Endpoints.EnableJwtRequestUri = true;
+
             _mockPipeline.JwtRequestMessageHandler.Response = new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError);
 
             var url = _mockPipeline.CreateAuthorizeUrl(
@@ -710,6 +758,8 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task request_uri_length_too_long_should_fail()
         {
+            _mockPipeline.Options.Endpoints.EnableJwtRequestUri = true;
+
             var url = _mockPipeline.CreateAuthorizeUrl(
                 clientId: _client.ClientId,
                 responseType: "id_token",
@@ -725,6 +775,8 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
         [Trait("Category", Category)]
         public async Task both_request_and_request_uri_params_should_fail()
         {
+            _mockPipeline.Options.Endpoints.EnableJwtRequestUri = true;
+
             var requestJwt = CreateRequestJwt(
                 issuer: _client.ClientId,
                 audience: IdentityServerPipeline.BaseUrl,

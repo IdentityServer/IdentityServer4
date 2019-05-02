@@ -16,6 +16,11 @@ namespace IdentityServer4.Configuration
         /// <c>true</c> if the authorize endpoint is enabled; otherwise, <c>false</c>.
         /// </value>
         public bool EnableAuthorizeEndpoint { get; set; } = true;
+        
+        /// <summary>
+        /// Gets or sets if JWT request_uri processing is enabled on the authorize endpoint. 
+        /// </summary>
+        public bool EnableJwtRequestUri { get; set; } = false;
 
         /// <summary>
         /// Gets or sets a value indicating whether the token endpoint is enabled.

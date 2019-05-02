@@ -161,33 +161,37 @@ namespace IdentityServer4.Validation
         private async Task<AuthorizeRequestValidationResult> ReadJwtRequestAsync(ValidatedAuthorizeRequest request)
         {
             //////////////////////////////////////////////////////////
-            // look for optional request param
+            // look for optional request params
             /////////////////////////////////////////////////////////
             var jwtRequest = request.Raw.Get(OidcConstants.AuthorizeRequest.Request);
-            var jwtRequestUri = request.Raw.Get(OidcConstants.AuthorizeRequest.RequestUri);
-            if (jwtRequest.IsPresent() && jwtRequestUri.IsPresent())
-            {
-                LogError("Both request and request_uri are present", request);
-                return Invalid(request, description: "Only one request parameter is allowed");
-            }
 
-            if (jwtRequestUri.IsPresent())
+            if (_options.Endpoints.EnableJwtRequestUri)
             {
-                // 512 is from the spec
-                if (jwtRequestUri.Length > 512)
+                var jwtRequestUri = request.Raw.Get(OidcConstants.AuthorizeRequest.RequestUri);
+                if (jwtRequest.IsPresent() && jwtRequestUri.IsPresent())
                 {
-                    LogError("request_uri is too long", request);
-                    return Invalid(request, description: "request_uri is too long");
+                    LogError("Both request and request_uri are present", request);
+                    return Invalid(request, description: "Only one request parameter is allowed");
                 }
 
-                var jwt = await _jwtRequestUriHttpClient.GetJwtAsync(jwtRequestUri);
-                if (jwt.IsMissing())
+                if (jwtRequestUri.IsPresent())
                 {
-                    LogError("no value returned from request_uri", request);
-                    return Invalid(request, description: "no value returned from request_uri");
-                }
+                    // 512 is from the spec
+                    if (jwtRequestUri.Length > 512)
+                    {
+                        LogError("request_uri is too long", request);
+                        return Invalid(request, description: "request_uri is too long");
+                    }
 
-                jwtRequest = jwt;
+                    var jwt = await _jwtRequestUriHttpClient.GetJwtAsync(jwtRequestUri, request.Client);
+                    if (jwt.IsMissing())
+                    {
+                        LogError("no value returned from request_uri", request);
+                        return Invalid(request, description: "no value returned from request_uri");
+                    }
+
+                    jwtRequest = jwt;
+                }
             }
 
             //////////////////////////////////////////////////////////
