@@ -62,8 +62,8 @@ namespace IdentityServer4.IntegrationTests.Common
         public BrowserClient BrowserClient { get; set; }
         public HttpClient BackChannelClient { get; set; }
 
-        public BackChannelMessageHandler BackChannelMessageHandler { get; set; } = new BackChannelMessageHandler();
-        public BackChannelMessageHandler JwtRequestMessageHandler { get; set; } = new BackChannelMessageHandler();
+        public MockMessageHandler BackChannelMessageHandler { get; set; } = new MockMessageHandler();
+        public MockMessageHandler JwtRequestMessageHandler { get; set; } = new MockMessageHandler();
 
         public event Action<IServiceCollection> OnPreConfigureServices = services => { };
         public event Action<IServiceCollection> OnPostConfigureServices = services => { };
@@ -141,7 +141,7 @@ namespace IdentityServer4.IntegrationTests.Common
             .AddDeveloperSigningCredential(persistKey: false);
 
             services.AddHttpClient()
-                .AddHttpClient(IdentityServerConstants.DefaultBackChannelLogoutHttpFactoryClientName)
+                .AddHttpClient<BackChannelLogoutHttpClient>()
                 .AddHttpMessageHandler(() => BackChannelMessageHandler);
 
             services.AddHttpClient<JwtRequestUriHttpClient>()
@@ -375,13 +375,16 @@ namespace IdentityServer4.IntegrationTests.Common
         }
     }
 
-    public class BackChannelMessageHandler : DelegatingHandler
+    public class MockMessageHandler : DelegatingHandler
     {
+        public bool InvokeWasCalled { get; set; }
         public Func<HttpRequestMessage, Task> OnInvoke { get; set; }
         public HttpResponseMessage Response { get; set; } = new HttpResponseMessage(HttpStatusCode.OK);
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
+            InvokeWasCalled = true;
+
             if (OnInvoke != null)
             {
                 await OnInvoke.Invoke(request);

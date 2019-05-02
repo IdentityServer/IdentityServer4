@@ -660,6 +660,8 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                 });
             var response = await _mockPipeline.BrowserClient.GetAsync(url);
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
+
+            _mockPipeline.JwtRequestMessageHandler.InvokeWasCalled.Should().BeFalse();
         }
 
         [Fact]
@@ -712,6 +714,8 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.LoginRequest.AcrValues.Should().BeEquivalentTo(new string[] { "acr_2", "acr_1" });
             _mockPipeline.LoginRequest.Parameters.AllKeys.Should().Contain("foo");
             _mockPipeline.LoginRequest.Parameters["foo"].Should().Be("123foo");
+
+            _mockPipeline.JwtRequestMessageHandler.InvokeWasCalled.Should().BeTrue();
         }
 
         [Fact]
@@ -732,6 +736,8 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             var response = await _mockPipeline.BrowserClient.GetAsync(url);
 
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
+
+            _mockPipeline.JwtRequestMessageHandler.InvokeWasCalled.Should().BeTrue();
         }
 
         [Fact]
@@ -740,7 +746,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
         {
             _mockPipeline.Options.Endpoints.EnableJwtRequestUri = true;
 
-            _mockPipeline.JwtRequestMessageHandler.Response = new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError);
+            _mockPipeline.JwtRequestMessageHandler.Response = new HttpResponseMessage(System.Net.HttpStatusCode.NotFound);
 
             var url = _mockPipeline.CreateAuthorizeUrl(
                 clientId: _client.ClientId,
@@ -752,6 +758,8 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             var response = await _mockPipeline.BrowserClient.GetAsync(url);
 
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
+
+            _mockPipeline.JwtRequestMessageHandler.InvokeWasCalled.Should().BeTrue();
         }
 
         [Fact]
@@ -769,6 +777,8 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                 });
             var response = await _mockPipeline.BrowserClient.GetAsync(url);
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
+
+            _mockPipeline.JwtRequestMessageHandler.InvokeWasCalled.Should().BeFalse();
         }
 
         [Fact]
@@ -808,6 +818,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             var response = await _mockPipeline.BrowserClient.GetAsync(url);
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
 
+            _mockPipeline.JwtRequestMessageHandler.InvokeWasCalled.Should().BeFalse();
         }
     }
 }

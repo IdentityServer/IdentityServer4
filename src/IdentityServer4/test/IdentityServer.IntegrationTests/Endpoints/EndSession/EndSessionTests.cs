@@ -547,6 +547,8 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
 
             var signoutFrameUrl = _mockPipeline.LogoutRequest.SignOutIFrameUrl;
             await _mockPipeline.BrowserClient.GetAsync(signoutFrameUrl);
+
+            _mockPipeline.BackChannelMessageHandler.InvokeWasCalled.Should().BeTrue();
         }
 
         [Fact]
@@ -570,6 +572,8 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
 
             var signoutFrameUrl = _mockPipeline.LogoutRequest.SignOutIFrameUrl;
             await _mockPipeline.BrowserClient.GetAsync(signoutFrameUrl);
+
+            _mockPipeline.BackChannelMessageHandler.InvokeWasCalled.Should().BeTrue();
         }
     }
 }
