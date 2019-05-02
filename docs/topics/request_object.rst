@@ -1,5 +1,6 @@
 Authorize Request Objects
 =========================
+
 Instead of providing all parameters for an authorize request as individual query string parameters, you can package them up in signed JWTs.
 You can either transmit them by value or by reference to the authorize endpoint - see the `spec <https://openid.net/specs/openid-connect-core-1_0.html#JWTRequests>`_ for more details.
 

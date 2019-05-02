@@ -99,7 +99,7 @@ It enables the following features in your applications:
    topics/refresh_tokens
    topics/reference_tokens
    topics/mtls
-   topic/request_object
+   topics/request_object
    topics/custom_token_request_validation
    topics/cors
    topics/discovery
