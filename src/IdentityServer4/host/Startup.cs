@@ -67,15 +67,26 @@ namespace Host
 
          
             builder.AddBackChannelLogoutHttpClient(client =>
-                {
-                    client.Timeout = TimeSpan.FromSeconds(30);
-                })
-                .AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(new[]
-                {
-                    TimeSpan.FromSeconds(1),
-                    TimeSpan.FromSeconds(2),
-                    TimeSpan.FromSeconds(3)
-                }));
+            {
+                client.Timeout = TimeSpan.FromSeconds(30);
+            })
+            .AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(new[]
+            {
+                TimeSpan.FromSeconds(1),
+                TimeSpan.FromSeconds(2),
+                TimeSpan.FromSeconds(3)
+            }));
+
+            builder.AddJwtRequestUriHttpClient(client =>
+            {
+                client.Timeout = TimeSpan.FromSeconds(30);
+            })
+            .AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(new[]
+            {
+                TimeSpan.FromSeconds(1),
+                TimeSpan.FromSeconds(2),
+                TimeSpan.FromSeconds(3)
+            }));
 
             services.AddExternalIdentityProviders();
             services.AddLocalApiAuthentication();
