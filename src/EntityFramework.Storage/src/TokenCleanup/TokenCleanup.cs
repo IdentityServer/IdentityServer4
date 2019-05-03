@@ -129,7 +129,7 @@ namespace IdentityServer4.EntityFramework
                     using (var context = serviceScope.ServiceProvider.GetService<IPersistedGrantDbContext>())
                     {
                         await RemoveGrants(context, tokenCleanupNotification);
-                        await RemoveDeviceCodes(context, tokenCleanupNotification);
+                        await RemoveDeviceCodes(context);
                     }
                 }
             }
@@ -176,7 +176,7 @@ namespace IdentityServer4.EntityFramework
             }
         }
 
-        private async Task RemoveDeviceCodes(IPersistedGrantDbContext context, IOperationalStoreNotification tokenCleanupNotification)
+        private async Task RemoveDeviceCodes(IPersistedGrantDbContext context)
         {
             var found = Int32.MaxValue;
 
@@ -196,11 +196,6 @@ namespace IdentityServer4.EntityFramework
                     try
                     {
                         context.SaveChanges();
-
-                        if (tokenCleanupNotification != null)
-                        {
-                            await tokenCleanupNotification.DeviceFlowCodesRemovedAsync(expiredCodes);
-                        }
                     }
                     catch (DbUpdateConcurrencyException ex)
                     {
