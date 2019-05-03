@@ -22,11 +22,5 @@ namespace Host
             }
             return Task.CompletedTask;
         }
-
-        public Task DeviceFlowCodesRemovedAsync(IEnumerable<DeviceFlowCodes> deviceFlowCodes)
-        {
-            Console.WriteLine($"cleaned {deviceFlowCodes.Count()} device codes");
-            return Task.CompletedTask;
-        }
     }
 }
