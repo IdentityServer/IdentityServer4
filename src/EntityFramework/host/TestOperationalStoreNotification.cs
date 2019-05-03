@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.EntityFramework;
 using IdentityServer4.EntityFramework.Entities;
@@ -19,6 +20,12 @@ namespace Host
             {
                 Console.WriteLine("cleaned: " + grant.Type);
             }
+            return Task.CompletedTask;
+        }
+
+        public Task DeviceFlowCodesRemovedAsync(IEnumerable<DeviceFlowCodes> deviceFlowCodes)
+        {
+            Console.WriteLine($"cleaned {deviceFlowCodes.Count()} device codes");
             return Task.CompletedTask;
         }
     }
