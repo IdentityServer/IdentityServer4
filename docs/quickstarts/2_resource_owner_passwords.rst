@@ -2,6 +2,8 @@
 Protecting an API using Passwords
 =================================
 
+.. note:: For any pre-requisites (like e.g. templates) have a look at the :ref:`overview <refQuickstartOverview>` first.
+
 The OAuth 2.0 resource owner password grant allows a client to send username and password
 to the token service and get an access token back that represents that user.
 

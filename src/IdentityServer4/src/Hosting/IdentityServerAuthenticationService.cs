@@ -174,7 +174,7 @@ namespace IdentityServer4.Hosting
 
             if (identity.FindFirst(JwtClaimTypes.AuthenticationTime) == null)
             {
-                var time = authTime.ToEpochTime().ToString();
+                var time = new DateTimeOffset(authTime).ToUnixTimeSeconds().ToString();
 
                 _logger.LogDebug("Adding auth_time claim with value: {value}", time);
                 identity.AddClaim(new Claim(JwtClaimTypes.AuthenticationTime, time, ClaimValueTypes.Integer));

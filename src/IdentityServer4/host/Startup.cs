@@ -10,7 +10,9 @@ using idunno.Authentication.Certificate;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Polly;
 using System;
 using System.Threading.Tasks;
 
@@ -23,6 +25,8 @@ namespace Host
         public Startup(IConfiguration config)
         {
             _config = config;
+
+            IdentityModelEventSource.ShowPII = true;
         }
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
@@ -36,7 +40,8 @@ namespace Host
                 iis.AutomaticAuthentication = false;
             });
 
-            services.AddIdentityServer(options =>
+
+            var builder = services.AddIdentityServer(options =>
                 {
                     options.Events.RaiseSuccessEvents = true;
                     options.Events.RaiseFailureEvents = true;
@@ -58,6 +63,34 @@ namespace Host
                 .AddTestUsers(TestUsers.Users)
                 .AddMutualTlsSecretValidators();
 
+            //builder.AddJwtRequestUriHttpClient(client =>
+            //{
+            //    client.Timeout = TimeSpan.FromSeconds(30);
+            //});
+
+         
+            builder.AddBackChannelLogoutHttpClient(client =>
+            {
+                client.Timeout = TimeSpan.FromSeconds(30);
+            })
+            .AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(new[]
+            {
+                TimeSpan.FromSeconds(1),
+                TimeSpan.FromSeconds(2),
+                TimeSpan.FromSeconds(3)
+            }));
+
+            builder.AddJwtRequestUriHttpClient(client =>
+            {
+                client.Timeout = TimeSpan.FromSeconds(30);
+            })
+            .AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(new[]
+            {
+                TimeSpan.FromSeconds(1),
+                TimeSpan.FromSeconds(2),
+                TimeSpan.FromSeconds(3)
+            }));
+
             services.AddExternalIdentityProviders();
             services.AddLocalApiAuthentication();
 
@@ -78,8 +111,7 @@ namespace Host
                    };
                });
 
-
-            return services.BuildServiceProvider(validateScopes: true);
+            return services.BuildServiceProvider(validateScopes: false);
         }
 
         public void Configure(IApplicationBuilder app)

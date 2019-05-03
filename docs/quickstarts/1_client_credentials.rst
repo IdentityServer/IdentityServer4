@@ -4,6 +4,8 @@ Protecting an API using Client Credentials
 
 This quickstart presents the most basic scenario for protecting APIs using IdentityServer. We will define an API and a Client that wants to access it. The client will request an access token at IdentityServer by providing a ``ClientCredentials`` which acts as a secret known to both the client and IdentityServer and it will use the token to gain access to the API.
 
+.. note:: For any pre-requisites (like e.g. templates) have a look at the :ref:`overview <refQuickstartOverview>` first.
+
 Setting up the ASP.NET Core application
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 First create a directory for the application - then use our template to create an ASP.NET Core application that includes a basic IdentityServer setup, e.g.::
@@ -39,7 +41,7 @@ Defining an API Resource
 An API is a resource in your system that you want to protect.
 
 Resource definitions can be loaded in many ways, the template uses a "code as configuration" appproach.
-In the ``Config.cs`` file you can find a method called ``GetApis``, define the API as follows::
+In the [``Config.cs``](https://github.com/IdentityServer/IdentityServer4/blob/master/samples/Quickstarts/1_ClientCredentials/src/IdentityServer/Config.cs) file you can find a method called ``GetApis``, define the API as follows::
 
     public static IEnumerable<ApiResource> GetApis()
     {
@@ -55,7 +57,7 @@ The next step is to define a client that can access this API.
 
 For this scenario, the client will not have an interactive user, and will authenticate
 using the so called client secret with IdentityServer.
-Add the following code to your `Config.cs` file::
+Add the following code to your  [``Config.cs``](https://github.com/IdentityServer/IdentityServer4/blob/master/samples/Quickstarts/1_ClientCredentials/src/IdentityServer/Config.cs)  file::
 
     public static IEnumerable<Client> GetClients()
     {
@@ -113,7 +115,14 @@ Run from within the ``src`` folder the following command::
 
     dotnet new web -n Api
 
-Configure the API application to run on ``http://localhost:5001`` only.
+Then add it to the solution by running the following commands::
+
+    cd ..
+    dotnet sln add .\src\Api\Api.csproj
+
+Configure the API application to run on ``http://localhost:5001`` only. You can do this by editing the `launchSettings.json` file inside the Properties folder. Change the application URL setting to be::
+
+    "applicationUrl": "http://localhost:5001"
 
 The controller
 --------------
@@ -170,7 +179,7 @@ Update `Startup` to look like this::
     }
 
 
-``AddAuthentication`` adds the authentication services to DI and configures ``"Bearer"`` as the default scheme. ``AddIdentityServerAuthentication`` adds the IdentityServer access token validation handler into DI for use by the authentication services.
+``AddAuthentication`` adds the authentication services to DI and configures ``"Bearer"`` as the default scheme. 
 ``UseAuthentication`` adds the authentication middleware to the pipeline so authentication will be performed automatically on every call into the host.
 
 Navigating to the controller ``http://localhost:5001/identity`` on a browser should return a 401 status code. This means your API requires a credential and is now protected by IdentityServer.
@@ -178,11 +187,16 @@ Navigating to the controller ``http://localhost:5001/identity`` on a browser sho
 Creating the client
 ^^^^^^^^^^^^^^^^^^^
 The last step is to write a client that requests an access token, and then uses this
-token to access the API. For that, add a console project to your solution::
+token to access the API. For that, add a console project to your solution, remember to create it in the ``src``::
 
     dotnet new console -n Client
     
-and copy the content from ``Program.cs`` `here <https://github.com/IdentityServer/IdentityServer4.Samples/blob/master/Quickstarts/1_ClientCredentials/src/Client/Program.cs>`_.
+Then as before, add it to your solution using::
+
+    cd ..
+    dotnet sln add .\src\Client\Client.csproj
+    
+Open up ``Program.cs`` and copy the content from `here <https://github.com/IdentityServer/IdentityServer4/blob/master/samples/Quickstarts/1_ClientCredentials/src/Client/Program.cs>`_ to it..
 
 The client program invokes the ``Main`` method asynchronously in order to run asynchronous http calls. This feature is possible since ``C# 7.1`` and will be available once you edit Client.csproj to add the following line as a ``PropertyGroup``::
 

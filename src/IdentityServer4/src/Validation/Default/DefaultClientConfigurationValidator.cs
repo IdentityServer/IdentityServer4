@@ -49,6 +49,9 @@ namespace IdentityServer4.Validation
                 await ValidateRedirectUriAsync(context);
                 if (context.IsValid == false) return;
 
+                await ValidateAllowedCorsOriginsAsync(context);
+                if (context.IsValid == false) return;
+
                 await ValidateUriSchemesAsync(context);
                 if (context.IsValid == false) return;
 
@@ -131,6 +134,53 @@ namespace IdentityServer4.Validation
                 if (!context.Client.RedirectUris.Any())
                 {
                     context.SetError("No redirect URI configured.");
+                }
+            }
+
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Validates allowed CORS origins for valid format.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <returns></returns>
+        protected virtual Task ValidateAllowedCorsOriginsAsync(ClientConfigurationValidationContext context)
+        {
+            if (context.Client.AllowedCorsOrigins?.Any() == true)
+            {
+                foreach (var origin in context.Client.AllowedCorsOrigins)
+                {
+                    var fail = true;
+
+                    if (!String.IsNullOrWhiteSpace(origin) && Uri.TryCreate(origin, UriKind.Absolute, out var uri))
+                    {
+                        if (uri.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) ||
+                            uri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase))
+                        {
+                            // http + :// + host/authority
+                            var originLength = uri.Scheme.Length + 3 + uri.Authority.Length;
+                            var path = origin.Substring(originLength);
+                            if (String.IsNullOrWhiteSpace(path))
+                            {
+                                fail = false;
+                            }
+                        }
+                    }
+
+                    if (fail)
+                    {
+                        if (!String.IsNullOrWhiteSpace(origin))
+                        {
+                            context.SetError($"AllowedCorsOrigins contains invalid origin: {origin}");
+                        }
+                        else
+                        {
+                            context.SetError($"AllowedCorsOrigins contains invalid origin. There is an empty value.");
+                        }
+                        return Task.CompletedTask;
+                    }
+
                 }
             }
 

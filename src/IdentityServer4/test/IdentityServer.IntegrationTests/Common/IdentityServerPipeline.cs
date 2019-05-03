@@ -13,7 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using IdentityServer4.Infrastructure;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Services;
@@ -63,7 +62,8 @@ namespace IdentityServer4.IntegrationTests.Common
         public BrowserClient BrowserClient { get; set; }
         public HttpClient BackChannelClient { get; set; }
 
-        public BackChannelMessageHandler BackChannelMessageHandler { get; set; } = new BackChannelMessageHandler();
+        public MockMessageHandler BackChannelMessageHandler { get; set; } = new MockMessageHandler();
+        public MockMessageHandler JwtRequestMessageHandler { get; set; } = new MockMessageHandler();
 
         public event Action<IServiceCollection> OnPreConfigureServices = services => { };
         public event Action<IServiceCollection> OnPostConfigureServices = services => { };
@@ -140,7 +140,12 @@ namespace IdentityServer4.IntegrationTests.Common
             .AddTestUsers(Users)
             .AddDeveloperSigningCredential(persistKey: false);
 
-            services.AddSingleton(new BackChannelHttpClient(BackChannelMessageHandler));
+            services.AddHttpClient()
+                .AddHttpClient<BackChannelLogoutHttpClient>()
+                .AddHttpMessageHandler(() => BackChannelMessageHandler);
+
+            services.AddHttpClient<JwtRequestUriHttpClient>()
+                .AddHttpMessageHandler(() => JwtRequestMessageHandler);
 
             OnPostConfigureServices(services);
         }
@@ -299,8 +304,8 @@ namespace IdentityServer4.IntegrationTests.Common
         }
 
         public string CreateAuthorizeUrl(
-            string clientId,
-            string responseType,
+            string clientId = null,
+            string responseType = null,
             string scope = null,
             string redirectUri = null,
             string state = null,
@@ -370,13 +375,16 @@ namespace IdentityServer4.IntegrationTests.Common
         }
     }
 
-    public class BackChannelMessageHandler : HttpMessageHandler
+    public class MockMessageHandler : DelegatingHandler
     {
+        public bool InvokeWasCalled { get; set; }
         public Func<HttpRequestMessage, Task> OnInvoke { get; set; }
         public HttpResponseMessage Response { get; set; } = new HttpResponseMessage(HttpStatusCode.OK);
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
+            InvokeWasCalled = true;
+
             if (OnInvoke != null)
             {
                 await OnInvoke.Invoke(request);

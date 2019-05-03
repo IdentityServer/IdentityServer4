@@ -79,7 +79,7 @@ namespace IdentityServer4
 
             if (AuthenticationTime.HasValue)
             {
-                claims.Add(new Claim(JwtClaimTypes.AuthenticationTime, AuthenticationTime.Value.ToEpochTime().ToString()));
+                claims.Add(new Claim(JwtClaimTypes.AuthenticationTime, new DateTimeOffset(AuthenticationTime.Value).ToUnixTimeSeconds().ToString()));
             }
 
             if (AuthenticationMethods.Any())

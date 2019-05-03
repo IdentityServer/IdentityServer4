@@ -43,6 +43,8 @@ namespace IdentityServer4.Configuration
         /// <summary>
         /// Gets or sets the timeout on the back channel logout HTTP call.
         /// </summary>
+        // todo: remove in 3.0
+        [Obsolete("Replaced by the use of BackChannelLogoutHttpClient. Use the new AddBackChannelLogoutHttpClient to configure the HttpClient settings.")]
         public TimeSpan BackChannelLogoutTimeOut { get; set; } = TimeSpan.FromSeconds(30);
 
         /// <summary>

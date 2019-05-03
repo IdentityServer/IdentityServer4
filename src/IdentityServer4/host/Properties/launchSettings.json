@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iis": {
-      "applicationUrl": "https://local.identityserver.io",
+      "applicationUrl": "https://sts.identityserver.local",
       "sslPort": 0
     },
     "iisExpress": {

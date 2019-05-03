@@ -18,7 +18,7 @@
 [Rr]eleases/
 x64/
 x86/
-build/
+
 bld/
 [Bb]in/
 [Oo]bj/
@@ -198,9 +198,8 @@ FakesAssemblies/
 *.opt
 docs/_build/
 
-# Cake Build Related
+# Local .NET CLI tools
 tools/
-.dotnet
 
 # Rider
 .idea

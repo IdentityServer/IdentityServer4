@@ -204,7 +204,7 @@ namespace IdentityServer4.ResponseHandling
             if (request.Client.UserSsoLifetime.HasValue)
             {
                 var authTimeEpoch = request.Subject.GetAuthenticationTimeEpoch();
-                var nowEpoch = Clock.UtcNow.ToEpochTime();
+                var nowEpoch = Clock.UtcNow.ToUnixTimeSeconds();
 
                 var diff = nowEpoch - authTimeEpoch;
                 if (diff > request.Client.UserSsoLifetime.Value)

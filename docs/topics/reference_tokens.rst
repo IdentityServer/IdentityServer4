@@ -16,8 +16,8 @@ You can switch the token type of a client using the following setting::
     client.AccessTokenType = AccessTokenType.Reference;
 
 IdentityServer provides an implementation of the OAuth 2.0 introspection specification which allows APIs to dereference the tokens.
-You can either use our dedicated `introspection middleware <https://github.com/IdentityModel/IdentityModel.AspNetCore.OAuth2Introspection>`_
-or use the `identity server authentication middleware <https://github.com/IdentityServer/IdentityServer4.AccessTokenValidation>`_ which can validate both JWTs and reference tokens.
+You can either use our dedicated `introspection handler <https://github.com/IdentityModel/IdentityModel.AspNetCore.OAuth2Introspection>`_
+or use the `identity server authentication handler <https://github.com/IdentityServer/IdentityServer4.AccessTokenValidation>`_ which can validate both JWTs and reference tokens.
 
 The introspection endpoint requires authentication - since the client of an introspection endpoint is an API, you configure the secret on the ``ApiResource``::
 

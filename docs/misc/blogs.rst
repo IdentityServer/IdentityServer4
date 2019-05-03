@@ -10,10 +10,14 @@ Team posts
 * `The State of the Implicit Flow in OAuth2 <https://brockallen.com/2019/01/03/the-state-of-the-implicit-flow-in-oauth2/>`_
 * `An alternative way to secure SPAs (with ASP.NET Core, OpenID Connect, OAuth 2.0 and ProxyKit  <https://leastprivilege.com/2019/01/18/an-alternative-way-to-secure-spas-with-asp-net-core-openid-connect-oauth-2-0-and-proxykit/>`_
 * `Automatic OAuth 2.0 Token Management in ASP.NET Core <https://leastprivilege.com/2019/01/14/automatic-oauth-2-0-token-management-in-asp-net-core/>`_
+* `Encrypting Identity Tokens in IdentityServer4 <https://www.scottbrady91.com/Identity-Server/Encrypting-Identity-Tokens-in-IdentityServer4>`_
 
 2018
 ----
 * `IdentityServer4 Update <https://leastprivilege.com/2018/01/17/ndc-london-2018-identityserver-update/>`_ 
+* `IdentityServer and Swagger <https://www.scottbrady91.com/Identity-Server/ASPNET-Core-Swagger-UI-Authorization-using-IdentityServer4>`_
+* `https://www.scottbrady91.com/OAuth/Removing-Shared-Secrets-for-OAuth-Client-Authentication <https://www.scottbrady91.com/OAuth/Removing-Shared-Secrets-for-OAuth-Client-Authentication>`_
+* `Creating Your Own IdentityServer4 Storage Library <https://www.scottbrady91.com/Identity-Server/Creating-Your-Own-IdentityServer4-Storage-Library>`_
 
 2017
 ----
@@ -25,7 +29,6 @@ Team posts
 * `Announcing IdentityServer4 RC1 <https://leastprivilege.com/2016/09/06/identityserver4-rc1/>`_
 * `Getting Started with IdentityServer 4 <https://www.scottbrady91.com/Identity-Server/Getting-Started-with-IdentityServer-4>`_
 * `IdentityServer 4 SharePoint Integration using WS-Federation <https://www.scottbrady91.com/Identity-Server/IdentityServer-4-SharePoint-Integration-using-WS-Federation>`_
-* `IdentityServer and Swagger <https://www.scottbrady91.com/Identity-Server/ASPNET-Core-Swagger-UI-Authorization-using-IdentityServer4>`__
 
 What's new posts
 ^^^^^^^^^^^^^^^^
@@ -58,3 +61,7 @@ Community posts
 * `Securing a Vue.js app using OpenID Connect Code Flow with PKCE and IdentityServer4 <https://damienbod.com/2019/01/29/securing-a-vue-js-app-using-openid-connect-code-flow-with-pkce-and-identityserver4/>`_
 * `Using an OData Client with an ASP.NET Core API <https://damienbod.com/2018/10/18/using-an-odata-client-with-an-asp-net-core-api/>`_
 * `OpenID Connect back-channel logout using Azure Redis Cache and IdentityServer4 <https://damienbod.com/2018/12/18/openid-connect-back-channel-logout-using-azure-redis-cache-and-identityserver4/>`_
+* `Single Sign Out in IdentityServer4 with Back Channel Logout <https://blog.tretainfotech.com/posts/2018/august/single-sign-out-in-identityserver4-with-back-channel-logout/>`_
+
+
+

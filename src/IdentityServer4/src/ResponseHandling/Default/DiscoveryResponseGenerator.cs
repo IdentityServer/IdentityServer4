@@ -174,7 +174,7 @@ namespace IdentityServer4.ResponseHandling
 
                     if (mtlsEndpoints.Any())
                     {
-                        entries.Add("mtls_endpoint_aliases", mtlsEndpoints);
+                        entries.Add(OidcConstants.Discovery.MtlsEndpointAliases, mtlsEndpoints);
                     }
                 }
             }
@@ -303,6 +303,16 @@ namespace IdentityServer4.ResponseHandling
             entries.Add(OidcConstants.Discovery.SubjectTypesSupported, new[] { "public" });
             entries.Add(OidcConstants.Discovery.IdTokenSigningAlgorithmsSupported, new[] { Constants.SigningAlgorithms.RSA_SHA_256 });
             entries.Add(OidcConstants.Discovery.CodeChallengeMethodsSupported, new[] { OidcConstants.CodeChallengeMethods.Plain, OidcConstants.CodeChallengeMethods.Sha256 });
+
+            if (Options.Endpoints.EnableAuthorizeEndpoint)
+            {
+                entries.Add(OidcConstants.Discovery.RequestParameterSupported, true);
+
+                if (Options.Endpoints.EnableJwtRequestUri)
+                {
+                    entries.Add(OidcConstants.Discovery.RequestUriParameterSupported, true);
+                }
+            }
 
             if (Options.MutualTls.Enabled)
             {

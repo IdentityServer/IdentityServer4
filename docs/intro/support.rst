@@ -44,6 +44,6 @@ Check the agenda and upcoming public dates  `here <https://identityserver.io/tra
 We can also perform the training privately at your company. 
 `Contact us <mailto:contact@identityserver.io>`_ to request the training on-site. 
 
-**Admin UI, Identity Express and SAML2p support**
+**Admin UI, WS-Federation and SAML2p IdP support**
 
 There are a couple of commercial add-on products available from our partners, check https://www.identityserver.com/products/.

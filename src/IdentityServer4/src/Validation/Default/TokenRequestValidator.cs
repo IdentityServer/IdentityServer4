@@ -252,6 +252,7 @@ namespace IdentityServer4.Validation
             }
 
             _validatedRequest.AuthorizationCode = authZcode;
+            _validatedRequest.Subject = authZcode.Subject;
 
             /////////////////////////////////////////////
             // validate redirect_uri
@@ -417,7 +418,7 @@ namespace IdentityServer4.Validation
                 if (resourceOwnerContext.Result.Error == OidcConstants.TokenErrors.UnsupportedGrantType)
                 {
                     LogError("Resource owner password credential grant type not supported");
-                    await RaiseFailedResourceOwnerAuthenticationEventAsync(userName, "password grant type not supported");
+                    await RaiseFailedResourceOwnerAuthenticationEventAsync(userName, "password grant type not supported", resourceOwnerContext.Request.Client.ClientId);
 
                     return Invalid(OidcConstants.TokenErrors.UnsupportedGrantType, customResponse: resourceOwnerContext.Result.CustomResponse);
                 }
@@ -429,8 +430,8 @@ namespace IdentityServer4.Validation
                     errorDescription = resourceOwnerContext.Result.ErrorDescription;
                 }
 
-                _logger.LogInformation("User authentication failed: {error}", errorDescription ?? resourceOwnerContext.Result.Error);
-                await RaiseFailedResourceOwnerAuthenticationEventAsync(userName, errorDescription);
+                LogInformation("User authentication failed: {error}", errorDescription ?? resourceOwnerContext.Result.Error);
+                await RaiseFailedResourceOwnerAuthenticationEventAsync(userName, errorDescription, resourceOwnerContext.Request.Client.ClientId);
 
                 return Invalid(resourceOwnerContext.Result.Error, errorDescription, resourceOwnerContext.Result.CustomResponse);
             }
@@ -439,7 +440,7 @@ namespace IdentityServer4.Validation
             {
                 var error = "User authentication failed: no principal returned";
                 LogError(error);
-                await RaiseFailedResourceOwnerAuthenticationEventAsync(userName, error);
+                await RaiseFailedResourceOwnerAuthenticationEventAsync(userName, error, resourceOwnerContext.Request.Client.ClientId);
 
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
@@ -453,7 +454,7 @@ namespace IdentityServer4.Validation
             if (isActiveCtx.IsActive == false)
             {
                 LogError("User has been disabled", new { subjectId = resourceOwnerContext.Result.Subject.GetSubjectId() });
-                await RaiseFailedResourceOwnerAuthenticationEventAsync(userName, "user is inactive");
+                await RaiseFailedResourceOwnerAuthenticationEventAsync(userName, "user is inactive", resourceOwnerContext.Request.Client.ClientId);
 
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
@@ -461,7 +462,7 @@ namespace IdentityServer4.Validation
             _validatedRequest.UserName = userName;
             _validatedRequest.Subject = resourceOwnerContext.Result.Subject;
 
-            await RaiseSuccessfulResourceOwnerAuthenticationEventAsync(userName, resourceOwnerContext.Result.Subject.GetSubjectId());
+            await RaiseSuccessfulResourceOwnerAuthenticationEventAsync(userName, resourceOwnerContext.Result.Subject.GetSubjectId(), resourceOwnerContext.Request.Client.ClientId);
             _logger.LogDebug("Resource owner password token request validation success.");
             return Valid(resourceOwnerContext.Result.CustomResponse);
         }
@@ -487,7 +488,7 @@ namespace IdentityServer4.Validation
 
             if (result.IsError)
             {
-                _logger.LogWarning("Refresh token validation failed. aborting.");
+                LogWarning("Refresh token validation failed. aborting");
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
@@ -751,6 +752,21 @@ namespace IdentityServer4.Validation
 
         private void LogError(string message = null, object values = null)
         {
+            LogWithRequestDetails(LogLevel.Error, message, values);
+        }
+
+        private void LogWarning(string message = null, object values = null)
+        {
+            LogWithRequestDetails(LogLevel.Warning, message, values);
+        }
+
+        private void LogInformation(string message = null, object values = null)
+        {
+            LogWithRequestDetails(LogLevel.Information, message, values);
+        }
+
+        private void LogWithRequestDetails(LogLevel logLevel, string message = null, object values = null)
+        {
             var details = new TokenRequestValidationLog(_validatedRequest);
 
             if (message.IsPresent())
@@ -759,11 +775,11 @@ namespace IdentityServer4.Validation
                 {
                     if (values == null)
                     {
-                        _logger.LogError(message + ", {@details}", details);
+                        _logger.Log(logLevel, message + ", {@details}", details);
                     }
                     else
                     {
-                        _logger.LogError(message + "{@values}, details: {@details}", values, details);
+                        _logger.Log(logLevel, message + "{@values}, details: {@details}", values, details);
                     }
                     
                 }
@@ -774,24 +790,23 @@ namespace IdentityServer4.Validation
             }
             else
             {
-                _logger.LogError("{@details}", details);
+                _logger.Log(logLevel, "{@details}", details);
             }
         }
 
         private void LogSuccess()
         {
-            var details = new TokenRequestValidationLog(_validatedRequest);
-            _logger.LogInformation("Token request validation success\n{@details}", details);
+            LogWithRequestDetails(LogLevel.Information, "Token request validation success");
         }
 
-        private Task RaiseSuccessfulResourceOwnerAuthenticationEventAsync(string userName, string subjectId)
+        private Task RaiseSuccessfulResourceOwnerAuthenticationEventAsync(string userName, string subjectId, string clientId)
         {
-            return _events.RaiseAsync(new UserLoginSuccessEvent(userName, subjectId, null, false));
+            return _events.RaiseAsync(new UserLoginSuccessEvent(userName, subjectId, null, false, clientId));
         }
 
-        private Task RaiseFailedResourceOwnerAuthenticationEventAsync(string userName, string error)
+        private Task RaiseFailedResourceOwnerAuthenticationEventAsync(string userName, string error, string clientId)
         {
-            return _events.RaiseAsync(new UserLoginFailureEvent(userName, error));
+            return _events.RaiseAsync(new UserLoginFailureEvent(userName, error, clientId: clientId));
         }
     }
 }

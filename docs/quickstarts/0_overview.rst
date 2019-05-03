@@ -1,3 +1,4 @@
+.. _refQuickstartOverview:
 Overview
 ========
 The quickstarts provide step by step instructions for various common IdentityServer scenarios.
@@ -13,8 +14,7 @@ it is recommended you do them in order.
 * adding AdminUI community edition to manage users and configuration
 
 Every quickstart has a reference solution - you can find the code in the 
-`IdentityServer4.Samples <https://github.com/IdentityServer/IdentityServer4.Samples>`_
-repo in the quickstarts folder.
+`samples <https://github.com/IdentityServer/IdentityServer4/tree/master/samples/Quickstarts>`_ folder.
 
 Preparation
 ^^^^^^^^^^^

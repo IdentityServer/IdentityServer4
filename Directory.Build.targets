@@ -2,11 +2,15 @@
 
   <PropertyGroup>
     <FrameworkVersion>2.1</FrameworkVersion>
-    <IdentityServerVersion>2.4.0</IdentityServerVersion>
+    <IdentityServerVersion>2.5.0-*</IdentityServerVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Update="IdentityModel" Version="3.10.6" />
+    <PackageReference Include="MinVer" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    
+    <PackageReference Update="IdentityModel" Version="3.10.10" />
 
     <PackageReference Update="IdentityServer4" Version="$(IdentityServerVersion)" />
     <PackageReference Update="IdentityServer4.AspNetIdentity" Version="$(IdentityServerVersion)" />
@@ -25,6 +29,7 @@
     <PackageReference Update="Microsoft.EntityFrameworkCore.Relational" Version="$(FrameworkVersion)" />
 
     <PackageReference Update="Microsoft.Extensions.Caching.Memory" Version="$(FrameworkVersion)" />
+    <PackageReference Update="Microsoft.Extensions.Http" Version="$(FrameworkVersion)" />
     <PackageReference Update="Microsoft.Extensions.Logging" Version="$(FrameworkVersion)" />
     <PackageReference Update="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(FrameworkVersion)" />
     
@@ -33,4 +38,10 @@
     
     <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-18618-05" PrivateAssets="All" />
   </ItemGroup>
+
+  <Target Name="SetAssemblyVersion" AfterTargets="MinVer">
+    <PropertyGroup>
+      <AssemblyVersion>$(MinVerMajor).$(MinVerMinor).$(MinVerPatch).0</AssemblyVersion>
+    </PropertyGroup>
+  </Target>
 </Project>

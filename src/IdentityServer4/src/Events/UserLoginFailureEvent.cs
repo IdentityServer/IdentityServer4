@@ -18,7 +18,8 @@ namespace IdentityServer4.Events
         /// <param name="username">The username.</param>
         /// <param name="error">The error.</param>
         /// <param name="interactive">Specifies if login was interactive</param>
-        public UserLoginFailureEvent(string username, string error, bool interactive = true)
+        /// <param name="clientId">The client id</param>
+        public UserLoginFailureEvent(string username, string error, bool interactive = true, string clientId = null)
             : base(EventCategories.Authentication,
                   "User Login Failure",
                   EventTypes.Failure, 
@@ -26,6 +27,7 @@ namespace IdentityServer4.Events
                   error)
         {
             Username = username;
+            ClientId = clientId;
 
             if (interactive)
             {
@@ -52,5 +54,13 @@ namespace IdentityServer4.Events
         /// The endpoint.
         /// </value>
         public string Endpoint { get; set; }
+
+        /// <summary>
+        /// Gets or sets the client id.
+        /// </summary>
+        /// <value>
+        /// The client id.
+        /// </value>
+        public string ClientId { get; set; }
     }
 }

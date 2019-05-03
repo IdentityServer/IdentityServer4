@@ -2,6 +2,8 @@
 Adding User Authentication with OpenID Connect
 ==============================================
 
+.. note:: For any pre-requisites (like e.g. templates) have a look at the :ref:`overview <refQuickstartOverview>` first.
+
 In this quickstart we want to add support for interactive user authentication via the
 OpenID Connect protocol to our IdentityServer.
 
@@ -274,5 +276,5 @@ middleware is where you configure which scopes will be sent to IdentityServer du
 
 It is also noteworthy, that the retrieval of claims for tokens is an extensibility point - ``IProfileService``.
 Since we are using ``AddTestUsers``, the ``TestUserProfileService`` is used by default.
-You can inspect the source code `here <https://github.com/IdentityServer/IdentityServer4/blob/master/src/Test/TestUserProfileService.cs>`_
+You can inspect the source code `here <https://github.com/IdentityServer/IdentityServer4/blob/master/src/IdentityServer4/src/Test/TestUserProfileService.cs>`_
 to see how it works.
