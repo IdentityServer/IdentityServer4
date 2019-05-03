@@ -123,51 +123,87 @@ namespace IdentityServer4.EntityFramework
             {
                 _logger.LogTrace("Querying for expired grants to remove");
 
-                var found = Int32.MaxValue;
-
                 using (var serviceScope = _serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
                 {
                     var tokenCleanupNotification = serviceScope.ServiceProvider.GetService<IOperationalStoreNotification>();
                     using (var context = serviceScope.ServiceProvider.GetService<IPersistedGrantDbContext>())
                     {
-                        while (found >= _options.TokenCleanupBatchSize)
-                        {
-                            // TODO: Device Flow cleanup
-                            var expired = context.PersistedGrants
-                                .Where(x => x.Expiration < DateTime.UtcNow)
-                                .OrderBy(x => x.Key)
-                                .Take(_options.TokenCleanupBatchSize)
-                                .ToArray();
-
-                            found = expired.Length;
-                            _logger.LogDebug("Removing {grantCount} grants", found);
-
-                            if (found > 0)
-                            {
-                                context.PersistedGrants.RemoveRange(expired);
-                                try
-                                {
-                                    context.SaveChanges();
-
-                                    if (tokenCleanupNotification != null)
-                                    {
-                                        await tokenCleanupNotification.PersistedGrantsRemovedAsync(expired);
-                                    }
-                                }
-                                catch (DbUpdateConcurrencyException ex)
-                                {
-                                    // we get this if/when someone else already deleted the records
-                                    // we want to essentially ignore this, and keep working
-                                    _logger.LogDebug("Concurrency exception removing expired grants: {exception}", ex.Message);
-                                }
-                            }
-                        }
+                        await RemoveGrants(context, tokenCleanupNotification);
+                        await RemoveDeviceCodes(context);
                     }
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError("Exception removing expired grants: {exception}", ex.Message);
+            }
+        }
+
+        private async Task RemoveGrants(IPersistedGrantDbContext context, IOperationalStoreNotification tokenCleanupNotification)
+        {
+            var found = Int32.MaxValue;
+            
+            while (found >= _options.TokenCleanupBatchSize)
+            {
+                var expiredGrants = context.PersistedGrants
+                    .Where(x => x.Expiration < DateTime.UtcNow)
+                    .OrderBy(x => x.Key)
+                    .Take(_options.TokenCleanupBatchSize)
+                    .ToArray();
+
+                found = expiredGrants.Length;
+                _logger.LogInformation("Removing {grantCount} grants", found);
+
+                if (found > 0)
+                {
+                    context.PersistedGrants.RemoveRange(expiredGrants);
+                    try
+                    {
+                        context.SaveChanges();
+
+                        if (tokenCleanupNotification != null)
+                        {
+                            await tokenCleanupNotification.PersistedGrantsRemovedAsync(expiredGrants);
+                        }
+                    }
+                    catch (DbUpdateConcurrencyException ex)
+                    {
+                        // we get this if/when someone else already deleted the records
+                        // we want to essentially ignore this, and keep working
+                        _logger.LogDebug("Concurrency exception removing expired grants: {exception}", ex.Message);
+                    }
+                }
+            }
+        }
+
+        private async Task RemoveDeviceCodes(IPersistedGrantDbContext context)
+        {
+            var found = Int32.MaxValue;
+
+            while (found >= _options.TokenCleanupBatchSize)
+            {
+                var expiredCodes = context.DeviceFlowCodes
+                    .Where(x => x.Expiration < DateTime.UtcNow)
+                    .Take(_options.TokenCleanupBatchSize)
+                    .ToArray();
+
+                found = expiredCodes.Length;
+                _logger.LogInformation("Removing {deviceCodeCount} device flow codes", found);
+
+                if (found > 0)
+                {
+                    context.DeviceFlowCodes.RemoveRange(expiredCodes);
+                    try
+                    {
+                        context.SaveChanges();
+                    }
+                    catch (DbUpdateConcurrencyException ex)
+                    {
+                        // we get this if/when someone else already deleted the records
+                        // we want to essentially ignore this, and keep working
+                        _logger.LogDebug("Concurrency exception removing expired grants: {exception}", ex.Message);
+                    }
+                }
             }
         }
     }
