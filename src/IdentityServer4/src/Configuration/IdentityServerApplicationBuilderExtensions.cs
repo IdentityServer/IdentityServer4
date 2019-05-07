@@ -23,8 +23,9 @@ namespace Microsoft.AspNetCore.Builder
         /// Adds IdentityServer to the pipeline.
         /// </summary>
         /// <param name="app">The application.</param>
+        /// <param name="options">The options.</param>
         /// <returns></returns>
-        public static IApplicationBuilder UseIdentityServer(this IApplicationBuilder app)
+        public static IApplicationBuilder UseIdentityServer(this IApplicationBuilder app, IdentityServerMiddlewareOptions options = null)
         {
             app.Validate();
 
@@ -37,7 +38,8 @@ namespace Microsoft.AspNetCore.Builder
             // handler, which just re-assigns the user on the context. claims transformation
             // will run twice, since that's not cached (whereas the authN handler result is)
             // related: https://github.com/aspnet/Security/issues/1399
-            app.UseAuthentication();
+            if (options == null) options = new IdentityServerMiddlewareOptions();
+            options.AuthenticationMiddleware(app);
 
             app.UseMiddleware<MutualTlsTokenEndpointMiddleware>();
             app.UseMiddleware<IdentityServerMiddleware>();
