@@ -1,26 +1,17 @@
 ﻿using Clients;
+using IdentityModel;
+using idunno.Authentication.Certificate;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using idunno.Authentication.Certificate;
-using IdentityModel;
-using System;
 using Newtonsoft.Json.Linq;
-using Microsoft.AspNetCore.Authentication;
+using System;
+using System.Threading.Tasks;
 
 namespace SampleApi
 {
     public class Startup
     {
-        private readonly ILogger<Startup> _logger;
-
-        public Startup(ILogger<Startup> logger)
-        {
-            _logger = logger;
-        }
-
         public void ConfigureServices(IServiceCollection services)
         {
             services
