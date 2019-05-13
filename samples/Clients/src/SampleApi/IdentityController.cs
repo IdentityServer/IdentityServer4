@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System.Linq;
 
 namespace SampleApi.Controllers
@@ -8,11 +9,20 @@ namespace SampleApi.Controllers
     [Authorize]
     public class IdentityController : ControllerBase
     {
+        private readonly ILogger<IdentityController> _logger;
+
+        public IdentityController(ILogger<IdentityController> logger)
+        {
+            _logger = logger;
+        }
+
         [HttpGet]
         public ActionResult Get()
         {
-            return new JsonResult(User.Claims.Select(
-                c => new { c.Type, c.Value }));
+            var claims = User.Claims.Select(c => new { c.Type, c.Value });
+            _logger.LogInformation("claims: {claims}", claims);
+
+            return new JsonResult(claims);
         }
     }
 }

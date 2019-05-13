@@ -12,7 +12,7 @@ namespace ConsoleClientWithBrowser
     public class Program
     {
         static OidcClient _oidcClient;
-        static HttpClient _apiClient = new HttpClient { BaseAddress = new Uri(Constants.SampleApi + "/identity") };
+        static HttpClient _apiClient = new HttpClient { BaseAddress = new Uri(Constants.SampleApi) };
 
         public static async Task Main()
         {
@@ -36,7 +36,11 @@ namespace ConsoleClientWithBrowser
             var options = new OidcClientOptions
             {
                 Authority = Constants.Authority,
+
                 ClientId = "console.hybrid.pkce",
+                Flow = OidcClientOptions.AuthenticationFlow.Hybrid,
+                ResponseMode = OidcClientOptions.AuthorizeResponseMode.FormPost,
+
                 RedirectUri = redirectUri,
                 Scope = "openid profile api1",
                 FilterClaims = false,
@@ -117,7 +121,7 @@ namespace ConsoleClientWithBrowser
         private static async Task CallApi(string currentAccessToken)
         {
             _apiClient.SetBearerToken(currentAccessToken);
-            var response = await _apiClient.GetAsync("");
+            var response = await _apiClient.GetAsync("identity");
 
             if (response.IsSuccessStatusCode)
             {
