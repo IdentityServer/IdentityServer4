@@ -5,6 +5,8 @@ These endpoints are typically protected by IdentityServer itself.
 
 For simple scenarios, we give you some helpers. See the advanced section to understand more of the internal plumbing.
 
+.. note:: You could achieve the same by using either our ``IdentityServerAuthentication`` handler or Microsoft's ``JwtBearer`` handler. But this is not recommended since it requires more configuration and creates dependencies on external libraries that might lead to conflicts in future updates.
+
 Start by registering your API as an ``ApiResource``, e.g.::
 
     public static IEnumerable<ApiResource> Apis = new List<ApiResource>
