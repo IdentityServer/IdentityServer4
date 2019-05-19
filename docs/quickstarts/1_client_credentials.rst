@@ -93,6 +93,17 @@ Loading the resource and client definitions happens in ``Startup.cs`` - the temp
             .AddInMemoryIdentityResources(Config.GetIdentityResources())
             .AddInMemoryApiResources(Config.GetApis())
             .AddInMemoryClients(Config.GetClients());
+        
+        // To know how to obtain the Environment property,
+        // take a look at the full Startup.cs file in our reporisory
+        if (Environment.IsDevelopment())
+        {
+            builder.AddDeveloperSigningCredential();
+        }
+        else
+        {
+            throw new Exception("need to configure key material");
+        }
 
         // rest omitted
     }
