@@ -100,10 +100,6 @@ Loading the resource and client definitions happens in ``Startup.cs`` - the temp
         {
             builder.AddDeveloperSigningCredential();
         }
-        else
-        {
-            throw new Exception("need to configure key material");
-        }
 
         // rest omitted
     }
