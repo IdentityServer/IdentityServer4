@@ -28,7 +28,6 @@ Arun David Shelly
 Reece Williams ([@AnEmptyReece](https://twitter.com/AnEmptyReece))  
 Alexander Zeitler ([@alexzeitler_](https://twitter.com/alexzeitler_))  
 Tobias Höft ([@tobiashoeft](https://twitter.com/tobiashoeft))  
-Richard Simpson ([@RichardSimp](https://twitter.com/RichardSimp))  
 Gusztav Varga ([@gusztavvargadr](https://twitter.com/gusztavvargadr))  
 William Grow  
 John Korsnes ([@johnkors](https://twitter.com/johnkors))  
@@ -46,7 +45,6 @@ Ibrahim Šuta ([@ibrahimsuta](https://twitter.com/ibrahimsuta))
 Dave Noderer  ([@davenoderer](https://twitter.com/davenoderer))  
 VIJAYA PAL NALLALA  
 Martijn Boland  
-Gary Ewan Park  ([@gep13](https://twitter.com/gep13))  
 Clinton Rocksmith  
 Giuseppe Turitto  
 Mauricio Schneider  
@@ -61,4 +59,4 @@ Michael Calasanz
 Fredrik Karlsson  ([@fredrik_zenit](https://twitter.com/fredrik_zenit))  
 Steve Graddy
 Tomáš Jurásek  ([@tomasjurasek](https://twitter.com/tomasjurasek))  
-
+Simon Colmer  ([@workshop2](https://twitter.com/workshop2))  
