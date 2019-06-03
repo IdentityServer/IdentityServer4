@@ -6,6 +6,10 @@ body {
   margin-top: 85px;
 }
 
+.list-inline-item {
+  margin-top: 15px;
+}
+
 .navbar-brand > .icon-banner {
   position: relative;
   top: -2px;
