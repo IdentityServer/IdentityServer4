@@ -2,9 +2,8 @@
 	margin-top: 65px;
 }
 
-.navbar-header {
-	position: relative;
-	top: -4px;
+.body-content {
+	margin-top: 85px;
 }
 
 .navbar-brand > .icon-banner {
@@ -42,10 +41,6 @@
 		.consent-scopecheck {
 			display: inline-block;
 			margin-right: 5px;
-		}
-
-		.consent-scopecheck[disabled] {
-			//visibility:hidden;
 		}
 
 		.consent-description {
@@ -107,9 +102,6 @@
 
 			&:last-child:after {
 				content: '';
-			}
-
-			.displayname {
 			}
 		}
 	}
