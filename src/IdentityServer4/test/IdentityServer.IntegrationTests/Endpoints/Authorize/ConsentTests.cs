@@ -90,7 +90,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 
             _mockPipeline.Initialize();
         }
-        
+
         [Fact]
         [Trait("Category", Category)]
         public async Task client_requires_consent_should_show_consent_page()
@@ -170,6 +170,43 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             authorization.State.Should().Be("123_state");
             var scopes = authorization.Scope.Split(' ');
             scopes.Should().BeEquivalentTo(new string[] { "api2", "openid" });
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task consent_response_should_reject_modified_request_params()
+        {
+            await _mockPipeline.LoginAsync("bob");
+
+            _mockPipeline.ConsentResponse = new ConsentResponse()
+            {
+                ScopesConsented = new string[] { "openid", "api2" }
+            };
+            _mockPipeline.BrowserClient.AllowAutoRedirect = false;
+
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                clientId: "client2",
+                responseType: "id_token token",
+                scope: "openid profile api2",
+                redirectUri: "https://client2/callback",
+                state: "123_state",
+                nonce: "123_nonce");
+            var response = await _mockPipeline.BrowserClient.GetAsync(url);
+
+            response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+            response.Headers.Location.ToString().Should().StartWith("https://server/consent");
+
+            response = await _mockPipeline.BrowserClient.GetAsync(response.Headers.Location.ToString());
+
+            response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+            response.Headers.Location.ToString().Should().StartWith("/connect/authorize/callback");
+
+            var modifiedAuthorizeCallback = "https://server" + response.Headers.Location.ToString();
+            modifiedAuthorizeCallback = modifiedAuthorizeCallback.Replace("api2", "api1%20api2");
+
+            response = await _mockPipeline.BrowserClient.GetAsync(modifiedAuthorizeCallback);
+            response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+            response.Headers.Location.ToString().Should().StartWith("https://server/consent");
         }
 
         [Fact()]
