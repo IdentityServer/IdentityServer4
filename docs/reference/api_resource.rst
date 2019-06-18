@@ -109,6 +109,6 @@ The ``AddInMemoryApiResource`` extensions method also supports adding clients fr
           "RequireConsent": false
         }
 
-Then pass the configuration section to the ``AddInMemoryApiResource`` method:
+Then pass the configuration section to the ``AddInMemoryApiResource`` method::
 
     AddInMemoryApiResources(configuration.GetSection("IdentityServer:ApiResources"))
