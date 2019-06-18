@@ -90,8 +90,8 @@ Using the convenience constructor is equivalent to this::
     }
 
 
-Defining clients in appsettings.json
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Defining API resources in appsettings.json
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The ``AddInMemoryApiResource`` extensions method also supports adding clients from the ASP.NET Core configuration file. This allows you to define static clients directly from the appsettings.json file::
 
