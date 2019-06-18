@@ -88,3 +88,27 @@ Using the convenience constructor is equivalent to this::
             }
         }
     }
+
+Defining API Resources in appsettings.json
+The AddInMemoryApiResources extensions method also supports adding resources from the ASP.NET Core configuration file. This allows you to define static API resources directly from the appsettings.json file:
+
+    "IdentityServer": {
+      "IssuerUri": "urn:sso.company.com",
+      "ApiResources": [
+        {
+          "Name": "api1",
+          "DisplayName": "My API",
+
+          "Scopes": [
+            {
+              "Name": "api1",
+              "DisplayName": "My API"
+            }
+          ]
+        }
+      ]
+    }
+
+Then pass the configuration section to the AddInMemoryApiResources method:
+
+    AddInMemoryApiResources(configuration.GetSection("IdentityServer:ApiResources"))
