@@ -97,16 +97,17 @@ The ``AddInMemoryApiResource`` extensions method also supports adding clients fr
 
     "IdentityServer": {
       "IssuerUri": "urn:sso.company.com",
-      "Clients": [
+      "ApiResources": [
         {
-          "Enabled": true,
-          "ClientId": "local-dev",
-          "ClientName": "Local Development",
-          "ClientSecrets": [ { "Value": "<Insert Sha256 hash of the secret encoded as Base64 string>" } ],
-          "AllowedGrantTypes": [ "implicit" ],
-          "AllowedScopes": [ "openid", "profile" ],
-          "RedirectUris": [ "https://localhost:5001/signin-oidc" ],
-          "RequireConsent": false
+          "Name": "api1",
+          "DisplayName": "My API",
+
+          "Scopes": [
+            {
+              "Name": "api1",
+              "DisplayName": "My API"
+            }
+          ]
         }
       ]
     }
