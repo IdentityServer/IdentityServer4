@@ -108,6 +108,8 @@ The ``AddInMemoryApiResource`` extensions method also supports adding clients fr
           "RedirectUris": [ "https://localhost:5001/signin-oidc" ],
           "RequireConsent": false
         }
+      ]
+    }
 
 Then pass the configuration section to the ``AddInMemoryApiResource`` method::
 
