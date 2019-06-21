@@ -49,7 +49,7 @@ This options class contains properties to control the configuration store and ``
     ::
             options.DefaultSchema = "myConfigurationSchema";      
 
-If you need to change the schema for the Migration History Table, you can chain another action to the ``UserSqlServer``::
+If you need to change the schema for the Migration History Table, you can chain another action to the ``UseSqlServer``::
 
     options.ConfigureDbContext = b =>
         b.UseSqlServer(connectionString,
