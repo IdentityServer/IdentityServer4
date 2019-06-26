@@ -21,27 +21,27 @@ namespace IdentityServer4.Validation
     /// <summary>
     /// Validates JWTs based on Secrets
     /// </summary>
-    internal class JwtRequestValidator
+    public class JwtRequestValidator
     {
-        private readonly string _audienceUri;
-        private readonly ILogger _logger;
+        protected readonly string AudienceUri;
+        protected readonly ILogger Logger;
 
         /// <summary>
         /// Instantiates an instance of private_key_jwt secret validator
         /// </summary>
         public JwtRequestValidator(IHttpContextAccessor contextAccessor, ILogger<JwtRequestValidator> logger)
         {
-            _audienceUri = contextAccessor.HttpContext.GetIdentityServerIssuerUri();
-            _logger = logger;
+            AudienceUri = contextAccessor.HttpContext.GetIdentityServerIssuerUri();
+            Logger = logger;
         }
 
         internal JwtRequestValidator(string audience, ILogger<JwtRequestValidator> logger)
         {
-            _audienceUri = audience;
-            _logger = logger;
+            AudienceUri = audience;
+            Logger = logger;
         }
 
-        public Task<JwtRequestValidationResult> ValidateAsync(Client client, string jwtTokenString)
+        public virtual Task<JwtRequestValidationResult> ValidateAsync(Client client, string jwtTokenString)
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
             if (String.IsNullOrWhiteSpace(jwtTokenString)) throw new ArgumentNullException(nameof(jwtTokenString));
@@ -50,20 +50,20 @@ namespace IdentityServer4.Validation
 
             var enumeratedSecrets = client.ClientSecrets.ToList().AsReadOnly();
 
-            List<SecurityKey> trustedKeys; 
+            List<SecurityKey> trustedKeys;
             try
             {
                 trustedKeys = GetKeys(enumeratedSecrets);
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Could not parse client secrets");
+                Logger.LogError(e, "Could not parse client secrets");
                 return fail;
             }
 
             if (!trustedKeys.Any())
             {
-                _logger.LogError("There are no keys available to validate JWT.");
+                Logger.LogError("There are no keys available to validate JWT.");
                 return fail;
             }
 
@@ -75,67 +75,67 @@ namespace IdentityServer4.Validation
                 ValidIssuer = client.ClientId,
                 ValidateIssuer = true,
 
-                ValidAudience = _audienceUri,
+                ValidAudience = AudienceUri,
                 ValidateAudience = true,
 
                 RequireSignedTokens = true,
                 RequireExpirationTime = true
             };
+
+            JwtSecurityToken jwtSecurityToken = null;
+
             try
             {
-                var handler = new JwtSecurityTokenHandler();
-                handler.ValidateToken(jwtTokenString, tokenValidationParameters, out var token);
-
-                var jwtSecurityToken = (JwtSecurityToken)token;
-
-                // todo: IdentityModel update
-                if (jwtSecurityToken.Payload.ContainsKey("request") ||
-                    jwtSecurityToken.Payload.ContainsKey("request_uri"))
-                {
-                    _logger.LogError("JWT payload must not contain request or request_uri");
-                    return fail;
-                }
-
-                // filter JWT validation values
-                var payload = new Dictionary<string, string>();
-                foreach(var key in jwtSecurityToken.Payload.Keys)
-                {
-                    if (!Constants.Filters.JwtRequestClaimTypesFilter.Contains(key))
-                    {
-                        var value = jwtSecurityToken.Payload[key];
-
-                        if (value is string s)
-                        {
-                            payload.Add(key, s);
-                        }
-                        else if (value is JObject jobj)
-                        {
-                            payload.Add(key, jobj.ToString(Formatting.None));
-                        }
-                        else if (value is JArray jarr)
-                        {
-                            payload.Add(key, jarr.ToString(Formatting.None));
-                        }
-                    }
-                }
-
-                var result = new JwtRequestValidationResult
-                {
-                    IsError = false,
-                    Payload = payload
-                };
-
-                _logger.LogDebug("JWT request object validation success.");
-                return Task.FromResult(result);
+                jwtSecurityToken = ValidateJwt(jwtTokenString, trustedKeys, client);
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "JWT token validation error");
+                Logger.LogError(e, "JWT token validation error");
                 return fail;
             }
+
+            // todo: IdentityModel update
+            if (jwtSecurityToken.Payload.ContainsKey("request") ||
+                jwtSecurityToken.Payload.ContainsKey("request_uri"))
+            {
+                Logger.LogError("JWT payload must not contain request or request_uri");
+                return fail;
+            }
+
+            // filter JWT validation values
+            var payload = new Dictionary<string, string>();
+            foreach (var key in jwtSecurityToken.Payload.Keys)
+            {
+                if (!Constants.Filters.JwtRequestClaimTypesFilter.Contains(key))
+                {
+                    var value = jwtSecurityToken.Payload[key];
+
+                    if (value is string s)
+                    {
+                        payload.Add(key, s);
+                    }
+                    else if (value is JObject jobj)
+                    {
+                        payload.Add(key, jobj.ToString(Formatting.None));
+                    }
+                    else if (value is JArray jarr)
+                    {
+                        payload.Add(key, jarr.ToString(Formatting.None));
+                    }
+                }
+            }
+
+            var result = new JwtRequestValidationResult
+            {
+                IsError = false,
+                Payload = payload
+            };
+
+            Logger.LogDebug("JWT request object validation success.");
+            return Task.FromResult(result);
         }
 
-        private List<SecurityKey> GetKeys(IReadOnlyCollection<Secret> secrets)
+        protected virtual List<SecurityKey> GetKeys(IReadOnlyCollection<Secret> secrets)
         {
             var keys = new List<SecurityKey>();
 
@@ -151,6 +151,29 @@ namespace IdentityServer4.Validation
             keys.AddRange(jwks);
 
             return keys;
+        }
+
+        protected virtual JwtSecurityToken ValidateJwt(string jwtTokenString, IEnumerable<SecurityKey> keys, Client client)
+        {
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                IssuerSigningKeys = keys,
+                ValidateIssuerSigningKey = true,
+
+                ValidIssuer = client.ClientId,
+                ValidateIssuer = true,
+
+                ValidAudience = AudienceUri,
+                ValidateAudience = true,
+
+                RequireSignedTokens = true,
+                RequireExpirationTime = true
+            };
+
+            var handler = new JwtSecurityTokenHandler();
+            handler.ValidateToken(jwtTokenString, tokenValidationParameters, out var token);
+
+            return (JwtSecurityToken)token;
         }
 
         private List<X509Certificate2> GetCertificates(IEnumerable<Secret> secrets)
@@ -170,7 +193,7 @@ namespace IdentityServer4.Validation
             }
             catch
             {
-                _logger.LogWarning("Could not read certificate from string: " + value);
+                Logger.LogWarning("Could not read certificate from string: " + value);
                 return null;
             }
         }
