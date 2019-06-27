@@ -8,6 +8,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using IdentityModel;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Http;
@@ -41,12 +42,12 @@ namespace IdentityServer4.Validation
             Logger = logger;
         }
 
-        public virtual Task<JwtRequestValidationResult> ValidateAsync(Client client, string jwtTokenString)
+        public virtual async Task<JwtRequestValidationResult> ValidateAsync(Client client, string jwtTokenString)
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
             if (String.IsNullOrWhiteSpace(jwtTokenString)) throw new ArgumentNullException(nameof(jwtTokenString));
 
-            var fail = Task.FromResult(new JwtRequestValidationResult { IsError = true });
+            var fail = new JwtRequestValidationResult { IsError = true };
 
             var enumeratedSecrets = client.ClientSecrets.ToList().AsReadOnly();
 
@@ -67,26 +68,11 @@ namespace IdentityServer4.Validation
                 return fail;
             }
 
-            var tokenValidationParameters = new TokenValidationParameters
-            {
-                IssuerSigningKeys = trustedKeys,
-                ValidateIssuerSigningKey = true,
-
-                ValidIssuer = client.ClientId,
-                ValidateIssuer = true,
-
-                ValidAudience = AudienceUri,
-                ValidateAudience = true,
-
-                RequireSignedTokens = true,
-                RequireExpirationTime = true
-            };
-
             JwtSecurityToken jwtSecurityToken = null;
 
             try
             {
-                jwtSecurityToken = ValidateJwt(jwtTokenString, trustedKeys, client);
+                jwtSecurityToken = await ValidateJwtAsync(jwtTokenString, trustedKeys, client);
             }
             catch (Exception e)
             {
@@ -94,36 +80,14 @@ namespace IdentityServer4.Validation
                 return fail;
             }
 
-            // todo: IdentityModel update
-            if (jwtSecurityToken.Payload.ContainsKey("request") ||
-                jwtSecurityToken.Payload.ContainsKey("request_uri"))
+            if (jwtSecurityToken.Payload.ContainsKey(OidcConstants.AuthorizeRequest.Request) ||
+                jwtSecurityToken.Payload.ContainsKey(OidcConstants.AuthorizeRequest.RequestUri))
             {
                 Logger.LogError("JWT payload must not contain request or request_uri");
                 return fail;
             }
 
-            // filter JWT validation values
-            var payload = new Dictionary<string, string>();
-            foreach (var key in jwtSecurityToken.Payload.Keys)
-            {
-                if (!Constants.Filters.JwtRequestClaimTypesFilter.Contains(key))
-                {
-                    var value = jwtSecurityToken.Payload[key];
-
-                    if (value is string s)
-                    {
-                        payload.Add(key, s);
-                    }
-                    else if (value is JObject jobj)
-                    {
-                        payload.Add(key, jobj.ToString(Formatting.None));
-                    }
-                    else if (value is JArray jarr)
-                    {
-                        payload.Add(key, jarr.ToString(Formatting.None));
-                    }
-                }
-            }
+            var payload = await ProcessPayloadAsync(jwtSecurityToken);
 
             var result = new JwtRequestValidationResult
             {
@@ -132,7 +96,7 @@ namespace IdentityServer4.Validation
             };
 
             Logger.LogDebug("JWT request object validation success.");
-            return Task.FromResult(result);
+            return result;
         }
 
         protected virtual List<SecurityKey> GetKeys(IReadOnlyCollection<Secret> secrets)
@@ -153,7 +117,7 @@ namespace IdentityServer4.Validation
             return keys;
         }
 
-        protected virtual JwtSecurityToken ValidateJwt(string jwtTokenString, IEnumerable<SecurityKey> keys, Client client)
+        protected virtual Task<JwtSecurityToken> ValidateJwtAsync(string jwtTokenString, IEnumerable<SecurityKey> keys, Client client)
         {
             var tokenValidationParameters = new TokenValidationParameters
             {
@@ -173,7 +137,35 @@ namespace IdentityServer4.Validation
             var handler = new JwtSecurityTokenHandler();
             handler.ValidateToken(jwtTokenString, tokenValidationParameters, out var token);
 
-            return (JwtSecurityToken)token;
+            return Task.FromResult((JwtSecurityToken)token);
+        }
+
+        protected virtual Task<Dictionary<string, string>> ProcessPayloadAsync(JwtSecurityToken token)
+        {
+            // filter JWT validation values
+            var payload = new Dictionary<string, string>();
+            foreach (var key in token.Payload.Keys)
+            {
+                if (!Constants.Filters.JwtRequestClaimTypesFilter.Contains(key))
+                {
+                    var value = token.Payload[key];
+
+                    if (value is string s)
+                    {
+                        payload.Add(key, s);
+                    }
+                    else if (value is JObject jobj)
+                    {
+                        payload.Add(key, jobj.ToString(Formatting.None));
+                    }
+                    else if (value is JArray jarr)
+                    {
+                        payload.Add(key, jarr.ToString(Formatting.None));
+                    }
+                }
+            }
+
+            return Task.FromResult(payload);
         }
 
         private List<X509Certificate2> GetCertificates(IEnumerable<Secret> secrets)
