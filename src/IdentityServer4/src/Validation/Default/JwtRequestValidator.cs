@@ -82,8 +82,7 @@ namespace IdentityServer4.Validation
                 return fail;
             }
 
-            JwtSecurityToken jwtSecurityToken = null;
-
+            JwtSecurityToken jwtSecurityToken;
             try
             {
                 jwtSecurityToken = await ValidateJwtAsync(jwtTokenString, trustedKeys, client);
@@ -113,6 +112,11 @@ namespace IdentityServer4.Validation
             return result;
         }
 
+        /// <summary>
+        /// Retrieves keys for a given client
+        /// </summary>
+        /// <param name="client">The client</param>
+        /// <returns></returns>
         protected virtual Task<List<SecurityKey>> GetKeysAsync(Client client)
         {
             var secrets = client.ClientSecrets.ToList().AsReadOnly();
@@ -133,6 +137,13 @@ namespace IdentityServer4.Validation
             return Task.FromResult(keys);
         }
 
+        /// <summary>
+        /// Validates the JWT token
+        /// </summary>
+        /// <param name="jwtTokenString">JWT as a string</param>
+        /// <param name="keys">The keys</param>
+        /// <param name="client">The client</param>
+        /// <returns></returns>
         protected virtual Task<JwtSecurityToken> ValidateJwtAsync(string jwtTokenString, IEnumerable<SecurityKey> keys, Client client)
         {
             var tokenValidationParameters = new TokenValidationParameters
@@ -156,6 +167,11 @@ namespace IdentityServer4.Validation
             return Task.FromResult((JwtSecurityToken)token);
         }
 
+        /// <summary>
+        /// Processes the JWT contents
+        /// </summary>
+        /// <param name="token">The JWT token</param>
+        /// <returns></returns>
         protected virtual Task<Dictionary<string, string>> ProcessPayloadAsync(JwtSecurityToken token)
         {
             // filter JWT validation values
