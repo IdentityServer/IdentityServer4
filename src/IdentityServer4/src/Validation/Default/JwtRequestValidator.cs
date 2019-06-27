@@ -20,11 +20,18 @@ using Newtonsoft.Json.Linq;
 namespace IdentityServer4.Validation
 {
     /// <summary>
-    /// Validates JWTs based on Secrets
+    /// Validates JWT requwest objects
     /// </summary>
     public class JwtRequestValidator
     {
+        /// <summary>
+        /// The audience URI to use
+        /// </summary>
         protected readonly string AudienceUri;
+
+        /// <summary>
+        /// The logger
+        /// </summary>
         protected readonly ILogger Logger;
 
         /// <summary>
@@ -36,12 +43,21 @@ namespace IdentityServer4.Validation
             Logger = logger;
         }
 
+        /// <summary>
+        /// Instantiates an instance of private_key_jwt secret validator (used for testing)
+        /// </summary>
         internal JwtRequestValidator(string audience, ILogger<JwtRequestValidator> logger)
         {
             AudienceUri = audience;
             Logger = logger;
         }
 
+        /// <summary>
+        /// Validates a JWT request object
+        /// </summary>
+        /// <param name="client">The client</param>
+        /// <param name="jwtTokenString">The JWT</param>
+        /// <returns></returns>
         public virtual async Task<JwtRequestValidationResult> ValidateAsync(Client client, string jwtTokenString)
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
@@ -49,12 +65,10 @@ namespace IdentityServer4.Validation
 
             var fail = new JwtRequestValidationResult { IsError = true };
 
-            var enumeratedSecrets = client.ClientSecrets.ToList().AsReadOnly();
-
             List<SecurityKey> trustedKeys;
             try
             {
-                trustedKeys = GetKeys(enumeratedSecrets);
+                trustedKeys = await GetKeysAsync(client);
             }
             catch (Exception e)
             {
@@ -99,8 +113,10 @@ namespace IdentityServer4.Validation
             return result;
         }
 
-        protected virtual List<SecurityKey> GetKeys(IReadOnlyCollection<Secret> secrets)
+        protected virtual Task<List<SecurityKey>> GetKeysAsync(Client client)
         {
+            var secrets = client.ClientSecrets.ToList().AsReadOnly();
+
             var keys = new List<SecurityKey>();
 
             var certificates = GetCertificates(secrets)
@@ -114,7 +130,7 @@ namespace IdentityServer4.Validation
                         .ToList();
             keys.AddRange(jwks);
 
-            return keys;
+            return Task.FromResult(keys);
         }
 
         protected virtual Task<JwtSecurityToken> ValidateJwtAsync(string jwtTokenString, IEnumerable<SecurityKey> keys, Client client)
