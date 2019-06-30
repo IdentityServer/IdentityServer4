@@ -6,6 +6,7 @@ using IdentityServer4;
 using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -29,7 +30,7 @@ namespace Microsoft.AspNetCore.Http
             await response.Body.FlushAsync();
         }
 
-        public static void SetCache(this HttpResponse response, int maxAge)
+        public static void SetCache(this HttpResponse response, int maxAge, params string[] varyBy)
         {
             if (maxAge == 0)
             {
@@ -40,6 +41,12 @@ namespace Microsoft.AspNetCore.Http
                 if (!response.Headers.ContainsKey("Cache-Control"))
                 {
                     response.Headers.Add("Cache-Control", $"max-age={maxAge}");
+                }
+
+                if (varyBy?.Any() == true)
+                {
+                    var vary = varyBy.Aggregate((x, y) => x + "," + y);
+                    response.Headers.Add("Vary", vary);
                 }
             }
         }
