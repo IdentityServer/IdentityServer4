@@ -78,9 +78,8 @@ namespace IdentityServer4.Endpoints.Results
                 Response.Error == OidcConstants.AuthorizeErrors.ConsentRequired ||
                 Response.Error == OidcConstants.AuthorizeErrors.InteractionRequired;
 
-            if (Response.Error != OidcConstants.AuthorizeErrors.InvalidRequestUri 
-                !isPromptNoneError ||
-                (isPromptNoneError && Response.Request?.PromptMode == OidcConstants.PromptModes.None)
+            if (Response.Error != OidcConstants.AuthorizeErrors.InvalidRequestUri &&
+                (!isPromptNoneError || (isPromptNoneError && Response.Request?.PromptMode == OidcConstants.PromptModes.None))
             )
             {
                 // this scenario we can return back to the client
