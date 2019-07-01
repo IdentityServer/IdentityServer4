@@ -71,14 +71,15 @@ namespace IdentityServer4.Endpoints.Results
 
         private async Task ProcessErrorAsync(HttpContext context)
         {
-            // these are the conditions where we can send a response 
-            // back directly to the client, otherwise we're only showing the error UI
+            // these are the conditions where we can only send a response 
+            // back directly to the client when the prompt mode is none
             var isPromptNoneError = Response.Error == OidcConstants.AuthorizeErrors.AccountSelectionRequired ||
                 Response.Error == OidcConstants.AuthorizeErrors.LoginRequired ||
                 Response.Error == OidcConstants.AuthorizeErrors.ConsentRequired ||
                 Response.Error == OidcConstants.AuthorizeErrors.InteractionRequired;
 
-            if (Response.Error == OidcConstants.AuthorizeErrors.AccessDenied ||
+            if (Response.Error != OidcConstants.AuthorizeErrors.InvalidRequestUri 
+                !isPromptNoneError ||
                 (isPromptNoneError && Response.Request?.PromptMode == OidcConstants.PromptModes.None)
             )
             {
