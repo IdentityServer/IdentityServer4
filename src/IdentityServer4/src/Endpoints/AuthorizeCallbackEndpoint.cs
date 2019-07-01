@@ -1,6 +1,7 @@
 // Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using System.Collections.Specialized;
 using System.Net;
 using System.Threading.Tasks;
 using IdentityServer4.Endpoints.Results;
@@ -19,6 +20,7 @@ namespace IdentityServer4.Endpoints
     internal class AuthorizeCallbackEndpoint : AuthorizeEndpointBase
     {
         private readonly IConsentMessageStore _consentResponseStore;
+        private readonly IAuthorizationParametersMessageStore _authorizationParametersMessageStore;
 
         public AuthorizeCallbackEndpoint(
             IEventService events,
@@ -27,10 +29,12 @@ namespace IdentityServer4.Endpoints
             IAuthorizeInteractionResponseGenerator interactionGenerator,
             IAuthorizeResponseGenerator authorizeResponseGenerator,
             IUserSession userSession,
-            IConsentMessageStore consentResponseStore)
+            IConsentMessageStore consentResponseStore,
+            IAuthorizationParametersMessageStore authorizationParametersMessageStore = null)
             : base(events, logger, validator, interactionGenerator, authorizeResponseGenerator, userSession)
         {
             _consentResponseStore = consentResponseStore;
+            _authorizationParametersMessageStore = authorizationParametersMessageStore;
         }
 
         public override async Task<IEndpointResult> ProcessAsync(HttpContext context)
@@ -44,6 +48,14 @@ namespace IdentityServer4.Endpoints
             Logger.LogDebug("Start authorize callback request");
 
             var parameters = context.Request.Query.AsNameValueCollection();
+            if (_authorizationParametersMessageStore != null)
+            {
+                var messageStoreId = parameters[Constants.AuthorizationParamsStore.MessageStoreIdParameterName];
+                var entry = await _authorizationParametersMessageStore.ReadAsync(messageStoreId);
+                parameters = entry?.Data ?? new NameValueCollection();
+
+                await _authorizationParametersMessageStore.DeleteAsync(messageStoreId);
+            }
 
             var user = await UserSession.GetUserAsync();
             var consentRequest = new ConsentRequest(parameters, user?.GetSubjectId());

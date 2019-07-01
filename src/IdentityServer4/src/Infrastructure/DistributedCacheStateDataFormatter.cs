@@ -59,9 +59,13 @@ namespace IdentityServer4.Infrastructure
 
             var options = new DistributedCacheEntryOptions();
             if (data.ExpiresUtc.HasValue)
+            {
                 options.SetAbsoluteExpiration(data.ExpiresUtc.Value);
+            }
             else
+            {
                 options.SetSlidingExpiration(Constants.DefaultCacheDuration);
+            }
             
             // Rather than encrypt the full AuthenticationProperties
             // cache the data and encrypt the key that points to the data

@@ -14,6 +14,9 @@ using IdentityServer4.Test;
 using System.Net.Http;
 using IdentityModel;
 using System;
+using Microsoft.Extensions.DependencyInjection;
+using IdentityServer4.Stores;
+using IdentityServer4.Stores.Default;
 
 namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 {
@@ -161,10 +164,22 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.LoginWasCalled.Should().BeTrue();
         }
 
-        [Fact]
+        [Theory]
+        [InlineData((Type)null)]
+        [InlineData(typeof(QueryStringAuthorizationParametersMessageStore))]
+        [InlineData(typeof(DistributedCacheAuthorizationParametersMessageStore))]
         [Trait("Category", Category)]
-        public async Task signin_request_should_have_authorization_params()
+        public async Task signin_request_should_have_authorization_params(Type storeType)
         {
+            if (storeType != null)
+            {
+                _mockPipeline.OnPostConfigureServices += services =>
+                {
+                    services.AddTransient(typeof(IAuthorizationParametersMessageStore), storeType);
+                };
+                _mockPipeline.Initialize();
+            }
+
             var url = _mockPipeline.CreateAuthorizeUrl(
                 clientId: "client1",
                 responseType: "id_token",
@@ -245,10 +260,22 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             authorization.State.Should().Be("123_state");
         }
 
-        [Fact]
+        [Theory]
+        [InlineData((Type)null)]
+        [InlineData(typeof(QueryStringAuthorizationParametersMessageStore))]
+        [InlineData(typeof(DistributedCacheAuthorizationParametersMessageStore))]
         [Trait("Category", Category)]
-        public async Task login_response_and_consent_response_should_receive_authorization_response()
+        public async Task login_response_and_consent_response_should_receive_authorization_response(Type storeType)
         {
+            if (storeType != null)
+            {
+                _mockPipeline.OnPostConfigureServices += services =>
+                {
+                    services.AddTransient(typeof(IAuthorizationParametersMessageStore), storeType);
+                };
+                _mockPipeline.Initialize();
+            }
+
             _mockPipeline.Subject = new IdentityServerUser("bob").CreatePrincipal();
 
             _mockPipeline.ConsentResponse = new ConsentResponse()
