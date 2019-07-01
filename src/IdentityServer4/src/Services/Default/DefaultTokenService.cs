@@ -173,7 +173,7 @@ namespace IdentityServer4.Services
                 Audiences = { string.Format(IdentityServerConstants.AccessTokenAudience, issuer.EnsureTrailingSlash()) },
                 Issuer = issuer,
                 Lifetime = request.ValidatedRequest.AccessTokenLifetime,
-                Claims = claims,
+                Claims = claims.Distinct(new ClaimComparer()).ToList(),
                 ClientId = request.ValidatedRequest.Client.ClientId,
                 AccessTokenType = request.ValidatedRequest.AccessTokenType
             };
