@@ -10,7 +10,6 @@ We thank those who [support](https://www.patreon.com/identityserver) IdentitySer
 [Ritter Insurance Marketing](https://www.ritterim.com) ([@RitterIM](https://twitter.com/ritterim))   
 [Intuit](https://www.intuit.com) ([@IntuitDev](https://twitter.com/IntuitDev))  
 [ExtranetUserManager](https://www.extranetusermanager.com) ([@eumgr](https://twitter.com/eumgr))  
-[FireGiant](https://www.firegiant.com/) ([@firegiantco](https://twitter.com/firegiantco))  
 
 ### Silver
 
@@ -19,6 +18,7 @@ Soluto ([@SolutoEng](https://twitter.com/SolutoEng))
 Steinar	Noem  
 Effectory ([@effectory](https://twitter.com/effectory))  
 Real Page ([@RealPage](https://twitter.com/RealPage))  
+FireGiant ([@firegiantco](https://twitter.com/firegiantco))  
 
 ## Individuals
 

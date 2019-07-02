@@ -28,7 +28,6 @@ This will help us devote more time to answering questions and doing feature deve
 [Ritter Insurance Marketing](https://www.ritterim.com)  
 [Intuit](https://www.intuit.com)  
 [ExtraNetUserManager](https://www.extranetusermanager.com/)  
-[FireGiant](https://www.firegiant.com/)  
 
 You can see a list of our current sponsors [here](https://github.com/IdentityServer/IdentityServer4/blob/master/SPONSORS.md) - and for companies we have some nice advertisement options as well.
 
