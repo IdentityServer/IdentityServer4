@@ -11,6 +11,10 @@ using IdentityServer4.Models;
 using System.Security.Claims;
 using IdentityServer4.IntegrationTests.Common;
 using IdentityServer4.Test;
+using IdentityServer4.Stores;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using IdentityServer4.Stores.Default;
 
 namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 {
@@ -110,10 +114,22 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.ConsentWasCalled.Should().BeTrue();
         }
 
-        [Fact]
+        [Theory]
+        [InlineData((Type)null)]
+        [InlineData(typeof(QueryStringAuthorizationParametersMessageStore))]
+        [InlineData(typeof(DistributedCacheAuthorizationParametersMessageStore))]
         [Trait("Category", Category)]
-        public async Task consent_page_should_have_authorization_params()
+        public async Task consent_page_should_have_authorization_params(Type storeType)
         {
+            if (storeType != null)
+            {
+                _mockPipeline.OnPostConfigureServices += services =>
+                {
+                    services.AddTransient(typeof(IAuthorizationParametersMessageStore), storeType);
+                };
+                _mockPipeline.Initialize();
+            }
+
             await _mockPipeline.LoginAsync("bob");
 
             var url = _mockPipeline.CreateAuthorizeUrl(
@@ -137,13 +153,29 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.ConsentRequest.ClientId.Should().Be("client2");
             _mockPipeline.ConsentRequest.DisplayMode.Should().Be("popup");
             _mockPipeline.ConsentRequest.UiLocales.Should().Be("ui_locale_value");
+            _mockPipeline.ConsentRequest.Tenant.Should().Be("tenant_value");
+            _mockPipeline.ConsentRequest.AcrValues.Should().BeEquivalentTo(new string[] { "acr_2", "acr_1" });
+            _mockPipeline.ConsentRequest.Parameters.AllKeys.Should().Contain("custom_foo");
+            _mockPipeline.ConsentRequest.Parameters["custom_foo"].Should().Be("foo_value");
             _mockPipeline.ConsentRequest.ScopesRequested.Should().BeEquivalentTo(new string[] { "api2", "openid", "api1" });
         }
 
-        [Fact]
+        [Theory]
+        [InlineData((Type)null)]
+        [InlineData(typeof(QueryStringAuthorizationParametersMessageStore))]
+        [InlineData(typeof(DistributedCacheAuthorizationParametersMessageStore))]
         [Trait("Category", Category)]
-        public async Task consent_response_should_allow_successful_authorization_response()
+        public async Task consent_response_should_allow_successful_authorization_response(Type storeType)
         {
+            if (storeType != null)
+            {
+                _mockPipeline.OnPostConfigureServices += services =>
+                {
+                    services.AddTransient(typeof(IAuthorizationParametersMessageStore), storeType);
+                };
+                _mockPipeline.Initialize();
+            }
+
             await _mockPipeline.LoginAsync("bob");
 
             _mockPipeline.ConsentResponse = new ConsentResponse()

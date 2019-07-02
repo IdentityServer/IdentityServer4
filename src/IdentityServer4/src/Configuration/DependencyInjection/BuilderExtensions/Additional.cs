@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityServer4;
 using IdentityServer4.ResponseHandling;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
@@ -355,6 +354,20 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             return builder.Services.AddHttpClient<JwtRequestUriHttpClient>();
+        }
+
+        /// <summary>
+        /// Adds a custom authorization request parameter store.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddAuthorizationParametersMessageStore<T>(this IIdentityServerBuilder builder)
+            where T : class, IAuthorizationParametersMessageStore
+        {
+            builder.Services.AddTransient<IAuthorizationParametersMessageStore, T>();
+
+            return builder;
         }
     }
 }
