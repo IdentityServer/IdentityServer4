@@ -287,6 +287,15 @@ namespace IdentityServer4.ResponseHandling
                 var jwt = await TokenService.CreateSecurityTokenAsync(idToken);
                 response.IdentityToken = jwt;
             }
+            
+            //////////////////////////
+            // scope
+            /////////////////////////
+            if (request.ValidatedRequest.DeviceCode.RequestedScopes.Count() 
+                != request.ValidatedRequest.DeviceCode.AuthorizedScopes.Count())
+            {
+                response.Scope = request.ValidatedRequest.DeviceCode.AuthorizedScopes.ToSpaceSeparatedString();
+            }
 
             return response;
         }
