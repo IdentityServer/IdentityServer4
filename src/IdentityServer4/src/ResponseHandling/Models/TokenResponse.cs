@@ -47,7 +47,7 @@ namespace IdentityServer4.ResponseHandling
         /// Gets or sets the scope.
         /// </summary>
         /// <value>
-        /// The refresh scope.
+        /// The scope.
         /// </value>
         public string Scope { get; set; }
 
