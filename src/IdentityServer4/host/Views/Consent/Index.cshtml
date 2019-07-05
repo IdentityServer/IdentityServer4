@@ -25,8 +25,8 @@
 
         @if (Model.IdentityScopes.Any())
         {
-        <div class="panel panel-default consent-buttons">
-          <div class="panel-heading">
+        <div class="card consent-buttons">
+          <div class="card-header">
             <span class="glyphicon glyphicon-user"></span>
             Personal Information
           </div>
@@ -41,8 +41,8 @@
 
         @if (Model.ResourceScopes.Any())
         {
-        <div class="panel panel-default">
-          <div class="panel-heading">
+        <div class="card">
+          <div class="card-header">
             <span class="glyphicon glyphicon-tasks"></span>
             Application Access
           </div>
@@ -67,10 +67,10 @@
 
         <div class="consent-buttons">
           <button name="button" value="yes" class="btn btn-primary" autofocus>Yes, Allow</button>
-          <button name="button" value="no" class="btn">No, Do Not Allow</button>
+          <button name="button" value="no" class="btn btn-link">No, Do Not Allow</button>
           @if (Model.ClientUrl != null)
           {
-          <a class="pull-right btn btn-default" target="_blank" href="@Model.ClientUrl">
+          <a class="float-right btn btn-secondary" target="_blank" href="@Model.ClientUrl">
             <span class="glyphicon glyphicon-info-sign"></span>
             <strong>@Model.ClientName</strong>
           </a>
