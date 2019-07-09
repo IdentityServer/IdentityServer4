@@ -38,6 +38,14 @@ namespace IdentityServer4.UnitTests.Validation
 
                 new Client
                 {
+                    ClientName = "Client with null secret set",
+                    ClientId = "null_secret_client",
+                    Enabled = true,
+                    ClientSecrets = { new Secret(null) }
+                },
+
+                new Client
+                {
                     ClientName = "Client with single secret, no protection, no expiration",
                     ClientId = "single_secret_no_protection_no_expiration",
                     Enabled = true,
