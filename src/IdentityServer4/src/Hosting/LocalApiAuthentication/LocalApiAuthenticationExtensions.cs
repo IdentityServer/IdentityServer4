@@ -6,6 +6,8 @@ using IdentityServer4;
 using IdentityServer4.Hosting.LocalApiAuthentication;
 using Microsoft.AspNetCore.Authentication;
 using System;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -19,12 +21,23 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddLocalApiAuthentication(this IServiceCollection services)
+        public static IServiceCollection AddLocalApiAuthentication(this IServiceCollection services, Func<ClaimsPrincipal, Task<ClaimsPrincipal>> transformationFunc = null)
         {
             services.AddAuthentication()
                 .AddLocalApi(options =>
                 {
                     options.ExpectedScope = IdentityServerConstants.LocalApi.ScopeName;
+
+                    if (transformationFunc != null)
+                    {
+                        options.Events = new LocalApiAuthenticationEvents
+                        {
+                            OnClaimsTransformation = async e =>
+                            {
+                                e.Principal = await transformationFunc(e.Principal);
+                            }
+                        };
+                    }
                 });
 
             services.AddAuthorization(options =>
