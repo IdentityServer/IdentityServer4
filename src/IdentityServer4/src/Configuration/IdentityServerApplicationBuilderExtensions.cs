@@ -105,7 +105,7 @@ namespace Microsoft.AspNetCore.Builder
 
                 if (!typeof(IAuthenticationSignInHandler).IsAssignableFrom(authenticationScheme.HandlerType))
                 {
-                    logger.LogError("Authentication scheme {scheme} is configured for IdentityServer, but it is not a scheme that supports signin (like cookies). Either configure the default authentication scheme with cookies or set the CookieAuthenticationScheme on the IdentityServerOptions.", authenticationScheme.Name);
+                    logger.LogInformation("Authentication scheme {scheme} is configured for IdentityServer, but it is not a scheme that supports signin (like cookies). If you support interactive logins via the browser, then a cookie-based scheme should be used.", authenticationScheme.Name);
                 }
 
                 logger.LogDebug("Using {scheme} as default ASP.NET Core scheme for authentication", (await schemes.GetDefaultAuthenticateSchemeAsync())?.Name);
