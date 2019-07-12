@@ -40,6 +40,7 @@ namespace IdentityServer4.Hosting.LocalApiAuthentication
             set => base.Events = value;
         }
 
+        /// <inheritdoc/>
         protected override Task<object> CreateEventsAsync() => Task.FromResult<object>(new LocalApiAuthenticationEvents());
 
         /// <inheritdoc />

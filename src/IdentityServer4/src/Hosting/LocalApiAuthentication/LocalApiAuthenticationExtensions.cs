@@ -19,7 +19,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds support for local APIs
         /// </summary>
-        /// <param name="services"></param>
+        /// <param name="services">The service collection</param>
+        /// <param name="transformationFunc">Function to transform the resulting principal</param>
         /// <returns></returns>
         public static IServiceCollection AddLocalApiAuthentication(this IServiceCollection services, Func<ClaimsPrincipal, Task<ClaimsPrincipal>> transformationFunc = null)
         {

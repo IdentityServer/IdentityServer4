@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace IdentityServer4.Hosting.LocalApiAuthentication
 {
+    /// <summary>
+    /// Events for local API authentication
+    /// </summary>
     public class LocalApiAuthenticationEvents
     {
         /// <summary>
@@ -19,9 +22,19 @@ namespace IdentityServer4.Hosting.LocalApiAuthentication
 
     }
 
+    /// <summary>
+    /// Context class for local API claims transformation
+    /// </summary>
     public class ClaimsTransformationContext
     {
+        /// <summary>
+        /// The principal
+        /// </summary>
         public ClaimsPrincipal Principal { get; set; }
+
+        /// <summary>
+        /// the HTTP context
+        /// </summary>
         public HttpContext HttpContext { get; set; }
     }
 }
