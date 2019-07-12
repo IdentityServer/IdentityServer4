@@ -39,12 +39,16 @@ CREATE UNIQUE INDEX [IX_DeviceCodes_DeviceCode] ON [DeviceCodes] ([DeviceCode]);
 
 GO
 
-CREATE INDEX [IX_PersistedGrants_SubjectId_ClientId_Type] ON [PersistedGrants] ([SubjectId], [ClientId], [Type]);
+CREATE INDEX [IX_DeviceCodes_Expiration] ON [DeviceCodes] ([Expiration]);
+
+GO
+
+CREATE INDEX [IX_PersistedGrants_SubjectId_ClientId_Type_Expiration] ON [PersistedGrants] ([SubjectId], [ClientId], [Type], [Expiration]);
 
 GO
 
 INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-VALUES (N'20181129175506_Grants', N'2.1.4-rtm-31024');
+VALUES (N'20190712142715_Grants', N'2.1.11-servicing-32099');
 
 GO
 
