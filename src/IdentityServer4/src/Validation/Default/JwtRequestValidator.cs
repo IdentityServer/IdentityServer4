@@ -20,7 +20,7 @@ using Newtonsoft.Json.Linq;
 namespace IdentityServer4.Validation
 {
     /// <summary>
-    /// Validates JWT requwest objects
+    /// Validates JWT request objects
     /// </summary>
     public class JwtRequestValidator
     {
@@ -39,7 +39,10 @@ namespace IdentityServer4.Validation
         /// </summary>
         public JwtRequestValidator(IHttpContextAccessor contextAccessor, ILogger<JwtRequestValidator> logger)
         {
-            AudienceUri = contextAccessor.HttpContext.GetIdentityServerIssuerUri();
+            if (contextAccessor.HttpContext != null)
+            {
+                AudienceUri = contextAccessor.HttpContext.GetIdentityServerIssuerUri();
+            }
             Logger = logger;
         }
 
