@@ -57,6 +57,8 @@ Finally, notice the addition of the new call to ``AddAspNetIdentity<ApplicationU
 ``AddAspNetIdentity`` adds the integration layer to allow IdentityServer to access the user data for the ASP.NET Identity user database.
 This is needed when IdentityServer must add claims for the users into tokens.
 
+Note that ``AddIdentity<ApplicationUser, IdentityRole>`` must be invoked before ``AddIdentityServer``.
+
 Config.cs
 -----------
 
