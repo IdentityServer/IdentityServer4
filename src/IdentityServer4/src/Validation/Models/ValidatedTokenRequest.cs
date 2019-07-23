@@ -83,5 +83,13 @@ namespace IdentityServer4.Validation
         /// The device code.
         /// </value>
         public DeviceCode DeviceCode { get; set; }
+
+        /// <summary>
+        /// Gets or sets the client ID that should be impersonated for the current request (this is useful for token exchange scenarios)
+        /// </summary>
+        /// <value>
+        /// The client ID to impersonate
+        /// </value>
+        public string ImpersonatedClientId { get; set; }
     }
 }
