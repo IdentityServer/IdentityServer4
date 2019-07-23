@@ -115,6 +115,6 @@ namespace IdentityServer4.Models
         /// <value>
         /// The properties
         /// </value>
-        public IDictionary<string, object> Properties { get; set; } = new Dictionary<string, object>();
+        public IDictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
     }
 }
