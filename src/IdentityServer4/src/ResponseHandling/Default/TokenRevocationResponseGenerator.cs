@@ -138,7 +138,7 @@ namespace IdentityServer4.ResponseHandling
                 }
                 else
                 {
-                    Logger.LogWarning("Client {clientId} tried to revoke a refresh token belonging to a different client: {clientId}", validationResult.Client.ClientId, token.ClientId);
+                    Logger.LogWarning("Client {clientId} denied from revoking a refresh token belonging to Client {tokenClientId}", validationResult.Client.ClientId, token.ClientId);
                 }
 
                 return true;
