@@ -114,17 +114,15 @@ namespace IdentityServer4.Services
         {
             Logger.LogDebug("Getting claims for access token for client: {clientId}", request.Client.ClientId);
 
-            var outputClaims = new List<Claim>();
+            var outputClaims = new List<Claim>()
+            {
+                new Claim(JwtClaimTypes.ClientId, request.ClientId)
+            };
 
-            // add client_id
-            if (request is ValidatedTokenRequest tokenRequest && tokenRequest.ImpersonatedClientId.IsPresent())
+            // log if client ID is overwritten
+            if (!string.Equals(request.ClientId, request.Client.ClientId))
             {
-                outputClaims.Add(new Claim(JwtClaimTypes.ClientId, tokenRequest.ImpersonatedClientId));
-                Logger.LogDebug("Client {clientId} is impersonating {impersonatedClientId}", request.Client.ClientId, tokenRequest.ImpersonatedClientId);
-            }
-            else
-            {
-                outputClaims.Add(new Claim(JwtClaimTypes.ClientId, request.Client.ClientId));
+                Logger.LogDebug("Client {clientId} is impersonating {impersonatedClientId}", request.Client.ClientId, request.ClientId);
             }
 
             // add cnf if present

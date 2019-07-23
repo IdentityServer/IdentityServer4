@@ -21,7 +21,7 @@ namespace IdentityServer4.IntegrationTests.Clients
 
             if (!string.IsNullOrEmpty(impersonatedClient))
             {
-                context.Request.ImpersonatedClientId = impersonatedClient;
+                context.Request.ClientId = impersonatedClient;
             }
 
             if (!string.IsNullOrEmpty(lifetime))
