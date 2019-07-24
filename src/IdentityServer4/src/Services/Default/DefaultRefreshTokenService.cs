@@ -66,8 +66,14 @@ namespace IdentityServer4.Services
             }
             else
             {
-                _logger.LogDebug("Setting a sliding lifetime: {slidingLifetime}", client.SlidingRefreshTokenLifetime);
                 lifetime = client.SlidingRefreshTokenLifetime;
+                if (client.AbsoluteRefreshTokenLifetime > 0 && lifetime > client.AbsoluteRefreshTokenLifetime)
+                {
+                    _logger.LogWarning("Client {clientId}'s configured " + nameof(client.SlidingRefreshTokenLifetime) + " of {slidingLifetime} exceeds its " + nameof(client.AbsoluteRefreshTokenLifetime) + " of {absoluteLifetime}. The refresh_token's sliding lifetime will be capped to the absolute lifetime", client.ClientId, lifetime, client.AbsoluteRefreshTokenLifetime);
+                    lifetime = client.AbsoluteRefreshTokenLifetime;
+                }
+
+                _logger.LogDebug("Setting a sliding lifetime: {slidingLifetime}", lifetime);
             }
 
             var refreshToken = new RefreshToken
