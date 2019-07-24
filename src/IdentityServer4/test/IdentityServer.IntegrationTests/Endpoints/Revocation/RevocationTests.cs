@@ -259,6 +259,27 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
 
         [Fact]
         [Trait("Category", Category)]
+        public async Task Revoke_valid_refresh_token_belonging_to_another_client_should_return_success_but_not_revoke_token()
+        {
+            var tokens = await GetTokensAsync();
+            (await UseRefreshTokenAsync(tokens)).Should().BeTrue();
+
+            var result = await _mockPipeline.BackChannelClient.RevokeTokenAsync(new TokenRevocationRequest
+            {
+                Address = IdentityServerPipeline.RevocationEndpoint,
+                ClientId = "implicit",
+                ClientSecret = client_secret,
+
+                Token = tokens.RefreshToken
+            });
+
+            result.IsError.Should().BeFalse();
+
+            (await UseRefreshTokenAsync(tokens)).Should().BeTrue();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
         public async Task Revoke_invalid_access_token_should_return_success()
         {
             var tokens = await GetTokensAsync();
