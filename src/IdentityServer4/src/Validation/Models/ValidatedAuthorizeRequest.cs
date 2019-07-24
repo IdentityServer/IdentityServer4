@@ -45,14 +45,6 @@ namespace IdentityServer4.Validation
         public string RedirectUri { get; set; }
 
         /// <summary>
-        /// Gets or sets the client identifier.
-        /// </summary>
-        /// <value>
-        /// The client identifier.
-        /// </value>
-        public string ClientId { get; set; }
-
-        /// <summary>
         /// Gets or sets the requested scopes.
         /// </summary>
         /// <value>
