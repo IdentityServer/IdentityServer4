@@ -25,12 +25,12 @@ namespace IdentityServer4.Services
         /// <summary>
         /// The refresh token store
         /// </summary>
-        protected readonly IRefreshTokenStore RefreshTokenStore;
+        protected IRefreshTokenStore RefreshTokenStore { get; }
 
         /// <summary>
         /// The clock
         /// </summary>
-        protected readonly ISystemClock Clock;
+        protected ISystemClock Clock { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultRefreshTokenService" /> class.
