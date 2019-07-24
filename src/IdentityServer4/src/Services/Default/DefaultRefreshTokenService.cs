@@ -61,12 +61,12 @@ namespace IdentityServer4.Services
             int lifetime;
             if (client.RefreshTokenExpiration == TokenExpiration.Absolute)
             {
-                _logger.LogDebug("Setting an absolute lifetime: " + client.AbsoluteRefreshTokenLifetime);
+                _logger.LogDebug("Setting an absolute lifetime: {absoluteLifetime}", client.AbsoluteRefreshTokenLifetime);
                 lifetime = client.AbsoluteRefreshTokenLifetime;
             }
             else
             {
-                _logger.LogDebug("Setting a sliding lifetime: " + client.SlidingRefreshTokenLifetime);
+                _logger.LogDebug("Setting a sliding lifetime: {slidingLifetime}", client.SlidingRefreshTokenLifetime);
                 lifetime = client.SlidingRefreshTokenLifetime;
             }
 
@@ -115,17 +115,17 @@ namespace IdentityServer4.Services
                 // if absolute exp > 0, make sure we don't exceed absolute exp
                 // if absolute exp = 0, allow indefinite slide
                 var currentLifetime = refreshToken.CreationTime.GetLifetimeInSeconds(Clock.UtcNow.UtcDateTime);
-                _logger.LogDebug("Current lifetime: " + currentLifetime.ToString());
+                _logger.LogDebug("Current lifetime: {currentLifetime}", currentLifetime.ToString());
 
                 var newLifetime = currentLifetime + client.SlidingRefreshTokenLifetime;
-                _logger.LogDebug("New lifetime: " + newLifetime.ToString());
+                _logger.LogDebug("New lifetime: {slidingLifetime}", newLifetime.ToString());
 
                 // zero absolute refresh token lifetime represents unbounded absolute lifetime
                 // if absolute lifetime > 0, cap at absolute lifetime
                 if (client.AbsoluteRefreshTokenLifetime > 0 && newLifetime > client.AbsoluteRefreshTokenLifetime)
                 {
                     newLifetime = client.AbsoluteRefreshTokenLifetime;
-                    _logger.LogDebug("New lifetime exceeds absolute lifetime, capping it to " + newLifetime.ToString());
+                    _logger.LogDebug("New lifetime exceeds absolute lifetime, capping it to {newLifetime}", newLifetime.ToString());
                 }
 
                 refreshToken.Lifetime = newLifetime;
