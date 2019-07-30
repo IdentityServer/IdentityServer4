@@ -219,6 +219,59 @@ namespace IdentityServer.UnitTests.Validation
         }
 
         [Fact]
+        [Trait("Category", Category)]
+        public async Task empty_grant_types_collection_should_fail()
+        {
+            var client = new Client
+            {
+                ClientId = "id",
+                AllowedGrantTypes = { },
+                AllowedScopes = { "foo" },
+                RedirectUris = { "https://foo" }
+            };
+
+            var context = await ValidateAsync(client);
+            await ShouldFailAsync(client, "no allowed grant type specified");
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task null_redirect_uris_collection_should_succeed()
+        {
+            var client = new Client
+            {
+                ClientId = "id",
+                AllowedGrantTypes = GrantTypes.ClientCredentials,
+                ClientSecrets = { new Secret("hash") },
+                AllowedScopes = { "foo" },
+                RedirectUris = null,
+                PostLogoutRedirectUris = null
+            };
+
+            var context = await ValidateAsync(client);
+            context.IsValid.Should().BeTrue();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task empty_redirect_uris_collection_should_succeed()
+        {
+            var client = new Client
+            {
+                ClientId = "id",
+                AllowedGrantTypes = GrantTypes.ClientCredentials,
+                ClientSecrets = { new Secret("hash") },
+                AllowedScopes = { "foo" },
+                RedirectUris = { },
+                PostLogoutRedirectUris = { }
+            };
+
+            var context = await ValidateAsync(client);
+            context.IsValid.Should().BeTrue();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
         public async Task ValidateUriSchemesAsync_for_invalid_redirecturi_scheme_should_fail()
         {
             _options.Validation.InvalidRedirectUriPrefixes.Add("custom");
@@ -235,6 +288,23 @@ namespace IdentityServer.UnitTests.Validation
         }
 
         [Fact]
+        [Trait("Category", Category)]
+        public async Task ValidateUriSchemesAsync_for_null_redirecturi_scheme_should_succeed()
+        {
+            var client = new Client
+            {
+                ClientId = "id",
+                AllowedGrantTypes = GrantTypes.Implicit,
+                AllowedScopes = { "foo" },
+                RedirectUris = null
+            };
+
+            var result = await ValidateAsync(client);
+            result.IsValid.Should().BeTrue();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
         public async Task ValidateUriSchemesAsync_for_valid_redirect_uri_scheme_should_succeed()
         {
             var client = new Client
@@ -250,6 +320,7 @@ namespace IdentityServer.UnitTests.Validation
         }
 
         [Fact]
+        [Trait("Category", Category)]
         public async Task ValidateUriSchemesAsync_for_invalid_post_logout_redirect_uri_scheme_should_fail()
         {
             _options.Validation.InvalidRedirectUriPrefixes.Add("custom");
@@ -267,6 +338,7 @@ namespace IdentityServer.UnitTests.Validation
         }
 
         [Fact]
+        [Trait("Category", Category)]
         public async Task ValidateUriSchemesAsync_for_valid_post_logout_redirect_uri_scheme_should_succeed()
         {
             var client = new Client
@@ -283,12 +355,15 @@ namespace IdentityServer.UnitTests.Validation
         }
 
         [Theory]
+        [Trait("Category", Category)]
         [InlineData("bad")]
         [InlineData("urn:foo")]
         [InlineData("urn:foo:123")]
         [InlineData("http://foo/")]
+        [InlineData("http://foo:80/path")]
         [InlineData("http://foo/path")]
         [InlineData("http://foo:123/path")]
+        [InlineData("https://foo:443/path")]
         [InlineData("")]
         [InlineData("   ")]
         [InlineData((string)null)]
@@ -316,10 +391,13 @@ namespace IdentityServer.UnitTests.Validation
         }
 
         [Theory]
+        [Trait("Category", Category)]
         [InlineData("http://foo")]
+        [InlineData("http://foo:80")]
         [InlineData("https://foo")]
         [InlineData("http://foo:123")]
         [InlineData("https://foo:456")]
+        [InlineData("https://foo:443")]
         public async Task ValidateAllowedCorsOriginsAsync_should_allow_valid_formats(string origin)
         {
             var client = new Client
@@ -333,6 +411,7 @@ namespace IdentityServer.UnitTests.Validation
             var result = await ValidateAsync(client);
             result.IsValid.Should().BeTrue();
         }
+
 
         private async Task<ClientConfigurationValidationContext> ValidateAsync(Client client)
         {

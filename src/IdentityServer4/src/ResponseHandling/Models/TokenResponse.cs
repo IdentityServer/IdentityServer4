@@ -44,6 +44,14 @@ namespace IdentityServer4.ResponseHandling
         public string RefreshToken { get; set; }
 
         /// <summary>
+        /// Gets or sets the scope.
+        /// </summary>
+        /// <value>
+        /// The scope.
+        /// </value>
+        public string Scope { get; set; }
+
+        /// <summary>
         /// Gets or sets the custom entries.
         /// </summary>
         /// <value>

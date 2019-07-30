@@ -53,7 +53,7 @@ namespace IdentityServer4.Endpoints.Results
         {
             if (MaxAge.HasValue && MaxAge.Value >= 0)
             {
-                context.Response.SetCache(MaxAge.Value);
+                context.Response.SetCache(MaxAge.Value, "Origin");
             }
 
             return context.Response.WriteJsonAsync(new { keys = WebKeys }, "application/jwk-set+json; charset=UTF-8");

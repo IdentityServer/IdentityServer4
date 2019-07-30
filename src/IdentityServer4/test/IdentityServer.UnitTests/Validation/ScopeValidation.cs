@@ -129,6 +129,18 @@ namespace IdentityServer4.UnitTests.Validation
 
         [Fact]
         [Trait("Category", Category)]
+        public async Task Only_Offline_Access_Requested()
+        {
+            var scopes = "offline_access".ParseScopesString();
+
+            var validator = Factory.CreateScopeValidator(_store);
+            var result = await validator.AreScopesValidAsync(scopes);
+
+            result.Should().BeFalse();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
         public async Task All_Scopes_Valid()
         {
             var scopes = "openid email resource1 resource2".ParseScopesString();

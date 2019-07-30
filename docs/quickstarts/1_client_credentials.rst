@@ -2,7 +2,7 @@
 Protecting an API using Client Credentials
 ==========================================
 
-The following Identity Server 4 quickstart provides step by step instructions for various common IdentityServer scenarios. These start with the absolute basics and become more complex as they progress. We recommend that you follow them in sequence.  To see the full list of please go to `IdentityServer4 Quickstarts Overview <https://identityserver4.readthedocs.io/en/latest/quickstarts/0_overview.html>`_
+The following Identity Server 4 quickstart provides step by step instructions for various common IdentityServer scenarios. These start with the absolute basics and become more complex as they progress. We recommend that you follow them in sequence.  To see the full list, please go to `IdentityServer4 Quickstarts Overview <https://identityserver4.readthedocs.io/en/latest/quickstarts/0_overview.html>`_
 
 This is quickstart number one it presents the most basic scenario for protecting APIs using IdentityServer 4. In this quickstart you define an API and a Client with which to access it. The client will request an access token from the Identity Server by providing a ``ClientCredentials`` which acts as a secret known to both the client and identity server and it will use the token to gain access to the API.
 
@@ -13,7 +13,7 @@ As with all of these quickstarts you can find the source code for it in the `Ide
 
 Preparation
 ^^^^^^^^^^^
-In order to make following these quickstarts easer for you the team has created some custom templates for dotnet new.  
+In order to make following these quickstarts easier for you the team has created some custom templates for dotnet new.  
 
 To install the custom templates open a console window and type the following command::
 
@@ -53,7 +53,7 @@ and let it add your IdentityServer project (keep this command in mind as we will
 
 Defining an API Resource
 ^^^^^^^^^^^^^^^^^^^^^^^^
-An API is a resource in your system that you want to protect. Resource definitions can be loaded in many ways, the template you used to create the project above shows how to uses a "code as configuration" approach.
+An API is a resource in your system that you want to protect. Resource definitions can be loaded in many ways, the template you used to create the project above shows how to use a "code as configuration" approach.
 
 Open the project that we just created above in your favorite editor.  Find the `Config.cs <https://github.com/IdentityServer/IdentityServer4/blob/master/samples/Quickstarts/1_ClientCredentials/src/IdentityServer/Config.cs>`_ file you can find a method called ``GetApis``, define the API as follows::
 

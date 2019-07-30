@@ -2,12 +2,17 @@
 
   <PropertyGroup>
     <FrameworkVersion>2.1</FrameworkVersion>
-    <IdentityServerVersion>2.5.0-*</IdentityServerVersion>
+    <IdentityServerVersion>2.5.1-*</IdentityServerVersion>
   </PropertyGroup>
 
   <ItemGroup>
+    <!--build related-->
     <PackageReference Include="MinVer" Version="1.1.0" PrivateAssets="All" />
-    
+    <PackageReference Update="SimpleExec" Version="6.0.0" />
+    <PackageReference Update="BullsEye" Version="2.3.0" />
+    <PackageReference Update="McMaster.Extensions.CommandLineUtils" Version="2.3.3" />
+
+    <!--our stuff -->
     <PackageReference Update="IdentityModel" Version="3.10.10" />
 
     <PackageReference Update="IdentityServer4" Version="$(IdentityServerVersion)" />
@@ -16,6 +21,7 @@
     <PackageReference Update="IdentityServer4.EntityFramework.Storage" Version="$(IdentityServerVersion)" />
     <PackageReference Update="IdentityServer4.EntityFramework" Version="$(IdentityServerVersion)" />
     
+    <!--microsoft -->
     <PackageReference Update="Microsoft.AspNetCore.Authentication" Version="$(FrameworkVersion)" />
     <PackageReference Update="Microsoft.AspNetCore.Authentication.Abstractions" Version="$(FrameworkVersion)" />
     <PackageReference Update="Microsoft.AspNetCore.Authentication.Cookies" Version="$(FrameworkVersion)" />

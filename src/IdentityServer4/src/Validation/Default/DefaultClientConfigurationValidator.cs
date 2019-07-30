@@ -70,7 +70,7 @@ namespace IdentityServer4.Validation
         /// <returns></returns>
         protected virtual Task ValidateGrantTypesAsync(ClientConfigurationValidationContext context)
         {
-            if (!context.Client.AllowedGrantTypes.Any())
+            if (context.Client.AllowedGrantTypes?.Any() != true)
             {
                 context.SetError("no allowed grant type specified");
             }
@@ -97,7 +97,7 @@ namespace IdentityServer4.Validation
                 return Task.CompletedTask;
             }
 
-            if (context.Client.AllowedGrantTypes.Contains(GrantType.DeviceFlow)
+            if (context.Client.AllowedGrantTypes?.Contains(GrantType.DeviceFlow) == true
                 && context.Client.DeviceCodeLifetime <= 0)
             {
                 context.SetError("device code lifetime is 0 or negative");
@@ -127,13 +127,16 @@ namespace IdentityServer4.Validation
         /// <returns></returns>
         protected virtual Task ValidateRedirectUriAsync(ClientConfigurationValidationContext context)
         {
-            if (context.Client.AllowedGrantTypes.Contains(GrantType.AuthorizationCode) ||
-                context.Client.AllowedGrantTypes.Contains(GrantType.Hybrid) ||
-                context.Client.AllowedGrantTypes.Contains(GrantType.Implicit))
+            if (context.Client.AllowedGrantTypes?.Any() == true)
             {
-                if (!context.Client.RedirectUris.Any())
+                if (context.Client.AllowedGrantTypes.Contains(GrantType.AuthorizationCode) ||
+                    context.Client.AllowedGrantTypes.Contains(GrantType.Hybrid) ||
+                    context.Client.AllowedGrantTypes.Contains(GrantType.Implicit))
                 {
-                    context.SetError("No redirect URI configured.");
+                    if (context.Client.RedirectUris?.Any() == false)
+                    {
+                        context.SetError("No redirect URI configured.");
+                    }
                 }
             }
 
@@ -153,15 +156,12 @@ namespace IdentityServer4.Validation
                 {
                     var fail = true;
 
-                    if (!String.IsNullOrWhiteSpace(origin) && Uri.TryCreate(origin, UriKind.Absolute, out var uri))
+                    if (!string.IsNullOrWhiteSpace(origin) && Uri.TryCreate(origin, UriKind.Absolute, out var uri))
                     {
                         if (uri.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) ||
                             uri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase))
                         {
-                            // http + :// + host/authority
-                            var originLength = uri.Scheme.Length + 3 + uri.Authority.Length;
-                            var path = origin.Substring(originLength);
-                            if (String.IsNullOrWhiteSpace(path))
+                            if (uri.AbsolutePath == "/" && !origin.EndsWith("/"))
                             {
                                 fail = false;
                             }
@@ -170,7 +170,7 @@ namespace IdentityServer4.Validation
 
                     if (fail)
                     {
-                        if (!String.IsNullOrWhiteSpace(origin))
+                        if (!string.IsNullOrWhiteSpace(origin))
                         {
                             context.SetError($"AllowedCorsOrigins contains invalid origin: {origin}");
                         }
@@ -180,7 +180,6 @@ namespace IdentityServer4.Validation
                         }
                         return Task.CompletedTask;
                     }
-
                 }
             }
 
@@ -197,21 +196,27 @@ namespace IdentityServer4.Validation
             // todo: null check for backwards compat; remove in 3.0
             if (_options != null)
             {
-                foreach (var uri in context.Client.RedirectUris)
+                if (context.Client.RedirectUris?.Any() == true)
                 {
-                    if (_options.Validation.InvalidRedirectUriPrefixes
-                            .Any(scheme => uri.StartsWith(scheme, StringComparison.OrdinalIgnoreCase)))
+                    foreach (var uri in context.Client.RedirectUris)
                     {
-                        context.SetError($"RedirectUri '{uri}' uses invalid scheme. If this scheme should be allowed, then configure it via ValidationOptions.");
+                        if (_options.Validation.InvalidRedirectUriPrefixes
+                                .Any(scheme => uri?.StartsWith(scheme, StringComparison.OrdinalIgnoreCase) == true))
+                        {
+                            context.SetError($"RedirectUri '{uri}' uses invalid scheme. If this scheme should be allowed, then configure it via ValidationOptions.");
+                        }
                     }
                 }
 
-                foreach (var uri in context.Client.PostLogoutRedirectUris)
+                if (context.Client.PostLogoutRedirectUris?.Any() == true)
                 {
-                    if (_options.Validation.InvalidRedirectUriPrefixes
-                            .Any(scheme => uri.StartsWith(scheme, StringComparison.OrdinalIgnoreCase)))
+                    foreach (var uri in context.Client.PostLogoutRedirectUris)
                     {
-                        context.SetError($"PostLogoutRedirectUri '{uri}' uses invalid scheme. If this scheme should be allowed, then configure it via ValidationOptions.");
+                        if (_options.Validation.InvalidRedirectUriPrefixes
+                                .Any(scheme => uri.StartsWith(scheme, StringComparison.OrdinalIgnoreCase)))
+                        {
+                            context.SetError($"PostLogoutRedirectUri '{uri}' uses invalid scheme. If this scheme should be allowed, then configure it via ValidationOptions.");
+                        }
                     }
                 }
             }
@@ -226,14 +231,17 @@ namespace IdentityServer4.Validation
         /// <returns></returns>
         protected virtual Task ValidateSecretsAsync(ClientConfigurationValidationContext context)
         {
-            foreach (var grantType in context.Client.AllowedGrantTypes)
+            if (context.Client.AllowedGrantTypes?.Any() == true)
             {
-                if (!string.Equals(grantType, GrantType.Implicit))
+                foreach (var grantType in context.Client.AllowedGrantTypes)
                 {
-                    if (context.Client.RequireClientSecret  && context.Client.ClientSecrets.Count == 0)
+                    if (!string.Equals(grantType, GrantType.Implicit))
                     {
-                        context.SetError($"Client secret is required for {grantType}, but no client secret is configured.");
-                        return Task.CompletedTask;
+                        if (context.Client.RequireClientSecret && context.Client.ClientSecrets.Count == 0)
+                        {
+                            context.SetError($"Client secret is required for {grantType}, but no client secret is configured.");
+                            return Task.CompletedTask;
+                        }
                     }
                 }
             }

@@ -140,5 +140,23 @@ namespace IdentityServer4.UnitTests.Validation.Secrets
             var result = await _validator.ValidateAsync(client.ClientSecrets, secret);
             result.Success.Should().BeFalse();
         }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task Client_with_null_Secret_Should_Fail()
+        {
+            var clientId = "null_secret_client";
+            var client = await _clients.FindEnabledClientByIdAsync(clientId);
+
+            var secret = new ParsedSecret
+            {
+                Id = clientId,
+                Type = IdentityServerConstants.ParsedSecretTypes.SharedSecret,
+                Credential = "secret"
+            };
+
+            var result = await _validator.ValidateAsync(client.ClientSecrets, secret);
+            result.Success.Should().BeFalse();
+        }
     }
 }

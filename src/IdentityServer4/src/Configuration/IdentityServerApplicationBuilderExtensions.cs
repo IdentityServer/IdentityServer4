@@ -23,8 +23,9 @@ namespace Microsoft.AspNetCore.Builder
         /// Adds IdentityServer to the pipeline.
         /// </summary>
         /// <param name="app">The application.</param>
+        /// <param name="options">The options.</param>
         /// <returns></returns>
-        public static IApplicationBuilder UseIdentityServer(this IApplicationBuilder app)
+        public static IApplicationBuilder UseIdentityServer(this IApplicationBuilder app, IdentityServerMiddlewareOptions options = null)
         {
             app.Validate();
 
@@ -37,7 +38,8 @@ namespace Microsoft.AspNetCore.Builder
             // handler, which just re-assigns the user on the context. claims transformation
             // will run twice, since that's not cached (whereas the authN handler result is)
             // related: https://github.com/aspnet/Security/issues/1399
-            app.UseAuthentication();
+            if (options == null) options = new IdentityServerMiddlewareOptions();
+            options.AuthenticationMiddleware(app);
 
             app.UseMiddleware<MutualTlsTokenEndpointMiddleware>();
             app.UseMiddleware<IdentityServerMiddleware>();
@@ -103,7 +105,7 @@ namespace Microsoft.AspNetCore.Builder
 
                 if (!typeof(IAuthenticationSignInHandler).IsAssignableFrom(authenticationScheme.HandlerType))
                 {
-                    logger.LogError("Authentication scheme {scheme} is configured for IdentityServer, but it is not a scheme that supports signin (like cookies). Either configure the default authentication scheme with cookies or set the CookieAuthenticationScheme on the IdentityServerOptions.", authenticationScheme.Name);
+                    logger.LogInformation("Authentication scheme {scheme} is configured for IdentityServer, but it is not a scheme that supports signin (like cookies). If you support interactive logins via the browser, then a cookie-based scheme should be used.", authenticationScheme.Name);
                 }
 
                 logger.LogDebug("Using {scheme} as default ASP.NET Core scheme for authentication", (await schemes.GetDefaultAuthenticateSchemeAsync())?.Name);

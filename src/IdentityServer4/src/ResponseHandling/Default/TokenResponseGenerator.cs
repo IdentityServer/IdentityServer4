@@ -137,7 +137,8 @@ namespace IdentityServer4.ResponseHandling
             {
                 AccessToken = accessToken,
                 AccessTokenLifetime = request.ValidatedRequest.AccessTokenLifetime,
-                Custom = request.CustomResponse
+                Custom = request.CustomResponse,
+                Scope = request.ValidatedRequest.AuthorizationCode.RequestedScopes.ToSpaceSeparatedString(),
             };
 
             //////////////////////////
@@ -225,7 +226,8 @@ namespace IdentityServer4.ResponseHandling
                 AccessToken = accessTokenString,
                 AccessTokenLifetime = request.ValidatedRequest.AccessTokenLifetime,
                 RefreshToken = handle,
-                Custom = request.CustomResponse
+                Custom = request.CustomResponse,
+                Scope = request.ValidatedRequest.RefreshToken.Scopes.ToSpaceSeparatedString()
             };
         }
 
@@ -246,7 +248,8 @@ namespace IdentityServer4.ResponseHandling
             {
                 AccessToken = accessToken,
                 AccessTokenLifetime = request.ValidatedRequest.AccessTokenLifetime,
-                Custom = request.CustomResponse
+                Custom = request.CustomResponse,
+                Scope = request.ValidatedRequest.DeviceCode.AuthorizedScopes.ToSpaceSeparatedString()
             };
 
             //////////////////////////
@@ -315,7 +318,8 @@ namespace IdentityServer4.ResponseHandling
             {
                 AccessToken = accessToken,
                 AccessTokenLifetime = validationResult.ValidatedRequest.AccessTokenLifetime,
-                Custom = validationResult.CustomResponse
+                Custom = validationResult.CustomResponse,
+                Scope = validationResult.ValidatedRequest.Scopes.ToSpaceSeparatedString()
             };
 
             if (refreshToken.IsPresent())
