@@ -16,6 +16,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.DependencyInjection;
+using IdentityServer4.Configuration;
 
 namespace IdentityServer4.Services
 {
@@ -55,6 +57,11 @@ namespace IdentityServer4.Services
         protected readonly ISystemClock Clock;
 
         /// <summary>
+        /// The key material service
+        /// </summary>
+        protected readonly IKeyMaterialService KeyMaterialService;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="DefaultTokenService" /> class. This overloaded constructor is deprecated and will be removed in 3.0.0.
         /// </summary>
         /// <param name="claimsProvider">The claims provider.</param>
@@ -62,6 +69,7 @@ namespace IdentityServer4.Services
         /// <param name="creationService">The signing service.</param>
         /// <param name="contextAccessor">The HTTP context accessor.</param>
         /// <param name="clock">The clock.</param>
+        /// <param name="keyMaterialService"></param>
         /// <param name="logger">The logger.</param>
         public DefaultTokenService(
             IClaimsService claimsProvider, 
@@ -69,6 +77,7 @@ namespace IdentityServer4.Services
             ITokenCreationService creationService,  
             IHttpContextAccessor contextAccessor, 
             ISystemClock clock, 
+            IKeyMaterialService keyMaterialService,
             ILogger<DefaultTokenService> logger)
         {
             Context = contextAccessor;
@@ -76,7 +85,8 @@ namespace IdentityServer4.Services
             ReferenceTokenStore = referenceTokenStore;
             CreationService = creationService;
             Clock = clock;
-            Logger = logger;            
+            KeyMaterialService = keyMaterialService;
+            Logger = logger;
         }
 
         /// <summary>
@@ -90,6 +100,8 @@ namespace IdentityServer4.Services
         {
             Logger.LogTrace("Creating identity token");
             request.Validate();
+
+            var signingAlgorithm = (await KeyMaterialService.GetSigningCredentialsAsync()).Algorithm;
 
             // host provided claims
             var claims = new List<Claim>();
@@ -106,13 +118,13 @@ namespace IdentityServer4.Services
             // add at_hash claim
             if (request.AccessTokenToHash.IsPresent())
             {
-                claims.Add(new Claim(JwtClaimTypes.AccessTokenHash, HashAdditionalData(request.AccessTokenToHash)));
+                claims.Add(new Claim(JwtClaimTypes.AccessTokenHash, CryptoHelper.CreateHashClaimValue(request.AccessTokenToHash, signingAlgorithm)));
             }
 
             // add c_hash claim
             if (request.AuthorizationCodeToHash.IsPresent())
             {
-                claims.Add(new Claim(JwtClaimTypes.AuthorizationCodeHash, HashAdditionalData(request.AuthorizationCodeToHash)));
+                claims.Add(new Claim(JwtClaimTypes.AuthorizationCodeHash, CryptoHelper.CreateHashClaimValue(request.AuthorizationCodeToHash, signingAlgorithm)));
             }
 
             // add sid if present
@@ -230,24 +242,6 @@ namespace IdentityServer4.Services
             }
 
             return tokenResult;
-        }
-
-        /// <summary>
-        /// Hashes an additional data (e.g. for c_hash or at_hash).
-        /// </summary>
-        /// <param name="tokenToHash">The token to hash.</param>
-        /// <returns></returns>
-        protected virtual string HashAdditionalData(string tokenToHash)
-        {
-            using (var sha = SHA256.Create())
-            {
-                var hash = sha.ComputeHash(Encoding.ASCII.GetBytes(tokenToHash));
-
-                var leftPart = new byte[16];
-                Array.Copy(hash, leftPart, 16);
-
-                return Base64Url.Encode(leftPart);
-            }
         }
     }
 }
