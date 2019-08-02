@@ -104,7 +104,11 @@ namespace IdentityServer4
 
             SecurityAlgorithms.RsaSsaPssSha256,
             SecurityAlgorithms.RsaSsaPssSha384,
-            SecurityAlgorithms.RsaSsaPssSha512
+            SecurityAlgorithms.RsaSsaPssSha512,
+
+            SecurityAlgorithms.EcdsaSha256,
+            SecurityAlgorithms.EcdsaSha384,
+            SecurityAlgorithms.EcdsaSha512,
         };
 
         public static class StandardScopes
