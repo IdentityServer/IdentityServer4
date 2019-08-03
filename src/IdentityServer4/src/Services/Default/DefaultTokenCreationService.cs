@@ -3,6 +3,7 @@
 
 
 using IdentityModel;
+using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Authentication;
@@ -37,15 +38,26 @@ namespace IdentityServer4.Services
         protected readonly ISystemClock Clock;
 
         /// <summary>
+        /// The options
+        /// </summary>
+        protected readonly IdentityServerOptions Options;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="DefaultTokenCreationService"/> class.
         /// </summary>
         /// <param name="clock">The options.</param>
         /// <param name="keys">The keys.</param>
+        /// <param name="options">The options.</param>
         /// <param name="logger">The logger.</param>
-        public DefaultTokenCreationService(ISystemClock clock, IKeyMaterialService keys, ILogger<DefaultTokenCreationService> logger)
+        public DefaultTokenCreationService(
+            ISystemClock clock,
+            IKeyMaterialService keys,
+            IdentityServerOptions options,
+            ILogger<DefaultTokenCreationService> logger)
         {
             Clock = clock;
             Keys = keys;
+            Options = options;
             Logger = logger;
         }
 
@@ -94,7 +106,10 @@ namespace IdentityServer4.Services
 
             if (token.Type == TokenTypes.AccessToken)
             {
-                header["typ"] = "at+jwt";
+                if (Options.AccessTokenJwtType.IsPresent())
+                {
+                    header["typ"] = Options.AccessTokenJwtType;
+                }
             }
 
             return header;
