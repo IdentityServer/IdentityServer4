@@ -12,6 +12,7 @@ using System;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
+using static IdentityServer4.IdentityServerConstants;
 
 namespace IdentityServer4.Services
 {
@@ -89,6 +90,11 @@ namespace IdentityServer4.Services
                 }
 
                 header["x5t"] = Base64Url.Encode(cert.GetCertHash());
+            }
+
+            if (token.Type == TokenTypes.AccessToken)
+            {
+                header["typ"] = "at+jwt";
             }
 
             return header;
