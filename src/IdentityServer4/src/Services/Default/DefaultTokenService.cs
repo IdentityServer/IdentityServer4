@@ -130,11 +130,6 @@ namespace IdentityServer4.Services
                 // todo: need constant
                 claims.Add(new Claim("s_hash", request.StateHash));
             }
-            else if (request.StateToHash.IsPresent())
-            {
-                // todo: need constant
-                claims.Add(new Claim("s_hash", CryptoHelper.CreateHashClaimValue(request.StateToHash, signingAlgorithm)));
-            }
 
             // add sid if present
             if (request.ValidatedRequest.SessionId.IsPresent())
