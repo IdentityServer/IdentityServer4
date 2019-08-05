@@ -79,11 +79,12 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="nameType">Name parameter can be either a distinguished name or a thumbprint</param>
         /// <param name="signingAlgorithm">The signing algorithm (defaults to RS256)</param>
         /// <exception cref="InvalidOperationException">certificate: '{name}'</exception>
-        public static IIdentityServerBuilder AddSigningCredential(this IIdentityServerBuilder builder,
-                                                                  string name,
-                                                                  StoreLocation location = StoreLocation.LocalMachine,
-                                                                  NameType nameType = NameType.SubjectDistinguishedName,
-                                                                  string signingAlgorithm = SecurityAlgorithms.RsaSha256)
+        public static IIdentityServerBuilder AddSigningCredential(
+            this IIdentityServerBuilder builder,
+            string name,
+            StoreLocation location = StoreLocation.LocalMachine,
+            NameType nameType = NameType.SubjectDistinguishedName,
+            string signingAlgorithm = SecurityAlgorithms.RsaSha256)
         {
             var certificate = FindCertificate(name, location, nameType);
             if (certificate == null) throw new InvalidOperationException($"certificate: '{name}' not found in certificate store");
@@ -95,18 +96,12 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Sets the signing credential.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        /// <param name="rsaKey">The RSA key.</param>
-        /// <param name="signingAlgorithm"></param>
-        /// <returns>The signing algorithm (defaults to RS256)</returns>
-        /// <exception cref="InvalidOperationException">RSA key does not have a private key.</exception>
-        public static IIdentityServerBuilder AddSigningCredential(this IIdentityServerBuilder builder, RsaSecurityKey rsaKey, string signingAlgorithm = SecurityAlgorithms.RsaSha256)
+        /// <param name="key">The key.</param>
+        /// <param name="signingAlgorithm">The signing algorithm</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddSigningCredential(this IIdentityServerBuilder builder, SecurityKey key, string signingAlgorithm)
         {
-            if (rsaKey.PrivateKeyStatus == PrivateKeyStatus.DoesNotExist)
-            {
-                throw new InvalidOperationException("RSA key does not have a private key.");
-            }
-
-            var credential = new SigningCredentials(rsaKey, signingAlgorithm);
+            var credential = new SigningCredentials(key, signingAlgorithm);
             return builder.AddSigningCredential(credential);
         }
 
