@@ -60,11 +60,11 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Discovery
         }
 
         [Theory]
-        [InlineData(JsonWebKeyECTypes.P256)]
-        [InlineData(JsonWebKeyECTypes.P384)]
-        [InlineData(JsonWebKeyECTypes.P521)]
+        [InlineData(JsonWebKeyECTypes.P256, SecurityAlgorithms.EcdsaSha256)]
+        [InlineData(JsonWebKeyECTypes.P384, SecurityAlgorithms.EcdsaSha384)]
+        [InlineData(JsonWebKeyECTypes.P521, SecurityAlgorithms.EcdsaSha512)]
         [Trait("Category", Category)]
-        public async Task Jwks_with_ecdsa_should_have_parsable_key(string crv)
+        public async Task Jwks_with_ecdsa_should_have_parsable_key(string crv, string alg)
         {
             var key = CryptoHelper.CreateECDsaSecurityKey(crv);
 
@@ -72,7 +72,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Discovery
             pipeline.OnPostConfigureServices += services =>
             {
                 services.AddIdentityServerBuilder()
-                    .AddSigningCredential(key, "ES256");
+                    .AddSigningCredential(key, alg);
             };
             pipeline.Initialize("/ROOT");
 
