@@ -397,7 +397,7 @@ namespace IdentityServer4.ResponseHandling
                             x5t = thumbprint,
                             x = x,
                             y = y,
-                            crv = "P-256",
+                            crv = CryptoHelper.GetCrvValueFromCurve(parameters.Curve),
                             x5c = new[] { cert64 },
                             alg = algorithm
                         };
@@ -439,7 +439,7 @@ namespace IdentityServer4.ResponseHandling
                         kid = ecdsaKey.KeyId,
                         x = x,
                         y = y,
-                        crv = "P-256",
+                        crv = CryptoHelper.GetCrvValueFromCurve(parameters.Curve),
                         alg = algorithm
                     };
                     webKeys.Add(ecdsaJsonWebKey);
