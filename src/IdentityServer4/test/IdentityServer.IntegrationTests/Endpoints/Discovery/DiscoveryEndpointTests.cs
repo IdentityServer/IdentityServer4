@@ -37,6 +37,30 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Discovery
 
         [Fact]
         [Trait("Category", Category)]
+        public async Task Algorithms_supported_should_match_signing_key()
+        {
+            var key = CryptoHelper.CreateECDsaSecurityKey(JsonWebKeyECTypes.P256);
+            var expectedAlgorithm = SecurityAlgorithms.EcdsaSha256;
+
+            IdentityServerPipeline pipeline = new IdentityServerPipeline();
+            pipeline.OnPostConfigureServices += services =>
+            {
+                services.AddIdentityServerBuilder()
+                    .AddSigningCredential(key, expectedAlgorithm);
+            };
+            pipeline.Initialize("/ROOT");
+
+            var result = await pipeline.BackChannelClient.GetAsync("https://server/root/.well-known/openid-configuration");
+
+            var json = await result.Content.ReadAsStringAsync();
+            var data = JObject.Parse(json);
+            var algorithmsSupported = data["id_token_signing_alg_values_supported"].Values<string>();
+
+            algorithmsSupported.Should().Contain(expectedAlgorithm);
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
         public async Task Jwks_entries_should_contain_alg()
         {
             IdentityServerPipeline pipeline = new IdentityServerPipeline();
