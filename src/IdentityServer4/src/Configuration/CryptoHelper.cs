@@ -123,11 +123,11 @@ namespace IdentityServer4.Configuration
         {
             switch (curve.Oid.Value)
             {
-                case "1.2.840.10045.3.1.7":
+                case Constants.CurveOids.P256:
                     return JsonWebKeyECTypes.P256;
-                case "1.3.132.0.34":
+                case Constants.CurveOids.P384:
                     return JsonWebKeyECTypes.P384;
-                case "1.3.132.0.35":
+                case Constants.CurveOids.P521:
                     return JsonWebKeyECTypes.P521;
                 default:
                     throw new InvalidOperationException($"Unsupported curve type of {curve.Oid.Value} - {curve.Oid.FriendlyName}");
