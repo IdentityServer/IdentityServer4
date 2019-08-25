@@ -364,6 +364,7 @@ namespace IdentityServer.UnitTests.Validation
         [InlineData("http://foo/path")]
         [InlineData("http://foo:123/path")]
         [InlineData("https://foo:443/path")]
+        [InlineData("foo://foo:443/path")]
         [InlineData("")]
         [InlineData("   ")]
         [InlineData((string)null)]
@@ -398,6 +399,8 @@ namespace IdentityServer.UnitTests.Validation
         [InlineData("http://foo:123")]
         [InlineData("https://foo:456")]
         [InlineData("https://foo:443")]
+        [InlineData("foo://foo:443")]
+        [InlineData("foo://foo")]
         public async Task ValidateAllowedCorsOriginsAsync_should_allow_valid_formats(string origin)
         {
             var client = new Client

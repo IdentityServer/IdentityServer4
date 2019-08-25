@@ -256,11 +256,8 @@ namespace IdentityServer4.Extensions
                 {
                     return null;
                 }
-
-                if (uri.Scheme == "http" || uri.Scheme == "https")
-                {
-                    return $"{uri.Scheme}://{uri.Authority}";
-                }
+                                
+                return $"{uri.Scheme}://{uri.Authority}";                
             }
 
             return null;
