@@ -14,6 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using static IdentityServer4.IdentityServerConstants;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
