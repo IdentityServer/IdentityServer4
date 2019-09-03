@@ -24,7 +24,7 @@ namespace IdentityServer4.Models
         /// Initializes a new instance of the <see cref="IdentityResource"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
-        /// <param name="claimTypes">The claim types.</param>
+        /// <param name="claimTypes">The claim types which must present in access token for the described identity resource.</param>
         public IdentityResource(string name, IEnumerable<string> claimTypes)
             : this(name, name, claimTypes)
         {
@@ -35,7 +35,7 @@ namespace IdentityServer4.Models
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="displayName">The display name.</param>
-        /// <param name="claimTypes">The claim types.</param>
+        /// <param name="claimTypes">The claim types which must present in access token for the described identity resource.</param>
         /// <exception cref="System.ArgumentNullException">name</exception>
         /// <exception cref="System.ArgumentException">Must provide at least one claim type - claimTypes</exception>
         public IdentityResource(string name, string displayName, IEnumerable<string> claimTypes)
