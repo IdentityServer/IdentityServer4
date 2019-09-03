@@ -44,7 +44,7 @@ namespace IdentityServer4.Models
         /// Initializes a new instance of the <see cref="ApiResource"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
-        /// <param name="claimTypes">The claim types.</param>
+        /// <param name="claimTypes">The claim types which must present in access token for the described API resource.</param>
         public ApiResource(string name, IEnumerable<string> claimTypes)
             : this(name, name, claimTypes)
         {
@@ -55,7 +55,7 @@ namespace IdentityServer4.Models
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="displayName">The display name.</param>
-        /// <param name="claimTypes">The claim types.</param>
+        /// <param name="claimTypes">The claim types which must present in access token for the described API resource.</param>
         /// <exception cref="System.ArgumentNullException">name</exception>
         public ApiResource(string name, string displayName, IEnumerable<string> claimTypes)
         {
