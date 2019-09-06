@@ -142,7 +142,7 @@ namespace IdentityServer4.EntityFramework.IntegrationTests.TokenCleanup
             }
         }
 
-        private EntityFramework.TokenCleanup CreateSut(DbContextOptions<PersistedGrantDbContext> options)
+        private EntityFramework.TokenCleanupService CreateSut(DbContextOptions<PersistedGrantDbContext> options)
         {
             IServiceCollection services = new ServiceCollection();
             services.AddIdentityServer()
@@ -155,11 +155,15 @@ namespace IdentityServer4.EntityFramework.IntegrationTests.TokenCleanup
                 new PersistedGrantDbContext(options, StoreOptions));
             services.AddTransient<IPersistedGrantStore, PersistedGrantStore>();
             services.AddTransient<IDeviceFlowStore, DeviceFlowStore>();
+            
+            services.AddTransient<EntityFramework.TokenCleanupService>();
+            services.AddSingleton(StoreOptions);
 
-            return new EntityFramework.TokenCleanup(
-                services.BuildServiceProvider(),
-                new NullLogger<EntityFramework.TokenCleanup>(),
-                StoreOptions);
+            return services.BuildServiceProvider().GetRequiredService<EntityFramework.TokenCleanupService>();
+            //return new EntityFramework.TokenCleanupService(
+            //    services.BuildServiceProvider(),
+            //    new NullLogger<EntityFramework.TokenCleanup>(),
+            //    StoreOptions);
         }
     }
 }
