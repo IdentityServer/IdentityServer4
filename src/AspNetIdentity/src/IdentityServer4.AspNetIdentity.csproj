@@ -8,7 +8,7 @@
     <Authors>Brock Allen;Dominick Baier</Authors>
     <AssemblyName>IdentityServer4.AspNetIdentity</AssemblyName>
     <PackageTags>OAuth2;OAuth 2.0;OpenID Connect;Security;Identity;IdentityServer;ASP.NET Identity</PackageTags>
-    <PackageIconUrl>https://raw.githubusercontent.com/IdentityServer/Artwork/master/Logos/IDserver_icon128.jpg</PackageIconUrl>
+    <PackageIcon>icon.jpg</PackageIcon>
     <PackageProjectUrl>https://github.com/IdentityServer/IdentityServer4.AspNetIdentity</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageReleaseNotes>https://github.com/IdentityServer/IdentityServer4/releases</PackageReleaseNotes>
@@ -23,6 +23,10 @@
 
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../../icon.jpg" Pack="true" Visible="false" PackagePath="" />
+  </ItemGroup>
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
