@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
-using IdentityServer4.EntityFramework.Services;
 using IdentityServer4.Models;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
