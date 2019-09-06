@@ -90,7 +90,7 @@ namespace IdentityServer4.Tests.Validation.Secrets
             secret.Should().BeNull();
         }
 
-        [Fact(Skip = "Needs updating for ASP.NET Core 3")]
+        [Fact]
         public async void Malformed_PostBody()
         {
             var context = new DefaultHttpContext();
