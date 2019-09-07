@@ -9,6 +9,7 @@ namespace build
 {
     class Program
     {
+        private const string Prefix = "IdentityServer4";
         private const bool RequireTests = true;
 
         private const string ArtifactsDir = "artifacts";
@@ -29,7 +30,7 @@ namespace build
                 {
                     var solution = Directory.GetFiles(".", "*.sln", SearchOption.TopDirectoryOnly).First();
 
-                    Run("dotnet", $"build {solution} -c Release");
+                    Run("dotnet", $"build {solution} -c Release", echoPrefix: Prefix);
 
                     if (sign.HasValue())
                     {
@@ -45,7 +46,7 @@ namespace build
 
                         foreach (var test in tests)
                         {
-                            Run("dotnet", $"test {test} -c Release --no-build");
+                            Run("dotnet", $"test {test} -c Release --no-build", echoPrefix: Prefix);
                         }    
                     }
                     catch (System.IO.DirectoryNotFoundException ex)
@@ -61,7 +62,7 @@ namespace build
                 {
                     var project = Directory.GetFiles("./src", "*.csproj", SearchOption.TopDirectoryOnly).First();
 
-                    Run("dotnet", $"pack {project} -c Release -o ./{ArtifactsDir} --no-build");
+                    Run("dotnet", $"pack {project} -c Release -o ./{ArtifactsDir} --no-build", echoPrefix: Prefix);
                     
                     if (sign.HasValue())
                     {
@@ -73,7 +74,7 @@ namespace build
 
 
                 Target("default", DependsOn(Test, Pack));
-                RunTargetsAndExit(app.RemainingArguments);
+                RunTargetsAndExit(app.RemainingArguments, logPrefix: Prefix);
             });
 
             app.Execute(args);
