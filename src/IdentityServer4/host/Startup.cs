@@ -3,17 +3,13 @@
 
 
 using Host.Configuration;
-using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Quickstart.UI;
-using idunno.Authentication.Certificate;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
-using Polly;
-using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -31,17 +27,16 @@ namespace Host
             IdentityModelEventSource.ShowPII = true;
         }
 
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc()
-                .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_2_1);
+            services.AddControllersWithViews()
+                .AddNewtonsoftJson();
 
             services.Configure<IISOptions>(iis =>
             {
                 iis.AuthenticationDisplayName = "Windows";
                 iis.AutomaticAuthentication = false;
             });
-
 
             var builder = services.AddIdentityServer(options =>
                 {
@@ -50,7 +45,7 @@ namespace Host
                     options.Events.RaiseErrorEvents = true;
                     options.Events.RaiseInformationEvents = true;
 
-                    options.MutualTls.Enabled = true;
+                    options.MutualTls.Enabled = false;
                     options.MutualTls.ClientCertificateAuthenticationScheme = "x509";
                 })
                 .AddInMemoryClients(Clients.Get())
@@ -65,33 +60,8 @@ namespace Host
                 .AddTestUsers(TestUsers.Users)
                 .AddMutualTlsSecretValidators();
 
-            //builder.AddJwtRequestUriHttpClient(client =>
-            //{
-            //    client.Timeout = TimeSpan.FromSeconds(30);
-            //});
-
-         
-            builder.AddBackChannelLogoutHttpClient(client =>
-            {
-                client.Timeout = TimeSpan.FromSeconds(30);
-            })
-            .AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(new[]
-            {
-                TimeSpan.FromSeconds(1),
-                TimeSpan.FromSeconds(2),
-                TimeSpan.FromSeconds(3)
-            }));
-
-            builder.AddJwtRequestUriHttpClient(client =>
-            {
-                client.Timeout = TimeSpan.FromSeconds(30);
-            })
-            .AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(new[]
-            {
-                TimeSpan.FromSeconds(1),
-                TimeSpan.FromSeconds(2),
-                TimeSpan.FromSeconds(3)
-            }));
+            //var key = CryptoHelper.CreateECDsaSecurityKey();
+            //builder.AddSigningCredential(key, SecurityAlgorithms.EcdsaSha256);
 
             services.AddExternalIdentityProviders();
             services.AddLocalApiAuthentication(principal =>
@@ -101,35 +71,39 @@ namespace Host
                 return Task.FromResult(principal);
             });
 
-            services.AddAuthentication()
-               .AddCertificate("x509", options =>
-               {
-                   options.RevocationMode = System.Security.Cryptography.X509Certificates.X509RevocationMode.NoCheck;
+            //services.AddAuthentication()
+            //   .AddCertificate("x509", options =>
+            //   {
+            //       options.RevocationMode = System.Security.Cryptography.X509Certificates.X509RevocationMode.NoCheck;
                    
-                   options.Events = new CertificateAuthenticationEvents
-                   {
-                       OnValidateCertificate = context =>
-                       {
-                           context.Principal = Principal.CreateFromCertificate(context.ClientCertificate, includeAllClaims:true);
-                           context.Success();
+            //       options.Events = new CertificateAuthenticationEvents
+            //       {
+            //           OnValidateCertificate = context =>
+            //           {
+            //               context.Principal = Principal.CreateFromCertificate(context.ClientCertificate, includeAllClaims:true);
+            //               context.Success();
 
-                           return Task.CompletedTask;
-                       }
-                   };
-               });
-
-            return services.BuildServiceProvider(validateScopes: false);
+            //               return Task.CompletedTask;
+            //           }
+            //       };
+            //   });
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseMiddleware<Logging.RequestLoggerMiddleware>();
             app.UseDeveloperExceptionPage();
+            app.UseStaticFiles();
 
+            app.UseRouting();
+            app.UseMiddleware<Logging.RequestLoggerMiddleware>();
             app.UseIdentityServer();
 
-            app.UseStaticFiles();
-            app.UseMvcWithDefaultRoute();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapDefaultControllerRoute();
+            });
         }
     }
 
@@ -141,17 +115,17 @@ namespace Host
             services.AddOidcStateDataFormatterCache("aad", "demoidsrv");
 
             services.AddAuthentication()
-                .AddOpenIdConnect("Google","Google", options =>
-                {
-                    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-                    options.ForwardSignOut = IdentityServerConstants.DefaultCookieAuthenticationScheme;
+                .AddOpenIdConnect("Google", "Google", options =>
+                 {
+                     options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                     options.ForwardSignOut = IdentityServerConstants.DefaultCookieAuthenticationScheme;
 
-                    options.Authority = "https://accounts.google.com/";
-                    options.ClientId = "708996912208-9m4dkjb5hscn7cjrn5u0r4tbgkbj1fko.apps.googleusercontent.com";
+                     options.Authority = "https://accounts.google.com/";
+                     options.ClientId = "708996912208-9m4dkjb5hscn7cjrn5u0r4tbgkbj1fko.apps.googleusercontent.com";
 
-                    options.CallbackPath = "/signin-google";
-                    options.Scope.Add("email");
-                })
+                     options.CallbackPath = "/signin-google";
+                     options.Scope.Add("email");
+                 })
                 .AddOpenIdConnect("demoidsrv", "IdentityServer", options =>
                 {
                     options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
@@ -205,21 +179,21 @@ namespace Host
                         NameClaimType = "name",
                         RoleClaimType = "role"
                     };
-                })
-                .AddWsFederation("adfs-wsfed", "ADFS with WS-Fed", options =>
-                {
-                    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-                    options.SignOutScheme = IdentityServerConstants.SignoutScheme;
-
-                    options.MetadataAddress = "https://adfs4.local/federationmetadata/2007-06/federationmetadata.xml";
-                    options.Wtrealm = "urn:test";
-
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        NameClaimType = "name",
-                        RoleClaimType = "role"
-                    };
                 });
+                //.AddWsFederation("adfs-wsfed", "ADFS with WS-Fed", options =>
+                //{
+                //    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                //    options.SignOutScheme = IdentityServerConstants.SignoutScheme;
+
+                //    options.MetadataAddress = "https://adfs4.local/federationmetadata/2007-06/federationmetadata.xml";
+                //    options.Wtrealm = "urn:test";
+
+                //    options.TokenValidationParameters = new TokenValidationParameters
+                //    {
+                //        NameClaimType = "name",
+                //        RoleClaimType = "role"
+                //    };
+                //});
 
             return services;
         }

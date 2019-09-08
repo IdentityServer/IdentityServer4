@@ -11,8 +11,8 @@ namespace SqlServer.Migrations.PersistedGrantDb
                 name: "DeviceCodes",
                 columns: table => new
                 {
-                    DeviceCode = table.Column<string>(maxLength: 200, nullable: false),
                     UserCode = table.Column<string>(maxLength: 200, nullable: false),
+                    DeviceCode = table.Column<string>(maxLength: 200, nullable: false),
                     SubjectId = table.Column<string>(maxLength: 200, nullable: true),
                     ClientId = table.Column<string>(maxLength: 200, nullable: false),
                     CreationTime = table.Column<DateTime>(nullable: false),
@@ -53,9 +53,14 @@ namespace SqlServer.Migrations.PersistedGrantDb
                 column: "Expiration");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PersistedGrants_SubjectId_ClientId_Type_Expiration",
+                name: "IX_PersistedGrants_Expiration",
                 table: "PersistedGrants",
-                columns: new[] { "SubjectId", "ClientId", "Type", "Expiration" });
+                column: "Expiration");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PersistedGrants_SubjectId_ClientId_Type",
+                table: "PersistedGrants",
+                columns: new[] { "SubjectId", "ClientId", "Type" });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

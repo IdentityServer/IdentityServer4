@@ -10,8 +10,8 @@ END;
 GO
 
 CREATE TABLE [DeviceCodes] (
-    [DeviceCode] nvarchar(200) NOT NULL,
     [UserCode] nvarchar(200) NOT NULL,
+    [DeviceCode] nvarchar(200) NOT NULL,
     [SubjectId] nvarchar(200) NULL,
     [ClientId] nvarchar(200) NOT NULL,
     [CreationTime] datetime2 NOT NULL,
@@ -43,12 +43,16 @@ CREATE INDEX [IX_DeviceCodes_Expiration] ON [DeviceCodes] ([Expiration]);
 
 GO
 
-CREATE INDEX [IX_PersistedGrants_SubjectId_ClientId_Type_Expiration] ON [PersistedGrants] ([SubjectId], [ClientId], [Type], [Expiration]);
+CREATE INDEX [IX_PersistedGrants_Expiration] ON [PersistedGrants] ([Expiration]);
+
+GO
+
+CREATE INDEX [IX_PersistedGrants_SubjectId_ClientId_Type] ON [PersistedGrants] ([SubjectId], [ClientId], [Type]);
 
 GO
 
 INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-VALUES (N'20190712142715_Grants', N'2.1.11-servicing-32099');
+VALUES (N'20190906144224_Grants', N'3.0.0-preview9.19423.6');
 
 GO
 

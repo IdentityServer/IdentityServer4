@@ -9,6 +9,7 @@ namespace build
 {
     class Program
     {
+        private const string Prefix = "Storage";
         private const bool RequireTests = false;
 
         private const string ArtifactsDir = "artifacts";
@@ -29,7 +30,7 @@ namespace build
                 {
                     var solution = Directory.GetFiles(".", "*.sln", SearchOption.TopDirectoryOnly).First();
 
-                    Run("dotnet", $"build {solution} -c Release");
+                    Run("dotnet", $"build {solution} -c Release", echoPrefix: Prefix);
 
                     if (sign.HasValue())
                     {
@@ -45,7 +46,7 @@ namespace build
 
                         foreach (var test in tests)
                         {
-                            Run("dotnet", $"test {test} -c Release --no-build");
+                            Run("dotnet", $"test {test} -c Release --no-build", echoPrefix: Prefix);
                         }    
                     }
                     catch (System.IO.DirectoryNotFoundException ex)
@@ -61,17 +62,19 @@ namespace build
                 {
                     var project = Directory.GetFiles("./src", "*.csproj", SearchOption.TopDirectoryOnly).First();
 
-                    Run("dotnet", $"pack {project} -c Release -o ../{ArtifactsDir} --no-build");
+                    Run("dotnet", $"pack {project} -c Release -o ./{ArtifactsDir} --no-build", echoPrefix: Prefix);
                     
                     if (sign.HasValue())
                     {
                         Sign("*.nupkg", $"./{ArtifactsDir}");
                     }
+
+                   CopyArtifacts();
                 });
 
 
                 Target("default", DependsOn(Test, Pack));
-                RunTargetsAndExit(app.RemainingArguments);
+                RunTargetsAndExit(app.RemainingArguments, logPrefix: Prefix);
             });
 
             app.Execute(args);
@@ -98,6 +101,18 @@ namespace build
             {
                 Console.WriteLine("  Signing " + file);
                 Run("../../tools/signclient", $"sign -c {signClientConfig} -i {file} -r sc-ids@dotnetfoundation.org -s \"{signClientSecret}\" -n 'IdentityServer4'", noEcho: true);
+            }
+        }
+
+        private static void CopyArtifacts()
+        {
+            var files = Directory.GetFiles($"./{ArtifactsDir}");
+
+            foreach (string s in files)
+            {
+                var fileName = Path.GetFileName(s);
+                var destFile = Path.Combine("../../nuget", fileName);
+                File.Copy(s, destFile, true);
             }
         }
 

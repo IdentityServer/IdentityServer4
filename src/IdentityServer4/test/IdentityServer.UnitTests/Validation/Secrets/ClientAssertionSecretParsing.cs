@@ -94,9 +94,8 @@ namespace IdentityServer4.Tests.Validation.Secrets
         public async void Malformed_PostBody()
         {
             var context = new DefaultHttpContext();
-
             var body = "malformed";
-
+            
             context.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(body));
             context.Request.ContentType = "application/x-www-form-urlencoded";
 

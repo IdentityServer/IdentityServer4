@@ -99,6 +99,7 @@ namespace IdentityServer4.EntityFramework.IntegrationTests.Stores
             Assert.NotNull(resources.IdentityResources.FirstOrDefault(x => x.Name == testIdentityResource.Name));
             Assert.NotNull(resources.ApiResources.FirstOrDefault(x => x.Name == testApiResource.Name));
         }
+
         [Theory, MemberData(nameof(TestDatabaseProviders))]
         public void FindResourcesAsync_WhenResourcesExist_ExpectOnlyResourcesRequestedReturned(DbContextOptions<ConfigurationDbContext> options)
         {

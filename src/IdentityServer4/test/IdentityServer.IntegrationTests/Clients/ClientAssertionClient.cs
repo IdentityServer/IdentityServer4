@@ -151,7 +151,7 @@ namespace IdentityServer4.IntegrationTests.Clients
         private async Task<TokenResponse> GetToken(FormUrlEncodedContent body)
         {
             var response = await _client.PostAsync(TokenEndpoint, body);
-            return new TokenResponse(await response.Content.ReadAsStringAsync());
+            return await ProtocolResponse.FromHttpResponseAsync<TokenResponse>(response);
         }
 
         private void AssertValidToken(TokenResponse response)
@@ -170,10 +170,7 @@ namespace IdentityServer4.IntegrationTests.Clients
             var scopes = payload["scope"] as JArray;
             scopes.First().ToString().Should().Be("api1");
 
-            var audiences = ((JArray)payload["aud"]).Select(x => x.ToString());
-            audiences.Count().Should().Be(2);
-            audiences.Should().Contain("https://idsvr4/resources");
-            audiences.Should().Contain("api");
+            payload["aud"].Should().Be("api");
         }
 
         private Dictionary<string, object> GetPayload(TokenResponse response)

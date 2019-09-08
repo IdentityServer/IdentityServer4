@@ -99,7 +99,7 @@ namespace IdentityServer4.EntityFramework.Storage
             }
 
             services.AddScoped<IPersistedGrantDbContext, TContext>();
-            services.AddSingleton<TokenCleanup>();
+            services.AddTransient<TokenCleanupService>();
 
             return services;
         }

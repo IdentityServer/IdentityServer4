@@ -15,34 +15,40 @@ namespace SqlServer.Migrations.PersistedGrantDb
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.11-servicing-32099")
+                .HasAnnotation("ProductVersion", "3.0.0-preview9.19423.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("IdentityServer4.EntityFramework.Entities.DeviceFlowCodes", b =>
                 {
                     b.Property<string>("UserCode")
-                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(200)")
                         .HasMaxLength(200);
 
                     b.Property<string>("ClientId")
                         .IsRequired()
+                        .HasColumnType("nvarchar(200)")
                         .HasMaxLength(200);
 
-                    b.Property<DateTime>("CreationTime");
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Data")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)")
                         .HasMaxLength(50000);
 
                     b.Property<string>("DeviceCode")
                         .IsRequired()
+                        .HasColumnType("nvarchar(200)")
                         .HasMaxLength(200);
 
                     b.Property<DateTime?>("Expiration")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("SubjectId")
+                        .HasColumnType("nvarchar(200)")
                         .HasMaxLength(200);
 
                     b.HasKey("UserCode");
@@ -58,30 +64,39 @@ namespace SqlServer.Migrations.PersistedGrantDb
             modelBuilder.Entity("IdentityServer4.EntityFramework.Entities.PersistedGrant", b =>
                 {
                     b.Property<string>("Key")
+                        .HasColumnType("nvarchar(200)")
                         .HasMaxLength(200);
 
                     b.Property<string>("ClientId")
                         .IsRequired()
+                        .HasColumnType("nvarchar(200)")
                         .HasMaxLength(200);
 
-                    b.Property<DateTime>("CreationTime");
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Data")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)")
                         .HasMaxLength(50000);
 
-                    b.Property<DateTime?>("Expiration");
+                    b.Property<DateTime?>("Expiration")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("SubjectId")
+                        .HasColumnType("nvarchar(200)")
                         .HasMaxLength(200);
 
                     b.Property<string>("Type")
                         .IsRequired()
+                        .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
 
                     b.HasKey("Key");
 
-                    b.HasIndex("SubjectId", "ClientId", "Type", "Expiration");
+                    b.HasIndex("Expiration");
+
+                    b.HasIndex("SubjectId", "ClientId", "Type");
 
                     b.ToTable("PersistedGrants");
                 });

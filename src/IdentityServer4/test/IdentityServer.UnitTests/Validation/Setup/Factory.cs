@@ -16,6 +16,7 @@ using IdentityServer4.Services.Default;
 using Microsoft.AspNetCore.Authentication;
 using System;
 using System.Net.Http;
+using IdentityServer4.Models;
 
 namespace IdentityServer4.UnitTests.Validation
 {
@@ -121,7 +122,10 @@ namespace IdentityServer4.UnitTests.Validation
         {
             return new DefaultTokenCreationService(
                 new StubClock(),
-                new DefaultKeyMaterialService(new IValidationKeysStore[] { }, new DefaultSigningCredentialsStore(TestCert.LoadSigningCredentials())), TestLogger.Create<DefaultTokenCreationService>());
+                new DefaultKeyMaterialService(new IValidationKeysStore[] { },
+                new DefaultSigningCredentialsStore(TestCert.LoadSigningCredentials())),
+                TestIdentityServerOptions.Create(),
+                TestLogger.Create<DefaultTokenCreationService>());
         }
 
         public static DeviceAuthorizationRequestValidator CreateDeviceAuthorizationRequestValidator(
@@ -247,6 +251,12 @@ namespace IdentityServer4.UnitTests.Validation
             var context = new MockHttpContextAccessor(options);
             var logger = TestLogger.Create<TokenValidator>();
 
+            var keyInfo = new SecurityKeyInfo
+            {
+                Key = TestCert.LoadSigningCredentials().Key,
+                SigningAlgorithm = "RS256"
+            };
+
             var validator = new TokenValidator(
                 clients: clients,
                 clock: clock,
@@ -254,7 +264,7 @@ namespace IdentityServer4.UnitTests.Validation
                 referenceTokenStore: store,
                 refreshTokenStore: refreshTokenStore,
                 customValidator: new DefaultCustomTokenValidator(),
-                    keys: new DefaultKeyMaterialService(new[] { new DefaultValidationKeysStore(new[] { TestCert.LoadSigningCredentials().Key }) }),
+                    keys: new DefaultKeyMaterialService(new[] { new DefaultValidationKeysStore(new[] { keyInfo }) }),
                 logger: logger,
                 options: options,
                 context: context);

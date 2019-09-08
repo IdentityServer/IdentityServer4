@@ -1,7 +1,16 @@
 <Project>
 
-  <ItemGroup>
-    <PackageReference Include="IdentityModel" Version="4.0.0-preview.2.33" />
-  </ItemGroup>
+  <PropertyGroup>
+    <AspNetVersion>3.0.0-preview9.19424.4</AspNetVersion>    
+  </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Update="IdentityModel" Version="4.0.0" />
+    <PackageReference Update="IdentityServer4.AccessTokenValidation" Version="3.0.0-preview.1.3" />
+
+    <PackageReference Update="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(AspNetVersion)" />
+    <PackageReference Update="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(AspNetVersion)" />
+    
+    <PackageReference Update="System.IdentityModel.Tokens.Jwt" Version="5.5.0" />
+  </ItemGroup>
 </Project>

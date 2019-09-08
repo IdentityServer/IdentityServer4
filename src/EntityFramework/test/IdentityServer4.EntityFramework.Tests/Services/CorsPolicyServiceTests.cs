@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
-using IdentityServer4.EntityFramework.Services;
 using IdentityServer4.Models;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -15,6 +14,7 @@ using IdentityServer4.EntityFramework.Options;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using IdentityServer4.EntityFramework.Interfaces;
+using IdentityServer4.EntityFramework.Services;
 
 namespace IdentityServer4.EntityFramework.IntegrationTests.Services
 {

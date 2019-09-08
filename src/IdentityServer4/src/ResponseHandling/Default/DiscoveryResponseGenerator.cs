@@ -299,9 +299,15 @@ namespace IdentityServer4.ResponseHandling
 
                 entries.Add(OidcConstants.Discovery.TokenEndpointAuthenticationMethodsSupported, types);
             }
+            
+            var signingCredentials = await Keys.GetSigningCredentialsAsync();
+            if (signingCredentials != null)
+            {
+                var algorithm = signingCredentials.Algorithm;
+                entries.Add(OidcConstants.Discovery.IdTokenSigningAlgorithmsSupported, new[] { algorithm });
+            }
 
             entries.Add(OidcConstants.Discovery.SubjectTypesSupported, new[] { "public" });
-            entries.Add(OidcConstants.Discovery.IdTokenSigningAlgorithmsSupported, new[] { Constants.SigningAlgorithms.RSA_SHA_256 });
             entries.Add(OidcConstants.Discovery.CodeChallengeMethodsSupported, new[] { OidcConstants.CodeChallengeMethods.Plain, OidcConstants.CodeChallengeMethods.Sha256 });
 
             if (Options.Endpoints.EnableAuthorizeEndpoint)
@@ -353,38 +359,59 @@ namespace IdentityServer4.ResponseHandling
         public virtual async Task<IEnumerable<Models.JsonWebKey>> CreateJwkDocumentAsync()
         {
             var webKeys = new List<Models.JsonWebKey>();
-            var signingCredentials = await Keys.GetSigningCredentialsAsync();
-            var algorithm = signingCredentials?.Algorithm ?? Constants.SigningAlgorithms.RSA_SHA_256;
-
+            
             foreach (var key in await Keys.GetValidationKeysAsync())
             {
-                if (key is X509SecurityKey x509Key)
+                if (key.Key is X509SecurityKey x509Key)
                 {
                     var cert64 = Convert.ToBase64String(x509Key.Certificate.RawData);
                     var thumbprint = Base64Url.Encode(x509Key.Certificate.GetCertHash());
 
-                    var pubKey = x509Key.PublicKey as RSA;
-                    var parameters = pubKey.ExportParameters(false);
-                    var exponent = Base64Url.Encode(parameters.Exponent);
-                    var modulus = Base64Url.Encode(parameters.Modulus);
-
-                    var webKey = new Models.JsonWebKey
+                    if (x509Key.PublicKey is RSA rsa)
                     {
-                        kty = "RSA",
-                        use = "sig",
-                        kid = x509Key.KeyId,
-                        x5t = thumbprint,
-                        e = exponent,
-                        n = modulus,
-                        x5c = new[] { cert64 },
-                        alg = algorithm
-                    };
+                        var parameters = rsa.ExportParameters(false);
+                        var exponent = Base64Url.Encode(parameters.Exponent);
+                        var modulus = Base64Url.Encode(parameters.Modulus);
 
-                    webKeys.Add(webKey);
-                    continue;
+                        var rsaJsonWebKey = new Models.JsonWebKey
+                        {
+                            kty = "RSA",
+                            use = "sig",
+                            kid = x509Key.KeyId,
+                            x5t = thumbprint,
+                            e = exponent,
+                            n = modulus,
+                            x5c = new[] { cert64 },
+                            alg = key.SigningAlgorithm
+                        };
+                        webKeys.Add(rsaJsonWebKey);
+                    }
+                    else if (x509Key.PublicKey is ECDsa ecdsa)
+                    {
+                        var parameters = ecdsa.ExportParameters(false);
+                        var x = Base64Url.Encode(parameters.Q.X);
+                        var y = Base64Url.Encode(parameters.Q.Y);
+
+                        var ecdsaJsonWebKey = new Models.JsonWebKey
+                        {
+                            kty = "EC",
+                            use = "sig",
+                            kid = x509Key.KeyId,
+                            x5t = thumbprint,
+                            x = x,
+                            y = y,
+                            crv = CryptoHelper.GetCrvValueFromCurve(parameters.Curve),
+                            x5c = new[] { cert64 },
+                            alg = key.SigningAlgorithm
+                        };
+                        webKeys.Add(ecdsaJsonWebKey);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException($"key type: {x509Key.PublicKey.GetType().Name} not supported.");
+                    }
                 }
-
-                if (key is RsaSecurityKey rsaKey)
+                else if (key.Key is RsaSecurityKey rsaKey)
                 {
                     var parameters = rsaKey.Rsa?.ExportParameters(false) ?? rsaKey.Parameters;
                     var exponent = Base64Url.Encode(parameters.Exponent);
@@ -397,13 +424,30 @@ namespace IdentityServer4.ResponseHandling
                         kid = rsaKey.KeyId,
                         e = exponent,
                         n = modulus,
-                        alg = algorithm
+                        alg = key.SigningAlgorithm
                     };
 
                     webKeys.Add(webKey);
                 }
+                else if (key.Key is ECDsaSecurityKey ecdsaKey)
+                {
+                    var parameters = ecdsaKey.ECDsa.ExportParameters(false);
+                    var x = Base64Url.Encode(parameters.Q.X);
+                    var y = Base64Url.Encode(parameters.Q.Y);
 
-                if (key is JsonWebKey jsonWebKey)
+                    var ecdsaJsonWebKey = new Models.JsonWebKey
+                    {
+                        kty = "EC",
+                        use = "sig",
+                        kid = ecdsaKey.KeyId,
+                        x = x,
+                        y = y,
+                        crv = CryptoHelper.GetCrvValueFromCurve(parameters.Curve),
+                        alg = key.SigningAlgorithm
+                    };
+                    webKeys.Add(ecdsaJsonWebKey);
+                }
+                else if (key.Key is JsonWebKey jsonWebKey)
                 {
                     var webKey = new Models.JsonWebKey
                     {
@@ -414,7 +458,10 @@ namespace IdentityServer4.ResponseHandling
                         e = jsonWebKey.E,
                         n = jsonWebKey.N,
                         x5c = jsonWebKey.X5c?.Count == 0 ? null : jsonWebKey.X5c.ToArray(),
-                        alg = jsonWebKey.Alg
+                        alg = jsonWebKey.Alg,
+
+                        x = jsonWebKey.X,
+                        y = jsonWebKey.Y
                     };
 
                     webKeys.Add(webKey);
