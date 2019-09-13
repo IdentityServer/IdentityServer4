@@ -42,7 +42,7 @@ As you use `IdentityServer4.EntityFramework.Storage` and upgrade over time, you 
 One approach for managing those changes is to use `EF migrations <https://docs.microsoft.com/en-us/ef/core/managing-schemas/migrations/index>`_, and this quickstart will show how that can be done.
 If migrations are not your preference, then you can manage the schema changes in any way you see fit.
 
-.. Note:: The latest SQL scripts for SqlServer are maintained for the entities in `IdentityServer4.EntityFramework.Storage`. They are located `here <https://github.com/IdentityServer/IdentityServer4.EntityFramework.Storage/tree/master/migrations/SqlServer/Migrations>`_.
+.. Note:: The latest SQL scripts for SqlServer are maintained for the entities in `IdentityServer4.EntityFramework.Storage`. They are located `here <https://github.com/IdentityServer/IdentityServer4/tree/master/src/EntityFramework.Storage/migrations/SqlServer/Migrations>`_.
 
 Configuring the stores
 ^^^^^^^^^^^^^^^^^^^^^^
