@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using IdentityServer4;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
@@ -101,6 +102,12 @@ namespace IdentityServer4.AspNetIdentity
             if (user == null)
             {
                 Logger?.LogWarning("No user found matching subject Id: {0}", sub);
+            }
+            
+            if (user is IPassiveable passiveable)
+            {
+                context.IsActive = passiveable.Active;
+                return;
             }
 
             context.IsActive = user != null;
