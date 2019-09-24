@@ -8,6 +8,7 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 using System;
+using System.Diagnostics;
 
 namespace Host
 {
@@ -15,6 +16,8 @@ namespace Host
     {
         public static int Main(string[] args)
         {
+            Activity.DefaultIdFormat = ActivityIdFormat.W3C;
+
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)

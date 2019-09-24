@@ -224,6 +224,39 @@ namespace Host.Configuration
                 },
 
                 ///////////////////////////////////////////
+                // MVC Code Flow Sample
+                //////////////////////////////////////////
+                new Client
+                {
+                    ClientId = "mvc.code",
+                    ClientName = "MVC Code Flow",
+                    ClientUri = "http://identityserver.io",
+                    //LogoUri = "https://pbs.twimg.com/profile_images/1612989113/Ki-hanja_400x400.png",
+
+                    ClientSecrets =
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RequirePkce = true,
+
+                    RedirectUris = { "https://localhost:44392/signin-oidc" },
+                    FrontChannelLogoutUri = "https://localhost:44392/signout-oidc",
+                    PostLogoutRedirectUris = { "https://localhost:44392/signout-callback-oidc" },
+
+                    AllowOfflineAccess = true,
+
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
+                        "api1", "api2.read_only"
+                    }
+                },
+
+                ///////////////////////////////////////////
                 // MVC Hybrid Flow Sample
                 //////////////////////////////////////////
                 new Client
@@ -292,7 +325,7 @@ namespace Host.Configuration
                 //////////////////////////////////////////
                 new Client
                 {
-                    ClientId = "mvc.hybrid.autorefresh",
+                    ClientId = "mvc.tokenmanagement",
                     ClientName = "MVC Hybrid (with automatic refresh)",
                     ClientUri = "http://identityserver.io",
 
@@ -301,14 +334,14 @@ namespace Host.Configuration
                         new Secret("secret".Sha256())
                     },
 
-                    AllowedGrantTypes = GrantTypes.Hybrid,
-                    AllowAccessTokensViaBrowser = false,
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RequirePkce = true,
 
                     AccessTokenLifetime = 75,
 
-                    RedirectUris = { "http://localhost:21404/signin-oidc" },
-                    FrontChannelLogoutUri = "http://localhost:21404/signout-oidc",
-                    PostLogoutRedirectUris = { "http://localhost:21404/signout-callback-oidc" },
+                    RedirectUris = { "https://localhost:44392/signin-oidc" },
+                    FrontChannelLogoutUri = "https://localhost:44392/signout-oidc",
+                    PostLogoutRedirectUris = { "https://localhost:44392/signout-callback-oidc" },
 
                     AllowOfflineAccess = true,
 
