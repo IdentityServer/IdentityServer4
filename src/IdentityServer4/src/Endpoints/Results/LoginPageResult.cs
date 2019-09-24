@@ -23,22 +23,25 @@ namespace IdentityServer4.Endpoints.Results
     public class LoginPageResult : IEndpointResult
     {
         private readonly ValidatedAuthorizeRequest _request;
+        private readonly string _loginUrl;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoginPageResult"/> class.
         /// </summary>
         /// <param name="request">The request.</param>
+        /// <param name="loginUrl">If not empty, overrides default login URL </param>
         /// <exception cref="System.ArgumentNullException">request</exception>
-        public LoginPageResult(ValidatedAuthorizeRequest request)
+        public LoginPageResult(ValidatedAuthorizeRequest request, string loginUrl)
         {
             _request = request ?? throw new ArgumentNullException(nameof(request));
+            _loginUrl = loginUrl;
         }
 
         internal LoginPageResult(
             ValidatedAuthorizeRequest request,
             IdentityServerOptions options,
             IAuthorizationParametersMessageStore authorizationParametersMessageStore = null) 
-            : this(request)
+            : this(request, null)
         {
             _options = options;
             _authorizationParametersMessageStore = authorizationParametersMessageStore;
@@ -46,7 +49,7 @@ namespace IdentityServer4.Endpoints.Results
 
         private IdentityServerOptions _options;
         private IAuthorizationParametersMessageStore _authorizationParametersMessageStore;
-
+        
         private void Init(HttpContext context)
         {
             _options = _options ?? context.RequestServices.GetRequiredService<IdentityServerOptions>();
@@ -74,7 +77,7 @@ namespace IdentityServer4.Endpoints.Results
                 returnUrl = returnUrl.AddQueryString(_request.Raw.ToQueryString());
             }
 
-            var loginUrl = _options.UserInteraction.LoginUrl;
+            var loginUrl = !string.IsNullOrEmpty(_loginUrl) ? _loginUrl : _options.UserInteraction.LoginUrl;
             if (!loginUrl.IsLocalUrl())
             {
                 // this converts the relative redirect path to an absolute one if we're 

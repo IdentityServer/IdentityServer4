@@ -85,11 +85,11 @@ namespace IdentityServer4.Endpoints
             }
             if (interactionResult.IsLogin)
             {
-                return new LoginPageResult(request);
+                return new LoginPageResult(request, interactionResult.RedirectUrl);
             }
             if (interactionResult.IsConsent)
             {
-                return new ConsentPageResult(request);
+                return new ConsentPageResult(request, interactionResult.RedirectUrl);
             }
             if (interactionResult.IsRedirect)
             {

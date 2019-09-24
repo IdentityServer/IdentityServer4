@@ -23,22 +23,25 @@ namespace IdentityServer4.Endpoints.Results
     public class ConsentPageResult : IEndpointResult
     {
         private readonly ValidatedAuthorizeRequest _request;
+        private readonly string _consentUrl;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConsentPageResult"/> class.
         /// </summary>
         /// <param name="request">The request.</param>
+        /// <param name="consentUrl">If not empty, overrides default consent URL </param>
         /// <exception cref="System.ArgumentNullException">request</exception>
-        public ConsentPageResult(ValidatedAuthorizeRequest request)
+        public ConsentPageResult(ValidatedAuthorizeRequest request, string consentUrl)
         {
             _request = request ?? throw new ArgumentNullException(nameof(request));
+            _consentUrl = consentUrl;
         }
 
         internal ConsentPageResult(
             ValidatedAuthorizeRequest request,
             IdentityServerOptions options,
             IAuthorizationParametersMessageStore authorizationParametersMessageStore = null) 
-            : this(request)
+            : this(request, null)
         {
             _options = options;
             _authorizationParametersMessageStore = authorizationParametersMessageStore;
@@ -74,7 +77,7 @@ namespace IdentityServer4.Endpoints.Results
                 returnUrl = returnUrl.AddQueryString(_request.Raw.ToQueryString());
             }
 
-            var consentUrl = _options.UserInteraction.ConsentUrl;
+            var consentUrl = !string.IsNullOrEmpty(_consentUrl) ? _consentUrl : _options.UserInteraction.ConsentUrl;
             if (!consentUrl.IsLocalUrl())
             {
                 // this converts the relative redirect path to an absolute one if we're 
