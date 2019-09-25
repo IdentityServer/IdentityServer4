@@ -2,15 +2,15 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using System;
-using System.Threading.Tasks;
-using IdentityServer4.Services;
-using System.Linq;
 using IdentityServer4.EntityFramework.Interfaces;
-using Microsoft.Extensions.Logging;
+using IdentityServer4.Services;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace IdentityServer4.EntityFramework.Services
 {
@@ -40,17 +40,15 @@ namespace IdentityServer4.EntityFramework.Services
         /// </summary>
         /// <param name="origin">The origin.</param>
         /// <returns></returns>
-        public Task<bool> IsOriginAllowedAsync(string origin)
+        public async Task<bool> IsOriginAllowedAsync(string origin)
         {
             // doing this here and not in the ctor because: https://github.com/aspnet/CORS/issues/105
             var dbContext = _context.HttpContext.RequestServices.GetRequiredService<IConfigurationDbContext>();
 
-            var origins = dbContext.Clients
-                .Include(x => x.AllowedCorsOrigins)
+            var origins = await dbContext.Clients
                 .AsNoTracking()
-                .ToList()
                 .SelectMany(x => x.AllowedCorsOrigins.Select(y => y.Origin))
-                .ToList();
+                .ToListAsync();
 
             var distinctOrigins = origins.Where(x => x != null).Distinct();
 
@@ -58,7 +56,7 @@ namespace IdentityServer4.EntityFramework.Services
 
             _logger.LogDebug("Origin {origin} is allowed: {originAllowed}", origin, isAllowed);
 
-            return Task.FromResult(isAllowed);
+            return isAllowed;
         }
     }
 }
