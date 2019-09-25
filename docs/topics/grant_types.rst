@@ -54,7 +54,7 @@ The resource owner password grant type allows to request tokens on behalf of a u
 This is so called "non-interactive" authentication and is generally not recommended.
 
 There might be reasons for certain legacy or first-party integration scenarios, where this grant type is useful, but the general recommendation
-is to use an interactive flow like implicit or hybrid for user authentication instead.
+is to use an interactive flow like Authorization Code with PKCE instead.
 
 See the :ref:`Resource Owner Password Quick Start <_refResourceOwnerQuickstart>` for a sample how to use it.
 You also need to provide code for the username/password validation which can be supplied by implementing the ``IResourceOwnerPasswordValidator`` interface.
