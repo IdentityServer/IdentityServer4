@@ -2,15 +2,14 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using IdentityServer4.EntityFramework.Interfaces;
 using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
 
 namespace IdentityServer4.EntityFramework.Stores
 {
@@ -49,9 +48,9 @@ namespace IdentityServer4.EntityFramework.Stores
         /// <returns>
         /// The client
         /// </returns>
-        public virtual Task<Client> FindClientByIdAsync(string clientId)
+        public virtual async Task<Client> FindClientByIdAsync(string clientId)
         {
-            var client = Context.Clients
+            var client = await Context.Clients
                 .Include(x => x.AllowedGrantTypes)
                 .Include(x => x.RedirectUris)
                 .Include(x => x.PostLogoutRedirectUris)
@@ -62,12 +61,12 @@ namespace IdentityServer4.EntityFramework.Stores
                 .Include(x => x.AllowedCorsOrigins)
                 .Include(x => x.Properties)
                 .AsNoTracking()
-                .FirstOrDefault(x => x.ClientId == clientId);
+                .FirstOrDefaultAsync(x => x.ClientId == clientId);
             var model = client?.ToModel();
 
             Logger.LogDebug("{clientId} found in database: {clientIdFound}", clientId, model != null);
 
-            return Task.FromResult(model);
+            return model;
         }
     }
 }
