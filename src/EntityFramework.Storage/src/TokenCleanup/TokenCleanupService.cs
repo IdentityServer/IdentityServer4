@@ -80,7 +80,7 @@ namespace IdentityServer4.EntityFramework
                     .Take(_options.TokenCleanupBatchSize)
                     .ToListAsync();
 
-                found = expiredGrants.Length;
+                found = expiredGrants.Count;
                 _logger.LogInformation("Removing {grantCount} grants", found);
 
                 if (found > 0)
@@ -121,7 +121,7 @@ namespace IdentityServer4.EntityFramework
                     .Take(_options.TokenCleanupBatchSize)
                     .ToListAsync();
 
-                found = expiredCodes.Length;
+                found = expiredCodes.Count;
                 _logger.LogInformation("Removing {deviceCodeCount} device flow codes", found);
 
                 if (found > 0)
