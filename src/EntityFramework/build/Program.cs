@@ -100,7 +100,7 @@ namespace build
             foreach (var file in files)
             {
                 Console.WriteLine("  Signing " + file);
-                Run("dotnetn", $"SignClient sign -c {signClientConfig} -i {file} -r sc-ids@dotnetfoundation.org -s \"{signClientSecret}\" -n 'IdentityServer4'", noEcho: true);
+                Run("dotnet", $"SignClient sign -c {signClientConfig} -i {file} -r sc-ids@dotnetfoundation.org -s \"{signClientSecret}\" -n 'IdentityServer4'", noEcho: true);
             }
         }
 
