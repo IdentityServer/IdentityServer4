@@ -9,6 +9,7 @@ using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Authentication;
+using IdentityServer.UnitTests.Common;
 
 namespace IdentityServer4.UnitTests.Common
 {
@@ -16,6 +17,8 @@ namespace IdentityServer4.UnitTests.Common
     {
         private HttpContext _context = new DefaultHttpContext();
         public MockAuthenticationService AuthenticationService { get; set; } = new MockAuthenticationService();
+
+        public MockAuthenticationSchemeProvider Schemes { get; set; } = new MockAuthenticationSchemeProvider();
 
         public MockHttpContextAccessor(
             IdentityServerOptions options = null,
@@ -27,10 +30,12 @@ namespace IdentityServer4.UnitTests.Common
             var services = new ServiceCollection();
             services.AddSingleton(options);
 
+            services.AddSingleton<IAuthenticationSchemeProvider>(Schemes);
             services.AddSingleton<IAuthenticationService>(AuthenticationService);
+
             services.AddAuthentication(auth =>
             {
-                auth.DefaultAuthenticateScheme = "foo";
+                auth.DefaultAuthenticateScheme = Schemes.Default;
             });
 
             if (userSession == null)
