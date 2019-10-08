@@ -27,6 +27,12 @@ Access token validation handler
 
 ASP.NET Core authentication handler for validating tokens in APIs. The handler allows supporting both JWT and reference tokens in the same API.
 
+Templates
+^^^^^^^^^
+`nuget <https://www.nuget.org/packages/IdentityServer4.Templates>`_ | `github <https://github.com/IdentityServer/IdentityServer4.Templates>`_
+
+Contains templates for the dotnet CLI.
+
 Dev builds
 ^^^^^^^^^^
 In addition we publish dev/interim builds to the GitHub package repository.
