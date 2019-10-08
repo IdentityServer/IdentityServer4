@@ -54,7 +54,7 @@ There are two modern mitigation techniques for this:
 **OpenID Connect Hybrid Flow**
 
 This uses a response type of ``code id_token`` to add an additional identity token to the response. This token is signed and protected against substitution.
-In addition it contains the hash of code via the ``c_hash`` claim. This allows checking that you indeed got the right code (experts call this a detached signature).
+In addition it contains the hash of the code via the ``c_hash`` claim. This allows checking that you indeed got the right code (experts call this a detached signature).
 
 This solves the problem but has the following down-sides:
 
