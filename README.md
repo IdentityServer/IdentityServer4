@@ -39,7 +39,7 @@ This will help us devote more time to answering questions and doing feature deve
 ### Platinum Sponsors
 [<img src="https://user-images.githubusercontent.com/1454075/62819413-39550c00-bb55-11e9-8f2f-a268c3552c71.png" width="200">](https://udelt.no)
 
-[<img src="https://user-images.githubusercontent.com/1454075/66421477-32892f00-ea08-11e9-9c7c-ae76bdfa1941.png" width="200">](https://github.com/dotnet-at-microsoft)
+[<img src="https://user-images.githubusercontent.com/1454075/66454740-fb973580-ea68-11e9-9993-6c1014881528.png" width="200">](https://github.com/dotnet-at-microsoft)
 
 ### Corporate Sponsors
 
