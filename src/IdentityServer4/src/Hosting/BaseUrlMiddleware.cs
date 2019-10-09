@@ -24,16 +24,22 @@ namespace IdentityServer4.Hosting
 
         public async Task Invoke(HttpContext context)
         {
+            Handle(context, _options);
+
+            await _next(context);
+        }
+
+        internal static void Handle(HttpContext context, IdentityServerOptions options)
+        {
             var request = context.Request;
 
-            if (_options.PublicOrigin.IsPresent())
+            if (options.PublicOrigin.IsPresent())
             {
-                context.SetIdentityServerOrigin(_options.PublicOrigin);
+                context.SetIdentityServerOrigin(options.PublicOrigin);
             }
 
             context.SetIdentityServerBasePath(request.PathBase.Value.RemoveTrailingSlash());
 
-            await _next(context);
         }
     }
 }

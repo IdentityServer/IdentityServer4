@@ -27,7 +27,7 @@ namespace Microsoft.AspNetCore.Builder
         /// <returns></returns>
         public static IApplicationBuilder UseIdentityServer(this IApplicationBuilder app, IdentityServerMiddlewareOptions options = null)
         {
-            app.Validate();
+            app.ApplicationServices.Validate();
 
             app.UseMiddleware<BaseUrlMiddleware>();
 
@@ -47,15 +47,15 @@ namespace Microsoft.AspNetCore.Builder
             return app;
         }
 
-        internal static void Validate(this IApplicationBuilder app)
+        internal static void Validate(this IServiceProvider provider)
         {
-            var loggerFactory = app.ApplicationServices.GetService(typeof(ILoggerFactory)) as ILoggerFactory;
+            var loggerFactory = provider.GetService(typeof(ILoggerFactory)) as ILoggerFactory;
             if (loggerFactory == null) throw new ArgumentNullException(nameof(loggerFactory));
 
             var logger = loggerFactory.CreateLogger("IdentityServer4.Startup");
             logger.LogInformation("Starting IdentityServer4 version {version}", typeof(IdentityServerApplicationBuilderExtensions).Assembly.GetName().Version.ToString());
 
-            var scopeFactory = app.ApplicationServices.GetService<IServiceScopeFactory>();
+            var scopeFactory = provider.GetService<IServiceScopeFactory>();
 
             using (var scope = scopeFactory.CreateScope())
             {

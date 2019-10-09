@@ -96,12 +96,13 @@ namespace Host
 
             app.UseRouting();
             app.UseMiddleware<Logging.RequestLoggerMiddleware>();
-            app.UseIdentityServer();
 
+            app.UseCors();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapIdentityServer();
                 endpoints.MapDefaultControllerRoute();
             });
         }
