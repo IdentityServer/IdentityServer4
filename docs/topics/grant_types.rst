@@ -80,7 +80,7 @@ If PKCE is available, this is the simpler solution to the problem.
 PKCE is already the official recommendation for `native <https://tools.ietf.org/html/rfc8252#section-6>`_ applications 
 and `SPAs <https://tools.ietf.org/html/draft-ietf-oauth-browser-based-apps-03#section-4>`_ - and with the release of ASP.NET Core 3 also by default supported in the OpenID Connect handler as well.
 
-This is how you would configure an interactive client::
+This is how you would configure an interactive public client. A confidential client would require a client secret::
 
     var client = new Client
     {
