@@ -4,6 +4,7 @@
 
 using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityServer4.EntityFramework.DbContexts;
@@ -63,21 +64,25 @@ namespace IdentityServer4.EntityFramework.IntegrationTests.Stores
                 client = await store.FindClientByIdAsync(testClient.ClientId);
             }
 
-            Assert.NotNull(client);
+            client.Should().NotBeNull();
         }
 
         [Theory, MemberData(nameof(TestDatabaseProviders))]
-        public async Task FindClientByIdAsync_WhenClientExists_ExpectClientPropertiesRetured(DbContextOptions<ConfigurationDbContext> options)
+        public async Task FindClientByIdAsync_WhenClientExistsWithCollections_ExpectClientReturnedCollections(DbContextOptions<ConfigurationDbContext> options)
         {
             var testClient = new Client
             {
                 ClientId = "properties_test_client",
                 ClientName = "Properties Test Client",
-                Properties =
-                {
-                    { "foo1", "bar1" },
-                    { "foo2", "bar2" },
-                }
+                AllowedCorsOrigins = {"https://localhost"},
+                AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
+                AllowedScopes = {"openid", "profile", "api1"},
+                Claims = {new Claim("test", "value")},
+                ClientSecrets = {new Secret("secret".Sha256())},
+                IdentityProviderRestrictions = {"AD"},
+                PostLogoutRedirectUris = {"https://locahost/signout-callback"},
+                Properties = {{"foo1", "bar1"}, {"foo2", "bar2"},},
+                RedirectUris = {"https://locahost/signin"}
             };
 
             using (var context = new ConfigurationDbContext(options, StoreOptions))
@@ -93,16 +98,11 @@ namespace IdentityServer4.EntityFramework.IntegrationTests.Stores
                 client = await store.FindClientByIdAsync(testClient.ClientId);
             }
 
-            client.Properties.Should().NotBeNull();
-            client.Properties.Count.Should().Be(2);
-            client.Properties.ContainsKey("foo1").Should().BeTrue();
-            client.Properties.ContainsKey("foo2").Should().BeTrue();
-            client.Properties["foo1"].Should().Be("bar1");
-            client.Properties["foo2"].Should().Be("bar2");
+            client.Should().BeEquivalentTo(testClient);
         }
 
         [Theory, MemberData(nameof(TestDatabaseProviders))]
-        public async Task FindClientByIdAsync_WhenClientsExistWithManyRelations_ExpectClientReturnedInUnderFiveSeconds(DbContextOptions<ConfigurationDbContext> options)
+        public async Task FindClientByIdAsync_WhenClientsExistWithManyCollections_ExpectClientReturnedInUnderFiveSeconds(DbContextOptions<ConfigurationDbContext> options)
         {
             var testClient = new Client
             {
