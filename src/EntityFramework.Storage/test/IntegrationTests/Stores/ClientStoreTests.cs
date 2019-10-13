@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -26,6 +27,17 @@ namespace IdentityServer4.EntityFramework.IntegrationTests.Stores
                 {
                     context.Database.EnsureCreated();
                 }
+            }
+        }
+
+        [Theory, MemberData(nameof(TestDatabaseProviders))]
+        public async Task FindClientByIdAsync_WhenClientDoesNotExist_ExpectNull(DbContextOptions<ConfigurationDbContext> options)
+        {
+            using (var context = new ConfigurationDbContext(options, StoreOptions))
+            {
+                var store = new ClientStore(context, FakeLogger<ClientStore>.Create());
+                var client = await store.FindClientByIdAsync(Guid.NewGuid().ToString());
+                client.Should().BeNull();
             }
         }
 

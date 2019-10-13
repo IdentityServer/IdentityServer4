@@ -56,18 +56,19 @@ namespace IdentityServer4.EntityFramework.Stores
                 .Take(1);
 
             var client = baseQuery.FirstOrDefault();
+            if (client == null) return Task.FromResult<Client>(null);
 
-            baseQuery.Include(x => x.AllowedGrantTypes).SelectMany(c => c.AllowedGrantTypes).Load();
-            baseQuery.Include(x => x.RedirectUris).SelectMany(c => c.RedirectUris).Load();
-            baseQuery.Include(x => x.PostLogoutRedirectUris).SelectMany(c => c.PostLogoutRedirectUris).Load();
-            baseQuery.Include(x => x.AllowedScopes).SelectMany(c => c.AllowedScopes).Load();
-            baseQuery.Include(x => x.ClientSecrets).SelectMany(c => c.ClientSecrets).Load();
-            baseQuery.Include(x => x.Claims).SelectMany(c => c.Claims).Load();
-            baseQuery.Include(x => x.IdentityProviderRestrictions).SelectMany(c => c.IdentityProviderRestrictions).Load();
             baseQuery.Include(x => x.AllowedCorsOrigins).SelectMany(c => c.AllowedCorsOrigins).Load();
+            baseQuery.Include(x => x.AllowedGrantTypes).SelectMany(c => c.AllowedGrantTypes).Load();
+            baseQuery.Include(x => x.AllowedScopes).SelectMany(c => c.AllowedScopes).Load();
+            baseQuery.Include(x => x.Claims).SelectMany(c => c.Claims).Load();
+            baseQuery.Include(x => x.ClientSecrets).SelectMany(c => c.ClientSecrets).Load();
+            baseQuery.Include(x => x.IdentityProviderRestrictions).SelectMany(c => c.IdentityProviderRestrictions).Load();
+            baseQuery.Include(x => x.PostLogoutRedirectUris).SelectMany(c => c.PostLogoutRedirectUris).Load();
             baseQuery.Include(x => x.Properties).SelectMany(c => c.Properties).Load();
+            baseQuery.Include(x => x.RedirectUris).SelectMany(c => c.RedirectUris).Load();
 
-            var model = client?.ToModel();
+            var model = client.ToModel();
 
             Logger.LogDebug("{clientId} found in database: {clientIdFound}", clientId, model != null);
 
