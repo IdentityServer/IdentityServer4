@@ -11,7 +11,6 @@ it is recommended you do them in order.
 * securing web applications and APIs
 * adding support for EntityFramework based configuration
 * adding support for ASP.NET Identity
-* adding AdminUI community edition to manage users and configuration
 
 Every quickstart has a reference solution - you can find the code in the 
 `samples <https://github.com/IdentityServer/IdentityServer4/tree/master/samples/Quickstarts>`_ folder.
