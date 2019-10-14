@@ -11,8 +11,10 @@ namespace IdentityServer
     {
         public void ConfigureServices(IServiceCollection services)
         {
+            // uncomment, if you want to add an MVC-based UI
+            //services.AddControllersWithViews();
+
             var builder = services.AddIdentityServer()
-                .AddInMemoryIdentityResources(Config.GetIdentityResources())
                 .AddInMemoryApiResources(Config.GetApis())
                 .AddInMemoryClients(Config.GetClients());
 
@@ -23,7 +25,18 @@ namespace IdentityServer
         {
             app.UseDeveloperExceptionPage();
 
+            // uncomment if you want to add MVC
+            //app.UseStaticFiles();
+            //app.UseRouting();
+
             app.UseIdentityServer();
+
+            // uncomment, if you want to add MVC-based
+            //app.UseAuthorization();
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    endpoints.MapDefaultControllerRoute();
+            //});
         }
     }
 }
