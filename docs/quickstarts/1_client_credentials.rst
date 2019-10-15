@@ -61,13 +61,11 @@ For this add a new class to your project and call it ``Config`` - add the follow
 
     public static class Config
     {
-        public static IEnumerable<ApiResource> GetApiResources()
-        {
-            return new List<ApiResource>
+        public static IEnumerable<ApiResource> Apis =>
+            new List<ApiResource>
             {
                 new ApiResource("api1", "My API")
             };
-        }
     }
 
 (see the full file `here <https://github.com/IdentityServer/IdentityServer4/blob/master/samples/Quickstarts/1_ClientCredentials/src/IdentityServer/Config.cs>`_).
@@ -82,9 +80,8 @@ For this scenario, the client will not have an interactive user, and will authen
 
 For this, add a client definition:: 
 
-    public static IEnumerable<Client> GetClients()
-    {
-        return new List<Client>
+    public static IEnumerable<Client> Clients =>
+        new List<Client>
         {
             new Client
             {
@@ -103,7 +100,6 @@ For this, add a client definition::
                 AllowedScopes = { "api1" }
             }
         };
-    }
 
 You can think of the ClientId and the ClientSecret as the login and password for your application itself.  It identifies your application to the identity server so that it knows which application is trying to connect to it.	
 
@@ -115,9 +111,8 @@ Loading the resource and client definitions happens in `Startup.cs <https://gith
     public void ConfigureServices(IServiceCollection services)
     {
         var builder = services.AddIdentityServer()
-            .AddInMemoryIdentityResources(Config.GetIdentityResources())
-            .AddInMemoryApiResources(Config.GetApiResources())
-            .AddInMemoryClients(Config.GetClients());
+            .AddInMemoryApiResources(Config.Apis)
+            .AddInMemoryClients(Config.Clients);
 
         // omitted for brevity
     }
@@ -228,11 +223,7 @@ The token endpoint at IdentityServer implements the OAuth 2.0 protocol, and you 
 However, we have a client library called IdentityModel, that encapsulates the protocol interaction in an easy to use API.
 
 Add the ``IdentityModel`` NuGet package to your client. 
-This can be done either via Visual Studio's Nuget Package manager or though the package manager Console with the following command::
-
-    Install-Package IdentityModel
-
-or by using the CLI::
+This can be done either via Visual Studio's Nuget Package manager or dotnet CLI::
 
     dotnet add package IdentityModel
 
