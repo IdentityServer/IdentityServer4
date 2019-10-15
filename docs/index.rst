@@ -51,8 +51,8 @@ It enables the following features in your applications:
 
    quickstarts/0_overview
    quickstarts/1_client_credentials
-   quickstarts/2_resource_owner_passwords
-   quickstarts/3_interactive_login
+   quickstarts/2_interactive_aspnetcore
+   
    quickstarts/4_external_authentication
    quickstarts/5_hybrid_and_api_access
    quickstarts/6_javascript_client

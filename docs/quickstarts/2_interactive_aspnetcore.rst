@@ -1,6 +1,6 @@
-.. _refImplicitQuickstart:
-Adding User Authentication with OpenID Connect
-==============================================
+.. _refInteractiveQuickstart:
+Interactive Applications with ASP.NET Core
+==========================================
 
 .. note:: For any pre-requisites (like e.g. templates) have a look at the :ref:`overview <refQuickstartOverview>` first.
 
