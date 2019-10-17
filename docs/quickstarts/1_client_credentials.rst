@@ -183,7 +183,7 @@ Update `Startup` to look like this::
         {
             services.AddMvcCore()
                 .AddAuthorization()
-                .AddJsonFormatters();
+                .AddNewtonsoftJson();
 
             services.AddAuthentication("Bearer")
                 .AddJwtBearer("Bearer", options =>
@@ -197,9 +197,14 @@ Update `Startup` to look like this::
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseAuthentication();
+            app.UseRouting();
+	    app.UseAuthentication();
+	    app.UseAuthorization();
 
-            app.UseMvc();
+            app.UseEndpoints(endpoints =>
+	    {
+	    	endpoints.MapControllers();
+	    });
         }
     }
 
