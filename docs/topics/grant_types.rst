@@ -1,3 +1,4 @@
+.. _refGrantTypes:
 Grant Types
 ^^^^^^^^^^^
 The OpenID Connect and OAuth 2.0 specifications define so-called grant types (often also called flows - or protocol flows).
