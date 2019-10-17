@@ -32,16 +32,15 @@ When you look at ``Startup.cs`` you will find comments in the ``ConfigureService
 
 Run the IdentityServer application, you should now see a home page.
 
-Spend some time inspecting the controllers and models, the better you understand them, 
-the easier it will be to make future modifications. 
+Spend some time inspecting the controllers and models - especially the ``AccountController`` which is the main UI entry point.
+The better you understand them, the easier it will be to make future modifications. 
 Most of the code lives in the "Quickstart" folder using a "feature folder" style. 
 If this style doesn't suit you, feel free to organize the code in any way you want.
 
 Creating an MVC client
 ^^^^^^^^^^^^^^^^^^^^^^
-Next you will add an MVC application to your solution.
+Next you will create an MVC application.
 Use the ASP.NET Core "Web Application" (i.e. MVC) template for that. 
-Don't configure the "Authentication" settings in the wizard -- you will do this manually in this quickstart.
 Once you've created the project, configure the application to run on port 5002.
 
 To add support for OpenID Connect authentication to the MVC application, you first need to add the nuget package containing the OpenID Connect handler to your project, e.g.::
@@ -124,7 +123,7 @@ Also modify the home view to display the claims of the user as well as the cooki
         }
     </dl>
 
-If you now navigate to that controller using the browser, a redirect attempt will be made
+If you now navigate to the application using the browser, a redirect attempt will be made
 to IdentityServer - this will result in an error because the MVC client is not registered yet.
 
 Adding support for OpenID Connect Identity Scopes
@@ -153,6 +152,19 @@ Register the identity resources with IdentityServer in ``startup.cs``::
 
 .. note:: All standard scopes and their corresponding claims can be found in the OpenID Connect `specification <https://openid.net/specs/openid-connect-core-1_0.html#ScopeClaims>`_
 
+Adding Test Users
+^^^^^^^^^^^^^^^^^
+The sample UI also comes with an in-memory "user database". You can enable this in IdentityServer by adding the ``AddTestUsers`` extension method::
+
+    var builder = services.AddIdentityServer()
+        .AddInMemoryIdentityResources(Config.Ids)
+        .AddInMemoryApiResources(Config.Apis)
+        .AddInMemoryClients(Config.Clients)
+        .AddTestUsers(TestUsers.Users);
+
+When you navigate to the ``TestUsers`` class, you can see that two users called ``alice`` and ``bob`` as well as some identity claims are defined.
+You can use those users to login.
+
 Adding the MVC Client to the IdentityServer Configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 The last step is to add a new configuration entry for the MVC client to IdentityServer.
@@ -160,12 +172,12 @@ The last step is to add a new configuration entry for the MVC client to Identity
 OpenID Connect-based clients are very similar to the OAuth 2.0 clients we added so far.
 But since the flows in OIDC are always interactive, we need to add some redirect URLs to our configuration.
 
-Add the following to your clients configuration::
+The client list should look like this::
 
     public static IEnumerable<Client> Clients =>
         new List<Client>
         {
-            // machine to machine client
+            // machine to machine client (from quickstart 1)
             new Client
             {
                 ClientId = "client",
@@ -199,19 +211,6 @@ Add the following to your clients configuration::
             }
         };
 
-Adding Test Users
-^^^^^^^^^^^^^^^^^
-The sample UI also comes with an in-memory "user database". You can enable this in IdentityServer by adding the ``AddTestUsers`` extension method::
-
-    var builder = services.AddIdentityServer()
-        .AddInMemoryIdentityResources(Config.Ids)
-        .AddInMemoryApiResources(Config.Apis)
-        .AddInMemoryClients(Config.Clients)
-        .AddTestUsers(TestUsers.Users);
-
-When you navigate to the ``TestUsers`` class, you can see that two users called ``alice`` and ``bob`` as well as some identity claims are defined.
-You can use those users to login.
-
 Testing the client
 ^^^^^^^^^^^^^^^^^^
 Now finally everything should be in place for the new MVC client.
@@ -221,20 +220,13 @@ You should see a redirect to the login page at IdentityServer.
 
 .. image:: images/3_login.png
 
-After successful login, the user is presented with the consent screen.
-Here the user can decide if he wants to release his identity information to the client application.
-
-.. note:: Consent can be turned off on a per client basis using the ``RequireConsent`` property on the client configuration.
-
-.. image:: images/3_consent.png
-
 After that, IdentityServer will redirect back to the MVC client, where the OpenID Connect authentication handler processes the response and signs-in the user locally by setting a cookie.
 Finally the MVC view will show the contents of the cookie.
 
 .. image:: images/3_claims.png
 
 As you can see, the cookie has two parts, the claims of the user, and some metadata. This metadata also contains the original token that was issued by IdentityServer.
-Feel free to copy this token to `jwt.io <https://jwt.io>`_ to inspect its content.
+Feel free to copy this token to `jwt.ms <https://jwt.ms>`_ to inspect its content.
 
 Adding sign-out
 ^^^^^^^^^^^^^^^
