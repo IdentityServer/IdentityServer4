@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -98,11 +99,12 @@ namespace Host
 
         public void Configure(IApplicationBuilder app)
         {
+            app.UseSerilogRequestLogging();
+
             app.UseDeveloperExceptionPage();
             app.UseStaticFiles();
 
             app.UseRouting();
-            app.UseMiddleware<Logging.RequestLoggerMiddleware>();
             app.UseIdentityServer();
 
             app.UseAuthorization();
