@@ -59,11 +59,11 @@ namespace IdentityServer4.EntityFramework.Stores
         /// <param name="userCode">The user code.</param>
         /// <param name="data">The data.</param>
         /// <returns></returns>
-        public virtual Task StoreDeviceAuthorizationAsync(string deviceCode, string userCode, DeviceCode data)
+        public virtual async Task StoreDeviceAuthorizationAsync(string deviceCode, string userCode, DeviceCode data)
         {
             Context.DeviceFlowCodes.Add(ToEntity(data, deviceCode, userCode));
 
-            return Context.SaveChangesAsync();
+            await Context.SaveChangesAsync();
         }
 
         /// <summary>
