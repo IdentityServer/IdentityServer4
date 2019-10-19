@@ -21,18 +21,16 @@ This will return you a builder object that in turn has a number of convenience m
 .. _refStartupKeyMaterial:
 Key material
 ^^^^^^^^^^^^
+IdentityServer supports X.509 certificates (both raw files and a reference to the Windows certificate store), RSA keys and EC keys for token signatures and validation. Each key can be configured with a (compatible) signing algorith, e.g. RS256, RS384, RS512, PS256, PS384, PS512, ES256, ES384 or ES512.
+
+You can configure the key material with the following methods:
 
 * ``AddSigningCredential``
     Adds a signing key service that provides the specified key material to the various token creation/validation services.
-    You can pass in either an ``X509Certificate2``, a ``SigningCredential`` or a reference to a certificate from the certificate store.
 * ``AddDeveloperSigningCredential``
-    Creates temporary key material at startup time. This is for dev only scenarios when you don't have a certificate to use.
-    The generated key will be persisted to the file system so it stays stable between server restarts (can be disabled by passing ``false``). 
-    This addresses issues when the client/api metadata caches get out of sync during development.
+    Creates temporary key material at startup time. This is for dev scenarios. The generated key will be persisted in the local directory by default.
 * ``AddValidationKey``
     Adds a key for validating tokens. They will be used by the internal token validator and will show up in the discovery document.
-    You can pass in either an ``X509Certificate2``, a ``SigningCredential`` or a reference to a certificate from the certificate store.
-    This is useful for key roll-over scenarios.
 
 In-Memory configuration stores
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
