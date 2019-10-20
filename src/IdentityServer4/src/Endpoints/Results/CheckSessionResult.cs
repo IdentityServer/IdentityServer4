@@ -40,7 +40,7 @@ namespace IdentityServer4.Endpoints.Results
 
         private void AddCspHeaders(HttpContext context)
         {
-            context.Response.AddScriptCspHeaders(_options.Csp, "sha256-ZT3q7lL9GXNGhPTB1Vvrvds2xw/kOV0zoeok2tiV23I=");
+            context.Response.AddScriptCspHeaders(_options.Csp, "sha256-kYWwwiDv9fpxpszjw0t30xE2oEwJTfibEzH5sY47od4=");
         }
         private string GetHtml(string cookieName)
         {
@@ -250,7 +250,8 @@ if (typeof define == 'function' && define.amd) define([], function() { return Sh
             var cookies = getCookies().filter(function(cookie) {
                 return (cookie.name === cookieName);
             });
-            return cookies[0] && cookies[0].value;
+            // empty string represents anonymous sid
+            return (cookies[0] && cookies[0].value) || '';
         }
 
         /*! (c) Tom Wu | http://www-cs-students.stanford.edu/~tjw/jsbn/ */
