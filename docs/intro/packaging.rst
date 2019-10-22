@@ -3,12 +3,17 @@ Packaging and Builds
 
 IdentityServer consists of a number of nuget packages.
 
-IdentityServer4
+IdentityServer4 main repo
 ^^^^^^^^^^^^^^^
-`nuget <https://www.nuget.org/packages/IdentityServer4/>`_ | `github <https://github.com/identityserver/IdentityServer4>`_
+`github <https://github.com/identityserver/IdentityServer4>`_
 
-Contains the core IdentityServer object model, services and middleware. 
-Only contains support for in-memory configuration and user stores - but you can plug-in support for other stores via the configuration. This is what the other repos and packages are about.
+Contains the core IdentityServer object model, services and middleware as well as the EntityFramework and ASP.NET Identity integration.
+
+nugets:
+
+* `IdentityServer4 <https://www.nuget.org/packages/IdentityServer4/>`_
+* `IdentityServer4.EntityFramework <https://www.nuget.org/packages/IdentityServer4.EntityFramework>`_
+* `IdentityServer4.AspNetIdentity <https://www.nuget.org/packages/IdentityServer4.AspNetIdentity>`_
 
 Quickstart UI
 ^^^^^^^^^^^^^
@@ -22,23 +27,15 @@ Access token validation handler
 
 ASP.NET Core authentication handler for validating tokens in APIs. The handler allows supporting both JWT and reference tokens in the same API.
 
-ASP.NET Core Identity
-^^^^^^^^^^^^^^^^^^^^^
-`nuget <https://www.nuget.org/packages/IdentityServer4.AspNetIdentity>`_ | `github <https://github.com/IdentityServer/IdentityServer4.AspNetIdentity>`_
+Templates
+^^^^^^^^^
+`nuget <https://www.nuget.org/packages/IdentityServer4.Templates>`_ | `github <https://github.com/IdentityServer/IdentityServer4.Templates>`_
 
-ASP.NET Core Identity integration package for IdentityServer. 
-This package provides a simple configuration API to use the ASP.NET Identity management library for your IdentityServer users.
-
-EntityFramework Core
-^^^^^^^^^^^^^^^^^^^^
-`nuget <https://www.nuget.org/packages/IdentityServer4.EntityFramework>`_ | `github <https://github.com/IdentityServer/IdentityServer4.EntityFramework>`_
-
-EntityFramework Core storage implementation for IdentityServer. 
-This package provides an EntityFramework implementation for the configuration and operational stores in IdentityServer.
+Contains templates for the dotnet CLI.
 
 Dev builds
 ^^^^^^^^^^
-In addition we publish dev/interim builds to MyGet.
-Add the following feed to your Visual Studio if you want to give them a try:
+In addition we publish dev/interim builds to the GitHub package repository.
+Add the following feed if you want to give them a try:
 
-https://www.myget.org/F/identity/
+https://github.com/orgs/IdentityServer/packages
