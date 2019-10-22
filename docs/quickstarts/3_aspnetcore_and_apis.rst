@@ -10,7 +10,7 @@ So far we only asked for identity resources during the token request, once we st
 the identity token containing the information about the authentication and session, and the access token to access APIs on behalf of the logged on user.
 
 Modifying the client configuration
-==================================
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Updating the client configuration in IdentityServer is straightforward - we simply need to add the ``api1`` resource to the allowed scopes list.
 In addition we enable support for refresh tokens via the ``EnableOfflineAccess`` property::
 
@@ -40,7 +40,7 @@ In addition we enable support for refresh tokens via the ``EnableOfflineAccess``
     }
 
 Modifying the MVC client
-========================
+^^^^^^^^^^^^^^^^^^^^^^^^
 All that's left to do now in the client is to ask for the additional resources via the scope parameter. This is done in the OpenID Connect handler configuration::
 
     services.AddAuthentication(options =>
@@ -68,7 +68,7 @@ Since ``SaveTokens`` is enabled, ASP.NET Core will automatically store the resul
 You should be able to inspect the data on the page that prints out the contents of the session that you created earlier.
 
 Using the access token
-======================
+^^^^^^^^^^^^^^^^^^^^^^
 You can access the tokens in the session using the standard ASP.NET Core extension methods that you can find in the ``Microsoft.AspNetCore.Authentication`` namespace::
 
 var accessToken = await HttpContext.GetTokenAsync("access_token")
@@ -95,7 +95,7 @@ Create a view called json.cshtml that outputs the json like this::
 Make sure the API is running, start the MVC client and call ``/home/CallApi`` after authentication.
 
 Managing the access token
-=========================
+^^^^^^^^^^^^^^^^^^^^^^^^^
 By far the most complex task for a typical client is to manage the access token. You typically want to 
 
 * request the access and refresh token at login time
