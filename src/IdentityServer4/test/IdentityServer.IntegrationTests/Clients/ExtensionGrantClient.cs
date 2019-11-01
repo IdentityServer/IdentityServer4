@@ -238,7 +238,7 @@ namespace IdentityServer4.IntegrationTests.Clients
             scopes.First().ToString().Should().Be("api1");
         }
 
-        [Fact(Skip = "Review: should default scopes include offline_access?")]
+        [Fact(Skip = "Discuss offline_access scope in access token")]
         public async Task Valid_client_with_default_scopes_should_succeed()
         {
             var response = await _client.RequestTokenAsync(new TokenRequest
@@ -260,7 +260,7 @@ namespace IdentityServer4.IntegrationTests.Clients
             response.ExpiresIn.Should().Be(3600);
             response.TokenType.Should().Be("Bearer");
             response.IdentityToken.Should().BeNull();
-            response.RefreshToken.Should().BeNull();
+            response.RefreshToken.Should().NotBeNull();
 
             var payload = GetPayload(response);
 
