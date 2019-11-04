@@ -22,4 +22,8 @@
     <ProjectReference Include="..\..\Constants\Constants.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="..\.dockerignore" />
+  </ItemGroup>
+
 </Project>
