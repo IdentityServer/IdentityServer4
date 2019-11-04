@@ -428,6 +428,26 @@ namespace Host.Configuration
                         IdentityServerConstants.StandardScopes.Email,
                         "api1", "api2.read_only", "api2.full_access"
                     }
+                },
+                ///////////////////////////////////////////
+                // Blazor Code Sample
+                //////////////////////////////////////////
+                new Client
+                {
+                    ClientId = "blazor.code",
+                    ClientName = "Blazor Code",
+                    RedirectUris = { "https://localhost:5001/authorization-code/callback" },
+                    PostLogoutRedirectUris = { "https://localhost:5001" },
+
+                    RequireClientSecret = false,
+                    RequireConsent = false,
+
+                    AllowedGrantTypes = GrantTypes.CodeAndClientCredentials,
+                    RequirePkce = true,
+                    AllowedScopes = { "openid", "profile", "api1" },
+
+                    AllowOfflineAccess = true,
+                    RefreshTokenUsage = TokenUsage.ReUse
                 }
             };
         }

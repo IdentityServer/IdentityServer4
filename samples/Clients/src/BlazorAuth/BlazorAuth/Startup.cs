@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using BlazorAuth.Data;
+using Clients;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -45,13 +46,15 @@ namespace BlazorAuth
             .AddOpenIdConnect(options =>
             {
                 options.RequireHttpsMetadata = false;
-                options.ClientId = "native.code";
-                options.Authority = "https://demo.identityserver.io";
+                options.ClientId = "blazor.code";
+                options.Authority = Constants.Authority;
                 options.CallbackPath = "/authorization-code/callback";
                 options.ResponseType = "code";
                 options.SaveTokens = true;
+                options.UseTokenLifetime = false;
                 options.GetClaimsFromUserInfoEndpoint = true;
-                options.Scope.Add("api");
+                options.Scope.Clear();
+                options.Scope.Add("api1");
                 options.Scope.Add("profile");
                 options.Scope.Add("openid");
                 options.UsePkce = true;
