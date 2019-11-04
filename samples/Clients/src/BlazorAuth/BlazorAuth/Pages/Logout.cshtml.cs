@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Components;
 
 namespace OktaBlazorAspNetCoreServerSide.Pages
 {
@@ -14,11 +15,7 @@ namespace OktaBlazorAspNetCoreServerSide.Pages
         public async Task OnGetAsync()
         {
             await HttpContext.SignOutAsync("Cookies");
-            var prop = new AuthenticationProperties()
-            {
-                RedirectUri = "https://localhost:5001"
-            };
-            await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme, prop);
+            //await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme);
         }
     }
 }

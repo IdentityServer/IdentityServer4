@@ -48,6 +48,7 @@ namespace BlazorAuth
                 options.Authority = "https://demo.identityserver.io";
                 options.CallbackPath = "/authorization-code/callback";
                 options.ResponseType = "code";
+                options.SaveTokens = true;
                 options.GetClaimsFromUserInfoEndpoint = true;
                 options.Scope.Add("api");
                 options.Scope.Add("profile");
