@@ -75,6 +75,10 @@ You might need these namespaces added to the file::
     using Microsoft.EntityFrameworkCore;
     using System.Reflection;
 
+
+Because we are using EF migrations in this quickstart, the call to ``MigrationsAssembly`` is used to inform Entity Framework that the host project will contain the migrations code.
+This is necessary since the host project is in a different assembly than the one that contains the ``DbContext`` classes.
+
 Adding Migrations
 ^^^^^^^^^^^^^^^^^
 
