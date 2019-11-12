@@ -17,6 +17,21 @@ namespace IdentityServer4.Configuration
         public CspLevel Level { get; set; } = CspLevel.Two;
 
         /// <summary>
+        /// Gets or sets own 'default-src' rules.
+        /// </summary>
+        public string DefaultSrc { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets own 'script-src' rules.
+        /// </summary>
+        public string ScriptSrc { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets own 'style-src' rules.
+        /// </summary>
+        public string StyleSrc { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets or sets a value indicating whether the deprected X-Content-Security-Policy header should be added.
         /// </summary>
         public bool AddDeprecatedHeader { get; set; } = true;

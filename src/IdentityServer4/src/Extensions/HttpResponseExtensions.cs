@@ -87,7 +87,9 @@ namespace IdentityServer4.Extensions
         public static void AddScriptCspHeaders(this HttpResponse response, CspOptions options, string hash)
         {
             var csp1part = options.Level == CspLevel.One ? "'unsafe-inline' " : string.Empty;
-            var cspHeader = $"default-src 'none'; script-src {csp1part}'{hash}'";
+            var userDefaultSrc = string.IsNullOrEmpty(options.DefaultSrc) ? string.Empty : $" {options.DefaultSrc}";
+            var userScriptSrc = string.IsNullOrEmpty(options.ScriptSrc) ? string.Empty : $" {options.ScriptSrc}";
+            var cspHeader = $"default-src 'none'{userDefaultSrc}; script-src {csp1part}'{hash}'{userScriptSrc}";
 
             AddCspHeaders(response.Headers, options, cspHeader);
         }
@@ -95,7 +97,9 @@ namespace IdentityServer4.Extensions
         public static void AddStyleCspHeaders(this HttpResponse response, CspOptions options, string hash, string frameSources)
         {
             var csp1part = options.Level == CspLevel.One ? "'unsafe-inline' " : string.Empty;
-            var cspHeader = $"default-src 'none'; style-src {csp1part}'{hash}'";
+            var userDefaultSrc = string.IsNullOrEmpty(options.DefaultSrc) ? string.Empty : $" {options.DefaultSrc}";
+            var userStyleCsp = string.IsNullOrEmpty(options.StyleSrc) ? string.Empty : $" {options.StyleSrc}";
+            var cspHeader = $"default-src 'none'{userDefaultSrc}; style-src {csp1part}'{hash}'{userStyleCsp}";
 
             if (!string.IsNullOrEmpty(frameSources))
             {
