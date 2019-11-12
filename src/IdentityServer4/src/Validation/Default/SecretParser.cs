@@ -15,7 +15,7 @@ namespace IdentityServer4.Validation
     /// <summary>
     /// Uses the registered secret parsers to parse a secret on the current request
     /// </summary>
-    public class SecretParser
+    public class SecretParser : ISecretsListParser
     {
         private readonly ILogger _logger;
         private readonly IEnumerable<ISecretParser> _parsers;
@@ -25,7 +25,7 @@ namespace IdentityServer4.Validation
         /// </summary>
         /// <param name="parsers">The parsers.</param>
         /// <param name="logger">The logger.</param>
-        public SecretParser(IEnumerable<ISecretParser> parsers, ILogger<SecretParser> logger)
+        public SecretParser(IEnumerable<ISecretParser> parsers, ILogger<ISecretsListParser> logger)
         {
             _parsers = parsers;
             _logger = logger;

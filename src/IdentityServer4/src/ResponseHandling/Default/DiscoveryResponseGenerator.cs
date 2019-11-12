@@ -52,7 +52,7 @@ namespace IdentityServer4.ResponseHandling
         /// <summary>
         /// The secret parsers
         /// </summary>
-        protected readonly SecretParser SecretParsers;
+        protected readonly ISecretsListParser SecretParsers;
 
         /// <summary>
         /// The logger
@@ -74,7 +74,7 @@ namespace IdentityServer4.ResponseHandling
             IResourceStore resourceStore,
             IKeyMaterialService keys,
             ExtensionGrantValidator extensionGrants,
-            SecretParser secretParsers,
+            ISecretsListParser secretParsers,
             IResourceOwnerPasswordValidator resourceOwnerValidator,
             ILogger<DiscoveryResponseGenerator> logger)
         {
