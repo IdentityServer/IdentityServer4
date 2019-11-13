@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -15,13 +14,14 @@ namespace BlazorAuth.Pages
 
         public async Task OnGetAsync()
         {
-            if (LogIn == true)
+            if (LogIn)
             {
                 var prop = new AuthenticationProperties {RedirectUri = RedirectUri};
                 string auth = HttpContext.Request.Headers["Authorization"];
                 await HttpContext.ChallengeAsync(prop);
             }
-            if (LogOut == true)
+
+            if (LogOut)
             {
                 var prop = new AuthenticationProperties {RedirectUri = RedirectUri};
                 await HttpContext.SignOutAsync("Cookies");
