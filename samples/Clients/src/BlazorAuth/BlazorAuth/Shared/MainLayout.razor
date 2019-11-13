@@ -1,24 +1,8 @@
-﻿@inherits LayoutComponentBase
-@inject NavigationManager navManager
-<div class="sidebar">
-    <NavMenu />
-</div>
+﻿@using Microsoft.AspNetCore.Builder
+@inherits LayoutComponentBase
 
 <div class="main">
-    <div class="top-row px-4">
-        <AuthorizeView>
-            <Authorized>
-                <a>Hello, @context.User.Identity.Name!</a>
-                <a href="LogOut">Log out</a>
-            </Authorized>
-            <NotAuthorized>
-                <a href="Login?RedirectUri=@(navManager.Uri)">Log in</a>
-            </NotAuthorized>
-        </AuthorizeView>
-    </div>
-
     <div class="content px-4">
         @Body
     </div>
 </div>
-
