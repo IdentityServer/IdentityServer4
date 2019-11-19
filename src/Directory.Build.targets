@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <FrameworkVersion>3.0.0</FrameworkVersion>
-    <ExtensionsVersion>3.0.0</ExtensionsVersion>
+    <ExtensionsVersion>3.0.1</ExtensionsVersion>
     <EntityFrameworkVersion>3.0.0</EntityFrameworkVersion>
     
     <IdentityServerVersion>3.0.3-*</IdentityServerVersion>
