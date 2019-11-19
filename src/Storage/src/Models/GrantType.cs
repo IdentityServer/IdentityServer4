@@ -11,6 +11,10 @@ namespace IdentityServer4.Models
         public const string Hybrid = "hybrid";
         public const string AuthorizationCode = "authorization_code";
         public const string ClientCredentials = "client_credentials";
+
+        /// <summary>
+        /// As Identity Server does not know how to validate user password you need to implement and register the <see cref="IdentityServer4.Validation.IResourceOwnerPasswordValidator"/> interface.
+        /// </summary>
         public const string ResourceOwnerPassword = "password";
         public const string DeviceFlow = "urn:ietf:params:oauth:grant-type:device_code";
     }

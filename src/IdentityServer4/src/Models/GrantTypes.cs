@@ -31,9 +31,15 @@ namespace IdentityServer4.Models
         public static ICollection<string> ClientCredentials =>
             new[] { GrantType.ClientCredentials };
 
+        /// <summary>
+        /// As Identity Server does not know how to validate user password you need to implement and register the <see cref="IdentityServer4.Validation.IResourceOwnerPasswordValidator"/> interface.
+        /// </summary>
         public static ICollection<string> ResourceOwnerPassword =>
             new[] { GrantType.ResourceOwnerPassword };
 
+        /// <summary>
+        /// As Identity Server does not know how to validate user password you need to implement and register the <see cref="IdentityServer4.Validation.IResourceOwnerPasswordValidator"/> interface.
+        /// </summary>
         public static ICollection<string> ResourceOwnerPasswordAndClientCredentials =>
             new[] { GrantType.ResourceOwnerPassword, GrantType.ClientCredentials };
 
