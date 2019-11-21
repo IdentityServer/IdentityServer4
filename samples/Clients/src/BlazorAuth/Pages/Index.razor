@@ -1,0 +1,30 @@
+﻿@page "/"
+@using BlazorAuth.Pages
+
+@attribute [Authorize]
+You are now authorized to see this page.
+
+<AuthorizeView>
+    <Authorized>
+        <dl>
+            @foreach (var claim in @context.User.Claims)
+            {
+                <dt>@claim.Type</dt>
+                <dd>@claim.Value</dd>
+            }
+        </dl>
+        <dl>
+            @if (HostModel.properties != null)
+            {
+                @foreach (var property in HostModel.properties.Items)
+                {
+                    <dt>@property.Key</dt>
+                    <dd>@property.Value</dd>
+                }
+            }
+        </dl>
+    </Authorized>
+    <NotAuthorized>
+        <a>If you can see this, than the Authorize attribute isn't working</a>
+    </NotAuthorized>
+</AuthorizeView>
