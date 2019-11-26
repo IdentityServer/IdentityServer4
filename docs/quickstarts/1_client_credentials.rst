@@ -265,7 +265,7 @@ Next you can use the information from the discovery document to request a token 
 
 (full file can be found `here <https://github.com/IdentityServer/IdentityServer4/blob/master/samples/Quickstarts/1_ClientCredentials/src/Client/Program.cs>`_)
 
-.. note:: Copy and paste the access token from the console to `jwt.io <https://jwt.ms>`_ to inspect the raw token.
+.. note:: Copy and paste the access token from the console to `jwt.ms <https://jwt.ms>`_ to inspect the raw token.
 
 Calling the API
 ^^^^^^^^^^^^^^^
