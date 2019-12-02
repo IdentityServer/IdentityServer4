@@ -2,6 +2,7 @@
 using IdentityModel.Client;
 using IdentityModel.OidcClient;
 using Microsoft.IdentityModel.Logging;
+using Serilog;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -74,6 +75,14 @@ namespace WindowsConsoleSystemBrowser
                 Scope = "openid profile api1",
                 RedirectUri = redirectUri,
             };
+
+            var serilog = new LoggerConfiguration()
+                  .MinimumLevel.Verbose()
+                  .Enrich.FromLogContext()
+                  .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message}{NewLine}{Exception}{NewLine}")
+                  .CreateLogger();
+
+            options.LoggerFactory.AddSerilog(serilog);
 
             var client = new OidcClient(options);
             var state = await client.PrepareLoginAsync();
