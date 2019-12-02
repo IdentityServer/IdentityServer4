@@ -66,4 +66,5 @@ Steve Graddy
 Jeremy Sinclair ([@sinclairinator](https://twitter.com/sinclairinator))  
 Veikko Eeva  
 Bruno Brito  
+James Hough  
 
