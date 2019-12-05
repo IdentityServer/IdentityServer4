@@ -80,7 +80,7 @@ To use the operational store support, use the ``AddOperationalStore`` extension 
 
                 // this enables automatic token cleanup. this is optional.
                 options.EnableTokenCleanup = true;
-                options.TokenCleanupInterval = 30; // interval in seconds
+                options.TokenCleanupInterval = 3600; // interval in seconds (default is 3600)
             });
     }
 
