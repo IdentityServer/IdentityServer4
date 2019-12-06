@@ -41,7 +41,7 @@ namespace IdentityServer4.Endpoints.Results
 
         private void AddCspHeaders(HttpContext context)
         {
-            context.Response.AddScriptCspHeaders(_options.Csp, "sha256-ZT3q7lL9GXNGhPTB1Vvrvds2xw/kOV0zoeok2tiV23I=");
+            context.Response.AddScriptCspHeaders(_options.Csp, "sha256-vNR+ikfJGR2UIDJapd+QYis00VgOtb2ndDNSsbXui6s=");
         }
         private string GetHtml(string cookieName)
         {
@@ -342,6 +342,11 @@ if (typeof define == 'function' && define.amd) define([], function() { return Sh
 
         if (cookieName && window.parent !== window) {
             window.addEventListener('message', function(e) {
+                if (window === e.source) {
+                    // ignore browser extensions that are sending messages.
+                    return;
+                }
+
                 var result = calculateSessionStateResult(e.origin, e.data);
                 e.source.postMessage(result, e.origin);
             }, false);
