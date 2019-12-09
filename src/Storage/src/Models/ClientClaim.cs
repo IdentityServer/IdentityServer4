@@ -2,9 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Security.Claims;
 
 namespace IdentityServer4.Models
 {
@@ -27,5 +25,18 @@ namespace IdentityServer4.Models
         /// The claim value type
         /// </summary>
         public string ValueType { get; set; }
+
+        /// <summary>
+        /// ctor
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="value"></param>
+        /// <param name="valueType"></param>
+        public ClientClaim(string type, string value, string valueType = ClaimValueTypes.String)
+        {
+            Type = type;
+            Value = value;
+            ValueType = valueType;
+        }
     }
 }
