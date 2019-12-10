@@ -37,7 +37,7 @@ namespace IdentityServer4.Services
             if (IsValidReturnUrl(returnUrl))
             {
                 var parameters = returnUrl.ReadQueryStringAsNameValueCollection();
-                if (_authorizationParametersMessageStore != null)
+                if (_authorizationParametersMessageStore != null && !(_authorizationParametersMessageStore is NopAuthorizationParametersMessageStore))
                 {
                     var messageStoreId = parameters[Constants.AuthorizationParamsStore.MessageStoreIdParameterName];
                     var entry = await _authorizationParametersMessageStore.ReadAsync(messageStoreId);

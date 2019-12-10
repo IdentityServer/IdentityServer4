@@ -63,7 +63,7 @@ namespace IdentityServer4.Endpoints.Results
             Init(context);
 
             var returnUrl = context.GetIdentityServerBasePath().EnsureTrailingSlash() + Constants.ProtocolRoutePaths.AuthorizeCallback;
-            if (_authorizationParametersMessageStore != null)
+            if (_authorizationParametersMessageStore != null && !(_authorizationParametersMessageStore is NopAuthorizationParametersMessageStore))
             {
                 var msg = new Message<NameValueCollection>(_request.Raw);
                 var id = await _authorizationParametersMessageStore.WriteAsync(msg);

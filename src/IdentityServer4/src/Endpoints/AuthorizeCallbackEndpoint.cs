@@ -48,7 +48,7 @@ namespace IdentityServer4.Endpoints
             Logger.LogDebug("Start authorize callback request");
 
             var parameters = context.Request.Query.AsNameValueCollection();
-            if (_authorizationParametersMessageStore != null)
+            if (_authorizationParametersMessageStore != null && !(_authorizationParametersMessageStore is NopAuthorizationParametersMessageStore))
             {
                 var messageStoreId = parameters[Constants.AuthorizationParamsStore.MessageStoreIdParameterName];
                 var entry = await _authorizationParametersMessageStore.ReadAsync(messageStoreId);
