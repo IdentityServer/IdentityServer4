@@ -213,20 +213,12 @@ namespace IdentityServer4.Services
                 token.Audiences.Add(string.Format(IdentityServerConstants.AccessTokenAudience, issuer.EnsureTrailingSlash()));
             }
 
-            //ICollection<string> allowedAlgorithms = new List<string>();
-            //if (request.Resources.ApiResources.Any())
-            //{
-            //    allowedAlgorithms = request.Resources.ApiResources.First().AllowedSigningAlgorithms;
-            //}
-
             foreach (var api in request.Resources.ApiResources)
             {
                 if (api.Name.IsPresent())
                 {
                     token.Audiences.Add(api.Name);
                 }
-
-                //allowedAlgorithms.Intersect(api.AllowedSigningAlgorithms);
             }
 
             // only one API resource request, forward the allowed signing algorithms (if any)
