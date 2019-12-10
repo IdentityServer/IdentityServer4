@@ -32,6 +32,11 @@ namespace IdentityServer4.Models
         }
 
         /// <summary>
+        /// The algorithm for signing the token. If null, will use the default algorithm.
+        /// </summary>
+        public string SigningAlgorithm { get; set; }
+
+        /// <summary>
         /// Gets or sets the audiences.
         /// </summary>
         /// <value>
