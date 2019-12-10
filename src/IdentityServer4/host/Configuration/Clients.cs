@@ -164,6 +164,7 @@ namespace Host.Configuration
                     RequireConsent = false,
 
                     AllowOfflineAccess = true,
+                    IdentityTokenSigningAlgorithm = "ES256",
 
                     AllowedScopes =
                     {
