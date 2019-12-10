@@ -128,7 +128,7 @@ namespace IdentityServer4.UnitTests.Validation.EndSessionRequestValidation
         }
 
         [Fact]
-        public async Task post_logout_uri_fails_validation_should_return_error()
+        public async Task post_logout_uri_fails_validation_should_not_honor_logout_uri()
         {
             _stubTokenValidator.IdentityTokenValidationResult = new TokenValidationResult()
             {
@@ -145,7 +145,13 @@ namespace IdentityServer4.UnitTests.Validation.EndSessionRequestValidation
             parameters.Add("state", "foo");
 
             var result = await _subject.ValidateAsync(parameters, _user);
-            result.IsError.Should().BeTrue();
+            result.IsError.Should().BeFalse();
+
+            result.ValidatedRequest.Client.ClientId.Should().Be("client");
+            result.ValidatedRequest.Subject.GetSubjectId().Should().Be(_user.GetSubjectId());
+            
+            result.ValidatedRequest.State.Should().BeNull();
+            result.ValidatedRequest.PostLogOutUri.Should().BeNull();
         }
 
         [Fact]

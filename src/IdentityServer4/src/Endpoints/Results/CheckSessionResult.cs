@@ -7,6 +7,7 @@ using IdentityServer4.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using IdentityServer4.Configuration;
+using IdentityServer4.Extensions;
 
 namespace IdentityServer4.Endpoints.Results
 {
@@ -40,7 +41,7 @@ namespace IdentityServer4.Endpoints.Results
 
         private void AddCspHeaders(HttpContext context)
         {
-            context.Response.AddScriptCspHeaders(_options.Csp, "sha256-kYWwwiDv9fpxpszjw0t30xE2oEwJTfibEzH5sY47od4=");
+            context.Response.AddScriptCspHeaders(_options.Csp, "sha256-bBR11t3xOeLLkccl6Pn1hYbkHCL+JE4CLkgBydaPSE0=");
         }
         private string GetHtml(string cookieName)
         {
@@ -342,6 +343,11 @@ if (typeof define == 'function' && define.amd) define([], function() { return Sh
 
         if (cookieName && window.parent !== window) {
             window.addEventListener('message', function(e) {
+                if (window === e.source) {
+                    // ignore browser extensions that are sending messages.
+                    return;
+                }
+
                 var result = calculateSessionStateResult(e.origin, e.data);
                 e.source.postMessage(result, e.origin);
             }, false);

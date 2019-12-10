@@ -2,6 +2,7 @@ Videos
 ======
 2019
 ^^^^
+* `October [TDC] -- Securing Web Applications and APIs with ASP.NET Core 3.0  <https://vimeo.com/369311388>`_
 * `January [NDC] -- Securing Web Applications and APIs with ASP.NET Core 2.2 and 3.0  <https://www.youtube.com/watch?v=EYk3KTwwbFA>`_
 * `January [NDC] -- Building Clients for OpenID Connect/OAuth 2-based Systems  <https://www.youtube.com/watch?v=BM091_OlX3o>`_
 

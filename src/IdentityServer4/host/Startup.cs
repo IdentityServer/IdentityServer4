@@ -3,6 +3,7 @@
 
 
 using Host.Configuration;
+using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Quickstart.UI;
 using Microsoft.AspNetCore.Builder;
@@ -13,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace Host
@@ -60,16 +62,13 @@ namespace Host
                 //.AddInMemoryClients(_config.GetSection("Clients"))
                 .AddInMemoryIdentityResources(Resources.GetIdentityResources())
                 .AddInMemoryApiResources(Resources.GetApiResources())
-                .AddDeveloperSigningCredential()
+                .AddSigningCredential()
                 .AddExtensionGrantValidator<Extensions.ExtensionGrantValidator>()
                 .AddExtensionGrantValidator<Extensions.NoSubjectExtensionGrantValidator>()
                 .AddJwtBearerClientAuthentication()
                 .AddAppAuthRedirectUriValidator()
                 .AddTestUsers(TestUsers.Users)
                 .AddMutualTlsSecretValidators();
-
-            //var key = CryptoHelper.CreateECDsaSecurityKey();
-            //builder.AddSigningCredential(key, SecurityAlgorithms.EcdsaSha256);
 
             services.AddExternalIdentityProviders();
             services.AddLocalApiAuthentication(principal =>
@@ -113,6 +112,33 @@ namespace Host
             {
                 endpoints.MapDefaultControllerRoute();
             });
+        }
+    }
+
+    public static class BuilderExtensions
+    {
+        public static IIdentityServerBuilder AddSigningCredential(this IIdentityServerBuilder builder)
+        {
+            // create random RS256 key
+            //return builder.AddDeveloperSigningCredential();
+
+            // use an RSA-based certificate with RS256
+            //var cert = new X509Certificate2("./keys/identityserver.test.rsa.p12", "changeit");
+            //return builder.AddSigningCredential(cert, "RS256");
+
+            // ...or PS256
+            //return builder.AddSigningCredential(cert, "PS256");
+
+            // or manually extract ECDSA key from certificate (directly using the certificate is not support by Microsoft right now)
+            var cert = new X509Certificate2("./keys/identityserver.test.ecdsa.p12", "changeit");
+            var key = new ECDsaSecurityKey(cert.GetECDsaPrivateKey())
+            {
+                KeyId = CryptoRandom.CreateUniqueId(16)
+            };
+
+            return builder.AddSigningCredential(
+                key,
+                IdentityServerConstants.ECDsaSigningAlgorithm.ES256);
         }
     }
 

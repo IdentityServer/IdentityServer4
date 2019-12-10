@@ -10,7 +10,7 @@ namespace build
     class Program
     {
         private const string Prefix = "IdentityServer4";
-        private const bool RequireTests = true;
+        private const bool RequireTests = false;
 
         private const string ArtifactsDir = "artifacts";
         private const string Build = "build";
@@ -28,9 +28,7 @@ namespace build
             {
                 Target(Build, () => 
                 {
-                    var solution = Directory.GetFiles(".", "*.sln", SearchOption.TopDirectoryOnly).First();
-
-                    Run("dotnet", $"build {solution} -c Release", echoPrefix: Prefix);
+                    Run("dotnet", $"build -c Release", echoPrefix: Prefix);
 
                     if (sign.HasValue())
                     {
@@ -40,22 +38,8 @@ namespace build
 
                 Target(Test, DependsOn(Build), () => 
                 {
-                    try
-                    {
-                        var tests = Directory.GetFiles("./test", "*.csproj", SearchOption.AllDirectories);
-
-                        foreach (var test in tests)
-                        {
-                            Run("dotnet", $"test {test} -c Release --no-build", echoPrefix: Prefix);
-                        }    
-                    }
-                    catch (System.IO.DirectoryNotFoundException ex)
-                    {
-                        if (RequireTests)
-                        {
-                            throw new Exception($"No tests found: {ex.Message}");
-                        };
-                    }
+                    Run("dotnet", $"test -c Release --no-build", echoPrefix: Prefix);
+                        
                 });
                 
                 Target(Pack, DependsOn(Build), () => 
@@ -96,6 +80,10 @@ namespace build
             }
 
             var files = Directory.GetFiles(directory, extension, SearchOption.AllDirectories);
+            if (files.Count() == 0)
+            {
+                throw new Exception($"File to sign not found: {extension}");
+            }
 
             foreach (var file in files)
             {
