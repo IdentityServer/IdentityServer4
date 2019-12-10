@@ -83,7 +83,7 @@ namespace IdentityServer4.Services
         /// <returns>The JWT header</returns>
         protected virtual async Task<JwtHeader> CreateHeaderAsync(Token token)
         {
-            var credential = await Keys.GetSigningCredentialsAsync(token.SigningAlgorithm);
+            var credential = await Keys.GetSigningCredentialsAsync(token.AllowedSigningAlgorithms);
 
             if (credential == null)
             {

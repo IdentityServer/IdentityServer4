@@ -168,7 +168,7 @@ namespace IdentityServer4.Services
                 Claims = claims.Distinct(new ClaimComparer()).ToList(),
                 ClientId = request.ValidatedRequest.Client.ClientId,
                 AccessTokenType = request.ValidatedRequest.AccessTokenType,
-                SigningAlgorithm = request.ValidatedRequest.Client.IdentityTokenSigningAlgorithm
+                AllowedSigningAlgorithms = request.ValidatedRequest.Client.AllowedIdentityTokenSigningAlgorithms
             };
 
             return token;

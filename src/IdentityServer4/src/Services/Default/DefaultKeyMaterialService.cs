@@ -9,6 +9,7 @@ using IdentityServer4.Stores;
 using IdentityServer4.Models;
 using System.Linq;
 using System;
+using IdentityServer4.Extensions;
 
 namespace IdentityServer4.Services
 {
@@ -36,20 +37,20 @@ namespace IdentityServer4.Services
         /// Gets the default signing credentials.
         /// </summary>
         /// <returns></returns>
-        public async Task<SigningCredentials> GetSigningCredentialsAsync(string algorithm = null)
+        public async Task<SigningCredentials> GetSigningCredentialsAsync(IEnumerable<string> allowedAlgorithms = null)
         {
             if (_signingCredentialStores != null)
             {
-                if (algorithm is null)
+                if (allowedAlgorithms.IsNullOrEmpty())
                 {
                     return await _signingCredentialStores.First().GetSigningCredentialsAsync();
                 }
                 else
                 {
-                    var credential = (await GetAllSigningCredentials()).FirstOrDefault(c => c.Algorithm.Equals(algorithm));
+                    var credential = (await GetAllSigningCredentials()).FirstOrDefault(c => allowedAlgorithms.Contains(c.Algorithm));
                     if (credential is null)
                     {
-                        throw new InvalidOperationException($"No signing credential for algorithm {algorithm} registered.");
+                        throw new InvalidOperationException($"No signing credential for algorithms ({allowedAlgorithms}) registered.");
                     }
 
                     return credential;
