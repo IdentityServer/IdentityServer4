@@ -167,7 +167,8 @@ namespace IdentityServer4.Services
                 Lifetime = request.ValidatedRequest.Client.IdentityTokenLifetime,
                 Claims = claims.Distinct(new ClaimComparer()).ToList(),
                 ClientId = request.ValidatedRequest.Client.ClientId,
-                AccessTokenType = request.ValidatedRequest.AccessTokenType
+                AccessTokenType = request.ValidatedRequest.AccessTokenType,
+                SigningAlgorithm = request.ValidatedRequest.Client.IdentityTokenSigningAlgorithm
             };
 
             return token;
