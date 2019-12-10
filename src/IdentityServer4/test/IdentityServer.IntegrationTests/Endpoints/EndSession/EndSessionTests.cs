@@ -257,7 +257,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task signout_callback_with_mismatched_post_logout_redirect_uri_should_not_pass_along_logout_message()
+        public async Task signout_callback_with_mismatched_post_logout_redirect_uri_should_not_pass_along_logout_uri()
         {
             await _mockPipeline.LoginAsync("bob");
 
@@ -284,7 +284,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.EndSession
 
             response = await _mockPipeline.BrowserClient.GetAsync(signoutFrameUrl);
 
-            _mockPipeline.LogoutRequest.ClientId.Should().BeNull();
+            _mockPipeline.LogoutRequest.ClientId.Should().NotBeNull();
             _mockPipeline.LogoutRequest.PostLogoutRedirectUri.Should().BeNull();
         }
 
