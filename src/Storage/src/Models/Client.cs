@@ -164,11 +164,10 @@ namespace IdentityServer4.Models
         /// </summary>
         public int IdentityTokenLifetime { get; set; } = 300;
 
-        // TODO: make array? Use convenience Enums - like .RS256 or .AnyRS ?
         /// <summary>
         /// Signing algorithm for identity token. Will default to standard algorithm if not set
         /// </summary>
-        public string IdentityTokenSigningAlgorithm { get; set; }
+        public ICollection<string> AllowedIdentityTokenSigningAlgorithms { get; set; } = new HashSet<string>();
 
         /// <summary>
         /// Lifetime of access token in seconds (defaults to 3600 seconds / 1 hour)
