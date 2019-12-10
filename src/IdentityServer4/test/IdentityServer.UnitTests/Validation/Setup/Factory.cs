@@ -123,7 +123,7 @@ namespace IdentityServer4.UnitTests.Validation
             return new DefaultTokenCreationService(
                 new StubClock(),
                 new DefaultKeyMaterialService(new IValidationKeysStore[] { },
-                new DefaultSigningCredentialsStore(TestCert.LoadSigningCredentials())),
+                    new ISigningCredentialStore[] { new DefaultSigningCredentialsStore(TestCert.LoadSigningCredentials()) }),
                 TestIdentityServerOptions.Create(),
                 TestLogger.Create<DefaultTokenCreationService>());
         }
