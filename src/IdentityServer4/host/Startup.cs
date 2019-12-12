@@ -215,20 +215,6 @@ namespace Host
                         RoleClaimType = "role"
                     };
                 });
-                //.AddWsFederation("adfs-wsfed", "ADFS with WS-Fed", options =>
-                //{
-                //    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-                //    options.SignOutScheme = IdentityServerConstants.SignoutScheme;
-
-                //    options.MetadataAddress = "https://adfs4.local/federationmetadata/2007-06/federationmetadata.xml";
-                //    options.Wtrealm = "urn:test";
-
-                //    options.TokenValidationParameters = new TokenValidationParameters
-                //    {
-                //        NameClaimType = "name",
-                //        RoleClaimType = "role"
-                //    };
-                //});
 
             return services;
         }
