@@ -60,13 +60,11 @@ namespace IdentityServer4.EntityFramework.Stores
         /// <param name="userCode">The user code.</param>
         /// <param name="data">The data.</param>
         /// <returns></returns>
-        public virtual Task StoreDeviceAuthorizationAsync(string deviceCode, string userCode, DeviceCode data)
+        public virtual async Task StoreDeviceAuthorizationAsync(string deviceCode, string userCode, DeviceCode data)
         {
             Context.DeviceFlowCodes.Add(ToEntity(data, deviceCode, userCode));
 
-            Context.SaveChanges();
-
-            return Task.FromResult(0);
+            await Context.SaveChangesAsync();
         }
 
         /// <summary>
@@ -74,14 +72,14 @@ namespace IdentityServer4.EntityFramework.Stores
         /// </summary>
         /// <param name="userCode">The user code.</param>
         /// <returns></returns>
-        public virtual Task<DeviceCode> FindByUserCodeAsync(string userCode)
+        public virtual async Task<DeviceCode> FindByUserCodeAsync(string userCode)
         {
-            var deviceFlowCodes = Context.DeviceFlowCodes.AsNoTracking().FirstOrDefault(x => x.UserCode == userCode);
+            var deviceFlowCodes = await Context.DeviceFlowCodes.AsNoTracking().FirstOrDefaultAsync(x => x.UserCode == userCode);
             var model = ToModel(deviceFlowCodes?.Data);
 
             Logger.LogDebug("{userCode} found in database: {userCodeFound}", userCode, model != null);
 
-            return Task.FromResult(model);
+            return model;
         }
 
         /// <summary>
@@ -89,14 +87,14 @@ namespace IdentityServer4.EntityFramework.Stores
         /// </summary>
         /// <param name="deviceCode">The device code.</param>
         /// <returns></returns>
-        public virtual Task<DeviceCode> FindByDeviceCodeAsync(string deviceCode)
+        public virtual async Task<DeviceCode> FindByDeviceCodeAsync(string deviceCode)
         {
-            var deviceFlowCodes = Context.DeviceFlowCodes.AsNoTracking().FirstOrDefault(x => x.DeviceCode == deviceCode);
+            var deviceFlowCodes = await Context.DeviceFlowCodes.AsNoTracking().FirstOrDefaultAsync(x => x.DeviceCode == deviceCode);
             var model = ToModel(deviceFlowCodes?.Data);
 
             Logger.LogDebug("{deviceCode} found in database: {deviceCodeFound}", deviceCode, model != null);
 
-            return Task.FromResult(model);
+            return model;
         }
 
         /// <summary>
@@ -105,9 +103,9 @@ namespace IdentityServer4.EntityFramework.Stores
         /// <param name="userCode">The user code.</param>
         /// <param name="data">The data.</param>
         /// <returns></returns>
-        public virtual Task UpdateByUserCodeAsync(string userCode, DeviceCode data)
+        public virtual async Task UpdateByUserCodeAsync(string userCode, DeviceCode data)
         {
-            var existing = Context.DeviceFlowCodes.SingleOrDefault(x => x.UserCode == userCode);
+            var existing = await Context.DeviceFlowCodes.SingleOrDefaultAsync(x => x.UserCode == userCode);
             if (existing == null)
             {
                 Logger.LogError("{userCode} not found in database", userCode);
@@ -122,14 +120,12 @@ namespace IdentityServer4.EntityFramework.Stores
 
             try
             {
-                Context.SaveChanges();
+                await Context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException ex)
             {
                 Logger.LogWarning("exception updating {userCode} user code in database: {error}", userCode, ex.Message);
             }
-
-            return Task.FromResult(0);
         }
 
         /// <summary>
@@ -137,9 +133,9 @@ namespace IdentityServer4.EntityFramework.Stores
         /// </summary>
         /// <param name="deviceCode">The device code.</param>
         /// <returns></returns>
-        public virtual Task RemoveByDeviceCodeAsync(string deviceCode)
+        public virtual async Task RemoveByDeviceCodeAsync(string deviceCode)
         {
-            var deviceFlowCodes = Context.DeviceFlowCodes.FirstOrDefault(x => x.DeviceCode == deviceCode);
+            var deviceFlowCodes = await Context.DeviceFlowCodes.FirstOrDefaultAsync(x => x.DeviceCode == deviceCode);
 
             if(deviceFlowCodes != null)
             {
@@ -149,7 +145,7 @@ namespace IdentityServer4.EntityFramework.Stores
 
                 try
                 {
-                    Context.SaveChanges();
+                    await Context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
@@ -160,8 +156,6 @@ namespace IdentityServer4.EntityFramework.Stores
             {
                 Logger.LogDebug("no {deviceCode} device code found in database", deviceCode);
             }
-
-            return Task.FromResult(0);
         }
 
         /// <summary>

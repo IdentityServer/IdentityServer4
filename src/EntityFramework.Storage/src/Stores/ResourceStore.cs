@@ -48,7 +48,7 @@ namespace IdentityServer4.EntityFramework.Stores
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns></returns>
-        public virtual Task<ApiResource> FindApiResourceAsync(string name)
+        public virtual async Task<ApiResource> FindApiResourceAsync(string name)
         {
             var query =
                 from apiResource in Context.ApiResources
@@ -63,7 +63,7 @@ namespace IdentityServer4.EntityFramework.Stores
                 .Include(x => x.Properties)
                 .AsNoTracking();
 
-            var api = apis.FirstOrDefault();
+            var api = await apis.FirstOrDefaultAsync();
 
             if (api != null)
             {
@@ -74,7 +74,7 @@ namespace IdentityServer4.EntityFramework.Stores
                 Logger.LogDebug("Did not find {api} API resource in database", name);
             }
 
-            return Task.FromResult(api.ToModel());
+            return api.ToModel();
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace IdentityServer4.EntityFramework.Stores
         /// </summary>
         /// <param name="scopeNames"></param>
         /// <returns></returns>
-        public virtual Task<IEnumerable<ApiResource>> FindApiResourcesByScopeAsync(IEnumerable<string> scopeNames)
+        public virtual async Task<IEnumerable<ApiResource>> FindApiResourcesByScopeAsync(IEnumerable<string> scopeNames)
         {
             var names = scopeNames.ToArray();
 
@@ -99,12 +99,12 @@ namespace IdentityServer4.EntityFramework.Stores
                 .Include(x => x.Properties)
                 .AsNoTracking();
 
-            var results = apis.ToArray();
+            var results = await apis.ToArrayAsync();
             var models = results.Select(x => x.ToModel()).ToArray();
 
             Logger.LogDebug("Found {scopes} API scopes in database", models.SelectMany(x => x.Scopes).Select(x => x.Name));
 
-            return Task.FromResult(models.AsEnumerable());
+            return models;
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace IdentityServer4.EntityFramework.Stores
         /// </summary>
         /// <param name="scopeNames"></param>
         /// <returns></returns>
-        public virtual Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeAsync(IEnumerable<string> scopeNames)
+        public virtual async Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeAsync(IEnumerable<string> scopeNames)
         {
             var scopes = scopeNames.ToArray();
 
@@ -126,18 +126,18 @@ namespace IdentityServer4.EntityFramework.Stores
                 .Include(x => x.Properties)
                 .AsNoTracking();
 
-            var results = resources.ToArray();
+            var results = await resources.ToArrayAsync();
 
             Logger.LogDebug("Found {scopes} identity scopes in database", results.Select(x => x.Name));
 
-            return Task.FromResult(results.Select(x => x.ToModel()).ToArray().AsEnumerable());
+            return results.Select(x => x.ToModel()).ToArray();
         }
 
         /// <summary>
         /// Gets all resources.
         /// </summary>
         /// <returns></returns>
-        public virtual Task<Resources> GetAllResourcesAsync()
+        public virtual async Task<Resources> GetAllResourcesAsync()
         {
             var identity = Context.IdentityResources
               .Include(x => x.UserClaims)
@@ -152,12 +152,13 @@ namespace IdentityServer4.EntityFramework.Stores
                 .AsNoTracking();
 
             var result = new Resources(
-                identity.ToArray().Select(x => x.ToModel()).AsEnumerable(),
-                apis.ToArray().Select(x => x.ToModel()).AsEnumerable());
+                (await identity.ToArrayAsync()).Select(x => x.ToModel()),
+                (await apis.ToArrayAsync()).Select(x => x.ToModel())
+            );
 
             Logger.LogDebug("Found {scopes} as all scopes in database", result.IdentityResources.Select(x=>x.Name).Union(result.ApiResources.SelectMany(x=>x.Scopes).Select(x=>x.Name)));
 
-            return Task.FromResult(result);
+            return result;
         }
     }
 }

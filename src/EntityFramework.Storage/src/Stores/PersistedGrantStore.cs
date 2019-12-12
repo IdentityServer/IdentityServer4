@@ -46,9 +46,9 @@ namespace IdentityServer4.EntityFramework.Stores
         /// </summary>
         /// <param name="token">The token.</param>
         /// <returns></returns>
-        public virtual Task StoreAsync(PersistedGrant token)
+        public virtual async Task StoreAsync(PersistedGrant token)
         {
-            var existing = Context.PersistedGrants.SingleOrDefault(x => x.Key == token.Key);
+            var existing = await Context.PersistedGrants.SingleOrDefaultAsync(x => x.Key == token.Key);
             if (existing == null)
             {
                 Logger.LogDebug("{persistedGrantKey} not found in database", token.Key);
@@ -65,14 +65,12 @@ namespace IdentityServer4.EntityFramework.Stores
 
             try
             {
-                Context.SaveChanges();
+                await Context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException ex)
             {
                 Logger.LogWarning("exception updating {persistedGrantKey} persisted grant in database: {error}", token.Key, ex.Message);
             }
-
-            return Task.FromResult(0);
         }
 
         /// <summary>
@@ -80,14 +78,14 @@ namespace IdentityServer4.EntityFramework.Stores
         /// </summary>
         /// <param name="key">The key.</param>
         /// <returns></returns>
-        public virtual Task<PersistedGrant> GetAsync(string key)
+        public virtual async Task<PersistedGrant> GetAsync(string key)
         {
-            var persistedGrant = Context.PersistedGrants.AsNoTracking().FirstOrDefault(x => x.Key == key);
+            var persistedGrant = await Context.PersistedGrants.AsNoTracking().FirstOrDefaultAsync(x => x.Key == key);
             var model = persistedGrant?.ToModel();
 
             Logger.LogDebug("{persistedGrantKey} found in database: {persistedGrantKeyFound}", key, model != null);
 
-            return Task.FromResult(model);
+            return model;
         }
 
         /// <summary>
@@ -95,14 +93,14 @@ namespace IdentityServer4.EntityFramework.Stores
         /// </summary>
         /// <param name="subjectId">The subject identifier.</param>
         /// <returns></returns>
-        public virtual Task<IEnumerable<PersistedGrant>> GetAllAsync(string subjectId)
+        public virtual async Task<IEnumerable<PersistedGrant>> GetAllAsync(string subjectId)
         {
-            var persistedGrants = Context.PersistedGrants.Where(x => x.SubjectId == subjectId).AsNoTracking().ToList();
+            var persistedGrants = await Context.PersistedGrants.Where(x => x.SubjectId == subjectId).AsNoTracking().ToListAsync();
             var model = persistedGrants.Select(x => x.ToModel());
 
             Logger.LogDebug("{persistedGrantCount} persisted grants found for {subjectId}", persistedGrants.Count, subjectId);
 
-            return Task.FromResult(model);
+            return model;
         }
 
         /// <summary>
@@ -110,9 +108,9 @@ namespace IdentityServer4.EntityFramework.Stores
         /// </summary>
         /// <param name="key">The key.</param>
         /// <returns></returns>
-        public virtual Task RemoveAsync(string key)
+        public virtual async Task RemoveAsync(string key)
         {
-            var persistedGrant = Context.PersistedGrants.FirstOrDefault(x => x.Key == key);
+            var persistedGrant = await Context.PersistedGrants.FirstOrDefaultAsync(x => x.Key == key);
             if (persistedGrant!= null)
             {
                 Logger.LogDebug("removing {persistedGrantKey} persisted grant from database", key);
@@ -121,7 +119,7 @@ namespace IdentityServer4.EntityFramework.Stores
 
                 try
                 {
-                    Context.SaveChanges();
+                    await Context.SaveChangesAsync();
                 }
                 catch(DbUpdateConcurrencyException ex)
                 {
@@ -132,8 +130,6 @@ namespace IdentityServer4.EntityFramework.Stores
             {
                 Logger.LogDebug("no {persistedGrantKey} persisted grant found in database", key);
             }
-
-            return Task.FromResult(0);
         }
 
         /// <summary>
@@ -142,9 +138,9 @@ namespace IdentityServer4.EntityFramework.Stores
         /// <param name="subjectId">The subject identifier.</param>
         /// <param name="clientId">The client identifier.</param>
         /// <returns></returns>
-        public virtual Task RemoveAllAsync(string subjectId, string clientId)
+        public virtual async Task RemoveAllAsync(string subjectId, string clientId)
         {
-            var persistedGrants = Context.PersistedGrants.Where(x => x.SubjectId == subjectId && x.ClientId == clientId).ToList();
+            var persistedGrants = await Context.PersistedGrants.Where(x => x.SubjectId == subjectId && x.ClientId == clientId).ToListAsync();
 
             Logger.LogDebug("removing {persistedGrantCount} persisted grants from database for subject {subjectId}, clientId {clientId}", persistedGrants.Count, subjectId, clientId);
 
@@ -152,14 +148,12 @@ namespace IdentityServer4.EntityFramework.Stores
 
             try
             {
-                Context.SaveChanges();
+                await Context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException ex)
             {
                 Logger.LogInformation("removing {persistedGrantCount} persisted grants from database for subject {subjectId}, clientId {clientId}: {error}", persistedGrants.Count, subjectId, clientId, ex.Message);
             }
-
-            return Task.FromResult(0);
         }
 
         /// <summary>
@@ -169,12 +163,12 @@ namespace IdentityServer4.EntityFramework.Stores
         /// <param name="clientId">The client identifier.</param>
         /// <param name="type">The type.</param>
         /// <returns></returns>
-        public virtual Task RemoveAllAsync(string subjectId, string clientId, string type)
+        public virtual async Task RemoveAllAsync(string subjectId, string clientId, string type)
         {
-            var persistedGrants = Context.PersistedGrants.Where(x =>
+            var persistedGrants = await Context.PersistedGrants.Where(x =>
                 x.SubjectId == subjectId &&
                 x.ClientId == clientId &&
-                x.Type == type).ToList();
+                x.Type == type).ToListAsync();
 
             Logger.LogDebug("removing {persistedGrantCount} persisted grants from database for subject {subjectId}, clientId {clientId}, grantType {persistedGrantType}", persistedGrants.Count, subjectId, clientId, type);
 
@@ -182,14 +176,12 @@ namespace IdentityServer4.EntityFramework.Stores
 
             try
             {
-                Context.SaveChanges();
+                await Context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException ex)
             {
                 Logger.LogInformation("exception removing {persistedGrantCount} persisted grants from database for subject {subjectId}, clientId {clientId}, grantType {persistedGrantType}: {error}", persistedGrants.Count, subjectId, clientId, type, ex.Message);
             }
-
-            return Task.FromResult(0);
         }
     }
 }
