@@ -27,10 +27,6 @@ jobs:
     inputs:
       packageType: 'sdk'
       useGlobalJson: true
-  - task: CmdLine@2
-    displayName: 'Start LocalDb'
-    inputs:
-      script: 'sqllocaldb start mssqllocaldb'
   - task: PowerShell@2
     displayName: 'Build Script'
     inputs:
