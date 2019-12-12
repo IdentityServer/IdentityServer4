@@ -25,5 +25,11 @@ namespace IdentityServer4.Services
         /// </summary>
         /// <returns></returns>
         Task<SigningCredentials> GetSigningCredentialsAsync(IEnumerable<string> allowedAlgorithms = null);
+
+        /// <summary>
+        /// Gets all signing credentials
+        /// </summary>
+        /// <returns></returns>
+        Task<IEnumerable<SigningCredentials>> GetAllSigningCredentialsAsync();
     }
 }

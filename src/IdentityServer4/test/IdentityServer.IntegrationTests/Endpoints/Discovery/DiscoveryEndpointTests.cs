@@ -37,7 +37,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.Discovery
             issuer.Should().Be("https://server/root");
         }
 
-        [Fact(Skip = "for now")]
+        [Fact]
         [Trait("Category", Category)]
         public async Task Algorithms_supported_should_match_signing_key()
         {
@@ -47,6 +47,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.Discovery
             IdentityServerPipeline pipeline = new IdentityServerPipeline();
             pipeline.OnPostConfigureServices += services =>
             {
+                // add key to standard RSA key
                 services.AddIdentityServerBuilder()
                     .AddSigningCredential(key, expectedAlgorithm);
             };
@@ -56,9 +57,12 @@ namespace IdentityServer.IntegrationTests.Endpoints.Discovery
 
             var json = await result.Content.ReadAsStringAsync();
             var data = JObject.Parse(json);
-            var algorithmsSupported = data["id_token_signing_alg_values_supported"].Values<string>();
+            var algorithmsSupported = data["id_token_signing_alg_values_supported"].First();
 
-            algorithmsSupported.Should().Contain(expectedAlgorithm);
+            algorithmsSupported.Count().Should().Be(2);
+            
+            algorithmsSupported.Values().Should().Contain(SecurityAlgorithms.RsaSha256);
+            algorithmsSupported.Values().Should().Contain(SecurityAlgorithms.EcdsaSha256);
         }
 
         [Fact]

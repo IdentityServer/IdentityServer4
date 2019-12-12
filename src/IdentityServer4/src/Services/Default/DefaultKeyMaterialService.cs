@@ -33,10 +33,7 @@ namespace IdentityServer4.Services
             _validationKeysStores = validationKeysStores;
         }
 
-        /// <summary>
-        /// Gets the default signing credentials.
-        /// </summary>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public async Task<SigningCredentials> GetSigningCredentialsAsync(IEnumerable<string> allowedAlgorithms = null)
         {
             if (_signingCredentialStores != null)
@@ -47,7 +44,7 @@ namespace IdentityServer4.Services
                 }
                 else
                 {
-                    var credential = (await GetAllSigningCredentials()).FirstOrDefault(c => allowedAlgorithms.Contains(c.Algorithm));
+                    var credential = (await GetAllSigningCredentialsAsync()).FirstOrDefault(c => allowedAlgorithms.Contains(c.Algorithm));
                     if (credential is null)
                     {
                         throw new InvalidOperationException($"No signing credential for algorithms ({allowedAlgorithms}) registered.");
@@ -60,7 +57,8 @@ namespace IdentityServer4.Services
             return null;
         }
 
-        public async Task<IEnumerable<SigningCredentials>> GetAllSigningCredentials()
+        /// <inheritdoc/>
+        public async Task<IEnumerable<SigningCredentials>> GetAllSigningCredentialsAsync()
         {
             var credentials = new List<SigningCredentials>();
 
@@ -75,10 +73,7 @@ namespace IdentityServer4.Services
             return credentials;
         }
 
-        /// <summary>
-        /// Gets all validation keys.
-        /// </summary>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public async Task<IEnumerable<SecurityKeyInfo>> GetValidationKeysAsync()
         {
             var keys = new List<SecurityKeyInfo>();
