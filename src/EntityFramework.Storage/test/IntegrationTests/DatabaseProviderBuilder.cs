@@ -32,12 +32,5 @@ namespace IdentityServer4.EntityFramework.IntegrationTests
                 $@"Data Source=(LocalDb)\MSSQLLocalDB;database=Test.IdentityServer4.EntityFramework-3.1.0.{name};trusted_connection=yes;");
             return builder.Options;
         }
-
-        public static DbContextOptions<T> BuildAppVeyorSqlServer2016<T>(string name) where T : DbContext
-        {
-            var builder = new DbContextOptionsBuilder<T>();
-            builder.UseSqlServer($@"Server=(local)\SQL2016;Database=Test.IdentityServer4.EntityFramework-3.1.0.{name};User ID=sa;Password=Password12!");
-            return builder.Options;
-        }
     }
 }
