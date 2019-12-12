@@ -34,7 +34,7 @@ namespace IdentityServer4.EntityFramework.IntegrationTests
                 {
                     DatabaseProviderBuilder.BuildInMemory<TDbContext>(typeof(TClass).Name),
                     DatabaseProviderBuilder.BuildSqlite<TDbContext>(typeof(TClass).Name),
-                    //DatabaseProviderBuilder.BuildLocalDb<TDbContext>(typeof(TClass).Name)
+                    DatabaseProviderBuilder.BuildLocalDb<TDbContext>(typeof(TClass).Name)
                 };
             }
             else
