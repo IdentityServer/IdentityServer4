@@ -84,5 +84,10 @@ namespace IdentityServer4.Models
         /// An API must have at least one scope. Each scope can have different settings.
         /// </summary>
         public ICollection<Scope> Scopes { get; set; } = new HashSet<Scope>();
+        
+        /// <summary>
+        /// List of allowed singing algorithm for the resource
+        /// </summary>
+        public ICollection<string> AllowedSigningAlgorithms { get; set; } = new HashSet<string>();
     }
 }
