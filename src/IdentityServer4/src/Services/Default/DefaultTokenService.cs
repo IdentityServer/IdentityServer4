@@ -205,7 +205,8 @@ namespace IdentityServer4.Services
                 Lifetime = request.ValidatedRequest.AccessTokenLifetime,
                 Claims = claims.Distinct(new ClaimComparer()).ToList(),
                 ClientId = request.ValidatedRequest.Client.ClientId,
-                AccessTokenType = request.ValidatedRequest.AccessTokenType
+                AccessTokenType = request.ValidatedRequest.AccessTokenType,
+                AllowedSigningAlgorithms = request.Resources.ApiResources.FindMatchingSigningAlgorithms()
             };
 
             if (Options.EmitLegacyResourceAudienceClaim)
@@ -220,38 +221,8 @@ namespace IdentityServer4.Services
                     token.Audiences.Add(api.Name);
                 }
             }
-
-            // only one API resource request, forward the allowed signing algorithms (if any)
-            if (request.Resources.ApiResources.Count == 1)
-            {
-                token.AllowedSigningAlgorithms = request.Resources.ApiResources.First().AllowedSigningAlgorithms;
-            }
-            else
-            {
-                var allAlgorithms = request.Resources.ApiResources.Where(r => r.AllowedSigningAlgorithms.Any()).Select(r => r.AllowedSigningAlgorithms);
-
-                // resources need to agree on allowed signing algorithms
-                if (allAlgorithms.Any())
-                {
-                    var allowedAlgorithms = IntersectLists(allAlgorithms);
-
-                    if (allowedAlgorithms.Any())
-                    {
-                        token.AllowedSigningAlgorithms = allowedAlgorithms.ToHashSet();
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException("Signing algorithms requirements for requested resources are not compatible.");
-                    }
-                }
-            }
-
+            
             return token;
-        }
-
-        private static IEnumerable<T> IntersectLists<T>(IEnumerable<IEnumerable<T>> lists)
-        {
-            return lists.Aggregate((l1, l2) => l1.Intersect(l2));
         }
 
         /// <summary>
