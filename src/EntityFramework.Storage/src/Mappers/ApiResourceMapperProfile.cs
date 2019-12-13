@@ -24,7 +24,9 @@ namespace IdentityServer4.EntityFramework.Mappers
             CreateMap<Entities.ApiResource, Models.ApiResource>(MemberList.Destination)
                 .ConstructUsing(src => new Models.ApiResource())
                 .ForMember(x => x.ApiSecrets, opts => opts.MapFrom(x => x.Secrets))
-                .ReverseMap();
+                .ForMember(x=>x.AllowedSigningAlgorithms, opts => opts.ConvertUsing(AllowedSigningAlgorithmsConverter.Converter, x=>x.AllowedSigningAlgorithms))
+                .ReverseMap()
+                .ForMember(x => x.AllowedSigningAlgorithms, opts => opts.ConvertUsing(AllowedSigningAlgorithmsConverter.Converter, x => x.AllowedSigningAlgorithms));
 
             CreateMap<Entities.ApiResourceClaim, string>()
                 .ConstructUsing(x => x.Type)

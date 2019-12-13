@@ -16,7 +16,7 @@ namespace IdentityServer4.EntityFramework.Entities
         public string Name { get; set; }
         public string DisplayName { get; set; }
         public string Description { get; set; }
-        public List<string> AllowedSigningAlgorithms { get; set; }
+        public string AllowedSigningAlgorithms { get; set; }
         public List<ApiSecret> Secrets { get; set; }
         public List<ApiScope> Scopes { get; set; }
         public List<ApiResourceClaim> UserClaims { get; set; }
