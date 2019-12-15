@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.572
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer4", "IdentityServer4\src\IdentityServer4.csproj", "{E786CA5A-28BF-4A36-AD87-C00BDF27516A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer4", "IdentityServer4\src\IdentityServer4.Local.csproj", "{E786CA5A-28BF-4A36-AD87-C00BDF27516A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Host", "IdentityServer4\host\Host.csproj", "{A4236AD3-4923-49EE-BC1E-28D6449FC793}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Host", "IdentityServer4\host\Host.Local.csproj", "{A4236AD3-4923-49EE-BC1E-28D6449FC793}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer4.Storage", "Storage\src\IdentityServer4.Storage.csproj", "{88E70F4C-C643-40C8-9192-4794D5FFD9D5}"
 EndProject
