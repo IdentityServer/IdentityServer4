@@ -56,6 +56,15 @@ namespace build
                     CopyArtifacts();
                 });
 
+                Target("quick", () => 
+                {
+                    var project = Directory.GetFiles("./src", "*.csproj", SearchOption.TopDirectoryOnly).First();
+
+                    Run("dotnet", $"pack {project} -c Release -o ./{ArtifactsDir}", echoPrefix: Prefix);
+                    
+                    CopyArtifacts();
+                });
+
 
                 Target("default", DependsOn(Test, Pack));
                 RunTargetsAndExit(app.RemainingArguments, logPrefix: Prefix);
