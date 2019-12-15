@@ -260,7 +260,7 @@ namespace IdentityServer4.Services
                 Secure = secure,
                 Path = path,
                 IsEssential = true,
-                SameSite = SameSiteMode.None
+                SameSite = SameSiteMode.Lax
             };
 
             return options;
