@@ -19,7 +19,7 @@ namespace IdentityServer4.Configuration
         public string IssuerUri { get; set; }
 
         /// <summary>
-        /// Set to false to preserve the original casing the the IssuerUri. Defaults to true.
+        /// Set to false to preserve the original casing of the IssuerUri. Defaults to true.
         /// </summary>
         public bool LowerCaseIssuerUri { get; set; } = true;
 
