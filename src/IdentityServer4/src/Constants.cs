@@ -4,6 +4,7 @@
 
 using IdentityModel;
 using IdentityServer4.Models;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 
@@ -335,6 +336,31 @@ namespace IdentityServer4
             public const string P256 = "1.2.840.10045.3.1.7";
             public const string P384 = "1.3.132.0.34";
             public const string P521 = "1.3.132.0.35";
+        }
+        public static class IdentityErrorCode
+        {
+            public const string ConcurrencyFailure = nameof(IdentityErrorDescriber.ConcurrencyFailure);
+            public const string DefaultError = nameof(IdentityErrorDescriber.DefaultError);
+            public const string DuplicateEmail = nameof(IdentityErrorDescriber.DuplicateEmail);
+            public const string DuplicateRoleName = nameof(IdentityErrorDescriber.DuplicateRoleName);
+            public const string DuplicateUserName = nameof(IdentityErrorDescriber.DuplicateUserName);
+            public const string InvalidEmail = nameof(IdentityErrorDescriber.InvalidEmail);
+            public const string InvalidRoleName = nameof(IdentityErrorDescriber.InvalidRoleName);
+            public const string InvalidToken = nameof(IdentityErrorDescriber.InvalidToken);
+            public const string InvalidUserName = nameof(IdentityErrorDescriber.InvalidUserName);
+            public const string LoginAlreadyAssociated = nameof(IdentityErrorDescriber.LoginAlreadyAssociated);
+            public const string PasswordMismatch = nameof(IdentityErrorDescriber.PasswordMismatch);
+            public const string PasswordRequiresDigit = nameof(IdentityErrorDescriber.PasswordRequiresDigit);
+            public const string PasswordRequiresLower = nameof(IdentityErrorDescriber.PasswordRequiresLower);
+            public const string PasswordRequiresNonAlphanumeric = nameof(IdentityErrorDescriber.PasswordRequiresNonAlphanumeric);
+            public const string PasswordRequiresUniqueChars = nameof(IdentityErrorDescriber.PasswordRequiresUniqueChars);
+            public const string PasswordRequiresUpper = nameof(IdentityErrorDescriber.PasswordRequiresUpper);
+            public const string PasswordTooShort = nameof(IdentityErrorDescriber.PasswordTooShort);
+            public const string RecoveryCodeRedemptionFailed = nameof(IdentityErrorDescriber.RecoveryCodeRedemptionFailed);
+            public const string UserAlreadyHasPassword = nameof(IdentityErrorDescriber.UserAlreadyHasPassword);
+            public const string UserAlreadyInRole = nameof(IdentityErrorDescriber.UserAlreadyInRole);
+            public const string UserLockoutNotEnabled = nameof(IdentityErrorDescriber.UserLockoutNotEnabled);
+            public const string UserNotInRole = nameof(IdentityErrorDescriber.UserNotInRole);
         }
     }
 }
