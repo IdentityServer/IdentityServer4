@@ -97,7 +97,7 @@ To get access tokens for APIs, you also need to register them as a scope. This t
                         Name = "api2.full_access",
                         DisplayName = "Full access to API 2",
                     },
-                    new Scope
+                    new Scope()
                     {
                         Name = "api2.read_only",
                         DisplayName = "Read only access to API 2"
