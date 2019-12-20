@@ -23,6 +23,9 @@ namespace IdentityServer4.Endpoints.Results
         }
 
         private IdentityServerOptions _options;
+        private static volatile string FormattedHtml;
+        private static readonly object Lock = new object();
+        private static volatile string LastCheckSessionCookieName;
 
         private void Init(HttpContext context)
         {
@@ -45,7 +48,18 @@ namespace IdentityServer4.Endpoints.Results
         }
         private string GetHtml(string cookieName)
         {
-            return Html.Replace("{cookieName}", cookieName);
+            if (cookieName != LastCheckSessionCookieName)
+            {
+                lock (Lock)
+                {
+                    if (cookieName != LastCheckSessionCookieName)
+                    {
+                        FormattedHtml = Html.Replace("{cookieName}", cookieName);
+                        LastCheckSessionCookieName = cookieName;
+                    }
+                }
+            }
+            return FormattedHtml;
         }
 
         private const string Html = @"
