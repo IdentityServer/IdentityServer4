@@ -16,6 +16,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Host.Extensions;
 
 namespace Host
 {
@@ -33,6 +34,9 @@ namespace Host
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            
+            // cookie policy to deal with temporary browser incompatibilities
+            services.AddSameSiteCookiePolicy();
 
             // configures IIS out-of-proc settings (see https://github.com/aspnet/AspNetCore/issues/14882)
             services.Configure<IISOptions>(iis =>
@@ -98,6 +102,8 @@ namespace Host
 
         public void Configure(IApplicationBuilder app)
         {
+            app.UseCookiePolicy();
+            
             app.UseSerilogRequestLogging();
 
             app.UseDeveloperExceptionPage();
