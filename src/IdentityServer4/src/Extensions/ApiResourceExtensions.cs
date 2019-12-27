@@ -17,6 +17,7 @@ namespace IdentityServer4.Models
                 Name = apiResource.Name,
                 DisplayName = apiResource.DisplayName,
                 ApiSecrets = new HashSet<Secret>(apiResource.ApiSecrets),
+                AllowedAccessTokenSigningAlgorithms = apiResource.AllowedAccessTokenSigningAlgorithms,
                 Scopes = new HashSet<Scope>(scopes.ToArray()),
                 UserClaims = new HashSet<string>(apiResource.UserClaims),
                 Properties = new Dictionary<string, string>(apiResource.Properties)

@@ -84,5 +84,10 @@ namespace IdentityServer4.Models
         /// An API must have at least one scope. Each scope can have different settings.
         /// </summary>
         public ICollection<Scope> Scopes { get; set; } = new HashSet<Scope>();
+
+        /// <summary>
+        /// Signing algorithm for access token. If empty, will use the server default signing algorithm.
+        /// </summary>
+        public ICollection<string> AllowedAccessTokenSigningAlgorithms { get; set; } = new HashSet<string>();
     }
 }

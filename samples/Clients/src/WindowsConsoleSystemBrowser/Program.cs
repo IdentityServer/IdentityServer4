@@ -119,7 +119,16 @@ namespace WindowsConsoleSystemBrowser
                 }
 
                 Console.WriteLine();
-                Console.WriteLine("Access token:\n{0}", result.AccessToken);
+
+                if (!string.IsNullOrEmpty(result.IdentityToken))
+                {
+                    Console.WriteLine("Identity token:\n{0}", result.IdentityToken);
+                }
+
+                if (!string.IsNullOrEmpty(result.AccessToken))
+                {
+                    Console.WriteLine("Access token:\n{0}", result.AccessToken);
+                }
 
                 if (!string.IsNullOrWhiteSpace(result.RefreshToken))
                 {

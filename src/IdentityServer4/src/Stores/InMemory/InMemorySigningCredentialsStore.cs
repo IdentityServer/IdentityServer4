@@ -11,15 +11,15 @@ namespace IdentityServer4.Stores
     /// Default signing credentials store
     /// </summary>
     /// <seealso cref="IdentityServer4.Stores.ISigningCredentialStore" />
-    public class DefaultSigningCredentialsStore : ISigningCredentialStore
+    public class InMemorySigningCredentialsStore : ISigningCredentialStore
     {
         private readonly SigningCredentials _credential;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultSigningCredentialsStore"/> class.
+        /// Initializes a new instance of the <see cref="InMemorySigningCredentialsStore"/> class.
         /// </summary>
         /// <param name="credential">The credential.</param>
-        public DefaultSigningCredentialsStore(SigningCredentials credential)
+        public InMemorySigningCredentialsStore(SigningCredentials credential)
         {
             _credential = credential;
         }

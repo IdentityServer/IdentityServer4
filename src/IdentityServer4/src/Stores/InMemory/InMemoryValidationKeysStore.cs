@@ -13,16 +13,16 @@ namespace IdentityServer4.Stores
     /// The default validation key store
     /// </summary>
     /// <seealso cref="IdentityServer4.Stores.IValidationKeysStore" />
-    public class DefaultValidationKeysStore : IValidationKeysStore
+    public class InMemoryValidationKeysStore : IValidationKeysStore
     {
         private readonly IEnumerable<SecurityKeyInfo> _keys;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultValidationKeysStore"/> class.
+        /// Initializes a new instance of the <see cref="InMemoryValidationKeysStore"/> class.
         /// </summary>
         /// <param name="keys">The keys.</param>
         /// <exception cref="System.ArgumentNullException">keys</exception>
-        public DefaultValidationKeysStore(IEnumerable<SecurityKeyInfo> keys)
+        public InMemoryValidationKeysStore(IEnumerable<SecurityKeyInfo> keys)
         {
             _keys = keys ?? throw new ArgumentNullException(nameof(keys));
         }

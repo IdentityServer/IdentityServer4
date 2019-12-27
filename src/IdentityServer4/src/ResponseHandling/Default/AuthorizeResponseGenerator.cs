@@ -180,7 +180,7 @@ namespace IdentityServer4.ResponseHandling
                 string stateHash = null;
                 if (request.State.IsPresent())
                 {
-                    var credential = await KeyMaterialService.GetSigningCredentialsAsync();
+                    var credential = await KeyMaterialService.GetSigningCredentialsAsync(request.Client.AllowedIdentityTokenSigningAlgorithms);
                     if (credential == null)
                     {
                         throw new InvalidOperationException("No signing credential is configured.");
@@ -228,7 +228,7 @@ namespace IdentityServer4.ResponseHandling
             string stateHash = null;
             if (request.State.IsPresent())
             {
-                var credential = await KeyMaterialService.GetSigningCredentialsAsync();
+                var credential = await KeyMaterialService.GetSigningCredentialsAsync(request.Client.AllowedIdentityTokenSigningAlgorithms);
                 if (credential == null)
                 {
                     throw new InvalidOperationException("No signing credential is configured.");

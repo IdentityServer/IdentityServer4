@@ -165,6 +165,11 @@ namespace IdentityServer4.Models
         public int IdentityTokenLifetime { get; set; } = 300;
 
         /// <summary>
+        /// Signing algorithm for identity token. If empty, will use the server default signing algorithm.
+        /// </summary>
+        public ICollection<string> AllowedIdentityTokenSigningAlgorithms { get; set; } = new HashSet<string>();
+
+        /// <summary>
         /// Lifetime of access token in seconds (defaults to 3600 seconds / 1 hour)
         /// </summary>
         public int AccessTokenLifetime { get; set; } = 3600;

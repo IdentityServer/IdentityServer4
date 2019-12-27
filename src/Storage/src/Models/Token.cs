@@ -32,6 +32,11 @@ namespace IdentityServer4.Models
         }
 
         /// <summary>
+        /// A list of allowed algorithm for signing the token. If null or empty, will use the default algorithm.
+        /// </summary>
+        public ICollection<string> AllowedSigningAlgorithms { get; set; } = new HashSet<string>();
+
+        /// <summary>
         /// Gets or sets the audiences.
         /// </summary>
         /// <value>

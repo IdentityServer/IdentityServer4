@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using IdentityServer.UnitTests.Common;
 using IdentityServer4.Configuration;
@@ -121,7 +122,7 @@ namespace IdentityServer.UnitTests.Validation.Setup
             return new DefaultTokenCreationService(
                 new StubClock(),
                 new DefaultKeyMaterialService(new IValidationKeysStore[] { },
-                new DefaultSigningCredentialsStore(TestCert.LoadSigningCredentials())),
+                    new ISigningCredentialStore[] { new InMemorySigningCredentialsStore(TestCert.LoadSigningCredentials()) }),
                 TestIdentityServerOptions.Create(),
                 TestLogger.Create<DefaultTokenCreationService>());
         }
@@ -262,7 +263,7 @@ namespace IdentityServer.UnitTests.Validation.Setup
                 referenceTokenStore: store,
                 refreshTokenStore: refreshTokenStore,
                 customValidator: new DefaultCustomTokenValidator(),
-                    keys: new DefaultKeyMaterialService(new[] { new DefaultValidationKeysStore(new[] { keyInfo }) }),
+                    keys: new DefaultKeyMaterialService(new[] { new InMemoryValidationKeysStore(new[] { keyInfo }) }, Enumerable.Empty<ISigningCredentialStore>()),
                 logger: logger,
                 options: options,
                 context: context);
