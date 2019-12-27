@@ -21,11 +21,29 @@ namespace IdentityServer4.Models
         /// The claim value
         /// </summary>
         public string Value { get; set; }
-        
+
         /// <summary>
         /// The claim value type
         /// </summary>
-        public string ValueType { get; set; }
+        public string ValueType { get; set; } = ClaimValueTypes.String;
+
+        /// <summary>
+        /// ctor
+        /// </summary>
+        public ClientClaim()
+        {
+        }
+
+        /// <summary>
+        /// ctor
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="value"></param>
+        public ClientClaim(string type, string value)
+        {
+            Type = type;
+            Value = value;
+        }
 
         /// <summary>
         /// ctor
@@ -33,7 +51,7 @@ namespace IdentityServer4.Models
         /// <param name="type"></param>
         /// <param name="value"></param>
         /// <param name="valueType"></param>
-        public ClientClaim(string type, string value, string valueType = ClaimValueTypes.String)
+        public ClientClaim(string type, string value, string valueType)
         {
             Type = type;
             Value = value;
