@@ -74,5 +74,21 @@ namespace IdentityServer.UnitTests.Endpoints.Results
             _context.Response.Headers["Content-Security-Policy"].First().Should().Contain("script-src 'sha256-bBR11t3xOeLLkccl6Pn1hYbkHCL+JE4CLkgBydaPSE0='");
             _context.Response.Headers["X-Content-Security-Policy"].Should().BeEmpty();
         }
+
+        [Theory]
+        [InlineData("foobar")]
+        [InlineData("morefoobar")]
+
+        public async Task can_change_cached_cookiename(string cookieName)
+        {
+            _options.Authentication.CheckSessionCookieName = cookieName;
+            await _subject.ExecuteAsync(_context);
+            _context.Response.Body.Seek(0, SeekOrigin.Begin);
+            using (var rdr = new StreamReader(_context.Response.Body))
+            {
+                var html = rdr.ReadToEnd();
+                html.Should().Contain($"<script id='cookie-name' type='application/json'>{cookieName}</script>");
+            }
+        }
     }
 }
