@@ -165,7 +165,7 @@ namespace IdentityServer4.Models
         public int IdentityTokenLifetime { get; set; } = 300;
 
         /// <summary>
-        /// Signing algorithm for identity token. Will default to standard algorithm if not set
+        /// Signing algorithm for identity token. If empty, will use the server default signing algorithm.
         /// </summary>
         public ICollection<string> AllowedIdentityTokenSigningAlgorithms { get; set; } = new HashSet<string>();
 

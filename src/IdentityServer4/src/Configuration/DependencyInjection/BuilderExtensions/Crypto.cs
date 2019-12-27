@@ -45,7 +45,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new InvalidOperationException("Invalid curve for signing algorithm");
             }
 
-            builder.Services.AddSingleton<ISigningCredentialStore>(new DefaultSigningCredentialsStore(credential));
+            builder.Services.AddSingleton<ISigningCredentialStore>(new InMemorySigningCredentialsStore(credential));
 
             var keyInfo = new SecurityKeyInfo
             {
@@ -53,7 +53,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 SigningAlgorithm = credential.Algorithm
             };
 
-            builder.Services.AddSingleton<IValidationKeysStore>(new DefaultValidationKeysStore(new[] { keyInfo }));
+            builder.Services.AddSingleton<IValidationKeysStore>(new InMemoryValidationKeysStore(new[] { keyInfo }));
 
             return builder;
         }
@@ -205,7 +205,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IIdentityServerBuilder AddValidationKey(this IIdentityServerBuilder builder, params SecurityKeyInfo[] keys)
         {
-            builder.Services.AddSingleton<IValidationKeysStore>(new DefaultValidationKeysStore(keys));
+            builder.Services.AddSingleton<IValidationKeysStore>(new InMemoryValidationKeysStore(keys));
 
             return builder;
         }

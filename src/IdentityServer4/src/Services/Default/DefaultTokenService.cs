@@ -106,7 +106,8 @@ namespace IdentityServer4.Services
             Logger.LogTrace("Creating identity token");
             request.Validate();
 
-            var credential = await KeyMaterialService.GetSigningCredentialsAsync();
+            // todo: Dom, add a test for this. validate the at and c hashes are correct for the id_token when the client's alg doesn't match the server default.
+            var credential = await KeyMaterialService.GetSigningCredentialsAsync(request.ValidatedRequest.Client.AllowedIdentityTokenSigningAlgorithms);
             if (credential == null)
             {
                 throw new InvalidOperationException("No signing credential is configured.");
@@ -141,7 +142,6 @@ namespace IdentityServer4.Services
             // add s_hash claim
             if (request.StateHash.IsPresent())
             {
-                // todo: need constant
                 claims.Add(new Claim(JwtClaimTypes.StateHash, request.StateHash));
             }
 

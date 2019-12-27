@@ -2,13 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
-using FluentAssertions.Common;
-using IdentityServer4.Configuration;
-using IdentityServer4.Extensions;
-using IdentityServer4.Hosting;
 using IdentityServer4.Models;
 using Xunit;
-using static IdentityServer4.Constants;
 
 namespace IdentityServer.UnitTests.Extensions
 {
@@ -42,26 +37,33 @@ namespace IdentityServer.UnitTests.Extensions
                     new [] { "A", "B" })]
         [InlineData(new [] { "A", "B", "C" }, new [] { "A", "B", "C" }, 
                     new [] { "A", "B", "C" })]
-        
+
         [InlineData(new [] { "A", "B" }, new [] { "A", "D" }, 
                     new [] { "A" })]
         [InlineData(new [] { "A", "B", "C" }, new [] { "A", "B", "Z" }, 
                     new [] { "A", "B" })]
-        
+
+        [InlineData(new string[] { }, new [] { "B" },
+                    new string[] { "B" })]
+        [InlineData(new string[] { }, new [] { "C", "D" },
+                    new string[] { "C", "D" })]
+
         [InlineData(new [] { "A" }, new [] { "B" }, 
                     new string[] { })]
         [InlineData(new [] { "A", "B" }, new [] { "C", "D" }, 
                     new string[] { })]
-        public void Two_resources_with_allowed_algorithms_set_should_return_right_values(string[] resource1Algorithms, string[] resource2Algorithms, string[] expectedAlgorithms)
+        public void Two_resources_with_allowed_algorithms_set_should_return_right_values(
+            string[] resource1Algorithms, string[] resource2Algorithms, 
+            string[] expectedAlgorithms)
         {
             var resource1 = new ApiResource()
             {
-                AllowedSigningAlgorithms = resource1Algorithms
+                AllowedAccessTokenSigningAlgorithms = resource1Algorithms
             };
             
             var resource2 = new ApiResource
             {
-                AllowedSigningAlgorithms = resource2Algorithms
+                AllowedAccessTokenSigningAlgorithms = resource2Algorithms
             };
 
             if (expectedAlgorithms.Any())
@@ -90,28 +92,37 @@ namespace IdentityServer.UnitTests.Extensions
                     new [] { "A", "B" })]
         [InlineData(new [] { "A", "B", "X" }, new [] { "C", "D", "X" }, new [] { "E", "F", "X" },
                     new [] { "X" })]
-        
+
+        [InlineData(new[] { "A", "B" }, new[] { "A", "D" }, new string[] { },
+                    new[] { "A" })]
+        [InlineData(new[] { "A", "B" }, new[] { "A", "C", "B" }, new string[] { },
+                    new[] { "A", "B" })]
+        [InlineData(new[] { "A", "B" }, new string[] { }, new string[] { },
+                    new[] { "A", "B" })]
+
         [InlineData(new [] { "A" }, new [] { "B" }, new [] { "C" }, 
             new string[] { })]
         [InlineData(new [] { "A", "B" }, new [] { "C", "D" }, new [] { "X", "Y" }, 
             new string[] { })]
         [InlineData(new [] { "A", "B", "C" }, new [] { "C", "D", "E" }, new [] { "E", "F", "G" },
                     new string[] { })]
-        public void Three_resources_with_allowed_algorithms_set_should_return_right_values(string[] resource1Algorithms, string[] resource2Algorithms, string[] resource3Algorithms, string[] expectedAlgorithms)
+        public void Three_resources_with_allowed_algorithms_set_should_return_right_values(
+            string[] resource1Algorithms, string[] resource2Algorithms, string[] resource3Algorithms, 
+            string[] expectedAlgorithms)
         {
             var resource1 = new ApiResource()
             {
-                AllowedSigningAlgorithms = resource1Algorithms
+                AllowedAccessTokenSigningAlgorithms = resource1Algorithms
             };
             
             var resource2 = new ApiResource
             {
-                AllowedSigningAlgorithms = resource2Algorithms
+                AllowedAccessTokenSigningAlgorithms = resource2Algorithms
             };
             
             var resource3 = new ApiResource
             {
-                AllowedSigningAlgorithms = resource3Algorithms
+                AllowedAccessTokenSigningAlgorithms = resource3Algorithms
             };
 
             if (expectedAlgorithms.Any())

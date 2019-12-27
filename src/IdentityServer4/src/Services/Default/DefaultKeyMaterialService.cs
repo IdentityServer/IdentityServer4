@@ -27,7 +27,7 @@ namespace IdentityServer4.Services
         /// </summary>
         /// <param name="validationKeysStores">The validation keys stores.</param>
         /// <param name="signingCredentialStores">The signing credential store.</param>
-        public DefaultKeyMaterialService(IEnumerable<IValidationKeysStore> validationKeysStores, IEnumerable<ISigningCredentialStore> signingCredentialStores = null)
+        public DefaultKeyMaterialService(IEnumerable<IValidationKeysStore> validationKeysStores, IEnumerable<ISigningCredentialStore> signingCredentialStores)
         {
             _signingCredentialStores = signingCredentialStores;
             _validationKeysStores = validationKeysStores;
@@ -36,7 +36,7 @@ namespace IdentityServer4.Services
         /// <inheritdoc/>
         public async Task<SigningCredentials> GetSigningCredentialsAsync(IEnumerable<string> allowedAlgorithms = null)
         {
-            if (_signingCredentialStores != null)
+            if (_signingCredentialStores.Any())
             {
                 if (allowedAlgorithms.IsNullOrEmpty())
                 {
@@ -62,12 +62,9 @@ namespace IdentityServer4.Services
         {
             var credentials = new List<SigningCredentials>();
 
-            if (_signingCredentialStores != null)
+            foreach (var store in _signingCredentialStores)
             {
-                foreach (var store in _signingCredentialStores)
-                {
-                    credentials.Add(await store.GetSigningCredentialsAsync());
-                }
+                credentials.Add(await store.GetSigningCredentialsAsync());
             }
 
             return credentials;

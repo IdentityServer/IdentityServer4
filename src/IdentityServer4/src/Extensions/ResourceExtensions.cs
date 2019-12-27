@@ -104,38 +104,33 @@ namespace IdentityServer4.Models
             {
                 return new List<string>();
             }
-            
+
             // only one API resource request, forward the allowed signing algorithms (if any)
-            if (apis.Count() == 1)
+            if (apis.Count == 1)
             {
-                return apis.First().AllowedSigningAlgorithms;
+                return apis.First().AllowedAccessTokenSigningAlgorithms;
             }
-            else
+            
+            var allAlgorithms = apis.Where(r => r.AllowedAccessTokenSigningAlgorithms.Any()).Select(r => r.AllowedAccessTokenSigningAlgorithms).ToList();
+
+            // resources need to agree on allowed signing algorithms
+            if (allAlgorithms.Any())
             {
-                var allAlgorithms = apis.Where(r => r.AllowedSigningAlgorithms.Any()).Select(r => r.AllowedSigningAlgorithms).ToList();
+                var allowedAlgorithms = IntersectLists(allAlgorithms);
 
-                // resources need to agree on allowed signing algorithms
-                if (allAlgorithms.Any())
+                if (allowedAlgorithms.Any())
                 {
-                    var allowedAlgorithms = IntersectLists(allAlgorithms);
-
-                    if (allowedAlgorithms.Any())
-                    {
-                        return allowedAlgorithms.ToHashSet();
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException("Signing algorithms requirements for requested resources are not compatible.");
-                    }
+                    return allowedAlgorithms.ToHashSet();
                 }
                 else
                 {
-
-                    return new List<string>();
+                    throw new InvalidOperationException("Signing algorithms requirements for requested resources are not compatible.");
                 }
             }
+
+            return new List<string>();
         }
-        
+
         private static IEnumerable<T> IntersectLists<T>(IEnumerable<IEnumerable<T>> lists)
         {
             return lists.Aggregate((l1, l2) => l1.Intersect(l2));

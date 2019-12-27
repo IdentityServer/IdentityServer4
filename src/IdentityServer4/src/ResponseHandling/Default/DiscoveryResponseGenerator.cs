@@ -303,7 +303,7 @@ namespace IdentityServer4.ResponseHandling
             var signingCredentials = await Keys.GetAllSigningCredentialsAsync();
             if (signingCredentials.Any())
             {
-                entries.Add(OidcConstants.Discovery.IdTokenSigningAlgorithmsSupported, new[] { signingCredentials.Select(c => c.Algorithm) });
+                entries.Add(OidcConstants.Discovery.IdTokenSigningAlgorithmsSupported, new[] { signingCredentials.Select(c => c.Algorithm).Distinct() });
             }
 
             entries.Add(OidcConstants.Discovery.SubjectTypesSupported, new[] { "public" });
