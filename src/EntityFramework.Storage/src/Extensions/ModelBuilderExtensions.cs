@@ -214,7 +214,7 @@ namespace IdentityServer4.EntityFramework.Extensions
                 apiResource.Property(x => x.Name).HasMaxLength(200).IsRequired();
                 apiResource.Property(x => x.DisplayName).HasMaxLength(200);
                 apiResource.Property(x => x.Description).HasMaxLength(1000);
-                apiResource.Property(x => x.AllowedSigningAlgorithms).HasMaxLength(100);
+                apiResource.Property(x => x.AllowedAccessTokenSigningAlgorithms).HasMaxLength(100);
 
                 apiResource.HasIndex(x => x.Name).IsUnique();
 

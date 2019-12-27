@@ -10,14 +10,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace SqlServer.Migrations.ConfigurationDb
 {
     [DbContext(typeof(ConfigurationDbContext))]
-    [Migration("20190906144232_Config")]
+    [Migration("20191227171318_Config")]
     partial class Config
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.0.0-preview9.19423.6")
+                .HasAnnotation("ProductVersion", "3.1.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -27,6 +27,10 @@ namespace SqlServer.Migrations.ConfigurationDb
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("AllowedAccessTokenSigningAlgorithms")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
@@ -241,6 +245,10 @@ namespace SqlServer.Migrations.ConfigurationDb
 
                     b.Property<bool>("AllowRememberConsent")
                         .HasColumnType("bit");
+
+                    b.Property<string>("AllowedIdentityTokenSigningAlgorithms")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
 
                     b.Property<bool>("AlwaysIncludeUserClaimsInIdToken")
                         .HasColumnType("bit");
