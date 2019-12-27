@@ -44,7 +44,7 @@ namespace build
                 
                 Target(Pack, DependsOn(Build), () => 
                 {
-                    var project = Directory.GetFiles("./src", "*.csproj", SearchOption.TopDirectoryOnly).First();
+                    var project = Directory.GetFiles("./src", "*.csproj", SearchOption.TopDirectoryOnly).OrderBy(_ => _).First();
 
                     Run("dotnet", $"pack {project} -c Release -o ./{ArtifactsDir} --no-build", echoPrefix: Prefix);
                     
@@ -53,6 +53,15 @@ namespace build
                         Sign("*.nupkg", $"./{ArtifactsDir}");
                     }
 
+                    CopyArtifacts();
+                });
+
+                Target("quick", () => 
+                {
+                    var project = Directory.GetFiles("./src", "*.csproj", SearchOption.TopDirectoryOnly).OrderBy(_ => _).First();
+
+                    Run("dotnet", $"pack {project} -c Release -o ./{ArtifactsDir}", echoPrefix: Prefix);
+                    
                     CopyArtifacts();
                 });
 

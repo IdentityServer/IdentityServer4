@@ -16,6 +16,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Host.Extensions;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace Host
 {
@@ -33,6 +35,9 @@ namespace Host
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            
+            // cookie policy to deal with temporary browser incompatibilities
+            services.AddSameSiteCookiePolicy();
 
             // configures IIS out-of-proc settings (see https://github.com/aspnet/AspNetCore/issues/14882)
             services.Configure<IISOptions>(iis =>
@@ -98,6 +103,13 @@ namespace Host
 
         public void Configure(IApplicationBuilder app)
         {
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
+            
+            app.UseCookiePolicy();
+            
             app.UseSerilogRequestLogging();
 
             app.UseDeveloperExceptionPage();
@@ -215,20 +227,6 @@ namespace Host
                         RoleClaimType = "role"
                     };
                 });
-                //.AddWsFederation("adfs-wsfed", "ADFS with WS-Fed", options =>
-                //{
-                //    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-                //    options.SignOutScheme = IdentityServerConstants.SignoutScheme;
-
-                //    options.MetadataAddress = "https://adfs4.local/federationmetadata/2007-06/federationmetadata.xml";
-                //    options.Wtrealm = "urn:test";
-
-                //    options.TokenValidationParameters = new TokenValidationParameters
-                //    {
-                //        NameClaimType = "name",
-                //        RoleClaimType = "role"
-                //    };
-                //});
 
             return services;
         }

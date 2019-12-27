@@ -74,11 +74,11 @@ namespace IdentityServer4.EntityFramework
             
             while (found >= _options.TokenCleanupBatchSize)
             {
-                var expiredGrants = _persistedGrantDbContext.PersistedGrants
+                var expiredGrants = await _persistedGrantDbContext.PersistedGrants
                     .Where(x => x.Expiration < DateTime.UtcNow)
                     .OrderBy(x => x.Key)
                     .Take(_options.TokenCleanupBatchSize)
-                    .ToArray();
+                    .ToArrayAsync();
 
                 found = expiredGrants.Length;
                 _logger.LogInformation("Removing {grantCount} grants", found);
@@ -88,7 +88,7 @@ namespace IdentityServer4.EntityFramework
                     _persistedGrantDbContext.PersistedGrants.RemoveRange(expiredGrants);
                     try
                     {
-                        _persistedGrantDbContext.SaveChanges();
+                        await _persistedGrantDbContext.SaveChangesAsync();
 
                         if (_operationalStoreNotification != null)
                         {
@@ -109,17 +109,17 @@ namespace IdentityServer4.EntityFramework
         /// Removes the stale device codes.
         /// </summary>
         /// <returns></returns>
-        protected virtual Task RemoveDeviceCodesAsync()
+        protected virtual async Task RemoveDeviceCodesAsync()
         {
             var found = Int32.MaxValue;
 
             while (found >= _options.TokenCleanupBatchSize)
             {
-                var expiredCodes = _persistedGrantDbContext.DeviceFlowCodes
+                var expiredCodes = await _persistedGrantDbContext.DeviceFlowCodes
                     .Where(x => x.Expiration < DateTime.UtcNow)
                     .OrderBy(x => x.DeviceCode)
                     .Take(_options.TokenCleanupBatchSize)
-                    .ToArray();
+                    .ToArrayAsync();
 
                 found = expiredCodes.Length;
                 _logger.LogInformation("Removing {deviceCodeCount} device flow codes", found);
@@ -129,7 +129,7 @@ namespace IdentityServer4.EntityFramework
                     _persistedGrantDbContext.DeviceFlowCodes.RemoveRange(expiredCodes);
                     try
                     {
-                        _persistedGrantDbContext.SaveChanges();
+                        await _persistedGrantDbContext.SaveChangesAsync();
                     }
                     catch (DbUpdateConcurrencyException ex)
                     {
@@ -139,8 +139,6 @@ namespace IdentityServer4.EntityFramework
                     }
                 }
             }
-
-            return Task.CompletedTask;
         }
     }
 }

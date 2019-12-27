@@ -3,18 +3,19 @@
 
 
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityModel.Client;
-using IdentityServer4.IntegrationTests.Common;
-using Newtonsoft.Json.Linq;
-using System.Threading.Tasks;
+using IdentityServer.IntegrationTests.Common;
+using IdentityServer4;
 using IdentityServer4.Configuration;
 using IdentityServer4.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
-namespace IdentityServer4.IntegrationTests.Endpoints.Discovery
+namespace IdentityServer.IntegrationTests.Endpoints.Discovery
 {
     public class DiscoveryEndpointTests
     {
@@ -34,6 +35,29 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Discovery
             var issuer = data["issuer"].ToString();
 
             issuer.Should().Be("https://server/root");
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task when_lower_case_issuer_option_disabled_issuer_uri_should_be_preserved()
+        {
+            IdentityServerPipeline pipeline = new IdentityServerPipeline();
+            pipeline.Initialize("/ROOT");
+
+            pipeline.Options.LowerCaseIssuerUri = false;
+            
+            var result = await pipeline.BackChannelClient.GetAsync("HTTPS://SERVER/ROOT/.WELL-KNOWN/OPENID-CONFIGURATION");
+
+            var json = await result.Content.ReadAsStringAsync();
+            var data = JObject.Parse(json);
+            var issuer = data["issuer"].ToString();
+
+            issuer.Should().Be("https://server/ROOT");
+        }
+
+        private void Pipeline_OnPostConfigureServices(IServiceCollection obj)
+        {
+            throw new System.NotImplementedException();
         }
 
         [Fact]
