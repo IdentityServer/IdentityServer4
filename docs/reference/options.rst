@@ -6,11 +6,16 @@ IdentityServer Options
     Set the issuer name that will appear in the discovery document and the issued JWT tokens.
     It is recommended to not set this property, which infers the issuer name from the host name that is used by the clients.
 
+* ``LowerCaseIssuerUri``
+    Set to ``false`` to preserve the original casing of the IssuerUri. Defaults to ``true``.
+
 * ``PublicOrigin``
     The origin of this server instance, e.g. https://myorigin.com. If not set, the origin name is inferred from the request.
 
 * ``AccessTokenJwtType``
     Specifies the value used for the JWT typ header for access tokens (defaults to ``at+jwt``).
+* ``EmitLegacyResourceAudienceClaim``
+    Emits an ``aud`` claim with the format issuer/resources. That's needed for some older access token validation plumbing. Defaults to false.
 
 Endpoints
 ^^^^^^^^^

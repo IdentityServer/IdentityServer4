@@ -19,6 +19,11 @@ namespace IdentityServer4.Configuration
         public string IssuerUri { get; set; }
 
         /// <summary>
+        /// Set to false to preserve the original casing of the IssuerUri. Defaults to true.
+        /// </summary>
+        public bool LowerCaseIssuerUri { get; set; } = true;
+
+        /// <summary>
         /// Gets or sets the origin of this server instance, e.g. https://myorigin.com.
         /// If not set, the origin name is inferred from the request
         /// Note: Do not set a URL or include a path.
@@ -35,6 +40,11 @@ namespace IdentityServer4.Configuration
         /// The JWT typ value.
         /// </value>
         public string AccessTokenJwtType { get; set; } = "at+jwt";
+
+        /// <summary>
+        /// Emits an aud claim with the format issuer/resources. That's needed for some older access token validation plumbing. Defaults to false.
+        /// </summary>
+        public bool EmitLegacyResourceAudienceClaim { get; set; } = false;
 
         /// <summary>
         /// Gets or sets the endpoint configuration.

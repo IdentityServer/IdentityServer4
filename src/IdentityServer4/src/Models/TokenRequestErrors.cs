@@ -37,6 +37,11 @@ namespace IdentityServer4.Models
         /// <summary>
         /// invalid_scope
         /// </summary>
-        InvalidScope
+        InvalidScope,
+
+        /// <summary>
+        /// invalid_target
+        /// </summary>
+        InvalidTarget
     }
 }

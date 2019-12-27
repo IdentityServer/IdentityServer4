@@ -136,7 +136,7 @@ namespace Host.Configuration
                     AllowedGrantTypes = GrantTypes.Code,
                     RequirePkce = true,
 
-                    RedirectUris = { "http://127.0.0.1", "sample-windows-client://callback" },
+                    RedirectUris = { "http://127.0.0.1" },
 
                     AllowOfflineAccess = true,
 
@@ -148,6 +148,33 @@ namespace Host.Configuration
                         "api1", "api2.read_only"
                     }
                 },
+                ///////////////////////////////////////////
+                // WinConsole with PKCE Sample
+                //////////////////////////////////////////
+                new Client
+                {
+                    ClientId = "winconsole",
+                    ClientName = "Windows Console with PKCE Sample",
+                    RequireClientSecret = false,
+
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RequirePkce = true,
+
+                    RedirectUris = { "sample-windows-client://callback" },
+                    RequireConsent = false,
+
+                    AllowOfflineAccess = true,
+                    AllowedIdentityTokenSigningAlgorithms = { "ES256" },
+
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
+                        "api1", "api2.read_only"
+                    }
+                },
+
 
                 ///////////////////////////////////////////
                 // Introspection Client Sample

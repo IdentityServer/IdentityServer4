@@ -15,7 +15,7 @@ namespace IdentityServer4.Models
     /// <summary>
     /// Models an OpenID Connect or OAuth2 client
     /// </summary>
-    [DebuggerDisplay("{DebuggerDisplay,nq}")]
+    [DebuggerDisplay("{" + nameof(DebuggerDisplay) + ",nq}")]
     public class Client
     {
         // setting grant types should be atomic
@@ -72,9 +72,9 @@ namespace IdentityServer4.Models
         public string LogoUri { get; set; }
 
         /// <summary>
-        /// Specifies whether a consent screen is required (defaults to <c>true</c>)
+        /// Specifies whether a consent screen is required (defaults to <c>false</c>)
         /// </summary>
-        public bool RequireConsent { get; set; } = true;
+        public bool RequireConsent { get; set; } = false;
 
         /// <summary>
         /// Specifies whether user can choose to store consent decisions (defaults to <c>true</c>)
@@ -95,9 +95,9 @@ namespace IdentityServer4.Models
         }
 
         /// <summary>
-        /// Specifies whether a proof key is required for authorization code based token requests (defaults to <c>false</c>).
+        /// Specifies whether a proof key is required for authorization code based token requests (defaults to <c>true</c>).
         /// </summary>
-        public bool RequirePkce { get; set; } = false;
+        public bool RequirePkce { get; set; } = true;
 
         /// <summary>
         /// Specifies whether a proof key can be sent using plain method (not recommended and defaults to <c>false</c>.)
@@ -163,6 +163,11 @@ namespace IdentityServer4.Models
         /// Lifetime of identity token in seconds (defaults to 300 seconds / 5 minutes)
         /// </summary>
         public int IdentityTokenLifetime { get; set; } = 300;
+
+        /// <summary>
+        /// Signing algorithm for identity token. If empty, will use the server default signing algorithm.
+        /// </summary>
+        public ICollection<string> AllowedIdentityTokenSigningAlgorithms { get; set; } = new HashSet<string>();
 
         /// <summary>
         /// Lifetime of access token in seconds (defaults to 3600 seconds / 1 hour)
@@ -242,7 +247,7 @@ namespace IdentityServer4.Models
         /// <value>
         /// The claims.
         /// </value>
-        public ICollection<Claim> Claims { get; set; } = new HashSet<Claim>(new ClaimComparer());
+        public ICollection<ClientClaim> Claims { get; set; } = new HashSet<ClientClaim>();
 
         /// <summary>
         /// Gets or sets a value indicating whether client claims should be always included in the access tokens - or only for client credentials flow.

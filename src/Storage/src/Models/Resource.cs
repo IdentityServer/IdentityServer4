@@ -34,7 +34,7 @@ namespace IdentityServer4.Models
         /// Description of the resource.
         /// </summary>
         public string Description { get; set; }
-
+        
         /// <summary>
         /// List of accociated user claims that should be included when this resource is requested.
         /// </summary>

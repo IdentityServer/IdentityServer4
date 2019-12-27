@@ -299,12 +299,11 @@ namespace IdentityServer4.ResponseHandling
 
                 entries.Add(OidcConstants.Discovery.TokenEndpointAuthenticationMethodsSupported, types);
             }
-            
-            var signingCredentials = await Keys.GetSigningCredentialsAsync();
-            if (signingCredentials != null)
+
+            var signingCredentials = await Keys.GetAllSigningCredentialsAsync();
+            if (signingCredentials.Any())
             {
-                var algorithm = signingCredentials.Algorithm;
-                entries.Add(OidcConstants.Discovery.IdTokenSigningAlgorithmsSupported, new[] { algorithm });
+                entries.Add(OidcConstants.Discovery.IdTokenSigningAlgorithmsSupported, new[] { signingCredentials.Select(c => c.Algorithm).Distinct() });
             }
 
             entries.Add(OidcConstants.Discovery.SubjectTypesSupported, new[] { "public" });

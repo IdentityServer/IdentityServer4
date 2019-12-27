@@ -2,20 +2,21 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using FluentAssertions;
-using IdentityServer4.Configuration;
-using IdentityServer4.Extensions;
-using IdentityServer4.Models;
-using IdentityServer4.Stores;
-using IdentityServer4.UnitTests.Common;
-using IdentityServer4.Validation;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using FluentAssertions;
+using IdentityServer.UnitTests.Common;
+using IdentityServer4;
+using IdentityServer4.Configuration;
+using IdentityServer4.Extensions;
+using IdentityServer4.Models;
+using IdentityServer4.Stores;
+using IdentityServer4.Validation;
 using Xunit;
 
-namespace IdentityServer4.UnitTests.Validation.EndSessionRequestValidation
+namespace IdentityServer.UnitTests.Validation.EndSessionRequestValidation
 {
     public class EndSessionRequestValidatorTests
     {
@@ -128,7 +129,7 @@ namespace IdentityServer4.UnitTests.Validation.EndSessionRequestValidation
         }
 
         [Fact]
-        public async Task post_logout_uri_fails_validation_should_return_error()
+        public async Task post_logout_uri_fails_validation_should_not_honor_logout_uri()
         {
             _stubTokenValidator.IdentityTokenValidationResult = new TokenValidationResult()
             {
@@ -145,7 +146,13 @@ namespace IdentityServer4.UnitTests.Validation.EndSessionRequestValidation
             parameters.Add("state", "foo");
 
             var result = await _subject.ValidateAsync(parameters, _user);
-            result.IsError.Should().BeTrue();
+            result.IsError.Should().BeFalse();
+
+            result.ValidatedRequest.Client.ClientId.Should().Be("client");
+            result.ValidatedRequest.Subject.GetSubjectId().Should().Be(_user.GetSubjectId());
+            
+            result.ValidatedRequest.State.Should().BeNull();
+            result.ValidatedRequest.PostLogOutUri.Should().BeNull();
         }
 
         [Fact]

@@ -2,13 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using FluentAssertions;
-using IdentityModel;
-using IdentityModel.Client;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -17,9 +10,17 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
+using IdentityModel;
+using IdentityModel.Client;
+using IdentityServer.IntegrationTests.Clients.Setup;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
-namespace IdentityServer4.IntegrationTests.Clients
+namespace IdentityServer.IntegrationTests.Clients
 {
     public class ExtensionGrantClient
     {
@@ -73,6 +74,123 @@ namespace IdentityServer4.IntegrationTests.Clients
             payload.Should().Contain("client_id", "client.custom");
             payload.Should().Contain("sub", "818727");
             payload.Should().Contain("idp", "local");
+
+            payload["aud"].Should().Be("api");
+
+            var scopes = payload["scope"] as JArray;
+            scopes.First().ToString().Should().Be("api1");
+
+            var amr = payload["amr"] as JArray;
+            amr.Count().Should().Be(1);
+            amr.First().ToString().Should().Be("custom");
+        }
+
+        [Fact]
+        public async Task Valid_client_with_extra_claim_should_succeed()
+        {
+            var response = await _client.RequestTokenAsync(new TokenRequest
+            {
+                Address = TokenEndpoint,
+                GrantType = "custom",
+
+                ClientId = "client.custom",
+                ClientSecret = "secret",
+
+                Parameters =
+                {
+                    { "custom_credential", "custom credential"},
+                    { "extra_claim", "extra_value" },
+                    { "scope", "api1" }
+                }
+            });
+
+            response.IsError.Should().BeFalse();
+            response.HttpStatusCode.Should().Be(HttpStatusCode.OK);
+            response.ExpiresIn.Should().Be(3600);
+            response.TokenType.Should().Be("Bearer");
+            response.IdentityToken.Should().BeNull();
+            response.RefreshToken.Should().BeNull();
+
+            var payload = GetPayload(response);
+
+            var unixNow = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            var exp = Int64.Parse(payload["exp"].ToString());
+            exp.Should().BeLessThan(unixNow + 3605);
+            exp.Should().BeGreaterThan(unixNow + 3595);
+
+            payload.Count().Should().Be(11);
+            payload.Should().Contain("iss", "https://idsvr4");
+            payload.Should().Contain("client_id", "client.custom");
+            payload.Should().Contain("sub", "818727");
+            payload.Should().Contain("idp", "local");
+            payload.Should().Contain("extra_claim", "extra_value");
+
+            payload["aud"].Should().Be("api");
+
+            var scopes = payload["scope"] as JArray;
+            scopes.First().ToString().Should().Be("api1");
+
+            var amr = payload["amr"] as JArray;
+            amr.Count().Should().Be(1);
+            amr.First().ToString().Should().Be("custom");
+        }
+
+        [Fact]
+        public async Task Valid_client_with_refreshed_extra_claim_should_succeed()
+        {
+            var response = await _client.RequestTokenAsync(new TokenRequest
+            {
+                Address = TokenEndpoint,
+                GrantType = "custom",
+
+                ClientId = "client.custom",
+                ClientSecret = "secret",
+
+                Parameters =
+                {
+                    { "custom_credential", "custom credential"},
+                    { "extra_claim", "extra_value" },
+                    { "scope", "api1 offline_access" }
+                }
+            });
+
+            response.IsError.Should().BeFalse();
+            response.HttpStatusCode.Should().Be(HttpStatusCode.OK);
+            response.ExpiresIn.Should().Be(3600);
+            response.TokenType.Should().Be("Bearer");
+            response.IdentityToken.Should().BeNull();
+            response.RefreshToken.Should().NotBeNull();
+
+            var refreshResponse = await _client.RequestRefreshTokenAsync(new RefreshTokenRequest
+            {
+                Address = TokenEndpoint,
+                
+                ClientId = "client.custom",
+                ClientSecret = "secret",
+
+                RefreshToken = response.RefreshToken
+            });
+
+            refreshResponse.IsError.Should().BeFalse();
+            refreshResponse.HttpStatusCode.Should().Be(HttpStatusCode.OK);
+            refreshResponse.ExpiresIn.Should().Be(3600);
+            refreshResponse.TokenType.Should().Be("Bearer");
+            refreshResponse.IdentityToken.Should().BeNull();
+            refreshResponse.RefreshToken.Should().NotBeNull();
+
+            var payload = GetPayload(refreshResponse);
+
+            var unixNow = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            var exp = Int64.Parse(payload["exp"].ToString());
+            exp.Should().BeLessThan(unixNow + 3605);
+            exp.Should().BeGreaterThan(unixNow + 3595);
+
+            payload.Count().Should().Be(11);
+            payload.Should().Contain("iss", "https://idsvr4");
+            payload.Should().Contain("client_id", "client.custom");
+            payload.Should().Contain("sub", "818727");
+            payload.Should().Contain("idp", "local");
+            payload.Should().Contain("extra_claim", "extra_value");
 
             payload["aud"].Should().Be("api");
 
@@ -143,7 +261,7 @@ namespace IdentityServer4.IntegrationTests.Clients
             response.ExpiresIn.Should().Be(3600);
             response.TokenType.Should().Be("Bearer");
             response.IdentityToken.Should().BeNull();
-            response.RefreshToken.Should().BeNull();
+            response.RefreshToken.Should().NotBeNull();
 
             var payload = GetPayload(response);
 
@@ -160,9 +278,10 @@ namespace IdentityServer4.IntegrationTests.Clients
             amr.First().ToString().Should().Be("custom");
 
             var scopes = payload["scope"] as JArray;
-            scopes.Count().Should().Be(2);
+            scopes.Count().Should().Be(3);
             scopes.First().ToString().Should().Be("api1");
             scopes.Skip(1).First().ToString().Should().Be("api2");
+            scopes.Skip(2).First().ToString().Should().Be("offline_access");
         }
 
         [Fact]

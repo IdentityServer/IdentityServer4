@@ -49,25 +49,30 @@ namespace IdentityServer4.EntityFramework.Stores
         /// <returns>
         /// The client
         /// </returns>
-        public virtual Task<Client> FindClientByIdAsync(string clientId)
+        public virtual async Task<Client> FindClientByIdAsync(string clientId)
         {
-            var client = Context.Clients
-                .Include(x => x.AllowedGrantTypes)
-                .Include(x => x.RedirectUris)
-                .Include(x => x.PostLogoutRedirectUris)
-                .Include(x => x.AllowedScopes)
-                .Include(x => x.ClientSecrets)
-                .Include(x => x.Claims)
-                .Include(x => x.IdentityProviderRestrictions)
-                .Include(x => x.AllowedCorsOrigins)
-                .Include(x => x.Properties)
-                .AsNoTracking()
-                .FirstOrDefault(x => x.ClientId == clientId);
-            var model = client?.ToModel();
+            IQueryable<Entities.Client> baseQuery = Context.Clients
+                .Where(x => x.ClientId == clientId)
+                .Take(1);
+
+            var client = await baseQuery.FirstOrDefaultAsync();
+            if (client == null) return null;
+
+            await baseQuery.Include(x => x.AllowedCorsOrigins).SelectMany(c => c.AllowedCorsOrigins).LoadAsync();
+            await baseQuery.Include(x => x.AllowedGrantTypes).SelectMany(c => c.AllowedGrantTypes).LoadAsync();
+            await baseQuery.Include(x => x.AllowedScopes).SelectMany(c => c.AllowedScopes).LoadAsync();
+            await baseQuery.Include(x => x.Claims).SelectMany(c => c.Claims).LoadAsync();
+            await baseQuery.Include(x => x.ClientSecrets).SelectMany(c => c.ClientSecrets).LoadAsync();
+            await baseQuery.Include(x => x.IdentityProviderRestrictions).SelectMany(c => c.IdentityProviderRestrictions).LoadAsync();
+            await baseQuery.Include(x => x.PostLogoutRedirectUris).SelectMany(c => c.PostLogoutRedirectUris).LoadAsync();
+            await baseQuery.Include(x => x.Properties).SelectMany(c => c.Properties).LoadAsync();
+            await baseQuery.Include(x => x.RedirectUris).SelectMany(c => c.RedirectUris).LoadAsync();
+
+            var model = client.ToModel();
 
             Logger.LogDebug("{clientId} found in database: {clientIdFound}", clientId, model != null);
 
-            return Task.FromResult(model);
+            return model;
         }
     }
 }
