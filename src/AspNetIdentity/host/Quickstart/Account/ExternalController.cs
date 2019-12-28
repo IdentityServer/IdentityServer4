@@ -119,8 +119,8 @@ namespace IdentityServer4.Quickstart.UI
             var additionalLocalClaims = new List<Claim>();
             var localSignInProps = new AuthenticationProperties();
             ProcessLoginCallbackForOidc(result, additionalLocalClaims, localSignInProps);
-            ProcessLoginCallbackForWsFed(result, additionalLocalClaims, localSignInProps);
-            ProcessLoginCallbackForSaml2p(result, additionalLocalClaims, localSignInProps);
+            //ProcessLoginCallbackForWsFed(result, additionalLocalClaims, localSignInProps);
+            //ProcessLoginCallbackForSaml2p(result, additionalLocalClaims, localSignInProps);
 
             // issue authentication cookie for user
             // we must issue the cookie maually, and can't use the SignInManager because
@@ -154,7 +154,7 @@ namespace IdentityServer4.Quickstart.UI
                 {
                     // if the client is PKCE then we assume it's native, so this change in how to
                     // return the response is for better UX for the end user.
-                    return View("Redirect", new RedirectViewModel { RedirectUrl = returnUrl });
+                    return this.LoadingPage("Redirect", returnUrl);
                 }
             }
 
@@ -181,7 +181,7 @@ namespace IdentityServer4.Quickstart.UI
                 };
 
                 var id = new ClaimsIdentity(AccountOptions.WindowsAuthenticationSchemeName);
-                id.AddClaim(new Claim(JwtClaimTypes.Subject, wp.Identity.Name));
+                id.AddClaim(new Claim(JwtClaimTypes.Subject, wp.FindFirst(ClaimTypes.PrimarySid).Value));
                 id.AddClaim(new Claim(JwtClaimTypes.Name, wp.Identity.Name));
 
                 // add the groups as claims -- be careful if the number of groups is too large
@@ -311,12 +311,12 @@ namespace IdentityServer4.Quickstart.UI
             }
         }
 
-        private void ProcessLoginCallbackForWsFed(AuthenticateResult externalResult, List<Claim> localClaims, AuthenticationProperties localSignInProps)
-        {
-        }
+        //private void ProcessLoginCallbackForWsFed(AuthenticateResult externalResult, List<Claim> localClaims, AuthenticationProperties localSignInProps)
+        //{
+        //}
 
-        private void ProcessLoginCallbackForSaml2p(AuthenticateResult externalResult, List<Claim> localClaims, AuthenticationProperties localSignInProps)
-        {
-        }
+        //private void ProcessLoginCallbackForSaml2p(AuthenticateResult externalResult, List<Claim> localClaims, AuthenticationProperties localSignInProps)
+        //{
+        //}
     }
 }
