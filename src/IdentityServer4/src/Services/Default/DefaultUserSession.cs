@@ -77,7 +77,6 @@ namespace IdentityServer4.Services
         /// Initializes a new instance of the <see cref="DefaultUserSession"/> class.
         /// </summary>
         /// <param name="httpContextAccessor">The HTTP context accessor.</param>
-        /// <param name="schemes">The schemes.</param>
         /// <param name="handlers">The handlers.</param>
         /// <param name="options">The options.</param>
         /// <param name="clock">The clock.</param>
