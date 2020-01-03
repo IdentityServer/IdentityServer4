@@ -1,4 +1,4 @@
-Welcome to IdentityServer4 (ASP.NET Core 3.x)
+Welcome to IdentityServer4 (latest)
 =============================================
 
 .. image:: images/logo.png
