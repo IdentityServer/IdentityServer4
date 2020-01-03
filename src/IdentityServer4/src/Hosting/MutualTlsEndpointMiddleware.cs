@@ -1,3 +1,5 @@
+using System;
+using System.ComponentModel.Design;
 using System.Threading.Tasks;
 using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
@@ -8,56 +10,121 @@ using Microsoft.Extensions.Logging;
 namespace IdentityServer4.Hosting
 {
     /// <summary>
-    /// Middleware for re-writing the MTLS enabled endpoints to the standard protocol endpoints
+    ///     Middleware for re-writing the MTLS enabled endpoints to the standard protocol endpoints
     /// </summary>
-    public class MutualTlsTokenEndpointMiddleware
+    public class MutualTlsEndpointMiddleware
     {
+        private readonly ILogger<MutualTlsEndpointMiddleware> _logger;
         private readonly RequestDelegate _next;
         private readonly IdentityServerOptions _options;
-        private readonly ILogger<MutualTlsTokenEndpointMiddleware> _logger;
 
         /// <summary>
-        /// ctor
+        ///     ctor
         /// </summary>
         /// <param name="next"></param>
         /// <param name="options"></param>
         /// <param name="logger"></param>
-        public MutualTlsTokenEndpointMiddleware(RequestDelegate next, IdentityServerOptions options, ILogger<MutualTlsTokenEndpointMiddleware> logger)
+        public MutualTlsEndpointMiddleware(RequestDelegate next, IdentityServerOptions options,
+            ILogger<MutualTlsEndpointMiddleware> logger)
         {
             _next = next;
             _options = options;
             _logger = logger;
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public async Task Invoke(HttpContext context, IAuthenticationSchemeProvider schemes)
         {
-            if (_options.MutualTls.Enabled &&
-                context.Request.Path.StartsWithSegments(Constants.ProtocolRoutePaths.MtlsPathPrefix.EnsureLeadingSlash(), out var subPath))
+            if (_options.MutualTls.Enabled)
             {
-                _logger.LogTrace("MTLS endpoint requested.");
-
-                var x509AuthResult = await context.AuthenticateAsync(_options.MutualTls.ClientCertificateAuthenticationScheme);
-                if (!x509AuthResult.Succeeded)
+                bool isMtlsRequest = false;
+             
+                // path based MTLS
+                if (context.Request.Path.StartsWithSegments(
+                    Constants.ProtocolRoutePaths.MtlsPathPrefix.EnsureLeadingSlash(), out var subPath))
                 {
-                    _logger.LogDebug("MTLS authentication failed, error: {error}.", x509AuthResult.Failure?.Message);
-                    await context.ForbidAsync(_options.MutualTls.ClientCertificateAuthenticationScheme);
-                    return;
+                    var result = await TriggerCertificateAuthentication(context);
+
+                    if (result.Succeeded)
+                    {
+                        isMtlsRequest = true;
+                        
+                        var path = Constants.ProtocolRoutePaths.ConnectPathPrefix +
+                                   subPath.ToString().EnsureLeadingSlash();
+                        path = path.EnsureLeadingSlash();
+
+                        _logger.LogDebug("Rewriting MTLS request from: {oldPath} to: {newPath}",
+                            context.Request.Path.ToString(), path);
+                        context.Request.Path = path;
+                    }
+                    else
+                    {
+                        return;
+                    }
                 }
-                else
+                
+                // domain-based MTLS
+                if (_options.MutualTls.DomainName.IsPresent())
+                {
+                    // separate domain
+                    if (_options.MutualTls.DomainName.Contains("."))
+                    {
+                        if (context.Request.Host.Host.Equals(_options.MutualTls.DomainName,
+                            StringComparison.OrdinalIgnoreCase))
+                        {
+                            var result = await TriggerCertificateAuthentication(context);
+                            if (result.Succeeded)
+                            {
+                                isMtlsRequest = true;
+                            }
+                            else
+                            {
+                                return;
+                            }
+                        }
+                    }
+                    // sub-domain
+                    else
+                    {
+                        if (context.Request.Host.Host.StartsWith(_options.MutualTls.DomainName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            var result = await TriggerCertificateAuthentication(context);
+                            if (result.Succeeded)
+                            {
+                                isMtlsRequest = true;
+                            }
+                            else
+                            {
+                                return;
+                            }
+                        }
+                    }
+                }
+
+                if (isMtlsRequest)
                 {
                     // todo: decide how to get cert from auth response above. for now, just get from the connection
-                    context.Items[IdentityServerConstants.MutualTls.X509CertificateItemKey] = context.Connection.ClientCertificate;
-
-                    var path = Constants.ProtocolRoutePaths.ConnectPathPrefix + subPath.ToString().EnsureLeadingSlash();
-                    path = path.EnsureLeadingSlash();
-
-                    _logger.LogDebug("Rewriting MTLS request from: {oldPath} to: {newPath}", context.Request.Path.ToString(), path);
-                    context.Request.Path = path;
+                    context.Items[IdentityServerConstants.MutualTls.X509CertificateItemKey] =
+                        context.Connection.ClientCertificate;
                 }
             }
-
+            
             await _next(context);
+        }
+
+        private async Task<AuthenticateResult> TriggerCertificateAuthentication(HttpContext context)
+        {
+            var x509AuthResult =
+                await context.AuthenticateAsync(_options.MutualTls.ClientCertificateAuthenticationScheme);
+
+            if (!x509AuthResult.Succeeded)
+            {
+                _logger.LogDebug("MTLS authentication failed, error: {error}.",
+                    x509AuthResult.Failure?.Message);
+                await context.ForbidAsync(_options.MutualTls.ClientCertificateAuthenticationScheme);
+            }
+
+            return x509AuthResult;
         }
     }
 }
