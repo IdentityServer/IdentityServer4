@@ -35,8 +35,7 @@
       },
       "applicationUrl": "http://localhost:5000",
       "launchUrl": "https://identityserver.local"
-    }
-  },
+    },
     "IIS": {
       "commandName": "IIS",
       "launchBrowser": true,
