@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace ConsoleMTLSClient
@@ -25,7 +26,7 @@ namespace ConsoleMTLSClient
         static async Task<TokenResponse> RequestTokenAsync()
         {
             var handler = new HttpClientHandler();
-            var cert = X509.CurrentUser.My.Thumbprint.Find("bf6e2ca4f07994430b86bf9d48833a33f27a5c24").Single();
+            var cert = new X509Certificate("client.p12", "changeit");
             handler.ClientCertificates.Add(cert);
 
             var client = new HttpClient(handler);
