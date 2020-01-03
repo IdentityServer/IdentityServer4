@@ -193,7 +193,7 @@ namespace IdentityServer4.ResponseHandling
                             {
 
                                 var parts = baseUrl.Split("://");
-                                return $"{parts[0]}://{Options.MutualTls.DomainName}.{parts[1]}/{endpoint}";
+                                return $"{parts[0]}://{Options.MutualTls.DomainName}.{parts[1]}{endpoint}";
                             }
                         }
                     }
