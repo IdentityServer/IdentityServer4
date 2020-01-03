@@ -201,9 +201,6 @@ docs/_build/
 # Local .NET CLI tools
 tools/
 
-# Rider
-.idea
-
 # Visual Studio Code workspace options
 .vscode
 
