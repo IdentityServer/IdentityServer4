@@ -25,21 +25,24 @@ namespace ConsoleMTLSClient
 
         static async Task<TokenResponse> RequestTokenAsync()
         {
-            var handler = new HttpClientHandler();
-            var cert = new X509Certificate("client.p12", "changeit");
-            handler.ClientCertificates.Add(cert);
-
+            var handler = new SocketsHttpHandler();
+            
+            var cert = new X509Certificate2("client.p12", "changeit");
+            handler.SslOptions.ClientCertificates = new X509CertificateCollection { cert };
+            
             var client = new HttpClient(handler);
 
-            var disco = await client.GetDiscoveryDocumentAsync(Constants.Authority);
+            var disco = await client.GetDiscoveryDocumentAsync("https://identityserver.local");
             if (disco.IsError) throw new Exception(disco.Error);
 
+            var endpoint = disco
+                    .TryGetValue(OidcConstants.Discovery.MtlsEndpointAliases)
+                    .Value<string>(OidcConstants.Discovery.TokenEndpoint)
+                    .ToString();
+            
             var response = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
             {
-                Address = disco
-                            .TryGetValue(OidcConstants.Discovery.MtlsEndpointAliases)
-                            .Value<string>(OidcConstants.Discovery.TokenEndpoint)
-                            .ToString(),
+                Address = endpoint,
 
                 ClientId = "mtls",
                 Scope = "api1"
