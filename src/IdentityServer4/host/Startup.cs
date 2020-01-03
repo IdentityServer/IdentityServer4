@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System;
 using Host.Configuration;
 using IdentityModel;
 using IdentityServer4;
@@ -15,6 +16,7 @@ using Serilog;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using System.Threading.Tasks;
 using Host.Extensions;
 using Microsoft.AspNetCore.Authentication.Certificate;
@@ -63,6 +65,7 @@ namespace Host
 
                     options.MutualTls.Enabled = true;
                     options.MutualTls.ClientCertificateAuthenticationScheme = "x509";
+                    options.MutualTls.DomainName = "mtls";
                 })
                 .AddInMemoryClients(Clients.Get())
                 //.AddInMemoryClients(_config.GetSection("Clients"))
@@ -84,6 +87,7 @@ namespace Host
                     options.AllowedCertificateTypes = CertificateTypes.All;
                     options.RevocationMode = X509RevocationMode.NoCheck;
                 });
+            services.AddCertificateForwardingForNginx();
             
             services.AddLocalApiAuthentication(principal =>
             {
@@ -91,8 +95,6 @@ namespace Host
 
                 return Task.FromResult(principal);
             });
-
-            
         }
 
         public void Configure(IApplicationBuilder app)
@@ -101,7 +103,8 @@ namespace Host
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
-            
+
+            app.UseCertificateForwarding();
             app.UseCookiePolicy();
             
             app.UseSerilogRequestLogging();
@@ -223,6 +226,27 @@ namespace Host
                 });
 
             return services;
+        }
+
+        public static void AddCertificateForwardingForNginx(this IServiceCollection services)
+        {
+            services.AddCertificateForwarding(options =>
+            {
+                options.CertificateHeader = "X-SSL-CERT";
+
+                options.HeaderConverter = (headerValue) =>
+                {
+                    X509Certificate2 clientCertificate = null;
+
+                    if(!string.IsNullOrWhiteSpace(headerValue))
+                    {
+                        byte[] bytes = Encoding.UTF8.GetBytes(Uri.UnescapeDataString(headerValue));
+                        clientCertificate = new X509Certificate2(bytes);
+                    }
+
+                    return clientCertificate;
+                };
+            });
         }
     }
 }
