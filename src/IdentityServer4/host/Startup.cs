@@ -17,6 +17,7 @@ using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Host.Extensions;
+using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.AspNetCore.HttpOverrides;
 
 namespace Host
@@ -60,7 +61,7 @@ namespace Host
                     options.Events.RaiseErrorEvents = true;
                     options.Events.RaiseInformationEvents = true;
 
-                    options.MutualTls.Enabled = false;
+                    options.MutualTls.Enabled = true;
                     options.MutualTls.ClientCertificateAuthenticationScheme = "x509";
                 })
                 .AddInMemoryClients(Clients.Get())
@@ -76,6 +77,14 @@ namespace Host
                 .AddMutualTlsSecretValidators();
 
             services.AddExternalIdentityProviders();
+
+            services.AddAuthentication()
+                .AddCertificate("x509", options =>
+                {
+                    options.AllowedCertificateTypes = CertificateTypes.All;
+                    options.RevocationMode = X509RevocationMode.NoCheck;
+                });
+            
             services.AddLocalApiAuthentication(principal =>
             {
                 principal.Identities.First().AddClaim(new Claim("additional_claim", "additional_value"));
@@ -83,22 +92,7 @@ namespace Host
                 return Task.FromResult(principal);
             });
 
-            //services.AddAuthentication()
-            //   .AddCertificate("x509", options =>
-            //   {
-            //       options.RevocationMode = System.Security.Cryptography.X509Certificates.X509RevocationMode.NoCheck;
-                   
-            //       options.Events = new CertificateAuthenticationEvents
-            //       {
-            //           OnValidateCertificate = context =>
-            //           {
-            //               context.Principal = Principal.CreateFromCertificate(context.ClientCertificate, includeAllClaims:true);
-            //               context.Success();
-
-            //               return Task.CompletedTask;
-            //           }
-            //       };
-            //   });
+            
         }
 
         public void Configure(IApplicationBuilder app)
