@@ -223,3 +223,4 @@ identityserver4_log.txt
 tempkey.rsa
 samples/KeyManagement/FileSystem/dataprotectionkeys/
 samples/KeyManagement/FileSystem/signingkeys/
+workspace.xml
