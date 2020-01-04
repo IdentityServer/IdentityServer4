@@ -179,16 +179,19 @@ namespace IdentityServer4.ResponseHandling
                         
                     string ConstructMtlsEndpoint(string endpoint)
                     {
+                        // path based
                         if (Options.MutualTls.DomainName.IsMissing())
                         {
                             return baseUrl + endpoint.Replace("connect", "connect/mtls");
                         }
                         else
                         {
+                            // domain based
                             if (Options.MutualTls.DomainName.Contains("."))
                             {
                                 return $"https://{Options.MutualTls.DomainName}/{endpoint}";
                             }
+                            // sub-domain based
                             else
                             {
 
