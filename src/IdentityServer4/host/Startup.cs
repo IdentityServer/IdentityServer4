@@ -64,7 +64,6 @@ namespace Host
                     options.Events.RaiseInformationEvents = true;
 
                     options.MutualTls.Enabled = true;
-                    options.MutualTls.ClientCertificateAuthenticationScheme = "x509";
                     options.MutualTls.DomainName = "mtls";
                 })
                 .AddInMemoryClients(Clients.Get())
@@ -82,11 +81,12 @@ namespace Host
             services.AddExternalIdentityProviders();
 
             services.AddAuthentication()
-                .AddCertificate("x509", options =>
+                .AddCertificate(options =>
                 {
                     options.AllowedCertificateTypes = CertificateTypes.All;
                     options.RevocationMode = X509RevocationMode.NoCheck;
                 });
+            
             services.AddCertificateForwardingForNginx();
             
             services.AddLocalApiAuthentication(principal =>

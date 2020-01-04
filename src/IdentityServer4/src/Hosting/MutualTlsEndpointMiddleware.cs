@@ -37,8 +37,6 @@ namespace IdentityServer4.Hosting
         {
             if (_options.MutualTls.Enabled)
             {
-                bool isMtlsRequest = false;
-                
                 // domain-based MTLS
                 if (_options.MutualTls.DomainName.IsPresent())
                 {
@@ -49,11 +47,7 @@ namespace IdentityServer4.Hosting
                             StringComparison.OrdinalIgnoreCase))
                         {
                             var result = await TriggerCertificateAuthentication(context);
-                            if (result.Succeeded)
-                            {
-                                isMtlsRequest = true;
-                            }
-                            else
+                            if (!result.Succeeded)
                             {
                                 return;
                             }
@@ -65,11 +59,7 @@ namespace IdentityServer4.Hosting
                         if (context.Request.Host.Host.StartsWith(_options.MutualTls.DomainName, StringComparison.OrdinalIgnoreCase))
                         {
                             var result = await TriggerCertificateAuthentication(context);
-                            if (result.Succeeded)
-                            {
-                                isMtlsRequest = true;
-                            }
-                            else
+                            if (!result.Succeeded)
                             {
                                 return;
                             }
@@ -83,8 +73,6 @@ namespace IdentityServer4.Hosting
 
                     if (result.Succeeded)
                     {
-                        isMtlsRequest = true;
-                        
                         var path = Constants.ProtocolRoutePaths.ConnectPathPrefix +
                                    subPath.ToString().EnsureLeadingSlash();
                         path = path.EnsureLeadingSlash();
@@ -97,13 +85,6 @@ namespace IdentityServer4.Hosting
                     {
                         return;
                     }
-                }
-                
-                if (isMtlsRequest)
-                {
-                    // todo: decide how to get cert from auth response above. for now, just get from the connection
-                    context.Items[IdentityServerConstants.MutualTls.X509CertificateItemKey] =
-                        context.Connection.ClientCertificate;
                 }
             }
             
