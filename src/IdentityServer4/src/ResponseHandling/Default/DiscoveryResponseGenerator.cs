@@ -182,7 +182,7 @@ namespace IdentityServer4.ResponseHandling
                         // path based
                         if (Options.MutualTls.DomainName.IsMissing())
                         {
-                            return baseUrl + endpoint.Replace("connect", "connect/mtls");
+                            return baseUrl + endpoint.Replace(Constants.ProtocolRoutePaths.ConnectPathPrefix, Constants.ProtocolRoutePaths.MtlsPathPrefix);
                         }
                         else
                         {
