@@ -38,30 +38,6 @@ namespace IdentityServer4.Hosting
             if (_options.MutualTls.Enabled)
             {
                 bool isMtlsRequest = false;
-             
-                // path based MTLS
-                if (context.Request.Path.StartsWithSegments(
-                    Constants.ProtocolRoutePaths.MtlsPathPrefix.EnsureLeadingSlash(), out var subPath))
-                {
-                    var result = await TriggerCertificateAuthentication(context);
-
-                    if (result.Succeeded)
-                    {
-                        isMtlsRequest = true;
-                        
-                        var path = Constants.ProtocolRoutePaths.ConnectPathPrefix +
-                                   subPath.ToString().EnsureLeadingSlash();
-                        path = path.EnsureLeadingSlash();
-
-                        _logger.LogDebug("Rewriting MTLS request from: {oldPath} to: {newPath}",
-                            context.Request.Path.ToString(), path);
-                        context.Request.Path = path;
-                    }
-                    else
-                    {
-                        return;
-                    }
-                }
                 
                 // domain-based MTLS
                 if (_options.MutualTls.DomainName.IsPresent())
@@ -100,7 +76,29 @@ namespace IdentityServer4.Hosting
                         }
                     }
                 }
+                // path based MTLS
+                else if (context.Request.Path.StartsWithSegments(Constants.ProtocolRoutePaths.MtlsPathPrefix.EnsureLeadingSlash(), out var subPath))
+                {
+                    var result = await TriggerCertificateAuthentication(context);
 
+                    if (result.Succeeded)
+                    {
+                        isMtlsRequest = true;
+                        
+                        var path = Constants.ProtocolRoutePaths.ConnectPathPrefix +
+                                   subPath.ToString().EnsureLeadingSlash();
+                        path = path.EnsureLeadingSlash();
+
+                        _logger.LogDebug("Rewriting MTLS request from: {oldPath} to: {newPath}",
+                            context.Request.Path.ToString(), path);
+                        context.Request.Path = path;
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+                
                 if (isMtlsRequest)
                 {
                     // todo: decide how to get cert from auth response above. for now, just get from the connection
