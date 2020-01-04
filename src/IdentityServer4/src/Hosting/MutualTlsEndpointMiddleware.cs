@@ -1,5 +1,4 @@
 using System;
-using System.ComponentModel.Design;
 using System.Threading.Tasks;
 using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;

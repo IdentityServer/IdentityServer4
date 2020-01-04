@@ -25,5 +25,12 @@ namespace IdentityServer4.Configuration
         /// If the string contains dots, a completely separate domain is assumend, e.g. main domain: identity.app.com, MTLS domain: mtls.app.com. In this case you must set a static issuer name on the options.
         /// </summary>
         public string DomainName { get; set; }
+
+        /// <summary>
+        /// Specifies whether a cnf claim gets emitted for access tokens if a client certificate was present.
+        /// Normally the cnf claims only gets emitted if the client used the client certificate for authentication,
+        /// setting this to true, will set the claim regardless of the authentication method. (defaults to false).
+        /// </summary>
+        public bool AlwaysEmitConfirmationClaim { get; set; }
     }
 }
