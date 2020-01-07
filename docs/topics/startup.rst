@@ -28,7 +28,7 @@ e.g. RS256, RS384, RS512, PS256, PS384, PS512, ES256, ES384 or ES512.
 You can configure the key material with the following methods:
 
 * ``AddSigningCredential``
-    Adds a signing key service that provides the specified key material to the various token creation/validation services.
+    Adds a signing key that provides the specified key material to the various token creation/validation services.
 * ``AddDeveloperSigningCredential``
     Creates temporary key material at startup time. This is for dev scenarios. The generated key will be persisted in the local directory by default.
 * ``AddValidationKey``
