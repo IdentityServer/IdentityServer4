@@ -65,6 +65,7 @@ namespace Host
 
                     options.MutualTls.Enabled = true;
                     options.MutualTls.DomainName = "mtls";
+                    //options.MutualTls.AlwaysEmitConfirmationClaim = true;
                 })
                 .AddInMemoryClients(Clients.Get())
                 //.AddInMemoryClients(_config.GetSection("Clients"))
