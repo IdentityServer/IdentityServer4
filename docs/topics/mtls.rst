@@ -54,6 +54,9 @@ ASP.NET 3.0 includes such a handler in the ``Microsoft.AspNetCore.Authentication
             options.AllowedCertificateTypes = CertificateTypes.All;
         });
 
+See `here <https://docs.microsoft.com/en-us/aspnet/core/security/authentication/certauth?view=aspnetcore-3.1>`_ for more information on how to configure
+the certificate handler.
+
 
 Next, in the :ref:`IdentityServer options <refOptions>`, enable mutual TLS and configure the scheme of the authentication handler registered in the previous step.
 
