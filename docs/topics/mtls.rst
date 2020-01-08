@@ -82,7 +82,7 @@ For example::
         AllowedScopes = { "api1" }
         ClientSecrets = 
         {
-            // common-name based
+            // name based
             new Secret(@"CN=mtls.test, OU=ROO\ballen@roo, O=mkcert development certificate", "mtls.test")
             {
                 Type = SecretTypes.X509CertificateName
