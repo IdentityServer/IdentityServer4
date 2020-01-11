@@ -6,6 +6,7 @@ using IdentityServer4.Models;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace IdentityServer4.Validation
 {
@@ -84,7 +85,9 @@ namespace IdentityServer4.Validation
                 return false;
             }
 
-            if (int.TryParse(parts[2], out var port))
+            var portMatch = Regex.Match(parts[2], @"(\d+)");
+
+            if (portMatch.Success && int.TryParse(portMatch.Value, out var port))
             {
                 if (port >= 0 && port <= 65536) return true;
             }
