@@ -49,6 +49,7 @@ namespace IdentityServer.UnitTests.Validation
         [Trait("Category", Category)]
         [InlineData("127.0.0.1")]
         [InlineData("//127.0.0.1")]
+        [InlineData("http://127.0.0.1:t65536")]
         [InlineData("https://127.0.0.1")]
         public async Task Loopback_Redirect_URIs_Should_Not_Be_AllowedAsync(string requestedUri)
         {

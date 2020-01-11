@@ -85,7 +85,7 @@ namespace IdentityServer4.Validation
                 return false;
             }
 
-            var portMatch = Regex.Match(parts[2], @"(\d+)");
+            var portMatch = Regex.Match(parts[2], @"^(\d+)");
 
             if (portMatch.Success && int.TryParse(portMatch.Value, out var port))
             {
