@@ -33,18 +33,18 @@ jobs:
       targetType: filePath
       filePath: ./build.ps1  
   - task: NuGetCommand@2
-    displayName: 'Push to GitHub packages'
-    inputs:
-      command: push
-      packagesToPush: 'nuget/*.nupkg'
-      nuGetFeedType: external
-      publishFeedCredentials: 'GitHub Packages'
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-  - task: NuGetCommand@2
     displayName: 'Push to MyGet'
     inputs:
       command: push
       packagesToPush: 'nuget/*.nupkg'
       nuGetFeedType: external
       publishFeedCredentials: 'MyGet'
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  - task: NuGetCommand@2
+    displayName: 'Push to GitHub packages'
+    inputs:
+      command: push
+      packagesToPush: 'nuget/*.nupkg'
+      nuGetFeedType: external
+      publishFeedCredentials: 'GitHub Packages'
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
