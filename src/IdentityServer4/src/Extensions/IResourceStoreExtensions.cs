@@ -15,6 +15,8 @@ namespace IdentityServer4.Stores
     /// </summary>
     public static class IResourceStoreExtensions
     {
+        // todo: used by scope validator to know if resource is disabled (mainly for error/logging)
+        // todo: used by token respnse generator -- not sure if should be calling the "enabled" API instead?
         /// <summary>
         /// Finds the resources by scope.
         /// </summary>
@@ -95,6 +97,7 @@ namespace IdentityServer4.Stores
             return (await store.FindResourcesByScopeAsync(scopeNames)).FilterEnabled();
         }
 
+        // todo: rework to get all scopes (since it's only used in discovery)
         /// <summary>
         /// Gets all enabled resources.
         /// </summary>
@@ -108,6 +111,7 @@ namespace IdentityServer4.Stores
             return resources.FilterEnabled();
         }
 
+        // todo: only used by userinfo to get identity resources based on identity scopes in access token
         /// <summary>
         /// Finds the enabled identity resources by scope.
         /// </summary>
@@ -117,6 +121,56 @@ namespace IdentityServer4.Stores
         public static async Task<IEnumerable<IdentityResource>> FindEnabledIdentityResourcesByScopeAsync(this IResourceStore store, IEnumerable<string> scopeNames)
         {
             return (await store.FindIdentityResourcesByScopeAsync(scopeNames)).Where(x => x.Enabled).ToArray();
+        }
+
+        /// <summary>
+        /// Returns the collection of scope names that are required.
+        /// </summary>
+        /// <param name="resources"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> GetRequiredScopeNames(this Resources resources)
+        {
+            var identity = resources.IdentityResources.Where(x => x.Required).Select(x => x.Name);
+            var apiQuery = from api in resources.ApiResources
+                           where api.Scopes != null
+                           from scope in api.Scopes
+                           where scope.Required
+                           select scope.Name;
+
+            var requiredScopes = identity.Union(apiQuery.Distinct());
+            return requiredScopes;
+        }
+
+        /// <summary>
+        /// Returns a new Resources filtered by the scopes indicated.
+        /// </summary>
+        /// <param name="resources"></param>
+        /// <param name="scopes"></param>
+        /// <returns></returns>
+        public static Resources Filter(this Resources resources, IEnumerable<string> scopes)
+        {
+            scopes = scopes ?? Enumerable.Empty<string>();
+
+            var offline = scopes.Contains(IdentityServerConstants.StandardScopes.OfflineAccess);
+            if (offline)
+            {
+                scopes = scopes.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess);
+            }
+
+            var identityToKeep = resources.IdentityResources.Where(x => x.Required || scopes.Contains(x.Name));
+            var apisToKeep = from api in resources.ApiResources
+                             where api.Scopes != null
+                             let scopesToKeep = (from scope in api.Scopes
+                                                 where scope.Required == true || scopes.Contains(scope.Name)
+                                                 select scope)
+                             where scopesToKeep.Any()
+                             select api.CloneWithScopes(scopesToKeep);
+
+            var result = new Resources(identityToKeep, apisToKeep)
+            {
+                OfflineAccess = offline
+            };
+            return result;
         }
     }
 }

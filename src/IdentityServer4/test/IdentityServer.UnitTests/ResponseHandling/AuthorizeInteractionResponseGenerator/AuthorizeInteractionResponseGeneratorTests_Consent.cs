@@ -257,17 +257,15 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
         {
             RequiresConsent(true);
             var client = new Client {};
-            var scopeValidator = new ScopeValidator(new InMemoryResourcesStore(GetIdentityScopes(), GetApiScopes()), TestLogger.Create<ScopeValidator>());
             var request = new ValidatedAuthorizeRequest()
             {
                 ResponseMode = OidcConstants.ResponseModes.Fragment,
                 State = "12345",
                 RedirectUri = "https://client.com/callback",
                 RequestedScopes = new List<string> { "openid", "read" },
-                ValidatedScopes = scopeValidator,
+                ValidatedResources = new Resources(GetIdentityScopes(), GetApiScopes()).Filter(new string[] { "read", "write" }),
                 Client = client
             };
-            var valid = scopeValidator.AreScopesValidAsync(request.RequestedScopes).Result;
 
             var consent = new ConsentResponse
             {
@@ -290,20 +288,21 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
                 ResponseMode = OidcConstants.ResponseModes.Fragment,
                 State = "12345",
                 RedirectUri = "https://client.com/callback",
-                ValidatedScopes = new ScopeValidator(new InMemoryResourcesStore(GetIdentityScopes(), GetApiScopes()), new LoggerFactory().CreateLogger<ScopeValidator>()),
                 Client = new Client {
                     AllowRememberConsent = false
-                }
+                },
+                ValidatedResources = new Resources(GetIdentityScopes(), GetApiScopes()).Filter(new string[] { "read", "write" })
             };
-            await request.ValidatedScopes.AreScopesValidAsync(new string[] { "read", "write" });
             var consent = new ConsentResponse
             {
                 RememberConsent = false,
-                ScopesConsented = new string[] { "read" }
+                ScopesConsented = new string[] { "openid", "read" }
             };
             var result = _subject.ProcessConsentAsync(request, consent).Result;
-            request.ValidatedScopes.GrantedResources.ApiResources.SelectMany(x=>x.Scopes).Count().Should().Be(1);
-            "read".Should().Be(request.ValidatedScopes.GrantedResources.ApiResources.SelectMany(x=>x.Scopes).First().Name);
+            request.ValidatedResources.IdentityResources.Count().Should().Be(1);
+            request.ValidatedResources.ApiResources.SelectMany(x => x.Scopes).Count().Should().Be(1);
+            "openid".Should().Be(request.ValidatedResources.IdentityResources.Select(x => x.Name).First());
+            "read".Should().Be(request.ValidatedResources.ApiResources.SelectMany(x => x.Scopes).First().Name);
             request.WasConsentShown.Should().BeTrue();
             result.IsConsent.Should().BeFalse();
             AssertUpdateConsentNotCalled();
@@ -318,20 +317,20 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
                 ResponseMode = OidcConstants.ResponseModes.Fragment,
                 State = "12345",
                 RedirectUri = "https://client.com/callback",
-                ValidatedScopes = new ScopeValidator(new InMemoryResourcesStore(GetIdentityScopes(), GetApiScopes()), new LoggerFactory().CreateLogger<ScopeValidator>()),
                 Client = new Client {
                     AllowRememberConsent = false
-                }
+                },
+                ValidatedResources = new Resources(GetIdentityScopes(), GetApiScopes()).Filter(new string[] { "read", "write" })
             };
-            await request.ValidatedScopes.AreScopesValidAsync(new string[] { "read", "write" });
             var consent = new ConsentResponse
             {
                 RememberConsent = false,
-                ScopesConsented = new string[] { "read" }
+                ScopesConsented = new string[] { "openid", "read" }
             };
             var result = _subject.ProcessConsentAsync(request, consent).Result;
-            request.ValidatedScopes.GrantedResources.ApiResources.SelectMany(x=>x.Scopes).Count().Should().Be(1);
-            "read".Should().Be(request.ValidatedScopes.GrantedResources.ApiResources.SelectMany(x => x.Scopes).First().Name);
+            request.ValidatedResources.IdentityResources.Count().Should().Be(1);
+            request.ValidatedResources.ApiResources.SelectMany(x=>x.Scopes).Count().Should().Be(1);
+            "read".Should().Be(request.ValidatedResources.ApiResources.SelectMany(x => x.Scopes).First().Name);
             request.WasConsentShown.Should().BeTrue();
             result.IsConsent.Should().BeFalse();
             AssertUpdateConsentNotCalled();
@@ -348,19 +347,17 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
                 ResponseMode = OidcConstants.ResponseModes.Fragment,
                 State = "12345",
                 RedirectUri = "https://client.com/callback",
-                ValidatedScopes = new ScopeValidator(new InMemoryResourcesStore(GetIdentityScopes(), GetApiScopes()), new LoggerFactory().CreateLogger<ScopeValidator>()),
                 Client = client,
-                Subject = user
+                Subject = user,
+                ValidatedResources = new Resources(GetIdentityScopes(), GetApiScopes()).Filter(new string[] { "read", "write" })
             };
-            await request.ValidatedScopes.AreScopesValidAsync(new string[] { "read", "write" });
             var consent = new ConsentResponse
             {
                 RememberConsent = true,
-                ScopesConsented = new string[] { "read" }
+                ScopesConsented = new string[] { "openid", "read" }
             };
-            var result = _subject.ProcessConsentAsync(request, consent).Result;
-            AssertUpdateConsentCalled(client, user, "read");
+            var result = await _subject.ProcessConsentAsync(request, consent);
+            AssertUpdateConsentCalled(client, user, "openid", "read");
         }
-
     }
 }

@@ -391,12 +391,12 @@ namespace IdentityServer4.ResponseHandling
             }
             else
             {
-                createRefreshToken = request.ValidatedScopes.ContainsOfflineAccessScope;
+                createRefreshToken = request.ValidatedResources.OfflineAccess;
 
                 tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.Subject,
-                    Resources = request.ValidatedScopes.GrantedResources,
+                    Resources = request.ValidatedResources,
                     ValidatedRequest = request
                 };
             }

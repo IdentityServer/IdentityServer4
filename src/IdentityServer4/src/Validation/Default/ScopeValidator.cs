@@ -14,10 +14,31 @@ namespace IdentityServer4.Validation
     /// <summary>
     /// Validates scopes
     /// </summary>
-    public class ScopeValidator
+    public class ScopeValidator__
     {
         private readonly ILogger _logger;
         private readonly IResourceStore _store;
+
+        // todo: idea: scope context? requested scopes, granted scopes, original scopes (for RT usage?)
+        // maybe this implies the presence of an authorize context which is stored and loaded in RT usage
+        // then RT requested scopes can be compared/subset checked against authorize reqquest's granted scopes?
+        // also, should a request context be diff than a persisted context? need to look into how currently we separate those.
+
+        // todo: scope validator should be separate service in DI
+        // todo: requested and granted scopes should be state on validated request (as List<string>).
+        // and those schould have strong semantics -- null vs. empty (null means not yet determined, empty means none granted)
+        // i would want those lists to be able to be manipulated if custom stuff needs to change what's happening.
+
+        // also, maybe we need something that will return the Resource from the store based on the requested/granted scope list of strings.
+        // this is needed because we will persist the requested/granted scopes arrays, but not the full resource object model (in the code/RT/Ref persisted grants).
+        // also, that will support custom/dynamic scopes where some need to be honored and other ignored.
+        // perhaps the default impl has API to return the tuple(valid, invalid) lists? and then custom can rearrange these?
+        // need to know to either ignore or error invalid or unknown scopes? OIDC says SHOULD ignore unrecognized scopes (as opposed to error)
+
+        // todo: replacement will be the "resource validator" to also handle resource indicators
+        // as each API will need to prolly accept list of resource indicators and scopes
+
+        // todo: consider requested scopes, scopes to consent, scopes granted
 
         /// <summary>
         /// Gets a value indicating whether this instance contains identity scopes
@@ -25,6 +46,7 @@ namespace IdentityServer4.Validation
         /// <value>
         ///   <c>true</c> if it contains identity scopes; otherwise, <c>false</c>.
         /// </value>
+        // todo: either on scope context or extension method on list of resources
         public bool ContainsOpenIdScopes => GrantedResources.IdentityResources.Any();
 
         /// <summary>
@@ -33,6 +55,7 @@ namespace IdentityServer4.Validation
         /// <value>
         ///   <c>true</c> if it contains API scopes; otherwise, <c>false</c>.
         /// </value>
+        // todo: either on scope context or extension method on list of resources
         public bool ContainsApiResourceScopes => GrantedResources.ApiResources.Any();
 
         /// <summary>
@@ -41,6 +64,7 @@ namespace IdentityServer4.Validation
         /// <value>
         ///   <c>true</c> if it contains the offline access scope; otherwise, <c>false</c>.
         /// </value>
+        // todo: either on scope context or extension method on list of resources
         public bool ContainsOfflineAccessScope => GrantedResources.OfflineAccess;
 
         /// <summary>
@@ -49,6 +73,7 @@ namespace IdentityServer4.Validation
         /// <value>
         /// The requested resources.
         /// </value>
+        // todo: mayve move to scope context or some sort
         public Resources RequestedResources { get; internal set; } = new Resources();
 
         /// <summary>
@@ -64,20 +89,22 @@ namespace IdentityServer4.Validation
         /// </summary>
         /// <param name="store">The store.</param>
         /// <param name="logger">The logger.</param>
-        public ScopeValidator(IResourceStore store, ILogger<ScopeValidator> logger)
-        {
-            _logger = logger;
-            _store = store;
-        }
+        //public ScopeValidator(IResourceStore store, ILogger<ScopeValidator> logger)
+        //{
+        //    _logger = logger;
+        //    _store = store;
+        //}
 
         /// <summary>
         /// Validates the required scopes.
         /// </summary>
         /// <param name="consentedScopes">The consented scopes.</param>
         /// <returns></returns>
+        // todo: rework for semantics AreAllRequiredScopedConsented/Granted?
+        // meant for UI interaction service.
         public bool ValidateRequiredScopes(IEnumerable<string> consentedScopes)
         {
-            var identity = RequestedResources.IdentityResources.Where(x => x.Required).Select(x=>x.Name);
+            var identity = RequestedResources.IdentityResources.Where(x => x.Required).Select(x => x.Name);
             var apiQuery = from api in RequestedResources.ApiResources
                            where api.Scopes != null
                            from scope in api.Scopes
@@ -123,6 +150,8 @@ namespace IdentityServer4.Validation
         /// <param name="requestedScopes">The requested scopes.</param>
         /// <param name="filterIdentityScopes">if set to <c>true</c> [filter identity scopes].</param>
         /// <returns></returns>
+        // todo: semantics: are these scopes valid in the system
+        // called from authZ, device, and token request validators
         public async Task<bool> AreScopesValidAsync(IEnumerable<string> requestedScopes, bool filterIdentityScopes = false)
         {
             if (requestedScopes.Contains(IdentityServerConstants.StandardScopes.OfflineAccess))
@@ -205,6 +234,8 @@ namespace IdentityServer4.Validation
         /// <param name="client">The client.</param>
         /// <param name="requestedScopes">The requested scopes.</param>
         /// <returns></returns>
+        // todo: semantics: are these scopes alloed for this client
+        // called from authZ, device, and token request validators
         public async Task<bool> AreScopesAllowedAsync(Client client, IEnumerable<string> requestedScopes)
         {
             if (requestedScopes.Contains(IdentityServerConstants.StandardScopes.OfflineAccess))
@@ -251,6 +282,7 @@ namespace IdentityServer4.Validation
         /// <returns>
         ///   <c>true</c> if the response type is valid; otherwise, <c>false</c>.
         /// </returns>
+        // todo: maybe move to authZ request validator? it's a authZ requrest specific thing.
         public bool IsResponseTypeValid(string responseType)
         {
             var requirement = Constants.ResponseTypeToScopeRequirement[responseType];

@@ -36,13 +36,12 @@ namespace IdentityServer.UnitTests.ResponseHandling
         public DeviceAuthorizationResponseGeneratorTests()
         {
             var resourceStore = new InMemoryResourcesStore(identityResources, apiResources);
-            var scopeValidator = new ScopeValidator(resourceStore, new NullLogger<ScopeValidator>());
+            var resourceValidator = new ResourceValidator(resourceStore, new NullLogger<ResourceValidator>());
             
             testResult = new DeviceAuthorizationRequestValidationResult(new ValidatedDeviceAuthorizationRequest
             {
                 Client = new Client {ClientId = Guid.NewGuid().ToString()},
                 IsOpenIdRequest = true,
-                ValidatedScopes = scopeValidator
             });
 
             generator = new DeviceAuthorizationResponseGenerator(

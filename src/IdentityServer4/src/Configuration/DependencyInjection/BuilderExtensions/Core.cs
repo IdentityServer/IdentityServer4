@@ -121,7 +121,6 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.Services.AddTransient<SecretParser>();
             builder.Services.AddTransient<SecretValidator>();
-            builder.Services.AddTransient<ScopeValidator>();
             builder.Services.AddTransient<ExtensionGrantValidator>();
             builder.Services.AddTransient<BearerTokenUsageValidator>();
             builder.Services.AddTransient<JwtRequestValidator>();
@@ -173,6 +172,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IUserCodeService, DefaultUserCodeService>();
             builder.Services.TryAddTransient<IUserCodeGenerator, NumericUserCodeGenerator>();
             builder.Services.TryAddTransient<IBackChannelLogoutService, DefaultBackChannelLogoutService>();
+            builder.Services.TryAddTransient<IResourceValidator, ResourceValidator>();
 
             builder.AddJwtRequestUriHttpClient();
             builder.AddBackChannelLogoutHttpClient();

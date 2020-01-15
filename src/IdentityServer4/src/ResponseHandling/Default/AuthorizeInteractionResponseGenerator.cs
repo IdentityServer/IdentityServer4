@@ -12,6 +12,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
+using IdentityServer4.Stores;
 
 namespace IdentityServer4.ResponseHandling
 {
@@ -276,7 +277,8 @@ namespace IdentityServer4.ResponseHandling
                     else
                     {
                         // double check that required scopes are in the list of consented scopes
-                        var valid = request.ValidatedScopes.ValidateRequiredScopes(consent.ScopesConsented);
+                        var requiredScopes = request.ValidatedResources.GetRequiredScopeNames();
+                        var valid = requiredScopes.All(x => consent.ScopesConsented.Contains(x));
                         if (valid == false)
                         {
                             response.Error = OidcConstants.AuthorizeErrors.AccessDenied;
@@ -285,7 +287,7 @@ namespace IdentityServer4.ResponseHandling
                         else
                         {
                             // they said yes, set scopes they chose
-                            request.ValidatedScopes.SetConsentedScopes(consent.ScopesConsented);
+                            request.ValidatedResources = request.ValidatedResources.Filter(consent.ScopesConsented);
                             Logger.LogInformation("User consented to scopes: {scopes}", consent.ScopesConsented);
 
                             if (request.Client.AllowRememberConsent)
@@ -295,7 +297,7 @@ namespace IdentityServer4.ResponseHandling
                                 if (consent.RememberConsent)
                                 {
                                     // remember what user actually selected
-                                    scopes = request.ValidatedScopes.GrantedResources.ToScopeNames();
+                                    scopes = request.ValidatedResources.ToScopeNames();
                                     Logger.LogDebug("User indicated to remember consent for scopes: {scopes}", scopes);
                                 }
 

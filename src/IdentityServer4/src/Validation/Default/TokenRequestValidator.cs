@@ -27,7 +27,8 @@ namespace IdentityServer4.Validation
         private readonly IAuthorizationCodeStore _authorizationCodeStore;
         private readonly ExtensionGrantValidator _extensionGrantValidator;
         private readonly ICustomTokenRequestValidator _customRequestValidator;
-        private readonly ScopeValidator _scopeValidator;
+        private readonly IResourceValidator _resourceValidator;
+        private readonly IResourceStore _resourceStore;
         private readonly ITokenValidator _tokenValidator;
         private readonly IEventService _events;
         private readonly IResourceOwnerPasswordValidator _resourceOwnerValidator;
@@ -48,12 +49,25 @@ namespace IdentityServer4.Validation
         /// <param name="deviceCodeValidator">The device code validator.</param>
         /// <param name="extensionGrantValidator">The extension grant validator.</param>
         /// <param name="customRequestValidator">The custom request validator.</param>
-        /// <param name="scopeValidator">The scope validator.</param>
+        /// <param name="resourceValidator">The resource validator.</param>
+        /// <param name="resourceStore">The resource store.</param>
         /// <param name="tokenValidator">The token validator.</param>
         /// <param name="events">The events.</param>
         /// <param name="clock">The clock.</param>
         /// <param name="logger">The logger.</param>
-        public TokenRequestValidator(IdentityServerOptions options, IAuthorizationCodeStore authorizationCodeStore, IResourceOwnerPasswordValidator resourceOwnerValidator, IProfileService profile, IDeviceCodeValidator deviceCodeValidator, ExtensionGrantValidator extensionGrantValidator, ICustomTokenRequestValidator customRequestValidator, ScopeValidator scopeValidator, ITokenValidator tokenValidator, IEventService events, ISystemClock clock, ILogger<TokenRequestValidator> logger)
+        public TokenRequestValidator(IdentityServerOptions options, 
+            IAuthorizationCodeStore authorizationCodeStore, 
+            IResourceOwnerPasswordValidator resourceOwnerValidator, 
+            IProfileService profile, 
+            IDeviceCodeValidator deviceCodeValidator, 
+            ExtensionGrantValidator extensionGrantValidator, 
+            ICustomTokenRequestValidator customRequestValidator,
+            IResourceValidator resourceValidator,
+            IResourceStore resourceStore,
+            ITokenValidator tokenValidator, 
+            IEventService events, 
+            ISystemClock clock, 
+            ILogger<TokenRequestValidator> logger)
         {
             _logger = logger;
             _options = options;
@@ -64,7 +78,8 @@ namespace IdentityServer4.Validation
             _deviceCodeValidator = deviceCodeValidator;
             _extensionGrantValidator = extensionGrantValidator;
             _customRequestValidator = customRequestValidator;
-            _scopeValidator = scopeValidator;
+            _resourceValidator = resourceValidator;
+            _resourceStore = resourceStore;
             _tokenValidator = tokenValidator;
             _events = events;
         }
@@ -343,13 +358,13 @@ namespace IdentityServer4.Validation
                 return Invalid(OidcConstants.TokenErrors.InvalidScope);
             }
 
-            if (_validatedRequest.ValidatedScopes.ContainsOpenIdScopes)
+            if (_validatedRequest.ValidatedResources.IdentityResources.Any())
             {
                 LogError("Client cannot request OpenID scopes in client credentials flow", new { clientId = _validatedRequest.Client.ClientId });
                 return Invalid(OidcConstants.TokenErrors.InvalidScope);
             }
 
-            if (_validatedRequest.ValidatedScopes.ContainsOfflineAccessScope)
+            if (_validatedRequest.ValidatedResources.OfflineAccess)
             {
                 LogError("Client cannot request a refresh token in client credentials flow", new { clientId = _validatedRequest.Client.ClientId });
                 return Invalid(OidcConstants.TokenErrors.InvalidScope);
@@ -634,21 +649,30 @@ namespace IdentityServer4.Validation
 
         private async Task<bool> ValidateRequestedScopesAsync(NameValueCollection parameters, bool ignoreImplicitIdentityScopes = false, bool ignoreImplicitOfflineAccess = false)
         {
-            var ignoreIdentityScopes = false;
-
             var scopes = parameters.Get(OidcConstants.TokenRequest.Scope);
             if (scopes.IsMissing())
             {
-                if (ignoreImplicitIdentityScopes)
-                {
-                    ignoreIdentityScopes = true;
-                }
-
                 _logger.LogTrace("Client provided no scopes - checking allowed scopes list");
 
                 if (!_validatedRequest.Client.AllowedScopes.IsNullOrEmpty())
                 {
-                    var clientAllowedScopes = new List<string>(_validatedRequest.Client.AllowedScopes);
+                    // this finds all the scopes the client is allowed to access
+                    var clientAllowedScopes = new List<string>();
+                    if (!ignoreImplicitIdentityScopes)
+                    {
+                        var resources = await _resourceStore.FindResourcesByScopeAsync(_validatedRequest.Client.AllowedScopes);
+                        clientAllowedScopes.AddRange(resources.IdentityResources.Select(x => x.Name)
+                            .Where(x => _validatedRequest.Client.AllowedScopes.Contains(x)));
+                        clientAllowedScopes.AddRange(resources.ApiResources.SelectMany(x => x.Scopes).Select(x => x.Name)
+                            .Where(x => _validatedRequest.Client.AllowedScopes.Contains(x)));
+                    }
+                    else
+                    {
+                        var resources = await _resourceStore.FindApiResourcesByScopeAsync(_validatedRequest.Client.AllowedScopes);
+                        clientAllowedScopes.AddRange(resources.SelectMany(x => x.Scopes).Select(x => x.Name)
+                            .Where(x => _validatedRequest.Client.AllowedScopes.Contains(x)));
+                    }
+
                     if (!ignoreImplicitOfflineAccess)
                     {
                         if (_validatedRequest.Client.AllowOfflineAccess)
@@ -657,7 +681,7 @@ namespace IdentityServer4.Validation
                         }
                     }
 
-                    scopes = clientAllowedScopes.ToSpaceSeparatedString();
+                    scopes = clientAllowedScopes.Distinct().ToSpaceSeparatedString();
                     _logger.LogTrace("Defaulting to: {scopes}", scopes);
                 }
                 else
@@ -681,20 +705,17 @@ namespace IdentityServer4.Validation
                 return false;
             }
 
-            if (!await _scopeValidator.AreScopesAllowedAsync(_validatedRequest.Client, requestedScopes))
+            var resourceValidationResult = await _resourceValidator.ValidateRequestedResources(_validatedRequest.Client, requestedScopes, null);
+            if (!resourceValidationResult.Succeeded)
             {
+                // todo: brock; maybe make this check invalid scope vs. not allowed for client like the other validators do?
                 LogError();
                 return false;
             }
-
-            if (!(await _scopeValidator.AreScopesValidAsync(requestedScopes, ignoreIdentityScopes)))
-            {
-                LogError();
-                return false;
-            }
-
+            
             _validatedRequest.Scopes = requestedScopes;
-            _validatedRequest.ValidatedScopes = _scopeValidator;
+            _validatedRequest.ValidatedResources = resourceValidationResult.ValidatedResources;
+            
             return true;
         }
 
