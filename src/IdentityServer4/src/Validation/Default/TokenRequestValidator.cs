@@ -647,6 +647,8 @@ namespace IdentityServer4.Validation
             return Valid(result.CustomResponse);
         }
 
+        // todo: brock; do we want to rework the semantics of these ignore params?
+        // also seems like other workflows other than CC clients can omit scopes?
         private async Task<bool> ValidateRequestedScopesAsync(NameValueCollection parameters, bool ignoreImplicitIdentityScopes = false, bool ignoreImplicitOfflineAccess = false)
         {
             var scopes = parameters.Get(OidcConstants.TokenRequest.Scope);
@@ -661,16 +663,13 @@ namespace IdentityServer4.Validation
                     if (!ignoreImplicitIdentityScopes)
                     {
                         var resources = await _resourceStore.FindResourcesByScopeAsync(_validatedRequest.Client.AllowedScopes);
-                        clientAllowedScopes.AddRange(resources.IdentityResources.Select(x => x.Name)
-                            .Where(x => _validatedRequest.Client.AllowedScopes.Contains(x)));
-                        clientAllowedScopes.AddRange(resources.ApiResources.SelectMany(x => x.Scopes).Select(x => x.Name)
-                            .Where(x => _validatedRequest.Client.AllowedScopes.Contains(x)));
+                        clientAllowedScopes.AddRange(resources.ToScopeNames().Where(x => _validatedRequest.Client.AllowedScopes.Contains(x)));
                     }
                     else
                     {
                         var resources = await _resourceStore.FindApiResourcesByScopeAsync(_validatedRequest.Client.AllowedScopes);
-                        clientAllowedScopes.AddRange(resources.SelectMany(x => x.Scopes).Select(x => x.Name)
-                            .Where(x => _validatedRequest.Client.AllowedScopes.Contains(x)));
+                        var apiScopes = resources.SelectMany(x => x.ToScopeNames());
+                        clientAllowedScopes.AddRange(apiScopes.Where(x => _validatedRequest.Client.AllowedScopes.Contains(x)));
                     }
 
                     if (!ignoreImplicitOfflineAccess)
@@ -708,11 +707,18 @@ namespace IdentityServer4.Validation
             var resourceValidationResult = await _resourceValidator.ValidateRequestedResources(_validatedRequest.Client, requestedScopes, null);
             if (!resourceValidationResult.Succeeded)
             {
-                // todo: brock; maybe make this check invalid scope vs. not allowed for client like the other validators do?
-                LogError();
+                if (resourceValidationResult.InvalidScopes.Any())
+                {
+                    LogError("Invalid scopes requested");
+                }
+                else
+                {
+                    LogError("Invalid scopes for client requested");
+                }
+
                 return false;
             }
-            
+
             _validatedRequest.Scopes = requestedScopes;
             _validatedRequest.ValidatedResources = resourceValidationResult.ValidatedResources;
             

@@ -139,6 +139,8 @@ namespace IdentityServer.UnitTests.Validation
             var result = await validator.ValidateRequestedResources(_restrictedClient, scopes, null);
 
             result.Succeeded.Should().BeFalse();
+            result.InvalidScopes.Should().BeEmpty();
+            result.InvalidScopesForClient.Should().Contain("offline_access");
         }
 
         [Fact]
@@ -151,6 +153,8 @@ namespace IdentityServer.UnitTests.Validation
             var result = await validator.ValidateRequestedResources(_restrictedClient, scopes, null);
 
             result.Succeeded.Should().BeTrue();
+            result.InvalidScopes.Should().BeEmpty();
+            result.InvalidScopesForClient.Should().BeEmpty();
         }
 
         [Fact]
@@ -164,6 +168,8 @@ namespace IdentityServer.UnitTests.Validation
                 var result = await validator.ValidateRequestedResources(_restrictedClient, scopes, null);
 
                 result.Succeeded.Should().BeFalse();
+                result.InvalidScopes.Should().Contain("unknown");
+                result.InvalidScopesForClient.Should().Contain("email");
             }
             {
                 var scopes = "openid resource1 resource2".ParseScopesString();
@@ -172,6 +178,8 @@ namespace IdentityServer.UnitTests.Validation
                 var result = await validator.ValidateRequestedResources(_restrictedClient, scopes, null);
 
                 result.Succeeded.Should().BeFalse();
+                result.InvalidScopes.Should().BeEmpty();
+                result.InvalidScopesForClient.Should().Contain("resource2");
             }
             {
                 var scopes = "openid email resource1".ParseScopesString();
@@ -180,6 +188,8 @@ namespace IdentityServer.UnitTests.Validation
                 var result = await validator.ValidateRequestedResources(_restrictedClient, scopes, null);
 
                 result.Succeeded.Should().BeFalse();
+                result.InvalidScopes.Should().BeEmpty();
+                result.InvalidScopesForClient.Should().Contain("email");
             }
         }
 
@@ -187,12 +197,14 @@ namespace IdentityServer.UnitTests.Validation
         [Trait("Category", Category)]
         public async Task Disabled_Scope()
         {
-            var scopes = "openid email resource1 resource2 disabled".ParseScopesString();
+            var scopes = "openid resource1 disabled".ParseScopesString();
 
             var validator = Factory.CreateResourceValidator(_store);
             var result = await validator.ValidateRequestedResources(_restrictedClient, scopes, null);
 
             result.Succeeded.Should().BeFalse();
+            result.InvalidScopes.Should().Contain("disabled");
+            result.InvalidScopesForClient.Should().BeEmpty();
         }
 
         [Fact]
@@ -205,6 +217,8 @@ namespace IdentityServer.UnitTests.Validation
             var result = await validator.ValidateRequestedResources(_restrictedClient, scopes, null);
 
             result.Succeeded.Should().BeTrue();
+            result.InvalidScopes.Should().BeEmpty();
+            result.InvalidScopesForClient.Should().BeEmpty();
         }
 
         [Fact]
@@ -217,6 +231,9 @@ namespace IdentityServer.UnitTests.Validation
             var result = await validator.ValidateRequestedResources(_restrictedClient, scopes, null);
 
             result.Succeeded.Should().BeFalse();
+            result.InvalidScopes.Should().BeEmpty();
+            result.InvalidScopesForClient.Should().Contain("email");
+            result.InvalidScopesForClient.Should().Contain("resource2");
         }
 
         [Fact]
@@ -229,8 +246,8 @@ namespace IdentityServer.UnitTests.Validation
             var result = await validator.ValidateRequestedResources(_restrictedClient, scopes, null);
 
             result.Succeeded.Should().BeTrue();
-            result.ValidatedResources.IdentityResources.Any().Should().BeTrue();
-            result.ValidatedResources.ApiResources.Any().Should().BeTrue();
+            result.ValidatedResources.IdentityResources.SelectMany(x => x.Name).Should().Contain("openid");
+            result.ValidatedResources.ApiResources.SelectMany(x => x.ToScopeNames()).Should().Contain("resource1");
         }
 
         [Fact]
@@ -243,8 +260,8 @@ namespace IdentityServer.UnitTests.Validation
             var result = await validator.ValidateRequestedResources(_restrictedClient, scopes, null);
 
             result.Succeeded.Should().BeTrue();
-            result.ValidatedResources.IdentityResources.Any().Should().BeFalse();
-            result.ValidatedResources.ApiResources.Any().Should().BeTrue();
+            result.ValidatedResources.IdentityResources.Should().BeEmpty();
+            result.ValidatedResources.ApiResources.SelectMany(x => x.ToScopeNames()).Should().Contain("resource1");
         }
 
         [Fact]
@@ -257,13 +274,13 @@ namespace IdentityServer.UnitTests.Validation
             var result = await validator.ValidateRequestedResources(_restrictedClient, scopes, null);
 
             result.Succeeded.Should().BeTrue();
-            result.ValidatedResources.IdentityResources.Any().Should().BeTrue();
-            result.ValidatedResources.ApiResources.Any().Should().BeFalse();
+            result.ValidatedResources.IdentityResources.SelectMany(x => x.Name).Should().Contain("openid");
+            result.ValidatedResources.ApiResources.Should().BeEmpty();
         }
 
         [Fact]
         [Trait("Category", Category)]
-        public void ValidateRequiredScopes_required_scopes_present_should_succeed()
+        public void GetRequiredScopeNames_should_return_correct_scopes()
         {
             var resources = new Resources(_identityResources, _apiResources);
             

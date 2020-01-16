@@ -13,21 +13,6 @@ using System.Threading.Tasks;
 namespace IdentityServer4.Validation
 {
     /// <summary>
-    /// Validates requested resources (scopes and resource identifiers)
-    /// </summary>
-    public interface IResourceValidator
-    {
-        /// <summary>
-        /// Validates the requested resources for the client.
-        /// </summary>
-        /// <param name="client"></param>
-        /// <param name="requestedScopes"></param>
-        /// <param name="requestedResourceIdentifiers"></param>
-        /// <returns></returns>
-        Task<ResourceValidationResult> ValidateRequestedResources(Client client, IEnumerable<string> requestedScopes, IEnumerable<string> requestedResourceIdentifiers);
-    }
-
-    /// <summary>
     /// Default implementation of IResourceValidator.
     /// </summary>
     public class ResourceValidator : IResourceValidator
@@ -45,9 +30,6 @@ namespace IdentityServer4.Validation
             _logger = logger;
             _store = store;
         }
-
-
-
 
         /// <summary>
         /// Validates the requested resources for the client.
@@ -67,13 +49,13 @@ namespace IdentityServer4.Validation
                 {
                     result.InvalidScopesForClient.Add("offline_access");
                 }
-                else
-                {
-                    requestedScopes = requestedScopes.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess).ToArray();
-                }
+
+                // filter here so below in our validation loop we're not doing extra checking for offline_access
+                requestedScopes = requestedScopes.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess).ToArray();
             }
 
             var resources = await _store.FindEnabledResourcesByScopeAsync(requestedScopes);
+            resources.OfflineAccess = offlineAccess;
 
             foreach (var scope in requestedScopes)
             {
@@ -121,31 +103,5 @@ namespace IdentityServer4.Validation
             
             return result;
         }
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    public class ResourceValidationResult
-    {
-        /// <summary>
-        /// 
-        /// </summary>
-        public bool Succeeded => ValidatedResources != null;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public Resources ValidatedResources { get; set; }
-
-        /// <summary>
-        /// Collection of scopes that are invalid.
-        /// </summary>
-        public ICollection<string> InvalidScopes { get; set; } = new HashSet<string>();
-
-        /// <summary>
-        /// Collection of scopes that are invalid for the client.
-        /// </summary>
-        public ICollection<string> InvalidScopesForClient { get; set; } = new HashSet<string>();
     }
 }

@@ -15,21 +15,94 @@ namespace IdentityServer4.Models
     public static class ResourceExtensions
     {
         /// <summary>
-        /// Converts to scope names.
+        /// Returns the collection of scope names that are required.
         /// </summary>
-        /// <param name="resources">The resources.</param>
+        /// <param name="resources"></param>
         /// <returns></returns>
+        public static IEnumerable<string> GetRequiredScopeNames(this Resources resources)
+        {
+            var identity = resources.IdentityResources.Where(x => x.Required).Select(x => x.Name);
+            var apiQuery = from api in resources.ApiResources
+                           where api.Scopes != null
+                           from scope in api.Scopes
+                           where scope.Required
+                           select scope.Name;
+
+            var requiredScopes = identity.Union(apiQuery.Distinct());
+            return requiredScopes;
+        }
+
+        /// <summary>
+        /// Returns a new Resources filtered by the scopes indicated.
+        /// </summary>
+        /// <param name="resources"></param>
+        /// <param name="scopes"></param>
+        /// <returns></returns>
+        public static Resources Filter(this Resources resources, IEnumerable<string> scopes)
+        {
+            scopes = scopes ?? Enumerable.Empty<string>();
+
+            var offline = scopes.Contains(IdentityServerConstants.StandardScopes.OfflineAccess);
+            if (offline)
+            {
+                scopes = scopes.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess);
+            }
+
+            var identityToKeep = resources.IdentityResources.Where(x => x.Required || scopes.Contains(x.Name));
+            var apisToKeep = from api in resources.ApiResources
+                             where api.Scopes != null
+                             let scopesToKeep = (from scope in api.Scopes
+                                                 where scope.Required == true || scopes.Contains(scope.Name)
+                                                 select scope)
+                             where scopesToKeep.Any()
+                             select api.CloneWithScopes(scopesToKeep);
+
+            var result = new Resources(identityToKeep, apisToKeep)
+            {
+                OfflineAccess = offline
+            };
+            return result;
+        }
+        
+        /// <summary>
+                 /// Converts to scope names.
+                 /// </summary>
+                 /// <param name="resources">The resources.</param>
+                 /// <returns></returns>
         public static IEnumerable<string> ToScopeNames(this Resources resources)
         {
-            var scopes = from api in resources.ApiResources
-                         where api.Scopes != null
-                         from scope in api.Scopes
-                         select scope.Name;
+            var scopes = resources.IdentityResources.Select(x => x.Name).ToList();
+            
+            scopes.AddRange(resources.ApiResources.SelectMany(x => x.ToScopeNames()));
+            
             if (resources.OfflineAccess)
             {
-                scopes = scopes.Union(new[] { IdentityServerConstants.StandardScopes.OfflineAccess });
+                scopes.Add(IdentityServerConstants.StandardScopes.OfflineAccess);
             }
-            return resources.IdentityResources.Select(x => x.Name).Union(scopes).ToArray();
+            
+            return scopes;
+        }
+
+        /// <summary>
+        /// Converts to scope names.
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<string> ToScopeNames(this ApiResource apiResource)
+        {
+            if (apiResource == null)
+            {
+                throw new ArgumentNullException(nameof(apiResource));
+            }
+
+            if (apiResource.Scopes == null)
+            {
+                return Enumerable.Empty<string>();
+            }
+
+            var scopes = from scope in apiResource.Scopes
+                         select scope.Name;
+
+            return scopes.ToArray();
         }
 
         /// <summary>
