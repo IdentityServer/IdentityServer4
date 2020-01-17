@@ -4,6 +4,7 @@
 
 using IdentityServer4.Models;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace IdentityServer4.Validation
 {
@@ -21,6 +22,11 @@ namespace IdentityServer4.Validation
         /// 
         /// </summary>
         public Resources ValidatedResources { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public IEnumerable<string> ValidScopes { get; set; } = Enumerable.Empty<string>();
 
         /// <summary>
         /// Collection of scopes that are invalid.
