@@ -246,8 +246,8 @@ namespace IdentityServer.UnitTests.Validation
             var result = await validator.ValidateRequestedResources(_restrictedClient, scopes, null);
 
             result.Succeeded.Should().BeTrue();
-            result.ValidatedResources.IdentityResources.SelectMany(x => x.Name).Should().Contain("openid");
-            result.ValidatedResources.ApiResources.SelectMany(x => x.ToScopeNames()).Should().Contain("resource1");
+            result.Resources.IdentityResources.SelectMany(x => x.Name).Should().Contain("openid");
+            result.Resources.ApiResources.SelectMany(x => x.ToScopeNames()).Should().Contain("resource1");
         }
 
         [Fact]
@@ -260,8 +260,8 @@ namespace IdentityServer.UnitTests.Validation
             var result = await validator.ValidateRequestedResources(_restrictedClient, scopes, null);
 
             result.Succeeded.Should().BeTrue();
-            result.ValidatedResources.IdentityResources.Should().BeEmpty();
-            result.ValidatedResources.ApiResources.SelectMany(x => x.ToScopeNames()).Should().Contain("resource1");
+            result.Resources.IdentityResources.Should().BeEmpty();
+            result.Resources.ApiResources.SelectMany(x => x.ToScopeNames()).Should().Contain("resource1");
         }
 
         [Fact]
@@ -274,8 +274,8 @@ namespace IdentityServer.UnitTests.Validation
             var result = await validator.ValidateRequestedResources(_restrictedClient, scopes, null);
 
             result.Succeeded.Should().BeTrue();
-            result.ValidatedResources.IdentityResources.SelectMany(x => x.Name).Should().Contain("openid");
-            result.ValidatedResources.ApiResources.Should().BeEmpty();
+            result.Resources.IdentityResources.SelectMany(x => x.Name).Should().Contain("openid");
+            result.Resources.ApiResources.Should().BeEmpty();
         }
 
         [Fact]

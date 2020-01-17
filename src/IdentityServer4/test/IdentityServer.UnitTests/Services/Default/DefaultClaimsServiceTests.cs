@@ -28,6 +28,18 @@ namespace IdentityServer.UnitTests.Services.Default
         private ValidatedRequest _validatedRequest;
         private Resources _resources = new Resources();
 
+        public ResourceValidationResult ResourceValidationResult
+        {
+            get
+            {
+                return new ResourceValidationResult()
+                {
+                    Resources = _resources,
+                    Scopes = _resources.ToScopeNames()
+                };
+            }
+        }
+
         public DefaultClaimsServiceTests()
         {
             _client = new Client
@@ -61,7 +73,7 @@ namespace IdentityServer.UnitTests.Services.Default
         [Fact]
         public async Task GetIdentityTokenClaimsAsync_should_return_standard_user_claims()
         {
-            var claims = await _subject.GetIdentityTokenClaimsAsync(_user, _resources, false, _validatedRequest);
+            var claims = await _subject.GetIdentityTokenClaimsAsync(_user, ResourceValidationResult, false, _validatedRequest);
 
             var types = claims.Select(x => x.Type);
             types.Should().Contain(JwtClaimTypes.Subject);
@@ -76,7 +88,7 @@ namespace IdentityServer.UnitTests.Services.Default
         {
             _resources.IdentityResources.Add(new IdentityResource("id_scope", new[] { "foo" }));
 
-            var claims = await _subject.GetIdentityTokenClaimsAsync(_user, _resources, false, _validatedRequest);
+            var claims = await _subject.GetIdentityTokenClaimsAsync(_user, ResourceValidationResult, false, _validatedRequest);
 
             _mockMockProfileService.GetProfileWasCalled.Should().BeFalse();
         }
@@ -87,7 +99,7 @@ namespace IdentityServer.UnitTests.Services.Default
             _resources.IdentityResources.Add(new IdentityResource("id_scope", new[] { "foo" }));
             _mockMockProfileService.ProfileClaims.Add(new Claim("foo", "foo1"));
 
-            var claims = await _subject.GetIdentityTokenClaimsAsync(_user, _resources, true, _validatedRequest);
+            var claims = await _subject.GetIdentityTokenClaimsAsync(_user, ResourceValidationResult, true, _validatedRequest);
 
             _mockMockProfileService.GetProfileWasCalled.Should().BeTrue();
             _mockMockProfileService.ProfileContext.RequestedClaimTypes.Should().Contain("foo");
@@ -101,7 +113,7 @@ namespace IdentityServer.UnitTests.Services.Default
             _resources.IdentityResources.Add(new IdentityResource("id_scope", new[] { "foo" }));
             _mockMockProfileService.ProfileClaims.Add(new Claim("foo", "foo1"));
 
-            var claims = await _subject.GetIdentityTokenClaimsAsync(_user, _resources, false, _validatedRequest);
+            var claims = await _subject.GetIdentityTokenClaimsAsync(_user, ResourceValidationResult, false, _validatedRequest);
 
             _mockMockProfileService.GetProfileWasCalled.Should().BeTrue();
             _mockMockProfileService.ProfileContext.RequestedClaimTypes.Should().Contain("foo");
@@ -113,7 +125,7 @@ namespace IdentityServer.UnitTests.Services.Default
             _resources.IdentityResources.Add(new IdentityResource("id_scope", new[] { "foo" }));
             _mockMockProfileService.ProfileClaims.Add(new Claim("aud", "bar"));
 
-            var claims = await _subject.GetIdentityTokenClaimsAsync(_user, _resources, true, _validatedRequest);
+            var claims = await _subject.GetIdentityTokenClaimsAsync(_user, ResourceValidationResult, true, _validatedRequest);
 
             claims.Count(x => x.Type == "aud" && x.Value == "bar").Should().Be(0);
         }
@@ -121,7 +133,7 @@ namespace IdentityServer.UnitTests.Services.Default
         [Fact]
         public async Task GetAccessTokenClaimsAsync_should_contain_client_id()
         {
-            var claims = await _subject.GetAccessTokenClaimsAsync(_user, _resources, _validatedRequest);
+            var claims = await _subject.GetAccessTokenClaimsAsync(_user, ResourceValidationResult, _validatedRequest);
 
             claims.Count(x => x.Type == JwtClaimTypes.ClientId && x.Value == _client.ClientId).Should().Be(1);
         }
@@ -129,7 +141,7 @@ namespace IdentityServer.UnitTests.Services.Default
         [Fact]
         public async Task GetAccessTokenClaimsAsync_client_claims_should_be_prefixed_with_default_value()
         {
-            var claims = await _subject.GetAccessTokenClaimsAsync(null, _resources, _validatedRequest);
+            var claims = await _subject.GetAccessTokenClaimsAsync(null, ResourceValidationResult, _validatedRequest);
 
             claims.Count(x => x.Type == "client_some_claim" && x.Value == "some_claim_value").Should().Be(1);
         }
@@ -138,7 +150,7 @@ namespace IdentityServer.UnitTests.Services.Default
         public async Task GetAccessTokenClaimsAsync_client_claims_should_be_prefixed_with_custom_value()
         {
             _validatedRequest.Client.ClientClaimsPrefix = "custom_prefix_";
-            var claims = await _subject.GetAccessTokenClaimsAsync(null, _resources, _validatedRequest);
+            var claims = await _subject.GetAccessTokenClaimsAsync(null, ResourceValidationResult, _validatedRequest);
 
             claims.Count(x => x.Type == "custom_prefix_some_claim" && x.Value == "some_claim_value").Should().Be(1);
         }
@@ -147,7 +159,7 @@ namespace IdentityServer.UnitTests.Services.Default
         public async Task GetAccessTokenClaimsAsync_should_contain_client_claims_when_no_subject()
         {
             _validatedRequest.Client.ClientClaimsPrefix = null;
-            var claims = await _subject.GetAccessTokenClaimsAsync(null, _resources, _validatedRequest);
+            var claims = await _subject.GetAccessTokenClaimsAsync(null, ResourceValidationResult, _validatedRequest);
 
             claims.Count(x => x.Type == "some_claim" && x.Value == "some_claim_value").Should().Be(1);
         }
@@ -158,7 +170,7 @@ namespace IdentityServer.UnitTests.Services.Default
             _validatedRequest.Client.ClientClaimsPrefix = null;
             _validatedRequest.Client.AlwaysSendClientClaims = true;
 
-            var claims = await _subject.GetAccessTokenClaimsAsync(_user, _resources, _validatedRequest);
+            var claims = await _subject.GetAccessTokenClaimsAsync(_user, ResourceValidationResult, _validatedRequest);
 
             claims.Count(x => x.Type == "some_claim" && x.Value == "some_claim_value").Should().Be(1);
         }
@@ -171,7 +183,7 @@ namespace IdentityServer.UnitTests.Services.Default
             _resources.ApiResources.Add(new ApiResource("api1"));
             _resources.ApiResources.Add(new ApiResource("api2"));
 
-            var claims = await _subject.GetAccessTokenClaimsAsync(_user, _resources, _validatedRequest);
+            var claims = await _subject.GetAccessTokenClaimsAsync(_user, ResourceValidationResult, _validatedRequest);
 
             var scopes = claims.Where(x => x.Type == JwtClaimTypes.Scope).Select(x => x.Value);
             scopes.Count().Should().Be(4);
@@ -187,7 +199,7 @@ namespace IdentityServer.UnitTests.Services.Default
             _resources.ApiResources.Add(new ApiResource("api2"));
             _resources.OfflineAccess = true;
 
-            var claims = await _subject.GetAccessTokenClaimsAsync(_user, _resources, _validatedRequest);
+            var claims = await _subject.GetAccessTokenClaimsAsync(_user, ResourceValidationResult, _validatedRequest);
 
             var scopes = claims.Where(x => x.Type == JwtClaimTypes.Scope).Select(x => x.Value);
             scopes.Should().Contain(IdentityServerConstants.StandardScopes.OfflineAccess);
@@ -202,7 +214,7 @@ namespace IdentityServer.UnitTests.Services.Default
             _resources.ApiResources.Add(new ApiResource("api2"));
             _resources.OfflineAccess = true;
 
-            var claims = await _subject.GetAccessTokenClaimsAsync(null, _resources, _validatedRequest);
+            var claims = await _subject.GetAccessTokenClaimsAsync(null, ResourceValidationResult, _validatedRequest);
 
             var scopes = claims.Where(x => x.Type == JwtClaimTypes.Scope).Select(x => x.Value);
             scopes.Should().NotContain(IdentityServerConstants.StandardScopes.OfflineAccess);
@@ -211,7 +223,7 @@ namespace IdentityServer.UnitTests.Services.Default
         [Fact]
         public async Task GetAccessTokenClaimsAsync_should_return_standard_user_claims()
         {
-            var claims = await _subject.GetAccessTokenClaimsAsync(_user, _resources, _validatedRequest);
+            var claims = await _subject.GetAccessTokenClaimsAsync(_user, ResourceValidationResult, _validatedRequest);
 
             var types = claims.Select(x => x.Type);
             types.Should().Contain(JwtClaimTypes.Subject);
@@ -227,7 +239,7 @@ namespace IdentityServer.UnitTests.Services.Default
             _resources.IdentityResources.Add(new IdentityResource("id1", new[] { "foo" }));
             _resources.ApiResources.Add(new ApiResource("api1", new string[] { "bar" }));
 
-            var claims = await _subject.GetAccessTokenClaimsAsync(_user, _resources, _validatedRequest);
+            var claims = await _subject.GetAccessTokenClaimsAsync(_user, ResourceValidationResult, _validatedRequest);
 
             _mockMockProfileService.GetProfileWasCalled.Should().BeTrue();
             _mockMockProfileService.ProfileContext.RequestedClaimTypes.Should().NotContain("foo");
@@ -240,7 +252,7 @@ namespace IdentityServer.UnitTests.Services.Default
             _resources.ApiResources.Add(new ApiResource("api1", new[] { "foo" }));
             _mockMockProfileService.ProfileClaims.Add(new Claim("aud", "bar"));
 
-            var claims = await _subject.GetAccessTokenClaimsAsync(_user, _resources, _validatedRequest);
+            var claims = await _subject.GetAccessTokenClaimsAsync(_user, ResourceValidationResult, _validatedRequest);
 
             claims.Count(x => x.Type == "aud" && x.Value == "bar").Should().Be(0);
         }
@@ -250,7 +262,7 @@ namespace IdentityServer.UnitTests.Services.Default
         {
             _resources.ApiResources.Add(new ApiResource("api1", new[] { "foo" }));
 
-            var claims = await _subject.GetAccessTokenClaimsAsync(_user, _resources, _validatedRequest);
+            var claims = await _subject.GetAccessTokenClaimsAsync(_user, ResourceValidationResult, _validatedRequest);
 
             _mockMockProfileService.ProfileContext.RequestedClaimTypes.Should().Contain("foo");
         }
@@ -271,7 +283,7 @@ namespace IdentityServer.UnitTests.Services.Default
                 }
             );
 
-            var claims = await _subject.GetAccessTokenClaimsAsync(_user, _resources, _validatedRequest);
+            var claims = await _subject.GetAccessTokenClaimsAsync(_user, ResourceValidationResult, _validatedRequest);
 
             _mockMockProfileService.ProfileContext.RequestedClaimTypes.Should().Contain("foo");
         }
@@ -293,7 +305,7 @@ namespace IdentityServer.UnitTests.Services.Default
                 }
             );
 
-            var claims = await _subject.GetAccessTokenClaimsAsync(_user, _resources, _validatedRequest);
+            var claims = await _subject.GetAccessTokenClaimsAsync(_user, ResourceValidationResult, _validatedRequest);
 
             _mockMockProfileService.ProfileContext.RequestedClaimTypes.Should().Contain("foo");
             _mockMockProfileService.ProfileContext.RequestedClaimTypes.Should().Contain("bar");

@@ -163,7 +163,7 @@ namespace IdentityServer4.ResponseHandling
                 var tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.Subject,
-                    Resources = request.ValidatedResources,
+                    ValidatedResources = request.ValidatedResources,
 
                     ValidatedRequest = request
                 };
@@ -194,7 +194,7 @@ namespace IdentityServer4.ResponseHandling
                 {
                     ValidatedRequest = request,
                     Subject = request.Subject,
-                    Resources = request.ValidatedResources,
+                    ValidatedResources = request.ValidatedResources,
                     Nonce = request.Raw.Get(OidcConstants.AuthorizeRequest.Nonce),
                     IncludeAllIdentityClaims = !request.AccessTokenRequested,
                     AccessTokenToHash = accessTokenValue,
@@ -249,7 +249,7 @@ namespace IdentityServer4.ResponseHandling
                 CodeChallengeMethod = request.CodeChallengeMethod,
 
                 IsOpenId = request.IsOpenIdRequest,
-                RequestedScopes = request.ValidatedResources.ToScopeNames(),
+                RequestedScopes = request.ValidatedResources.Resources.ToScopeNames(),
                 RedirectUri = request.RedirectUri,
                 Nonce = request.Nonce,
                 StateHash = stateHash,

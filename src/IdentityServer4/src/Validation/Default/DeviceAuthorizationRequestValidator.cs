@@ -163,13 +163,13 @@ namespace IdentityServer4.Validation
                 return Invalid(request, OidcConstants.AuthorizeErrors.UnauthorizedClient, "Invalid scope");
             }
 
-            if (validatedResources.ValidatedResources.IdentityResources.Any() && !request.IsOpenIdRequest)
+            if (validatedResources.Resources.IdentityResources.Any() && !request.IsOpenIdRequest)
             {
                 LogError("Identity related scope requests, but no openid scope", request);
                 return Invalid(request, OidcConstants.AuthorizeErrors.InvalidScope);
             }
 
-            request.ValidatedResources = validatedResources.ValidatedResources;
+            request.ValidatedResources = validatedResources;
             
             return Valid(request);
         }

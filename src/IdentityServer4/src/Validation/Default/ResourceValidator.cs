@@ -76,8 +76,8 @@ namespace IdentityServer4.Validation
             else
             {
                 resources.OfflineAccess = offlineAccess;
-                result.ValidatedResources = resources;
-                result.ValidScopes = requestedScopes;
+                result.Resources = resources;
+                result.Scopes = requestedScopes;
             }
 
             return result;

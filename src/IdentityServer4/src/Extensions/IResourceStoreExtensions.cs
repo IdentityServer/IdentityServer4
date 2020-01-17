@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
+using IdentityServer4.Validation;
 
 namespace IdentityServer4.Stores
 {
@@ -95,6 +96,22 @@ namespace IdentityServer4.Stores
         public static async Task<Resources> FindEnabledResourcesByScopeAsync(this IResourceStore store, IEnumerable<string> scopeNames)
         {
             return (await store.FindResourcesByScopeAsync(scopeNames)).FilterEnabled();
+        }
+        
+        /// <summary>
+        /// Creates a resource validation result.
+        /// </summary>
+        /// <param name="store">The store.</param>
+        /// <param name="scopeNames">The scope names.</param>
+        /// <returns></returns>
+        public static async Task<ResourceValidationResult> CreateResourceValidationResult(this IResourceStore store, IEnumerable<string> scopeNames)
+        {
+            var validatedResource = new ResourceValidationResult
+            {
+                Resources = await store.FindEnabledResourcesByScopeAsync(scopeNames),
+                Scopes = scopeNames
+            };
+            return validatedResource;
         }
 
         // todo: rework to get all scopes (since it's only used in discovery)

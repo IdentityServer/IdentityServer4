@@ -16,17 +16,17 @@ namespace IdentityServer4.Validation
         /// <summary>
         /// 
         /// </summary>
-        public bool Succeeded => ValidatedResources != null;
+        public bool Succeeded => Resources != null;
 
         /// <summary>
         /// 
         /// </summary>
-        public Resources ValidatedResources { get; set; }
+        public Resources Resources { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public IEnumerable<string> ValidScopes { get; set; } = Enumerable.Empty<string>();
+        public IEnumerable<string> Scopes { get; set; } = Enumerable.Empty<string>();
 
         /// <summary>
         /// Collection of scopes that are invalid.

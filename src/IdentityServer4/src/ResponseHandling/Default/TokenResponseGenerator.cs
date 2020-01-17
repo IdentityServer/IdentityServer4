@@ -165,12 +165,10 @@ namespace IdentityServer4.ResponseHandling
                     throw new InvalidOperationException("Client does not exist anymore.");
                 }
 
-                var resources = await Resources.FindEnabledResourcesByScopeAsync(request.ValidatedRequest.AuthorizationCode.RequestedScopes);
-
                 var tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.ValidatedRequest.AuthorizationCode.Subject,
-                    Resources = resources,
+                    ValidatedResources = await Resources.CreateResourceValidationResult(request.ValidatedRequest.AuthorizationCode.RequestedScopes),
                     Nonce = request.ValidatedRequest.AuthorizationCode.Nonce,
                     AccessTokenToHash = response.AccessToken,
                     StateHash = request.ValidatedRequest.AuthorizationCode.StateHash,
@@ -205,7 +203,7 @@ namespace IdentityServer4.ResponseHandling
                 {
                     Subject = subject,
                     ValidatedRequest = request.ValidatedRequest,
-                    Resources = await Resources.FindEnabledResourcesByScopeAsync(oldAccessToken.Scopes)
+                    ValidatedResources = await Resources.CreateResourceValidationResult(oldAccessToken.Scopes)
                 };
 
                 var newAccessToken = await TokenService.CreateAccessTokenAsync(creationRequest);
@@ -277,12 +275,12 @@ namespace IdentityServer4.ResponseHandling
                     throw new InvalidOperationException("Client does not exist anymore.");
                 }
 
-                var resources = await Resources.FindEnabledResourcesByScopeAsync(request.ValidatedRequest.DeviceCode.AuthorizedScopes);
+                var resources = await Resources.CreateResourceValidationResult(request.ValidatedRequest.DeviceCode.AuthorizedScopes);
 
                 var tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.ValidatedRequest.DeviceCode.Subject,
-                    Resources = resources,
+                    ValidatedResources = resources,
                     AccessTokenToHash = response.AccessToken,
                     ValidatedRequest = request.ValidatedRequest
                 };
@@ -357,12 +355,12 @@ namespace IdentityServer4.ResponseHandling
                     throw new InvalidOperationException("Client does not exist anymore.");
                 }
 
-                var resources = await Resources.FindEnabledResourcesByScopeAsync(request.AuthorizationCode.RequestedScopes);
+                var resources = await Resources.CreateResourceValidationResult(request.AuthorizationCode.RequestedScopes);
 
                 tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.AuthorizationCode.Subject,
-                    Resources = resources,
+                    ValidatedResources = resources,
                     ValidatedRequest = request
                 };
             }
@@ -380,23 +378,23 @@ namespace IdentityServer4.ResponseHandling
                     throw new InvalidOperationException("Client does not exist anymore.");
                 }
 
-                var resources = await Resources.FindEnabledResourcesByScopeAsync(request.DeviceCode.AuthorizedScopes);
+                var resources = await Resources.CreateResourceValidationResult(request.DeviceCode.AuthorizedScopes);
 
                 tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.DeviceCode.Subject,
-                    Resources = resources,
+                    ValidatedResources = resources,
                     ValidatedRequest = request
                 };
             }
             else
             {
-                createRefreshToken = request.ValidatedResources.OfflineAccess;
+                createRefreshToken = request.ValidatedResources.Resources.OfflineAccess;
 
                 tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.Subject,
-                    Resources = request.ValidatedResources,
+                    ValidatedResources = request.ValidatedResources,
                     ValidatedRequest = request
                 };
             }
@@ -428,7 +426,7 @@ namespace IdentityServer4.ResponseHandling
                 var tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.RefreshToken.Subject,
-                    Resources = await Resources.FindEnabledResourcesByScopeAsync(oldAccessToken.Scopes),
+                    ValidatedResources = await Resources.CreateResourceValidationResult(oldAccessToken.Scopes),
                     ValidatedRequest = request,
                     AccessTokenToHash = newAccessToken
                 };

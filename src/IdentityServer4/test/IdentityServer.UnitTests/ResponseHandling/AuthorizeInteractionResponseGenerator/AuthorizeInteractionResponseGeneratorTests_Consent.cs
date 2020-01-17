@@ -96,6 +96,16 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
                 _fakeUserService);
         }
 
+        private static ResourceValidationResult GetValidatedResources(params string[] scopes)
+        {
+            return new ResourceValidationResult
+            {
+                Resources = new Resources(GetIdentityScopes(), GetApiScopes()).Filter(scopes),
+                Scopes = scopes
+            };
+        }
+
+
         [Fact]
         public void ProcessConsentAsync_NullRequest_Throws()
         {
@@ -115,8 +125,8 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
                 RedirectUri = "https://client.com/callback",
                 PromptMode = OidcConstants.PromptModes.Consent,
                 RequestedScopes = new List<string> { "openid", "read", "write" },
-                ValidatedResources = new Resources(GetIdentityScopes(), GetApiScopes()).Filter(new string[] { "openid", "read", "write" }),
-            }; 
+                ValidatedResources = GetValidatedResources("openid", "read", "write"),
+            };
             await _subject.ProcessConsentAsync(request, null);
         }
 
@@ -131,7 +141,7 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
                 RedirectUri = "https://client.com/callback",
                 PromptMode = OidcConstants.PromptModes.Login,
                 RequestedScopes = new List<string> { "openid", "read", "write" },
-                ValidatedResources = new Resources(GetIdentityScopes(), GetApiScopes()).Filter(new string[] { "openid", "read", "write" }),
+                ValidatedResources = GetValidatedResources("openid", "read", "write"),
             };
 
             Func<Task> act = () => _subject.ProcessConsentAsync(request);
@@ -151,7 +161,7 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
                 RedirectUri = "https://client.com/callback",
                 PromptMode = OidcConstants.PromptModes.SelectAccount,
                 RequestedScopes = new List<string> { "openid", "read", "write" },
-                ValidatedResources = new Resources(GetIdentityScopes(), GetApiScopes()).Filter(new string[] { "openid", "read", "write" }),
+                ValidatedResources = GetValidatedResources("openid", "read", "write"),
             };
 
             Func<Task> act = () => _subject.ProcessConsentAsync(request);
@@ -172,7 +182,7 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
                 RedirectUri = "https://client.com/callback",
                 PromptMode = OidcConstants.PromptModes.None,
                 RequestedScopes = new List<string> { "openid", "read", "write" },
-                ValidatedResources = new Resources(GetIdentityScopes(), GetApiScopes()).Filter(new string[] { "openid", "read", "write" }),
+                ValidatedResources = GetValidatedResources("openid", "read", "write"),
             };
             var result = await _subject.ProcessConsentAsync(request);
 
@@ -192,7 +202,7 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
                 RedirectUri = "https://client.com/callback",
                 PromptMode = OidcConstants.PromptModes.Consent,
                 RequestedScopes = new List<string> { "openid", "read", "write" },
-                ValidatedResources = new Resources(GetIdentityScopes(), GetApiScopes()).Filter(new string[] { "openid", "read", "write" }),
+                ValidatedResources = GetValidatedResources("openid", "read", "write"),
             };
             var result = await _subject.ProcessConsentAsync(request);
             request.WasConsentShown.Should().BeFalse();
@@ -211,7 +221,7 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
                 RedirectUri = "https://client.com/callback",
                 PromptMode = OidcConstants.PromptModes.Consent,
                 RequestedScopes = new List<string> { "openid", "read", "write" },
-                ValidatedResources = new Resources(GetIdentityScopes(), GetApiScopes()).Filter(new string[] { "openid", "read", "write" }),
+                ValidatedResources = GetValidatedResources("openid", "read", "write"),
             };
             var result = await _subject.ProcessConsentAsync(request);
             request.WasConsentShown.Should().BeFalse();
@@ -229,7 +239,7 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
                 RedirectUri = "https://client.com/callback",
                 PromptMode = OidcConstants.PromptModes.Consent,
                 RequestedScopes = new List<string> { "openid", "read", "write" },
-                ValidatedResources = new Resources(GetIdentityScopes(), GetApiScopes()).Filter(new string[] { "openid", "read", "write" }),
+                ValidatedResources = GetValidatedResources("openid", "read", "write"),
             };
 
             var consent = new ConsentResponse
@@ -254,7 +264,7 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
                 State = "12345",
                 RedirectUri = "https://client.com/callback",
                 RequestedScopes = new List<string> { "openid", "read", "write" },
-                ValidatedResources = new Resources(GetIdentityScopes(), GetApiScopes()).Filter(new string[] { "openid", "read", "write" }),
+                ValidatedResources = GetValidatedResources("openid", "read", "write"),
             };
             var consent = new ConsentResponse
             {
@@ -279,7 +289,7 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
                 State = "12345",
                 RedirectUri = "https://client.com/callback",
                 RequestedScopes = new List<string> { "openid", "read", "write" },
-                ValidatedResources = new Resources(GetIdentityScopes(), GetApiScopes()).Filter(new string[] { "openid", "read", "write" }),
+                ValidatedResources = GetValidatedResources("openid", "read", "write"),
                 Client = client
             };
 
@@ -308,7 +318,7 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
                     AllowRememberConsent = false
                 },
                 RequestedScopes = new List<string> { "openid", "read", "write" },
-                ValidatedResources = new Resources(GetIdentityScopes(), GetApiScopes()).Filter(new string[] { "openid", "read", "write" }),
+                ValidatedResources = GetValidatedResources("openid", "read", "write"),
             };
             var consent = new ConsentResponse
             {
@@ -316,10 +326,10 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
                 ScopesConsented = new string[] { "openid", "read" }
             };
             var result = await _subject.ProcessConsentAsync(request, consent);
-            request.ValidatedResources.IdentityResources.Count().Should().Be(1);
-            request.ValidatedResources.ApiResources.SelectMany(x => x.Scopes).Count().Should().Be(1);
-            "openid".Should().Be(request.ValidatedResources.IdentityResources.Select(x => x.Name).First());
-            "read".Should().Be(request.ValidatedResources.ApiResources.SelectMany(x => x.Scopes).First().Name);
+            request.ValidatedResources.Resources.IdentityResources.Count().Should().Be(1);
+            request.ValidatedResources.Resources.ApiResources.SelectMany(x => x.Scopes).Count().Should().Be(1);
+            "openid".Should().Be(request.ValidatedResources.Resources.IdentityResources.Select(x => x.Name).First());
+            "read".Should().Be(request.ValidatedResources.Resources.ApiResources.SelectMany(x => x.Scopes).First().Name);
             request.WasConsentShown.Should().BeTrue();
             result.IsConsent.Should().BeFalse();
             AssertUpdateConsentNotCalled();
@@ -338,7 +348,7 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
                     AllowRememberConsent = false
                 },
                 RequestedScopes = new List<string> { "openid", "read", "write" },
-                ValidatedResources = new Resources(GetIdentityScopes(), GetApiScopes()).Filter(new string[] { "openid", "read", "write" }),
+                ValidatedResources = GetValidatedResources("openid", "read", "write"),
             };
             var consent = new ConsentResponse
             {
@@ -346,9 +356,9 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
                 ScopesConsented = new string[] { "openid", "read" }
             };
             var result = await _subject.ProcessConsentAsync(request, consent);
-            request.ValidatedResources.IdentityResources.Count().Should().Be(1);
-            request.ValidatedResources.ApiResources.SelectMany(x=>x.Scopes).Count().Should().Be(1);
-            "read".Should().Be(request.ValidatedResources.ApiResources.SelectMany(x => x.Scopes).First().Name);
+            request.ValidatedResources.Resources.IdentityResources.Count().Should().Be(1);
+            request.ValidatedResources.Resources.ApiResources.SelectMany(x=>x.Scopes).Count().Should().Be(1);
+            "read".Should().Be(request.ValidatedResources.Resources.ApiResources.SelectMany(x => x.Scopes).First().Name);
             request.WasConsentShown.Should().BeTrue();
             result.IsConsent.Should().BeFalse();
             AssertUpdateConsentNotCalled();
@@ -368,7 +378,7 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
                 Client = client,
                 Subject = user,
                 RequestedScopes = new List<string> { "openid", "read", "write" },
-                ValidatedResources = new Resources(GetIdentityScopes(), GetApiScopes()).Filter(new string[] { "openid", "read", "write" }),
+                ValidatedResources = GetValidatedResources("openid", "read", "write"),
             };
             var consent = new ConsentResponse
             {

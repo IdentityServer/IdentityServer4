@@ -50,7 +50,7 @@ namespace IdentityServer4.Services
         /// <returns>
         /// Claims for the identity token
         /// </returns>
-        public virtual async Task<IEnumerable<Claim>> GetIdentityTokenClaimsAsync(ClaimsPrincipal subject, Resources resources, bool includeAllIdentityClaims, ValidatedRequest request)
+        public virtual async Task<IEnumerable<Claim>> GetIdentityTokenClaimsAsync(ClaimsPrincipal subject, ResourceValidationResult resources, bool includeAllIdentityClaims, ValidatedRequest request)
         {
             Logger.LogDebug("Getting claims for identity token for subject: {subject} and client: {clientId}",
                 subject.GetSubjectId(),
@@ -64,7 +64,7 @@ namespace IdentityServer4.Services
             {
                 var additionalClaimTypes = new List<string>();
 
-                foreach (var identityResource in resources.IdentityResources)
+                foreach (var identityResource in resources.Resources.IdentityResources)
                 {
                     foreach (var userClaim in identityResource.UserClaims)
                     {
@@ -81,7 +81,7 @@ namespace IdentityServer4.Services
                     IdentityServerConstants.ProfileDataCallers.ClaimsProviderIdentityToken,
                     additionalClaimTypes)
                 {
-                    RequestedResources = resources,
+                    RequestedResources = resources.Resources,
                     ValidatedRequest = request
                 };
 
@@ -110,7 +110,7 @@ namespace IdentityServer4.Services
         /// <returns>
         /// Claims for the access token
         /// </returns>
-        public virtual async Task<IEnumerable<Claim>> GetAccessTokenClaimsAsync(ClaimsPrincipal subject, Resources resources, ValidatedRequest request)
+        public virtual async Task<IEnumerable<Claim>> GetAccessTokenClaimsAsync(ClaimsPrincipal subject, ResourceValidationResult resources, ValidatedRequest request)
         {
             Logger.LogDebug("Getting claims for access token for client: {clientId}", request.Client.ClientId);
 
@@ -145,11 +145,11 @@ namespace IdentityServer4.Services
             }
             
             // add scopes
-            foreach (var scope in resources.IdentityResources)
+            foreach (var scope in resources.Resources.IdentityResources)
             {
                 outputClaims.Add(new Claim(JwtClaimTypes.Scope, scope.Name));
             }
-            foreach (var scope in resources.ApiResources.SelectMany(x => x.Scopes))
+            foreach (var scope in resources.Resources.ApiResources.SelectMany(x => x.Scopes))
             {
                 outputClaims.Add(new Claim(JwtClaimTypes.Scope, scope.Name));
             }
@@ -157,7 +157,7 @@ namespace IdentityServer4.Services
             // a user is involved
             if (subject != null)
             {
-                if (resources.OfflineAccess)
+                if (resources.Resources.OfflineAccess)
                 {
                     outputClaims.Add(new Claim(JwtClaimTypes.Scope, IdentityServerConstants.StandardScopes.OfflineAccess));
                 }
@@ -169,7 +169,7 @@ namespace IdentityServer4.Services
 
                 // fetch all resource claims that need to go into the access token
                 var additionalClaimTypes = new List<string>();
-                foreach (var api in resources.ApiResources)
+                foreach (var api in resources.Resources.ApiResources)
                 {
                     // add claims configured on api resource
                     if (api.UserClaims != null)
@@ -202,7 +202,7 @@ namespace IdentityServer4.Services
                     IdentityServerConstants.ProfileDataCallers.ClaimsProviderAccessToken,
                     additionalClaimTypes.Distinct())
                 {
-                    RequestedResources = resources,
+                    RequestedResources = resources.Resources,
                     ValidatedRequest = request
                 };
 

@@ -358,13 +358,13 @@ namespace IdentityServer4.Validation
                 return Invalid(OidcConstants.TokenErrors.InvalidScope);
             }
 
-            if (_validatedRequest.ValidatedResources.IdentityResources.Any())
+            if (_validatedRequest.ValidatedResources.Resources.IdentityResources.Any())
             {
                 LogError("Client cannot request OpenID scopes in client credentials flow", new { clientId = _validatedRequest.Client.ClientId });
                 return Invalid(OidcConstants.TokenErrors.InvalidScope);
             }
 
-            if (_validatedRequest.ValidatedResources.OfflineAccess)
+            if (_validatedRequest.ValidatedResources.Resources.OfflineAccess)
             {
                 LogError("Client cannot request a refresh token in client credentials flow", new { clientId = _validatedRequest.Client.ClientId });
                 return Invalid(OidcConstants.TokenErrors.InvalidScope);
@@ -720,7 +720,7 @@ namespace IdentityServer4.Validation
             }
 
             _validatedRequest.Scopes = requestedScopes;
-            _validatedRequest.ValidatedResources = resourceValidationResult.ValidatedResources;
+            _validatedRequest.ValidatedResources = resourceValidationResult;
             
             return true;
         }
