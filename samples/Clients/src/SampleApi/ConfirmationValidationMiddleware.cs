@@ -30,7 +30,7 @@ namespace SampleApi
                         return;
                     }
 
-                    var cert = ctx.Connection.ClientCertificate;
+                    var cert = await ctx.Connection.GetClientCertificateAsync();
                     if (cert == null)
                     {
                         await ctx.ChallengeAsync("x509");
