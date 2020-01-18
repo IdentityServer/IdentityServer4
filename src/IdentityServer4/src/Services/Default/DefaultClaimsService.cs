@@ -64,7 +64,7 @@ namespace IdentityServer4.Services
             {
                 var additionalClaimTypes = new List<string>();
 
-                foreach (var identityResource in resources.Resources.IdentityResources)
+                foreach (var identityResource in resources.IdentityResources)
                 {
                     foreach (var userClaim in identityResource.UserClaims)
                     {
@@ -81,6 +81,7 @@ namespace IdentityServer4.Services
                     IdentityServerConstants.ProfileDataCallers.ClaimsProviderIdentityToken,
                     additionalClaimTypes)
                 {
+                    // todo: brock; put back or remove?
                     RequestedResources = resources.Resources,
                     ValidatedRequest = request
                 };
@@ -145,7 +146,7 @@ namespace IdentityServer4.Services
             }
 
             // add scopes (filter offline_access)
-            foreach (var scope in resources.Scopes.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess))
+            foreach (var scope in resources.ScopeValues.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess))
             {
                 outputClaims.Add(new Claim(JwtClaimTypes.Scope, scope));
             }

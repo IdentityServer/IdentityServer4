@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using IdentityServer4.Extensions;
+using IdentityServer4.Validation;
 
 namespace IdentityServer4.Models
 {
@@ -207,6 +208,41 @@ namespace IdentityServer4.Models
         private static IEnumerable<T> IntersectLists<T>(IEnumerable<IEnumerable<T>> lists)
         {
             return lists.Aggregate((l1, l2) => l1.Intersect(l2));
+        }
+
+        internal static ResourceValidationResult ToResourceValidationResult(this Resources resources)
+        {
+            var scopes = new List<ValidatedScope>();
+
+            if (resources.OfflineAccess)
+            {
+                scopes.Add(new ValidatedScope(IdentityServerConstants.StandardScopes.OfflineAccess));
+            }
+
+            foreach (var scope in resources.ToScopeNames())
+            {
+                var apiResource = resources.FindApiResourceByScope(scope);
+                var apiScope = apiResource.FindApiScope(scope);
+                if (apiScope != null)
+                {
+                    scopes.Add(new ValidatedScope(scope, apiResource, apiScope));
+                }
+                else
+                {
+                    var id = resources.IdentityResources.FirstOrDefault(x => x.Name == scope);
+                    if (id != null)
+                    {
+                        scopes.Add(new ValidatedScope(scope, id));
+                    }
+                }
+            }
+
+            var validatedResource = new ResourceValidationResult
+            {
+                ValidScopes = scopes
+            };
+
+            return validatedResource;
         }
     }
 }

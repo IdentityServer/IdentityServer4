@@ -25,7 +25,6 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
         private IdentityServerOptions _options = new IdentityServerOptions();
         private MockConsentService _mockConsent = new MockConsentService();
         private MockProfileService _fakeUserService = new MockProfileService();
-        private MockResourceValidator _mockResourceValidator = new MockResourceValidator();
 
         private void RequiresConsent(bool value)
         {
@@ -94,19 +93,14 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
                 new StubClock(),
                 TestLogger.Create<IdentityServer4.ResponseHandling.AuthorizeInteractionResponseGenerator>(),
                 _mockConsent,
-                _mockResourceValidator,
                 _fakeUserService);
         }
 
         private static ResourceValidationResult GetValidatedResources(params string[] scopes)
         {
-            var resources = new Resources(GetIdentityScopes(), GetApiScopes()).Filter(scopes);
-            return new ResourceValidationResult
-            {
-                Resources = resources,
-                Scopes = scopes.ToList(),
-                RequiredScopes = resources.GetRequiredScopeNames().ToList()
-            };
+            return new Resources(GetIdentityScopes(), GetApiScopes())
+                .Filter(scopes)
+                .ToResourceValidationResult();
         }
 
 

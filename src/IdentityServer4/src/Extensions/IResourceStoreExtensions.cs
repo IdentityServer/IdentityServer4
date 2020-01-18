@@ -106,12 +106,8 @@ namespace IdentityServer4.Stores
         /// <returns></returns>
         public static async Task<ResourceValidationResult> CreateResourceValidationResult(this IResourceStore store, IEnumerable<string> scopeNames)
         {
-            var validatedResource = new ResourceValidationResult
-            {
-                Resources = await store.FindEnabledResourcesByScopeAsync(scopeNames),
-                Scopes = scopeNames.ToList()
-            };
-            return validatedResource;
+            var resources = await store.FindEnabledResourcesByScopeAsync(scopeNames);
+            return resources.ToResourceValidationResult();
         }
 
         // todo: rework to get all scopes (since it's only used in discovery)

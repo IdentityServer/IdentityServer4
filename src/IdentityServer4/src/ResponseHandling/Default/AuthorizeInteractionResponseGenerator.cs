@@ -33,11 +33,6 @@ namespace IdentityServer4.ResponseHandling
         protected readonly IConsentService Consent;
 
         /// <summary>
-        /// The resource validator.
-        /// </summary>
-        protected readonly IResourceValidator ResourceValidator;
-
-        /// <summary>
         /// The profile service.
         /// </summary>
         protected readonly IProfileService Profile;
@@ -53,19 +48,16 @@ namespace IdentityServer4.ResponseHandling
         /// <param name="clock">The clock.</param>
         /// <param name="logger">The logger.</param>
         /// <param name="consent">The consent.</param>
-        /// <param name="resourceValidator">The resource validator.</param>
         /// <param name="profile">The profile.</param>
         public AuthorizeInteractionResponseGenerator(
             ISystemClock clock,
             ILogger<AuthorizeInteractionResponseGenerator> logger,
             IConsentService consent, 
-            IResourceValidator resourceValidator,
             IProfileService profile)
         {
             Clock = clock;
             Logger = logger;
             Consent = consent;
-            ResourceValidator = resourceValidator;
             Profile = profile;
         }
 
@@ -285,7 +277,7 @@ namespace IdentityServer4.ResponseHandling
                     else
                     {
                         // double check that required scopes are in the list of consented scopes
-                        var requiredScopes = request.ValidatedResources.RequiredScopes;
+                        var requiredScopes = request.ValidatedResources.RequiredScopeValues;
                         var valid = requiredScopes.All(x => consent.ScopesConsented.Contains(x));
                         if (valid == false)
                         {
@@ -295,7 +287,7 @@ namespace IdentityServer4.ResponseHandling
                         else
                         {
                             // they said yes, set scopes they chose
-                            request.ValidatedResources = await ResourceValidator.FilterResourcesAsync(request.ValidatedResources, consent.ScopesConsented);
+                            request.ValidatedResources = request.ValidatedResources.Filter(consent.ScopesConsented);
                             Logger.LogInformation("User consented to scopes: {scopes}", consent.ScopesConsented);
 
                             if (request.Client.AllowRememberConsent)
@@ -305,7 +297,7 @@ namespace IdentityServer4.ResponseHandling
                                 if (consent.RememberConsent)
                                 {
                                     // remember what user actually selected
-                                    scopes = request.ValidatedResources.Scopes;
+                                    scopes = request.ValidatedResources.ScopeValues;
                                     Logger.LogDebug("User indicated to remember consent for scopes: {scopes}", scopes);
                                 }
 

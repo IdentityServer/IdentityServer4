@@ -28,17 +28,7 @@ namespace IdentityServer.UnitTests.Services.Default
         private ValidatedRequest _validatedRequest;
         private Resources _resources = new Resources();
 
-        public ResourceValidationResult ResourceValidationResult
-        {
-            get
-            {
-                return new ResourceValidationResult()
-                {
-                    Resources = _resources,
-                    Scopes = _resources.ToScopeNames().ToList()
-                };
-            }
-        }
+        public ResourceValidationResult ResourceValidationResult => _resources.ToResourceValidationResult();
 
         public DefaultClaimsServiceTests()
         {

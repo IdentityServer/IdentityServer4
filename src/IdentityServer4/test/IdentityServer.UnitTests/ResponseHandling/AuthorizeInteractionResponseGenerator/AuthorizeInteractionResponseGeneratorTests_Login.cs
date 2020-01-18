@@ -23,7 +23,6 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
         private IdentityServer4.ResponseHandling.AuthorizeInteractionResponseGenerator _subject;
         private MockConsentService _mockConsentService = new MockConsentService();
         private StubClock _clock = new StubClock();
-        private MockResourceValidator _mockResourceValidator = new MockResourceValidator();
 
         public AuthorizeInteractionResponseGeneratorTests_Login()
         {
@@ -31,7 +30,6 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
                 _clock,
                 TestLogger.Create<IdentityServer4.ResponseHandling.AuthorizeInteractionResponseGenerator>(),
                 _mockConsentService,
-                _mockResourceValidator,
                 new MockProfileService());
         }
 

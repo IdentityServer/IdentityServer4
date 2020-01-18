@@ -12,15 +12,6 @@ namespace IdentityServer.UnitTests.Common
     {
         public ResourceValidationResult Result { get; set; } = new ResourceValidationResult();
 
-        public Task<ResourceValidationResult> FilterResourcesAsync(ResourceValidationResult resourceValidationResult, IEnumerable<string> scopes)
-        {
-            var result = new ResourceValidationResult { 
-                Resources = resourceValidationResult.Resources.Filter(scopes),
-                Scopes = scopes.ToList()
-            };
-            return Task.FromResult(result);            
-        }
-
         public Task<ResourceValidationResult> ValidateRequestedResourcesAsync(Client client, IEnumerable<string> requestedScopes, IEnumerable<string> requestedResourceIdentifiers)
         {
             return Task.FromResult(Result);

@@ -17,10 +17,5 @@ namespace IdentityServer4.Validation
         /// Validates the requested resources for the client.
         /// </summary>
         Task<ResourceValidationResult> ValidateRequestedResourcesAsync(Client client, IEnumerable<string> requestedScopes, IEnumerable<string> requestedResourceIdentifiers);
-
-        /// <summary>
-        /// Filters the Resources in the ResourceValidationResult based upon the indicated scopes.
-        /// </summary>
-        Task<ResourceValidationResult> FilterResourcesAsync(ResourceValidationResult resourceValidationResult, IEnumerable<string> scopes);
     }
 }
