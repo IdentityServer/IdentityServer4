@@ -704,7 +704,7 @@ namespace IdentityServer4.Validation
                 return false;
             }
 
-            var resourceValidationResult = await _resourceValidator.ValidateRequestedResources(_validatedRequest.Client, requestedScopes, null);
+            var resourceValidationResult = await _resourceValidator.ValidateRequestedResourcesAsync(_validatedRequest.Client, requestedScopes, null);
             if (!resourceValidationResult.Succeeded)
             {
                 if (resourceValidationResult.InvalidScopes.Any())

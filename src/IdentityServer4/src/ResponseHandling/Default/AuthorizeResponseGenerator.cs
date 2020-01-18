@@ -249,7 +249,7 @@ namespace IdentityServer4.ResponseHandling
                 CodeChallengeMethod = request.CodeChallengeMethod,
 
                 IsOpenId = request.IsOpenIdRequest,
-                RequestedScopes = request.ValidatedResources.Resources.ToScopeNames(),
+                RequestedScopes = request.ValidatedResources.Scopes,
                 RedirectUri = request.RedirectUri,
                 Nonce = request.Nonce,
                 StateHash = stateHash,

@@ -109,7 +109,7 @@ namespace IdentityServer4.Stores
             var validatedResource = new ResourceValidationResult
             {
                 Resources = await store.FindEnabledResourcesByScopeAsync(scopeNames),
-                Scopes = scopeNames
+                Scopes = scopeNames.ToList()
             };
             return validatedResource;
         }

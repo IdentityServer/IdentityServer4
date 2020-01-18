@@ -14,27 +14,32 @@ namespace IdentityServer4.Validation
     public class ResourceValidationResult
     {
         /// <summary>
-        /// 
+        /// Indicates if the result was successful.
         /// </summary>
         public bool Succeeded => Resources != null;
 
         /// <summary>
-        /// 
+        /// Resources that model the validated scopes.
         /// </summary>
         public Resources Resources { get; set; }
 
         /// <summary>
-        /// 
+        /// The valid scope values.
         /// </summary>
-        public IEnumerable<string> Scopes { get; set; } = Enumerable.Empty<string>();
+        public ICollection<string> Scopes { get; set; } = new HashSet<string>();
+        
+        /// <summary>
+        /// The scopes which are required.
+        /// </summary>
+        public ICollection<string> RequiredScopes { get; set; } = new HashSet<string>();
 
         /// <summary>
-        /// Collection of scopes that are invalid.
+        /// The requested scopes that are invalid.
         /// </summary>
         public ICollection<string> InvalidScopes { get; set; } = new HashSet<string>();
 
         /// <summary>
-        /// Collection of scopes that are invalid for the client.
+        /// The requested scopes that are not allowed for the client.
         /// </summary>
         public ICollection<string> InvalidScopesForClient { get; set; } = new HashSet<string>();
     }

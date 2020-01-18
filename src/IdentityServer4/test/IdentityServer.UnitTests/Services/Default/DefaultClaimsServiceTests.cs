@@ -35,7 +35,7 @@ namespace IdentityServer.UnitTests.Services.Default
                 return new ResourceValidationResult()
                 {
                     Resources = _resources,
-                    Scopes = _resources.ToScopeNames()
+                    Scopes = _resources.ToScopeNames().ToList()
                 };
             }
         }

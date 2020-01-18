@@ -152,7 +152,7 @@ namespace IdentityServer4.Validation
             //////////////////////////////////////////////////////////
             // check if scopes are valid/supported
             //////////////////////////////////////////////////////////
-            var validatedResources = await _resourceValidator.ValidateRequestedResources(request.Client, request.RequestedScopes, null);
+            var validatedResources = await _resourceValidator.ValidateRequestedResourcesAsync(request.Client, request.RequestedScopes, null);
             if (!validatedResources.Succeeded)
             {
                 if (validatedResources.InvalidScopes.Count > 0)

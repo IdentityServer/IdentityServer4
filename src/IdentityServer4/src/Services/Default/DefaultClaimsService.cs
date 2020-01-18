@@ -143,15 +143,11 @@ namespace IdentityServer4.Services
                     }
                 }
             }
-            
-            // add scopes
-            foreach (var scope in resources.Resources.IdentityResources)
+
+            // add scopes (filter offline_access)
+            foreach (var scope in resources.Scopes.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess))
             {
-                outputClaims.Add(new Claim(JwtClaimTypes.Scope, scope.Name));
-            }
-            foreach (var scope in resources.Resources.ApiResources.SelectMany(x => x.Scopes))
-            {
-                outputClaims.Add(new Claim(JwtClaimTypes.Scope, scope.Name));
+                outputClaims.Add(new Claim(JwtClaimTypes.Scope, scope));
             }
 
             // a user is involved
