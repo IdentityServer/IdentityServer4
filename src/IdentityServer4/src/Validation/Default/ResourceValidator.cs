@@ -130,9 +130,7 @@ namespace IdentityServer4.Validation
             }
             else
             {
-                // todo: brock still not right -- need to use the virtuals to allow for dynamic scope values
-                var apiResource = resources.FindApiResourceByScope(scope);
-                var apiScope = apiResource.FindApiScope(scope);
+                var apiScope = await FindApiScopeAsync(resources, scope);
                 if (apiScope != null)
                 {
                     if (!await IsClientAllowedApiScopeAsync(client, apiScope))
@@ -141,7 +139,8 @@ namespace IdentityServer4.Validation
                     }
                     else
                     {
-                        result.ValidScopes.Add(new ValidatedScope(scope, apiResource, apiScope));
+                        var apis = resources.FindApiResourcesByScope(apiScope.Name);
+                        result.ValidScopes.Add(new ValidatedScope(scope, apis, apiScope));
                     }
                 }
                 else
@@ -175,17 +174,17 @@ namespace IdentityServer4.Validation
             return Task.FromResult(allowed);
         }
 
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <param name="resources"></param>
-        ///// <param name="scope"></param>
-        ///// <returns></returns>
-        //protected virtual Task<IEnumerable<ApiResource>> FindApiResourcesAsync(Resources resources, string scope)
-        //{
-        //    var apiScopes = resources.FindApiResourceByScope(scope);
-        //    return Task.FromResult(apiScopes);
-        //}
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="resources"></param>
+        /// <param name="scope"></param>
+        /// <returns></returns>
+        protected virtual Task<IEnumerable<ApiResource>> FindApiResourcesAsync(Resources resources, string scope)
+        {
+            var apis = resources.FindApiResourcesByScope(scope);
+            return Task.FromResult(apis);
+        }
 
         /// <summary>
         /// 

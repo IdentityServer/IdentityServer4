@@ -29,7 +29,7 @@ namespace IdentityServer4.Validation
         /// 
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<string> ScopeValues => ValidScopes.Select(x => x.Value).ToArray();
+        public IEnumerable<string> ScopeValues => ValidScopes.Select(x => x.Value).Distinct().ToArray();
 
         /// <summary>
         /// 
@@ -48,10 +48,31 @@ namespace IdentityServer4.Validation
         {
             get
             {
-                var validScopes = ValidScopes.Where(x => x.Api != null);
-                var groupedScopes = validScopes.GroupBy(x => x.Api.Name);
-                var apiResources = groupedScopes.Select(x => x.First().Api.CloneWithScopes(x.Select(y => y.Scope)));
-                return apiResources;
+                var apis = new Dictionary<string, ApiResource>();
+
+                foreach(var validScope in ValidScopes)
+                {
+                    if (validScope.Apis != null)
+                    {
+                        foreach(var api in validScope.Apis)
+                        {
+                            if (!apis.ContainsKey(api.Name))
+                            {
+                                apis[api.Name] = api.CloneWithScopes(new[] { validScope.Scope });
+                            }
+                            else
+                            {
+                                var apiResource = apis[api.Name];
+                                if (apiResource.FindApiScope(validScope.Scope.Name) == null)
+                                {
+                                    apiResource.Scopes.Add(validScope.Scope);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return apis.Select(x => x.Value).ToArray();
             }
         }
 
@@ -118,15 +139,16 @@ namespace IdentityServer4.Validation
         /// 
         /// </summary>
         /// <param name="value"></param>
-        /// <param name="api"></param>
+        /// <param name="apis"></param>
         /// <param name="scope"></param>
-        public ValidatedScope(string value, ApiResource api, Scope scope)
+        public ValidatedScope(string value, IEnumerable<ApiResource> apis, Scope scope)
             : this(value)
         {
-            Api = api ?? throw new ArgumentNullException(nameof(api));
+            Apis = apis ?? throw new ArgumentNullException(nameof(apis));
             Scope = scope ?? throw new ArgumentNullException(nameof(scope));
-            
-            if (Api.FindApiScope(scope.Name) == null) throw new ArgumentException($"Scope '{scope.Name}' is not a scope of ApiResource '{api.Name}'.");
+
+            if (!apis.Any()) throw new ArgumentException("API resource collection is empty.", nameof(apis));
+            if (!apis.All(x => x.Scopes.Any(y => y.Name == scope.Name))) throw new ArgumentException($"Not all API resources contain the scope {scope.Name}", nameof(apis));
         }
 
         /// <summary>
@@ -147,7 +169,7 @@ namespace IdentityServer4.Validation
         /// <summary>
         /// 
         /// </summary>
-        public ApiResource Api { get; set; }
+        public IEnumerable<ApiResource> Apis { get; set; }
 
         /// <summary>
         /// 

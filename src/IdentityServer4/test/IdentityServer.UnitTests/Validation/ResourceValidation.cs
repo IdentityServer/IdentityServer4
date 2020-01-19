@@ -288,5 +288,24 @@ namespace IdentityServer.UnitTests.Validation
             
             result.Should().BeEquivalentTo(new string[] { "openid", "resource1" });
         }
+
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task Scope_matches_multipls_apis_should_succeed()
+        {
+            _apiResources.Clear();
+            _apiResources.Add(new ApiResource { Name = "api1", Scopes = { new Scope { Name = "resource" } } });
+            _apiResources.Add(new ApiResource { Name = "api2", Scopes = { new Scope { Name = "resource" } } });
+
+            var validator = Factory.CreateResourceValidator(_store);
+            var result = await validator.ValidateRequestedResourcesAsync(new Client { AllowedScopes = { "resource" } }, new[] { "resource" }, null);
+
+            result.Succeeded.Should().BeTrue();
+            result.Resources.ApiResources.Count.Should().Be(2);
+            result.Resources.ApiResources.Select(x => x.Name).Should().BeEquivalentTo(new[] { "api1", "api2" });
+            result.Scopes.Count().Should().Be(1);
+            result.Scopes.Select(x => x.Name).Should().BeEquivalentTo(new[] { "resource" });
+        }
     }
 }

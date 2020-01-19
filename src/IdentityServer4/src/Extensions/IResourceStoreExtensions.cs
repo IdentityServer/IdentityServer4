@@ -49,11 +49,24 @@ namespace IdentityServer4.Stores
             // attempt to detect invalid configuration. this is about the only place
             // we can do this, since it's hard to get the values in the store.
             var identityScopeNames = identity.Select(x => x.Name).ToArray();
+            var dups = GetDuplicates(identityScopeNames);
+            if (dups.Any())
+            {
+                var names = dups.Aggregate((x, y) => x + ", " + y);
+                throw new Exception(String.Format("Duplicate identity scopes found. This is an invalid configuration. Use different names for identity scopes. Scopes found: {0}", names));
+            }
+
+            var apiNames = apiResources.Select(x => x.Name);
+            dups = GetDuplicates(apiNames);
+            if (dups.Any())
+            {
+                var names = dups.Aggregate((x, y) => x + ", " + y);
+                throw new Exception(String.Format("Duplicate api resources found. This is an invalid configuration. Use different names for identity resources. Names found: {0}", names));
+            }
+
             var apiScopeNames = (from api in apiResources
                                  from scope in api.Scopes
                                  select scope.Name).ToArray();
-            CheckForDuplicates(identityScopeNames, apiScopeNames);
-
             var overlap = identityScopeNames.Intersect(apiScopeNames).ToArray();
             if (overlap.Any())
             {
@@ -62,29 +75,14 @@ namespace IdentityServer4.Stores
             }
         }
 
-        private static void CheckForDuplicates(string[] identityScopeNames, string[] apiScopeNames)
+        private static IEnumerable<string> GetDuplicates(IEnumerable<string> names)
         {
-            var identityDuplicates = identityScopeNames
+            var duplicates = names
                             .GroupBy(x => x)
                             .Where(g => g.Count() > 1)
                             .Select(y => y.Key)
                             .ToArray();
-            if (identityDuplicates.Any())
-            {
-                var names = identityDuplicates.Aggregate((x, y) => x + ", " + y);
-                throw new Exception(String.Format("Duplicate identity scopes found. This is an invalid configuration. Use different names for identity scopes. Scopes found: {0}", names));
-            }
-
-            var apiDuplicates = apiScopeNames
-                .GroupBy(x => x)
-                .Where(g => g.Count() > 1)
-                .Select(y => y.Key)
-                .ToArray();
-            if (apiDuplicates.Any())
-            {
-                var names = apiDuplicates.Aggregate((x, y) => x + ", " + y);
-                throw new Exception(String.Format("Duplicate API scopes found. This is an invalid configuration. Use different names for API scopes. Scopes found: {0}", names));
-            }
+            return duplicates.ToArray();
         }
 
         /// <summary>

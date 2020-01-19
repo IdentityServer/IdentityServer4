@@ -74,7 +74,7 @@ namespace IdentityServer4.Models
         {
             var scopes = resources.IdentityResources.Select(x => x.Name).ToList();
             
-            scopes.AddRange(resources.ApiResources.SelectMany(x => x.ToScopeNames()));
+            scopes.AddRange(resources.ApiResources.SelectMany(x => x.ToScopeNames()).Distinct());
             
             if (resources.OfflineAccess)
             {
@@ -107,19 +107,19 @@ namespace IdentityServer4.Models
         }
 
         /// <summary>
-        /// Finds the API resource by scope.
+        /// Finds the API resources that contain the scope.
         /// </summary>
         /// <param name="resources">The resources.</param>
         /// <param name="name">The name.</param>
         /// <returns></returns>
-        public static ApiResource FindApiResourceByScope(this Resources resources, string name)
+        public static IEnumerable<ApiResource> FindApiResourcesByScope(this Resources resources, string name)
         {
             var q = from api in resources.ApiResources
                     where api.Scopes != null
                     from scope in api.Scopes
                     where scope.Name == name
                     select api;
-            return q.FirstOrDefault();
+            return q.ToArray();
         }
 
         /// <summary>
@@ -221,11 +221,11 @@ namespace IdentityServer4.Models
 
             foreach (var scope in resources.ToScopeNames())
             {
-                var apiResource = resources.FindApiResourceByScope(scope);
-                var apiScope = apiResource.FindApiScope(scope);
+                var apiScope = resources.FindApiScope(scope);
                 if (apiScope != null)
                 {
-                    scopes.Add(new ValidatedScope(scope, apiResource, apiScope));
+                    var apis = resources.FindApiResourcesByScope(apiScope.Name);
+                    scopes.Add(new ValidatedScope(scope, apis, apiScope));
                 }
                 else
                 {

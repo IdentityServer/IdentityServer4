@@ -181,6 +181,24 @@ namespace IdentityServer.UnitTests.Services.Default
         }
 
         [Fact]
+        public async Task GetAccessTokenClaimsAsync_when_multiple_resources_with_same_scope_should_contain_scope_once()
+        {
+            _resources.OfflineAccess = false;
+            _resources.IdentityResources.Clear();
+            _resources.ApiResources.Clear();
+
+            _resources.ApiResources.Add(new ApiResource { Name = "api1", Scopes = { new Scope("resource") } });
+            _resources.ApiResources.Add(new ApiResource { Name = "api2", Scopes = { new Scope("resource") } });
+            _resources.ApiResources.Add(new ApiResource { Name = "api3", Scopes = { new Scope("resource") } });
+
+            var claims = await _subject.GetAccessTokenClaimsAsync(_user, ResourceValidationResult, _validatedRequest);
+
+            var scopes = claims.Where(x => x.Type == JwtClaimTypes.Scope).Select(x => x.Value);
+            scopes.Count().Should().Be(1);
+            scopes.ToArray().Should().BeEquivalentTo(new string[] { "resource" });
+        }
+        
+        [Fact]
         public async Task GetAccessTokenClaimsAsync_should_contain_offline_scope()
         {
             _resources.IdentityResources.Add(new IdentityResource("id1", new[] { "foo" }));

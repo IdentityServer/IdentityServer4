@@ -238,7 +238,7 @@ namespace IdentityServer4.Services
                     token.Audiences.Add(api.Name);
                 }
             }
-            
+
             return token;
         }
 
