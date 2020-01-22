@@ -156,7 +156,7 @@ namespace IdentityServer4.Quickstart.UI.Device
                 if (client != null)
                 {
                     var resources = await _resourceStore.FindEnabledResourcesByScopeAsync(request.ScopesRequested);
-                    if (resources != null && (resources.IdentityResources.Any() || resources.ApiResources.Any()))
+                    if (resources != null && (resources.IdentityResources.Any() || resources.Scopes.Any()))
                     {
                         return CreateConsentViewModel(userCode, model, client, resources);
                     }

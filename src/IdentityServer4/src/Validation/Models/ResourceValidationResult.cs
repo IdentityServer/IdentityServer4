@@ -51,7 +51,7 @@ namespace IdentityServer4.Validation
         /// 
         /// </summary>
         //public IEnumerable<IdentityResource> IdentityResources => ValidScopes.Where(x => x.IdentityResource != null).Select(x => x.IdentityResource);
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -95,7 +95,7 @@ namespace IdentityServer4.Validation
         /// <summary>
         /// 
         /// </summary>
-        public Resources Resources => new Resources(IdentityResources, ApiResources, Scopes.Select(x=>x.Scope)) { OfflineAccess = ScopeValues.Contains(IdentityServerConstants.StandardScopes.OfflineAccess) };
+        public Resources Resources => new Resources(IdentityResources, ApiResources, Scopes.Where(x => x.Scope != null).Select(x => x.Scope)) { OfflineAccess = ScopeValues.Contains(IdentityServerConstants.StandardScopes.OfflineAccess) };
 
         /// <summary>
         /// The requested scopes that are invalid.

@@ -548,7 +548,7 @@ namespace IdentityServer4.Validation
                 return Invalid(request, OidcConstants.AuthorizeErrors.InvalidScope, "Identity scopes requested, but openid scope is missing");
             }
 
-            if (validatedResources.Resources.ApiResources.Any())
+            if (validatedResources.Resources.Scopes.Any())
             {
                 request.IsApiResourceRequest = true;
             }
@@ -567,14 +567,14 @@ namespace IdentityServer4.Validation
                     }
                     break;
                 case Constants.ScopeRequirement.IdentityOnly:
-                    if (!validatedResources.Resources.IdentityResources.Any() || validatedResources.Resources.ApiResources.Any())
+                    if (!validatedResources.Resources.IdentityResources.Any() || validatedResources.Resources.Scopes.Any())
                     {
                         _logger.LogError("Requests for id_token response type only must not include resource scopes");
                         responseTypeValidationCheck = false;
                     }
                     break;
                 case Constants.ScopeRequirement.ResourceOnly:
-                    if (validatedResources.Resources.IdentityResources.Any() || !validatedResources.Resources.ApiResources.Any())
+                    if (validatedResources.Resources.IdentityResources.Any() || !validatedResources.Resources.Scopes.Any())
                     {
                         _logger.LogError("Requests for token response type only must include resource scopes, but no identity scopes.");
                         responseTypeValidationCheck = false;

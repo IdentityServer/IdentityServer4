@@ -150,7 +150,7 @@ namespace IdentityServer4.Validation
                         var apis = resources.FindApiResourcesByScope(apiScope.Name);
                         foreach(var api in apis)
                         {
-                            resources.ApiResources.Add(api);
+                            result.ApiResources.Add(api);
                         }
                     }
                 }
