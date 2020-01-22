@@ -12,7 +12,7 @@ namespace IdentityServer.UnitTests.Common
     {
         public ResourceValidationResult Result { get; set; } = new ResourceValidationResult();
 
-        public Task<ResourceValidationResult> ValidateRequestedResourcesAsync(Client client, IEnumerable<string> requestedScopes, IEnumerable<string> requestedResourceIdentifiers)
+        public Task<ResourceValidationResult> ValidateRequestedResourcesAsync(ResourceValidationRequest request)
         {
             return Task.FromResult(Result);
         }

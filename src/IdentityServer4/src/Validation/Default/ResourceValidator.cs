@@ -32,16 +32,18 @@ namespace IdentityServer4.Validation
         }
 
         /// <inheritdoc/>
-        public async Task<ResourceValidationResult> ValidateRequestedResourcesAsync(Client client, IEnumerable<string> requestedScopes, IEnumerable<string> requestedResourceIdentifiers)
+        public async Task<ResourceValidationResult> ValidateRequestedResourcesAsync(ResourceValidationRequest request)
         {
+            if (request == null) throw new ArgumentNullException(nameof(request));
+
             var result = new ResourceValidationResult();
 
-            var offlineAccess = requestedScopes.Contains(IdentityServerConstants.StandardScopes.OfflineAccess);
+            var offlineAccess = request.ScopeValues.Contains(IdentityServerConstants.StandardScopes.OfflineAccess);
             if (offlineAccess)
             {
-                if (await IsClientAllowedOfflineAccessAsync(client))
+                if (await IsClientAllowedOfflineAccessAsync(request.Client))
                 {
-                    result.ValidScopes.Add(new ValidatedScope(IdentityServerConstants.StandardScopes.OfflineAccess));
+                    result.Scopes.Add(new ScopeValue(IdentityServerConstants.StandardScopes.OfflineAccess));
                 }
                 else
                 {
@@ -49,18 +51,23 @@ namespace IdentityServer4.Validation
                 }
             }
 
-            if (offlineAccess)
-            {
-                // filter here so below in our validation loop we're not doing extra checking for offline_access
-                requestedScopes = requestedScopes.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess).ToArray();
-            }
-            
-            var resources = await FindResourcesByScopeAsync(requestedScopes);
+            // filter here so below in our validation loop we're not doing extra checking for offline_access
+            var requestedScopes = offlineAccess ?
+                request.ScopeValues.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess).ToArray() : 
+                request.ScopeValues;
+
+            // todo: brock add ValidateScopeValues?
+
+            var scopeNames = GetScopeNamesFromValues(requestedScopes);
+            var names = scopeNames.Select(x => x.Name).Distinct();
+
+            var resources = await _store.FindEnabledResourcesByScopeAsync(names);
+
             resources.OfflineAccess = offlineAccess;
 
-            foreach (var scope in requestedScopes)
+            foreach (var scope in scopeNames)
             {
-                await ValidateScopeAsync(client, resources, scope, result);
+                await ValidateScopeAsync(request.Client, resources, scope, result);
             }
 
             if (result.InvalidScopes.Count > 0 || result.InvalidScopesForClient.Count > 0)
@@ -71,21 +78,23 @@ namespace IdentityServer4.Validation
                 }
                 if (result.InvalidScopesForClient.Count > 0)
                 {
-                    _logger.LogError("Invalid scopes for client id: {clientId}, scopes: {scopes}", client.ClientId, result.InvalidScopesForClient);
+                    _logger.LogError("Invalid scopes for client id: {clientId}, scopes: {scopes}", request.Client.ClientId, result.InvalidScopesForClient);
                 }
 
-                result.ValidScopes.Clear();
+                result.IdentityResources.Clear();
+                result.ApiResources.Clear();
+                result.Scopes.Clear();
             }
 
             return result;
         }
 
         /// <summary>
-        /// Loads the scopes from the store.
+        /// 
         /// </summary>
-        /// <param name="requestedScopes"></param>
+        /// <param name="scopeValues"></param>
         /// <returns></returns>
-        protected virtual async Task<Resources> FindResourcesByScopeAsync(IEnumerable<string> requestedScopes)
+        protected IEnumerable<ScopeName> GetScopeNamesFromValues(IEnumerable<string> scopeValues)
         {
             //if (requestedScopes.Contains("payment:"))
             //{
@@ -95,15 +104,12 @@ namespace IdentityServer4.Validation
 
             // requestedScopes=["payment:123", "api1", "openid"]
             // client:{allowedScopes="payment"}
-            // apiResource {  name="payment",  scopes=[ {name="payment:123", userClaims=['email']} ]}
-
-            var result = await _store.FindEnabledResourcesByScopeAsync(requestedScopes);
-
-            // todo: keep original scope string, formal name in db, bag for data, scope value to emit
+            // apiResource {  name="payment",  scopes=[ {name="payment:123", userClaims=['email']} ]}            // todo: keep original scope string, formal name in db, bag for data, scope value to emit
 
             //result.ApiResources.Where(x=>x.Name == "payment")["txId"] = 
 
-            return result;
+            
+            return scopeValues.Select(x => new ScopeName { Name = x, Value = x }).ToArray();
         }
 
         /// <summary>
@@ -111,55 +117,48 @@ namespace IdentityServer4.Validation
         /// </summary>
         /// <param name="client"></param>
         /// <param name="resources"></param>
-        /// <param name="scope"></param>
+        /// <param name="scopeName"></param>
         /// <param name="result"></param>
         /// <returns></returns>
-        protected virtual async Task ValidateScopeAsync(Client client, Resources resources, string scope, ResourceValidationResult result)
+        protected virtual async Task ValidateScopeAsync(Client client, Resources resources, ScopeName scopeName, ResourceValidationResult result)
         {
-            var identity = await FindIdentityResourceAsync(resources, scope);
+            var identity = resources.FindIdentityResourcesByScope(scopeName.Name);
             if (identity != null)
             {
                 if (!await IsClientAllowedIdentityResourceAsync(client, identity))
                 {
-                    result.InvalidScopesForClient.Add(scope);
+                    result.InvalidScopesForClient.Add(scopeName.Value);
                 }
                 else
                 {
-                    result.ValidScopes.Add(new ValidatedScope(scope, identity));
+                    result.IdentityResources.Add(identity);
                 }
             }
             else
             {
-                var apiScope = await FindApiScopeAsync(resources, scope);
+                var apiScope = resources.FindScope(scopeName.Name);
                 if (apiScope != null)
                 {
                     if (!await IsClientAllowedApiScopeAsync(client, apiScope))
                     {
-                        result.InvalidScopesForClient.Add(scope);
+                        result.InvalidScopesForClient.Add(scopeName.Value);
                     }
                     else
                     {
+                        result.Scopes.Add(new ScopeValue(scopeName.Name, apiScope));
+
                         var apis = resources.FindApiResourcesByScope(apiScope.Name);
-                        result.ValidScopes.Add(new ValidatedScope(scope, apis, apiScope));
+                        foreach(var api in apis)
+                        {
+                            resources.ApiResources.Add(api);
+                        }
                     }
                 }
                 else
                 {
-                    result.InvalidScopes.Add(scope);
+                    result.InvalidScopes.Add(scopeName.Value);
                 }
             }
-        }
-
-        /// <summary>
-        /// Find the matching IdentityResource.
-        /// </summary>
-        /// <param name="resources"></param>
-        /// <param name="scope"></param>
-        /// <returns></returns>
-        protected virtual Task<IdentityResource> FindIdentityResourceAsync(Resources resources, string scope)
-        {
-            var identityResource = resources.IdentityResources.FirstOrDefault(x => x.Name == scope);
-            return Task.FromResult(identityResource);
         }
 
         /// <summary>
@@ -172,30 +171,6 @@ namespace IdentityServer4.Validation
         {
             var allowed = client.AllowedScopes.Contains(identity.Name);
             return Task.FromResult(allowed);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="resources"></param>
-        /// <param name="scope"></param>
-        /// <returns></returns>
-        protected virtual Task<IEnumerable<ApiResource>> FindApiResourcesAsync(Resources resources, string scope)
-        {
-            var apis = resources.FindApiResourcesByScope(scope);
-            return Task.FromResult(apis);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="resources"></param>
-        /// <param name="scope"></param>
-        /// <returns></returns>
-        protected virtual Task<Scope> FindApiScopeAsync(Resources resources, string scope)
-        {
-            var apiScope = resources.FindApiScope(scope);
-            return Task.FromResult(apiScope);
         }
 
         /// <summary>
@@ -218,6 +193,12 @@ namespace IdentityServer4.Validation
         protected virtual Task<bool> IsClientAllowedOfflineAccessAsync(Client client)
         {
             return Task.FromResult(client.AllowOfflineAccess);
+        }
+
+        public class ScopeName
+        {
+            public string Name { get; set; }
+            public string Value { get; set; }
         }
     }
 }

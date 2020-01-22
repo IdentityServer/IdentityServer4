@@ -25,19 +25,24 @@ namespace IdentityServer.UnitTests.Validation.Setup
                 new ApiResource
                 {
                     Name = "api",
-                    Scopes =
-                    {
-                        new Scope
-                        {
-                            Name = "resource",
-                            Description = "resource scope"
-                        },
-                        new Scope
-                        {
-                            Name = "resource2",
-                            Description = "resource scope"
-                        }
-                    }
+                    Scopes =  { "resource", "resource2" }
+                }
+            };
+        }
+
+        public static IEnumerable<Scope> GetScopes()
+        {
+            return new Scope[]
+            {
+                new Scope
+                {
+                    Name = "resource",
+                    Description = "resource scope"
+                },
+                new Scope
+                {
+                    Name = "resource2",
+                    Description = "resource scope"
                 }
             };
         }

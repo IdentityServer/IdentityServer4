@@ -176,16 +176,15 @@ namespace IdentityServer4.Services
                             additionalClaimTypes.Add(claim);
                         }
                     }
+                }
 
-                    // add claims configured on scope
-                    foreach (var scope in api.Scopes)
+                foreach(var scope in resources.Scopes)
+                {
+                    if (scope.Scope != null && scope.Scope.UserClaims != null)
                     {
-                        if (scope.UserClaims != null)
+                        foreach (var claim in scope.Scope.UserClaims)
                         {
-                            foreach (var claim in scope.UserClaims)
-                            {
-                                additionalClaimTypes.Add(claim);
-                            }
+                            additionalClaimTypes.Add(claim);
                         }
                     }
                 }

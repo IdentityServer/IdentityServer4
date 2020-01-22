@@ -46,7 +46,7 @@ namespace IdentityServer.UnitTests.Validation.Setup
 
             if (resourceStore == null)
             {
-                resourceStore = new InMemoryResourcesStore(TestScopes.GetIdentity(), TestScopes.GetApis());
+                resourceStore = new InMemoryResourcesStore(TestScopes.GetIdentity(), TestScopes.GetApis(), TestScopes.GetScopes());
             }
 
             if (resourceOwnerValidator == null)
@@ -116,7 +116,7 @@ namespace IdentityServer.UnitTests.Validation.Setup
 
         internal static IResourceValidator CreateResourceValidator(IResourceStore store = null)
         {
-            store = store ?? new InMemoryResourcesStore(TestScopes.GetIdentity(), TestScopes.GetApis());
+            store = store ?? new InMemoryResourcesStore(TestScopes.GetIdentity(), TestScopes.GetApis(), TestScopes.GetScopes());
             return new ResourceValidator(store, TestLogger.Create<ResourceValidator>());
         }
 
@@ -142,7 +142,7 @@ namespace IdentityServer.UnitTests.Validation.Setup
             
             if (resourceStore == null)
             {
-                resourceStore = new InMemoryResourcesStore(TestScopes.GetIdentity(), TestScopes.GetApis());
+                resourceStore = new InMemoryResourcesStore(TestScopes.GetIdentity(), TestScopes.GetApis(), TestScopes.GetScopes());
             }
 
             if (resourceValidator == null)
@@ -175,7 +175,7 @@ namespace IdentityServer.UnitTests.Validation.Setup
 
             if (resourceStore == null)
             {
-                resourceStore = new InMemoryResourcesStore(TestScopes.GetIdentity(), TestScopes.GetApis());
+                resourceStore = new InMemoryResourcesStore(TestScopes.GetIdentity(), TestScopes.GetApis(), TestScopes.GetScopes());
             }
 
             if (clients == null)

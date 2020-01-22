@@ -94,21 +94,21 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
                 new IdentityResources.Profile(),
                 new IdentityResources.Email()
             });
-            _mockPipeline.ApiScopes.AddRange(new ApiResource[] {
+            _mockPipeline.ApiResources.AddRange(new ApiResource[] {
                 new ApiResource
                 {
                     Name = "api",
-                    Scopes =
-                    {
-                        new Scope
-                        {
-                            Name = "api1"
-                        },
-                        new Scope
-                        {
-                            Name = "api2"
-                        }
-                    }
+                    Scopes = { "api1", "api2" }
+                }
+            });
+            _mockPipeline.Scopes.AddRange(new Scope[] {
+                new Scope
+                {
+                    Name = "api1"
+                },
+                new Scope
+                {
+                    Name = "api2"
                 }
             });
 
@@ -1046,8 +1046,8 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
         {
             _mockPipeline.IdentityScopes.Add(new IdentityResource("foo", "Foo", new string[] { "name" }));
             _mockPipeline.IdentityScopes.Add(new IdentityResource("bar", "Bar", new string[] { "name" }));
-            _mockPipeline.ApiScopes.Add(new ApiResource("foo", "Foo"));
-            _mockPipeline.ApiScopes.Add(new ApiResource("bar", "Bar"));
+            _mockPipeline.ApiResources.Add(new ApiResource("foo", "Foo"));
+            _mockPipeline.ApiResources.Add(new ApiResource("bar", "Bar"));
 
             await _mockPipeline.LoginAsync("bob");
 

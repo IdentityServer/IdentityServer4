@@ -277,7 +277,7 @@ namespace IdentityServer4.ResponseHandling
                     else
                     {
                         // double check that required scopes are in the list of consented scopes
-                        var requiredScopes = request.ValidatedResources.RequiredScopeValues;
+                        var requiredScopes = request.ValidatedResources.GetRequiredScopeValues();
                         var valid = requiredScopes.All(x => consent.ScopesConsented.Contains(x));
                         if (valid == false)
                         {

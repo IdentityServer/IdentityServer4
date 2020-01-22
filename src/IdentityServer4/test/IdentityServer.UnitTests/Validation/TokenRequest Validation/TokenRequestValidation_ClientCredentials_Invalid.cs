@@ -54,9 +54,8 @@ namespace IdentityServer.UnitTests.Validation.TokenRequest_Validation
             result.ValidatedRequest.ValidatedResources.Resources.ApiResources.Count.Should().Be(1);
             result.ValidatedRequest.ValidatedResources.Resources.ApiResources.First().Name.Should().Be("api");
 
-            result.ValidatedRequest.ValidatedResources.Resources.ApiResources.First().Scopes.Count.Should().Be(2);
-            result.ValidatedRequest.ValidatedResources.Resources.ApiResources.First().Scopes.First().Name.Should().Be("resource");
-            result.ValidatedRequest.ValidatedResources.Resources.ApiResources.First().Scopes.Skip(1).First().Name.Should().Be("resource2");
+            result.ValidatedRequest.ValidatedResources.Resources.Scopes.Count.Should().Be(2);
+            result.ValidatedRequest.ValidatedResources.Resources.Scopes.Select(x=>x.Name).Should().BeEquivalentTo(new[] { "resource", "resource2" });
         }
 
         [Fact]

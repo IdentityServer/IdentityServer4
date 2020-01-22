@@ -231,7 +231,7 @@ namespace IdentityServer4.Services
                 }
             }
 
-            foreach (var api in request.ValidatedResources.Resources.ApiResources)
+            foreach (var api in request.ValidatedResources.ApiResources)
             {
                 if (api.Name.IsPresent())
                 {

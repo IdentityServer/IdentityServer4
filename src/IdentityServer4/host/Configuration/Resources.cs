@@ -39,6 +39,8 @@ namespace Host.Configuration
                     ApiSecrets = { new Secret("secret".Sha256()) },
 
                     //AllowedSigningAlgorithms = { "RS256", "ES256" }
+
+                    Scopes = { "api1" }
                 },
                 
                 // expanded version if more control is needed
@@ -59,27 +61,33 @@ namespace Host.Configuration
                         JwtClaimTypes.Email
                     },
 
-                    Scopes =
+                    Scopes = { "api2.full_access", "api2.read_only", "api2.internal" }
+                }
+            };
+        }
+
+        public static IEnumerable<Scope> GetScopes()
+        {
+            return new[]
+            {
+                new Scope("api1"),
+                new Scope
+                {
+                    Name = "api2.full_access",
+                    DisplayName = "Full access to API 2"
+                },
+                new Scope
+                {
+                    Name = "api2.read_only",
+                    DisplayName = "Read only access to API 2"
+                },
+                new Scope
+                {
+                    Name = "api2.internal",
+                    ShowInDiscoveryDocument = false,
+                    UserClaims =
                     {
-                        new Scope
-                        {
-                            Name = "api2.full_access",
-                            DisplayName = "Full access to API 2"
-                        },
-                        new Scope
-                        {
-                            Name = "api2.read_only",
-                            DisplayName = "Read only access to API 2"
-                        },
-                        new Scope
-                        {
-                            Name = "api2.internal",
-                            ShowInDiscoveryDocument = false,
-                            UserClaims =
-                            {
-                                "internal_id"
-                            }
-                        }
+                        "internal_id"
                     }
                 }
             };

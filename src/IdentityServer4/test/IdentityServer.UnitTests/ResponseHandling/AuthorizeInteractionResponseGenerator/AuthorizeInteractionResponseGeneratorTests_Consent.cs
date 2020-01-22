@@ -55,38 +55,43 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
             };
         }
 
-        private static IEnumerable<ApiResource> GetApiScopes()
+        private static IEnumerable<ApiResource> GetApiResources()
         {
             return new ApiResource[]
             {
                 new ApiResource
                 {
                     Name = "api",
-                    Scopes =
-                    {
-                        new Scope
-                        {
-                            Name = "read",
-                            DisplayName = "Read data",
-                            Emphasize = false
-                        },
-                        new Scope
-                        {
-                            Name = "write",
-                            DisplayName = "Write data",
-                            Emphasize = true
-                        },
-                        new Scope
-                        {
-                            Name = "forbidden",
-                            DisplayName = "Forbidden scope",
-                            Emphasize = true
-                        }
-                    }
+                    Scopes = { "read", "write", "forbidden" }
                 }
              };
         }
-        
+
+        private static IEnumerable<Scope> GetScopes()
+        {
+            return new Scope[]
+            {
+                new Scope
+                {
+                    Name = "read",
+                    DisplayName = "Read data",
+                    Emphasize = false
+                },
+                new Scope
+                {
+                    Name = "write",
+                    DisplayName = "Write data",
+                    Emphasize = true
+                },
+                new Scope
+                {
+                    Name = "forbidden",
+                    DisplayName = "Forbidden scope",
+                    Emphasize = true
+                }
+             };
+        }
+
         public AuthorizeInteractionResponseGeneratorTests_Consent()
         {
             _subject = new IdentityServer4.ResponseHandling.AuthorizeInteractionResponseGenerator(
@@ -98,7 +103,7 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
 
         private static ResourceValidationResult GetValidatedResources(params string[] scopes)
         {
-            return new Resources(GetIdentityScopes(), GetApiScopes())
+            return new Resources(GetIdentityScopes(), GetApiResources(), GetScopes())
                 .Filter(scopes)
                 .ToResourceValidationResult();
         }
@@ -325,9 +330,9 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
             };
             var result = await _subject.ProcessConsentAsync(request, consent);
             request.ValidatedResources.Resources.IdentityResources.Count().Should().Be(1);
-            request.ValidatedResources.Resources.ApiResources.SelectMany(x => x.Scopes).Count().Should().Be(1);
+            request.ValidatedResources.Resources.Scopes.Count().Should().Be(1);
             "openid".Should().Be(request.ValidatedResources.Resources.IdentityResources.Select(x => x.Name).First());
-            "read".Should().Be(request.ValidatedResources.Resources.ApiResources.SelectMany(x => x.Scopes).First().Name);
+            "read".Should().Be(request.ValidatedResources.Resources.Scopes.First().Name);
             request.WasConsentShown.Should().BeTrue();
             result.IsConsent.Should().BeFalse();
             AssertUpdateConsentNotCalled();
@@ -355,8 +360,8 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
             };
             var result = await _subject.ProcessConsentAsync(request, consent);
             request.ValidatedResources.Resources.IdentityResources.Count().Should().Be(1);
-            request.ValidatedResources.Resources.ApiResources.SelectMany(x=>x.Scopes).Count().Should().Be(1);
-            "read".Should().Be(request.ValidatedResources.Resources.ApiResources.SelectMany(x => x.Scopes).First().Name);
+            request.ValidatedResources.Resources.Scopes.Count().Should().Be(1);
+            "read".Should().Be(request.ValidatedResources.Resources.Scopes.First().Name);
             request.WasConsentShown.Should().BeTrue();
             result.IsConsent.Should().BeFalse();
             AssertUpdateConsentNotCalled();

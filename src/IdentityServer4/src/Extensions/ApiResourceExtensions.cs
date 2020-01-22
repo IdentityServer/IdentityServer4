@@ -9,19 +9,20 @@ namespace IdentityServer4.Models
 {
     internal static class ApiResourceExtensions
     {
-        public static ApiResource CloneWithScopes(this ApiResource apiResource, IEnumerable<Scope> scopes)
-        {
-            return new ApiResource
-            {
-                Enabled = apiResource.Enabled,
-                Name = apiResource.Name,
-                DisplayName = apiResource.DisplayName,
-                ApiSecrets = new HashSet<Secret>(apiResource.ApiSecrets),
-                AllowedAccessTokenSigningAlgorithms = apiResource.AllowedAccessTokenSigningAlgorithms,
-                Scopes = new HashSet<Scope>(scopes.ToArray()),
-                UserClaims = new HashSet<string>(apiResource.UserClaims),
-                Properties = new Dictionary<string, string>(apiResource.Properties)
-            };
-        }
+        // todo: brock can remove?
+        //public static ApiResource CloneWithScopes(this ApiResource apiResource, IEnumerable<Scope> scopes)
+        //{
+        //    return new ApiResource
+        //    {
+        //        Enabled = apiResource.Enabled,
+        //        Name = apiResource.Name,
+        //        DisplayName = apiResource.DisplayName,
+        //        ApiSecrets = new HashSet<Secret>(apiResource.ApiSecrets),
+        //        AllowedAccessTokenSigningAlgorithms = apiResource.AllowedAccessTokenSigningAlgorithms,
+        //        Scopes = new HashSet<Scope>(scopes.ToArray()),
+        //        UserClaims = new HashSet<string>(apiResource.UserClaims),
+        //        Properties = new Dictionary<string, string>(apiResource.Properties)
+        //    };
+        //}
     }
 }

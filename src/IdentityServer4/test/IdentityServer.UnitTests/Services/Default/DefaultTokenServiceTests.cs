@@ -55,16 +55,21 @@ namespace IdentityServer.UnitTests.Services.Default
         public async Task CreateAccessTokenAsync_should_include_aud_for_each_ApiResource()
         {
             var scope = new Scope() { Name = "resource" };
+
             var request = new TokenCreationRequest { 
                 ValidatedResources = new ResourceValidationResult()
                 {
-                    ValidScopes = 
+                    ApiResources = 
                     {
-                        new ValidatedScope("res1", new[]{ new ApiResource { Name = "api1", Scopes = { scope } } }, scope),
-                        new ValidatedScope("res2", new[]{ new ApiResource { Name = "api2", Scopes = { scope } } }, scope),
-                        new ValidatedScope("res3", new[]{ new ApiResource { Name = "api3", Scopes = { scope } } }, scope),
-                        new ValidatedScope("res3", new[]{ new ApiResource { Name = "api3", Scopes = { scope } } }, scope),
-                        new ValidatedScope("res3", new[]{ new ApiResource { Name = "api3", Scopes = { scope } } }, scope),
+                        new ApiResource("api1"){ Scopes = { scope.Name } },
+                        new ApiResource("api2"){ Scopes = { scope.Name } },
+                        new ApiResource("api3"){ Scopes = { scope.Name } },
+                    },
+                    Scopes = 
+                    {
+                        new ScopeValue("res1", scope),
+                        new ScopeValue("res2", scope),
+                        new ScopeValue("res3", scope),
                     }
                 },
                 ValidatedRequest = new ValidatedRequest()

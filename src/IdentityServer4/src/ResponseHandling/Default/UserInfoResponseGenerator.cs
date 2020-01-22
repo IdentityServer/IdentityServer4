@@ -158,7 +158,7 @@ namespace IdentityServer4.ResponseHandling
             Logger.LogDebug("Scopes in access token: {scopes}", scopeString);
 
             var identityResources = await Resources.FindEnabledIdentityResourcesByScopeAsync(scopes);
-            return new Resources(identityResources, Enumerable.Empty<ApiResource>());
+            return new Resources(identityResources, Enumerable.Empty<ApiResource>(), Enumerable.Empty<Scope>());
         }
     }
 }

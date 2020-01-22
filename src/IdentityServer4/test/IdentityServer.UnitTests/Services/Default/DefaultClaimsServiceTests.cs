@@ -170,8 +170,8 @@ namespace IdentityServer.UnitTests.Services.Default
         {
             _resources.IdentityResources.Add(new IdentityResource("id1", new[] { "foo" }));
             _resources.IdentityResources.Add(new IdentityResource("id2", new[] { "bar" }));
-            _resources.ApiResources.Add(new ApiResource("api1"));
-            _resources.ApiResources.Add(new ApiResource("api2"));
+            _resources.Scopes.Add(new Scope("api1"));
+            _resources.Scopes.Add(new Scope("api2"));
 
             var claims = await _subject.GetAccessTokenClaimsAsync(_user, ResourceValidationResult, _validatedRequest);
 
@@ -186,10 +186,12 @@ namespace IdentityServer.UnitTests.Services.Default
             _resources.OfflineAccess = false;
             _resources.IdentityResources.Clear();
             _resources.ApiResources.Clear();
+            _resources.Scopes.Clear();
 
-            _resources.ApiResources.Add(new ApiResource { Name = "api1", Scopes = { new Scope("resource") } });
-            _resources.ApiResources.Add(new ApiResource { Name = "api2", Scopes = { new Scope("resource") } });
-            _resources.ApiResources.Add(new ApiResource { Name = "api3", Scopes = { new Scope("resource") } });
+            _resources.ApiResources.Add(new ApiResource { Name = "api1", Scopes = { "resource" } });
+            _resources.ApiResources.Add(new ApiResource { Name = "api2", Scopes = { "resource" } });
+            _resources.ApiResources.Add(new ApiResource { Name = "api3", Scopes = { "resource" } });
+            _resources.Scopes.Add(new Scope("resource"));
 
             var claims = await _subject.GetAccessTokenClaimsAsync(_user, ResourceValidationResult, _validatedRequest);
 
@@ -281,13 +283,13 @@ namespace IdentityServer.UnitTests.Services.Default
             _resources.ApiResources.Add(
                 new ApiResource("api")
                 {
-                    Scopes =
-                    {
-                        new Scope("api1")
-                        {
-                            UserClaims = { "foo" }
-                        }
-                    }
+                    Scopes = { "api1" }
+                }
+            );
+            _resources.Scopes.Add(
+                new Scope("api1")
+                {
+                    UserClaims = { "foo" }
                 }
             );
 
@@ -303,13 +305,13 @@ namespace IdentityServer.UnitTests.Services.Default
                 new ApiResource("api")
                 {
                     UserClaims = { "foo" },
-                    Scopes =
-                    {
-                        new Scope("api1")
-                        {
-                            UserClaims = { "bar" }
-                        }
-                    }
+                    Scopes = { "api1" } 
+                }
+            );
+            _resources.Scopes.Add(
+                new Scope("api1")
+                {
+                    UserClaims = { "bar" }
                 }
             );
 
