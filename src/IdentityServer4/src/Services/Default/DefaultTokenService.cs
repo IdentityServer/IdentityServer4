@@ -231,12 +231,31 @@ namespace IdentityServer4.Services
                 }
             }
 
-            foreach (var api in request.ValidatedResources.ApiResources)
+            var audiences = new List<string>();
+            foreach (var scope in request.ValidatedResources.Resources.Scopes)
             {
-                if (api.Name.IsPresent())
+                if (scope.Name.IsPresent())
                 {
-                    token.Audiences.Add(api.Name);
+                    var apiResources = request.ValidatedResources.Resources.FindApiResourcesByScope(scope.Name);
+                    if (apiResources.Any())
+                    {
+                        audiences.AddRange(apiResources.Select(x => x.Name));
+                    }
+                    else
+                    {
+                        audiences.Add(scope.Name);
+                    }
                 }
+            }
+
+            if (request.ValidatedResources.ApiResources.Any())
+            {
+                audiences.AddRange(request.ValidatedResources.ApiResources.Select(x => x.Name));
+            }
+
+            foreach(var aud in audiences.Distinct())
+            {
+                token.Audiences.Add(aud);
             }
 
             return token;

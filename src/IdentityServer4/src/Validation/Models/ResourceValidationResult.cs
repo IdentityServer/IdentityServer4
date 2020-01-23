@@ -27,6 +27,7 @@ namespace IdentityServer4.Validation
         /// </summary>
         public bool Succeeded => IdentityResources.Any() || ApiResources.Any() || Scopes.Any();
 
+        // todo: brock change these to APIs to add, rather then iterateable collections
         public ICollection<ScopeValue> Scopes { get; set; } = new HashSet<ScopeValue>();
         public ICollection<ApiResource> ApiResources { get; set; } = new HashSet<ApiResource>();
         public ICollection<IdentityResource> IdentityResources { get; set; } = new HashSet<IdentityResource>();

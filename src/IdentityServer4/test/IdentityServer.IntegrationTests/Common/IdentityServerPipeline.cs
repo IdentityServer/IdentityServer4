@@ -139,6 +139,7 @@ namespace IdentityServer.IntegrationTests.Common
             .AddInMemoryClients(Clients)
             .AddInMemoryIdentityResources(IdentityScopes)
             .AddInMemoryApiResources(ApiResources)
+            .AddInMemoryScopes(Scopes)
             .AddTestUsers(Users)
             .AddDeveloperSigningCredential(persistKey: false);
 

@@ -20,7 +20,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.Introspection.Setup
 
             builder.AddInMemoryClients(Clients.Get());
             builder.AddInMemoryApiResources(Scopes.GetApis());
-            builder.AddInMemoryApiResources(Scopes.GetApis());
+            builder.AddInMemoryScopes(Scopes.GetScopes());
             builder.AddTestUsers(Users.Get());
             builder.AddDeveloperSigningCredential(persistKey: false);
         }

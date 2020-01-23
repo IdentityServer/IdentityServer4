@@ -1046,8 +1046,8 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
         {
             _mockPipeline.IdentityScopes.Add(new IdentityResource("foo", "Foo", new string[] { "name" }));
             _mockPipeline.IdentityScopes.Add(new IdentityResource("bar", "Bar", new string[] { "name" }));
-            _mockPipeline.ApiResources.Add(new ApiResource("foo", "Foo"));
-            _mockPipeline.ApiResources.Add(new ApiResource("bar", "Bar"));
+            _mockPipeline.Scopes.Add(new Scope("foo", "Foo"));
+            _mockPipeline.Scopes.Add(new Scope("bar", "Bar"));
 
             await _mockPipeline.LoginAsync("bob");
 
