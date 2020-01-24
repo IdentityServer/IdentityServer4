@@ -5,12 +5,9 @@
 
 namespace IdentityServer4.EntityFramework.Entities
 {
-    public class ApiScope
+    public class ScopeClaim : UserClaim
     {
-        public int Id { get; set; }
-        public string Scope { get; set; }
-
-        public int ApiResourceId { get; set; }
-        public ApiResource ApiResource { get; set; }
+        public int ScopeId { get; set; }
+        public Scope Scope { get; set; }
     }
 }

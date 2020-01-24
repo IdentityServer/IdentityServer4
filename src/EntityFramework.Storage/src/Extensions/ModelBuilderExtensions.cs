@@ -244,20 +244,7 @@ namespace IdentityServer4.EntityFramework.Extensions
             {
                 apiScope.ToTable(storeOptions.ApiScope).HasKey(x => x.Id);
 
-                apiScope.Property(x => x.Name).HasMaxLength(200).IsRequired();
-                apiScope.Property(x => x.DisplayName).HasMaxLength(200);
-                apiScope.Property(x => x.Description).HasMaxLength(1000);
-
-                apiScope.HasIndex(x => x.Name).IsUnique();
-
-                apiScope.HasMany(x => x.UserClaims).WithOne(x => x.ApiScope).HasForeignKey(x => x.ApiScopeId).IsRequired().OnDelete(DeleteBehavior.Cascade);
-            });
-
-            modelBuilder.Entity<ApiScopeClaim>(apiScopeClaim =>
-            {
-                apiScopeClaim.ToTable(storeOptions.ApiScopeClaim).HasKey(x => x.Id);
-
-                apiScopeClaim.Property(x => x.Type).HasMaxLength(200).IsRequired();
+                apiScope.Property(x => x.Scope).HasMaxLength(200).IsRequired();
             });
 
             modelBuilder.Entity<ApiResourceProperty>(property =>
@@ -266,6 +253,28 @@ namespace IdentityServer4.EntityFramework.Extensions
                 property.Property(x => x.Key).HasMaxLength(250).IsRequired();
                 property.Property(x => x.Value).HasMaxLength(2000).IsRequired();
             });
+
+
+            modelBuilder.Entity<Scope>(scope =>
+            {
+                scope.ToTable(storeOptions.Scope).HasKey(x => x.Id);
+
+                scope.Property(x => x.Name).HasMaxLength(200).IsRequired();
+                scope.Property(x => x.DisplayName).HasMaxLength(200);
+                scope.Property(x => x.Description).HasMaxLength(1000);
+
+                scope.HasIndex(x => x.Name).IsUnique();
+
+                scope.HasMany(x => x.UserClaims).WithOne(x => x.Scope).HasForeignKey(x => x.ScopeId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+            });
+            
+            modelBuilder.Entity<ScopeClaim>(scopeClaim =>
+            {
+                scopeClaim.ToTable(storeOptions.ScopeClaim).HasKey(x => x.Id);
+
+                scopeClaim.Property(x => x.Type).HasMaxLength(200).IsRequired();
+            });
+
 
         }
     }
