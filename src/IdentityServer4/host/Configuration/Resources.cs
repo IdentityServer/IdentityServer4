@@ -29,9 +29,6 @@ namespace Host.Configuration
         {
             return new[]
             {
-                // local API
-                new ApiResource(LocalApi.ScopeName),
-
                 // simple version with ctor
                 new ApiResource("api1", "Some API 1")
                 {
@@ -70,6 +67,9 @@ namespace Host.Configuration
         {
             return new[]
             {
+                // local API
+                // todo: brock discuss w/ dom? should we also use a resource id for this?
+                new Scope(LocalApi.ScopeName),
                 new Scope("api1"),
                 new Scope
                 {
