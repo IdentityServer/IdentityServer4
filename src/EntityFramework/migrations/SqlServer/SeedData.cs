@@ -65,6 +65,20 @@ namespace SqlServer
                 Console.WriteLine("ApiResources already populated");
             }
 
+            if (!context.Scopes.Any())
+            {
+                Console.WriteLine("Scopes being populated");
+                foreach (var resource in Config.Scopes)
+                {
+                    context.Scopes.Add(resource.ToEntity());
+                }
+                context.SaveChanges();
+            }
+            else
+            {
+                Console.WriteLine("Scopes already populated");
+            }
+
             Console.WriteLine("Done seeding database.");
             Console.WriteLine();
         }

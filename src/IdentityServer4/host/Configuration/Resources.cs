@@ -11,9 +11,8 @@ namespace Host.Configuration
 {
     public class Resources
     {
-        public static IEnumerable<IdentityResource> GetIdentityResources()
-        {
-            return new[]
+        public static IEnumerable<IdentityResource> IdentityResources =
+            new[]
             {
                 // some standard scopes from the OIDC spec
                 new IdentityResources.OpenId(),
@@ -23,11 +22,8 @@ namespace Host.Configuration
                 // custom identity resource with some consolidated claims
                 new IdentityResource("custom.profile", new[] { JwtClaimTypes.Name, JwtClaimTypes.Email, "location" })
             };
-        }
 
-        public static IEnumerable<ApiResource> GetApiResources()
-        {
-            return new[]
+        public static IEnumerable<ApiResource> ApiResources = new[]
             {
                 // simple version with ctor
                 new ApiResource("api1", "Some API 1")
@@ -61,11 +57,8 @@ namespace Host.Configuration
                     Scopes = { "api2.full_access", "api2.read_only", "api2.internal" }
                 }
             };
-        }
 
-        public static IEnumerable<Scope> GetScopes()
-        {
-            return new[]
+        public static IEnumerable<Scope> Scopes = new[]
             {
                 // local API
                 // todo: brock discuss w/ dom? should we also use a resource id for this?
@@ -91,6 +84,5 @@ namespace Host.Configuration
                     }
                 }
             };
-        }
     }
 }
