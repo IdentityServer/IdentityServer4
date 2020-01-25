@@ -2,6 +2,7 @@
 using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Models;
+using static IdentityServer4.IdentityServerConstants;
 
 namespace SqlServer
 {
@@ -274,8 +275,9 @@ namespace SqlServer
             }
         };
 
-        public static IEnumerable<IdentityResource> IdentityResources = new IdentityResource[]
-        {
+        public static IEnumerable<IdentityResource> IdentityResources =
+            new[]
+            {
                 // some standard scopes from the OIDC spec
                 new IdentityResources.OpenId(),
                 new IdentityResources.Profile(),
@@ -283,15 +285,19 @@ namespace SqlServer
 
                 // custom identity resource with some consolidated claims
                 new IdentityResource("custom.profile", new[] { JwtClaimTypes.Name, JwtClaimTypes.Email, "location" })
-        };
+            };
 
-        public static IEnumerable<ApiResource> ApiResources = new ApiResource[]
-        {
+        public static IEnumerable<ApiResource> ApiResources = new[]
+            {
                 // simple version with ctor
                 new ApiResource("api1", "Some API 1")
                 {
                     // this is needed for introspection when using reference tokens
-                    ApiSecrets = { new Secret("secret".Sha256()) }
+                    ApiSecrets = { new Secret("secret".Sha256()) },
+
+                    //AllowedSigningAlgorithms = { "RS256", "ES256" }
+
+                    Scopes = { "api1" }
                 },
                 
                 // expanded version if more control is needed
@@ -304,26 +310,43 @@ namespace SqlServer
                         new Secret("secret".Sha256())
                     },
 
+                    //AllowedSigningAlgorithms = { "PS256", "ES256", "RS256" },
+
                     UserClaims =
                     {
                         JwtClaimTypes.Name,
                         JwtClaimTypes.Email
                     },
 
-                    Scopes =
-                    {
-                        new Scope()
-                        {
-                            Name = "api2.full_access",
-                            DisplayName = "Full access to API 2"
-                        },
-                        new Scope
-                        {
-                            Name = "api2.read_only",
-                            DisplayName = "Read only access to API 2"
-                        }
+                    Scopes = { "api2.full_access", "api2.read_only", "api2.internal" }
                 }
-            }
-        };
+            };
+
+        public static IEnumerable<Scope> Scopes = new[]
+            {
+                // local API
+                // todo: brock discuss w/ dom? should we also use a resource id for this?
+                new Scope(LocalApi.ScopeName),
+                new Scope("api1"),
+                new Scope
+                {
+                    Name = "api2.full_access",
+                    DisplayName = "Full access to API 2"
+                },
+                new Scope
+                {
+                    Name = "api2.read_only",
+                    DisplayName = "Read only access to API 2"
+                },
+                new Scope
+                {
+                    Name = "api2.internal",
+                    ShowInDiscoveryDocument = false,
+                    UserClaims =
+                    {
+                        "internal_id"
+                    }
+                }
+            };
     }
 }
