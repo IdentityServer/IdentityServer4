@@ -419,6 +419,7 @@ namespace IdentityServer4.ResponseHandling
         /// <returns></returns>
         protected virtual async Task<string> CreateIdTokenFromRefreshTokenRequestAsync(ValidatedTokenRequest request, string newAccessToken)
         {
+            // todo: brock maybe call the enabled version?
             var resources = await Resources.FindResourcesByScopeAsync(request.RefreshToken.Scopes);
             if (resources.IdentityResources.Any())
             {

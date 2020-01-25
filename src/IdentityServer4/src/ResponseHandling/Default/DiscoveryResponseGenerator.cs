@@ -248,16 +248,9 @@ namespace IdentityServer4.ResponseHandling
 
                     // add non-hidden identity scopes related claims
                     claims.AddRange(resources.IdentityResources.Where(x => x.ShowInDiscoveryDocument).SelectMany(x => x.UserClaims));
-
-                    // add non-hidden api scopes related claims
-                    foreach (var scope in resources.Scopes)
-                    {
-                        claims.AddRange(scope.UserClaims);
-                        if (scope.ShowInDiscoveryDocument)
-                        {
-                            claims.AddRange(scope.UserClaims);
-                        }
-                    }
+                    // todo: brock do we want a ShowInDiscoveryDocument flag on ApiResource?
+                    claims.AddRange(resources.ApiResources.SelectMany(x => x.UserClaims));
+                    claims.AddRange(resources.Scopes.Where(x => x.ShowInDiscoveryDocument).SelectMany(x => x.UserClaims));
 
                     entries.Add(OidcConstants.Discovery.ClaimsSupported, claims.Distinct().ToArray());
                 }
