@@ -153,7 +153,7 @@ namespace IdentityServer4.Services
 
             claims.AddRange(await ClaimsProvider.GetIdentityTokenClaimsAsync(
                 request.Subject,
-                request.Resources,
+                request.ValidatedResources,
                 request.IncludeAllIdentityClaims,
                 request.ValidatedRequest));
 
@@ -189,7 +189,7 @@ namespace IdentityServer4.Services
             var claims = new List<Claim>();
             claims.AddRange(await ClaimsProvider.GetAccessTokenClaimsAsync(
                 request.Subject,
-                request.Resources,
+                request.ValidatedResources,
                 request.ValidatedRequest));
 
             if (request.ValidatedRequest.Client.IncludeJwtId)
@@ -206,7 +206,7 @@ namespace IdentityServer4.Services
                 Claims = claims.Distinct(new ClaimComparer()).ToList(),
                 ClientId = request.ValidatedRequest.Client.ClientId,
                 AccessTokenType = request.ValidatedRequest.AccessTokenType,
-                AllowedSigningAlgorithms = request.Resources.ApiResources.FindMatchingSigningAlgorithms()
+                AllowedSigningAlgorithms = request.ValidatedResources.Resources.ApiResources.FindMatchingSigningAlgorithms()
             };
 
             if (Options.EmitLegacyResourceAudienceClaim)
@@ -231,14 +231,33 @@ namespace IdentityServer4.Services
                 }
             }
 
-            foreach (var api in request.Resources.ApiResources)
+            var audiences = new List<string>();
+            foreach (var scope in request.ValidatedResources.Resources.Scopes)
             {
-                if (api.Name.IsPresent())
+                if (scope.Name.IsPresent())
                 {
-                    token.Audiences.Add(api.Name);
+                    var apiResources = request.ValidatedResources.Resources.FindApiResourcesByScope(scope.Name);
+                    if (apiResources.Any())
+                    {
+                        audiences.AddRange(apiResources.Select(x => x.Name));
+                    }
+                    else
+                    {
+                        audiences.Add(scope.Name);
+                    }
                 }
             }
-            
+
+            if (request.ValidatedResources.ApiResources.Any())
+            {
+                audiences.AddRange(request.ValidatedResources.ApiResources.Select(x => x.Name));
+            }
+
+            foreach(var aud in audiences.Distinct())
+            {
+                token.Audiences.Add(aud);
+            }
+
             return token;
         }
 

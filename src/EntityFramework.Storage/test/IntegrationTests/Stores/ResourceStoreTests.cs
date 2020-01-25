@@ -51,15 +51,7 @@ namespace IdentityServer4.EntityFramework.IntegrationTests.Stores
             {
                 Name = Guid.NewGuid().ToString(),
                 ApiSecrets = new List<Secret> {new Secret("secret".ToSha256())},
-                Scopes =
-                    new List<Scope>
-                    {
-                        new Scope
-                        {
-                            Name = Guid.NewGuid().ToString(),
-                            UserClaims = {Guid.NewGuid().ToString()}
-                        }
-                    },
+                Scopes = { Guid.NewGuid().ToString() },
                 UserClaims = 
                 {
                     Guid.NewGuid().ToString(),
@@ -88,7 +80,7 @@ namespace IdentityServer4.EntityFramework.IntegrationTests.Stores
                 resources = await store.FindResourcesByScopeAsync(new List<string>
                 {
                     testIdentityResource.Name,
-                    testApiResource.Scopes.First().Name
+                    testApiResource.Scopes.First()
                 });
             }
 
@@ -123,7 +115,7 @@ namespace IdentityServer4.EntityFramework.IntegrationTests.Stores
                 resources = await store.FindResourcesByScopeAsync(new List<string>
                 {
                     testIdentityResource.Name,
-                    testApiResource.Scopes.First().Name
+                    testApiResource.Scopes.First()
                 });
             }
 
@@ -145,7 +137,7 @@ namespace IdentityServer4.EntityFramework.IntegrationTests.Stores
             var hiddenApiResource = new ApiResource
             {
                 Name = Guid.NewGuid().ToString(),
-                Scopes = new List<Scope> {new Scope {Name = Guid.NewGuid().ToString(), ShowInDiscoveryDocument = false}}
+                Scopes = { Guid.NewGuid().ToString() }
             };
 
             using (var context = new ConfigurationDbContext(options, StoreOptions))
@@ -169,7 +161,7 @@ namespace IdentityServer4.EntityFramework.IntegrationTests.Stores
             Assert.NotEmpty(resources.ApiResources);
 
             Assert.Contains(resources.IdentityResources, x => !x.ShowInDiscoveryDocument);
-            Assert.Contains(resources.ApiResources, x => !x.Scopes.Any(y => y.ShowInDiscoveryDocument));
+            Assert.Contains(resources.ApiResources, x => x.Scopes.Any());
         }
 
         [Theory, MemberData(nameof(TestDatabaseProviders))]
@@ -244,7 +236,7 @@ namespace IdentityServer4.EntityFramework.IntegrationTests.Stores
             using (var context = new ConfigurationDbContext(options, StoreOptions))
             {
                 var store = new ResourceStore(context, FakeLogger<ResourceStore>.Create());
-                foundResource = await store.FindApiResourceAsync(resource.Name);
+                foundResource = (await store.FindApiResourcesAsync(new[] { resource.Name })).SingleOrDefault();
             }
 
             Assert.NotNull(foundResource);
@@ -255,7 +247,6 @@ namespace IdentityServer4.EntityFramework.IntegrationTests.Stores
             Assert.NotEmpty(foundResource.ApiSecrets);
             Assert.NotNull(foundResource.Scopes);
             Assert.NotEmpty(foundResource.Scopes);
-            Assert.Contains(foundResource.Scopes, x => x.UserClaims.Any());
         }
 
         [Theory, MemberData(nameof(TestDatabaseProviders))]
@@ -273,7 +264,7 @@ namespace IdentityServer4.EntityFramework.IntegrationTests.Stores
             using (var context = new ConfigurationDbContext(options, StoreOptions))
             {
                 var store = new ResourceStore(context, FakeLogger<ResourceStore>.Create());
-                resources = (await store.FindApiResourcesByScopeAsync(new List<string> {resource.Scopes.First().Name})).ToList();
+                resources = (await store.FindApiResourcesByScopeAsync(new List<string> {resource.Scopes.First()})).ToList();
             }
 
             Assert.NotEmpty(resources);
@@ -285,7 +276,6 @@ namespace IdentityServer4.EntityFramework.IntegrationTests.Stores
             Assert.NotEmpty(resources.First().ApiSecrets);
             Assert.NotNull(resources.First().Scopes);
             Assert.NotEmpty(resources.First().Scopes);
-            Assert.Contains(resources.First().Scopes, x => x.UserClaims.Any());
         }
 
         [Theory, MemberData(nameof(TestDatabaseProviders))]
@@ -305,7 +295,7 @@ namespace IdentityServer4.EntityFramework.IntegrationTests.Stores
             using (var context = new ConfigurationDbContext(options, StoreOptions))
             {
                 var store = new ResourceStore(context, FakeLogger<ResourceStore>.Create());
-                resources = (await store.FindApiResourcesByScopeAsync(new List<string> {resource.Scopes.First().Name})).ToList();
+                resources = (await store.FindApiResourcesByScopeAsync(new List<string> {resource.Scopes.First()})).ToList();
             }
 
             Assert.NotNull(resources);

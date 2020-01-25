@@ -17,6 +17,11 @@ namespace IdentityServer4.Stores
         /// Gets identity resources by scope name.
         /// </summary>
         Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeAsync(IEnumerable<string> scopeNames);
+
+        /// <summary>
+        /// Gets scopes by scope name.
+        /// </summary>
+        Task<IEnumerable<Scope>> FindScopesAsync(IEnumerable<string> scopeNames);
         
         /// <summary>
         /// Gets API resources by scope name.
@@ -24,11 +29,9 @@ namespace IdentityServer4.Stores
         Task<IEnumerable<ApiResource>> FindApiResourcesByScopeAsync(IEnumerable<string> scopeNames);
 
         /// <summary>
-        /// Finds the API resource by name.
+        /// Gets API resources by API resource name.
         /// </summary>
-        /// <param name="name">The name.</param>
-        /// <returns></returns>
-        Task<ApiResource> FindApiResourceAsync(string name);
+        Task<IEnumerable<ApiResource>> FindApiResourcesAsync(IEnumerable<string> apiResourceNames);
 
         /// <summary>
         /// Gets all resources.

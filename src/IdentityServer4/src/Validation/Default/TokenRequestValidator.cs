@@ -358,13 +358,13 @@ namespace IdentityServer4.Validation
                 return Invalid(OidcConstants.TokenErrors.InvalidScope);
             }
 
-            if (_validatedRequest.ValidatedResources.IdentityResources.Any())
+            if (_validatedRequest.ValidatedResources.Resources.IdentityResources.Any())
             {
                 LogError("Client cannot request OpenID scopes in client credentials flow", new { clientId = _validatedRequest.Client.ClientId });
                 return Invalid(OidcConstants.TokenErrors.InvalidScope);
             }
 
-            if (_validatedRequest.ValidatedResources.OfflineAccess)
+            if (_validatedRequest.ValidatedResources.Resources.OfflineAccess)
             {
                 LogError("Client cannot request a refresh token in client credentials flow", new { clientId = _validatedRequest.Client.ClientId });
                 return Invalid(OidcConstants.TokenErrors.InvalidScope);
@@ -667,9 +667,8 @@ namespace IdentityServer4.Validation
                     }
                     else
                     {
-                        var resources = await _resourceStore.FindApiResourcesByScopeAsync(_validatedRequest.Client.AllowedScopes);
-                        var apiScopes = resources.SelectMany(x => x.ToScopeNames());
-                        clientAllowedScopes.AddRange(apiScopes.Where(x => _validatedRequest.Client.AllowedScopes.Contains(x)));
+                        var apiScopes = await _resourceStore.FindScopesAsync(_validatedRequest.Client.AllowedScopes);
+                        clientAllowedScopes.AddRange(apiScopes.Select(x => x.Name));
                     }
 
                     if (!ignoreImplicitOfflineAccess)
@@ -704,7 +703,11 @@ namespace IdentityServer4.Validation
                 return false;
             }
 
-            var resourceValidationResult = await _resourceValidator.ValidateRequestedResources(_validatedRequest.Client, requestedScopes, null);
+            var resourceValidationResult = await _resourceValidator.ValidateRequestedResourcesAsync(new ResourceValidationRequest { 
+                Client = _validatedRequest.Client,
+                ScopeValues = requestedScopes,
+            });
+
             if (!resourceValidationResult.Succeeded)
             {
                 if (resourceValidationResult.InvalidScopes.Any())
@@ -720,7 +723,7 @@ namespace IdentityServer4.Validation
             }
 
             _validatedRequest.Scopes = requestedScopes;
-            _validatedRequest.ValidatedResources = resourceValidationResult.ValidatedResources;
+            _validatedRequest.ValidatedResources = resourceValidationResult;
             
             return true;
         }

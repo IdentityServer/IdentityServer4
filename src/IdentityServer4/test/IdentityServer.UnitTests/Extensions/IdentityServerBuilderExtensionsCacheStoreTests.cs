@@ -32,12 +32,17 @@ namespace IdentityServer.UnitTests.Extensions
                 throw new System.NotImplementedException();
             }
 
-            public Task<ApiResource> FindApiResourceAsync(string name)
+            public Task<IEnumerable<ApiResource>> FindApiResourcesAsync(IEnumerable<string> names)
             {
                 throw new System.NotImplementedException();
             }
 
             public Task<Resources> GetAllResourcesAsync()
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public Task<IEnumerable<Scope>> FindScopesAsync(IEnumerable<string> scopeNames)
             {
                 throw new System.NotImplementedException();
             }

@@ -2,6 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using IdentityServer4.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -14,6 +16,26 @@ namespace IdentityServer4.Models
     public abstract class Resource
     {
         private string DebuggerDisplay => Name ?? $"{{{typeof(Resource)}}}";
+
+        // todo: brock add this ?
+        ///// <summary>
+        ///// Ctor for Resource.
+        ///// </summary>
+        ///// <param name="name"></param>
+        ///// <param name="displayName"></param>
+        ///// <param name="claimTypes"></param>
+        //protected Resource(string name, string displayName, IEnumerable<string> claimTypes)
+        //{
+        //    if (name.IsMissing()) throw new ArgumentNullException(nameof(name));
+
+        //    Name = name;
+        //    DisplayName = displayName;
+
+        //    foreach (var type in claimTypes)
+        //    {
+        //        UserClaims.Add(type);
+        //    }
+        //}
 
         /// <summary>
         /// Indicates if this resource is enabled. Defaults to true.

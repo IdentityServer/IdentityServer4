@@ -54,21 +54,21 @@ namespace IdentityServer.IntegrationTests.Pipeline
                 new IdentityResources.Profile(),
                 new IdentityResources.Email()
             });
-            _pipeline.ApiScopes.AddRange(new ApiResource[] {
+            _pipeline.ApiResources.AddRange(new ApiResource[] {
                 new ApiResource
                 {
                     Name = "api",
-                    Scopes =
-                    {
-                        new Scope
-                        {
-                            Name = "api1"
-                        },
-                        new Scope
-                        {
-                            Name = "api2"
-                        }
-                    }
+                    Scopes = { "api1", "api2" }
+                }
+            });
+            _pipeline.Scopes.AddRange(new[] {
+                new Scope
+                {
+                    Name = "api1"
+                },
+                new Scope
+                {
+                    Name = "api2"
                 }
             });
 

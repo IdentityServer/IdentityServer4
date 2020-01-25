@@ -42,15 +42,15 @@ namespace IdentityServer.UnitTests.Extensions
         }
 
         [Fact]
-        public void GetAllEnabledResourcesAsync_on_duplicate_api_scopes_should_fail()
+        public void GetAllEnabledResourcesAsync_on_duplicate_api_resources_should_fail()
         {
             var store = new MockResourceStore()
             {
-                ApiResources = { new ApiResource("A"), new ApiResource("A") }
+                ApiResources = { new ApiResource { Name = "a" }, new ApiResource { Name = "a" } }
             };
 
             Func<Task> a = () => store.GetAllEnabledResourcesAsync();
-            a.Should().Throw<Exception>().And.Message.ToLowerInvariant().Should().Contain("duplicate").And.Contain("api scopes");
+            a.Should().Throw<Exception>().And.Message.ToLowerInvariant().Should().Contain("duplicate").And.Contain("api resources");
         }
 
         [Fact]
@@ -92,15 +92,24 @@ namespace IdentityServer.UnitTests.Extensions
         }
 
         [Fact]
-        public void FindResourcesByScopeAsync_on_duplicate_api_scopes_should_fail()
+        public async Task FindResourcesByScopeAsync_on_duplicate_api_scopes_should_succeed()
         {
             var store = new MockResourceStore()
             {
-                ApiResources = { new ApiResource("A"), new ApiResource("A") }
+                ApiResources = { 
+                    new ApiResource { Name = "api1", Scopes = { "a" } },
+                    new ApiResource() { Name = "api2", Scopes = { "a" } },
+                },
+                Scopes = { 
+                    new Scope("a") 
+                } 
             };
 
-            Func<Task> a = () => store.FindResourcesByScopeAsync(new string[] { "A" });
-            a.Should().Throw<Exception>().And.Message.ToLowerInvariant().Should().Contain("duplicate").And.Contain("api scopes");
+            var result = await store.FindResourcesByScopeAsync(new string[] { "a" });
+            result.ApiResources.Count.Should().Be(2);
+            result.Scopes.Count.Should().Be(1);
+            result.ApiResources.Select(x => x.Name).Should().BeEquivalentTo(new[] { "api1", "api2" });
+            result.Scopes.Select(x => x.Name).Should().BeEquivalentTo(new[] { "a" });
         }
 
         [Fact]
@@ -114,17 +123,37 @@ namespace IdentityServer.UnitTests.Extensions
             await store.FindResourcesByScopeAsync(new string[] { "A" });
         }
 
+        [Fact]
+        public async Task FindResourcesByScopeAsync_with_duplicate_api_scopes_on_single_api_resource_should_succeed_and_only_reuturn_one_resource()
+        {
+            var store = new MockResourceStore()
+            {
+                ApiResources = { 
+                    new ApiResource { 
+                        Name = "api1", Scopes = { "a", "a" }
+                    }
+                },
+                Scopes = {
+                    new Scope("a"),
+                }
+            };
+
+            var result = await store.FindResourcesByScopeAsync(new string[] { "a" });
+            result.ApiResources.Count.Should().Be(1);
+        }
+
         public class MockResourceStore : IResourceStore
         {
             public List<IdentityResource> IdentityResources { get; set; } = new List<IdentityResource>();
             public List<ApiResource> ApiResources { get; set; } = new List<ApiResource>();
+            public List<Scope> Scopes { get; set; } = new List<Scope>();
 
-            public Task<ApiResource> FindApiResourceAsync(string name)
+            public Task<IEnumerable<ApiResource>> FindApiResourcesAsync(IEnumerable<string> names)
             {
-                var api = from a in ApiResources
-                          where a.Name == name
+                var apis = from a in ApiResources
+                          where names.Contains(a.Name)
                           select a;
-                return Task.FromResult(api.FirstOrDefault());
+                return Task.FromResult(apis);
             }
 
             public Task<IEnumerable<ApiResource>> FindApiResourcesByScopeAsync(IEnumerable<string> names)
@@ -132,8 +161,7 @@ namespace IdentityServer.UnitTests.Extensions
                 if (names == null) throw new ArgumentNullException(nameof(names));
 
                 var api = from a in ApiResources
-                          let scopes = (from s in a.Scopes where names.Contains(s.Name) select s)
-                          where scopes.Any()
+                          where a.Scopes.Any(x => names.Contains(x))
                           select a;
 
                 return Task.FromResult(api);
@@ -150,9 +178,17 @@ namespace IdentityServer.UnitTests.Extensions
                 return Task.FromResult(identity);
             }
 
+            public Task<IEnumerable<Scope>> FindScopesAsync(IEnumerable<string> scopeNames)
+            {
+                var q = from x in Scopes
+                        where scopeNames.Contains(x.Name)
+                        select x;
+                return Task.FromResult(q);
+            }
+
             public Task<Resources> GetAllResourcesAsync()
             {
-                var result = new Resources(IdentityResources, ApiResources);
+                var result = new Resources(IdentityResources, ApiResources, Scopes);
                 return Task.FromResult(result);
             }
         }

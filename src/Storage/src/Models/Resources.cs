@@ -24,7 +24,7 @@ namespace IdentityServer4.Models
         /// </summary>
         /// <param name="other">The other.</param>
         public Resources(Resources other)
-            : this(other.IdentityResources, other.ApiResources)
+            : this(other.IdentityResources, other.ApiResources, other.Scopes)
         {
             OfflineAccess = other.OfflineAccess;
         }
@@ -34,10 +34,12 @@ namespace IdentityServer4.Models
         /// </summary>
         /// <param name="identityResources">The identity resources.</param>
         /// <param name="apiResources">The API resources.</param>
-        public Resources(IEnumerable<IdentityResource> identityResources, IEnumerable<ApiResource> apiResources)
+        /// <param name="scopes">The scopes.</param>
+        public Resources(IEnumerable<IdentityResource> identityResources, IEnumerable<ApiResource> apiResources, IEnumerable<Scope> scopes)
         {
             IdentityResources = new HashSet<IdentityResource>(identityResources.ToArray());
             ApiResources = new HashSet<ApiResource>(apiResources.ToArray());
+            Scopes = new HashSet<Scope>(scopes.ToArray());
         }
 
         /// <summary>
@@ -52,10 +54,15 @@ namespace IdentityServer4.Models
         /// Gets or sets the identity resources.
         /// </summary>
         public ICollection<IdentityResource> IdentityResources { get; set; } = new HashSet<IdentityResource>();
-        
+
         /// <summary>
         /// Gets or sets the API resources.
         /// </summary>
         public ICollection<ApiResource> ApiResources { get; set; } = new HashSet<ApiResource>();
+        
+        /// <summary>
+        /// Gets or sets the scopes.
+        /// </summary>
+        public ICollection<Scope> Scopes { get; set; } = new HashSet<Scope>();
     }
 }

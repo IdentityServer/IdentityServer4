@@ -277,7 +277,7 @@ namespace IdentityServer4.ResponseHandling
                     else
                     {
                         // double check that required scopes are in the list of consented scopes
-                        var requiredScopes = request.ValidatedResources.GetRequiredScopeNames();
+                        var requiredScopes = request.ValidatedResources.GetRequiredScopeValues();
                         var valid = requiredScopes.All(x => consent.ScopesConsented.Contains(x));
                         if (valid == false)
                         {
@@ -297,7 +297,7 @@ namespace IdentityServer4.ResponseHandling
                                 if (consent.RememberConsent)
                                 {
                                     // remember what user actually selected
-                                    scopes = request.ValidatedResources.ToScopeNames();
+                                    scopes = request.ValidatedResources.ScopeValues;
                                     Logger.LogDebug("User indicated to remember consent for scopes: {scopes}", scopes);
                                 }
 

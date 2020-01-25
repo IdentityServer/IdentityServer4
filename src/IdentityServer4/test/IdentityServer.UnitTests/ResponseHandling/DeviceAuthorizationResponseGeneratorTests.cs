@@ -22,7 +22,8 @@ namespace IdentityServer.UnitTests.ResponseHandling
     public class DeviceAuthorizationResponseGeneratorTests
     {
         private readonly List<IdentityResource> identityResources = new List<IdentityResource> {new IdentityResources.OpenId(), new IdentityResources.Profile()};
-        private readonly List<ApiResource> apiResources = new List<ApiResource> {new ApiResource("resource") {Scopes = new List<Scope> {new Scope("api1")}}};
+        private readonly List<ApiResource> apiResources = new List<ApiResource> { new ApiResource("resource") { Scopes = {"api1" } } };
+        private readonly List<Scope> scopes = new List<Scope> { new Scope("api1") };
 
         private readonly FakeUserCodeGenerator fakeUserCodeGenerator = new FakeUserCodeGenerator();
         private readonly IDeviceFlowCodeService deviceFlowCodeService = new DefaultDeviceFlowCodeService(new InMemoryDeviceFlowStore(), new StubHandleGenerationService());

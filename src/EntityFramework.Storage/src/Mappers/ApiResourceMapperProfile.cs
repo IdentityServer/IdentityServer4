@@ -37,14 +37,10 @@ namespace IdentityServer4.EntityFramework.Mappers
                 .ForMember(dest => dest.Type, opt => opt.Condition(srs => srs != null))
                 .ReverseMap();
 
-            CreateMap<Entities.ApiScope, Models.Scope>(MemberList.Destination)
-                .ConstructUsing(src => new Models.Scope())
-                .ReverseMap();
-
-            CreateMap<Entities.ApiScopeClaim, string>()
-               .ConstructUsing(x => x.Type)
-               .ReverseMap()
-               .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src));
+            CreateMap<Entities.ApiScope, string>()
+                .ConstructUsing(x => x.Scope)
+                .ReverseMap()
+                .ForMember(dest => dest.Scope, opt => opt.MapFrom(src => src));
         }
     }
 }

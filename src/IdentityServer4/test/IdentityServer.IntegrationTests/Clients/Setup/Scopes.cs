@@ -20,7 +20,7 @@ namespace IdentityServer.IntegrationTests.Clients.Setup
             };
         }
 
-        public static IEnumerable<ApiResource> GetApiScopes()
+        public static IEnumerable<ApiResource> GetApis()
         {
             return new List<ApiResource>
             {
@@ -31,28 +31,40 @@ namespace IdentityServer.IntegrationTests.Clients.Setup
                     {
                         new Secret("secret".Sha256())
                     },
-                    Scopes =
-                    {
-                        new Scope
-                        {
-                            Name = "api1"
-                        },
-                        new Scope
-                        {
-                            Name = "api2"
-                        },
-                        new Scope
-                        {
-                            Name = "api3"
-                        },
-                        new Scope
-                        {
-                            Name = "api4.with.roles",
-                            UserClaims = { "role" }
-                        }
-                    }
+                    Scopes = { "api1", "api2", "api3", "api4.with.roles" }
                 },
                 new ApiResource("other_api")
+                {
+                    Scopes = { "other_api" }
+                }
+            };
+        }
+
+        public static IEnumerable<Scope> GetScopes()
+        {
+            return new Scope[]
+            {
+                new Scope
+                {
+                    Name = "api1"
+                },
+                new Scope
+                {
+                    Name = "api2"
+                },
+                new Scope
+                {
+                    Name = "api3"
+                },
+                new Scope
+                {
+                    Name = "api4.with.roles",
+                    UserClaims = { "role" }
+                },
+                new Scope
+                {
+                    Name = "other_api",
+                },
             };
         }
     }

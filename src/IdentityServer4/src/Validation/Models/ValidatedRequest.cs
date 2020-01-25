@@ -90,7 +90,7 @@ namespace IdentityServer4.Validation
         /// <value>
         /// The validated resources.
         /// </value>
-        public Resources ValidatedResources { get; set; }
+        public ResourceValidationResult ValidatedResources { get; set; }
 
         /// <summary>
         /// Gets or sets the value of the confirmation method (will become the cnf claim). Must be a JSON object.

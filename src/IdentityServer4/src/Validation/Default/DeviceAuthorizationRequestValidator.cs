@@ -152,7 +152,11 @@ namespace IdentityServer4.Validation
             //////////////////////////////////////////////////////////
             // check if scopes are valid/supported
             //////////////////////////////////////////////////////////
-            var validatedResources = await _resourceValidator.ValidateRequestedResources(request.Client, request.RequestedScopes, null);
+            var validatedResources = await _resourceValidator.ValidateRequestedResourcesAsync(new ResourceValidationRequest{
+                Client = request.Client,  
+                ScopeValues = request.RequestedScopes
+            });
+
             if (!validatedResources.Succeeded)
             {
                 if (validatedResources.InvalidScopes.Count > 0)
@@ -163,13 +167,13 @@ namespace IdentityServer4.Validation
                 return Invalid(request, OidcConstants.AuthorizeErrors.UnauthorizedClient, "Invalid scope");
             }
 
-            if (validatedResources.ValidatedResources.IdentityResources.Any() && !request.IsOpenIdRequest)
+            if (validatedResources.Resources.IdentityResources.Any() && !request.IsOpenIdRequest)
             {
                 LogError("Identity related scope requests, but no openid scope", request);
                 return Invalid(request, OidcConstants.AuthorizeErrors.InvalidScope);
             }
 
-            request.ValidatedResources = validatedResources.ValidatedResources;
+            request.ValidatedResources = validatedResources;
             
             return Valid(request);
         }

@@ -91,6 +91,20 @@ CREATE TABLE [IdentityResources] (
 
 GO
 
+CREATE TABLE [Scopes] (
+    [Id] int NOT NULL IDENTITY,
+    [Enabled] bit NOT NULL,
+    [Name] nvarchar(200) NOT NULL,
+    [DisplayName] nvarchar(200) NULL,
+    [Description] nvarchar(1000) NULL,
+    [Required] bit NOT NULL,
+    [Emphasize] bit NOT NULL,
+    [ShowInDiscoveryDocument] bit NOT NULL,
+    CONSTRAINT [PK_Scopes] PRIMARY KEY ([Id])
+);
+
+GO
+
 CREATE TABLE [ApiClaims] (
     [Id] int NOT NULL IDENTITY,
     [Type] nvarchar(200) NOT NULL,
@@ -114,12 +128,7 @@ GO
 
 CREATE TABLE [ApiScopes] (
     [Id] int NOT NULL IDENTITY,
-    [Name] nvarchar(200) NOT NULL,
-    [DisplayName] nvarchar(200) NULL,
-    [Description] nvarchar(1000) NULL,
-    [Required] bit NOT NULL,
-    [Emphasize] bit NOT NULL,
-    [ShowInDiscoveryDocument] bit NOT NULL,
+    [Scope] nvarchar(200) NOT NULL,
     [ApiResourceId] int NOT NULL,
     CONSTRAINT [PK_ApiScopes] PRIMARY KEY ([Id]),
     CONSTRAINT [FK_ApiScopes_ApiResources_ApiResourceId] FOREIGN KEY ([ApiResourceId]) REFERENCES [ApiResources] ([Id]) ON DELETE CASCADE
@@ -258,12 +267,23 @@ CREATE TABLE [IdentityProperties] (
 
 GO
 
-CREATE TABLE [ApiScopeClaims] (
+CREATE TABLE [ScopeClaims] (
     [Id] int NOT NULL IDENTITY,
     [Type] nvarchar(200) NOT NULL,
-    [ApiScopeId] int NOT NULL,
-    CONSTRAINT [PK_ApiScopeClaims] PRIMARY KEY ([Id]),
-    CONSTRAINT [FK_ApiScopeClaims_ApiScopes_ApiScopeId] FOREIGN KEY ([ApiScopeId]) REFERENCES [ApiScopes] ([Id]) ON DELETE CASCADE
+    [ScopeId] int NOT NULL,
+    CONSTRAINT [PK_ScopeClaims] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_ScopeClaims_Scopes_ScopeId] FOREIGN KEY ([ScopeId]) REFERENCES [Scopes] ([Id]) ON DELETE CASCADE
+);
+
+GO
+
+CREATE TABLE [ScopeProperty] (
+    [Id] int NOT NULL IDENTITY,
+    [Key] nvarchar(max) NULL,
+    [Value] nvarchar(max) NULL,
+    [ScopeId] int NOT NULL,
+    CONSTRAINT [PK_ScopeProperty] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_ScopeProperty_Scopes_ScopeId] FOREIGN KEY ([ScopeId]) REFERENCES [Scopes] ([Id]) ON DELETE CASCADE
 );
 
 GO
@@ -280,15 +300,7 @@ CREATE UNIQUE INDEX [IX_ApiResources_Name] ON [ApiResources] ([Name]);
 
 GO
 
-CREATE INDEX [IX_ApiScopeClaims_ApiScopeId] ON [ApiScopeClaims] ([ApiScopeId]);
-
-GO
-
 CREATE INDEX [IX_ApiScopes_ApiResourceId] ON [ApiScopes] ([ApiResourceId]);
-
-GO
-
-CREATE UNIQUE INDEX [IX_ApiScopes_Name] ON [ApiScopes] ([Name]);
 
 GO
 
@@ -348,8 +360,20 @@ CREATE UNIQUE INDEX [IX_IdentityResources_Name] ON [IdentityResources] ([Name]);
 
 GO
 
+CREATE INDEX [IX_ScopeClaims_ScopeId] ON [ScopeClaims] ([ScopeId]);
+
+GO
+
+CREATE INDEX [IX_ScopeProperty_ScopeId] ON [ScopeProperty] ([ScopeId]);
+
+GO
+
+CREATE UNIQUE INDEX [IX_Scopes_Name] ON [Scopes] ([Name]);
+
+GO
+
 INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-VALUES (N'20191227171318_Config', N'3.1.0');
+VALUES (N'20200124215721_Config', N'3.1.0');
 
 GO
 

@@ -105,6 +105,25 @@ namespace SqlServer.Migrations.ConfigurationDb
                 });
 
             migrationBuilder.CreateTable(
+                name: "Scopes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Enabled = table.Column<bool>(nullable: false),
+                    Name = table.Column<string>(maxLength: 200, nullable: false),
+                    DisplayName = table.Column<string>(maxLength: 200, nullable: true),
+                    Description = table.Column<string>(maxLength: 1000, nullable: true),
+                    Required = table.Column<bool>(nullable: false),
+                    Emphasize = table.Column<bool>(nullable: false),
+                    ShowInDiscoveryDocument = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Scopes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ApiClaims",
                 columns: table => new
                 {
@@ -151,12 +170,7 @@ namespace SqlServer.Migrations.ConfigurationDb
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(maxLength: 200, nullable: false),
-                    DisplayName = table.Column<string>(maxLength: 200, nullable: true),
-                    Description = table.Column<string>(maxLength: 1000, nullable: true),
-                    Required = table.Column<bool>(nullable: false),
-                    Emphasize = table.Column<bool>(nullable: false),
-                    ShowInDiscoveryDocument = table.Column<bool>(nullable: false),
+                    Scope = table.Column<string>(maxLength: 200, nullable: false),
                     ApiResourceId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -422,21 +436,42 @@ namespace SqlServer.Migrations.ConfigurationDb
                 });
 
             migrationBuilder.CreateTable(
-                name: "ApiScopeClaims",
+                name: "ScopeClaims",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Type = table.Column<string>(maxLength: 200, nullable: false),
-                    ApiScopeId = table.Column<int>(nullable: false)
+                    ScopeId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ApiScopeClaims", x => x.Id);
+                    table.PrimaryKey("PK_ScopeClaims", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ApiScopeClaims_ApiScopes_ApiScopeId",
-                        column: x => x.ApiScopeId,
-                        principalTable: "ApiScopes",
+                        name: "FK_ScopeClaims_Scopes_ScopeId",
+                        column: x => x.ScopeId,
+                        principalTable: "Scopes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ScopeProperty",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Key = table.Column<string>(nullable: true),
+                    Value = table.Column<string>(nullable: true),
+                    ScopeId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ScopeProperty", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ScopeProperty_Scopes_ScopeId",
+                        column: x => x.ScopeId,
+                        principalTable: "Scopes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -458,20 +493,9 @@ namespace SqlServer.Migrations.ConfigurationDb
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ApiScopeClaims_ApiScopeId",
-                table: "ApiScopeClaims",
-                column: "ApiScopeId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ApiScopes_ApiResourceId",
                 table: "ApiScopes",
                 column: "ApiResourceId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ApiScopes_Name",
-                table: "ApiScopes",
-                column: "Name",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiSecrets_ApiResourceId",
@@ -544,6 +568,22 @@ namespace SqlServer.Migrations.ConfigurationDb
                 table: "IdentityResources",
                 column: "Name",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ScopeClaims_ScopeId",
+                table: "ScopeClaims",
+                column: "ScopeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ScopeProperty_ScopeId",
+                table: "ScopeProperty",
+                column: "ScopeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Scopes_Name",
+                table: "Scopes",
+                column: "Name",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -555,7 +595,7 @@ namespace SqlServer.Migrations.ConfigurationDb
                 name: "ApiProperties");
 
             migrationBuilder.DropTable(
-                name: "ApiScopeClaims");
+                name: "ApiScopes");
 
             migrationBuilder.DropTable(
                 name: "ApiSecrets");
@@ -594,7 +634,13 @@ namespace SqlServer.Migrations.ConfigurationDb
                 name: "IdentityProperties");
 
             migrationBuilder.DropTable(
-                name: "ApiScopes");
+                name: "ScopeClaims");
+
+            migrationBuilder.DropTable(
+                name: "ScopeProperty");
+
+            migrationBuilder.DropTable(
+                name: "ApiResources");
 
             migrationBuilder.DropTable(
                 name: "Clients");
@@ -603,7 +649,7 @@ namespace SqlServer.Migrations.ConfigurationDb
                 name: "IdentityResources");
 
             migrationBuilder.DropTable(
-                name: "ApiResources");
+                name: "Scopes");
         }
     }
 }

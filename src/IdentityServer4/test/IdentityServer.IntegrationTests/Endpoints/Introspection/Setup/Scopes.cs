@@ -9,7 +9,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.Introspection.Setup
 {
     internal class Scopes
     {
-        public static IEnumerable<ApiResource> GetApiScopes()
+        public static IEnumerable<ApiResource> GetApis()
         {
             return new ApiResource[]
             {
@@ -20,13 +20,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.Introspection.Setup
                     {
                         new Secret("secret".Sha256())
                     },
-                    Scopes =
-                    {
-                        new Scope
-                        {
-                            Name = "api1"
-                        }
-                    }
+                    Scopes = { "api1" }
                 },
                 new ApiResource
                 {
@@ -35,13 +29,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.Introspection.Setup
                     {
                         new Secret("secret".Sha256())
                     },
-                    Scopes =
-                    {
-                        new Scope
-                        {
-                            Name = "api2"
-                        }
-                    }
+                    Scopes = { "api2" }
                 },
                  new ApiResource
                 {
@@ -50,17 +38,29 @@ namespace IdentityServer.IntegrationTests.Endpoints.Introspection.Setup
                     {
                         new Secret("secret".Sha256())
                     },
-                    Scopes =
-                    {
-                        new Scope
-                        {
-                            Name = "api3-a"
-                        },
-                        new Scope
-                        {
-                            Name = "api3-b"
-                        }
-                    }
+                    Scopes = { "api3-a", "api3-b" }
+                }
+            };
+        }
+        public static IEnumerable<Scope> GetScopes()
+        {
+            return new Scope[]
+            {
+                new Scope
+                {
+                    Name = "api1"
+                },
+                new Scope
+                {
+                    Name = "api2"
+                },
+                new Scope
+                {
+                    Name = "api3-a"
+                },
+                new Scope
+                {
+                    Name = "api3-b"
                 }
             };
         }

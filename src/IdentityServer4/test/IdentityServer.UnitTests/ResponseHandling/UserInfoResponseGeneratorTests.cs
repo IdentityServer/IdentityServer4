@@ -27,6 +27,7 @@ namespace IdentityServer.UnitTests.ResponseHandling
         private InMemoryResourcesStore _resourceStore;
         private List<IdentityResource> _identityResources = new List<IdentityResource>();
         private List<ApiResource> _apiResources = new List<ApiResource>();
+        private List<Scope> _scopes = new List<Scope>();
 
         public UserInfoResponseGeneratorTests()
         {
@@ -46,7 +47,7 @@ namespace IdentityServer.UnitTests.ResponseHandling
                 }
             }.CreatePrincipal();
 
-            _resourceStore = new InMemoryResourcesStore(_identityResources, _apiResources);
+            _resourceStore = new InMemoryResourcesStore(_identityResources, _apiResources, _scopes);
             _subject = new UserInfoResponseGenerator(_mockProfileService, _resourceStore, TestLogger.Create<UserInfoResponseGenerator>());
         }
 

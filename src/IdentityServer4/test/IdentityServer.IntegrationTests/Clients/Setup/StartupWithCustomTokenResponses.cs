@@ -30,7 +30,8 @@ namespace IdentityServer.IntegrationTests.Clients.Setup
 
             builder.AddInMemoryClients(Clients.Get());
             builder.AddInMemoryIdentityResources(Scopes.GetIdentityScopes());
-            builder.AddInMemoryApiResources(Scopes.GetApiScopes());
+            builder.AddInMemoryApiResources(Scopes.GetApis());
+            builder.AddInMemoryScopes(Scopes.GetScopes());
 
             builder.AddDeveloperSigningCredential(persistKey: false);
 

@@ -25,7 +25,7 @@ namespace IdentityServer4.Services
         /// <returns>
         /// Claims for the identity token
         /// </returns>
-        Task<IEnumerable<Claim>> GetIdentityTokenClaimsAsync(ClaimsPrincipal subject, Resources resources, bool includeAllIdentityClaims, ValidatedRequest request);
+        Task<IEnumerable<Claim>> GetIdentityTokenClaimsAsync(ClaimsPrincipal subject, ResourceValidationResult resources, bool includeAllIdentityClaims, ValidatedRequest request);
 
         /// <summary>
         /// Returns claims for an access token.
@@ -36,6 +36,6 @@ namespace IdentityServer4.Services
         /// <returns>
         /// Claims for the access token
         /// </returns>
-        Task<IEnumerable<Claim>> GetAccessTokenClaimsAsync(ClaimsPrincipal subject, Resources resources, ValidatedRequest request);
+        Task<IEnumerable<Claim>> GetAccessTokenClaimsAsync(ClaimsPrincipal subject, ResourceValidationResult resources, ValidatedRequest request);
     }
 }

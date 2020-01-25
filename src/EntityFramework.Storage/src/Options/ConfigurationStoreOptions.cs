@@ -79,13 +79,6 @@ namespace IdentityServer4.EntityFramework.Options
         /// The API claim.
         /// </value>
         public TableConfiguration ApiClaim { get; set; } = new TableConfiguration("ApiClaims");
-        /// <summary>
-        /// Gets or sets the API scope claim table configuration.
-        /// </summary>
-        /// <value>
-        /// The API scope claim.
-        /// </value>
-        public TableConfiguration ApiScopeClaim { get; set; } = new TableConfiguration("ApiScopeClaims");
 
         /// <summary>
         /// Gets or sets the client table configuration.
@@ -171,5 +164,21 @@ namespace IdentityServer4.EntityFramework.Options
         /// The client property.
         /// </value>
         public TableConfiguration IdentityResourceProperty { get; set; } = new TableConfiguration("IdentityProperties");
+
+        /// <summary>
+        /// Gets or sets the scope table configuration.
+        /// </summary>
+        /// <value>
+        /// The API resource.
+        /// </value>
+        public TableConfiguration Scope { get; set; } = new TableConfiguration("Scopes");
+        /// <summary>
+        /// Gets or sets the scope claim table configuration.
+        /// </summary>
+        /// <value>
+        /// The API scope claim.
+        /// </value>
+        public TableConfiguration ScopeClaim { get; set; } = new TableConfiguration("ScopeClaims");
+
     }
 }

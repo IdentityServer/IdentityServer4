@@ -59,21 +59,20 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
                 new IdentityResources.Profile(),
                 new IdentityResources.Email()
             });
-            _mockPipeline.ApiScopes.AddRange(new ApiResource[] {
+            _mockPipeline.ApiResources.AddRange(new ApiResource[] {
                 new ApiResource
                 {
                     Name = "api",
-                    Scopes =
-                    {
-                        new Scope
-                        {
-                            Name = "api1"
-                        },
-                        new Scope
-                        {
-                            Name = "api2"
-                        }
-                    }
+                }
+            });
+            _mockPipeline.Scopes.AddRange(new Scope[] {
+                new Scope
+                {
+                    Name = "api1"
+                },
+                new Scope
+                {
+                    Name = "api2"
                 }
             });
 
