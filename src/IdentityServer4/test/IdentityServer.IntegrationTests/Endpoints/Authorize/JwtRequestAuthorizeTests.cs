@@ -39,7 +39,8 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
 
             _rsaKey = CryptoHelper.CreateRsaSecurityKey();
 
-            _mockPipeline.Clients.AddRange(new Client[] {
+            _mockPipeline.Clients.AddRange(new Client[] 
+            {
                 _client = new Client
                 {
                     ClientName = "Client with keys",
@@ -52,25 +53,28 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
                     {
                         new Secret
                         {
+                            // x509 cert as base64 string
                             Type = IdentityServerConstants.SecretTypes.X509CertificateBase64,
                             Value = Convert.ToBase64String(TestCert.Load().Export(X509ContentType.Cert))
                         },
                         new Secret
                         {
+                            // symmetric key as JWK
                             Type = IdentityServerConstants.SecretTypes.JsonWebKey,
                             Value = _symmetricJwk
                         },
                         new Secret
                         {
+                            // RSA key as JWK
                             Type = IdentityServerConstants.SecretTypes.JsonWebKey,
                             Value = JsonConvert.SerializeObject(JsonWebKeyConverter.ConvertFromRSASecurityKey(_rsaKey))
                         },
-                        // turning a x509 JWK into an X509 security key does not seem to work... (KeySize = 0)
-                        //new Secret
-                        //{
-                        //    Type = IdentityServerConstants.SecretTypes.JsonWebKey,
-                        //    Value = JsonConvert.SerializeObject(JsonWebKeyConverter.ConvertFromX509SecurityKey(new X509SecurityKey(TestCert.Load())))
-                        //}
+                        new Secret
+                        {
+                            // x509 cert as JWK
+                            Type = IdentityServerConstants.SecretTypes.JsonWebKey,
+                            Value = JsonConvert.SerializeObject(JsonWebKeyConverter.ConvertFromX509SecurityKey(new X509SecurityKey(TestCert.Load())))
+                        }
                     },
 
                     AllowedGrantTypes = GrantTypes.Implicit,
