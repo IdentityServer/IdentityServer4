@@ -105,7 +105,7 @@ namespace IdentityServer4.Models
         public bool AllowPlainTextPkce { get; set; } = false;
 
         /// <summary>
-        /// Specified whether the client must use a request object on authorize requests (defaults to <c>false</c>.)
+        /// Specifies whether the client must use a request object on authorize requests (defaults to <c>false</c>.)
         /// </summary>
         public bool RequireRequestObject { get; set; } = false;
         
