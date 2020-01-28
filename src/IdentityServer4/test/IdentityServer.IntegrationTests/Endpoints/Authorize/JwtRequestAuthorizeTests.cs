@@ -301,6 +301,52 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
             _mockPipeline.LoginRequest.RequestObjectValues.Should().ContainKey("foo");
             _mockPipeline.LoginRequest.RequestObjectValues["foo"].Should().Be("123foo");
         }
+        
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task authorize_should_accept_valid_JWT_request_without_query_string_parameters()
+        {
+            var requestJwt = CreateRequestJwt(
+                issuer: _client.ClientId,
+                audience: IdentityServerPipeline.BaseUrl,
+                credential: new X509SigningCredentials(TestCert.Load()),
+                claims: new[] {
+                    new Claim("client_id", _client.ClientId),
+                    new Claim("response_type", "id_token"),
+                    new Claim("scope", "openid profile"),
+                    new Claim("state", "123state"),
+                    new Claim("nonce", "123nonce"),
+                    new Claim("redirect_uri", "https://client/callback"),
+                    new Claim("acr_values", "acr_1 acr_2 tenant:tenant_value idp:idp_value"),
+                    new Claim("login_hint", "login_hint_value"),
+                    new Claim("display", "popup"),
+                    new Claim("ui_locales", "ui_locale_value"),
+                    new Claim("foo", "123foo"),
+            });
+
+            var url = _mockPipeline.CreateAuthorizeUrl(
+                extra: new
+                {
+                    request = requestJwt
+                });
+            var response = await _mockPipeline.BrowserClient.GetAsync(url);
+
+            _mockPipeline.LoginRequest.Should().NotBeNull();
+            _mockPipeline.LoginRequest.ClientId.Should().Be(_client.ClientId);
+            _mockPipeline.LoginRequest.DisplayMode.Should().Be("popup");
+            _mockPipeline.LoginRequest.UiLocales.Should().Be("ui_locale_value");
+            _mockPipeline.LoginRequest.IdP.Should().Be("idp_value");
+            _mockPipeline.LoginRequest.Tenant.Should().Be("tenant_value");
+            _mockPipeline.LoginRequest.LoginHint.Should().Be("login_hint_value");
+            _mockPipeline.LoginRequest.AcrValues.Should().BeEquivalentTo(new string[] { "acr_2", "acr_1" });
+
+            _mockPipeline.LoginRequest.Parameters.AllKeys.Should().Contain("foo");
+            _mockPipeline.LoginRequest.Parameters["foo"].Should().Be("123foo");
+
+            _mockPipeline.LoginRequest.RequestObjectValues.Count.Should().Be(11);
+            _mockPipeline.LoginRequest.RequestObjectValues.Should().ContainKey("foo");
+            _mockPipeline.LoginRequest.RequestObjectValues["foo"].Should().Be("123foo");
+        }
 
         [Fact]
         [Trait("Category", Category)]
@@ -672,9 +718,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Be("Invalid JWT request");
             _mockPipeline.LoginRequest.Should().BeNull();
         }
-
-
-
+        
         [Fact]
         [Trait("Category", Category)]
         public async Task authorize_should_ignore_request_uri_when_feature_is_disabled()
@@ -753,6 +797,58 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
             var url = _mockPipeline.CreateAuthorizeUrl(
                 clientId: _client.ClientId,
                 responseType: "id_token",
+                extra: new
+                {
+                    request_uri = "http://client_jwt"
+                });
+            var response = await _mockPipeline.BrowserClient.GetAsync(url);
+
+            _mockPipeline.LoginRequest.Should().NotBeNull();
+            _mockPipeline.LoginRequest.ClientId.Should().Be(_client.ClientId);
+            _mockPipeline.LoginRequest.DisplayMode.Should().Be("popup");
+            _mockPipeline.LoginRequest.UiLocales.Should().Be("ui_locale_value");
+            _mockPipeline.LoginRequest.IdP.Should().Be("idp_value");
+            _mockPipeline.LoginRequest.Tenant.Should().Be("tenant_value");
+            _mockPipeline.LoginRequest.LoginHint.Should().Be("login_hint_value");
+            _mockPipeline.LoginRequest.AcrValues.Should().BeEquivalentTo(new string[] { "acr_2", "acr_1" });
+            _mockPipeline.LoginRequest.Parameters.AllKeys.Should().Contain("foo");
+            _mockPipeline.LoginRequest.Parameters["foo"].Should().Be("123foo");
+
+            _mockPipeline.JwtRequestMessageHandler.InvokeWasCalled.Should().BeTrue();
+        }
+        
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task authorize_should_accept_request_uri_without_query_string_parameters()
+        {
+            _mockPipeline.Options.Endpoints.EnableJwtRequestUri = true;
+
+            var requestJwt = CreateRequestJwt(
+                issuer: _client.ClientId,
+                audience: IdentityServerPipeline.BaseUrl,
+                credential: new X509SigningCredentials(TestCert.Load()),
+                claims: new[] {
+                    new Claim("client_id", _client.ClientId),
+                    new Claim("response_type", "id_token"),
+                    new Claim("scope", "openid profile"),
+                    new Claim("state", "123state"),
+                    new Claim("nonce", "123nonce"),
+                    new Claim("redirect_uri", "https://client/callback"),
+                    new Claim("acr_values", "acr_1 acr_2 tenant:tenant_value idp:idp_value"),
+                    new Claim("login_hint", "login_hint_value"),
+                    new Claim("display", "popup"),
+                    new Claim("ui_locales", "ui_locale_value"),
+                    new Claim("foo", "123foo"),
+            });
+            _mockPipeline.JwtRequestMessageHandler.OnInvoke = req =>
+            {
+                req.RequestUri.Should().Be(new Uri("http://client_jwt"));
+                return Task.CompletedTask;
+            };
+            _mockPipeline.JwtRequestMessageHandler.Response.Content = new StringContent(requestJwt);
+
+
+            var url = _mockPipeline.CreateAuthorizeUrl(
                 extra: new
                 {
                     request_uri = "http://client_jwt"
