@@ -646,7 +646,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
                 credential: new X509SigningCredentials(TestCert.Load()),
                 claims: new[] {
                     new Claim("response_type", "id_token"),
-                    new Claim("client_id", "invalid"),
+                    new Claim("client_id", "client"),
                     new Claim("scope", "openid profile"),
                     new Claim("state", "123state"),
                     new Claim("nonce", "123nonce"),
@@ -659,7 +659,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
             });
 
             var url = _mockPipeline.CreateAuthorizeUrl(
-                clientId: _client.ClientId,
+                clientId: "invalid",
                 responseType: "id_token",
                 extra: new
                 {
