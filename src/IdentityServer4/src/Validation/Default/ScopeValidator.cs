@@ -129,6 +129,12 @@ namespace IdentityServer4.Validation
             {
                 GrantedResources.OfflineAccess = true;
                 requestedScopes = requestedScopes.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess).ToArray();
+
+                if (!requestedScopes.Any())
+                {
+                    _logger.LogError("No identity or API scopes requested");
+                    return false;
+                }
             }
 
             var resources = await _store.FindResourcesByScopeAsync(requestedScopes);

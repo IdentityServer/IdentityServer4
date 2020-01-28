@@ -13,6 +13,8 @@ This class model an API resource.
     This value can be used e.g. on the consent screen.
 ``ApiSecrets``
     The API secret is used for the introspection endpoint. The API can authenticate with introspection using the API name and secret.
+``AllowedAccessTokenSigningAlgorithms``
+    List of allowed signing algorithms for access token. If empty, will use the server default signing algorithm.
 ``UserClaims``
     List of associated user claim types that should be included in the access token.
 ``Scopes``
@@ -88,3 +90,30 @@ Using the convenience constructor is equivalent to this::
             }
         }
     }
+
+
+Defining API resources in appsettings.json
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The ``AddInMemoryApiResource`` extensions method also supports adding clients from the ASP.NET Core configuration file. This allows you to define static clients directly from the appsettings.json file::
+
+    "IdentityServer": {
+      "IssuerUri": "urn:sso.company.com",
+      "ApiResources": [
+        {
+          "Name": "api1",
+          "DisplayName": "My API",
+
+          "Scopes": [
+            {
+              "Name": "api1",
+              "DisplayName": "My API"
+            }
+          ]
+        }
+      ]
+    }
+
+Then pass the configuration section to the ``AddInMemoryApiResource`` method::
+
+    AddInMemoryApiResources(configuration.GetSection("IdentityServer:ApiResources"))

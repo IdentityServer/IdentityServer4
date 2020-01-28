@@ -87,11 +87,22 @@ namespace IdentityServer4.Validation
             }
         }
 
+        public static void AddAcrValue(this ValidatedAuthorizeRequest request, string value)
+        {
+            if (String.IsNullOrWhiteSpace(value)) throw new ArgumentNullException(nameof(value));
+
+            request.AuthenticationContextReferenceClasses.Add(value);
+            var acr_values = request.AuthenticationContextReferenceClasses.ToSpaceSeparatedString();
+            request.Raw[OidcConstants.AuthorizeRequest.AcrValues] = acr_values;
+        }
+
         public static string GenerateSessionStateValue(this ValidatedAuthorizeRequest request)
         {
+            if (request == null) return null;
             if (!request.IsOpenIdRequest) return null;
+            
+            if (request.SessionId == null) return null;
 
-            if (request.SessionId.IsMissing()) return null;
             if (request.ClientId.IsMissing()) return null;
             if (request.RedirectUri.IsMissing()) return null;
 

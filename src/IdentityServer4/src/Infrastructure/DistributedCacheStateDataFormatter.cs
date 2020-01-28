@@ -57,9 +57,19 @@ namespace IdentityServer4.Infrastructure
             var cacheKey = $"{CacheKeyPrefix}-{purpose}-{key}";
             var json = ObjectSerializer.ToString(data);
 
+            var options = new DistributedCacheEntryOptions();
+            if (data.ExpiresUtc.HasValue)
+            {
+                options.SetAbsoluteExpiration(data.ExpiresUtc.Value);
+            }
+            else
+            {
+                options.SetSlidingExpiration(Constants.DefaultCacheDuration);
+            }
+            
             // Rather than encrypt the full AuthenticationProperties
             // cache the data and encrypt the key that points to the data
-            Cache.SetString(cacheKey, json);
+            Cache.SetString(cacheKey, json, options);
 
             return Protector.Protect(key);
         }

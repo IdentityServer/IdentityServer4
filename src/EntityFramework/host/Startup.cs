@@ -20,10 +20,9 @@ namespace Host
             _config = config;
         }
 
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc()
-                .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_2_1);
+            services.AddControllersWithViews();
 
             var connectionString = _config.GetConnectionString("db");
 
@@ -42,12 +41,10 @@ namespace Host
 
                     // this enables automatic token cleanup. this is optional.
                     options.EnableTokenCleanup = true;
-                    options.TokenCleanupInterval = 30; // interval in seconds, short for testing
+                    options.TokenCleanupInterval = 5; // interval in seconds, short for testing
                 });
                 // this is something you will want in production to reduce load on and requests to the DB
                 //.AddConfigurationStoreCache();
-
-            return services.BuildServiceProvider(validateScopes: true);
         }
 
         public void Configure(IApplicationBuilder app)
@@ -55,10 +52,18 @@ namespace Host
             app.UseMiddleware<Logging.RequestLoggerMiddleware>();
             app.UseDeveloperExceptionPage();
 
+            app.UseStaticFiles();
+
+            app.UseRouting();
+
             app.UseIdentityServer();
 
-            app.UseStaticFiles();
-            app.UseMvcWithDefaultRoute();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapDefaultControllerRoute();
+            });
         }
     }
 }

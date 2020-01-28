@@ -13,6 +13,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
+using IdentityServer4.Configuration;
 
 namespace IdentityServer4.ResponseHandling
 {
@@ -48,17 +49,30 @@ namespace IdentityServer4.ResponseHandling
         protected readonly ISystemClock Clock;
 
         /// <summary>
+        /// The key material service
+        /// </summary>
+        protected readonly IKeyMaterialService KeyMaterialService;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizeResponseGenerator"/> class.
         /// </summary>
         /// <param name="clock">The clock.</param>
         /// <param name="logger">The logger.</param>
         /// <param name="tokenService">The token service.</param>
+        /// <param name="keyMaterialService"></param>
         /// <param name="authorizationCodeStore">The authorization code store.</param>
         /// <param name="events">The events.</param>
-        public AuthorizeResponseGenerator(ISystemClock clock, ITokenService tokenService, IAuthorizationCodeStore authorizationCodeStore, ILogger<AuthorizeResponseGenerator> logger, IEventService events)
+        public AuthorizeResponseGenerator(
+            ISystemClock clock,
+            ITokenService tokenService,
+            IKeyMaterialService keyMaterialService,
+            IAuthorizationCodeStore authorizationCodeStore,
+            ILogger<AuthorizeResponseGenerator> logger,
+            IEventService events)
         {
             Clock = clock;
             TokenService = tokenService;
+            KeyMaterialService = keyMaterialService;
             AuthorizationCodeStore = authorizationCodeStore;
             Events = events;
             Logger = logger;
@@ -99,8 +113,10 @@ namespace IdentityServer4.ResponseHandling
             Logger.LogDebug("Creating Hybrid Flow response.");
 
             var code = await CreateCodeAsync(request);
-            var response = await CreateImplicitFlowResponseAsync(request, code);
-            response.Code = code;
+            var id = await AuthorizationCodeStore.StoreAuthorizationCodeAsync(code);
+
+            var response = await CreateImplicitFlowResponseAsync(request, id);
+            response.Code = id;
 
             return response;
         }
@@ -115,11 +131,12 @@ namespace IdentityServer4.ResponseHandling
             Logger.LogDebug("Creating Authorization Code Flow response.");
 
             var code = await CreateCodeAsync(request);
+            var id = await AuthorizationCodeStore.StoreAuthorizationCodeAsync(code);
 
             var response = new AuthorizeResponse
             {
                 Request = request,
-                Code = code,
+                Code = id,
                 SessionState = request.GenerateSessionStateValue()
             };
 
@@ -160,17 +177,29 @@ namespace IdentityServer4.ResponseHandling
             string jwt = null;
             if (responseTypes.Contains(OidcConstants.ResponseTypes.IdToken))
             {
+                string stateHash = null;
+                if (request.State.IsPresent())
+                {
+                    var credential = await KeyMaterialService.GetSigningCredentialsAsync(request.Client.AllowedIdentityTokenSigningAlgorithms);
+                    if (credential == null)
+                    {
+                        throw new InvalidOperationException("No signing credential is configured.");
+                    }
+
+                    var algorithm = credential.Algorithm;
+                    stateHash = CryptoHelper.CreateHashClaimValue(request.State, algorithm);
+                }
+
                 var tokenRequest = new TokenCreationRequest
                 {
                     ValidatedRequest = request,
                     Subject = request.Subject,
                     Resources = request.ValidatedScopes.GrantedResources,
-
                     Nonce = request.Raw.Get(OidcConstants.AuthorizeRequest.Nonce),
-                    // if no access token is requested, then we need to include all the claims in the id token
                     IncludeAllIdentityClaims = !request.AccessTokenRequested,
                     AccessTokenToHash = accessTokenValue,
-                    AuthorizationCodeToHash = authorizationCode
+                    AuthorizationCodeToHash = authorizationCode,
+                    StateHash = stateHash
                 };
 
                 var idToken = await TokenService.CreateIdentityTokenAsync(tokenRequest);
@@ -194,8 +223,21 @@ namespace IdentityServer4.ResponseHandling
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        protected async Task<string> CreateCodeAsync(ValidatedAuthorizeRequest request)
+        protected virtual async Task<AuthorizationCode> CreateCodeAsync(ValidatedAuthorizeRequest request)
         {
+            string stateHash = null;
+            if (request.State.IsPresent())
+            {
+                var credential = await KeyMaterialService.GetSigningCredentialsAsync(request.Client.AllowedIdentityTokenSigningAlgorithms);
+                if (credential == null)
+                {
+                    throw new InvalidOperationException("No signing credential is configured.");
+                }
+
+                var algorithm = credential.Algorithm;
+                stateHash = CryptoHelper.CreateHashClaimValue(request.State, algorithm);
+            }
+
             var code = new AuthorizationCode
             {
                 CreationTime = Clock.UtcNow.UtcDateTime,
@@ -210,14 +252,12 @@ namespace IdentityServer4.ResponseHandling
                 RequestedScopes = request.ValidatedScopes.GrantedResources.ToScopeNames(),
                 RedirectUri = request.RedirectUri,
                 Nonce = request.Nonce,
+                StateHash = stateHash,
 
                 WasConsentShown = request.WasConsentShown
             };
 
-            // store id token and access token and return authorization code
-            var id = await AuthorizationCodeStore.StoreAuthorizationCodeAsync(code);
-
-            return id;
+            return code;
         }
-   }
+    }
 }

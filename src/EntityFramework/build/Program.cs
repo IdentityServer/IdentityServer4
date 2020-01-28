@@ -9,6 +9,7 @@ namespace build
 {
     class Program
     {
+        private const string Prefix = "EntityFramework";
         private const bool RequireTests = false;
 
         private const string ArtifactsDir = "artifacts";
@@ -27,9 +28,7 @@ namespace build
             {
                 Target(Build, () => 
                 {
-                    var solution = Directory.GetFiles(".", "*.sln", SearchOption.TopDirectoryOnly).First();
-
-                    Run("dotnet", $"build {solution} -c Release");
+                    Run("dotnet", $"build -c Release", echoPrefix: Prefix);
 
                     if (sign.HasValue())
                     {
@@ -39,39 +38,36 @@ namespace build
 
                 Target(Test, DependsOn(Build), () => 
                 {
-                    try
-                    {
-                        var tests = Directory.GetFiles("./test", "*.csproj", SearchOption.AllDirectories);
-
-                        foreach (var test in tests)
-                        {
-                            Run("dotnet", $"test {test} -c Release --no-build");
-                        }    
-                    }
-                    catch (System.IO.DirectoryNotFoundException ex)
-                    {
-                        if (RequireTests)
-                        {
-                            throw new Exception($"No tests found: {ex.Message}");
-                        };
-                    }
+                    Run("dotnet", $"test -c Release --no-build", echoPrefix: Prefix);
+                        
                 });
                 
                 Target(Pack, DependsOn(Build), () => 
                 {
-                    var project = Directory.GetFiles("./src", "*.csproj", SearchOption.TopDirectoryOnly).First();
+                    var project = Directory.GetFiles("./src", "*.csproj", SearchOption.TopDirectoryOnly).OrderBy(_ => _).First();
 
-                    Run("dotnet", $"pack {project} -c Release -o ../{ArtifactsDir} --no-build");
+                    Run("dotnet", $"pack {project} -c Release -o ./{ArtifactsDir} --no-build", echoPrefix: Prefix);
                     
                     if (sign.HasValue())
                     {
                         Sign("*.nupkg", $"./{ArtifactsDir}");
                     }
+
+                    CopyArtifacts();
+                });
+
+                Target("quick", () => 
+                {
+                    var project = Directory.GetFiles("./src", "*.csproj", SearchOption.TopDirectoryOnly).OrderBy(_ => _).First();
+
+                    Run("dotnet", $"pack {project} -c Release -o ./{ArtifactsDir}", echoPrefix: Prefix);
+                    
+                    CopyArtifacts();
                 });
 
 
                 Target("default", DependsOn(Test, Pack));
-                RunTargetsAndExit(app.RemainingArguments);
+                RunTargetsAndExit(app.RemainingArguments, logPrefix: Prefix);
             });
 
             app.Execute(args);
@@ -93,11 +89,27 @@ namespace build
             }
 
             var files = Directory.GetFiles(directory, extension, SearchOption.AllDirectories);
+            if (files.Count() == 0)
+            {
+                throw new Exception($"File to sign not found: {extension}");
+            }
 
             foreach (var file in files)
             {
                 Console.WriteLine("  Signing " + file);
-                Run("../../tools/signclient", $"sign -c {signClientConfig} -i {file} -r sc-ids@dotnetfoundation.org -s \"{signClientSecret}\" -n 'IdentityServer4'", noEcho: true);
+                Run("dotnet", $"SignClient sign -c {signClientConfig} -i {file} -r sc-ids@dotnetfoundation.org -s \"{signClientSecret}\" -n 'IdentityServer4'", noEcho: true);
+            }
+        }
+
+        private static void CopyArtifacts()
+        {
+            var files = Directory.GetFiles($"./{ArtifactsDir}");
+
+            foreach (string s in files)
+            {
+                var fileName = Path.GetFileName(s);
+                var destFile = Path.Combine("../../nuget", fileName);
+                File.Copy(s, destFile, true);
             }
         }
 

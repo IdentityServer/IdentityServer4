@@ -2,20 +2,19 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using FluentAssertions;
-using IdentityModel.Client;
-using IdentityServer4.IntegrationTests.Common;
-using IdentityServer4.Models;
-using IdentityServer4.Test;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using FluentAssertions;
+using IdentityModel.Client;
+using IdentityServer.IntegrationTests.Common;
+using IdentityServer4.Models;
+using IdentityServer4.Test;
 using Xunit;
 
-
-namespace IdentityServer4.IntegrationTests.Conformance.Basic
+namespace IdentityServer.IntegrationTests.Conformance.Basic
 {
     public class ClientAuthenticationTests 
     {
@@ -39,6 +38,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Basic
                 AllowedScopes = { "openid" },
 
                 RequireConsent = false,
+                RequirePkce = false,
                 RedirectUris = new List<string>
                 {
                     "https://code_pipeline.Client/callback",
@@ -97,7 +97,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Basic
             });
 
             tokenResult.IsError.Should().BeFalse();
-            tokenResult.HttpErrorReason.Should().BeNull();
+            tokenResult.HttpErrorReason.Should().Be("OK");
             tokenResult.TokenType.Should().Be("Bearer");
             tokenResult.AccessToken.Should().NotBeNull();
             tokenResult.ExpiresIn.Should().BeGreaterThan(0);
@@ -144,7 +144,7 @@ namespace IdentityServer4.IntegrationTests.Conformance.Basic
             });
 
             tokenResult.IsError.Should().BeFalse();
-            tokenResult.HttpErrorReason.Should().BeNull();
+            tokenResult.HttpErrorReason.Should().Be("OK");
             tokenResult.TokenType.Should().Be("Bearer");
             tokenResult.AccessToken.Should().NotBeNull();
             tokenResult.ExpiresIn.Should().BeGreaterThan(0);

@@ -32,6 +32,16 @@ namespace IdentityServer4.Models
         }
 
         /// <summary>
+        /// A list of allowed algorithm for signing the token. If null or empty, will use the default algorithm.
+        /// </summary>
+        public ICollection<string> AllowedSigningAlgorithms { get; set; } = new HashSet<string>();
+
+        /// <summary>
+        /// Specifies the confirmation method of the token. This value, if set, will become the cnf claim.
+        /// </summary>
+        public string Confirmation { get; set; }
+
+        /// <summary>
         /// Gets or sets the audiences.
         /// </summary>
         /// <value>

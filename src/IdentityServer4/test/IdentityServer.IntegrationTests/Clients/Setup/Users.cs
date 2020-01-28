@@ -2,12 +2,13 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityModel;
-using IdentityServer4.Test;
 using System.Collections.Generic;
 using System.Security.Claims;
+using IdentityModel;
+using IdentityServer4;
+using IdentityServer4.Test;
 
-namespace IdentityServer4.IntegrationTests.Clients
+namespace IdentityServer.IntegrationTests.Clients.Setup
 {
     internal static class Users
     {
@@ -30,6 +31,20 @@ namespace IdentityServer4.IntegrationTests.Clients
                     }
                 },
                 new TestUser{SubjectId = "88421113", Username = "bob", Password = "bob", 
+                    Claims = new Claim[]
+                    {
+                        new Claim(JwtClaimTypes.Name, "Bob Smith"),
+                        new Claim(JwtClaimTypes.GivenName, "Bob"),
+                        new Claim(JwtClaimTypes.FamilyName, "Smith"),
+                        new Claim(JwtClaimTypes.Email, "BobSmith@email.com"),
+                        new Claim(JwtClaimTypes.EmailVerified, "true", ClaimValueTypes.Boolean),
+                        new Claim(JwtClaimTypes.Role, "Developer"),
+                        new Claim(JwtClaimTypes.Role, "Geek"),
+                        new Claim(JwtClaimTypes.WebSite, "http://bob.com"),
+                        new Claim(JwtClaimTypes.Address, @"{ 'street_address': 'One Hacker Way', 'locality': 'Heidelberg', 'postal_code': 69118, 'country': 'Germany' }", IdentityServerConstants.ClaimValueTypes.Json)
+                    }
+                },
+                new TestUser{SubjectId = "88421113", Username = "bob_no_password", 
                     Claims = new Claim[]
                     {
                         new Claim(JwtClaimTypes.Name, "Bob Smith"),

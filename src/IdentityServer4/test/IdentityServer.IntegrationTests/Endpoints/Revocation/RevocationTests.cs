@@ -2,19 +2,19 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using FluentAssertions;
-using IdentityModel.Client;
-using IdentityServer4.IntegrationTests.Common;
-using IdentityServer4.Models;
-using IdentityServer4.Test;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using FluentAssertions;
+using IdentityModel.Client;
+using IdentityServer.IntegrationTests.Common;
+using IdentityServer4.Models;
+using IdentityServer4.Test;
 using Xunit;
 
-namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
+namespace IdentityServer.IntegrationTests.Endpoints.Revocation
 {
     public class RevocationTests
     {
@@ -37,6 +37,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
                 ClientSecrets = new List<Secret> { new Secret(client_secret.Sha256()) },
                 AllowedGrantTypes = GrantTypes.Code,
                 RequireConsent = false,
+                RequirePkce = false,
                 AllowOfflineAccess = true,
                 AllowedScopes = new List<string> { "api" },
                 RedirectUris = new List<string> { redirect_uri },
@@ -238,6 +239,26 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
 
         [Fact]
         [Trait("Category", Category)]
+        public async Task Revoke_valid_access_token_belonging_to_another_client_should_return_success_but_not_revoke_token()
+        {
+            var tokens = await GetTokensAsync();
+            (await IsAccessTokenValidAsync(tokens)).Should().BeTrue();
+
+            var result = await _mockPipeline.BackChannelClient.RevokeTokenAsync(new TokenRevocationRequest
+            {
+                Address = IdentityServerPipeline.RevocationEndpoint,
+                ClientId = "implicit",
+                ClientSecret = client_secret,
+
+                Token = tokens.AccessToken
+            });
+
+            result.IsError.Should().BeFalse();
+            (await IsAccessTokenValidAsync(tokens)).Should().BeTrue();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
         public async Task Revoke_valid_refresh_token_should_return_success()
         {
             var tokens = await GetTokensAsync();
@@ -255,6 +276,27 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
             result.IsError.Should().BeFalse();
 
             (await UseRefreshTokenAsync(tokens)).Should().BeFalse();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task Revoke_valid_refresh_token_belonging_to_another_client_should_return_success_but_not_revoke_token()
+        {
+            var tokens = await GetTokensAsync();
+            (await UseRefreshTokenAsync(tokens)).Should().BeTrue();
+
+            var result = await _mockPipeline.BackChannelClient.RevokeTokenAsync(new TokenRevocationRequest
+            {
+                Address = IdentityServerPipeline.RevocationEndpoint,
+                ClientId = "implicit",
+                ClientSecret = client_secret,
+
+                Token = tokens.RefreshToken
+            });
+
+            result.IsError.Should().BeFalse();
+
+            (await UseRefreshTokenAsync(tokens)).Should().BeTrue();
         }
 
         [Fact]
@@ -374,7 +416,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
             var response = await _mockPipeline.BackChannelClient.PostAsync(IdentityServerPipeline.RevocationEndpoint, new FormUrlEncodedContent(data));
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-            var result = new TokenRevocationResponse(await response.Content.ReadAsStringAsync());
+            var result = await ProtocolResponse.FromHttpResponseAsync<TokenRevocationResponse>(response);
             result.IsError.Should().BeTrue();
             result.Error.Should().Be("invalid_request");
         }
@@ -397,7 +439,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Revocation
             var response = await _mockPipeline.BackChannelClient.PostAsync(IdentityServerPipeline.RevocationEndpoint, new FormUrlEncodedContent(data));
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-            var result = new TokenRevocationResponse(await response.Content.ReadAsStringAsync());
+            var result = await ProtocolResponse.FromHttpResponseAsync<TokenRevocationResponse>(response);
             result.IsError.Should().BeTrue();
             result.Error.Should().Be("unsupported_token_type");
         }

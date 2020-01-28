@@ -48,7 +48,7 @@
       </div>
     </div>
     }
-
+    
     @if (Model.VisibleExternalProviders.Any())
     {
     <div class="col-lg-6 col-md-6 external-providers">
@@ -61,9 +61,12 @@
             @foreach (var provider in Model.VisibleExternalProviders)
             {
             <li class="list-inline-item">
-              <a class="btn btn-outline-secondary" asp-controller="External" asp-action="Challenge"
-                asp-route-provider="@provider.AuthenticationScheme" asp-route-returnurl="@Model.ReturnUrl">
-                @provider.DisplayName
+              <a class="btn btn-outline-secondary" 
+                 asp-controller="External" 
+                 asp-action="Challenge"
+                 asp-route-scheme="@provider.AuthenticationScheme" 
+                 asp-route-returnurl="@Model.ReturnUrl">
+                  @provider.DisplayName
               </a>
             </li>
             }

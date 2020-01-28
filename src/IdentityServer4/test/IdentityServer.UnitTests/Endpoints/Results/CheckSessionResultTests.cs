@@ -2,18 +2,18 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityServer4.Configuration;
 using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Extensions;
-using Microsoft.AspNetCore.Http;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
 using IdentityServer4.Models;
+using Microsoft.AspNetCore.Http;
+using Xunit;
 
-namespace IdentityServer4.UnitTests.Endpoints.Results
+namespace IdentityServer.UnitTests.Endpoints.Results
 {
     public class CheckSessionResultTests
     {
@@ -42,9 +42,9 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
             _context.Response.StatusCode.Should().Be(200);
             _context.Response.ContentType.Should().StartWith("text/html");
             _context.Response.Headers["Content-Security-Policy"].First().Should().Contain("default-src 'none';");
-            _context.Response.Headers["Content-Security-Policy"].First().Should().Contain("script-src 'sha256-ZT3q7lL9GXNGhPTB1Vvrvds2xw/kOV0zoeok2tiV23I='");
+            _context.Response.Headers["Content-Security-Policy"].First().Should().Contain("script-src 'sha256-bBR11t3xOeLLkccl6Pn1hYbkHCL+JE4CLkgBydaPSE0='");
             _context.Response.Headers["X-Content-Security-Policy"].First().Should().Contain("default-src 'none';");
-            _context.Response.Headers["X-Content-Security-Policy"].First().Should().Contain("script-src 'sha256-ZT3q7lL9GXNGhPTB1Vvrvds2xw/kOV0zoeok2tiV23I='");
+            _context.Response.Headers["X-Content-Security-Policy"].First().Should().Contain("script-src 'sha256-bBR11t3xOeLLkccl6Pn1hYbkHCL+JE4CLkgBydaPSE0='");
             _context.Response.Body.Seek(0, SeekOrigin.Begin);
             using (var rdr = new StreamReader(_context.Response.Body))
             {
@@ -60,8 +60,8 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
 
             await _subject.ExecuteAsync(_context);
 
-            _context.Response.Headers["Content-Security-Policy"].First().Should().Contain("script-src 'unsafe-inline' 'sha256-ZT3q7lL9GXNGhPTB1Vvrvds2xw/kOV0zoeok2tiV23I='");
-            _context.Response.Headers["X-Content-Security-Policy"].First().Should().Contain("script-src 'unsafe-inline' 'sha256-ZT3q7lL9GXNGhPTB1Vvrvds2xw/kOV0zoeok2tiV23I='");
+            _context.Response.Headers["Content-Security-Policy"].First().Should().Contain("script-src 'unsafe-inline' 'sha256-bBR11t3xOeLLkccl6Pn1hYbkHCL+JE4CLkgBydaPSE0='");
+            _context.Response.Headers["X-Content-Security-Policy"].First().Should().Contain("script-src 'unsafe-inline' 'sha256-bBR11t3xOeLLkccl6Pn1hYbkHCL+JE4CLkgBydaPSE0='");
         }
 
         [Fact]
@@ -71,8 +71,24 @@ namespace IdentityServer4.UnitTests.Endpoints.Results
 
             await _subject.ExecuteAsync(_context);
 
-            _context.Response.Headers["Content-Security-Policy"].First().Should().Contain("script-src 'sha256-ZT3q7lL9GXNGhPTB1Vvrvds2xw/kOV0zoeok2tiV23I='");
+            _context.Response.Headers["Content-Security-Policy"].First().Should().Contain("script-src 'sha256-bBR11t3xOeLLkccl6Pn1hYbkHCL+JE4CLkgBydaPSE0='");
             _context.Response.Headers["X-Content-Security-Policy"].Should().BeEmpty();
+        }
+
+        [Theory]
+        [InlineData("foobar")]
+        [InlineData("morefoobar")]
+
+        public async Task can_change_cached_cookiename(string cookieName)
+        {
+            _options.Authentication.CheckSessionCookieName = cookieName;
+            await _subject.ExecuteAsync(_context);
+            _context.Response.Body.Seek(0, SeekOrigin.Begin);
+            using (var rdr = new StreamReader(_context.Response.Body))
+            {
+                var html = rdr.ReadToEnd();
+                html.Should().Contain($"<script id='cookie-name' type='application/json'>{cookieName}</script>");
+            }
         }
     }
 }

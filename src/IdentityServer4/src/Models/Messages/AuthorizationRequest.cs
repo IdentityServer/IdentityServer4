@@ -106,6 +106,14 @@ namespace IdentityServer4.Models
         public NameValueCollection Parameters { get; }
 
         /// <summary>
+        /// Gets the validated contents of the request object (if present)
+        /// </summary>
+        /// <value>
+        /// The request object values
+        /// </value>
+        public Dictionary<string, string> RequestObjectValues { get; } = new Dictionary<string, string>();
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizationRequest"/> class.
         /// </summary>
         public AuthorizationRequest()
@@ -130,6 +138,7 @@ namespace IdentityServer4.Models
             AcrValues = request.GetAcrValues();
             ScopesRequested = request.RequestedScopes;
             Parameters = request.Raw;
+            RequestObjectValues = request.RequestObjectValues;
         }
     }
 }

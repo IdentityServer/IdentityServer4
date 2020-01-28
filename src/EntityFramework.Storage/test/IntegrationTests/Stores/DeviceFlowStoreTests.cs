@@ -214,7 +214,7 @@ namespace IdentityServer4.EntityFramework.IntegrationTests.Stores
                 code = await store.FindByUserCodeAsync(testUserCode);
             }
             
-            code.ShouldBeEquivalentTo(expectedDeviceCodeData, 
+            code.Should().BeEquivalentTo(expectedDeviceCodeData, 
                 assertionOptions => assertionOptions.Excluding(x=> x.Subject));
 
             code.Subject.Claims.FirstOrDefault(x => x.Type == JwtClaimTypes.Subject && x.Value == expectedSubject).Should().NotBeNull();
@@ -270,7 +270,7 @@ namespace IdentityServer4.EntityFramework.IntegrationTests.Stores
                 code = await store.FindByDeviceCodeAsync(testDeviceCode);
             }
 
-            code.ShouldBeEquivalentTo(expectedDeviceCodeData,
+            code.Should().BeEquivalentTo(expectedDeviceCodeData,
                 assertionOptions => assertionOptions.Excluding(x => x.Subject));
 
             code.Subject.Claims.FirstOrDefault(x => x.Type == JwtClaimTypes.Subject && x.Value == expectedSubject).Should().NotBeNull();
@@ -349,7 +349,7 @@ namespace IdentityServer4.EntityFramework.IntegrationTests.Stores
 
             // should be changed
             var parsedCode = serializer.Deserialize<DeviceCode>(updatedCodes.Data);
-            parsedCode.ShouldBeEquivalentTo(authorizedDeviceCode, assertionOptions => assertionOptions.Excluding(x => x.Subject));
+            parsedCode.Should().BeEquivalentTo(authorizedDeviceCode, assertionOptions => assertionOptions.Excluding(x => x.Subject));
             parsedCode.Subject.Claims.FirstOrDefault(x => x.Type == JwtClaimTypes.Subject && x.Value == expectedSubject).Should().NotBeNull();
         }
 

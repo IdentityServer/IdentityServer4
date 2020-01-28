@@ -2,20 +2,24 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using System.Threading.Tasks;
-using Xunit;
-using FluentAssertions;
-using System.Net;
-using System.Collections.Generic;
-using IdentityServer4.Models;
-using System.Security.Claims;
-using IdentityServer4.IntegrationTests.Common;
-using IdentityServer4.Test;
-using System.Net.Http;
-using IdentityModel;
 using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using FluentAssertions;
+using IdentityModel;
+using IdentityServer.IntegrationTests.Common;
+using IdentityServer4;
+using IdentityServer4.Models;
+using IdentityServer4.Stores;
+using IdentityServer4.Stores.Default;
+using IdentityServer4.Test;
+using Microsoft.Extensions.DependencyInjection;
+using Xunit;
 
-namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
+namespace IdentityServer.IntegrationTests.Endpoints.Authorize
 {
     public class AuthorizeTests
     {
@@ -33,6 +37,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                     ClientId = "client1",
                     AllowedGrantTypes = GrantTypes.Implicit,
                     RequireConsent = false,
+                    
                     AllowedScopes = new List<string> { "openid", "profile" },
                     RedirectUris = new List<string> { "https://client1/callback" },
                     AllowAccessTokensViaBrowser = true
@@ -42,6 +47,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                     ClientId = "client2",
                     AllowedGrantTypes = GrantTypes.Implicit,
                     RequireConsent = true,
+                    
                     AllowedScopes = new List<string> { "openid", "profile", "api1", "api2" },
                     RedirectUris = new List<string> { "https://client2/callback" },
                     AllowAccessTokensViaBrowser = true
@@ -51,6 +57,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                     ClientId = "client3",
                     AllowedGrantTypes = GrantTypes.Implicit,
                     RequireConsent = false,
+                    
                     AllowedScopes = new List<string> { "openid", "profile", "api1", "api2" },
                     RedirectUris = new List<string> { "https://client3/callback" },
                     AllowAccessTokensViaBrowser = true,
@@ -63,6 +70,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                     AllowedGrantTypes = GrantTypes.Code,
                     RequireClientSecret = false,
                     RequireConsent = false,
+                    RequirePkce = false,
                     AllowedScopes = new List<string> { "openid", "profile", "api1", "api2" },
                     RedirectUris = new List<string> { "https://client4/callback" },
                 },
@@ -161,10 +169,22 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             _mockPipeline.LoginWasCalled.Should().BeTrue();
         }
 
-        [Fact]
+        [Theory]
+        [InlineData((Type)null)]
+        [InlineData(typeof(QueryStringAuthorizationParametersMessageStore))]
+        [InlineData(typeof(DistributedCacheAuthorizationParametersMessageStore))]
         [Trait("Category", Category)]
-        public async Task signin_request_should_have_authorization_params()
+        public async Task signin_request_should_have_authorization_params(Type storeType)
         {
+            if (storeType != null)
+            {
+                _mockPipeline.OnPostConfigureServices += services =>
+                {
+                    services.AddTransient(typeof(IAuthorizationParametersMessageStore), storeType);
+                };
+                _mockPipeline.Initialize();
+            }
+
             var url = _mockPipeline.CreateAuthorizeUrl(
                 clientId: "client1",
                 responseType: "id_token",
@@ -245,10 +265,22 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             authorization.State.Should().Be("123_state");
         }
 
-        [Fact]
+        [Theory]
+        [InlineData((Type)null)]
+        [InlineData(typeof(QueryStringAuthorizationParametersMessageStore))]
+        [InlineData(typeof(DistributedCacheAuthorizationParametersMessageStore))]
         [Trait("Category", Category)]
-        public async Task login_response_and_consent_response_should_receive_authorization_response()
+        public async Task login_response_and_consent_response_should_receive_authorization_response(Type storeType)
         {
+            if (storeType != null)
+            {
+                _mockPipeline.OnPostConfigureServices += services =>
+                {
+                    services.AddTransient(typeof(IAuthorizationParametersMessageStore), storeType);
+                };
+                _mockPipeline.Initialize();
+            }
+
             _mockPipeline.Subject = new IdentityServerUser("bob").CreatePrincipal();
 
             _mockPipeline.ConsentResponse = new ConsentResponse()

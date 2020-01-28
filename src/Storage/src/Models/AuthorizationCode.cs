@@ -78,6 +78,14 @@ namespace IdentityServer4.Models
         public string Nonce { get; set; }
 
         /// <summary>
+        /// Gets or sets the hashed state (to output s_hash claim).
+        /// </summary>
+        /// <value>
+        /// The hashed state.
+        /// </value>
+        public string StateHash { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether consent was shown.
         /// </summary>
         /// <value>
@@ -108,5 +116,13 @@ namespace IdentityServer4.Models
         /// The code challenge method
         /// </value>
         public string CodeChallengeMethod { get; set; }
+
+        /// <summary>
+        /// Gets or sets properties
+        /// </summary>
+        /// <value>
+        /// The properties
+        /// </value>
+        public IDictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
     }
 }

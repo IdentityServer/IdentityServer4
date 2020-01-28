@@ -2,18 +2,17 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityModel;
+using IdentityServer4;
+using IdentityServer4.Configuration;
+using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using Newtonsoft.Json.Serialization;
-using CryptoRandom = IdentityModel.CryptoRandom;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -30,15 +29,31 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IIdentityServerBuilder AddSigningCredential(this IIdentityServerBuilder builder, SigningCredentials credential)
         {
-            // todo dom
             if (!(credential.Key is AsymmetricSecurityKey
-                || credential.Key is JsonWebKey && ((JsonWebKey)credential.Key).HasPrivateKey))
-            //&& !credential.Key.IsSupportedAlgorithm(SecurityAlgorithms.RsaSha256Signature))
+                || credential.Key is IdentityModel.Tokens.JsonWebKey && ((IdentityModel.Tokens.JsonWebKey)credential.Key).HasPrivateKey))
             {
                 throw new InvalidOperationException("Signing key is not asymmetric");
             }
-            builder.Services.AddSingleton<ISigningCredentialStore>(new DefaultSigningCredentialsStore(credential));
-            builder.Services.AddSingleton<IValidationKeysStore>(new DefaultValidationKeysStore(new[] { credential.Key }));
+
+            if (!IdentityServerConstants.SupportedSigningAlgorithms.Contains(credential.Algorithm, StringComparer.Ordinal))
+            {
+                throw new InvalidOperationException($"Signing algorithm {credential.Algorithm} is not supported.");
+            }
+
+            if (credential.Key is ECDsaSecurityKey key && !CryptoHelper.IsValidCurveForAlgorithm(key, credential.Algorithm))
+            {
+                throw new InvalidOperationException("Invalid curve for signing algorithm");
+            }
+
+            builder.Services.AddSingleton<ISigningCredentialStore>(new InMemorySigningCredentialsStore(credential));
+
+            var keyInfo = new SecurityKeyInfo
+            {
+                Key = credential.Key,
+                SigningAlgorithm = credential.Algorithm
+            };
+
+            builder.Services.AddSingleton<IValidationKeysStore>(new InMemoryValidationKeysStore(new[] { keyInfo }));
 
             return builder;
         }
@@ -48,10 +63,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <param name="certificate">The certificate.</param>
+        /// <param name="signingAlgorithm">The signing algorithm (defaults to RS256)</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidOperationException">X509 certificate does not have a private key.</exception>
-        public static IIdentityServerBuilder AddSigningCredential(this IIdentityServerBuilder builder, X509Certificate2 certificate)
+        public static IIdentityServerBuilder AddSigningCredential(this IIdentityServerBuilder builder, X509Certificate2 certificate, string signingAlgorithm = SecurityAlgorithms.RsaSha256)
         {
             if (certificate == null) throw new ArgumentNullException(nameof(certificate));
 
@@ -60,7 +76,11 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new InvalidOperationException("X509 certificate does not have a private key.");
             }
 
-            var credential = new SigningCredentials(new X509SecurityKey(certificate), "RS256");
+            // add signing algorithm name to key ID to allow using the same key for two different algorithms (e.g. RS256 and PS56);
+            var key = new X509SecurityKey(certificate);
+            key.KeyId += signingAlgorithm;
+            
+            var credential = new SigningCredentials(key, signingAlgorithm);
             return builder.AddSigningCredential(credential);
         }
 
@@ -71,30 +91,57 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="name">The name.</param>
         /// <param name="location">The location.</param>
         /// <param name="nameType">Name parameter can be either a distinguished name or a thumbprint</param>
+        /// <param name="signingAlgorithm">The signing algorithm (defaults to RS256)</param>
         /// <exception cref="InvalidOperationException">certificate: '{name}'</exception>
-        public static IIdentityServerBuilder AddSigningCredential(this IIdentityServerBuilder builder, string name, StoreLocation location = StoreLocation.LocalMachine, NameType nameType = NameType.SubjectDistinguishedName)
+        public static IIdentityServerBuilder AddSigningCredential(
+            this IIdentityServerBuilder builder,
+            string name,
+            StoreLocation location = StoreLocation.LocalMachine,
+            NameType nameType = NameType.SubjectDistinguishedName,
+            string signingAlgorithm = SecurityAlgorithms.RsaSha256)
         {
-            var certificate = FindCertificate(name, location, nameType);
+            var certificate = CryptoHelper.FindCertificate(name, location, nameType);
             if (certificate == null) throw new InvalidOperationException($"certificate: '{name}' not found in certificate store");
 
-            return builder.AddSigningCredential(certificate);
+            return builder.AddSigningCredential(certificate, signingAlgorithm);
         }
 
         /// <summary>
         /// Sets the signing credential.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        /// <param name="rsaKey">The RSA key.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="signingAlgorithm">The signing algorithm</param>
         /// <returns></returns>
-        /// <exception cref="InvalidOperationException">RSA key does not have a private key.</exception>
-        public static IIdentityServerBuilder AddSigningCredential(this IIdentityServerBuilder builder, RsaSecurityKey rsaKey)
+        public static IIdentityServerBuilder AddSigningCredential(this IIdentityServerBuilder builder, SecurityKey key, string signingAlgorithm)
         {
-            if (rsaKey.PrivateKeyStatus == PrivateKeyStatus.DoesNotExist)
-            {
-                throw new InvalidOperationException("RSA key does not have a private key.");
-            }
+            var credential = new SigningCredentials(key, signingAlgorithm);
+            return builder.AddSigningCredential(credential);
+        }
 
-            var credential = new SigningCredentials(rsaKey, "RS256");
+        /// <summary>
+        /// Sets an RSA-based signing credential.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="key">The RSA key.</param>
+        /// <param name="signingAlgorithm">The signing algorithm</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddSigningCredential(this IIdentityServerBuilder builder, RsaSecurityKey key, IdentityServerConstants.RsaSigningAlgorithm signingAlgorithm)
+        {
+            var credential = new SigningCredentials(key, CryptoHelper.GetRsaSigningAlgorithmValue(signingAlgorithm));
+            return builder.AddSigningCredential(credential);
+        }
+
+        /// <summary>
+        /// Sets an ECDsa-based signing credential.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="key">The ECDsa key.</param>
+        /// <param name="signingAlgorithm">The signing algorithm</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddSigningCredential(this IIdentityServerBuilder builder, ECDsaSecurityKey key, IdentityServerConstants.ECDsaSigningAlgorithm signingAlgorithm)
+        {
+            var credential = new SigningCredentials(key, CryptoHelper.GetECDsaSigningAlgorithmValue(signingAlgorithm));
             return builder.AddSigningCredential(credential);
         }
 
@@ -104,8 +151,13 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="builder">The builder.</param>
         /// <param name="persistKey">Specifies if the temporary key should be persisted to disk.</param>
         /// <param name="filename">The filename.</param>
+        /// <param name="signingAlgorithm">The signing algorithm (defaults to RS256)</param>
         /// <returns></returns>
-        public static IIdentityServerBuilder AddDeveloperSigningCredential(this IIdentityServerBuilder builder, bool persistKey = true, string filename = null)
+        public static IIdentityServerBuilder AddDeveloperSigningCredential(
+            this IIdentityServerBuilder builder,
+            bool persistKey = true,
+            string filename = null,
+            IdentityServerConstants.RsaSigningAlgorithm signingAlgorithm = IdentityServerConstants.RsaSigningAlgorithm.RS256)
         {
             if (filename == null)
             {
@@ -115,22 +167,26 @@ namespace Microsoft.Extensions.DependencyInjection
             if (File.Exists(filename))
             {
                 var keyFile = File.ReadAllText(filename);
-                var tempKey = JsonConvert.DeserializeObject<TemporaryRsaKey>(keyFile, new JsonSerializerSettings { ContractResolver = new RsaKeyContractResolver() });
+                var tempKey = JsonConvert.DeserializeObject<CryptoHelper.TemporaryRsaKey>(keyFile, new JsonSerializerSettings { ContractResolver = new CryptoHelper.RsaKeyContractResolver() });
 
-                return builder.AddSigningCredential(CreateRsaSecurityKey(tempKey.Parameters, tempKey.KeyId));
+                return builder.AddSigningCredential(CryptoHelper.CreateRsaSecurityKey(tempKey.Parameters, tempKey.KeyId), signingAlgorithm);
             }
             else
             {
-                var key = CreateRsaSecurityKey();
+                var key = CryptoHelper.CreateRsaSecurityKey();
 
                 RSAParameters parameters;
 
                 if (key.Rsa != null)
+                {
                     parameters = key.Rsa.ExportParameters(includePrivateParameters: true);
+                }
                 else
+                {
                     parameters = key.Parameters;
+                }
 
-                var tempKey = new TemporaryRsaKey
+                var tempKey = new CryptoHelper.TemporaryRsaKey
                 {
                     Parameters = parameters,
                     KeyId = key.KeyId
@@ -138,54 +194,11 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 if (persistKey)
                 {
-                    File.WriteAllText(filename, JsonConvert.SerializeObject(tempKey, new JsonSerializerSettings { ContractResolver = new RsaKeyContractResolver() }));
+                    File.WriteAllText(filename, JsonConvert.SerializeObject(tempKey, new JsonSerializerSettings { ContractResolver = new CryptoHelper.RsaKeyContractResolver() }));
                 }
                 
-                return builder.AddSigningCredential(key);
+                return builder.AddSigningCredential(key, signingAlgorithm);
             }
-        }
-
-        /// <summary>
-        /// Creates an RSA security key.
-        /// </summary>
-        /// <param name="parameters">The parameters.</param>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
-        public static RsaSecurityKey CreateRsaSecurityKey(RSAParameters parameters, string id)
-        {
-            var key = new RsaSecurityKey(parameters)
-            {
-                KeyId = id
-            };
-
-            return key;
-        }
-
-        /// <summary>
-        /// Creates a new RSA security key.
-        /// </summary>
-        /// <returns></returns>
-        public static RsaSecurityKey CreateRsaSecurityKey()
-        {
-            var rsa = RSA.Create();
-            RsaSecurityKey key;
-
-            if (rsa is RSACryptoServiceProvider)
-            {
-                rsa.Dispose();
-                var cng = new RSACng(2048);
-
-                var parameters = cng.ExportParameters(includePrivateParameters: true);
-                key = new RsaSecurityKey(parameters);
-            }
-            else
-            {
-                rsa.KeySize = 2048;
-                key = new RsaSecurityKey(rsa);
-            }
-
-            key.KeyId = CryptoRandom.CreateUniqueId(16);
-            return key;
         }
 
         /// <summary>
@@ -194,11 +207,53 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="builder">The builder.</param>
         /// <param name="keys">The keys.</param>
         /// <returns></returns>
-        public static IIdentityServerBuilder AddValidationKeys(this IIdentityServerBuilder builder, params AsymmetricSecurityKey[] keys)
+        public static IIdentityServerBuilder AddValidationKey(this IIdentityServerBuilder builder, params SecurityKeyInfo[] keys)
         {
-            builder.Services.AddSingleton<IValidationKeysStore>(new DefaultValidationKeysStore(keys));
+            builder.Services.AddSingleton<IValidationKeysStore>(new InMemoryValidationKeysStore(keys));
 
             return builder;
+        }
+
+        /// <summary>
+        /// Adds an RSA-based validation key.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="key">The RSA key</param>
+        /// <param name="signingAlgorithm">The RSA-based signing algorithm</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddValidationKey(
+            this IIdentityServerBuilder builder,
+            RsaSecurityKey key,
+            IdentityServerConstants.RsaSigningAlgorithm signingAlgorithm = IdentityServerConstants.RsaSigningAlgorithm.RS256)
+        {
+            var keyInfo = new SecurityKeyInfo
+            {
+                Key = key,
+                SigningAlgorithm = CryptoHelper.GetRsaSigningAlgorithmValue(signingAlgorithm)
+            };
+
+            return builder.AddValidationKey(keyInfo);
+        }
+
+        /// <summary>
+        /// Adds an ECDSA-based validation key.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="key">The ECDSA key</param>
+        /// <param name="signingAlgorithm">The ECDSA-based signing algorithm</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddValidationKey(
+            this IIdentityServerBuilder builder,
+            ECDsaSecurityKey key,
+            IdentityServerConstants.ECDsaSigningAlgorithm signingAlgorithm = IdentityServerConstants.ECDsaSigningAlgorithm.ES256)
+        {
+            var keyInfo = new SecurityKeyInfo
+            {
+                Key = key,
+                SigningAlgorithm = CryptoHelper.GetECDsaSigningAlgorithmValue(signingAlgorithm)
+            };
+
+            return builder.AddValidationKey(keyInfo);
         }
 
         /// <summary>
@@ -206,14 +261,23 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <param name="certificate">The certificate.</param>
+        /// <param name="signingAlgorithm">The signing algorithm</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public static IIdentityServerBuilder AddValidationKey(this IIdentityServerBuilder builder, X509Certificate2 certificate)
+        public static IIdentityServerBuilder AddValidationKey(
+            this IIdentityServerBuilder builder,
+            X509Certificate2 certificate,
+            string signingAlgorithm = SecurityAlgorithms.RsaSha256)
         {
             if (certificate == null) throw new ArgumentNullException(nameof(certificate));
 
-            var key = new X509SecurityKey(certificate);
-            return builder.AddValidationKeys(key);
+            var keyInfo = new SecurityKeyInfo
+            {
+                Key = new X509SecurityKey(certificate),
+                SigningAlgorithm = signingAlgorithm
+            };
+
+            return builder.AddValidationKey(keyInfo);
         }
 
         /// <summary>
@@ -223,77 +287,18 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="name">The name.</param>
         /// <param name="location">The location.</param>
         /// <param name="nameType">Name parameter can be either a distinguished name or a thumbprint</param>
-        public static IIdentityServerBuilder AddValidationKey(this IIdentityServerBuilder builder, string name, StoreLocation location = StoreLocation.LocalMachine, NameType nameType = NameType.SubjectDistinguishedName)
+        /// <param name="signingAlgorithm">The signing algorithm</param>
+        public static IIdentityServerBuilder AddValidationKey(
+            this IIdentityServerBuilder builder,
+            string name,
+            StoreLocation location = StoreLocation.LocalMachine,
+            NameType nameType = NameType.SubjectDistinguishedName,
+            string signingAlgorithm = SecurityAlgorithms.RsaSha256)
         {
-            var certificate = FindCertificate(name, location, nameType);
+            var certificate = CryptoHelper.FindCertificate(name, location, nameType);
             if (certificate == null) throw new InvalidOperationException($"certificate: '{name}' not found in certificate store");
 
-            return builder.AddValidationKey(certificate);
+            return builder.AddValidationKey(certificate, signingAlgorithm);
         }
-
-        private static X509Certificate2 FindCertificate(string name, StoreLocation location, NameType nameType)
-        {
-            X509Certificate2 certificate = null;
-
-            if (location == StoreLocation.LocalMachine)
-            {
-                if (nameType == NameType.SubjectDistinguishedName)
-                {
-                    certificate = X509.LocalMachine.My.SubjectDistinguishedName.Find(name, validOnly: false).FirstOrDefault();
-                }
-                else if (nameType == NameType.Thumbprint)
-                {
-                    certificate = X509.LocalMachine.My.Thumbprint.Find(name, validOnly: false).FirstOrDefault();
-                }
-            }
-            else
-            {
-                if (nameType == NameType.SubjectDistinguishedName)
-                {
-                    certificate = X509.CurrentUser.My.SubjectDistinguishedName.Find(name, validOnly: false).FirstOrDefault();
-                }
-                else if (nameType == NameType.Thumbprint)
-                {
-                    certificate = X509.CurrentUser.My.Thumbprint.Find(name, validOnly: false).FirstOrDefault();
-                }
-            }
-
-            return certificate;
-        }
-
-        // used for serialization to temporary RSA key
-        private class TemporaryRsaKey
-        {
-            public string KeyId { get; set; }
-            public RSAParameters Parameters { get; set; }
-        }
-
-        private class RsaKeyContractResolver : DefaultContractResolver
-        {
-            protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
-            {
-                var property = base.CreateProperty(member, memberSerialization);
-
-                property.Ignored = false;
-
-                return property;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Describes the string so we know what to search for in certificate store
-    /// </summary>
-    public enum NameType
-    {
-        /// <summary>
-        /// subject distinguished name
-        /// </summary>
-        SubjectDistinguishedName,
-
-        /// <summary>
-        /// thumbprint
-        /// </summary>
-        Thumbprint
     }
 }

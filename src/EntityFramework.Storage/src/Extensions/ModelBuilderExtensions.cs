@@ -45,6 +45,7 @@ namespace IdentityServer4.EntityFramework.Extensions
                 client.Property(x => x.ClientClaimsPrefix).HasMaxLength(200);
                 client.Property(x => x.PairWiseSubjectSalt).HasMaxLength(200);
                 client.Property(x => x.UserCodeType).HasMaxLength(100);
+                client.Property(x => x.AllowedIdentityTokenSigningAlgorithms).HasMaxLength(100);
 
                 client.HasIndex(x => x.ClientId).IsUnique();
 
@@ -142,7 +143,8 @@ namespace IdentityServer4.EntityFramework.Extensions
 
                 grant.HasKey(x => x.Key);
 
-                grant.HasIndex(x => new { x.SubjectId, x.ClientId, x.Type, x.Expiration });
+                grant.HasIndex(x => new { x.SubjectId, x.ClientId, x.Type });
+                grant.HasIndex(x => x.Expiration);
             });
 
             modelBuilder.Entity<DeviceFlowCodes>(codes =>
@@ -212,6 +214,7 @@ namespace IdentityServer4.EntityFramework.Extensions
                 apiResource.Property(x => x.Name).HasMaxLength(200).IsRequired();
                 apiResource.Property(x => x.DisplayName).HasMaxLength(200);
                 apiResource.Property(x => x.Description).HasMaxLength(1000);
+                apiResource.Property(x => x.AllowedAccessTokenSigningAlgorithms).HasMaxLength(100);
 
                 apiResource.HasIndex(x => x.Name).IsUnique();
 

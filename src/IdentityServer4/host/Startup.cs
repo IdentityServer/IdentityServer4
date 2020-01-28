@@ -2,19 +2,25 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System;
 using Host.Configuration;
 using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Quickstart.UI;
-using idunno.Authentication.Certificate;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
-using Polly;
-using System;
+using Serilog;
+using System.Linq;
+using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using System.Threading.Tasks;
+using Host.Extensions;
+using Microsoft.AspNetCore.Authentication.Certificate;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace Host
 {
@@ -29,17 +35,26 @@ namespace Host
             IdentityModelEventSource.ShowPII = true;
         }
 
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc()
-                .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_2_1);
+            services.AddControllersWithViews();
+            
+            // cookie policy to deal with temporary browser incompatibilities
+            services.AddSameSiteCookiePolicy();
 
+            // configures IIS out-of-proc settings (see https://github.com/aspnet/AspNetCore/issues/14882)
             services.Configure<IISOptions>(iis =>
             {
                 iis.AuthenticationDisplayName = "Windows";
                 iis.AutomaticAuthentication = false;
             });
 
+            // configures IIS in-proc settings
+            services.Configure<IISServerOptions>(iis =>
+            {
+                iis.AuthenticationDisplayName = "Windows";
+                iis.AutomaticAuthentication = false;
+            });
 
             var builder = services.AddIdentityServer(options =>
                 {
@@ -49,80 +64,92 @@ namespace Host
                     options.Events.RaiseInformationEvents = true;
 
                     options.MutualTls.Enabled = true;
-                    options.MutualTls.ClientCertificateAuthenticationScheme = "x509";
+                    options.MutualTls.DomainName = "mtls";
+                    //options.MutualTls.AlwaysEmitConfirmationClaim = true;
                 })
                 .AddInMemoryClients(Clients.Get())
                 //.AddInMemoryClients(_config.GetSection("Clients"))
                 .AddInMemoryIdentityResources(Resources.GetIdentityResources())
                 .AddInMemoryApiResources(Resources.GetApiResources())
-                .AddDeveloperSigningCredential()
+                .AddSigningCredential()
                 .AddExtensionGrantValidator<Extensions.ExtensionGrantValidator>()
                 .AddExtensionGrantValidator<Extensions.NoSubjectExtensionGrantValidator>()
                 .AddJwtBearerClientAuthentication()
                 .AddAppAuthRedirectUriValidator()
                 .AddTestUsers(TestUsers.Users)
+                .AddProfileService<HostProfileService>()
                 .AddMutualTlsSecretValidators();
 
-            //builder.AddJwtRequestUriHttpClient(client =>
-            //{
-            //    client.Timeout = TimeSpan.FromSeconds(30);
-            //});
-
-         
-            builder.AddBackChannelLogoutHttpClient(client =>
-            {
-                client.Timeout = TimeSpan.FromSeconds(30);
-            })
-            .AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(new[]
-            {
-                TimeSpan.FromSeconds(1),
-                TimeSpan.FromSeconds(2),
-                TimeSpan.FromSeconds(3)
-            }));
-
-            builder.AddJwtRequestUriHttpClient(client =>
-            {
-                client.Timeout = TimeSpan.FromSeconds(30);
-            })
-            .AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(new[]
-            {
-                TimeSpan.FromSeconds(1),
-                TimeSpan.FromSeconds(2),
-                TimeSpan.FromSeconds(3)
-            }));
-
             services.AddExternalIdentityProviders();
-            services.AddLocalApiAuthentication();
 
             services.AddAuthentication()
-               .AddCertificate("x509", options =>
-               {
-                   options.RevocationMode = System.Security.Cryptography.X509Certificates.X509RevocationMode.NoCheck;
-                   
-                   options.Events = new CertificateAuthenticationEvents
-                   {
-                       OnValidateCertificate = context =>
-                       {
-                           context.Principal = Principal.CreateFromCertificate(context.ClientCertificate, includeAllClaims:true);
-                           context.Success();
+                .AddCertificate(options =>
+                {
+                    options.AllowedCertificateTypes = CertificateTypes.All;
+                    options.RevocationMode = X509RevocationMode.NoCheck;
+                });
+            
+            services.AddCertificateForwardingForNginx();
+            
+            services.AddLocalApiAuthentication(principal =>
+            {
+                principal.Identities.First().AddClaim(new Claim("additional_claim", "additional_value"));
 
-                           return Task.CompletedTask;
-                       }
-                   };
-               });
-
-            return services.BuildServiceProvider(validateScopes: false);
+                return Task.FromResult(principal);
+            });
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseMiddleware<Logging.RequestLoggerMiddleware>();
-            app.UseDeveloperExceptionPage();
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
 
+            app.UseCertificateForwarding();
+            app.UseCookiePolicy();
+            
+            app.UseSerilogRequestLogging();
+
+            app.UseDeveloperExceptionPage();
+            app.UseStaticFiles();
+
+            app.UseRouting();
             app.UseIdentityServer();
 
-            app.UseStaticFiles();
-            app.UseMvcWithDefaultRoute();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapDefaultControllerRoute();
+            });
+        }
+    }
+
+    public static class BuilderExtensions
+    {
+        public static IIdentityServerBuilder AddSigningCredential(this IIdentityServerBuilder builder)
+        {
+            // create random RS256 key
+            //builder.AddDeveloperSigningCredential();
+
+            // use an RSA-based certificate with RS256
+            var rsaCert = new X509Certificate2("./keys/identityserver.test.rsa.p12", "changeit");
+            builder.AddSigningCredential(rsaCert, "RS256");
+
+            // ...and PS256
+            builder.AddSigningCredential(rsaCert, "PS256");
+
+            // or manually extract ECDSA key from certificate (directly using the certificate is not support by Microsoft right now)
+            var ecCert = new X509Certificate2("./keys/identityserver.test.ecdsa.p12", "changeit");
+            var key = new ECDsaSecurityKey(ecCert.GetECDsaPrivateKey())
+            {
+                KeyId = CryptoRandom.CreateUniqueId(16)
+            };
+
+            return builder.AddSigningCredential(
+                key,
+                IdentityServerConstants.ECDsaSigningAlgorithm.ES256);
         }
     }
 
@@ -134,17 +161,17 @@ namespace Host
             services.AddOidcStateDataFormatterCache("aad", "demoidsrv");
 
             services.AddAuthentication()
-                .AddOpenIdConnect("Google","Google", options =>
-                {
-                    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-                    options.ForwardSignOut = IdentityServerConstants.DefaultCookieAuthenticationScheme;
+                .AddOpenIdConnect("Google", "Google", options =>
+                 {
+                     options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                     options.ForwardSignOut = IdentityServerConstants.DefaultCookieAuthenticationScheme;
 
-                    options.Authority = "https://accounts.google.com/";
-                    options.ClientId = "708996912208-9m4dkjb5hscn7cjrn5u0r4tbgkbj1fko.apps.googleusercontent.com";
+                     options.Authority = "https://accounts.google.com/";
+                     options.ClientId = "708996912208-9m4dkjb5hscn7cjrn5u0r4tbgkbj1fko.apps.googleusercontent.com";
 
-                    options.CallbackPath = "/signin-google";
-                    options.Scope.Add("email");
-                })
+                     options.CallbackPath = "/signin-google";
+                     options.Scope.Add("email");
+                 })
                 .AddOpenIdConnect("demoidsrv", "IdentityServer", options =>
                 {
                     options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
@@ -198,23 +225,30 @@ namespace Host
                         NameClaimType = "name",
                         RoleClaimType = "role"
                     };
-                })
-                .AddWsFederation("adfs-wsfed", "ADFS with WS-Fed", options =>
-                {
-                    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-                    options.SignOutScheme = IdentityServerConstants.SignoutScheme;
-
-                    options.MetadataAddress = "https://adfs4.local/federationmetadata/2007-06/federationmetadata.xml";
-                    options.Wtrealm = "urn:test";
-
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        NameClaimType = "name",
-                        RoleClaimType = "role"
-                    };
                 });
 
             return services;
+        }
+
+        public static void AddCertificateForwardingForNginx(this IServiceCollection services)
+        {
+            services.AddCertificateForwarding(options =>
+            {
+                options.CertificateHeader = "X-SSL-CERT";
+
+                options.HeaderConverter = (headerValue) =>
+                {
+                    X509Certificate2 clientCertificate = null;
+
+                    if(!string.IsNullOrWhiteSpace(headerValue))
+                    {
+                        byte[] bytes = Encoding.UTF8.GetBytes(Uri.UnescapeDataString(headerValue));
+                        clientCertificate = new X509Certificate2(bytes);
+                    }
+
+                    return clientCertificate;
+                };
+            });
         }
     }
 }

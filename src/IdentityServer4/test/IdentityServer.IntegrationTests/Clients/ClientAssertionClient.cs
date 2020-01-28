@@ -2,26 +2,27 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using FluentAssertions;
-using IdentityModel.Client;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Xunit;
-using System.IdentityModel.Tokens.Jwt;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Net.Http;
 using System.Security.Claims;
-using IdentityModel;
-using Microsoft.IdentityModel.Tokens;
-using IdentityServer4.IntegrationTests.Common;
-using Newtonsoft.Json;
 using System.Text;
+using System.Threading.Tasks;
+using FluentAssertions;
+using IdentityModel;
+using IdentityModel.Client;
+using IdentityServer.IntegrationTests.Clients.Setup;
+using IdentityServer.IntegrationTests.Common;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Xunit;
 
-namespace IdentityServer4.IntegrationTests.Clients
+namespace IdentityServer.IntegrationTests.Clients
 {
     public class ClientAssertionClient
     {
@@ -151,7 +152,7 @@ namespace IdentityServer4.IntegrationTests.Clients
         private async Task<TokenResponse> GetToken(FormUrlEncodedContent body)
         {
             var response = await _client.PostAsync(TokenEndpoint, body);
-            return new TokenResponse(await response.Content.ReadAsStringAsync());
+            return await ProtocolResponse.FromHttpResponseAsync<TokenResponse>(response);
         }
 
         private void AssertValidToken(TokenResponse response)
@@ -170,10 +171,7 @@ namespace IdentityServer4.IntegrationTests.Clients
             var scopes = payload["scope"] as JArray;
             scopes.First().ToString().Should().Be("api1");
 
-            var audiences = ((JArray)payload["aud"]).Select(x => x.ToString());
-            audiences.Count().Should().Be(2);
-            audiences.Should().Contain("https://idsvr4/resources");
-            audiences.Should().Contain("api");
+            payload["aud"].Should().Be("api");
         }
 
         private Dictionary<string, object> GetPayload(TokenResponse response)

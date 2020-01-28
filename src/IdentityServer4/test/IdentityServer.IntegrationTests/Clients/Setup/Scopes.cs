@@ -2,10 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityServer4.Models;
 using System.Collections.Generic;
+using IdentityServer4.Models;
 
-namespace IdentityServer4.IntegrationTests.Clients
+namespace IdentityServer.IntegrationTests.Clients.Setup
 {
     internal class Scopes
     {
@@ -27,7 +27,7 @@ namespace IdentityServer4.IntegrationTests.Clients
                 new ApiResource
                 {
                     Name = "api",
-                    ApiSecrets = 
+                    ApiSecrets =
                     {
                         new Secret("secret".Sha256())
                     },
@@ -51,7 +51,8 @@ namespace IdentityServer4.IntegrationTests.Clients
                             UserClaims = { "role" }
                         }
                     }
-                }
+                },
+                new ApiResource("other_api")
             };
         }
     }

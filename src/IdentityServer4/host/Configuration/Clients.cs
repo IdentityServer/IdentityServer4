@@ -34,14 +34,14 @@ namespace Host.Configuration
                 {
                     ClientId = "mtls",
                     ClientSecrets = {
-                        new Secret(@"CN=mtls.test, OU=ROO\ballen@roo, O=mkcert development certificate", "mtls.test")
+                        // new Secret(@"CN=mtls.test, OU=ROO\ballen@roo, O=mkcert development certificate", "mtls.test")
+                        // {
+                        //     Type = SecretTypes.X509CertificateName
+                        // },
+                        new Secret("5D9E9B6B333CD42C99D1DE6175CC0F3EF99DDF68", "mtls.test")
                         {
-                            Type = SecretTypes.X509CertificateName
+                            Type = SecretTypes.X509CertificateThumbprint
                         },
-                        //new Secret("bca0d040847f843c5ee0fa6eb494837470155868", "mtls.test")
-                        //{
-                        //    Type = SecretTypes.X509CertificateThumbprint
-                        //},
                     },
 
                     AccessTokenType = AccessTokenType.Jwt,
@@ -125,18 +125,18 @@ namespace Host.Configuration
                 },
 
                 ///////////////////////////////////////////
-                // Console Hybrid with PKCE Sample
+                // Console with PKCE Sample
                 //////////////////////////////////////////
                 new Client
                 {
-                    ClientId = "console.hybrid.pkce",
-                    ClientName = "Console Hybrid with PKCE Sample",
+                    ClientId = "console.pkce",
+                    ClientName = "Console with PKCE Sample",
                     RequireClientSecret = false,
 
-                    AllowedGrantTypes = GrantTypes.Hybrid,
+                    AllowedGrantTypes = GrantTypes.Code,
                     RequirePkce = true,
 
-                    RedirectUris = { "http://127.0.0.1", "sample-windows-client://callback" },
+                    RedirectUris = { "http://127.0.0.1" },
 
                     AllowOfflineAccess = true,
 
@@ -148,6 +148,33 @@ namespace Host.Configuration
                         "api1", "api2.read_only"
                     }
                 },
+                ///////////////////////////////////////////
+                // WinConsole with PKCE Sample
+                //////////////////////////////////////////
+                new Client
+                {
+                    ClientId = "winconsole",
+                    ClientName = "Windows Console with PKCE Sample",
+                    RequireClientSecret = false,
+
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RequirePkce = true,
+
+                    RedirectUris = { "sample-windows-client://callback" },
+                    RequireConsent = false,
+
+                    AllowOfflineAccess = true,
+                    AllowedIdentityTokenSigningAlgorithms = { "ES256" },
+
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
+                        "api1", "api2.read_only"
+                    }
+                },
+
 
                 ///////////////////////////////////////////
                 // Introspection Client Sample
@@ -224,6 +251,39 @@ namespace Host.Configuration
                 },
 
                 ///////////////////////////////////////////
+                // MVC Code Flow Sample
+                //////////////////////////////////////////
+                new Client
+                {
+                    ClientId = "mvc.code",
+                    ClientName = "MVC Code Flow",
+                    ClientUri = "http://identityserver.io",
+                    //LogoUri = "https://pbs.twimg.com/profile_images/1612989113/Ki-hanja_400x400.png",
+
+                    ClientSecrets =
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RequirePkce = true,
+
+                    RedirectUris = { "https://localhost:44392/signin-oidc" },
+                    FrontChannelLogoutUri = "https://localhost:44392/signout-oidc",
+                    PostLogoutRedirectUris = { "https://localhost:44392/signout-callback-oidc" },
+
+                    AllowOfflineAccess = true,
+
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
+                        "api1", "api2.read_only"
+                    }
+                },
+
+                ///////////////////////////////////////////
                 // MVC Hybrid Flow Sample
                 //////////////////////////////////////////
                 new Client
@@ -292,7 +352,7 @@ namespace Host.Configuration
                 //////////////////////////////////////////
                 new Client
                 {
-                    ClientId = "mvc.hybrid.autorefresh",
+                    ClientId = "mvc.tokenmanagement",
                     ClientName = "MVC Hybrid (with automatic refresh)",
                     ClientUri = "http://identityserver.io",
 
@@ -301,14 +361,14 @@ namespace Host.Configuration
                         new Secret("secret".Sha256())
                     },
 
-                    AllowedGrantTypes = GrantTypes.Hybrid,
-                    AllowAccessTokensViaBrowser = false,
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RequirePkce = true,
 
                     AccessTokenLifetime = 75,
 
-                    RedirectUris = { "http://localhost:21404/signin-oidc" },
-                    FrontChannelLogoutUri = "http://localhost:21404/signout-oidc",
-                    PostLogoutRedirectUris = { "http://localhost:21404/signout-callback-oidc" },
+                    RedirectUris = { "https://localhost:44392/signin-oidc" },
+                    FrontChannelLogoutUri = "https://localhost:44392/signout-oidc",
+                    PostLogoutRedirectUris = { "https://localhost:44392/signout-callback-oidc" },
 
                     AllowOfflineAccess = true,
 

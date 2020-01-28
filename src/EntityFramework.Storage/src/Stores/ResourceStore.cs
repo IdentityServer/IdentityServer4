@@ -21,8 +21,15 @@ namespace IdentityServer4.EntityFramework.Stores
     /// <seealso cref="IdentityServer4.Stores.IResourceStore" />
     public class ResourceStore : IResourceStore
     {
-        private readonly IConfigurationDbContext _context;
-        private readonly ILogger<ResourceStore> _logger;
+        /// <summary>
+        /// The DbContext.
+        /// </summary>
+        protected readonly IConfigurationDbContext Context;
+        
+        /// <summary>
+        /// The logger.
+        /// </summary>
+        protected readonly ILogger<ResourceStore> Logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceStore"/> class.
@@ -32,8 +39,8 @@ namespace IdentityServer4.EntityFramework.Stores
         /// <exception cref="ArgumentNullException">context</exception>
         public ResourceStore(IConfigurationDbContext context, ILogger<ResourceStore> logger)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _logger = logger;
+            Context = context ?? throw new ArgumentNullException(nameof(context));
+            Logger = logger;
         }
 
         /// <summary>
@@ -41,10 +48,10 @@ namespace IdentityServer4.EntityFramework.Stores
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns></returns>
-        public Task<ApiResource> FindApiResourceAsync(string name)
+        public virtual async Task<ApiResource> FindApiResourceAsync(string name)
         {
             var query =
-                from apiResource in _context.ApiResources
+                from apiResource in Context.ApiResources
                 where apiResource.Name == name
                 select apiResource;
 
@@ -56,18 +63,18 @@ namespace IdentityServer4.EntityFramework.Stores
                 .Include(x => x.Properties)
                 .AsNoTracking();
 
-            var api = apis.FirstOrDefault();
+            var api = await apis.FirstOrDefaultAsync();
 
             if (api != null)
             {
-                _logger.LogDebug("Found {api} API resource in database", name);
+                Logger.LogDebug("Found {api} API resource in database", name);
             }
             else
             {
-                _logger.LogDebug("Did not find {api} API resource in database", name);
+                Logger.LogDebug("Did not find {api} API resource in database", name);
             }
 
-            return Task.FromResult(api.ToModel());
+            return api.ToModel();
         }
 
         /// <summary>
@@ -75,12 +82,12 @@ namespace IdentityServer4.EntityFramework.Stores
         /// </summary>
         /// <param name="scopeNames"></param>
         /// <returns></returns>
-        public Task<IEnumerable<ApiResource>> FindApiResourcesByScopeAsync(IEnumerable<string> scopeNames)
+        public virtual async Task<IEnumerable<ApiResource>> FindApiResourcesByScopeAsync(IEnumerable<string> scopeNames)
         {
             var names = scopeNames.ToArray();
 
             var query =
-                from api in _context.ApiResources
+                from api in Context.ApiResources
                 where api.Scopes.Where(x=>names.Contains(x.Name)).Any()
                 select api;
 
@@ -92,12 +99,12 @@ namespace IdentityServer4.EntityFramework.Stores
                 .Include(x => x.Properties)
                 .AsNoTracking();
 
-            var results = apis.ToArray();
+            var results = await apis.ToArrayAsync();
             var models = results.Select(x => x.ToModel()).ToArray();
 
-            _logger.LogDebug("Found {scopes} API scopes in database", models.SelectMany(x => x.Scopes).Select(x => x.Name));
+            Logger.LogDebug("Found {scopes} API scopes in database", models.SelectMany(x => x.Scopes).Select(x => x.Name));
 
-            return Task.FromResult(models.AsEnumerable());
+            return models;
         }
 
         /// <summary>
@@ -105,12 +112,12 @@ namespace IdentityServer4.EntityFramework.Stores
         /// </summary>
         /// <param name="scopeNames"></param>
         /// <returns></returns>
-        public Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeAsync(IEnumerable<string> scopeNames)
+        public virtual async Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeAsync(IEnumerable<string> scopeNames)
         {
             var scopes = scopeNames.ToArray();
 
             var query =
-                from identityResource in _context.IdentityResources
+                from identityResource in Context.IdentityResources
                 where scopes.Contains(identityResource.Name)
                 select identityResource;
 
@@ -119,23 +126,24 @@ namespace IdentityServer4.EntityFramework.Stores
                 .Include(x => x.Properties)
                 .AsNoTracking();
 
-            var results = resources.ToArray();
+            var results = await resources.ToArrayAsync();
 
-            _logger.LogDebug("Found {scopes} identity scopes in database", results.Select(x => x.Name));
+            Logger.LogDebug("Found {scopes} identity scopes in database", results.Select(x => x.Name));
 
-            return Task.FromResult(results.Select(x => x.ToModel()).ToArray().AsEnumerable());
+            return results.Select(x => x.ToModel()).ToArray();
         }
 
         /// <summary>
         /// Gets all resources.
         /// </summary>
         /// <returns></returns>
-        public Task<Resources> GetAllResourcesAsync()
+        public virtual async Task<Resources> GetAllResourcesAsync()
         {
-            var identity = _context.IdentityResources
-              .Include(x => x.UserClaims);
+            var identity = Context.IdentityResources
+              .Include(x => x.UserClaims)
+              .Include(x => x.Properties);
 
-            var apis = _context.ApiResources
+            var apis = Context.ApiResources
                 .Include(x => x.Secrets)
                 .Include(x => x.Scopes)
                     .ThenInclude(s => s.UserClaims)
@@ -144,12 +152,13 @@ namespace IdentityServer4.EntityFramework.Stores
                 .AsNoTracking();
 
             var result = new Resources(
-                identity.ToArray().Select(x => x.ToModel()).AsEnumerable(),
-                apis.ToArray().Select(x => x.ToModel()).AsEnumerable());
+                (await identity.ToArrayAsync()).Select(x => x.ToModel()),
+                (await apis.ToArrayAsync()).Select(x => x.ToModel())
+            );
 
-            _logger.LogDebug("Found {scopes} as all scopes in database", result.IdentityResources.Select(x=>x.Name).Union(result.ApiResources.SelectMany(x=>x.Scopes).Select(x=>x.Name)));
+            Logger.LogDebug("Found {scopes} as all scopes in database", result.IdentityResources.Select(x=>x.Name).Union(result.ApiResources.SelectMany(x=>x.Scopes).Select(x=>x.Name)));
 
-            return Task.FromResult(result);
+            return result;
         }
     }
 }
