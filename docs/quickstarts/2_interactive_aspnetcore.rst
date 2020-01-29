@@ -49,6 +49,10 @@ To add support for OpenID Connect authentication to the MVC application, you fir
 
 ..then add the following to ``ConfigureServices`` in ``Startup``::
 
+    using System.IdentityModel.Tokens.Jwt;
+    
+    // ...
+    
     JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
     services.AddAuthentication(options =>
