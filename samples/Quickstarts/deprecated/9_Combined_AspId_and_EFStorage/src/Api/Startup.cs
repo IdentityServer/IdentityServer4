@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,12 +11,10 @@ namespace Api
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvcCore()
-                .AddAuthorization()
-                .AddJsonFormatters();
+            services.AddControllers();
 
-            services.AddAuthentication("Bearer")
-                .AddJwtBearer("Bearer", options =>
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
                 {
                     options.Authority = "http://localhost:5000";
                     options.RequireHttpsMetadata = false;
@@ -25,8 +24,8 @@ namespace Api
 
             services.AddCors(options =>
             {
-                // this defines a CORS policy called "default"
-                options.AddPolicy("default", policy =>
+                // this defines a default CORS policy
+                options.AddDefaultPolicy(policy =>
                 {
                     policy.WithOrigins("http://localhost:5003")
                         .AllowAnyHeader()
@@ -37,9 +36,17 @@ namespace Api
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseCors("default");
+            app.UseCors();
+
+            app.UseRouting();
+            
             app.UseAuthentication();
-            app.UseMvc();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }
