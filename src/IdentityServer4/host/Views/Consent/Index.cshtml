@@ -25,12 +25,12 @@
 
         @if (Model.IdentityScopes.Any())
         {
-        <div class="card consent-buttons">
+        <div class="card consent-buttons mb-3">
           <div class="card-header">
             <span class="glyphicon glyphicon-user"></span>
             Personal Information
           </div>
-          <ul class="list-group">
+          <ul class="list-group list-group-flush">
             @foreach (var scope in Model.IdentityScopes)
             {
             <partial name="_ScopeListItem" model="@scope" />
