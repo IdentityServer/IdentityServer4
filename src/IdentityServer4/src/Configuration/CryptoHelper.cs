@@ -139,9 +139,9 @@ namespace IdentityServer4.Configuration
         }
         internal static bool IsValidCrvValueForAlgorithm(string crv)
         {
-            return crv == JsonWebKeyECTypes.P256
-                   || crv == JsonWebKeyECTypes.P384
-                   || crv == JsonWebKeyECTypes.P521;
+            return crv == JsonWebKeyECTypes.P256 ||
+                   crv == JsonWebKeyECTypes.P384 ||
+                   crv == JsonWebKeyECTypes.P521;
         }
 
         internal static string GetRsaSigningAlgorithmValue(IdentityServerConstants.RsaSigningAlgorithm value)

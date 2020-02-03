@@ -145,7 +145,7 @@ namespace IdentityServer.UnitTests.Extensions
 
             var jsonWebKeyFromECDsa = new JsonWebKey()
             {
-                Kty = "EC",
+                Kty = JsonWebAlgorithmsKeyTypes.EllipticCurve,
                 Use = "sig",
                 Kid = key.KeyId,
                 KeyId = key.KeyId,

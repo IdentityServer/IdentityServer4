@@ -13,7 +13,6 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using JsonWebKey = Microsoft.IdentityModel.Tokens.JsonWebKey;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -46,9 +45,10 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new InvalidOperationException("Invalid curve for signing algorithm");
             }
 
-            if (credential.Key is JsonWebKey jsonWebKey && !CryptoHelper.IsValidCrvValueForAlgorithm(jsonWebKey.Crv))
+            if (credential.Key is IdentityModel.Tokens.JsonWebKey jsonWebKey)
             {
-                throw new InvalidOperationException("Invalid crv value for signing algorithm");
+                if (jsonWebKey.Kty == JsonWebAlgorithmsKeyTypes.EllipticCurve && !CryptoHelper.IsValidCrvValueForAlgorithm(jsonWebKey.Crv))
+                    throw new InvalidOperationException("Invalid crv value for signing algorithm");
             }
 
             builder.Services.AddSingleton<ISigningCredentialStore>(new InMemorySigningCredentialsStore(credential));

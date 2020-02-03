@@ -100,7 +100,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.Discovery
 
             var jsonWebKeyFromECDsa = new JsonWebKey()
             {
-                Kty = "EC",
+                Kty = JsonWebAlgorithmsKeyTypes.EllipticCurve,
                 Use = "sig",
                 Kid = ecdsaKey.KeyId,
                 KeyId = ecdsaKey.KeyId,
