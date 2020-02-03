@@ -125,18 +125,18 @@ namespace Host.Configuration
                 },
 
                 ///////////////////////////////////////////
-                // Console Hybrid with PKCE Sample
+                // Console with PKCE Sample
                 //////////////////////////////////////////
                 new Client
                 {
-                    ClientId = "console.hybrid.pkce",
-                    ClientName = "Console Hybrid with PKCE Sample",
+                    ClientId = "console.pkce",
+                    ClientName = "Console with PKCE Sample",
                     RequireClientSecret = false,
 
-                    AllowedGrantTypes = GrantTypes.Hybrid,
+                    AllowedGrantTypes = GrantTypes.Code,
                     RequirePkce = true,
 
-                    RedirectUris = { "http://127.0.0.1", "sample-windows-client://callback" },
+                    RedirectUris = { "http://127.0.0.1" },
 
                     AllowOfflineAccess = true,
 
@@ -148,6 +148,33 @@ namespace Host.Configuration
                         "api1", "api2.read_only"
                     }
                 },
+                ///////////////////////////////////////////
+                // WinConsole with PKCE Sample
+                //////////////////////////////////////////
+                new Client
+                {
+                    ClientId = "winconsole",
+                    ClientName = "Windows Console with PKCE Sample",
+                    RequireClientSecret = false,
+
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RequirePkce = true,
+
+                    RedirectUris = { "sample-windows-client://callback" },
+                    RequireConsent = false,
+
+                    AllowOfflineAccess = true,
+                    AllowedIdentityTokenSigningAlgorithms = { "ES256" },
+
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
+                        "api1", "api2.read_only"
+                    }
+                },
+
 
                 ///////////////////////////////////////////
                 // Introspection Client Sample
@@ -174,6 +201,16 @@ namespace Host.Configuration
                     ClientId = "mvc.implicit",
                     ClientName = "MVC Implicit",
                     ClientUri = "http://identityserver.io",
+
+                    // if request JWT is used
+                    ClientSecrets =
+                    {
+                        new Secret
+                        {
+                            Type = IdentityServerConstants.SecretTypes.X509CertificateBase64,
+                            Value = "MIIDATCCAe2gAwIBAgIQoHUYAquk9rBJcq8W+F0FAzAJBgUrDgMCHQUAMBIxEDAOBgNVBAMTB0RldlJvb3QwHhcNMTAwMTIwMjMwMDAwWhcNMjAwMTIwMjMwMDAwWjARMQ8wDQYDVQQDEwZDbGllbnQwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDSaY4x1eXqjHF1iXQcF3pbFrIbmNw19w/IdOQxbavmuPbhY7jX0IORu/GQiHjmhqWt8F4G7KGLhXLC1j7rXdDmxXRyVJBZBTEaSYukuX7zGeUXscdpgODLQVay/0hUGz54aDZPAhtBHaYbog+yH10sCXgV1Mxtzx3dGelA6pPwiAmXwFxjJ1HGsS/hdbt+vgXhdlzud3ZSfyI/TJAnFeKxsmbJUyqMfoBl1zFKG4MOvgHhBjekp+r8gYNGknMYu9JDFr1ue0wylaw9UwG8ZXAkYmYbn2wN/CpJl3gJgX42/9g87uLvtVAmz5L+rZQTlS1ibv54ScR2lcRpGQiQav/LAgMBAAGjXDBaMBMGA1UdJQQMMAoGCCsGAQUFBwMCMEMGA1UdAQQ8MDqAENIWANpX5DZ3bX3WvoDfy0GhFDASMRAwDgYDVQQDEwdEZXZSb290ghAsWTt7E82DjU1E1p427Qj2MAkGBSsOAwIdBQADggEBADLje0qbqGVPaZHINLn+WSM2czZk0b5NG80btp7arjgDYoWBIe2TSOkkApTRhLPfmZTsaiI3Ro/64q+Dk3z3Kt7w+grHqu5nYhsn7xQFAQUf3y2KcJnRdIEk0jrLM4vgIzYdXsoC6YO+9QnlkNqcN36Y8IpSVSTda6gRKvGXiAhu42e2Qey/WNMFOL+YzMXGt/nDHL/qRKsuXBOarIb++43DV3YnxGTx22llhOnPpuZ9/gnNY7KLjODaiEciKhaKqt/b57mTEz4jTF4kIg6BP03MUfDXeVlM1Qf1jB43G2QQ19n5lUiqTpmQkcfLfyci2uBZ8BkOhXr3Vk9HIk/xBXQ="
+                        }
+                    },
 
                     AllowedGrantTypes = GrantTypes.Implicit,
                     AllowAccessTokensViaBrowser = true,
@@ -210,6 +247,39 @@ namespace Host.Configuration
                     AllowedScopes = {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
+                    }
+                },
+
+                ///////////////////////////////////////////
+                // MVC Code Flow Sample
+                //////////////////////////////////////////
+                new Client
+                {
+                    ClientId = "mvc.code",
+                    ClientName = "MVC Code Flow",
+                    ClientUri = "http://identityserver.io",
+                    //LogoUri = "https://pbs.twimg.com/profile_images/1612989113/Ki-hanja_400x400.png",
+
+                    ClientSecrets =
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RequirePkce = true,
+
+                    RedirectUris = { "https://localhost:44392/signin-oidc" },
+                    FrontChannelLogoutUri = "https://localhost:44392/signout-oidc",
+                    PostLogoutRedirectUris = { "https://localhost:44392/signout-callback-oidc" },
+
+                    AllowOfflineAccess = true,
+
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
+                        "api1", "api2.read_only"
                     }
                 },
 
@@ -282,7 +352,7 @@ namespace Host.Configuration
                 //////////////////////////////////////////
                 new Client
                 {
-                    ClientId = "mvc.hybrid.autorefresh",
+                    ClientId = "mvc.tokenmanagement",
                     ClientName = "MVC Hybrid (with automatic refresh)",
                     ClientUri = "http://identityserver.io",
 
@@ -291,14 +361,14 @@ namespace Host.Configuration
                         new Secret("secret".Sha256())
                     },
 
-                    AllowedGrantTypes = GrantTypes.Hybrid,
-                    AllowAccessTokensViaBrowser = false,
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RequirePkce = true,
 
                     AccessTokenLifetime = 75,
 
-                    RedirectUris = { "http://localhost:21404/signin-oidc" },
-                    FrontChannelLogoutUri = "http://localhost:21404/signout-oidc",
-                    PostLogoutRedirectUris = { "http://localhost:21404/signout-callback-oidc" },
+                    RedirectUris = { "https://localhost:44392/signin-oidc" },
+                    FrontChannelLogoutUri = "https://localhost:44392/signout-oidc",
+                    PostLogoutRedirectUris = { "https://localhost:44392/signout-callback-oidc" },
 
                     AllowOfflineAccess = true,
 

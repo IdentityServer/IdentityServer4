@@ -2,22 +2,22 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityServer4.Configuration;
-using IdentityServer4.Services;
-using IdentityServer4.Validation;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using IdentityServer4.Stores;
-using IdentityServer4.UnitTests.Common;
-using IdentityServer4.Stores.Serialization;
-using IdentityServer.UnitTests.Common;
-using IdentityServer.UnitTests.Validation.Setup;
-using IdentityServer4.Services.Default;
-using Microsoft.AspNetCore.Authentication;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
+using IdentityServer.UnitTests.Common;
+using IdentityServer4.Configuration;
+using IdentityServer4.Models;
+using IdentityServer4.Services;
+using IdentityServer4.Services.Default;
+using IdentityServer4.Stores;
+using IdentityServer4.Stores.Serialization;
+using IdentityServer4.Validation;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Logging;
 
-namespace IdentityServer4.UnitTests.Validation
+namespace IdentityServer.UnitTests.Validation.Setup
 {
     internal static class Factory
     {
@@ -121,7 +121,10 @@ namespace IdentityServer4.UnitTests.Validation
         {
             return new DefaultTokenCreationService(
                 new StubClock(),
-                new DefaultKeyMaterialService(new IValidationKeysStore[] { }, new DefaultSigningCredentialsStore(TestCert.LoadSigningCredentials())), TestLogger.Create<DefaultTokenCreationService>());
+                new DefaultKeyMaterialService(new IValidationKeysStore[] { },
+                    new ISigningCredentialStore[] { new InMemorySigningCredentialsStore(TestCert.LoadSigningCredentials()) }),
+                TestIdentityServerOptions.Create(),
+                TestLogger.Create<DefaultTokenCreationService>());
         }
 
         public static DeviceAuthorizationRequestValidator CreateDeviceAuthorizationRequestValidator(
@@ -247,6 +250,12 @@ namespace IdentityServer4.UnitTests.Validation
             var context = new MockHttpContextAccessor(options);
             var logger = TestLogger.Create<TokenValidator>();
 
+            var keyInfo = new SecurityKeyInfo
+            {
+                Key = TestCert.LoadSigningCredentials().Key,
+                SigningAlgorithm = "RS256"
+            };
+
             var validator = new TokenValidator(
                 clients: clients,
                 clock: clock,
@@ -254,7 +263,7 @@ namespace IdentityServer4.UnitTests.Validation
                 referenceTokenStore: store,
                 refreshTokenStore: refreshTokenStore,
                 customValidator: new DefaultCustomTokenValidator(),
-                    keys: new DefaultKeyMaterialService(new[] { new DefaultValidationKeysStore(new[] { TestCert.LoadSigningCredentials().Key }) }),
+                    keys: new DefaultKeyMaterialService(new[] { new InMemoryValidationKeysStore(new[] { keyInfo }) }, Enumerable.Empty<ISigningCredentialStore>()),
                 logger: logger,
                 options: options,
                 context: context);

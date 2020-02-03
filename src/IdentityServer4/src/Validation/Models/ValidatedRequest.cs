@@ -101,6 +101,14 @@ namespace IdentityServer4.Validation
         public string Confirmation { get; set; }
 
         /// <summary>
+        /// Gets or sets the client ID that should be used for the current request (this is useful for token exchange scenarios)
+        /// </summary>
+        /// <value>
+        /// The client ID
+        /// </value>
+        public string ClientId { get; set; }
+
+        /// <summary>
         /// Sets the client and the appropriate request specific settings.
         /// </summary>
         /// <param name="client">The client.</param>
@@ -112,10 +120,11 @@ namespace IdentityServer4.Validation
             Client = client ?? throw new ArgumentNullException(nameof(client));
             Secret = secret;
             Confirmation = confirmation;
+            ClientId = client.ClientId;
 
             AccessTokenLifetime = client.AccessTokenLifetime;
             AccessTokenType = client.AccessTokenType;
-            ClientClaims = client.Claims.Select(c => new Claim(c.Type, c.Value, c.ValueType, c.Issuer)).ToList();
+            ClientClaims = client.Claims.Select(c => new Claim(c.Type, c.Value, c.ValueType)).ToList();
         }
     }
 }

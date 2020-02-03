@@ -3,19 +3,18 @@
 
 
 using IdentityModel;
+using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.Services
 {
@@ -32,7 +31,7 @@ namespace IdentityServer4.Services
         /// <summary>
         /// The HTTP context accessor
         /// </summary>
-        protected readonly IHttpContextAccessor Context;
+        protected readonly IHttpContextAccessor ContextAccessor;
 
         /// <summary>
         /// The claims provider
@@ -55,28 +54,44 @@ namespace IdentityServer4.Services
         protected readonly ISystemClock Clock;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultTokenService" /> class. This overloaded constructor is deprecated and will be removed in 3.0.0.
+        /// The key material service
+        /// </summary>
+        protected readonly IKeyMaterialService KeyMaterialService;
+
+        /// <summary>
+        /// The IdentityServer options
+        /// </summary>
+        protected readonly IdentityServerOptions Options;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultTokenService" /> class.
         /// </summary>
         /// <param name="claimsProvider">The claims provider.</param>
         /// <param name="referenceTokenStore">The reference token store.</param>
         /// <param name="creationService">The signing service.</param>
         /// <param name="contextAccessor">The HTTP context accessor.</param>
         /// <param name="clock">The clock.</param>
+        /// <param name="keyMaterialService"></param>
+        /// <param name="options">The IdentityServer options</param>
         /// <param name="logger">The logger.</param>
         public DefaultTokenService(
-            IClaimsService claimsProvider, 
-            IReferenceTokenStore referenceTokenStore, 
-            ITokenCreationService creationService,  
-            IHttpContextAccessor contextAccessor, 
-            ISystemClock clock, 
+            IClaimsService claimsProvider,
+            IReferenceTokenStore referenceTokenStore,
+            ITokenCreationService creationService,
+            IHttpContextAccessor contextAccessor,
+            ISystemClock clock,
+            IKeyMaterialService keyMaterialService,
+            IdentityServerOptions options,
             ILogger<DefaultTokenService> logger)
         {
-            Context = contextAccessor;
+            ContextAccessor = contextAccessor;
             ClaimsProvider = claimsProvider;
             ReferenceTokenStore = referenceTokenStore;
             CreationService = creationService;
             Clock = clock;
-            Logger = logger;            
+            KeyMaterialService = keyMaterialService;
+            Options = options;
+            Logger = logger;
         }
 
         /// <summary>
@@ -91,6 +106,15 @@ namespace IdentityServer4.Services
             Logger.LogTrace("Creating identity token");
             request.Validate();
 
+            // todo: Dom, add a test for this. validate the at and c hashes are correct for the id_token when the client's alg doesn't match the server default.
+            var credential = await KeyMaterialService.GetSigningCredentialsAsync(request.ValidatedRequest.Client.AllowedIdentityTokenSigningAlgorithms);
+            if (credential == null)
+            {
+                throw new InvalidOperationException("No signing credential is configured.");
+            }
+
+            var signingAlgorithm = credential.Algorithm;
+
             // host provided claims
             var claims = new List<Claim>();
 
@@ -101,18 +125,24 @@ namespace IdentityServer4.Services
             }
 
             // add iat claim
-            claims.Add(new Claim(JwtClaimTypes.IssuedAt, Clock.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer));
+            claims.Add(new Claim(JwtClaimTypes.IssuedAt, Clock.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64));
 
             // add at_hash claim
             if (request.AccessTokenToHash.IsPresent())
             {
-                claims.Add(new Claim(JwtClaimTypes.AccessTokenHash, HashAdditionalData(request.AccessTokenToHash)));
+                claims.Add(new Claim(JwtClaimTypes.AccessTokenHash, CryptoHelper.CreateHashClaimValue(request.AccessTokenToHash, signingAlgorithm)));
             }
 
             // add c_hash claim
             if (request.AuthorizationCodeToHash.IsPresent())
             {
-                claims.Add(new Claim(JwtClaimTypes.AuthorizationCodeHash, HashAdditionalData(request.AuthorizationCodeToHash)));
+                claims.Add(new Claim(JwtClaimTypes.AuthorizationCodeHash, CryptoHelper.CreateHashClaimValue(request.AuthorizationCodeToHash, signingAlgorithm)));
+            }
+
+            // add s_hash claim
+            if (request.StateHash.IsPresent())
+            {
+                claims.Add(new Claim(JwtClaimTypes.StateHash, request.StateHash));
             }
 
             // add sid if present
@@ -127,7 +157,7 @@ namespace IdentityServer4.Services
                 request.IncludeAllIdentityClaims,
                 request.ValidatedRequest));
 
-            var issuer = Context.HttpContext.GetIdentityServerIssuerUri();
+            var issuer = ContextAccessor.HttpContext.GetIdentityServerIssuerUri();
 
             var token = new Token(OidcConstants.TokenTypes.IdentityToken)
             {
@@ -137,7 +167,8 @@ namespace IdentityServer4.Services
                 Lifetime = request.ValidatedRequest.Client.IdentityTokenLifetime,
                 Claims = claims.Distinct(new ClaimComparer()).ToList(),
                 ClientId = request.ValidatedRequest.Client.ClientId,
-                AccessTokenType = request.ValidatedRequest.AccessTokenType
+                AccessTokenType = request.ValidatedRequest.AccessTokenType,
+                AllowedSigningAlgorithms = request.ValidatedRequest.Client.AllowedIdentityTokenSigningAlgorithms
             };
 
             return token;
@@ -166,26 +197,48 @@ namespace IdentityServer4.Services
                 claims.Add(new Claim(JwtClaimTypes.JwtId, CryptoRandom.CreateUniqueId(16)));
             }
 
-            var issuer = Context.HttpContext.GetIdentityServerIssuerUri();
+            var issuer = ContextAccessor.HttpContext.GetIdentityServerIssuerUri();
             var token = new Token(OidcConstants.TokenTypes.AccessToken)
             {
                 CreationTime = Clock.UtcNow.UtcDateTime,
-                Audiences = { string.Format(IdentityServerConstants.AccessTokenAudience, issuer.EnsureTrailingSlash()) },
                 Issuer = issuer,
                 Lifetime = request.ValidatedRequest.AccessTokenLifetime,
-                Claims = claims,
+                Claims = claims.Distinct(new ClaimComparer()).ToList(),
                 ClientId = request.ValidatedRequest.Client.ClientId,
-                AccessTokenType = request.ValidatedRequest.AccessTokenType
+                AccessTokenType = request.ValidatedRequest.AccessTokenType,
+                AllowedSigningAlgorithms = request.Resources.ApiResources.FindMatchingSigningAlgorithms()
             };
 
-            foreach(var api in request.Resources.ApiResources)
+            if (Options.EmitLegacyResourceAudienceClaim)
+            {
+                token.Audiences.Add(string.Format(IdentityServerConstants.AccessTokenAudience, issuer.EnsureTrailingSlash()));
+            }
+
+            // add cnf if present
+            if (request.ValidatedRequest.Confirmation.IsPresent())
+            {
+                token.Confirmation = request.ValidatedRequest.Confirmation;
+            }
+            else
+            {
+                if (Options.MutualTls.AlwaysEmitConfirmationClaim)
+                {
+                    var clientCertificate = await ContextAccessor.HttpContext.Connection.GetClientCertificateAsync();
+                    if (clientCertificate != null)
+                    {
+                        token.Confirmation = clientCertificate.CreateThumbprintCnf();
+                    }
+                }
+            }
+
+            foreach (var api in request.Resources.ApiResources)
             {
                 if (api.Name.IsPresent())
                 {
                     token.Audiences.Add(api.Name);
                 }
             }
-
+            
             return token;
         }
 
@@ -230,24 +283,6 @@ namespace IdentityServer4.Services
             }
 
             return tokenResult;
-        }
-
-        /// <summary>
-        /// Hashes an additional data (e.g. for c_hash or at_hash).
-        /// </summary>
-        /// <param name="tokenToHash">The token to hash.</param>
-        /// <returns></returns>
-        protected virtual string HashAdditionalData(string tokenToHash)
-        {
-            using (var sha = SHA256.Create())
-            {
-                var hash = sha.ComputeHash(Encoding.ASCII.GetBytes(tokenToHash));
-
-                var leftPart = new byte[16];
-                Array.Copy(hash, leftPart, 16);
-
-                return Base64Url.Encode(leftPart);
-            }
         }
     }
 }

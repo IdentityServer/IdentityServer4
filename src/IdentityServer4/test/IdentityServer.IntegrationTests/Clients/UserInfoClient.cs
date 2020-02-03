@@ -2,22 +2,23 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using FluentAssertions;
-using IdentityModel;
-using IdentityModel.Client;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
+using IdentityModel;
+using IdentityModel.Client;
+using IdentityServer.IntegrationTests.Clients.Setup;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
-namespace IdentityServer4.IntegrationTests.Clients
+namespace IdentityServer.IntegrationTests.Clients
 {
     public class UserInfoEndpointClient
     {
@@ -62,7 +63,7 @@ namespace IdentityServer4.IntegrationTests.Clients
 
             userInfo.Claims.Should().Contain(c => c.Type == "sub" && c.Value == "88421113");
             userInfo.Claims.Should().Contain(c => c.Type == "email" && c.Value == "BobSmith@email.com");
-            userInfo.Claims.Should().Contain(c => c.Type == "email_verified" && c.Value == "True");
+            userInfo.Claims.Should().Contain(c => c.Type == "email_verified" && c.Value == "true");
         }
 
         [Fact]

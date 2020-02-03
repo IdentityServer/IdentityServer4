@@ -82,6 +82,11 @@ namespace IdentityServer4.Validation
                     _logger.LogInformation("Secret: {description} uses invalid hashing algorithm.", secretDescription);
                     return fail;
                 }
+                catch (ArgumentNullException)
+                {
+                    _logger.LogInformation("Secret: {description} is null.", secretDescription);
+                    return fail;
+                }
 
                 if (secretBytes.Length == 32)
                 {

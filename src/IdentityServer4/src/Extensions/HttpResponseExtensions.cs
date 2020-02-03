@@ -2,16 +2,16 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityServer4;
 using IdentityServer4.Configuration;
-using IdentityServer4.Extensions;
 using IdentityServer4.Models;
+using Microsoft.AspNetCore.Http;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 #pragma warning disable 1591
 
-namespace Microsoft.AspNetCore.Http
+namespace IdentityServer4.Extensions
 {
     public static class HttpResponseExtensions
     {
@@ -29,7 +29,7 @@ namespace Microsoft.AspNetCore.Http
             await response.Body.FlushAsync();
         }
 
-        public static void SetCache(this HttpResponse response, int maxAge)
+        public static void SetCache(this HttpResponse response, int maxAge, params string[] varyBy)
         {
             if (maxAge == 0)
             {
@@ -40,6 +40,16 @@ namespace Microsoft.AspNetCore.Http
                 if (!response.Headers.ContainsKey("Cache-Control"))
                 {
                     response.Headers.Add("Cache-Control", $"max-age={maxAge}");
+                }
+
+                if (varyBy?.Any() == true)
+                {
+                    var vary = varyBy.Aggregate((x, y) => x + "," + y);
+                    if (response.Headers.ContainsKey("Vary"))
+                    {
+                        vary = response.Headers["Vary"].ToString() + "," + vary;
+                    }
+                    response.Headers["Vary"] = vary;
                 }
             }
         }

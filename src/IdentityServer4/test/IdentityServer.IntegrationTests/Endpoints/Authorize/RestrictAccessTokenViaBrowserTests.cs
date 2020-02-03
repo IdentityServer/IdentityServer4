@@ -2,17 +2,18 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using System.Threading.Tasks;
-using Xunit;
-using FluentAssertions;
-using System.Net;
 using System.Collections.Generic;
-using IdentityServer4.Models;
+using System.Net;
 using System.Security.Claims;
-using IdentityServer4.IntegrationTests.Common;
+using System.Threading.Tasks;
+using FluentAssertions;
+using IdentityServer.IntegrationTests.Common;
+using IdentityServer4;
+using IdentityServer4.Models;
 using IdentityServer4.Test;
+using Xunit;
 
-namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
+namespace IdentityServer.IntegrationTests.Endpoints.Authorize
 {
     public class RestrictAccessTokenViaBrowserTests
     {
@@ -49,6 +50,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                     AllowedGrantTypes = GrantTypes.Hybrid,
                     ClientSecrets = { new Secret("secret".Sha256()) },
                     RequireConsent = false,
+                    RequirePkce = false,
                     AllowedScopes = new List<string> { "openid" },
                     RedirectUris = new List<string> { "https://client3/callback" },
                     AllowAccessTokensViaBrowser = true
@@ -59,6 +61,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                     AllowedGrantTypes = GrantTypes.Hybrid,
                     ClientSecrets = { new Secret("secret".Sha256()) },
                     RequireConsent = false,
+                    RequirePkce = false,
                     AllowedScopes = new List<string> { "openid" },
                     RedirectUris = new List<string> { "https://client4/callback" },
                     AllowAccessTokensViaBrowser = false

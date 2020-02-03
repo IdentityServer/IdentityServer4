@@ -5,7 +5,6 @@ using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using IdentityServer4.Stores.Serialization;
-using IdentityServer4.UnitTests.Common;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -55,6 +54,26 @@ namespace IdentityServer.UnitTests.Services.Default
                 ClientId = "client1",
                 RefreshTokenUsage = TokenUsage.ReUse,
                 RefreshTokenExpiration = TokenExpiration.Absolute,
+                AbsoluteRefreshTokenLifetime = 10
+            };
+
+            var handle = await _subject.CreateRefreshTokenAsync(_user, new Token(), client);
+
+            var refreshToken = (await _store.GetRefreshTokenAsync(handle));
+
+            refreshToken.Should().NotBeNull();
+            refreshToken.Lifetime.Should().Be(client.AbsoluteRefreshTokenLifetime);
+        }
+
+        [Fact]
+        public async Task CreateRefreshToken_should_cap_sliding_lifetime_that_exceeds_absolute_lifetime()
+        {
+            var client = new Client
+            {
+                ClientId = "client1",
+                RefreshTokenUsage = TokenUsage.ReUse,
+                RefreshTokenExpiration = TokenExpiration.Sliding,
+                SlidingRefreshTokenLifetime  = 100,
                 AbsoluteRefreshTokenLifetime = 10
             };
 

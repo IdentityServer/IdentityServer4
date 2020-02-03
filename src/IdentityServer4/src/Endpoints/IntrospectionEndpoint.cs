@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using System.Net;
 using IdentityServer4.Services;
 using IdentityServer4.Events;
+using IdentityServer4.Extensions;
 
 namespace IdentityServer4.Endpoints
 {

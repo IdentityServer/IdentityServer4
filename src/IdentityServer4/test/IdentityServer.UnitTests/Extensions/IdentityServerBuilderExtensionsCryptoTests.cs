@@ -2,14 +2,16 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System;
+using System.IO;
+using System.Security.Cryptography;
+using IdentityServer4;
 using IdentityServer4.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.IO;
 using Xunit;
 
-namespace IdentityServer4.UnitTests.Extensions
+namespace IdentityServer.UnitTests.Extensions
 {
     public class IdentityServerBuilderExtensionsCryptoTests
     {
@@ -94,6 +96,36 @@ namespace IdentityServer4.UnitTests.Extensions
                 if (File.Exists(filename))
                     File.Delete(filename);
             }
+        }
+
+        [Theory]
+        [InlineData(Constants.CurveOids.P256, SecurityAlgorithms.EcdsaSha256)]
+        [InlineData(Constants.CurveOids.P384, SecurityAlgorithms.EcdsaSha384)]
+        [InlineData(Constants.CurveOids.P521, SecurityAlgorithms.EcdsaSha512)]
+        public void AddSigningCredential_with_valid_curve_should_succeed(string curveOid, string alg)
+        {
+            IServiceCollection services = new ServiceCollection();
+            IIdentityServerBuilder identityServerBuilder = new IdentityServerBuilder(services);
+
+            var key = new ECDsaSecurityKey(ECDsa.Create(
+                ECCurve.CreateFromOid(Oid.FromOidValue(curveOid, OidGroup.All))));
+
+            identityServerBuilder.AddSigningCredential(key, alg);
+        }
+
+        [Theory]
+        [InlineData(Constants.CurveOids.P256, SecurityAlgorithms.EcdsaSha512)]
+        [InlineData(Constants.CurveOids.P384, SecurityAlgorithms.EcdsaSha512)]
+        [InlineData(Constants.CurveOids.P521, SecurityAlgorithms.EcdsaSha256)]
+        public void AddSigningCredential_with_invalid_curve_should_throw_exception(string curveOid, string alg)
+        {
+            IServiceCollection services = new ServiceCollection();
+            IIdentityServerBuilder identityServerBuilder = new IdentityServerBuilder(services);
+
+            var key = new ECDsaSecurityKey(ECDsa.Create(
+                ECCurve.CreateFromOid(Oid.FromOidValue(curveOid, OidGroup.All))));
+
+            Assert.Throws<InvalidOperationException>(() => identityServerBuilder.AddSigningCredential(key, alg));
         }
     }
 }

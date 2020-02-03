@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.Http;
 using IdentityServer4.Validation;
 using IdentityServer4.Extensions;
 using Microsoft.Extensions.DependencyInjection;
+using IdentityServer4.Stores;
+using System.Collections.Specialized;
+using IdentityServer4.Models;
 
 namespace IdentityServer4.Endpoints.Results
 {
@@ -33,17 +36,21 @@ namespace IdentityServer4.Endpoints.Results
 
         internal ConsentPageResult(
             ValidatedAuthorizeRequest request,
-            IdentityServerOptions options) 
+            IdentityServerOptions options,
+            IAuthorizationParametersMessageStore authorizationParametersMessageStore = null) 
             : this(request)
         {
             _options = options;
+            _authorizationParametersMessageStore = authorizationParametersMessageStore;
         }
 
         private IdentityServerOptions _options;
+        private IAuthorizationParametersMessageStore _authorizationParametersMessageStore;
 
         private void Init(HttpContext context)
         {
             _options = _options ?? context.RequestServices.GetRequiredService<IdentityServerOptions>();
+            _authorizationParametersMessageStore = _authorizationParametersMessageStore ?? context.RequestServices.GetService<IAuthorizationParametersMessageStore>();
         }
 
         /// <summary>
@@ -51,25 +58,32 @@ namespace IdentityServer4.Endpoints.Results
         /// </summary>
         /// <param name="context">The HTTP context.</param>
         /// <returns></returns>
-        public Task ExecuteAsync(HttpContext context)
+        public async Task ExecuteAsync(HttpContext context)
         {
             Init(context);
 
             var returnUrl = context.GetIdentityServerBasePath().EnsureTrailingSlash() + Constants.ProtocolRoutePaths.AuthorizeCallback;
-            returnUrl = returnUrl.AddQueryString(_request.Raw.ToQueryString());
+            if (_authorizationParametersMessageStore != null)
+            {
+                var msg = new Message<NameValueCollection>(_request.Raw);
+                var id = await _authorizationParametersMessageStore.WriteAsync(msg);
+                returnUrl = returnUrl.AddQueryString(Constants.AuthorizationParamsStore.MessageStoreIdParameterName, id);
+            }
+            else
+            {
+                returnUrl = returnUrl.AddQueryString(_request.Raw.ToQueryString());
+            }
 
             var consentUrl = _options.UserInteraction.ConsentUrl;
             if (!consentUrl.IsLocalUrl())
             {
                 // this converts the relative redirect path to an absolute one if we're 
                 // redirecting to a different server
-                returnUrl = context.GetIdentityServerBaseUrl().EnsureTrailingSlash() + returnUrl.RemoveLeadingSlash();
+                returnUrl = context.GetIdentityServerHost().EnsureTrailingSlash() + returnUrl.RemoveLeadingSlash();
             }
 
             var url = consentUrl.AddQueryString(_options.UserInteraction.ConsentReturnUrlParameter, returnUrl);
             context.Response.RedirectToAbsoluteUrl(url);
-
-            return Task.CompletedTask;
         }
     }
 }

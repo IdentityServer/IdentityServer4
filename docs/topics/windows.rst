@@ -6,9 +6,11 @@ Currently Windows authentication is available when you host IdentityServer using
 
 * `Kestrel <https://docs.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel>`_ on Windows using IIS and the IIS integration package
 * `HTTP.sys <https://docs.microsoft.com/en-us/aspnet/core/fundamentals/servers/httpsys>`_ server on Windows
+* The Negotiate authentication handler from Microsoft (requires .NET Core 3.x or higher)
 
-In both cases, Windows authentication is triggered by using the ``ChallengeAsync`` API on the ``HttpContext`` using the scheme ``"Windows"``.
-The account controller in our `quickstart UI <https://github.com/IdentityServer/IdentityServer4.Quickstart.UI>`_ implements the necessary logic.
+In all cases, Windows authentication is triggered by using the ``ChallengeAsync`` API on the ``HttpContext``.
+
+The ``ExternalController`` in our `quickstart UI <https://github.com/IdentityServer/IdentityServer4.Quickstart.UI>`_ implements the necessary logic.
 
 Using Kestrel
 ^^^^^^^^^^^^^
@@ -25,13 +27,22 @@ When using Kestrel, you must run "behind" IIS and use the IIS integration::
 
 Kestrel is automatically configured when using the ``WebHost.CreateDefaultBuilder`` approach for setting up the ``WebHostBuilder``.
 
-Also the virtual directory in IIS (or IIS Express) must have Windows and anonymous authentication enabled.
+Also, if you are hosting in IIS/IIS Express, the virtual directory in must have Windows and anonymous authentication enabled.
 
 The IIS integration layer will configure a Windows authentication handler into DI that can be invoked via the authentication service.
 Typically in IdentityServer it is advisable to disable this automatic behavior. 
+
 This is done in ``ConfigureServices``::
 
-    services.Configure<IISOptions>(iis => 
+    // configures IIS out-of-proc settings (see https://github.com/aspnet/AspNetCore/issues/14882)
+    services.Configure<IISOptions>(iis =>
+    {
+        iis.AuthenticationDisplayName = "Windows";
+        iis.AutomaticAuthentication = false;
+    });
+
+    // ..or configures IIS in-proc settings
+    services.Configure<IISServerOptions>(iis =>
     {
         iis.AuthenticationDisplayName = "Windows";
         iis.AutomaticAuthentication = false;

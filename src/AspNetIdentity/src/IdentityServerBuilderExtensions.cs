@@ -22,7 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Configures IdentityServer to use the ASP.NET Identity implementations 
         /// of IUserClaimsPrincipalFactory, IResourceOwnerPasswordValidator, and IProfileService.
         /// Also configures some of ASP.NET Identity's options for use with IdentityServer (such as claim types to use
-        /// and authenticaiton cookie settings).
+        /// and authentication cookie settings).
         /// </summary>
         /// <typeparam name="TUser">The type of the user.</typeparam>
         /// <param name="builder">The builder.</param>

@@ -1,6 +1,6 @@
 {
   "iisSettings": {
-    "windowsAuthentication": false,
+    "windowsAuthentication": true,
     "anonymousAuthentication": true,
     "iis": {
       "applicationUrl": "https://sts.identityserver.local",
@@ -22,6 +22,15 @@
     "Host": {
       "commandName": "Project",
       "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:5000;https://localhost:5001"
+    },
+    "Reverse Proxy": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "https://identityserver.local",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

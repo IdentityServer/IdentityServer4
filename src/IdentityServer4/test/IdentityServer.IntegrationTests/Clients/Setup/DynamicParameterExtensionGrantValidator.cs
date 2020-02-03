@@ -2,21 +2,27 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityServer4.Models;
-using IdentityServer4.Validation;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using IdentityServer4.Models;
+using IdentityServer4.Validation;
 
-namespace IdentityServer4.IntegrationTests.Clients
+namespace IdentityServer.IntegrationTests.Clients.Setup
 {
     public class DynamicParameterExtensionGrantValidator : IExtensionGrantValidator
     {
         public Task ValidateAsync(ExtensionGrantValidationContext context)
         {
+            var impersonatedClient = context.Request.Raw.Get("impersonated_client");
             var lifetime = context.Request.Raw.Get("lifetime");
             var extraClaim = context.Request.Raw.Get("claim");
             var tokenType = context.Request.Raw.Get("type");
             var sub = context.Request.Raw.Get("sub");
+
+            if (!string.IsNullOrEmpty(impersonatedClient))
+            {
+                context.Request.ClientId = impersonatedClient;
+            }
 
             if (!string.IsNullOrEmpty(lifetime))
             {

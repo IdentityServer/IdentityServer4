@@ -2,20 +2,20 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using FluentAssertions;
-using IdentityModel;
-using IdentityServer4.Configuration;
-using IdentityServer4.Models;
-using IdentityServer4.Stores;
-using IdentityServer4.UnitTests.Common;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
-using Xunit;
+using FluentAssertions;
+using IdentityModel;
 using IdentityServer.UnitTests.Common;
+using IdentityServer.UnitTests.Validation.Setup;
+using IdentityServer4.Configuration;
+using IdentityServer4.Models;
+using IdentityServer4.Stores;
+using Xunit;
 
-namespace IdentityServer4.UnitTests.Validation
+namespace IdentityServer.UnitTests.Validation
 {
     public class AccessTokenValidation
     {
@@ -192,23 +192,6 @@ namespace IdentityServer4.UnitTests.Validation
             var signer = Factory.CreateDefaultTokenCreator();
             var jwt = await signer.CreateTokenAsync(TokenFactory.CreateAccessTokenLong(new Client { ClientId = "roclient" }, "valid", 600, 1000, "read", "write"));
             
-            var validator = Factory.CreateTokenValidator(null);
-            var result = await validator.ValidateAccessTokenAsync(jwt);
-
-            result.IsError.Should().BeTrue();
-            result.Error.Should().Be(OidcConstants.ProtectedResourceErrors.InvalidToken);
-        }
-
-        [Fact]
-        [Trait("Category", Category)]
-        public async Task JWT_Token_invalid_Audience()
-        {
-            var signer = Factory.CreateDefaultTokenCreator();
-            var token = TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "valid", 600, "read", "write");
-            token.Audiences.Clear();
-            token.Audiences.Add("invalid");
-            var jwt = await signer.CreateTokenAsync(token);
-
             var validator = Factory.CreateTokenValidator(null);
             var result = await validator.ValidateAccessTokenAsync(jwt);
 

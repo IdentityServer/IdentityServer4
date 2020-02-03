@@ -107,7 +107,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where T : class, IEndpointHandler
         {
             builder.Services.AddTransient<T>();
-            builder.Services.AddSingleton(new Endpoint(name, path, typeof(T)));
+            builder.Services.AddSingleton(new IdentityServer4.Hosting.Endpoint(name, path, typeof(T)));
 
             return builder;
         }
@@ -125,11 +125,6 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddTransient<ExtensionGrantValidator>();
             builder.Services.AddTransient<BearerTokenUsageValidator>();
             builder.Services.AddTransient<JwtRequestValidator>();
-
-            // todo: remove in 3.0
-#pragma warning disable CS0618 // Type or member is obsolete
-            builder.Services.AddTransient<BackChannelHttpClient>();
-#pragma warning restore CS0618 // Type or member is obsolete
 
             builder.Services.AddTransient<ReturnUrlParser>();
             builder.Services.AddTransient<IdentityServerTools>();
@@ -179,8 +174,10 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IUserCodeGenerator, NumericUserCodeGenerator>();
             builder.Services.TryAddTransient<IBackChannelLogoutService, DefaultBackChannelLogoutService>();
 
-            builder.Services.AddHttpClient<BackChannelLogoutHttpClient>();
-            builder.Services.AddHttpClient<JwtRequestUriHttpClient>();
+            builder.AddJwtRequestUriHttpClient();
+            builder.AddBackChannelLogoutHttpClient();
+            //builder.Services.AddHttpClient<BackChannelLogoutHttpClient>();
+            //builder.Services.AddHttpClient<JwtRequestUriHttpClient>();
 
             builder.Services.AddTransient<IClientSecretValidator, ClientSecretValidator>();
             builder.Services.AddTransient<IApiSecretValidator, ApiSecretValidator>();
