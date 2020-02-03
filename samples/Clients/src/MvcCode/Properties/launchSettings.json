@@ -4,6 +4,7 @@
     "anonymousAuthentication": true, 
     "iisExpress": {
       "applicationUrl": "http://localhost:45411",
+      
       "sslPort": 44392
     }
   },
@@ -18,7 +19,7 @@
     "MvcCode": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:5001;http://localhost:5000",
+      "applicationUrl": "https://localhost:44392",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

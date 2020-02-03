@@ -61,6 +61,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvcAutomaticTokenManagement
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowsConsoleSystemBrowser", "src\WindowsConsoleSystemBrowser\WindowsConsoleSystemBrowser.csproj", "{43BF1DCB-7343-471E-A53C-D59F19E2EB74}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleEphemeralMtlsClient", "src\ConsoleEphemeralMtlsClient\ConsoleEphemeralMtlsClient.csproj", "{47A706D4-4DF6-437E-9401-61878ECA243C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -171,6 +173,10 @@ Global
 		{43BF1DCB-7343-471E-A53C-D59F19E2EB74}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43BF1DCB-7343-471E-A53C-D59F19E2EB74}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{43BF1DCB-7343-471E-A53C-D59F19E2EB74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47A706D4-4DF6-437E-9401-61878ECA243C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47A706D4-4DF6-437E-9401-61878ECA243C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47A706D4-4DF6-437E-9401-61878ECA243C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47A706D4-4DF6-437E-9401-61878ECA243C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -203,6 +209,7 @@ Global
 		{9FB83FF6-5A75-4036-80E6-11B302B921BE} = {187AC294-0420-4726-808B-ED49148C0632}
 		{8302E4DD-2A99-439C-9D0C-A4BCF48E3FA3} = {187AC294-0420-4726-808B-ED49148C0632}
 		{43BF1DCB-7343-471E-A53C-D59F19E2EB74} = {187AC294-0420-4726-808B-ED49148C0632}
+		{47A706D4-4DF6-437E-9401-61878ECA243C} = {187AC294-0420-4726-808B-ED49148C0632}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BAD78470-3D66-466E-9C17-2A67F0905B18}

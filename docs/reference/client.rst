@@ -20,7 +20,7 @@ Basics
 ``AllowedGrantTypes``
     Specifies the grant types the client is allowed to use. Use the ``GrantTypes`` class for common combinations.
 ``RequirePkce``
-    Specifies whether clients using an authorization code based grant type must send a proof key
+    Specifies whether clients using an authorization code based grant type must send a proof key (defaults to ``true``).
 ``AllowPlainTextPkce``
     Specifies whether clients using PKCE can use a plain text code challenge (not recommended - and default to ``false``)
 ``RedirectUris``
@@ -63,6 +63,8 @@ Token
 
 ``IdentityTokenLifetime``
     Lifetime to identity token in seconds (defaults to 300 seconds / 5 minutes)
+``AllowedIdentityTokenSigningAlgorithms``
+    List of allowed signing algorithms for identity token. If empty, will use the server default signing algorithm.
 ``AccessTokenLifetime``
     Lifetime of access token in seconds (defaults to 3600 seconds / 1 hour)
 ``AuthorizationCodeLifetime``
@@ -102,9 +104,9 @@ Consent Screen
 ^^^^^^^^^^^^^^
 
 ``RequireConsent``
-    Specifies whether a consent screen is required. Defaults to `true`.
+    Specifies whether a consent screen is required. Defaults to ``false``.
 ``AllowRememberConsent``
-    Specifies whether user can choose to store consent decisions. Defaults to `true`.
+    Specifies whether user can choose to store consent decisions. Defaults to ``true``.
 ``ConsentLifetime``
     Lifetime of a user consent in seconds. Defaults to null (no expiration).
 ``ClientName``

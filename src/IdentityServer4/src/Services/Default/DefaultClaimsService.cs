@@ -125,12 +125,6 @@ namespace IdentityServer4.Services
                 Logger.LogDebug("Client {clientId} is impersonating {impersonatedClientId}", request.Client.ClientId, request.ClientId);
             }
 
-            // add cnf if present
-            if (request.Confirmation.IsPresent())
-            {
-                outputClaims.Add(new Claim(JwtClaimTypes.Confirmation, request.Confirmation, IdentityServerConstants.ClaimValueTypes.Json));
-            }
-
             // check for client claims
             if (request.ClientClaims != null && request.ClientClaims.Any())
             {
@@ -149,7 +143,7 @@ namespace IdentityServer4.Services
                     }
                 }
             }
-
+            
             // add scopes
             foreach (var scope in resources.IdentityResources)
             {

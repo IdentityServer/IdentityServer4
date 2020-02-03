@@ -157,24 +157,48 @@ namespace IdentityServer4.ResponseHandling
 
                     if (Options.Endpoints.EnableTokenEndpoint)
                     {
-                        mtlsEndpoints.Add(OidcConstants.Discovery.TokenEndpoint, baseUrl + Constants.ProtocolRoutePaths.MtlsToken);
+                        mtlsEndpoints.Add(OidcConstants.Discovery.TokenEndpoint, ConstructMtlsEndpoint(Constants.ProtocolRoutePaths.Token));
                     }
                     if (Options.Endpoints.EnableTokenRevocationEndpoint)
                     {
-                        mtlsEndpoints.Add(OidcConstants.Discovery.RevocationEndpoint, baseUrl + Constants.ProtocolRoutePaths.MtlsRevocation);
+                        mtlsEndpoints.Add(OidcConstants.Discovery.RevocationEndpoint, ConstructMtlsEndpoint(Constants.ProtocolRoutePaths.Revocation));
                     }
                     if (Options.Endpoints.EnableIntrospectionEndpoint)
                     {
-                        mtlsEndpoints.Add(OidcConstants.Discovery.IntrospectionEndpoint, baseUrl + Constants.ProtocolRoutePaths.MtlsIntrospection);
+                        mtlsEndpoints.Add(OidcConstants.Discovery.IntrospectionEndpoint, ConstructMtlsEndpoint(Constants.ProtocolRoutePaths.Introspection));
                     }
                     if (Options.Endpoints.EnableDeviceAuthorizationEndpoint)
                     {
-                        mtlsEndpoints.Add(OidcConstants.Discovery.DeviceAuthorizationEndpoint, baseUrl + Constants.ProtocolRoutePaths.MtlsDeviceAuthorization);
+                        mtlsEndpoints.Add(OidcConstants.Discovery.DeviceAuthorizationEndpoint, ConstructMtlsEndpoint(Constants.ProtocolRoutePaths.DeviceAuthorization));
                     }
 
                     if (mtlsEndpoints.Any())
                     {
                         entries.Add(OidcConstants.Discovery.MtlsEndpointAliases, mtlsEndpoints);
+                    }
+
+                    string ConstructMtlsEndpoint(string endpoint)
+                    {
+                        // path based
+                        if (Options.MutualTls.DomainName.IsMissing())
+                        {
+                            return baseUrl + endpoint.Replace(Constants.ProtocolRoutePaths.ConnectPathPrefix, Constants.ProtocolRoutePaths.MtlsPathPrefix);
+                        }
+                        else
+                        {
+                            // domain based
+                            if (Options.MutualTls.DomainName.Contains("."))
+                            {
+                                return $"https://{Options.MutualTls.DomainName}/{endpoint}";
+                            }
+                            // sub-domain based
+                            else
+                            {
+
+                                var parts = baseUrl.Split("://");
+                                return $"https://{Options.MutualTls.DomainName}.{parts[1]}{endpoint}";
+                            }
+                        }
                     }
                 }
             }
@@ -299,12 +323,12 @@ namespace IdentityServer4.ResponseHandling
 
                 entries.Add(OidcConstants.Discovery.TokenEndpointAuthenticationMethodsSupported, types);
             }
-            
-            var signingCredentials = await Keys.GetSigningCredentialsAsync();
-            if (signingCredentials != null)
+
+            var signingCredentials = await Keys.GetAllSigningCredentialsAsync();
+            if (signingCredentials.Any())
             {
-                var algorithm = signingCredentials.Algorithm;
-                entries.Add(OidcConstants.Discovery.IdTokenSigningAlgorithmsSupported, new[] { algorithm });
+                var signingAlgorithms = signingCredentials.Select(c => c.Algorithm).Distinct();
+                entries.Add(OidcConstants.Discovery.IdTokenSigningAlgorithmsSupported, signingAlgorithms);
             }
 
             entries.Add(OidcConstants.Discovery.SubjectTypesSupported, new[] { "public" });
@@ -359,7 +383,7 @@ namespace IdentityServer4.ResponseHandling
         public virtual async Task<IEnumerable<Models.JsonWebKey>> CreateJwkDocumentAsync()
         {
             var webKeys = new List<Models.JsonWebKey>();
-            
+
             foreach (var key in await Keys.GetValidationKeysAsync())
             {
                 if (key.Key is X509SecurityKey x509Key)
@@ -459,7 +483,7 @@ namespace IdentityServer4.ResponseHandling
                         n = jsonWebKey.N,
                         x5c = jsonWebKey.X5c?.Count == 0 ? null : jsonWebKey.X5c.ToArray(),
                         alg = jsonWebKey.Alg,
-
+                        crv = jsonWebKey.Crv,
                         x = jsonWebKey.X,
                         y = jsonWebKey.Y
                     };

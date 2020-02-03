@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System;
 using Host.Configuration;
 using IdentityModel;
 using IdentityServer4;
@@ -15,7 +16,11 @@ using Serilog;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using System.Threading.Tasks;
+using Host.Extensions;
+using Microsoft.AspNetCore.Authentication.Certificate;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace Host
 {
@@ -33,6 +38,9 @@ namespace Host
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            
+            // cookie policy to deal with temporary browser incompatibilities
+            services.AddSameSiteCookiePolicy();
 
             // configures IIS out-of-proc settings (see https://github.com/aspnet/AspNetCore/issues/14882)
             services.Configure<IISOptions>(iis =>
@@ -55,8 +63,9 @@ namespace Host
                     options.Events.RaiseErrorEvents = true;
                     options.Events.RaiseInformationEvents = true;
 
-                    options.MutualTls.Enabled = false;
-                    options.MutualTls.ClientCertificateAuthenticationScheme = "x509";
+                    options.MutualTls.Enabled = true;
+                    options.MutualTls.DomainName = "mtls";
+                    //options.MutualTls.AlwaysEmitConfirmationClaim = true;
                 })
                 .AddInMemoryClients(Clients.Get())
                 //.AddInMemoryClients(_config.GetSection("Clients"))
@@ -68,36 +77,38 @@ namespace Host
                 .AddJwtBearerClientAuthentication()
                 .AddAppAuthRedirectUriValidator()
                 .AddTestUsers(TestUsers.Users)
+                .AddProfileService<HostProfileService>()
                 .AddMutualTlsSecretValidators();
 
             services.AddExternalIdentityProviders();
+
+            services.AddAuthentication()
+                .AddCertificate(options =>
+                {
+                    options.AllowedCertificateTypes = CertificateTypes.All;
+                    options.RevocationMode = X509RevocationMode.NoCheck;
+                });
+            
+            services.AddCertificateForwardingForNginx();
+            
             services.AddLocalApiAuthentication(principal =>
             {
                 principal.Identities.First().AddClaim(new Claim("additional_claim", "additional_value"));
 
                 return Task.FromResult(principal);
             });
-
-            //services.AddAuthentication()
-            //   .AddCertificate("x509", options =>
-            //   {
-            //       options.RevocationMode = System.Security.Cryptography.X509Certificates.X509RevocationMode.NoCheck;
-                   
-            //       options.Events = new CertificateAuthenticationEvents
-            //       {
-            //           OnValidateCertificate = context =>
-            //           {
-            //               context.Principal = Principal.CreateFromCertificate(context.ClientCertificate, includeAllClaims:true);
-            //               context.Success();
-
-            //               return Task.CompletedTask;
-            //           }
-            //       };
-            //   });
         }
 
         public void Configure(IApplicationBuilder app)
         {
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
+
+            app.UseCertificateForwarding();
+            app.UseCookiePolicy();
+            
             app.UseSerilogRequestLogging();
 
             app.UseDeveloperExceptionPage();
@@ -120,18 +131,18 @@ namespace Host
         public static IIdentityServerBuilder AddSigningCredential(this IIdentityServerBuilder builder)
         {
             // create random RS256 key
-            //return builder.AddDeveloperSigningCredential();
+            //builder.AddDeveloperSigningCredential();
 
             // use an RSA-based certificate with RS256
-            //var cert = new X509Certificate2("./keys/identityserver.test.rsa.p12", "changeit");
-            //return builder.AddSigningCredential(cert, "RS256");
+            var rsaCert = new X509Certificate2("./keys/identityserver.test.rsa.p12", "changeit");
+            builder.AddSigningCredential(rsaCert, "RS256");
 
-            // ...or PS256
-            //return builder.AddSigningCredential(cert, "PS256");
+            // ...and PS256
+            builder.AddSigningCredential(rsaCert, "PS256");
 
             // or manually extract ECDSA key from certificate (directly using the certificate is not support by Microsoft right now)
-            var cert = new X509Certificate2("./keys/identityserver.test.ecdsa.p12", "changeit");
-            var key = new ECDsaSecurityKey(cert.GetECDsaPrivateKey())
+            var ecCert = new X509Certificate2("./keys/identityserver.test.ecdsa.p12", "changeit");
+            var key = new ECDsaSecurityKey(ecCert.GetECDsaPrivateKey())
             {
                 KeyId = CryptoRandom.CreateUniqueId(16)
             };
@@ -217,6 +228,27 @@ namespace Host
                 });
 
             return services;
+        }
+
+        public static void AddCertificateForwardingForNginx(this IServiceCollection services)
+        {
+            services.AddCertificateForwarding(options =>
+            {
+                options.CertificateHeader = "X-SSL-CERT";
+
+                options.HeaderConverter = (headerValue) =>
+                {
+                    X509Certificate2 clientCertificate = null;
+
+                    if(!string.IsNullOrWhiteSpace(headerValue))
+                    {
+                        byte[] bytes = Encoding.UTF8.GetBytes(Uri.UnescapeDataString(headerValue));
+                        clientCertificate = new X509Certificate2(bytes);
+                    }
+
+                    return clientCertificate;
+                };
+            });
         }
     }
 }

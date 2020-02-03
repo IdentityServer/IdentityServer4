@@ -5,6 +5,7 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using AutoMapper;
+using IdentityServer4.Models;
 
 namespace IdentityServer4.EntityFramework.Mappers
 {
@@ -26,7 +27,9 @@ namespace IdentityServer4.EntityFramework.Mappers
 
             CreateMap<Entities.Client, Models.Client>()
                 .ForMember(dest => dest.ProtocolType, opt => opt.Condition(srs => srs != null))
-                .ReverseMap();
+                .ForMember(x => x.AllowedIdentityTokenSigningAlgorithms, opts => opts.ConvertUsing(AllowedSigningAlgorithmsConverter.Converter, x => x.AllowedIdentityTokenSigningAlgorithms))
+                .ReverseMap()
+                .ForMember(x => x.AllowedIdentityTokenSigningAlgorithms, opts => opts.ConvertUsing(AllowedSigningAlgorithmsConverter.Converter, x => x.AllowedIdentityTokenSigningAlgorithms));
 
             CreateMap<Entities.ClientCorsOrigin, string>()
                 .ConstructUsing(src => src.Origin)
@@ -38,8 +41,8 @@ namespace IdentityServer4.EntityFramework.Mappers
                 .ReverseMap()
                 .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src));
 
-            CreateMap<Entities.ClientClaim, Claim>(MemberList.None)
-                .ConstructUsing(src => new Claim(src.Type, src.Value))
+            CreateMap<Entities.ClientClaim, ClientClaim>(MemberList.None)
+                .ConstructUsing(src => new ClientClaim(src.Type, src.Value, ClaimValueTypes.String))
                 .ReverseMap();
 
             CreateMap<Entities.ClientScope, string>()

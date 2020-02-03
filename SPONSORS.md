@@ -39,7 +39,6 @@ James Roberts
 Chris Simmons ([@netchrisdotcom](https://twitter.com/netchrisdotcom))  
 Shawn Wildermuth  
 Thomas C  
-David Christiansen ([@dotnetopenauth](https://twitter.com/dotnetopenauth))  
 Ben	Cull  
 Johan Boström ([@zarx](https://twitter.com/zarx))  
 Chris White  

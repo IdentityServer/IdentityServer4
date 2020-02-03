@@ -9,9 +9,11 @@ using FluentAssertions;
 using IdentityModel;
 using IdentityServer.UnitTests.Common;
 using IdentityServer4;
+using IdentityServer4.Configuration;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Validation;
+using Microsoft.AspNetCore.Http;
 using Xunit;
 
 namespace IdentityServer.UnitTests.Services.Default
@@ -31,7 +33,7 @@ namespace IdentityServer.UnitTests.Services.Default
             _client = new Client
             {
                 ClientId = "client",
-                Claims = { new Claim("some_claim", "some_claim_value") }
+                Claims = { new ClientClaim("some_claim", "some_claim_value") }
             };
 
             _user = new IdentityServerUser("bob")
@@ -52,6 +54,7 @@ namespace IdentityServer.UnitTests.Services.Default
             _subject = new DefaultClaimsService(_mockMockProfileService, TestLogger.Create<DefaultClaimsService>());
 
             _validatedRequest = new ValidatedRequest();
+            _validatedRequest.Options = new IdentityServerOptions();
             _validatedRequest.SetClient(_client);
         }
 

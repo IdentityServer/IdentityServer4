@@ -52,7 +52,7 @@ CREATE INDEX [IX_PersistedGrants_SubjectId_ClientId_Type] ON [PersistedGrants] (
 GO
 
 INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-VALUES (N'20190906144224_Grants', N'3.0.0-preview9.19423.6');
+VALUES (N'20191227171314_Grants', N'3.1.0');
 
 GO
 
