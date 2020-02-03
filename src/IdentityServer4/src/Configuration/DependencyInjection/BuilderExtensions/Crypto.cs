@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using JsonWebKey = Microsoft.IdentityModel.Tokens.JsonWebKey;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -43,6 +44,11 @@ namespace Microsoft.Extensions.DependencyInjection
             if (credential.Key is ECDsaSecurityKey key && !CryptoHelper.IsValidCurveForAlgorithm(key, credential.Algorithm))
             {
                 throw new InvalidOperationException("Invalid curve for signing algorithm");
+            }
+
+            if (credential.Key is JsonWebKey jsonWebKey && !CryptoHelper.IsValidCrvValueForAlgorithm(jsonWebKey.Crv))
+            {
+                throw new InvalidOperationException("Invalid crv value for signing algorithm");
             }
 
             builder.Services.AddSingleton<ISigningCredentialStore>(new InMemorySigningCredentialsStore(credential));
@@ -79,7 +85,7 @@ namespace Microsoft.Extensions.DependencyInjection
             // add signing algorithm name to key ID to allow using the same key for two different algorithms (e.g. RS256 and PS56);
             var key = new X509SecurityKey(certificate);
             key.KeyId += signingAlgorithm;
-            
+
             var credential = new SigningCredentials(key, signingAlgorithm);
             return builder.AddSigningCredential(credential);
         }
@@ -196,7 +202,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     File.WriteAllText(filename, JsonConvert.SerializeObject(tempKey, new JsonSerializerSettings { ContractResolver = new CryptoHelper.RsaKeyContractResolver() }));
                 }
-                
+
                 return builder.AddSigningCredential(key, signingAlgorithm);
             }
         }

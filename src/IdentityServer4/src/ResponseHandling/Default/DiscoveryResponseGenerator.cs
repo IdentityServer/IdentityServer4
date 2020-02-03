@@ -473,9 +473,6 @@ namespace IdentityServer4.ResponseHandling
                 }
                 else if (key.Key is JsonWebKey jsonWebKey)
                 {
-                    if (jsonWebKey.Crv.IsPresent() && !CryptoHelper.IsValidCrvValueForAlgorithm(jsonWebKey.Crv))
-                        throw new InvalidOperationException($"key type: {jsonWebKey.GetType().Name} - invalid {nameof(jsonWebKey.Crv)} value.");
-
                     var webKey = new Models.JsonWebKey
                     {
                         kty = jsonWebKey.Kty,
