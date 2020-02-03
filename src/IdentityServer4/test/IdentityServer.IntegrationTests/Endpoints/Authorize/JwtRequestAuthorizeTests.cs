@@ -85,6 +85,50 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
                         "openid", "profile", "api1", "api2"
                     }
                 },
+                _client = new Client
+                {
+                    ClientName = "Client with keys",
+                    ClientId = "client2",
+                    Enabled = true,
+                    RequireRequestObject = true,
+
+                    RedirectUris = { "https://client/callback" },
+
+                    ClientSecrets =
+                    {
+                        new Secret
+                        {
+                            // x509 cert as base64 string
+                            Type = IdentityServerConstants.SecretTypes.X509CertificateBase64,
+                            Value = Convert.ToBase64String(TestCert.Load().Export(X509ContentType.Cert))
+                        },
+                        new Secret
+                        {
+                            // symmetric key as JWK
+                            Type = IdentityServerConstants.SecretTypes.JsonWebKey,
+                            Value = _symmetricJwk
+                        },
+                        new Secret
+                        {
+                            // RSA key as JWK
+                            Type = IdentityServerConstants.SecretTypes.JsonWebKey,
+                            Value = JsonConvert.SerializeObject(JsonWebKeyConverter.ConvertFromRSASecurityKey(_rsaKey))
+                        },
+                        new Secret
+                        {
+                            // x509 cert as JWK
+                            Type = IdentityServerConstants.SecretTypes.JsonWebKey,
+                            Value = JsonConvert.SerializeObject(JsonWebKeyConverter.ConvertFromX509SecurityKey(new X509SecurityKey(TestCert.Load())))
+                        }
+                    },
+
+                    AllowedGrantTypes = GrantTypes.Implicit,
+
+                    AllowedScopes = new List<string>
+                    {
+                        "openid", "profile", "api1", "api2"
+                    }
+                },
             });
 
             _mockPipeline.Users.Add(new TestUser
@@ -705,7 +749,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
             });
 
             var url = _mockPipeline.CreateAuthorizeUrl(
-                clientId: "invalid",
+                clientId: "client2",
                 responseType: "id_token",
                 extra: new
                 {

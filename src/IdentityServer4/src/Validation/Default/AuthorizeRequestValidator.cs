@@ -11,6 +11,7 @@ using IdentityServer4.Stores;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Specialized;
+using System.Diagnostics.Eventing.Reader;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -169,9 +170,18 @@ namespace IdentityServer4.Validation
                     jwtRequest = jwt;
                 }
             }
-
+            
+            // check length restrictions
+            if (jwtRequest.IsPresent())
+            {
+                if (jwtRequest.Length >= _options.InputLengthRestrictions.Jwt)
+                {
+                    LogError("request value is too long", request);
+                    return Invalid(request, description: "Invalid request value");
+                }
+            }
+            
             request.RequestObject = jwtRequest;
-
             return Valid(request);
         }
         
@@ -181,27 +191,10 @@ namespace IdentityServer4.Validation
             // client_id must be present (either on the query string or the request object)
             /////////////////////////////////////////////////////////
             var clientId = request.Raw.Get(OidcConstants.AuthorizeRequest.ClientId);
-            
-            if (request.RequestObject.IsPresent())
-            {
-                var handler = new JwtSecurityTokenHandler();
-                var token = handler.ReadJwtToken(request.RequestObject);
 
-                var clientIdClaim =
-                    token.Payload.Claims.FirstOrDefault(c => c.Type == OidcConstants.AuthorizeRequest.ClientId)?.Value;
-                
-                if (clientIdClaim.IsPresent())
-                {
-                    if (clientId.IsPresent())
-                    {
-                        if (!string.Equals(clientIdClaim, clientId, StringComparison.Ordinal))
-                        {
-                            return Invalid(request, description: "Invalid JWT request");
-                        }
-                    }
-                    
-                    clientId = clientIdClaim;
-                }
+            if (clientId.IsMissing() && request.RequestObject.IsPresent())
+            {
+                clientId = await _jwtRequestValidator.LoadClientId(request.RequestObject);
             }
             
             if (clientId.IsMissingOrTooLong(_options.InputLengthRestrictions.ClientId))
@@ -234,13 +227,6 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////////////////
             if (request.RequestObject.IsPresent())
             {
-                // check length restrictions
-                if (request.RequestObject.Length >= _options.InputLengthRestrictions.Jwt)
-                {
-                    LogError("request value is too long", request);
-                    return Invalid(request, description: "Invalid request value");
-                }
-
                 // validate the request JWT for this client
                 var jwtRequestValidationResult = await _jwtRequestValidator.ValidateAsync(request.Client, request.RequestObject);
                 if (jwtRequestValidationResult.IsError)
@@ -261,6 +247,20 @@ namespace IdentityServer4.Validation
                             return Invalid(request, description: "Invalid JWT request");
                         }
                     }
+                }
+                
+                if (jwtRequestValidationResult.Payload.TryGetValue(OidcConstants.AuthorizeRequest.ClientId, out var payloadClientId))
+                {
+                    if (!string.Equals(request.ClientId, payloadClientId, StringComparison.Ordinal))
+                    {
+                        LogError("client_id in JWT payload does not match client_id in request", request);
+                        return Invalid(request, description: "Invalid JWT request");   
+                    }
+                }
+                else
+                {
+                    LogError("client_id is missing in JWT payload", request);
+                    return Invalid(request, description: "Invalid JWT request");   
                 }
 
                 // merge jwt payload values into original request parameters
