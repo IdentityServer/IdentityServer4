@@ -251,7 +251,8 @@ namespace IdentityServer4.Validation
                 
                 if (jwtRequestValidationResult.Payload.TryGetValue(OidcConstants.AuthorizeRequest.ClientId, out var payloadClientId))
                 {
-                    if (!string.Equals(request.ClientId, payloadClientId, StringComparison.Ordinal))
+                    var queryClientId = request.Raw.Get(OidcConstants.AuthorizeRequest.ClientId);
+                    if (queryClientId.IsPresent() && !string.Equals(queryClientId, payloadClientId, StringComparison.Ordinal))
                     {
                         LogError("client_id in JWT payload does not match client_id in request", request);
                         return Invalid(request, description: "Invalid JWT request");   
