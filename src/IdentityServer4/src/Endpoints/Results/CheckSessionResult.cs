@@ -2,11 +2,11 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using System.Threading.Tasks;
+using IdentityServer4.Configuration;
 using IdentityServer4.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using IdentityServer4.Configuration;
+using System.Threading.Tasks;
 
 namespace IdentityServer4.Endpoints.Results
 {
@@ -40,7 +40,7 @@ namespace IdentityServer4.Endpoints.Results
 
         private void AddCspHeaders(HttpContext context)
         {
-            context.Response.AddScriptCspHeaders(_options.Csp, "sha256-ZT3q7lL9GXNGhPTB1Vvrvds2xw/kOV0zoeok2tiV23I=");
+            context.Response.AddScriptCspHeaders(_options.Csp, "sha256-bVyFTw2sODzxD0smnBHKVczetxWV9Hs75DdK8+YttZo=");
         }
         private string GetHtml(string cookieName)
         {
@@ -341,6 +341,17 @@ if (typeof define == 'function' && define.amd) define([], function() { return Sh
 
         if (cookieName && window.parent !== window) {
             window.addEventListener('message', function(e) {
+
+                if (window === e.source) {
+                    // ignore browser extensions that are sending messages.
+                    return;
+                }
+                
+                if (typeof e.data !== 'string') {
+                    // ignore if the data is not a string. ios 12+ chrome sends an object of type 'org.chromium.encryptedMessage' which blows up in the 'calculateSessionStateResult' as its expecting a string.
+                    return;
+                }
+
                 var result = calculateSessionStateResult(e.origin, e.data);
                 e.source.postMessage(result, e.origin);
             }, false);
