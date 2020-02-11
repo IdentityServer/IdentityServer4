@@ -30,7 +30,7 @@ namespace ConsoleEphemeralMtlsClient
         {
             var client = new HttpClient(GetHandler(ClientCertificate));
 
-            var disco = await client.GetDiscoveryDocumentAsync("https://identityserver.local");
+            var disco = await client.GetDiscoveryDocumentAsync(Constants.AuthorityMtls);
             if (disco.IsError) throw new Exception(disco.Error);
 
             var endpoint = disco
@@ -55,7 +55,7 @@ namespace ConsoleEphemeralMtlsClient
         {
             var client = new HttpClient(GetHandler(ClientCertificate))
             {
-                BaseAddress = new Uri(Constants.SampleApi)
+                BaseAddress = new Uri(Constants.SampleApiMtls)
             };
 
             client.SetBearerToken(token);
@@ -69,7 +69,7 @@ namespace ConsoleEphemeralMtlsClient
         {
             X500DistinguishedName distinguishedName = new X500DistinguishedName($"CN={name}");
 
-            using (RSA rsa = RSA.Create(2048))
+            using (var rsa = RSA.Create(2048))
             {
                 var request = new CertificateRequest(distinguishedName, rsa, HashAlgorithmName.SHA256,RSASignaturePadding.Pkcs1);
 
@@ -86,8 +86,13 @@ namespace ConsoleEphemeralMtlsClient
         
         static SocketsHttpHandler GetHandler(X509Certificate2 certificate)
         {
-            var handler = new SocketsHttpHandler();
-            handler.SslOptions.ClientCertificates = new X509CertificateCollection { certificate };
+            var handler = new SocketsHttpHandler
+            {
+                SslOptions =
+                {
+                    ClientCertificates = new X509CertificateCollection {certificate}
+                }
+            };
 
             return handler;
         }
