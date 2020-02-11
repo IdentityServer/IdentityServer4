@@ -4,16 +4,16 @@ Mutual TLS
 Mutual TLS support in IdentityServer allows for two features:
 
 * Client authentication to IdentityServer endpoints using a TLS X.509 client certificate
-* Binding of access tokens to clients using a TLS X.509 client certificate certificate
+* Binding of access tokens to clients using a TLS X.509 client certificate
 
-.. Note:: See `this <https://tools.ietf.org/wg/oauth/draft-ietf-oauth-mtls/>`_ spec for more information
+.. Note:: See the `"OAuth 2.0 Mutual-TLS Client Authentication and Certificate-Bound Access Tokens" <https://tools.ietf.org/wg/oauth/draft-ietf-oauth-mtls/>`_ spec for more information
 
 Setting up MTLS involves a couple of steps.
 
 Server setup
 ^^^^^^^^^^^^
 It's the hosting layer's responsibility to do the actual validation of the client certificate.
-IdentityServer will then use that information to associate the certificate with a client and embed certificate information in the access tokens.
+IdentityServer will then use that information to associate the certificate with a client and embed the certificate information in the access tokens.
 
 Depending which server you are using, those steps are different. See `this <https://leastprivilege.com/2020/02/07/mutual-tls-and-proof-of-possession-access-tokens-part-1-setup/>`_ blog post for more information.
 
@@ -27,7 +27,7 @@ typically you have a reverse proxy in front of the application server.
 This means that in addition to the typical forwarded headers handling, you also need to process the header that contains the client certificate.
 Add a call to ``app.UseCertificateForwarding();`` in the beginning of your middleware pipeline for that.
 
-The exact format how proxies transmit the certificates is not standardized, that's why you need register a callback to do the actual header parsing.
+The exact format how proxies transmit the certificates is not standardized, that's why you need to register a callback to do the actual header parsing.
 The Microsoft `docs <https://docs.microsoft.com/en-us/aspnet/core/security/authentication/certauth?view=aspnetcore-3.1>`_ show how that would work for Azure Web Apps.
 
 If you are using Nginx (which we found is the most flexible hosting option), you need to register the following service in ``ConfigureServices``::
@@ -175,8 +175,6 @@ This value is a hash of the thumbprint of the client certificate used to authent
 This value can be seen in this screen shot of a decoded access token:
 
 .. image:: images/mtls_access_token_with_cnf.png
-
-.. note:: This feature can be also enabled for other authentication methods (e.g. shared secrets) by setting ``AlwaysEmitConfirmationClaim`` to ``true`` on the MTLS options. 
 
 The API will then use this value to ensure the client certificate being used at the API matches the confirmation value in the access token.
 
