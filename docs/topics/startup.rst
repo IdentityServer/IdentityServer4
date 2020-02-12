@@ -22,7 +22,7 @@ This will return you a builder object that in turn has a number of convenience m
 Key material
 ^^^^^^^^^^^^
 IdentityServer supports X.509 certificates (both raw files and a reference to the Windows certificate store), 
-RSA keys and EC keys for token signatures and validation. Each key can be configured with a (compatible) signing algorith, 
+RSA keys and EC keys for token signatures and validation. Each key can be configured with a (compatible) signing algorithm, 
 e.g. RS256, RS384, RS512, PS256, PS384, PS512, ES256, ES384 or ES512.
 
 You can configure the key material with the following methods:
