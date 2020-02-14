@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-
 using System;
 using System.Threading.Tasks;
 using IdentityServer4.EntityFramework.Entities;
@@ -9,6 +8,7 @@ using IdentityServer4.EntityFramework.Extensions;
 using IdentityServer4.EntityFramework.Interfaces;
 using IdentityServer4.EntityFramework.Options;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace IdentityServer4.EntityFramework.DbContexts
 {
@@ -60,6 +60,7 @@ namespace IdentityServer4.EntityFramework.DbContexts
         /// The clients.
         /// </value>
         public DbSet<Client> Clients { get; set; }
+
         /// <summary>
         /// Gets or sets the identity resources.
         /// </summary>
@@ -67,6 +68,7 @@ namespace IdentityServer4.EntityFramework.DbContexts
         /// The identity resources.
         /// </value>
         public DbSet<IdentityResource> IdentityResources { get; set; }
+
         /// <summary>
         /// Gets or sets the API resources.
         /// </summary>
@@ -74,6 +76,18 @@ namespace IdentityServer4.EntityFramework.DbContexts
         /// The API resources.
         /// </value>
         public DbSet<ApiResource> ApiResources { get; set; }
+
+        /// <summary>
+        ///     Gets an <see cref="T:Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry`1" /> for the given entity. The entry provides
+        ///     access to change tracking information and operations for the entity.
+        /// </summary>
+        /// <typeparam name="TEntity"> The type of the entity. </typeparam>
+        /// <param name="entity"> The entity to get the entry for. </param>
+        /// <returns> The entry for the given entity. </returns>
+        public EntityEntry Entry<TEntity>(TEntity entity) where TEntity : class
+        {
+            return base.Entry<TEntity>(entity);
+        }
 
         /// <summary>
         /// Saves the changes.
