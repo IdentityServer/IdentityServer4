@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace SqlServer.Migrations.ConfigurationDb
 {
     [DbContext(typeof(ConfigurationDbContext))]
-    [Migration("20200124215721_Config")]
+    [Migration("20200214163806_Config")]
     partial class Config
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -305,6 +305,9 @@ namespace SqlServer.Migrations.ConfigurationDb
                         .HasColumnType("bit");
 
                     b.Property<bool>("RequirePkce")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("RequireRequestObject")
                         .HasColumnType("bit");
 
                     b.Property<int>("SlidingRefreshTokenLifetime")

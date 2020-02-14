@@ -40,6 +40,7 @@ CREATE TABLE [Clients] (
     [AlwaysIncludeUserClaimsInIdToken] bit NOT NULL,
     [RequirePkce] bit NOT NULL,
     [AllowPlainTextPkce] bit NOT NULL,
+    [RequireRequestObject] bit NOT NULL,
     [AllowAccessTokensViaBrowser] bit NOT NULL,
     [FrontChannelLogoutUri] nvarchar(2000) NULL,
     [FrontChannelLogoutSessionRequired] bit NOT NULL,
@@ -373,7 +374,7 @@ CREATE UNIQUE INDEX [IX_Scopes_Name] ON [Scopes] ([Name]);
 GO
 
 INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-VALUES (N'20200124215721_Config', N'3.1.0');
+VALUES (N'20200214163806_Config', N'3.1.0');
 
 GO
 

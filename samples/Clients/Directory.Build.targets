@@ -10,6 +10,7 @@
 
     <PackageReference Update="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(AspNetVersion)" />
     <PackageReference Update="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(AspNetVersion)" />
+    <PackageReference Update="Microsoft.AspNetCore.Authentication.Certificate" Version="$(AspNetVersion)"/>
     
     <PackageReference Update="System.IdentityModel.Tokens.Jwt" Version="5.6.0" />
   </ItemGroup>
