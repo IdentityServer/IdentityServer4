@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -63,15 +62,15 @@ namespace IdentityServer4.EntityFramework.Stores
 
             if (client == null) return null;
 
-            await Context.Entry(client).Collection(x => x.AllowedCorsOrigins).LoadAsync();
-            await Context.Entry(client).Collection(x => x.AllowedGrantTypes).LoadAsync();
-            await Context.Entry(client).Collection(x => x.AllowedScopes).LoadAsync();
-            await Context.Entry(client).Collection(x => x.Claims).LoadAsync();
-            await Context.Entry(client).Collection(x => x.ClientSecrets).LoadAsync();
-            await Context.Entry(client).Collection(x => x.IdentityProviderRestrictions).LoadAsync();
-            await Context.Entry(client).Collection(x => x.PostLogoutRedirectUris).LoadAsync();
-            await Context.Entry(client).Collection(x => x.Properties).LoadAsync();
-            await Context.Entry(client).Collection(x => x.RedirectUris).LoadAsync();
+            await Context.Entry(client).Collection("AllowedCorsOrigins").LoadAsync();
+            await Context.Entry(client).Collection("AllowedGrantTypes").LoadAsync();
+            await Context.Entry(client).Collection("AllowedScopes").LoadAsync();
+            await Context.Entry(client).Collection("Claims").LoadAsync();
+            await Context.Entry(client).Collection("ClientSecrets").LoadAsync();
+            await Context.Entry(client).Collection("IdentityProviderRestrictions").LoadAsync();
+            await Context.Entry(client).Collection("PostLogoutRedirectUris").LoadAsync();
+            await Context.Entry(client).Collection("Properties").LoadAsync();
+            await Context.Entry(client).Collection("RedirectUris").LoadAsync();
 
             var model = client.ToModel();
             Logger.LogDebug("{clientId} found in database: {clientIdFound}", clientId, model != null);
