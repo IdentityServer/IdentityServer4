@@ -51,30 +51,30 @@ namespace IdentityServer4.EntityFramework.Stores
         /// </returns>
         public virtual async Task<Client> FindClientByIdAsync(string clientId)
         {
-            var exists = await _context.Clients
+            var exists = await Context.Clients
                 .CountAsync(x => x.ClientId == clientId);
 
             if (exists != 1) return null;
 
-            var baseQuery = _context.Clients.AsTracking()
+            var baseQuery = Context.Clients.AsTracking()
                 .Where(x => x.ClientId == clientId);
 
             var client = await baseQuery.FirstOrDefaultAsync();
 
             if (client == null) return null;
 
-            await _context.Entry(client).Collection(x => x.AllowedCorsOrigins).LoadAsync();
-            await _context.Entry(client).Collection(x => x.AllowedGrantTypes).LoadAsync();
-            await _context.Entry(client).Collection(x => x.AllowedScopes).LoadAsync();
-            await _context.Entry(client).Collection(x => x.Claims).LoadAsync();
-            await _context.Entry(client).Collection(x => x.ClientSecrets).LoadAsync();
-            await _context.Entry(client).Collection(x => x.IdentityProviderRestrictions).LoadAsync();
-            await _context.Entry(client).Collection(x => x.PostLogoutRedirectUris).LoadAsync();
-            await _context.Entry(client).Collection(x => x.Properties).LoadAsync();
-            await _context.Entry(client).Collection(x => x.RedirectUris).LoadAsync();
+            await Context.Entry(client).Collection(x => x.AllowedCorsOrigins).LoadAsync();
+            await Context.Entry(client).Collection(x => x.AllowedGrantTypes).LoadAsync();
+            await Context.Entry(client).Collection(x => x.AllowedScopes).LoadAsync();
+            await Context.Entry(client).Collection(x => x.Claims).LoadAsync();
+            await Context.Entry(client).Collection(x => x.ClientSecrets).LoadAsync();
+            await Context.Entry(client).Collection(x => x.IdentityProviderRestrictions).LoadAsync();
+            await Context.Entry(client).Collection(x => x.PostLogoutRedirectUris).LoadAsync();
+            await Context.Entry(client).Collection(x => x.Properties).LoadAsync();
+            await Context.Entry(client).Collection(x => x.RedirectUris).LoadAsync();
 
             var model = client.ToModel();
-
+            Logger.LogDebug("{clientId} found in database: {clientIdFound}", clientId, model != null);
             return model;
         }
     }
