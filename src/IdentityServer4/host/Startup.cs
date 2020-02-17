@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using System.Linq;
+using System.Reflection;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -21,6 +22,7 @@ using System.Threading.Tasks;
 using Host.Extensions;
 using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.EntityFrameworkCore;
 
 namespace Host
 {
@@ -55,7 +57,7 @@ namespace Host
                 iis.AuthenticationDisplayName = "Windows";
                 iis.AutomaticAuthentication = false;
             });
-
+            
             var builder = services.AddIdentityServer(options =>
                 {
                     options.Events.RaiseSuccessEvents = true;
@@ -79,6 +81,16 @@ namespace Host
                 .AddTestUsers(TestUsers.Users)
                 .AddProfileService<HostProfileService>()
                 .AddMutualTlsSecretValidators();
+            
+            // use this for persisted grants
+            // var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+            // const string connectionString = "DataSource=identityserver.db";
+            // builder.AddOperationalStore(options =>
+            // {
+            //     options.ConfigureDbContext = b => b.UseSqlite(connectionString,
+            //         sql => sql.MigrationsAssembly(migrationsAssembly));
+            // });
+                
 
             services.AddExternalIdentityProviders();
 
