@@ -168,13 +168,14 @@ namespace Host
                 IdentityServerConstants.ECDsaSigningAlgorithm.ES256);
         }
 
-        public static void InitializePersistedGrantsStore(this IApplicationBuilder app)
-        {
-            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-            {
-                serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
-            }
-        }
+        // use this for persisted grants store
+        // public static void InitializePersistedGrantsStore(this IApplicationBuilder app)
+        // {
+        //     using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+        //     {
+        //         serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
+        //     }
+        // }
     }
 
     public static class ServiceExtensions
