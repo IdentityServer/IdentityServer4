@@ -208,5 +208,5 @@ The code for these missing pieces can simply be copied over from the prior quick
 Once you've done that, then you can finally delete/remove the old IdentityServer project. 
 Also, once you've done this don't forget to re-enable the ``RequireConsent=true`` flag on the MVC client configuration.
 
-The `sample code for this quickstart <https://github.com/IdentityServer/IdentityServer4/tree/master/samples/Quickstarts/6_AspNetIdentity>`_ has already done these steps for you, so you can get started quickly with all of these features.
+The `sample code for this quickstart <https://github.com/IdentityServer/IdentityServer4.Samples/tree/dev/Quickstarts/6_AspNetIdentity>`_ has already done these steps for you, so you can get started quickly with all of these features.
 Enjoy!
