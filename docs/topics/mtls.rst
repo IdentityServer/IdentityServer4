@@ -303,7 +303,7 @@ For this enable the following settin in the options::
 Using an ephemeral certificate to request a token
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 In this scenario, the client uses *some* client secret (a shared secret in the below sample), but attaches an additional client certificate to the token request.
-Since this certificate does not to be associated with the client at the token services, it can be created on the fly::
+Since this certificate does not need to be associated with the client at the token services, it can be created on the fly::
 
     static X509Certificate2 CreateClientCertificate(string name)
     {
