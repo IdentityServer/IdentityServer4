@@ -58,7 +58,6 @@ namespace Host
                 .UseSerilog()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    // webBuilder.UseSetting(WebHostDefaults.SuppressStatusMessagesKey, "False");
                     webBuilder.UseStartup<Startup>();
                 });
     }

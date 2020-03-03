@@ -2,18 +2,29 @@
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Certificate;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace SampleApi
 {
+    public class ConfirmationValidationMiddlewareOptions
+    {
+        public string CertificateSchemeName { get; set; } = CertificateAuthenticationDefaults.AuthenticationScheme;
+        public string JwtBearerSchemeName { get; set; } = JwtBearerDefaults.AuthenticationScheme;
+    }
+    
     // this middleware validate the cnf claim (if present) against the thumbprint of the X.509 client certificate for the current client
     public class ConfirmationValidationMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly ConfirmationValidationMiddlewareOptions _options;
 
-        public ConfirmationValidationMiddleware(RequestDelegate next)
+        public ConfirmationValidationMiddleware(RequestDelegate next, ConfirmationValidationMiddlewareOptions options = null)
         {
             _next = next;
+            _options = options ?? new ConfirmationValidationMiddlewareOptions();
         }
 
         public async Task Invoke(HttpContext ctx)
@@ -23,21 +34,14 @@ namespace SampleApi
                 var cnfJson = ctx.User.FindFirst("cnf")?.Value;
                 if (!String.IsNullOrWhiteSpace(cnfJson))
                 {
-                    var certResult = await ctx.AuthenticateAsync("x509");
+                    var certResult = await ctx.AuthenticateAsync(_options.CertificateSchemeName);
                     if (!certResult.Succeeded)
                     {
-                        await ctx.ChallengeAsync("x509");
+                        await ctx.ChallengeAsync(_options.CertificateSchemeName);
                         return;
                     }
 
-                    var cert = await ctx.Connection.GetClientCertificateAsync();
-                    if (cert == null)
-                    {
-                        await ctx.ChallengeAsync("x509");
-                        return;
-                    }
-
-                    var thumbprint = cert.Thumbprint;
+                    var thumbprint = certResult.Principal.FindFirst(ClaimTypes.Thumbprint).Value;
 
                     var cnf = JObject.Parse(cnfJson);
                     var sha256 = cnf.Value<string>("x5t#S256");
@@ -45,7 +49,7 @@ namespace SampleApi
                     if (String.IsNullOrWhiteSpace(sha256) ||
                         !thumbprint.Equals(sha256, StringComparison.OrdinalIgnoreCase))
                     {
-                        await ctx.ChallengeAsync("token");
+                        await ctx.ChallengeAsync(_options.JwtBearerSchemeName);
                         return;
                     }
                 }
