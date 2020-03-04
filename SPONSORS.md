@@ -9,8 +9,6 @@ We thank those who [support](https://www.patreon.com/identityserver) IdentitySer
 [Microsoft .NET](https://github.com/dotnet-at-microsoft)
 
 ### Gold
-
-[Thinktecture AG](https://www.thinktecture.com)   ([@Thinktecture](https://twitter.com/thinktecture))  
 [Ritter Insurance Marketing](https://www.ritterim.com) ([@RitterIM](https://twitter.com/ritterim))   
 [Intuit](https://www.intuit.com) ([@IntuitDev](https://twitter.com/IntuitDev))  
 [ExtranetUserManager](https://www.extranetusermanager.com) ([@eumgr](https://twitter.com/eumgr))  
