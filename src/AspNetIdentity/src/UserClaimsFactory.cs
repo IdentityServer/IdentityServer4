@@ -47,7 +47,7 @@ namespace IdentityServer4.AspNetIdentity
                 identity.AddClaim(new Claim(JwtClaimTypes.Name, username));
             }
 
-            if (_userManager.SupportsUserEmail)
+            if (_userManager.SupportsUserEmail && !identity.HasClaim(x => x.Type == JwtClaimTypes.Email))
             {
                 var email = await _userManager.GetEmailAsync(user);
                 if (!String.IsNullOrWhiteSpace(email))
