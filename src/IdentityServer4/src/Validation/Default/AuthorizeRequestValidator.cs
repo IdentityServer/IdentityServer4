@@ -571,6 +571,7 @@ namespace IdentityServer4.Validation
             
             if (!validatedResources.Succeeded)
             {
+                // todo: dom should we leak that via error messages?
                 if (validatedResources.InvalidScopes.Any())
                 {
                     return Invalid(request, OidcConstants.AuthorizeErrors.InvalidScope, "Invalid scope");
