@@ -572,6 +572,7 @@ namespace IdentityServer4.Validation
             if (!validatedResources.Succeeded)
             {
                 // todo: dom should we leak that via error messages?
+                // check oauth spec for proper error response. it seems to indicate that invalid_scope is always the right answer
                 if (validatedResources.InvalidScopes.Any())
                 {
                     return Invalid(request, OidcConstants.AuthorizeErrors.InvalidScope, "Invalid scope");

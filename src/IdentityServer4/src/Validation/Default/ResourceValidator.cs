@@ -89,6 +89,8 @@ namespace IdentityServer4.Validation
             return result;
         }
 
+        // todo: rename to parse something, so we know that this parses the scope values and returns the 
+        // DB name and the params/values of the scope
         /// <summary>
         /// 
         /// </summary>
@@ -109,6 +111,7 @@ namespace IdentityServer4.Validation
             //result.ApiResources.Where(x=>x.Name == "payment")["txId"] = 
 
             
+
             return scopeValues.Select(x => new ScopeName { Name = x, Value = x }).ToArray();
         }
 
@@ -156,6 +159,7 @@ namespace IdentityServer4.Validation
                 }
                 else
                 {
+                    // this scope name was not in the results from the store
                     result.InvalidScopes.Add(scopeName.Value);
                 }
             }
@@ -198,6 +202,8 @@ namespace IdentityServer4.Validation
         public class ScopeName
         {
             public string Name { get; set; }
+
+            // todo: maybe this should be something w/ more structure? dictionary?
             public string Value { get; set; }
         }
     }
