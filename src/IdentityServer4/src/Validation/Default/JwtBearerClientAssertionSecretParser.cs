@@ -105,6 +105,9 @@ namespace IdentityServer4.Validation
 
         private string GetClientIdFromToken(string token)
         {
+            // todo: also read from post body?
+            // is .Subject the right thing to do?
+            
             try
             {
                 var jwt = new JwtSecurityToken(token);
