@@ -21,15 +21,15 @@ namespace IdentityServer4.Validation
     /// </summary>
     public class PrivateKeyJwtSecretValidator : ISecretValidator
     {
+        private readonly IHttpContextAccessor _contextAccessor;
         private readonly ILogger _logger;
-        private readonly string _audienceUri;
-
+        
         /// <summary>
         /// Instantiates an instance of private_key_jwt secret validator
         /// </summary>
         public PrivateKeyJwtSecretValidator(IHttpContextAccessor contextAccessor, ILogger<PrivateKeyJwtSecretValidator> logger)
         {
-            _audienceUri = string.Concat(contextAccessor.HttpContext.GetIdentityServerIssuerUri().EnsureTrailingSlash(), Constants.ProtocolRoutePaths.Token);
+            _contextAccessor = contextAccessor;
             _logger = logger;
         }
 
@@ -75,6 +75,9 @@ namespace IdentityServer4.Validation
                 return fail;
             }
 
+            // todo: allow issuer name as well?
+            var tokenEndpointAudience = string.Concat(_contextAccessor.HttpContext.GetIdentityServerIssuerUri().EnsureTrailingSlash(), Constants.ProtocolRoutePaths.Token);
+            
             var tokenValidationParameters = new TokenValidationParameters
             {
                 IssuerSigningKeys = trustedKeys,
@@ -83,7 +86,7 @@ namespace IdentityServer4.Validation
                 ValidIssuer = parsedSecret.Id,
                 ValidateIssuer = true,
 
-                ValidAudience = _audienceUri,
+                ValidAudience = tokenEndpointAudience,
                 ValidateAudience = true,
 
                 RequireSignedTokens = true,
