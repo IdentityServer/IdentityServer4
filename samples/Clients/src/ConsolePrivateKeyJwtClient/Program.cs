@@ -42,7 +42,6 @@ namespace ConsolePrivateKeyJwtClient
             var response = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
             {
                 Address = disco.TokenEndpoint,
-                ClientId = "client.jwt",
                 Scope = "api1",
 
                 ClientAssertion =
