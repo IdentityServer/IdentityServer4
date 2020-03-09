@@ -14,13 +14,16 @@ using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using System.Linq;
+using System.Reflection;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using Host.Extensions;
+using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.EntityFrameworkCore;
 
 namespace Host
 {
@@ -55,7 +58,7 @@ namespace Host
                 iis.AuthenticationDisplayName = "Windows";
                 iis.AutomaticAuthentication = false;
             });
-
+            
             var builder = services.AddIdentityServer(options =>
                 {
                     options.Events.RaiseSuccessEvents = true;
@@ -80,6 +83,16 @@ namespace Host
                 .AddTestUsers(TestUsers.Users)
                 .AddProfileService<HostProfileService>()
                 .AddMutualTlsSecretValidators();
+            
+            // use this for persisted grants store
+            // var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+            // const string connectionString = "DataSource=identityserver.db";
+            // builder.AddOperationalStore(options =>
+            // {
+            //     options.ConfigureDbContext = b => b.UseSqlite(connectionString,
+            //         sql => sql.MigrationsAssembly(migrationsAssembly));
+            // });
+                
 
             services.AddExternalIdentityProviders();
 
@@ -102,6 +115,9 @@ namespace Host
 
         public void Configure(IApplicationBuilder app)
         {
+            // use this for persisted grants store
+            // app.InitializePersistedGrantsStore();
+            
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
@@ -152,6 +168,15 @@ namespace Host
                 key,
                 IdentityServerConstants.ECDsaSigningAlgorithm.ES256);
         }
+
+        // use this for persisted grants store
+        // public static void InitializePersistedGrantsStore(this IApplicationBuilder app)
+        // {
+        //     using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+        //     {
+        //         serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
+        //     }
+        // }
     }
 
     public static class ServiceExtensions
