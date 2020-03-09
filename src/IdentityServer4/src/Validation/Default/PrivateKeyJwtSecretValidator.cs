@@ -75,8 +75,15 @@ namespace IdentityServer4.Validation
                 return fail;
             }
 
-            // todo: allow issuer name as well?
-            var tokenEndpointAudience = string.Concat(_contextAccessor.HttpContext.GetIdentityServerIssuerUri().EnsureTrailingSlash(), Constants.ProtocolRoutePaths.Token);
+            var validAudiences = new[]
+            {
+                // issuer URI
+                _contextAccessor.HttpContext.GetIdentityServerIssuerUri(),
+                
+                // token endpoint URL
+                string.Concat(_contextAccessor.HttpContext.GetIdentityServerIssuerUri().EnsureTrailingSlash(),
+                    Constants.ProtocolRoutePaths.Token)
+            };
             
             var tokenValidationParameters = new TokenValidationParameters
             {
@@ -86,7 +93,7 @@ namespace IdentityServer4.Validation
                 ValidIssuer = parsedSecret.Id,
                 ValidateIssuer = true,
 
-                ValidAudience = tokenEndpointAudience,
+                ValidAudiences = validAudiences,
                 ValidateAudience = true,
 
                 RequireSignedTokens = true,
