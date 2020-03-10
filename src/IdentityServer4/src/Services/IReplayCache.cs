@@ -12,9 +12,9 @@ namespace IdentityServer4.Services
         /// Adds a handle to the cache 
         /// </summary>
         /// <param name="handle"></param>
-        /// <param name="expireTimeSpan"></param>
+        /// <param name="expiration"></param>
         /// <returns></returns>
-        Task AddAsync(string handle, TimeSpan expireTimeSpan);
+        Task AddAsync(string handle, DateTimeOffset expiration);
 
 
         /// <summary>

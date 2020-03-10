@@ -23,11 +23,11 @@ namespace IdentityServer4.Services
         }
         
         /// <inheritdoc />
-        public async Task AddAsync(string handle, TimeSpan expireTimeSpan)
+        public async Task AddAsync(string handle, DateTimeOffset expiration)
         {
             var options = new DistributedCacheEntryOptions
             {
-                AbsoluteExpirationRelativeToNow = expireTimeSpan
+                AbsoluteExpiration = expiration
             };
             
             await _cache.SetAsync(handle, new byte[] { }, options);
