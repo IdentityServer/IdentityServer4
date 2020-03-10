@@ -25,6 +25,8 @@ namespace IdentityServer4.Validation
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly IReplayCache _replayCache;
         private readonly ILogger _logger;
+
+        private const string Purpose = nameof(PrivateKeyJwtSecretValidator);
         
         /// <summary>
         /// Instantiates an instance of private_key_jwt secret validator
@@ -100,7 +102,9 @@ namespace IdentityServer4.Validation
                 ValidateAudience = true,
 
                 RequireSignedTokens = true,
-                RequireExpirationTime = true
+                RequireExpirationTime = true,
+                
+                ClockSkew = TimeSpan.FromMinutes(5)
             };
             try
             {
@@ -128,14 +132,14 @@ namespace IdentityServer4.Validation
                     return fail;
                 }
 
-                if (await _replayCache.ExistsAsync(jti))
+                if (await _replayCache.ExistsAsync(Purpose, jti))
                 {
                     _logger.LogError("jti is found in replay cache. Possible replay attack.");
                     return fail;
                 }
                 else
                 {
-                    await _replayCache.AddAsync(jti, DateTimeOffset.FromUnixTimeSeconds(exp.Value));
+                    await _replayCache.AddAsync(Purpose, jti, DateTimeOffset.FromUnixTimeSeconds(exp.Value).AddMinutes(5));
                 }
 
                 return success;

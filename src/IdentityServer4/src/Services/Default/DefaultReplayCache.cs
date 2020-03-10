@@ -23,20 +23,20 @@ namespace IdentityServer4.Services
         }
         
         /// <inheritdoc />
-        public async Task AddAsync(string handle, DateTimeOffset expiration)
+        public async Task AddAsync(string purpose, string handle, DateTimeOffset expiration)
         {
             var options = new DistributedCacheEntryOptions
             {
                 AbsoluteExpiration = expiration
             };
             
-            await _cache.SetAsync(handle, new byte[] { }, options);
+            await _cache.SetAsync(Prefix + purpose + handle, new byte[] { }, options);
         }
 
         /// <inheritdoc />
-        public async Task<bool> ExistsAsync(string handle)
+        public async Task<bool> ExistsAsync(string purpose, string handle)
         {
-            return (await _cache.GetAsync(handle, default)) != null;
+            return (await _cache.GetAsync(Prefix + purpose + handle, default)) != null;
         }
     }
 }
