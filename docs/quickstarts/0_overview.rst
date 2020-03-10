@@ -54,7 +54,7 @@ Modify your ``Startup.cs`` file to look like this::
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddIdentityServer()
-                .AddTemporarySigningCredential();
+                .AddDeveloperSigningCredential();
         }
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
@@ -70,7 +70,7 @@ Modify your ``Startup.cs`` file to look like this::
 This is useful for development scenarios. For production scenarios you need a persistent or shared store like a database or cache for that.
 See the :ref:`EntityFramework <refEntityFrameworkQuickstart>` quickstart for more information.
 
-The ``AddTemporarySigningCredential`` extension creates temporary key material for signing tokens on every start.
+The ``AddDeveloperSigningCredential`` extension creates temporary key material for signing tokens on every start.
 Again this might be useful to get started, but needs to be replaced by some persistent key material for production scenarios.
 See the :ref:`cryptography docs <refCrypto>` for more information.
 
