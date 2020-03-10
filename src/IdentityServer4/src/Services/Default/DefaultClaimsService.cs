@@ -64,7 +64,7 @@ namespace IdentityServer4.Services
             {
                 var additionalClaimTypes = new List<string>();
 
-                foreach (var identityResource in resources.IdentityResources)
+                foreach (var identityResource in resources.Resources.IdentityResources)
                 {
                     foreach (var userClaim in identityResource.UserClaims)
                     {
@@ -106,12 +106,12 @@ namespace IdentityServer4.Services
         /// Returns claims for an identity token.
         /// </summary>
         /// <param name="subject">The subject.</param>
-        /// <param name="resources">The requested resources</param>
+        /// <param name="resourceResult">The validated resource result</param>
         /// <param name="request">The raw request.</param>
         /// <returns>
         /// Claims for the access token
         /// </returns>
-        public virtual async Task<IEnumerable<Claim>> GetAccessTokenClaimsAsync(ClaimsPrincipal subject, ResourceValidationResult resources, ValidatedRequest request)
+        public virtual async Task<IEnumerable<Claim>> GetAccessTokenClaimsAsync(ClaimsPrincipal subject, ResourceValidationResult resourceResult, ValidatedRequest request)
         {
             Logger.LogDebug("Getting claims for access token for client: {clientId}", request.Client.ClientId);
 
@@ -148,7 +148,7 @@ namespace IdentityServer4.Services
             // add scopes (filter offline_access)
             // we use the ScopeValues collection rather than the Resources.Scopes because we support dynamic scope values 
             // from the request, so this issues those in the token.
-            foreach (var scope in resources.ScopeValues.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess))
+            foreach (var scope in resourceResult.ScopeValues.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess))
             {
                 outputClaims.Add(new Claim(JwtClaimTypes.Scope, scope));
             }
@@ -156,7 +156,7 @@ namespace IdentityServer4.Services
             // a user is involved
             if (subject != null)
             {
-                if (resources.Resources.OfflineAccess)
+                if (resourceResult.Resources.OfflineAccess)
                 {
                     outputClaims.Add(new Claim(JwtClaimTypes.Scope, IdentityServerConstants.StandardScopes.OfflineAccess));
                 }
@@ -168,7 +168,7 @@ namespace IdentityServer4.Services
 
                 // fetch all resource claims that need to go into the access token
                 var additionalClaimTypes = new List<string>();
-                foreach (var api in resources.Resources.ApiResources)
+                foreach (var api in resourceResult.Resources.ApiResources)
                 {
                     // add claims configured on api resource
                     if (api.UserClaims != null)
@@ -180,12 +180,12 @@ namespace IdentityServer4.Services
                     }
                 }
 
-                foreach(var scope in resources.Scopes)
+                foreach(var scope in resourceResult.Resources.Scopes)
                 {
                     // add claims configured on scopes
-                    if (scope.Scope != null && scope.Scope.UserClaims != null)
+                    if (scope.UserClaims != null)
                     {
-                        foreach (var claim in scope.Scope.UserClaims)
+                        foreach (var claim in scope.UserClaims)
                         {
                             additionalClaimTypes.Add(claim);
                         }
@@ -201,7 +201,7 @@ namespace IdentityServer4.Services
                     IdentityServerConstants.ProfileDataCallers.ClaimsProviderAccessToken,
                     additionalClaimTypes.Distinct())
                 {
-                    RequestedResources = resources.Resources,
+                    RequestedResources = resourceResult.Resources,
                     ValidatedRequest = request
                 };
 

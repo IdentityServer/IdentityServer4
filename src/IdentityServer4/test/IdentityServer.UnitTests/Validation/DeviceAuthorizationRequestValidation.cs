@@ -76,7 +76,7 @@ namespace IdentityServer.UnitTests.Validation
             var result = await validator.ValidateAsync(parameters, new ClientSecretValidationResult {Client = testClient});
 
             result.IsError.Should().BeTrue();
-            result.Error.Should().Be(OidcConstants.AuthorizeErrors.UnauthorizedClient);
+            result.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidScope);
         }
 
         [Fact]

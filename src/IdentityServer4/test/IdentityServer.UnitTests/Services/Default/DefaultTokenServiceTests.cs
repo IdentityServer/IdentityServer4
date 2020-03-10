@@ -2,17 +2,12 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using FluentAssertions;
-using IdentityModel;
 using IdentityServer.UnitTests.Common;
-using IdentityServer4;
 using IdentityServer4.Configuration;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
-using IdentityServer4.Stores;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -59,17 +54,20 @@ namespace IdentityServer.UnitTests.Services.Default
             var request = new TokenCreationRequest { 
                 ValidatedResources = new ResourceValidationResult()
                 {
-                    ApiResources = 
+                    Resources = new Resources()
                     {
-                        new ApiResource("api1"){ Scopes = { scope.Name } },
-                        new ApiResource("api2"){ Scopes = { scope.Name } },
-                        new ApiResource("api3"){ Scopes = { scope.Name } },
+                        ApiResources = 
+                        {
+                            new ApiResource("api1"){ Scopes = { scope.Name } },
+                            new ApiResource("api2"){ Scopes = { scope.Name } },
+                            new ApiResource("api3"){ Scopes = { scope.Name } },
+                        },
                     },
-                    Scopes = 
+                    ParsedScopes =
                     {
-                        new ScopeValue("res1", scope),
-                        new ScopeValue("res2", scope),
-                        new ScopeValue("res3", scope),
+                        new ParsedScopeValue("res1"),
+                        new ParsedScopeValue("res2"),
+                        new ParsedScopeValue("res3"),
                     }
                 },
                 ValidatedRequest = new ValidatedRequest()

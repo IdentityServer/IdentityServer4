@@ -12,7 +12,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
-using IdentityServer4.Stores;
 
 namespace IdentityServer4.ResponseHandling
 {

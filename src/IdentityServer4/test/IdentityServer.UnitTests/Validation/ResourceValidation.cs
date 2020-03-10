@@ -138,8 +138,7 @@ namespace IdentityServer.UnitTests.Validation
             });
 
             result.Succeeded.Should().BeFalse();
-            result.InvalidScopes.Should().BeEmpty();
-            result.InvalidScopesForClient.Should().Contain("offline_access");
+            result.InvalidScopes.Should().Contain("offline_access");
         }
 
         [Fact]
@@ -157,7 +156,6 @@ namespace IdentityServer.UnitTests.Validation
 
             result.Succeeded.Should().BeTrue();
             result.InvalidScopes.Should().BeEmpty();
-            result.InvalidScopesForClient.Should().BeEmpty();
         }
 
         [Fact]
@@ -176,7 +174,7 @@ namespace IdentityServer.UnitTests.Validation
 
                 result.Succeeded.Should().BeFalse();
                 result.InvalidScopes.Should().Contain("unknown");
-                result.InvalidScopesForClient.Should().Contain("email");
+                result.InvalidScopes.Should().Contain("email");
             }
             {
                 var scopes = "openid resource1 resource2".ParseScopesString();
@@ -189,8 +187,7 @@ namespace IdentityServer.UnitTests.Validation
                 });
 
                 result.Succeeded.Should().BeFalse();
-                result.InvalidScopes.Should().BeEmpty();
-                result.InvalidScopesForClient.Should().Contain("resource2");
+                result.InvalidScopes.Should().Contain("resource2");
             }
             {
                 var scopes = "openid email resource1".ParseScopesString();
@@ -203,8 +200,7 @@ namespace IdentityServer.UnitTests.Validation
                 });
 
                 result.Succeeded.Should().BeFalse();
-                result.InvalidScopes.Should().BeEmpty();
-                result.InvalidScopesForClient.Should().Contain("email");
+                result.InvalidScopes.Should().Contain("email");
             }
         }
 
@@ -223,7 +219,6 @@ namespace IdentityServer.UnitTests.Validation
 
             result.Succeeded.Should().BeFalse();
             result.InvalidScopes.Should().Contain("disabled");
-            result.InvalidScopesForClient.Should().BeEmpty();
         }
 
         [Fact]
@@ -241,7 +236,6 @@ namespace IdentityServer.UnitTests.Validation
 
             result.Succeeded.Should().BeTrue();
             result.InvalidScopes.Should().BeEmpty();
-            result.InvalidScopesForClient.Should().BeEmpty();
         }
 
         [Fact]
@@ -258,9 +252,8 @@ namespace IdentityServer.UnitTests.Validation
             });
 
             result.Succeeded.Should().BeFalse();
-            result.InvalidScopes.Should().BeEmpty();
-            result.InvalidScopesForClient.Should().Contain("email");
-            result.InvalidScopesForClient.Should().Contain("resource2");
+            result.InvalidScopes.Should().Contain("email");
+            result.InvalidScopes.Should().Contain("resource2");
         }
 
         [Fact]
@@ -349,8 +342,8 @@ namespace IdentityServer.UnitTests.Validation
             result.Succeeded.Should().BeTrue();
             result.Resources.ApiResources.Count.Should().Be(2);
             result.Resources.ApiResources.Select(x => x.Name).Should().BeEquivalentTo(new[] { "api1", "api2" });
-            result.Scopes.Count().Should().Be(1);
-            result.Scopes.Select(x => x.Scope.Name).Should().BeEquivalentTo(new[] { "resource" });
+            result.ScopeValues.Count().Should().Be(1);
+            result.ScopeValues.Should().BeEquivalentTo(new[] { "resource" });
         }
     }
 }

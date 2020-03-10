@@ -874,7 +874,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
             await _mockPipeline.BrowserClient.GetAsync(url);
 
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
-            _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.UnauthorizedClient);
+            _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidScope);
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("scope");
             _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
             _mockPipeline.ErrorMessage.ResponseMode.Should().Be("fragment");

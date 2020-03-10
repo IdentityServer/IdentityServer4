@@ -11,11 +11,8 @@ using IdentityServer4.Stores;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Specialized;
-using System.Diagnostics.Eventing.Reader;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using IdentityServer4.Logging.Models;
 
@@ -583,14 +580,7 @@ namespace IdentityServer4.Validation
             
             if (!validatedResources.Succeeded)
             {
-                // todo: dom should we leak that via error messages?
-                // check oauth spec for proper error response. it seems to indicate that invalid_scope is always the right answer
-                if (validatedResources.InvalidScopes.Any())
-                {
-                    return Invalid(request, OidcConstants.AuthorizeErrors.InvalidScope, "Invalid scope");
-                }
-                
-                return Invalid(request, OidcConstants.AuthorizeErrors.UnauthorizedClient, description: "Invalid scope for client");
+                return Invalid(request, OidcConstants.AuthorizeErrors.InvalidScope, "Invalid scope");
             }
 
             if (validatedResources.Resources.IdentityResources.Any() && !request.IsOpenIdRequest)

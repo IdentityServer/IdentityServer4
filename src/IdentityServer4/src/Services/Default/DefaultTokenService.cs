@@ -248,9 +248,9 @@ namespace IdentityServer4.Services
                 }
             }
 
-            if (request.ValidatedResources.ApiResources.Any())
+            if (request.ValidatedResources.Resources.ApiResources.Any())
             {
-                audiences.AddRange(request.ValidatedResources.ApiResources.Select(x => x.Name));
+                audiences.AddRange(request.ValidatedResources.Resources.ApiResources.Select(x => x.Name));
             }
 
             foreach(var aud in audiences.Distinct())

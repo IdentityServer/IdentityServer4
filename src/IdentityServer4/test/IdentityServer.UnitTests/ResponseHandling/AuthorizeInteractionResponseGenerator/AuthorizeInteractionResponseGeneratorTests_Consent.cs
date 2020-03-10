@@ -12,9 +12,7 @@ using IdentityModel;
 using IdentityServer.UnitTests.Common;
 using IdentityServer4.Configuration;
 using IdentityServer4.Models;
-using IdentityServer4.Stores;
 using IdentityServer4.Validation;
-using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponseGenerator
@@ -103,9 +101,8 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
 
         private static ResourceValidationResult GetValidatedResources(params string[] scopes)
         {
-            return new Resources(GetIdentityScopes(), GetApiResources(), GetScopes())
-                .Filter(scopes)
-                .ToResourceValidationResult();
+            var resources = new Resources(GetIdentityScopes(), GetApiResources(), GetScopes());
+            return new ResourceValidationResult(resources).Filter(scopes);
         }
 
 

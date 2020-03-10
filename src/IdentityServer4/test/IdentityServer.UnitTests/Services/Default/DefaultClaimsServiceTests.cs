@@ -13,7 +13,6 @@ using IdentityServer4.Configuration;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Validation;
-using Microsoft.AspNetCore.Http;
 using Xunit;
 
 namespace IdentityServer.UnitTests.Services.Default
@@ -28,7 +27,7 @@ namespace IdentityServer.UnitTests.Services.Default
         private ValidatedRequest _validatedRequest;
         private Resources _resources = new Resources();
 
-        public ResourceValidationResult ResourceValidationResult => _resources.ToResourceValidationResult();
+        public ResourceValidationResult ResourceValidationResult => new ResourceValidationResult(_resources);
 
         public DefaultClaimsServiceTests()
         {

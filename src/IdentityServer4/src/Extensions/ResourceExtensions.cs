@@ -15,6 +15,7 @@ namespace IdentityServer4.Models
     /// </summary>
     public static class ResourceExtensions
     {
+        // todo: brock see if this is still used?
         /// <summary>
         /// Returns the collection of scope names that are required.
         /// </summary>
@@ -28,41 +29,20 @@ namespace IdentityServer4.Models
             return requiredScopes;
         }
 
+        /// <summary>
+        /// Returns the collection of scope values that are required.
+        /// </summary>
+        /// <param name="resourceValidationResult"></param>
+        /// <returns></returns>
         public static IEnumerable<string> GetRequiredScopeValues(this ResourceValidationResult resourceValidationResult)
         {
-            var identity = resourceValidationResult.IdentityResources.Where(x => x.Required).Select(x => x.Name);
-            var scopes = resourceValidationResult.Scopes.Where(x => x.Scope.Required).Select(x => x.Value);
-            var requiredScopes = identity.Union(scopes);
-            return requiredScopes;
+            var names = resourceValidationResult.Resources.IdentityResources.Where(x => x.Required).Select(x => x.Name).ToList();
+            names.AddRange(resourceValidationResult.Resources.Scopes.Where(x => x.Required).Select(x => x.Name));
+
+            var values = resourceValidationResult.ParsedScopes.Where(x => names.Contains(x.Name)).Select(x => x.Value);
+            return values;
         }
-        
 
-        /// <summary>
-        /// Returns a new Resources filtered by the scopes indicated.
-        /// </summary>
-        /// <param name="resources"></param>
-        /// <param name="scopes"></param>
-        /// <returns></returns>
-        public static Resources Filter(this Resources resources, IEnumerable<string> scopes)
-        {
-            scopes = scopes ?? Enumerable.Empty<string>();
-
-            var offline = scopes.Contains(IdentityServerConstants.StandardScopes.OfflineAccess);
-            if (offline)
-            {
-                scopes = scopes.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess);
-            }
-
-            var identityToKeep = resources.IdentityResources.Where(x => x.Required || scopes.Contains(x.Name));
-            var scopesToKeep = resources.Scopes.Where(x => x.Required || scopes.Contains(x.Name));
-
-            var result = new Resources(identityToKeep, resources.ApiResources, scopesToKeep)
-            {
-                OfflineAccess = offline
-            };
-            return result;
-        }
-        
         /// <summary>
         /// Converts to scope names.
         /// </summary>
@@ -128,8 +108,8 @@ namespace IdentityServer4.Models
 
             return new Resources(
                 resources.IdentityResources.Where(x => x.Enabled),
-                resources.ApiResources.Where(x=>x.Enabled),
-                resources.Scopes.Where(x=>x.Enabled))
+                resources.ApiResources.Where(x => x.Enabled),
+                resources.Scopes.Where(x => x.Enabled))
             {
                 OfflineAccess = resources.OfflineAccess
             };
@@ -173,23 +153,6 @@ namespace IdentityServer4.Models
         private static IEnumerable<T> IntersectLists<T>(IEnumerable<IEnumerable<T>> lists)
         {
             return lists.Aggregate((l1, l2) => l1.Intersect(l2));
-        }
-
-        internal static ResourceValidationResult ToResourceValidationResult(this Resources resources)
-        {
-            var validatedResource = new ResourceValidationResult
-            {
-                IdentityResources = resources.IdentityResources,
-                ApiResources = resources.ApiResources,
-                Scopes = resources.Scopes.Select(x=>new ScopeValue(x)).ToList()
-            };
-            
-            if (resources.OfflineAccess)
-            {
-                validatedResource.Scopes.Add(new ScopeValue(IdentityServerConstants.StandardScopes.OfflineAccess));
-            }
-
-            return validatedResource;
         }
     }
 }
