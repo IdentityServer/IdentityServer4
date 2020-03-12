@@ -17,6 +17,7 @@ namespace IdentityServer4.Validation
         /// <value>
         /// The scopes.
         /// </value>
+        // todo: brock, see where this is used vs. ValidatedResources
         public IEnumerable<string> RequestedScopes { get; set; }
 
         /// <summary>

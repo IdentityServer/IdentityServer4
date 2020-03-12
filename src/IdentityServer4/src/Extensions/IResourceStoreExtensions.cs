@@ -101,11 +101,12 @@ namespace IdentityServer4.Stores
         /// Creates a resource validation result.
         /// </summary>
         /// <param name="store">The store.</param>
-        /// <param name="scopeNames">The scope names.</param>
+        /// <param name="scopeValues">The scope names.</param>
         /// <returns></returns>
-        public static async Task<ResourceValidationResult> CreateResourceValidationResult(this IResourceStore store, IEnumerable<string> scopeNames)
+        // todo: brock, update to use parsed scopes
+        public static async Task<ResourceValidationResult> CreateResourceValidationResult(this IResourceStore store, IEnumerable<string> scopeValues)
         {
-            var resources = await store.FindEnabledResourcesByScopeAsync(scopeNames);
+            var resources = await store.FindEnabledResourcesByScopeAsync(scopeValues);
             return new ResourceValidationResult(resources);
         }
 

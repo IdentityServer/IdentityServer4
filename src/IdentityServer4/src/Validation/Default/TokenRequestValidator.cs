@@ -555,7 +555,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // validate device code
             /////////////////////////////////////////////
-            var deviceCodeContext = new DeviceCodeValidationContext {DeviceCode = deviceCode, Request = _validatedRequest};
+            var deviceCodeContext = new DeviceCodeValidationContext { DeviceCode = deviceCode, Request = _validatedRequest };
             await _deviceCodeValidator.ValidateAsync(deviceCodeContext);
 
             if (deviceCodeContext.Result.IsError) return deviceCodeContext.Result;

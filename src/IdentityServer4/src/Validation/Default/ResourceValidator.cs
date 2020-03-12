@@ -60,12 +60,12 @@ namespace IdentityServer4.Validation
             var parsedScopes = ParseRequestedScopes(requestedScopes);
             var scopeNames = parsedScopes.Select(x => x.Name).Distinct();
 
-            var resources = await _store.FindEnabledResourcesByScopeAsync(scopeNames);
-            resources.OfflineAccess = offlineAccess;
+            var resourcesFromStore = await _store.FindEnabledResourcesByScopeAsync(scopeNames);
+            resourcesFromStore.OfflineAccess = offlineAccess;
 
             foreach (var scope in parsedScopes)
             {
-                await ValidateScopeAsync(request.Client, resources, scope, result);
+                await ValidateScopeAsync(request.Client, resourcesFromStore, scope, result);
             }
 
             if (result.InvalidScopes.Count > 0)
@@ -110,7 +110,11 @@ namespace IdentityServer4.Validation
         /// <param name="requestedScope"></param>
         /// <param name="result"></param>
         /// <returns></returns>
-        protected virtual async Task ValidateScopeAsync(Client client, Resources resourcesFromStore, ParsedScopeValue requestedScope, ResourceValidationResult result)
+        protected virtual async Task ValidateScopeAsync(
+            Client client, 
+            Resources resourcesFromStore, 
+            ParsedScopeValue requestedScope, 
+            ResourceValidationResult result)
         {
             var identity = resourcesFromStore.FindIdentityResourcesByScope(requestedScope.Name);
             if (identity != null)

@@ -50,6 +50,7 @@ namespace IdentityServer4.Validation
         /// <value>
         /// The requested scopes.
         /// </value>
+        // todo: brock, make this go away!
         public List<string> RequestedScopes { get; set; }
 
         /// <summary>

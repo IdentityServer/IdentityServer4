@@ -23,6 +23,7 @@ namespace IdentityServer4.Services
         /// <returns>
         /// Boolean if consent is required.
         /// </returns>
+        // todo: brock, should this accept parsed scopes?
         Task<bool> RequiresConsentAsync(ClaimsPrincipal subject, Client client, IEnumerable<string> scopes);
 
         /// <summary>
@@ -32,6 +33,7 @@ namespace IdentityServer4.Services
         /// <param name="client">The client.</param>
         /// <param name="scopes">The scopes.</param>
         /// <returns></returns>
+        // todo: brock, should this accept parsed scopes?
         Task UpdateConsentAsync(ClaimsPrincipal subject, Client client, IEnumerable<string> scopes);
     }
 }

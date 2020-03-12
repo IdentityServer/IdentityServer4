@@ -81,6 +81,7 @@ namespace IdentityServer4.Models
         /// <value>
         /// The resources.
         /// </value>
+        // todo: brock, change to pass the validated resource result
         public Resources RequestedResources { get; set; }
 
         /// <summary>

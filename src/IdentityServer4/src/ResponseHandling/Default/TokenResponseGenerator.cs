@@ -355,6 +355,8 @@ namespace IdentityServer4.ResponseHandling
                     throw new InvalidOperationException("Client does not exist anymore.");
                 }
 
+                // todo: brock, rerun resource validation here to get the parsed scopes?
+                // or just load from parsed scopes
                 var resources = await Resources.CreateResourceValidationResult(request.AuthorizationCode.RequestedScopes);
 
                 tokenRequest = new TokenCreationRequest

@@ -31,6 +31,7 @@ namespace IdentityServer4.Models
         /// <value>
         /// The scopes.
         /// </value>
+        // todo: brock, update to indicate these are the scope values
         public IEnumerable<string> ScopesConsented { get; set; }
 
         /// <summary>

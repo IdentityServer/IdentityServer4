@@ -95,6 +95,7 @@ namespace IdentityServer4.Models
         /// <value>
         /// The scopes requested.
         /// </value>
+        // todo: brock, should this be the parsed scopes?
         public IEnumerable<string> ScopesRequested { get; set; }
 
         /// <summary>

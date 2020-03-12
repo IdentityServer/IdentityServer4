@@ -26,6 +26,7 @@ namespace IdentityServer4.Validation
         /// <value>
         /// The scopes.
         /// </value>
+        // todo: brock, remove in favor of validatedresources!
         public IEnumerable<string> Scopes { get; set; }
 
         /// <summary>
