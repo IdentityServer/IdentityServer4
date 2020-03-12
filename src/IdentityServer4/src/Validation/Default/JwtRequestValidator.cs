@@ -19,7 +19,7 @@ using Newtonsoft.Json.Linq;
 namespace IdentityServer4.Validation
 {
     /// <summary>
-    /// Validates JWT requwest objects
+    /// Validates JWT authorization request objects
     /// </summary>
     public class JwtRequestValidator
     {
