@@ -137,6 +137,7 @@ namespace IdentityServer4.Models
             LoginHint = request.LoginHint;
             PromptMode = request.PromptMode;
             AcrValues = request.GetAcrValues();
+            // todo: brock, use validated resources?
             ScopesRequested = request.RequestedScopes;
             Parameters = request.Raw;
             RequestObjectValues = request.RequestObjectValues;

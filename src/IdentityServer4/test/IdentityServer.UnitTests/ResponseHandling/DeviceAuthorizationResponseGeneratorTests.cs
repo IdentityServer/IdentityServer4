@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityServer.UnitTests.Common;
@@ -40,6 +41,7 @@ namespace IdentityServer.UnitTests.ResponseHandling
             {
                 Client = new Client {ClientId = Guid.NewGuid().ToString()},
                 IsOpenIdRequest = true,
+                ValidatedResources = new ResourceValidationResult()
             });
 
             generator = new DeviceAuthorizationResponseGenerator(
@@ -105,7 +107,11 @@ namespace IdentityServer.UnitTests.ResponseHandling
             var creationTime = DateTime.UtcNow;
             clock.UtcNowFunc = () => creationTime;
 
-            testResult.ValidatedRequest.RequestedScopes = new List<string> { "openid", "resource" };
+            testResult.ValidatedRequest.RequestedScopes = new List<string> { "openid", "api1" };
+            testResult.ValidatedRequest.ValidatedResources = new ResourceValidationResult(new Resources(
+                identityResources.Where(x=>x.Name == "openid"), 
+                apiResources.Where(x=>x.Name == "resource"), 
+                scopes.Where(x=>x.Name == "api1")));
 
             var response = await generator.ProcessAsync(testResult, TestBaseUrl);
 

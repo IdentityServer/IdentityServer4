@@ -237,6 +237,7 @@ namespace IdentityServer4.ResponseHandling
                 throw new ArgumentException("Invalid PromptMode");
             }
 
+            // todo: brock, use validated resources?
             var consentRequired = await Consent.RequiresConsentAsync(request.Subject, request.Client, request.RequestedScopes);
 
             if (consentRequired && request.PromptMode == OidcConstants.PromptModes.None)
