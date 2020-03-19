@@ -15,6 +15,11 @@ namespace Host.Configuration
         {
             return new List<Client>
             {
+                ///////////////////////////////////////////////////////////////
+                // Console-based Client
+                ///////////////////////////////////////////////////////////////
+                
+                
                 ///////////////////////////////////////////
                 // Console Client Credentials Flow Sample
                 //////////////////////////////////////////
@@ -197,6 +202,117 @@ namespace Host.Configuration
 
                     AccessTokenType = AccessTokenType.Reference
                 },
+                
+                
+                
+                ///////////////////////////////////////////////////////////////
+                // Browser-based Client
+                ///////////////////////////////////////////////////////////////
+
+                
+                
+                ///////////////////////////////////////////
+                // JS OIDC Sample
+                //////////////////////////////////////////
+                new Client
+                {
+                    ClientId = "js_oidc",
+                    ClientName = "JavaScript OIDC Client",
+                    ClientUri = "http://identityserver.io",
+                    
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RequireClientSecret = false,
+                    
+                    RedirectUris = 
+                    {
+                        "https://localhost:44300/index.html",
+                        "https://localhost:44300/callback.html",
+                        "https://localhost:44300/silent.html",
+                        "https://localhost:44300/popup.html"
+                    },
+
+                    PostLogoutRedirectUris = { "https://localhost:44300/index.html" },
+                    AllowedCorsOrigins = { "https://localhost:44300" },
+
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
+                        "api1", "api2.read_only", "api2.full_access"
+                    }
+                },
+                
+                ///////////////////////////////////////////
+                // MVC Automatic Token Management Sample
+                //////////////////////////////////////////
+                new Client
+                {
+                    ClientId = "mvc.tokenmanagement",
+                    
+                    ClientSecrets =
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RequirePkce = true,
+
+                    AccessTokenLifetime = 75,
+
+                    RedirectUris = { "https://localhost:44301/signin-oidc" },
+                    FrontChannelLogoutUri = "https://localhost:44301/signout-oidc",
+                    PostLogoutRedirectUris = { "https://localhost:44301/signout-callback-oidc" },
+
+                    AllowOfflineAccess = true,
+
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
+                        "api1", "api2.read_only"
+                    }
+                },
+                
+                ///////////////////////////////////////////
+                // MVC Code Flow Sample
+                //////////////////////////////////////////
+                new Client
+                {
+                    ClientId = "mvc.code",
+                    ClientName = "MVC Code Flow",
+                    ClientUri = "http://identityserver.io",
+
+                    ClientSecrets =
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    AllowedGrantTypes = GrantTypes.Code,
+
+                    RedirectUris = { "https://localhost:44302/signin-oidc" },
+                    FrontChannelLogoutUri = "https://localhost:44302/signout-oidc",
+                    PostLogoutRedirectUris = { "https://localhost:44302/signout-callback-oidc" },
+
+                    AllowOfflineAccess = true,
+
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
+                        "api1", "api2.read_only"
+                    }
+                },
+                
+               
+                
+                
+                
+                
+                
+                
 
                 ///////////////////////////////////////////
                 // MVC Implicit Flow Samples
@@ -255,38 +371,7 @@ namespace Host.Configuration
                     }
                 },
 
-                ///////////////////////////////////////////
-                // MVC Code Flow Sample
-                //////////////////////////////////////////
-                new Client
-                {
-                    ClientId = "mvc.code",
-                    ClientName = "MVC Code Flow",
-                    ClientUri = "http://identityserver.io",
-                    //LogoUri = "https://pbs.twimg.com/profile_images/1612989113/Ki-hanja_400x400.png",
-
-                    ClientSecrets =
-                    {
-                        new Secret("secret".Sha256())
-                    },
-
-                    AllowedGrantTypes = GrantTypes.Code,
-                    RequirePkce = true,
-
-                    RedirectUris = { "https://localhost:44392/signin-oidc" },
-                    FrontChannelLogoutUri = "https://localhost:44392/signout-oidc",
-                    PostLogoutRedirectUris = { "https://localhost:44392/signout-callback-oidc" },
-
-                    AllowOfflineAccess = true,
-
-                    AllowedScopes =
-                    {
-                        IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile,
-                        IdentityServerConstants.StandardScopes.Email,
-                        "api1", "api2.read_only"
-                    }
-                },
+                
 
                 ///////////////////////////////////////////
                 // MVC Hybrid Flow Sample
@@ -352,91 +437,9 @@ namespace Host.Configuration
                     }
                 },
 
-                ///////////////////////////////////////////
-                // MVC Hybrid Flow Sample (Automatic Refresh)
-                //////////////////////////////////////////
-                new Client
-                {
-                    ClientId = "mvc.tokenmanagement",
-                    ClientName = "MVC Hybrid (with automatic refresh)",
-                    ClientUri = "http://identityserver.io",
-
-                    ClientSecrets =
-                    {
-                        new Secret("secret".Sha256())
-                    },
-
-                    AllowedGrantTypes = GrantTypes.Code,
-                    RequirePkce = true,
-
-                    AccessTokenLifetime = 75,
-
-                    RedirectUris = { "https://localhost:44392/signin-oidc" },
-                    FrontChannelLogoutUri = "https://localhost:44392/signout-oidc",
-                    PostLogoutRedirectUris = { "https://localhost:44392/signout-callback-oidc" },
-
-                    AllowOfflineAccess = true,
-
-                    AllowedScopes =
-                    {
-                        IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile,
-                        IdentityServerConstants.StandardScopes.Email,
-                        "api1", "api2.read_only"
-                    }
-                },
-
-                ///////////////////////////////////////////
-                // JS OAuth 2.0 Sample
-                //////////////////////////////////////////
-                new Client
-                {
-                    ClientId = "js_oauth",
-                    ClientName = "JavaScript OAuth 2.0 Client",
-                    ClientUri = "http://identityserver.io",
-                    //LogoUri = "https://pbs.twimg.com/profile_images/1612989113/Ki-hanja_400x400.png",
-
-                    AllowedGrantTypes = GrantTypes.Implicit,
-                    AllowAccessTokensViaBrowser = true,
-
-                    RedirectUris = { "http://localhost:28895/index.html" },
-                    AllowedScopes = { "api1", "api2.read_only" }
-                },
                 
-                ///////////////////////////////////////////
-                // JS OIDC Sample
-                //////////////////////////////////////////
-                new Client
-                {
-                    ClientId = "js_oidc",
-                    ClientName = "JavaScript OIDC Client",
-                    ClientUri = "http://identityserver.io",
-                    //LogoUri = "https://pbs.twimg.com/profile_images/1612989113/Ki-hanja_400x400.png",
-
-                    AllowedGrantTypes = GrantTypes.Code,
-                    RequirePkce = true,
-                    RequireClientSecret = false,
-                    AccessTokenType = AccessTokenType.Jwt,
-
-                    RedirectUris = 
-                    {
-                        "http://localhost:7017/index.html",
-                        "http://localhost:7017/callback.html",
-                        "http://localhost:7017/silent.html",
-                        "http://localhost:7017/popup.html"
-                    },
-
-                    PostLogoutRedirectUris = { "http://localhost:7017/index.html" },
-                    AllowedCorsOrigins = { "http://localhost:7017" },
-
-                    AllowedScopes =
-                    {
-                        IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile,
-                        IdentityServerConstants.StandardScopes.Email,
-                        "api1", "api2.read_only", "api2.full_access"
-                    }
-                },
+                
+                
 
                 ///////////////////////////////////////////
                 // Device Flow Sample
