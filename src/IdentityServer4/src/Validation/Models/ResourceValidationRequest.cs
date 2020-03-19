@@ -20,7 +20,7 @@ namespace IdentityServer4.Validation
         /// <summary>
         /// The requested scope values.
         /// </summary>
-        public IEnumerable<string> ScopeValues { get; set; }
+        public IEnumerable<ParsedScopeValue> ParsedScopeValues { get; set; }
 
         /// <summary>
         /// The requested resource identifiers.

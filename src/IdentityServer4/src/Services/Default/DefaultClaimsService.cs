@@ -81,8 +81,7 @@ namespace IdentityServer4.Services
                     IdentityServerConstants.ProfileDataCallers.ClaimsProviderIdentityToken,
                     additionalClaimTypes)
                 {
-                    // todo: brock; put back or remove?
-                    RequestedResources = resources.Resources,
+                    RequestedResources = request.ValidatedResources,
                     ValidatedRequest = request
                 };
 
@@ -201,7 +200,7 @@ namespace IdentityServer4.Services
                     IdentityServerConstants.ProfileDataCallers.ClaimsProviderAccessToken,
                     additionalClaimTypes.Distinct())
                 {
-                    RequestedResources = resourceResult.Resources,
+                    RequestedResources = resourceResult,
                     ValidatedRequest = request
                 };
 

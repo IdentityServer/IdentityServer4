@@ -36,34 +36,11 @@ namespace IdentityServer4.Validation
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
-            var result = new ResourceValidationResult();
-
-            var offlineAccess = request.ScopeValues.Contains(IdentityServerConstants.StandardScopes.OfflineAccess);
-            if (offlineAccess)
-            {
-                if (await IsClientAllowedOfflineAccessAsync(request.Client))
-                {
-                    result.Resources.OfflineAccess = true;
-                    result.ParsedScopes.Add(new ParsedScopeValue(IdentityServerConstants.StandardScopes.OfflineAccess));
-                }
-                else
-                {
-                    result.InvalidScopes.Add(IdentityServerConstants.StandardScopes.OfflineAccess);
-                }
-            }
-
-            // filter here so below in our store call and in the validation loop we're not doing extra checking for offline_access
-            var requestedScopes = offlineAccess ?
-                request.ScopeValues.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess).ToArray() : 
-                request.ScopeValues;
-
-            var parsedScopes = ParseRequestedScopes(requestedScopes);
-            var scopeNames = parsedScopes.Select(x => x.Name).Distinct();
-
+            var scopeNames = request.ParsedScopeValues.Select(x => x.Name).Distinct().ToArray();
             var resourcesFromStore = await _store.FindEnabledResourcesByScopeAsync(scopeNames);
-            resourcesFromStore.OfflineAccess = offlineAccess;
 
-            foreach (var scope in parsedScopes)
+            var result = new ResourceValidationResult();
+            foreach (var scope in request.ParsedScopeValues)
             {
                 await ValidateScopeAsync(request.Client, resourcesFromStore, scope, result);
             }
@@ -84,7 +61,7 @@ namespace IdentityServer4.Validation
         /// </summary>
         /// <param name="scopeValues"></param>
         /// <returns></returns>
-        protected IEnumerable<ParsedScopeValue> ParseRequestedScopes(IEnumerable<string> scopeValues)
+        public Task<IEnumerable<ParsedScopeValue>> ParseRequestedScopes(IEnumerable<string> scopeValues)
         {
             //if (requestedScopes.Contains("payment:"))
             //{
@@ -99,7 +76,8 @@ namespace IdentityServer4.Validation
 
             //result.ApiResources.Where(x=>x.Name == "payment")["txId"] = 
 
-            return scopeValues.Select(x => new ParsedScopeValue(x));
+            var result = scopeValues.Select(x => new ParsedScopeValue(x));
+            return Task.FromResult(result);
         }
 
         /// <summary>
@@ -116,44 +94,59 @@ namespace IdentityServer4.Validation
             ParsedScopeValue requestedScope, 
             ResourceValidationResult result)
         {
-            var identity = resourcesFromStore.FindIdentityResourcesByScope(requestedScope.Name);
-            if (identity != null)
+            if (requestedScope.Name == IdentityServerConstants.StandardScopes.OfflineAccess)
             {
-                if (!await IsClientAllowedIdentityResourceAsync(client, identity))
+                if (await IsClientAllowedOfflineAccessAsync(client))
                 {
-                    result.InvalidScopes.Add(requestedScope.Value);
+                    result.Resources.OfflineAccess = true;
+                    result.ParsedScopes.Add(new ParsedScopeValue(IdentityServerConstants.StandardScopes.OfflineAccess));
                 }
                 else
                 {
-                    result.ParsedScopes.Add(requestedScope);
-                    result.Resources.IdentityResources.Add(identity);
+                    result.InvalidScopes.Add(IdentityServerConstants.StandardScopes.OfflineAccess);
                 }
             }
             else
             {
-                var apiScope = resourcesFromStore.FindScope(requestedScope.Name);
-                if (apiScope != null)
+                var identity = resourcesFromStore.FindIdentityResourcesByScope(requestedScope.Name);
+                if (identity != null)
                 {
-                    if (!await IsClientAllowedApiScopeAsync(client, apiScope))
+                    if (await IsClientAllowedIdentityResourceAsync(client, identity))
                     {
-                        result.InvalidScopes.Add(requestedScope.Value);
+                        result.ParsedScopes.Add(requestedScope);
+                        result.Resources.IdentityResources.Add(identity);
                     }
                     else
                     {
-                        result.ParsedScopes.Add(requestedScope);
-                        result.Resources.Scopes.Add(apiScope);
-
-                        var apis = resourcesFromStore.FindApiResourcesByScope(apiScope.Name);
-                        foreach(var api in apis)
-                        {
-                            result.Resources.ApiResources.Add(api);
-                        }
+                        result.InvalidScopes.Add(requestedScope.Value);
                     }
                 }
                 else
                 {
-                    _logger.LogError("Scope {scope} not found in store.", requestedScope.Name);
-                    result.InvalidScopes.Add(requestedScope.Value);
+                    var apiScope = resourcesFromStore.FindScope(requestedScope.Name);
+                    if (apiScope != null)
+                    {
+                        if (await IsClientAllowedApiScopeAsync(client, apiScope))
+                        {
+                            result.ParsedScopes.Add(requestedScope);
+                            result.Resources.Scopes.Add(apiScope);
+
+                            var apis = resourcesFromStore.FindApiResourcesByScope(apiScope.Name);
+                            foreach (var api in apis)
+                            {
+                                result.Resources.ApiResources.Add(api);
+                            }
+                        }
+                        else
+                        {
+                            result.InvalidScopes.Add(requestedScope.Value);
+                        }
+                    }
+                    else
+                    {
+                        _logger.LogError("Scope {scope} not found in store.", requestedScope.Name);
+                        result.InvalidScopes.Add(requestedScope.Value);
+                    }
                 }
             }
         }

@@ -318,7 +318,7 @@ namespace IdentityServer4.ResponseHandling
                 AccessToken = accessToken,
                 AccessTokenLifetime = validationResult.ValidatedRequest.AccessTokenLifetime,
                 Custom = validationResult.CustomResponse,
-                Scope = validationResult.ValidatedRequest.Scopes.ToSpaceSeparatedString()
+                Scope = validationResult.ValidatedRequest.ValidatedResources.ScopeValues.ToSpaceSeparatedString()
             };
 
             if (refreshToken.IsPresent())

@@ -126,7 +126,7 @@ namespace IdentityServer4.ResponseHandling
             var resources = await GetRequestedResourcesAsync(scopes);
             if (resources == null) return Enumerable.Empty<string>();
 
-            var identityResources = resources.IdentityResources;
+            var identityResources = resources.Resources.IdentityResources;
             var scopeClaims = new List<string>();
 
             foreach (var scope in scopes)
@@ -147,7 +147,7 @@ namespace IdentityServer4.ResponseHandling
         /// </summary>
         /// <param name="scopes"></param>
         /// <returns></returns>
-        internal protected virtual async Task<Resources> GetRequestedResourcesAsync(IEnumerable<string> scopes)
+        internal protected virtual async Task<ResourceValidationResult> GetRequestedResourcesAsync(IEnumerable<string> scopes)
         {
             if (scopes == null || !scopes.Any())
             {
@@ -157,8 +157,13 @@ namespace IdentityServer4.ResponseHandling
             var scopeString = string.Join(" ", scopes);
             Logger.LogDebug("Scopes in access token: {scopes}", scopeString);
 
+            // todo: brock, if we ever parameterize identity scopes, then we would need to invoke the resource validator's parse API here
             var identityResources = await Resources.FindEnabledIdentityResourcesByScopeAsync(scopes);
-            return new Resources(identityResources, Enumerable.Empty<ApiResource>(), Enumerable.Empty<Scope>());
+            
+            var resources = new Resources(identityResources, Enumerable.Empty<ApiResource>(), Enumerable.Empty<Scope>());
+            var result = new ResourceValidationResult(resources);
+            
+            return result;
         }
     }
 }

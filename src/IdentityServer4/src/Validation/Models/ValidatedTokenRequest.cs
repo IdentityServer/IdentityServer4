@@ -26,8 +26,8 @@ namespace IdentityServer4.Validation
         /// <value>
         /// The scopes.
         /// </value>
-        // todo: brock, remove in favor of validatedresources!
-        public IEnumerable<string> Scopes { get; set; }
+        // todo: dom, see where used to consider intent and if could be replacted by validated resources
+        public IEnumerable<string> RequestedScopes { get; set; }
 
         /// <summary>
         /// Gets or sets the username used in the request.

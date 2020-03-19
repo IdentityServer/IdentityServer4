@@ -703,9 +703,10 @@ namespace IdentityServer4.Validation
                 return false;
             }
 
+            var parasedScopes = await _resourceValidator.ParseRequestedScopes(requestedScopes);
             var resourceValidationResult = await _resourceValidator.ValidateRequestedResourcesAsync(new ResourceValidationRequest { 
                 Client = _validatedRequest.Client,
-                ScopeValues = requestedScopes,
+                ParsedScopeValues = parasedScopes
             });
 
             if (!resourceValidationResult.Succeeded)
@@ -722,7 +723,7 @@ namespace IdentityServer4.Validation
                 return false;
             }
 
-            _validatedRequest.Scopes = requestedScopes;
+            _validatedRequest.RequestedScopes = requestedScopes;
             _validatedRequest.ValidatedResources = resourceValidationResult;
             
             return true;
