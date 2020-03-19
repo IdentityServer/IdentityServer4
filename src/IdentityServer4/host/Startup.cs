@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using Host.Extensions;
 using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.AspNetCore.HttpOverrides;
+using IdentityServer4.Validation;
 
 namespace Host
 {
@@ -80,6 +81,8 @@ namespace Host
                 .AddTestUsers(TestUsers.Users)
                 .AddProfileService<HostProfileService>()
                 .AddMutualTlsSecretValidators();
+
+            services.AddTransient<IResourceValidator, CustomResourceValidator>();
             
             // use this for persisted grants store
             // var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;

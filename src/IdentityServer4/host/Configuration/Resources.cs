@@ -82,6 +82,10 @@ namespace Host.Configuration
                     {
                         "internal_id"
                     }
+                },
+                new Scope
+                {
+                    Name = "transaction"
                 }
             };
     }

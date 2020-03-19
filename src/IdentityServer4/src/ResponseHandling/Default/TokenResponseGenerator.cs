@@ -38,6 +38,11 @@ namespace IdentityServer4.ResponseHandling
         protected readonly IRefreshTokenService RefreshTokenService;
 
         /// <summary>
+        /// The resource validator
+        /// </summary>
+        public IResourceValidator ResourceValidator { get; }
+
+        /// <summary>
         /// The resource store
         /// </summary>
         protected readonly IResourceStore Resources;
@@ -58,14 +63,16 @@ namespace IdentityServer4.ResponseHandling
         /// <param name="clock">The clock.</param>
         /// <param name="tokenService">The token service.</param>
         /// <param name="refreshTokenService">The refresh token service.</param>
+        /// <param name="resourceValidator">The resource validator.</param>
         /// <param name="resources">The resources.</param>
         /// <param name="clients">The clients.</param>
         /// <param name="logger">The logger.</param>
-        public TokenResponseGenerator(ISystemClock clock, ITokenService tokenService, IRefreshTokenService refreshTokenService, IResourceStore resources, IClientStore clients, ILogger<TokenResponseGenerator> logger)
+        public TokenResponseGenerator(ISystemClock clock, ITokenService tokenService, IRefreshTokenService refreshTokenService, IResourceValidator resourceValidator, IResourceStore resources, IClientStore clients, ILogger<TokenResponseGenerator> logger)
         {
             Clock = clock;
             TokenService = tokenService;
             RefreshTokenService = refreshTokenService;
+            ResourceValidator = resourceValidator;
             Resources = resources;
             Clients = clients;
             Logger = logger;
@@ -357,12 +364,20 @@ namespace IdentityServer4.ResponseHandling
 
                 // todo: brock, rerun resource validation here to get the parsed scopes?
                 // or just load from parsed scopes
-                var resources = await Resources.CreateResourceValidationResult(request.AuthorizationCode.RequestedScopes);
+                // todo: cleanup? add as extension method (like CreateResourceValidationResult)?
+                var parsedScopes = await ResourceValidator.ParseRequestedScopes(request.AuthorizationCode.RequestedScopes);
+                var scopesNames = parsedScopes.Select(x => x.Name);
+                var resources = await Resources.FindEnabledResourcesByScopeAsync(scopesNames);
+                var validatedResources = new ResourceValidationResult()
+                {
+                    Resources = resources,
+                    ParsedScopes = parsedScopes.ToHashSet()
+                };
 
                 tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.AuthorizationCode.Subject,
-                    ValidatedResources = resources,
+                    ValidatedResources = validatedResources,
                     ValidatedRequest = request
                 };
             }

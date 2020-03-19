@@ -32,7 +32,7 @@ namespace IdentityServer4.Validation
         }
 
         /// <inheritdoc/>
-        public async Task<ResourceValidationResult> ValidateRequestedResourcesAsync(ResourceValidationRequest request)
+        public virtual async Task<ResourceValidationResult> ValidateRequestedResourcesAsync(ResourceValidationRequest request)
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
@@ -61,7 +61,8 @@ namespace IdentityServer4.Validation
         /// </summary>
         /// <param name="scopeValues"></param>
         /// <returns></returns>
-        public Task<IEnumerable<ParsedScopeValue>> ParseRequestedScopes(IEnumerable<string> scopeValues)
+        // todo: brock, add helper to parse a single scope
+        public virtual Task<IEnumerable<ParsedScopeValue>> ParseRequestedScopes(IEnumerable<string> scopeValues)
         {
             //if (requestedScopes.Contains("payment:"))
             //{
@@ -162,7 +163,7 @@ namespace IdentityServer4.Validation
             var allowed = client.AllowedScopes.Contains(identity.Name);
             if (!allowed)
             {
-                _logger.LogError("Client {client} is now allowed access to scope {scope}.", client.ClientId, identity.Name);
+                _logger.LogError("Client {client} is not allowed access to scope {scope}.", client.ClientId, identity.Name);
             }
             return Task.FromResult(allowed);
         }
@@ -178,7 +179,7 @@ namespace IdentityServer4.Validation
             var allowed = client.AllowedScopes.Contains(apiScope.Name);
             if (!allowed)
             {
-                _logger.LogError("Client {client} is now allowed access to scope {scope}.", client.ClientId, apiScope.Name);
+                _logger.LogError("Client {client} is not allowed access to scope {scope}.", client.ClientId, apiScope.Name);
             }
             return Task.FromResult(allowed);
         }
@@ -193,7 +194,7 @@ namespace IdentityServer4.Validation
             var allowed = client.AllowOfflineAccess;
             if (!allowed)
             {
-                _logger.LogError("Client {client} is now allowed access to scope offline_access (via AllowOfflineAccess setting).", client.ClientId);
+                _logger.LogError("Client {client} is not allowed access to scope offline_access (via AllowOfflineAccess setting).", client.ClientId);
             }
             return Task.FromResult(allowed);
         }
