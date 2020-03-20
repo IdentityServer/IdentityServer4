@@ -54,7 +54,8 @@ namespace IdentityServer.UnitTests.ResponseHandling
         [Fact]
         public async Task GetRequestedClaimTypesAsync_when_no_scopes_requested_should_return_empty_claim_types()
         {
-            var claims = await _subject.GetRequestedClaimTypesAsync(null);
+            var resources = await _subject.GetRequestedResourcesAsync(null);
+            var claims = await _subject.GetRequestedClaimTypesAsync(resources);
             claims.Should().BeEquivalentTo(new string[] { });
         }
 
@@ -64,7 +65,8 @@ namespace IdentityServer.UnitTests.ResponseHandling
             _identityResources.Add(new IdentityResource("id1", new[] { "c1", "c2" }));
             _identityResources.Add(new IdentityResource("id2", new[] { "c2", "c3" }));
 
-            var claims = await _subject.GetRequestedClaimTypesAsync(new[] { "id1", "id2", "id3" });
+            var resources = await _subject.GetRequestedResourcesAsync(new[] { "id1", "id2", "id3" });
+            var claims = await _subject.GetRequestedClaimTypesAsync(resources);
             claims.Should().BeEquivalentTo(new string[] { "c1", "c2", "c3" });
         }
 
@@ -74,7 +76,8 @@ namespace IdentityServer.UnitTests.ResponseHandling
             _identityResources.Add(new IdentityResource("id1", new[] { "c1", "c2" }) { Enabled = false });
             _identityResources.Add(new IdentityResource("id2", new[] { "c2", "c3" }));
 
-            var claims = await _subject.GetRequestedClaimTypesAsync(new[] { "id1", "id2", "id3" });
+            var resources = await _subject.GetRequestedResourcesAsync(new[] { "id1", "id2", "id3" });
+            var claims = await _subject.GetRequestedClaimTypesAsync(resources);
             claims.Should().BeEquivalentTo(new string[] { "c2", "c3" });
         }
 

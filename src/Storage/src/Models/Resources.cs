@@ -37,9 +37,18 @@ namespace IdentityServer4.Models
         /// <param name="apiScopes">The API scopes.</param>
         public Resources(IEnumerable<IdentityResource> identityResources, IEnumerable<ApiResource> apiResources, IEnumerable<ApiScope> apiScopes)
         {
-            IdentityResources = new HashSet<IdentityResource>(identityResources.ToArray());
-            ApiResources = new HashSet<ApiResource>(apiResources.ToArray());
-            ApiScopes = new HashSet<ApiScope>(apiScopes.ToArray());
+            if (identityResources?.Any() == true)
+            {
+                IdentityResources = new HashSet<IdentityResource>(identityResources.ToArray());
+            }
+            if (apiResources?.Any() == true)
+            {
+                ApiResources = new HashSet<ApiResource>(apiResources.ToArray());
+            }
+            if (apiScopes?.Any() == true)
+            {
+                ApiScopes = new HashSet<ApiScope>(apiScopes.ToArray());
+            }
         }
 
         /// <summary>
