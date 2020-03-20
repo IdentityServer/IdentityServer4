@@ -65,7 +65,6 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="builder">The builder.</param>
         /// <param name="apiResources">The API resources.</param>
         /// <returns></returns>
-        // todo: brock, review how api resuorces and scopes are registered: diff stores?
         public static IIdentityServerBuilder AddInMemoryApiResources(this IIdentityServerBuilder builder, IEnumerable<ApiResource> apiResources)
         {
             builder.Services.AddSingleton(apiResources);

@@ -152,14 +152,14 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
             var response = await _mockPipeline.BrowserClient.GetAsync(url);
 
             _mockPipeline.ConsentRequest.Should().NotBeNull();
-            _mockPipeline.ConsentRequest.ClientId.Should().Be("client2");
+            _mockPipeline.ConsentRequest.Client.ClientId.Should().Be("client2");
             _mockPipeline.ConsentRequest.DisplayMode.Should().Be("popup");
             _mockPipeline.ConsentRequest.UiLocales.Should().Be("ui_locale_value");
             _mockPipeline.ConsentRequest.Tenant.Should().Be("tenant_value");
             _mockPipeline.ConsentRequest.AcrValues.Should().BeEquivalentTo(new string[] { "acr_2", "acr_1" });
             _mockPipeline.ConsentRequest.Parameters.AllKeys.Should().Contain("custom_foo");
             _mockPipeline.ConsentRequest.Parameters["custom_foo"].Should().Be("foo_value");
-            _mockPipeline.ConsentRequest.ScopesRequested.Should().BeEquivalentTo(new string[] { "api2", "openid", "api1" });
+            _mockPipeline.ConsentRequest.ValidatedResources.ScopeValues.Should().BeEquivalentTo(new string[] { "api2", "openid", "api1" });
         }
 
         [Theory]

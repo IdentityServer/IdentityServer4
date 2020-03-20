@@ -61,7 +61,7 @@ namespace Host.Configuration
         public static IEnumerable<ApiScope> ApiScopes = new[]
             {
                 // local API
-                // todo: brock discuss w/ dom? should we also use a resource id for this?
+                // todo: dom, should we also use a resource id for this?
                 new ApiScope(LocalApi.ScopeName),
                 new ApiScope("api1"),
                 new ApiScope

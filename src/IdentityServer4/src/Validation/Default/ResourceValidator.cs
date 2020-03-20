@@ -61,7 +61,7 @@ namespace IdentityServer4.Validation
         /// </summary>
         /// <param name="scopeValues"></param>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<ParsedScopeValue>> ParseRequestedScopes(IEnumerable<string> scopeValues)
+        public virtual async Task<IEnumerable<ParsedScopeValue>> ParseRequestedScopesAsync(IEnumerable<string> scopeValues)
         {
             var list = new List<ParsedScopeValue>();
 

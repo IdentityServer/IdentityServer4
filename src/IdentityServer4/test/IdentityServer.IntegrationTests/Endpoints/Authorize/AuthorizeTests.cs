@@ -203,7 +203,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
             var response = await _mockPipeline.BrowserClient.GetAsync(url + "&foo=bar");
 
             _mockPipeline.LoginRequest.Should().NotBeNull();
-            _mockPipeline.LoginRequest.ClientId.Should().Be("client1");
+            _mockPipeline.LoginRequest.Client.ClientId.Should().Be("client1");
             _mockPipeline.LoginRequest.DisplayMode.Should().Be("popup");
             _mockPipeline.LoginRequest.UiLocales.Should().Be("ui_locale_value");
             _mockPipeline.LoginRequest.IdP.Should().Be("idp_value");

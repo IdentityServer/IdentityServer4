@@ -703,7 +703,7 @@ namespace IdentityServer4.Validation
                 return false;
             }
 
-            var parasedScopes = await _resourceValidator.ParseRequestedScopes(requestedScopes);
+            var parasedScopes = await _resourceValidator.ParseRequestedScopesAsync(requestedScopes);
             var resourceValidationResult = await _resourceValidator.ValidateRequestedResourcesAsync(new ResourceValidationRequest { 
                 Client = _validatedRequest.Client,
                 ParsedScopeValues = parasedScopes

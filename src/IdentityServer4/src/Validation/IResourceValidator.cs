@@ -15,7 +15,7 @@ namespace IdentityServer4.Validation
         /// <summary>
         /// Parses the requested scopes.
         /// </summary>
-        Task<IEnumerable<ParsedScopeValue>> ParseRequestedScopes(IEnumerable<string> scopeValues);
+        Task<IEnumerable<ParsedScopeValue>> ParseRequestedScopesAsync(IEnumerable<string> scopeValues);
         
         /// <summary>
         /// Validates the requested resources for the client.

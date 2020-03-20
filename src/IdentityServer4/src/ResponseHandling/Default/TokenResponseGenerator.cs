@@ -363,7 +363,7 @@ namespace IdentityServer4.ResponseHandling
                 }
 
                 // todo: cleanup? add as extension method (like CreateResourceValidationResult)?
-                var parsedScopes = await ResourceValidator.ParseRequestedScopes(request.AuthorizationCode.RequestedScopes);
+                var parsedScopes = await ResourceValidator.ParseRequestedScopesAsync(request.AuthorizationCode.RequestedScopes);
                 var scopesNames = parsedScopes.Select(x => x.Name);
                 var resources = await Resources.FindEnabledResourcesByScopeAsync(scopesNames);
                 var validatedResources = new ResourceValidationResult()

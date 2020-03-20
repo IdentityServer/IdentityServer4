@@ -9,7 +9,7 @@ namespace IdentityServer.UnitTests.Common
     {
         public ResourceValidationResult Result { get; set; } = new ResourceValidationResult();
 
-        public Task<IEnumerable<ParsedScopeValue>> ParseRequestedScopes(IEnumerable<string> scopeValues)
+        public Task<IEnumerable<ParsedScopeValue>> ParseRequestedScopesAsync(IEnumerable<string> scopeValues)
         {
             return Task.FromResult(scopeValues.Select(x => new ParsedScopeValue(x)));
         }

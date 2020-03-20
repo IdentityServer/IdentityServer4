@@ -91,6 +91,7 @@ namespace Host.Configuration
                         new Secret("secret".Sha256())
                     },
 
+                    RequireConsent = true,
                     AllowedGrantTypes = GrantTypes.Code,
 
                     RedirectUris = { "https://localhost:44302/signin-oidc" },
