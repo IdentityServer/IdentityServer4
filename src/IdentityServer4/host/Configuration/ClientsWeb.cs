@@ -123,11 +123,11 @@ namespace Host.Configuration
                     },
 
                     AllowedGrantTypes = GrantTypes.Hybrid,
-                    AllowAccessTokensViaBrowser = false,
+                    RequirePkce = false,
 
-                    RedirectUris = { "http://localhost:21403/signin-oidc" },
-                    BackChannelLogoutUri = "http://localhost:21403/logout",
-                    PostLogoutRedirectUris = { "http://localhost:21403/signout-callback-oidc" },
+                    RedirectUris = { "https://localhost:44303/signin-oidc" },
+                    BackChannelLogoutUri = "http://localhost:44303/logout",
+                    PostLogoutRedirectUris = { "https://localhost:44303/signout-callback-oidc" },
 
                     AllowOfflineAccess = true,
 
