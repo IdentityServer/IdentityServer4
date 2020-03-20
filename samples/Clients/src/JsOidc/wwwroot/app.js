@@ -1,7 +1,7 @@
 ﻿/// <reference path="libs/oidc-client.js" />
 
 var config = {
-    authority: "http://localhost:5000/",
+    authority: "https://localhost:5001/",
     client_id: "js_oidc",
     redirect_uri: window.location.origin + "/callback.html",
     post_logout_redirect_uri: window.location.origin + "/index.html",
@@ -104,7 +104,7 @@ function callApi() {
                 display("#ajax-result", xhr.response);
             }
         };
-        xhr.open("GET", "http://localhost:3721/identity", true);
+        xhr.open("GET", "https://localhost:5005/identity", true);
         xhr.setRequestHeader("Authorization", "Bearer " + user.access_token);
         xhr.send();
     });

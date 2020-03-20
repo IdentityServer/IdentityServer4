@@ -25,7 +25,6 @@ namespace SampleApi
                 .AddIdentityServerAuthentication("token", options =>
                 {
                     options.Authority = Constants.Authority;
-                    options.RequireHttpsMetadata = false;
 
                     // enable for MTLS scenarios
                     // options.Authority = Constants.AuthorityMtls;
@@ -87,8 +86,7 @@ namespace SampleApi
             app.UseCors(policy =>
             {
                 policy.WithOrigins(
-                    "http://localhost:28895",
-                    "http://localhost:7017");
+                    "https://localhost:44300");
 
                 policy.AllowAnyHeader();
                 policy.AllowAnyMethod();
