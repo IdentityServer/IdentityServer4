@@ -97,7 +97,8 @@ namespace IdentityServer4.Validation
             _logger.LogDebug("Client found: {clientId} / {clientName}", client.ClientId, client.ClientName);
 
             var keys = await _keys.GetValidationKeysAsync();
-            var result = await ValidateJwtAsync(token, keys, audience: clientId, validateLifetime: validateLifetime);
+            var audience = string.Format(IdentityServerConstants.AccessTokenAudience, _context.HttpContext.GetIdentityServerIssuerUri().EnsureTrailingSlash());
+            var result = await ValidateJwtAsync(token, keys, audience: audience, validateLifetime: validateLifetime);
 
             result.Client = client;
 
@@ -493,7 +494,7 @@ namespace IdentityServer4.Validation
             try
             {
                 var jwt = new JwtSecurityToken(token);
-                var clientId = jwt.Audiences.FirstOrDefault();
+                var clientId = jwt.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.ClientId)?.Value;
 
                 return clientId;
             }
