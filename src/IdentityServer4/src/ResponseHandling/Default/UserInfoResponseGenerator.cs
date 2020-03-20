@@ -157,7 +157,7 @@ namespace IdentityServer4.ResponseHandling
             var scopeString = string.Join(" ", scopes);
             Logger.LogDebug("Scopes in access token: {scopes}", scopeString);
 
-            // todo: brock, if we ever parameterize identity scopes, then we would need to invoke the resource validator's parse API here
+            // if we ever parameterize identity scopes, then we would need to invoke the resource validator's parse API here
             var identityResources = await Resources.FindEnabledIdentityResourcesByScopeAsync(scopes);
             
             var resources = new Resources(identityResources, Enumerable.Empty<ApiResource>(), Enumerable.Empty<ApiScope>());

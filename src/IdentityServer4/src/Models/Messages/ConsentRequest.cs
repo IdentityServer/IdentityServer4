@@ -39,7 +39,6 @@ namespace IdentityServer4.Models
         {
             ClientId = parameters[OidcConstants.AuthorizeRequest.ClientId];
             Nonce = parameters[OidcConstants.AuthorizeRequest.Nonce];
-            // todo: brock, figure out what this is doing
             ScopesRequested = parameters[OidcConstants.AuthorizeRequest.Scope].ParseScopesString();
             Subject = subject;
         }
@@ -66,7 +65,6 @@ namespace IdentityServer4.Models
         /// <value>
         /// The scopes requested.
         /// </value>
-        // todo: brock, should this be the parsed scopes?
         public IEnumerable<string> ScopesRequested { get; set; }
 
         /// <summary>

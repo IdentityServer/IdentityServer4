@@ -46,13 +46,7 @@ namespace IdentityServer4.Services
             if (client == null) return null;
 
             var parsedScopes = await _resourceValidator.ParseRequestedScopesAsync(deviceAuth.RequestedScopes);
-            var scopeNames = parsedScopes.Select(x => x.Name);
-            var resources = await _resourceStore.FindEnabledResourcesByScopeAsync(scopeNames);
-            var validatedResources = new ResourceValidationResult()
-            { 
-                Resources = resources,
-                ParsedScopes = parsedScopes.ToHashSet()
-            };
+            var validatedResources = await _resourceStore.CreateResourceValidationResult(parsedScopes);
 
             return new DeviceFlowAuthorizationRequest
             {
@@ -77,7 +71,7 @@ namespace IdentityServer4.Services
 
             deviceAuth.IsAuthorized = true;
             deviceAuth.Subject = subject;
-            deviceAuth.AuthorizedScopes = consent.ScopesConsented;
+            deviceAuth.AuthorizedScopes = consent.ScopesValuesConsented;
 
             // TODO: Device Flow - Record consent template
             if (consent.RememberConsent)

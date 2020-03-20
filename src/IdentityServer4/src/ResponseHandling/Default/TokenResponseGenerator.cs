@@ -172,10 +172,13 @@ namespace IdentityServer4.ResponseHandling
                     throw new InvalidOperationException("Client does not exist anymore.");
                 }
 
+                var parsedScopes = await ResourceValidator.ParseRequestedScopesAsync(request.ValidatedRequest.AuthorizationCode.RequestedScopes);
+                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopes);
+
                 var tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.ValidatedRequest.AuthorizationCode.Subject,
-                    ValidatedResources = await Resources.CreateResourceValidationResult(request.ValidatedRequest.AuthorizationCode.RequestedScopes),
+                    ValidatedResources = validatedResources,
                     Nonce = request.ValidatedRequest.AuthorizationCode.Nonce,
                     AccessTokenToHash = response.AccessToken,
                     StateHash = request.ValidatedRequest.AuthorizationCode.StateHash,
@@ -206,11 +209,14 @@ namespace IdentityServer4.ResponseHandling
             {
                 var subject = request.ValidatedRequest.RefreshToken.Subject;
 
+                var parsedScopes = await ResourceValidator.ParseRequestedScopesAsync(oldAccessToken.Scopes);
+                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopes);
+
                 var creationRequest = new TokenCreationRequest
                 {
                     Subject = subject,
                     ValidatedRequest = request.ValidatedRequest,
-                    ValidatedResources = await Resources.CreateResourceValidationResult(oldAccessToken.Scopes)
+                    ValidatedResources = validatedResources
                 };
 
                 var newAccessToken = await TokenService.CreateAccessTokenAsync(creationRequest);
@@ -282,12 +288,13 @@ namespace IdentityServer4.ResponseHandling
                     throw new InvalidOperationException("Client does not exist anymore.");
                 }
 
-                var resources = await Resources.CreateResourceValidationResult(request.ValidatedRequest.DeviceCode.AuthorizedScopes);
-
+                var parsedScopes = await ResourceValidator.ParseRequestedScopesAsync(request.ValidatedRequest.DeviceCode.AuthorizedScopes);
+                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopes);
+                
                 var tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.ValidatedRequest.DeviceCode.Subject,
-                    ValidatedResources = resources,
+                    ValidatedResources = validatedResources,
                     AccessTokenToHash = response.AccessToken,
                     ValidatedRequest = request.ValidatedRequest
                 };
@@ -362,15 +369,8 @@ namespace IdentityServer4.ResponseHandling
                     throw new InvalidOperationException("Client does not exist anymore.");
                 }
 
-                // todo: cleanup? add as extension method (like CreateResourceValidationResult)?
                 var parsedScopes = await ResourceValidator.ParseRequestedScopesAsync(request.AuthorizationCode.RequestedScopes);
-                var scopesNames = parsedScopes.Select(x => x.Name);
-                var resources = await Resources.FindEnabledResourcesByScopeAsync(scopesNames);
-                var validatedResources = new ResourceValidationResult()
-                {
-                    Resources = resources,
-                    ParsedScopes = parsedScopes.ToHashSet()
-                };
+                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopes);
 
                 tokenRequest = new TokenCreationRequest
                 {
@@ -393,12 +393,13 @@ namespace IdentityServer4.ResponseHandling
                     throw new InvalidOperationException("Client does not exist anymore.");
                 }
 
-                var resources = await Resources.CreateResourceValidationResult(request.DeviceCode.AuthorizedScopes);
+                var parsedScopes = await ResourceValidator.ParseRequestedScopesAsync(request.DeviceCode.AuthorizedScopes);
+                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopes);
 
                 tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.DeviceCode.Subject,
-                    ValidatedResources = resources,
+                    ValidatedResources = validatedResources,
                     ValidatedRequest = request
                 };
             }
@@ -438,10 +439,14 @@ namespace IdentityServer4.ResponseHandling
             if (resources.IdentityResources.Any())
             {
                 var oldAccessToken = request.RefreshToken.AccessToken;
+                
+                var parsedScopes = await ResourceValidator.ParseRequestedScopesAsync(oldAccessToken.Scopes);
+                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopes);
+
                 var tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.RefreshToken.Subject,
-                    ValidatedResources = await Resources.CreateResourceValidationResult(oldAccessToken.Scopes),
+                    ValidatedResources = validatedResources,
                     ValidatedRequest = request,
                     AccessTokenToHash = newAccessToken
                 };

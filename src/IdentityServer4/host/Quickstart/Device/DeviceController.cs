@@ -106,11 +106,11 @@ namespace IdentityServer4.Quickstart.UI.Device
                     grantedConsent = new ConsentResponse
                     {
                         RememberConsent = model.RememberConsent,
-                        ScopesConsented = scopes.ToArray()
+                        ScopesValuesConsented = scopes.ToArray()
                     };
 
                     // emit event
-                    await _events.RaiseAsync(new ConsentGrantedEvent(User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.ScopeValues, grantedConsent.ScopesConsented, grantedConsent.RememberConsent));
+                    await _events.RaiseAsync(new ConsentGrantedEvent(User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.ScopeValues, grantedConsent.ScopesValuesConsented, grantedConsent.RememberConsent));
                 }
                 else
                 {

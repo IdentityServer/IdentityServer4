@@ -114,7 +114,7 @@ namespace IdentityServer.UnitTests.Services.Default
         {
             Func<Task> act = () => _subject.GrantConsentAsync(
                 new AuthorizationRequest(), 
-                new ConsentResponse() { ScopesConsented = new[] { "openid" } }, 
+                new ConsentResponse() { ScopesValuesConsented = new[] { "openid" } }, 
                 null);
 
             act.Should().Throw<ArgumentNullException>()

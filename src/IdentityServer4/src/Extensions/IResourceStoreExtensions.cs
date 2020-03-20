@@ -16,8 +16,6 @@ namespace IdentityServer4.Stores
     /// </summary>
     public static class IResourceStoreExtensions
     {
-        // todo: used by scope validator to know if resource is disabled (mainly for error/logging)
-        // todo: used by token respnse generator -- not sure if should be calling the "enabled" API instead?
         /// <summary>
         /// Finds the resources by scope.
         /// </summary>
@@ -96,21 +94,33 @@ namespace IdentityServer4.Stores
         {
             return (await store.FindResourcesByScopeAsync(scopeNames)).FilterEnabled();
         }
-        
+
         /// <summary>
         /// Creates a resource validation result.
         /// </summary>
         /// <param name="store">The store.</param>
-        /// <param name="scopeValues">The scope names.</param>
+        /// <param name="parsedScopeValues">The parsed scopes.</param>
         /// <returns></returns>
-        // todo: brock, update to use parsed scopes
-        public static async Task<ResourceValidationResult> CreateResourceValidationResult(this IResourceStore store, IEnumerable<string> scopeValues)
+        public static async Task<ResourceValidationResult> CreateResourceValidationResult(this IResourceStore store, IEnumerable<ParsedScopeValue> parsedScopeValues)
         {
-            var resources = await store.FindEnabledResourcesByScopeAsync(scopeValues);
-            return new ResourceValidationResult(resources);
+            var scopes = parsedScopeValues.Select(x => x.Name).ToArray();
+            var resources = await store.FindEnabledResourcesByScopeAsync(scopes);
+            return new ResourceValidationResult(resources, parsedScopeValues);
         }
 
-        // todo: rework to get all scopes (since it's only used in discovery)
+        /// <summary>
+        /// Gets the names of the scopes
+        /// </summary>
+        /// <param name="resourceValidator"></param>
+        /// <param name="scopeValues">The scope names.</param>
+        /// <returns></returns>
+        public static async Task<(IEnumerable<ParsedScopeValue> parsedScopes, IEnumerable<string> scopeNames)> GetParsedScopes(this IResourceValidator resourceValidator, IEnumerable<string> scopeValues)
+        {
+            var parsedScopes = await resourceValidator.ParseRequestedScopesAsync(scopeValues);
+            var scopeNames = parsedScopes.Select(x => x.Name).ToArray();
+            return (parsedScopes, scopeNames);
+        }
+
         /// <summary>
         /// Gets all enabled resources.
         /// </summary>
@@ -124,7 +134,6 @@ namespace IdentityServer4.Stores
             return resources.FilterEnabled();
         }
 
-        // todo: only used by userinfo to get identity resources based on identity scopes in access token
         /// <summary>
         /// Finds the enabled identity resources by scope.
         /// </summary>

@@ -54,6 +54,7 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
             {
                 ClientId = "foo",
                 Client = new Client(),
+                ValidatedResources = new ResourceValidationResult(),
                 Subject = new IdentityServerUser("123")
                 {
                     IdentityProvider = IdentityServerConstants.LocalIdentityProvider

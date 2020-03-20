@@ -3,10 +3,12 @@
 
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
+using IdentityServer4.Validation;
 
 namespace IdentityServer.UnitTests.Common
 {
@@ -14,7 +16,7 @@ namespace IdentityServer.UnitTests.Common
     {
         public bool RequiresConsentResult { get; set; }
 
-        public Task<bool> RequiresConsentAsync(ClaimsPrincipal subject, Client client, IEnumerable<string> scopes)
+        public Task<bool> RequiresConsentAsync(ClaimsPrincipal subject, Client client, IEnumerable<ParsedScopeValue> parsedScopes)
         {
             return Task.FromResult(RequiresConsentResult);
         }
@@ -23,11 +25,11 @@ namespace IdentityServer.UnitTests.Common
         public Client ConsentClient { get; set; }
         public IEnumerable<string> ConsentScopes { get; set; }
 
-        public Task UpdateConsentAsync(ClaimsPrincipal subject, Client client, IEnumerable<string> scopes)
+        public Task UpdateConsentAsync(ClaimsPrincipal subject, Client client, IEnumerable<ParsedScopeValue> parsedScopes)
         {
             ConsentSubject = subject;
             ConsentClient = client;
-            ConsentScopes = scopes;
+            ConsentScopes = parsedScopes?.Select(x => x.Value);
 
             return Task.CompletedTask;
         }

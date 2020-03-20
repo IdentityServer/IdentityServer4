@@ -182,7 +182,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
 
             _mockPipeline.ConsentResponse = new ConsentResponse()
             {
-                ScopesConsented = new string[] { "openid", "api2" }
+                ScopesValuesConsented = new string[] { "openid", "api2" }
             };
             _mockPipeline.BrowserClient.StopRedirectingAfter = 2;
 
@@ -214,7 +214,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
 
             _mockPipeline.ConsentResponse = new ConsentResponse()
             {
-                ScopesConsented = new string[] { "openid", "api2" }
+                ScopesValuesConsented = new string[] { "openid", "api2" }
             };
             _mockPipeline.BrowserClient.AllowAutoRedirect = false;
 
@@ -251,7 +251,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
 
             _mockPipeline.ConsentResponse = new ConsentResponse()
             {
-                ScopesConsented = new string[] { "api2" }
+                ScopesValuesConsented = new string[] { "api2" }
             };
             _mockPipeline.BrowserClient.StopRedirectingAfter = 2;
 

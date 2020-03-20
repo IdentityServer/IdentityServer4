@@ -285,7 +285,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
 
             _mockPipeline.ConsentResponse = new ConsentResponse()
             {
-                ScopesConsented = new string[] { "openid", "api1", "profile" }
+                ScopesValuesConsented = new string[] { "openid", "api1", "profile" }
             };
 
             _mockPipeline.BrowserClient.StopRedirectingAfter = 4;

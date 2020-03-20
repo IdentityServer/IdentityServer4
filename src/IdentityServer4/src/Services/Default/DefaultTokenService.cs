@@ -231,7 +231,7 @@ namespace IdentityServer4.Services
                 }
             }
 
-            // todo: brock, consider aud selection/generation moving into resource validator
+            // todo: consider aud selection/generation moving into resource validator
             var audiences = new List<string>();
             foreach (var scope in request.ValidatedResources.Resources.ApiScopes)
             {

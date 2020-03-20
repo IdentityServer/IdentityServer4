@@ -13,6 +13,7 @@ using IdentityServer4;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
+using IdentityServer4.Validation;
 using Xunit;
 
 namespace IdentityServer.UnitTests.Services.Default
@@ -69,7 +70,7 @@ namespace IdentityServer.UnitTests.Services.Default
         {
             _client.AllowRememberConsent = false;
 
-            await _subject.UpdateConsentAsync(_user, _client, new string[] { "scope1", "scope2" });
+            await _subject.UpdateConsentAsync(_user, _client, new [] { new ParsedScopeValue("scope1"), new ParsedScopeValue("scope2") });
 
             var consent = await _userConsentStore.GetUserConsentAsync(_user.GetSubjectId(), _client.ClientId);
             consent.Should().BeNull();
@@ -78,7 +79,7 @@ namespace IdentityServer.UnitTests.Services.Default
         [Fact]
         public async Task UpdateConsentAsync_should_persist_consent()
         {
-            await _subject.UpdateConsentAsync(_user, _client, new string[] { "scope1", "scope2" });
+            await _subject.UpdateConsentAsync(_user, _client, new[] { new ParsedScopeValue("scope1"), new ParsedScopeValue("scope2") });
 
             var consent = await _userConsentStore.GetUserConsentAsync(_user.GetSubjectId(), _client.ClientId);
             consent.Scopes.Count().Should().Be(2);
@@ -89,9 +90,9 @@ namespace IdentityServer.UnitTests.Services.Default
         [Fact]
         public async Task UpdateConsentAsync_empty_scopes_should_should_remove_consent()
         {
-            await _subject.UpdateConsentAsync(_user, _client, new string[] { "scope1", "scope2" });
+            await _subject.UpdateConsentAsync(_user, _client, new[] { new ParsedScopeValue("scope1"), new ParsedScopeValue("scope2") });
 
-            await _subject.UpdateConsentAsync(_user, _client, new string[] { });
+            await _subject.UpdateConsentAsync(_user, _client, new ParsedScopeValue[] { });
 
             var consent = await _userConsentStore.GetUserConsentAsync(_user.GetSubjectId(), _client.ClientId);
             consent.Should().BeNull();
@@ -102,7 +103,7 @@ namespace IdentityServer.UnitTests.Services.Default
         {
             _client.RequireConsent = false;
 
-            var result = await _subject.RequiresConsentAsync(_user, _client, new string[] { "scope1", "scope2" });
+            var result = await _subject.RequiresConsentAsync(_user, _client, new[] { new ParsedScopeValue("scope1"), new ParsedScopeValue("scope2") });
 
             result.Should().BeFalse();
         }
@@ -112,7 +113,7 @@ namespace IdentityServer.UnitTests.Services.Default
         {
             _client.AllowRememberConsent = false;
 
-            var result = await _subject.RequiresConsentAsync(_user, _client, new string[] { "scope1", "scope2" });
+            var result = await _subject.RequiresConsentAsync(_user, _client, new[] { new ParsedScopeValue("scope1"), new ParsedScopeValue("scope2") });
 
             result.Should().BeTrue();
         }
@@ -120,7 +121,7 @@ namespace IdentityServer.UnitTests.Services.Default
         [Fact]
         public async Task RequiresConsentAsync_no_scopes_should_not_require_consent()
         {
-            var result = await _subject.RequiresConsentAsync(_user, _client, new string[] { });
+            var result = await _subject.RequiresConsentAsync(_user, _client, new ParsedScopeValue[] { });
 
             result.Should().BeFalse();
         }
@@ -128,7 +129,7 @@ namespace IdentityServer.UnitTests.Services.Default
         [Fact]
         public async Task RequiresConsentAsync_offline_access_should_require_consent()
         {
-            var result = await _subject.RequiresConsentAsync(_user, _client, new string[] { "scope1", "offline_access" });
+            var result = await _subject.RequiresConsentAsync(_user, _client, new[] { new ParsedScopeValue("scope1"), new ParsedScopeValue("offline_access") });
 
             result.Should().BeTrue();
         }
@@ -136,7 +137,7 @@ namespace IdentityServer.UnitTests.Services.Default
         [Fact]
         public async Task RequiresConsentAsync_no_prior_consent_should_require_consent()
         {
-            var result = await _subject.RequiresConsentAsync(_user, _client, new string[] { "scope1", "scope2" });
+            var result = await _subject.RequiresConsentAsync(_user, _client, new[] { new ParsedScopeValue("scope1"), new ParsedScopeValue("scope2") });
 
             result.Should().BeTrue();
         }
@@ -144,9 +145,9 @@ namespace IdentityServer.UnitTests.Services.Default
         [Fact]
         public async Task RequiresConsentAsync_prior_consent_should_not_require_consent()
         {
-            await _subject.UpdateConsentAsync(_user, _client, new string[] { "scope1", "scope2" });
+            await _subject.UpdateConsentAsync(_user, _client, new[] { new ParsedScopeValue("scope1"), new ParsedScopeValue("scope2") });
 
-            var result = await _subject.RequiresConsentAsync(_user, _client, new string[] { "scope1", "scope2" });
+            var result = await _subject.RequiresConsentAsync(_user, _client, new[] { new ParsedScopeValue("scope1"), new ParsedScopeValue("scope2") });
 
             result.Should().BeFalse();
         }
@@ -154,9 +155,9 @@ namespace IdentityServer.UnitTests.Services.Default
         [Fact]
         public async Task RequiresConsentAsync_prior_consent_with_more_scopes_should_not_require_consent()
         {
-            await _subject.UpdateConsentAsync(_user, _client, new string[] { "scope1", "scope2", "scope3" });
+            await _subject.UpdateConsentAsync(_user, _client, new[] { new ParsedScopeValue("scope1"), new ParsedScopeValue("scope2"), new ParsedScopeValue("scope3") });
 
-            var result = await _subject.RequiresConsentAsync(_user, _client, new string[] { "scope2" });
+            var result = await _subject.RequiresConsentAsync(_user, _client, new [] { new ParsedScopeValue("scope2") });
 
             result.Should().BeFalse();
         }
@@ -164,9 +165,9 @@ namespace IdentityServer.UnitTests.Services.Default
         [Fact]
         public async Task RequiresConsentAsync_prior_consent_with_too_few_scopes_should_require_consent()
         {
-            await _subject.UpdateConsentAsync(_user, _client, new string[] { "scope2", "scope3" });
+            await _subject.UpdateConsentAsync(_user, _client, new[] { new ParsedScopeValue("scope2"), new ParsedScopeValue("scope3") });
 
-            var result = await _subject.RequiresConsentAsync(_user, _client, new string[] { "scope1", "scope2" });
+            var result = await _subject.RequiresConsentAsync(_user, _client, new[] { new ParsedScopeValue("scope1"), new ParsedScopeValue("scope2") });
 
             result.Should().BeTrue();
         }
@@ -176,7 +177,7 @@ namespace IdentityServer.UnitTests.Services.Default
         {
             now = DateTime.UtcNow;
 
-            var scopes = new string[] { "foo", "bar" };
+            var scopes = new[] { new ParsedScopeValue("foo"), new ParsedScopeValue("bar") };
             _client.ConsentLifetime = 2;
 
             await _subject.UpdateConsentAsync(_user, _client, scopes);
@@ -193,7 +194,7 @@ namespace IdentityServer.UnitTests.Services.Default
         {
             now = DateTime.UtcNow;
 
-            var scopes = new string[] { "foo", "bar" };
+            var scopes = new[] { new ParsedScopeValue("foo"), new ParsedScopeValue("bar") };
             _client.ConsentLifetime = 2;
 
             await _subject.UpdateConsentAsync(_user, _client, scopes);

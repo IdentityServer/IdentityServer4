@@ -19,7 +19,7 @@ namespace IdentityServer4.Validation
         public ResourceValidationResult()
         {
         }
-        
+
         /// <summary>
         /// Ctor
         /// </summary>
@@ -28,6 +28,17 @@ namespace IdentityServer4.Validation
         {
             Resources = resources;
             ParsedScopes = resources.ToScopeNames().Select(x => new ParsedScopeValue(x)).ToList();
+        }
+
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="resources"></param>
+        /// <param name="parsedScopeValues"></param>
+        public ResourceValidationResult(Resources resources, IEnumerable<ParsedScopeValue> parsedScopeValues)
+        {
+            Resources = resources;
+            ParsedScopes = parsedScopeValues.ToList();
         }
 
         /// <summary>

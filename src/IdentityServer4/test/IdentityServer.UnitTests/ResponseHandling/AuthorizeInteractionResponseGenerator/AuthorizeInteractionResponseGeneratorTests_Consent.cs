@@ -245,7 +245,7 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
             var consent = new ConsentResponse
             {
                 RememberConsent = false,
-                ScopesConsented = new string[] {}
+                ScopesValuesConsented = new string[] {}
             };
             var result = await _subject.ProcessConsentAsync(request, consent);
             request.WasConsentShown.Should().BeTrue();
@@ -269,7 +269,7 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
             var consent = new ConsentResponse
             {
                 RememberConsent = false,
-                ScopesConsented = new string[] {}
+                ScopesValuesConsented = new string[] {}
             };
             var result = await _subject.ProcessConsentAsync(request, consent);
             request.WasConsentShown.Should().BeTrue();
@@ -296,7 +296,7 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
             var consent = new ConsentResponse
             {
                 RememberConsent = false,
-                ScopesConsented = new string[] { "read" }
+                ScopesValuesConsented = new string[] { "read" }
             };
 
             var result = await _subject.ProcessConsentAsync(request, consent);
@@ -323,7 +323,7 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
             var consent = new ConsentResponse
             {
                 RememberConsent = false,
-                ScopesConsented = new string[] { "openid", "read" }
+                ScopesValuesConsented = new string[] { "openid", "read" }
             };
             var result = await _subject.ProcessConsentAsync(request, consent);
             request.ValidatedResources.Resources.IdentityResources.Count().Should().Be(1);
@@ -353,7 +353,7 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
             var consent = new ConsentResponse
             {
                 RememberConsent = false,
-                ScopesConsented = new string[] { "openid", "read" }
+                ScopesValuesConsented = new string[] { "openid", "read" }
             };
             var result = await _subject.ProcessConsentAsync(request, consent);
             request.ValidatedResources.Resources.IdentityResources.Count().Should().Be(1);
@@ -383,7 +383,7 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
             var consent = new ConsentResponse
             {
                 RememberConsent = true,
-                ScopesConsented = new string[] { "openid", "read" }
+                ScopesValuesConsented = new string[] { "openid", "read" }
             };
             var result = await _subject.ProcessConsentAsync(request, consent);
             AssertUpdateConsentCalled(client, user, "openid", "read");
