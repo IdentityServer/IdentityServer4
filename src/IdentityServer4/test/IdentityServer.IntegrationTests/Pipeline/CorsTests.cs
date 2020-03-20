@@ -61,12 +61,12 @@ namespace IdentityServer.IntegrationTests.Pipeline
                     Scopes = { "api1", "api2" }
                 }
             });
-            _pipeline.Scopes.AddRange(new[] {
-                new Scope
+            _pipeline.ApiScopes.AddRange(new[] {
+                new ApiScope
                 {
                     Name = "api1"
                 },
-                new Scope
+                new ApiScope
                 {
                     Name = "api2"
                 }

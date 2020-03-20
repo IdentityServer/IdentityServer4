@@ -58,23 +58,23 @@ namespace Host.Configuration
                 }
             };
 
-        public static IEnumerable<Scope> Scopes = new[]
+        public static IEnumerable<ApiScope> ApiScopes = new[]
             {
                 // local API
                 // todo: brock discuss w/ dom? should we also use a resource id for this?
-                new Scope(LocalApi.ScopeName),
-                new Scope("api1"),
-                new Scope
+                new ApiScope(LocalApi.ScopeName),
+                new ApiScope("api1"),
+                new ApiScope
                 {
                     Name = "api2.full_access",
                     DisplayName = "Full access to API 2"
                 },
-                new Scope
+                new ApiScope
                 {
                     Name = "api2.read_only",
                     DisplayName = "Read only access to API 2"
                 },
-                new Scope
+                new ApiScope
                 {
                     Name = "api2.internal",
                     ShowInDiscoveryDocument = false,
@@ -83,7 +83,7 @@ namespace Host.Configuration
                         "internal_id"
                     }
                 },
-                new Scope
+                new ApiScope
                 {
                     Name = "transaction"
                 }

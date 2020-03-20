@@ -26,11 +26,11 @@ namespace IdentityServer.UnitTests.Stores
                 new ApiResource { Name = "C" }
             };
 
-            List<Scope> scopes = new List<Scope>
+            List<ApiScope> scopes = new List<ApiScope>
             {
-                new Scope { Name = "B" },
-                new Scope { Name = "C" },
-                new Scope { Name = "C" },
+                new ApiScope { Name = "B" },
+                new ApiScope { Name = "C" },
+                new ApiScope { Name = "C" },
             };
 
             Action act = () => new InMemoryResourcesStore(identityResources, null, null);
@@ -60,16 +60,16 @@ namespace IdentityServer.UnitTests.Stores
                 new ApiResource { Name = "C" }
             };
 
-            List<Scope> scopes = new List<Scope>
+            List<ApiScope> apiScopes = new List<ApiScope>
             {
-                new Scope { Name = "A" },
-                new Scope { Name = "B" },
-                new Scope { Name = "C" },
+                new ApiScope { Name = "A" },
+                new ApiScope { Name = "B" },
+                new ApiScope { Name = "C" },
             };
             
             new InMemoryResourcesStore(identityResources, null, null);
             new InMemoryResourcesStore(null, apiResources, null);
-            new InMemoryResourcesStore(null, null, scopes);
+            new InMemoryResourcesStore(null, null, apiScopes);
         }
     }
 }

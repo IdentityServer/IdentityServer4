@@ -72,7 +72,7 @@ namespace Host
                 //.AddInMemoryClients(_config.GetSection("Clients"))
                 .AddInMemoryIdentityResources(Resources.IdentityResources)
                 .AddInMemoryApiResources(Resources.ApiResources)
-                .AddInMemoryScopes(Resources.Scopes)
+                .AddInMemoryApiScopes(Resources.ApiScopes)
                 .AddSigningCredential()
                 .AddExtensionGrantValidator<Extensions.ExtensionGrantValidator>()
                 .AddExtensionGrantValidator<Extensions.NoSubjectExtensionGrantValidator>()

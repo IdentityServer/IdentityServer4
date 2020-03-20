@@ -179,7 +179,7 @@ namespace IdentityServer4.Services
                     }
                 }
 
-                foreach(var scope in resourceResult.Resources.Scopes)
+                foreach(var scope in resourceResult.Resources.ApiScopes)
                 {
                     // add claims configured on scopes
                     if (scope.UserClaims != null)

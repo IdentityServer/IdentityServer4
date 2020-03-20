@@ -20,7 +20,7 @@ namespace IdentityServer.IntegrationTests.Clients.Setup
             };
         }
 
-        public static IEnumerable<ApiResource> GetApis()
+        public static IEnumerable<ApiResource> GetApiResources()
         {
             return new List<ApiResource>
             {
@@ -40,28 +40,28 @@ namespace IdentityServer.IntegrationTests.Clients.Setup
             };
         }
 
-        public static IEnumerable<Scope> GetScopes()
+        public static IEnumerable<ApiScope> GetApiScopes()
         {
-            return new Scope[]
+            return new ApiScope[]
             {
-                new Scope
+                new ApiScope
                 {
                     Name = "api1"
                 },
-                new Scope
+                new ApiScope
                 {
                     Name = "api2"
                 },
-                new Scope
+                new ApiScope
                 {
                     Name = "api3"
                 },
-                new Scope
+                new ApiScope
                 {
                     Name = "api4.with.roles",
                     UserClaims = { "role" }
                 },
-                new Scope
+                new ApiScope
                 {
                     Name = "other_api",
                 },

@@ -64,7 +64,7 @@ namespace IdentityServer4.Validation
             }
 
             // load API resource
-            var apis = await _resources.FindApiResourcesAsync(new[] { parsedSecret.Id });
+            var apis = await _resources.FindApiResourcesByNameAsync(new[] { parsedSecret.Id });
             if (apis == null || !apis.Any())
             {
                 await RaiseFailureEventAsync(parsedSecret.Id, "Unknown API resource");

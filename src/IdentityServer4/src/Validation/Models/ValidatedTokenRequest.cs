@@ -26,7 +26,6 @@ namespace IdentityServer4.Validation
         /// <value>
         /// The scopes.
         /// </value>
-        // todo: dom, see where used to consider intent and if could be replacted by validated resources
         public IEnumerable<string> RequestedScopes { get; set; }
 
         /// <summary>

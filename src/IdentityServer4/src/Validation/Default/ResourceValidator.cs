@@ -49,7 +49,7 @@ namespace IdentityServer4.Validation
             {
                 result.Resources.IdentityResources.Clear();
                 result.Resources.ApiResources.Clear();
-                result.Resources.Scopes.Clear();
+                result.Resources.ApiScopes.Clear();
                 result.ParsedScopes.Clear();
             }
 
@@ -61,24 +61,27 @@ namespace IdentityServer4.Validation
         /// </summary>
         /// <param name="scopeValues"></param>
         /// <returns></returns>
-        // todo: brock, add helper to parse a single scope
-        public virtual Task<IEnumerable<ParsedScopeValue>> ParseRequestedScopes(IEnumerable<string> scopeValues)
+        public virtual async Task<IEnumerable<ParsedScopeValue>> ParseRequestedScopes(IEnumerable<string> scopeValues)
         {
-            //if (requestedScopes.Contains("payment:"))
-            //{
-            //    var newScopes = requestedScopes.Where(x => !x.StartsWith("payment:")).ToList();
-            //    newScopes.Add("payment");
-            //}
+            var list = new List<ParsedScopeValue>();
 
-            // requestedScopes=["payment:123", "api1", "openid"]
-            // client:{allowedScopes="payment"}
-            // apiResource {  name="payment",  scopes=[ {name="payment:123", userClaims=['email']} ]}            
-            // todo: keep original scope string, formal name in db, bag for data, scope value to emit
+            foreach(var scopeValue in scopeValues)
+            {
+                var parsedScopeValue = await ParseScopeValue(scopeValue);
+                list.Add(parsedScopeValue);
+            }
 
-            //result.ApiResources.Where(x=>x.Name == "payment")["txId"] = 
+            return list;
+        }
 
-            var result = scopeValues.Select(x => new ParsedScopeValue(x));
-            return Task.FromResult(result);
+        /// <summary>
+        /// Parses a scope value.
+        /// </summary>
+        /// <param name="scopeValue"></param>
+        /// <returns></returns>
+        public virtual Task<ParsedScopeValue> ParseScopeValue(string scopeValue)
+        {
+            return Task.FromResult(new ParsedScopeValue(scopeValue));
         }
 
         /// <summary>
@@ -124,13 +127,13 @@ namespace IdentityServer4.Validation
                 }
                 else
                 {
-                    var apiScope = resourcesFromStore.FindScope(requestedScope.Name);
+                    var apiScope = resourcesFromStore.FindApiScope(requestedScope.Name);
                     if (apiScope != null)
                     {
                         if (await IsClientAllowedApiScopeAsync(client, apiScope))
                         {
                             result.ParsedScopes.Add(requestedScope);
-                            result.Resources.Scopes.Add(apiScope);
+                            result.Resources.ApiScopes.Add(apiScope);
 
                             var apis = resourcesFromStore.FindApiResourcesByScope(apiScope.Name);
                             foreach (var api in apis)
@@ -174,7 +177,7 @@ namespace IdentityServer4.Validation
         /// <param name="client"></param>
         /// <param name="apiScope"></param>
         /// <returns></returns>
-        protected virtual Task<bool> IsClientAllowedApiScopeAsync(Client client, Scope apiScope)
+        protected virtual Task<bool> IsClientAllowedApiScopeAsync(Client client, ApiScope apiScope)
         {
             var allowed = client.AllowedScopes.Contains(apiScope.Name);
             if (!allowed)

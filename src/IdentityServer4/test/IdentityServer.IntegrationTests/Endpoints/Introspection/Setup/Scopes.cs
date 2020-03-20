@@ -42,23 +42,23 @@ namespace IdentityServer.IntegrationTests.Endpoints.Introspection.Setup
                 }
             };
         }
-        public static IEnumerable<Scope> GetScopes()
+        public static IEnumerable<ApiScope> GetScopes()
         {
-            return new Scope[]
+            return new ApiScope[]
             {
-                new Scope
+                new ApiScope
                 {
                     Name = "api1"
                 },
-                new Scope
+                new ApiScope
                 {
                     Name = "api2"
                 },
-                new Scope
+                new ApiScope
                 {
                     Name = "api3-a"
                 },
-                new Scope
+                new ApiScope
                 {
                     Name = "api3-b"
                 }

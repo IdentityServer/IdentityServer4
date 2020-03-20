@@ -129,12 +129,12 @@ namespace IdentityServer.UnitTests.Validation
 
             result.ValidatedRequest.ValidatedResources.Resources.IdentityResources.Should().BeEmpty();
             result.ValidatedRequest.ValidatedResources.Resources.ApiResources.Should().Contain(x => x.Name == "api");
-            result.ValidatedRequest.ValidatedResources.Resources.Scopes.Should().Contain(x => x.Name == "resource");
+            result.ValidatedRequest.ValidatedResources.Resources.ApiScopes.Should().Contain(x => x.Name == "resource");
             result.ValidatedRequest.ValidatedResources.Resources.OfflineAccess.Should().BeFalse();
 
             result.ValidatedRequest.ValidatedResources.Resources.IdentityResources.Any().Should().BeFalse();
             result.ValidatedRequest.ValidatedResources.Resources.ApiResources.Any().Should().BeTrue();
-            result.ValidatedRequest.ValidatedResources.Resources.Scopes.Any().Should().BeTrue();
+            result.ValidatedRequest.ValidatedResources.Resources.ApiScopes.Any().Should().BeTrue();
             result.ValidatedRequest.ValidatedResources.Resources.OfflineAccess.Should().BeFalse();
         }
 
@@ -155,12 +155,12 @@ namespace IdentityServer.UnitTests.Validation
 
             result.ValidatedRequest.ValidatedResources.Resources.IdentityResources.Should().Contain(x => x.Name == "openid");
             result.ValidatedRequest.ValidatedResources.Resources.ApiResources.Should().Contain(x => x.Name == "api");
-            result.ValidatedRequest.ValidatedResources.Resources.Scopes.Should().Contain(x => x.Name == "resource");
+            result.ValidatedRequest.ValidatedResources.Resources.ApiScopes.Should().Contain(x => x.Name == "resource");
             result.ValidatedRequest.ValidatedResources.Resources.OfflineAccess.Should().BeTrue();
 
             result.ValidatedRequest.ValidatedResources.Resources.IdentityResources.Any().Should().BeTrue();
             result.ValidatedRequest.ValidatedResources.Resources.ApiResources.Any().Should().BeTrue();
-            result.ValidatedRequest.ValidatedResources.Resources.Scopes.Any().Should().BeTrue();
+            result.ValidatedRequest.ValidatedResources.Resources.ApiScopes.Any().Should().BeTrue();
             result.ValidatedRequest.ValidatedResources.Resources.OfflineAccess.Should().BeTrue();
         }
 

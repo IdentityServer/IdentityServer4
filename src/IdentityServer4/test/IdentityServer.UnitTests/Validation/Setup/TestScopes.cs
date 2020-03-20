@@ -30,16 +30,16 @@ namespace IdentityServer.UnitTests.Validation.Setup
             };
         }
 
-        public static IEnumerable<Scope> GetScopes()
+        public static IEnumerable<ApiScope> GetScopes()
         {
-            return new Scope[]
+            return new ApiScope[]
             {
-                new Scope
+                new ApiScope
                 {
                     Name = "resource",
                     Description = "resource scope"
                 },
-                new Scope
+                new ApiScope
                 {
                     Name = "resource2",
                     Description = "resource scope"

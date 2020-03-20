@@ -56,7 +56,12 @@ namespace IdentityServer4.Models
         /// Description of the resource.
         /// </summary>
         public string Description { get; set; }
-        
+
+        /// <summary>
+        /// Specifies whether this scope is shown in the discovery document. Defaults to true.
+        /// </summary>
+        public bool ShowInDiscoveryDocument { get; set; } = true;
+
         /// <summary>
         /// List of accociated user claims that should be included when this resource is requested.
         /// </summary>

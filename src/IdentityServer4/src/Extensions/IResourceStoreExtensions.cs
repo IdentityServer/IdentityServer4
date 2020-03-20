@@ -26,9 +26,9 @@ namespace IdentityServer4.Stores
         /// <returns></returns>
         public static async Task<Resources> FindResourcesByScopeAsync(this IResourceStore store, IEnumerable<string> scopeNames)
         {
-            var identity = await store.FindIdentityResourcesByScopeAsync(scopeNames);
-            var apiResources = await store.FindApiResourcesByScopeAsync(scopeNames);
-            var scopes = await store.FindScopesAsync(scopeNames);
+            var identity = await store.FindIdentityResourcesByScopeNameAsync(scopeNames);
+            var apiResources = await store.FindApiResourcesByScopeNameAsync(scopeNames);
+            var scopes = await store.FindApiScopesByNameAsync(scopeNames);
 
             Validate(identity, apiResources, scopes);
 
@@ -40,7 +40,7 @@ namespace IdentityServer4.Stores
             return resources;
         }
 
-        private static void Validate(IEnumerable<IdentityResource> identity, IEnumerable<ApiResource> apiResources, IEnumerable<Scope> scopes)
+        private static void Validate(IEnumerable<IdentityResource> identity, IEnumerable<ApiResource> apiResources, IEnumerable<ApiScope> apiScopes)
         {
             // attempt to detect invalid configuration. this is about the only place
             // we can do this, since it's hard to get the values in the store.
@@ -60,7 +60,7 @@ namespace IdentityServer4.Stores
                 throw new Exception(String.Format("Duplicate api resources found. This is an invalid configuration. Use different names for API resources. Names found: {0}", names));
             }
             
-            var scopesNames = scopes.Select(x => x.Name);
+            var scopesNames = apiScopes.Select(x => x.Name);
             dups = GetDuplicates(scopesNames);
             if (dups.Any())
             {
@@ -119,7 +119,7 @@ namespace IdentityServer4.Stores
         public static async Task<Resources> GetAllEnabledResourcesAsync(this IResourceStore store)
         {
             var resources = await store.GetAllResourcesAsync();
-            Validate(resources.IdentityResources, resources.ApiResources, resources.Scopes);
+            Validate(resources.IdentityResources, resources.ApiResources, resources.ApiScopes);
 
             return resources.FilterEnabled();
         }
@@ -133,7 +133,7 @@ namespace IdentityServer4.Stores
         /// <returns></returns>
         public static async Task<IEnumerable<IdentityResource>> FindEnabledIdentityResourcesByScopeAsync(this IResourceStore store, IEnumerable<string> scopeNames)
         {
-            return (await store.FindIdentityResourcesByScopeAsync(scopeNames)).Where(x => x.Enabled).ToArray();
+            return (await store.FindIdentityResourcesByScopeNameAsync(scopeNames)).Where(x => x.Enabled).ToArray();
         }
     }
 }

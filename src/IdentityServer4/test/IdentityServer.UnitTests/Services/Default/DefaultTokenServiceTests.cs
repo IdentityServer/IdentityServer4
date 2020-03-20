@@ -49,7 +49,7 @@ namespace IdentityServer.UnitTests.Services.Default
         [Fact]
         public async Task CreateAccessTokenAsync_should_include_aud_for_each_ApiResource()
         {
-            var scope = new Scope() { Name = "resource" };
+            var scope = new ApiScope() { Name = "resource" };
 
             var request = new TokenCreationRequest { 
                 ValidatedResources = new ResourceValidationResult()

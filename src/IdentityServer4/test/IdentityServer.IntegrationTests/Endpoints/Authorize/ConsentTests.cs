@@ -82,13 +82,13 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
                 }
             });
 
-            _mockPipeline.Scopes.AddRange(new Scope[]
+            _mockPipeline.ApiScopes.AddRange(new ApiScope[]
             {
-                new Scope
+                new ApiScope
                 {
                     Name = "api1"
                 },
-                new Scope
+                new ApiScope
                 {
                     Name = "api2"
                 }

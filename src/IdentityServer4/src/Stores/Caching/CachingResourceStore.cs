@@ -27,8 +27,8 @@ namespace IdentityServer4.Stores
         
         private readonly ICache<IEnumerable<IdentityResource>> _identityCache;
         private readonly ICache<IEnumerable<ApiResource>> _apiByScopeCache;
-        private readonly ICache<IEnumerable<Scope>> _scopeCache;
-        private readonly ICache<IEnumerable<ApiResource>> _apisCache;
+        private readonly ICache<IEnumerable<ApiScope>> _apiScopeCache;
+        private readonly ICache<IEnumerable<ApiResource>> _apiResourceCache;
         private readonly ICache<Resources> _allCache;
         
         private readonly IResourceStore _inner;
@@ -49,7 +49,7 @@ namespace IdentityServer4.Stores
             ICache<IEnumerable<IdentityResource>> identityCache, 
             ICache<IEnumerable<ApiResource>> apiByScopeCache,
             ICache<IEnumerable<ApiResource>> apisCache,
-            ICache<IEnumerable<Scope>> scopeCache,
+            ICache<IEnumerable<ApiScope>> scopeCache,
             ICache<Resources> allCache,
             ILogger<CachingResourceStore<T>> logger)
         {
@@ -57,8 +57,8 @@ namespace IdentityServer4.Stores
             _inner = inner;
             _identityCache = identityCache;
             _apiByScopeCache = apiByScopeCache;
-            _apisCache = apisCache;
-            _scopeCache = scopeCache;
+            _apiResourceCache = apisCache;
+            _apiScopeCache = scopeCache;
             _allCache = allCache;
             _logger = logger;
         }
@@ -83,52 +83,52 @@ namespace IdentityServer4.Stores
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<ApiResource>> FindApiResourcesAsync(IEnumerable<string> apiResourceNames)
+        public async Task<IEnumerable<ApiResource>> FindApiResourcesByNameAsync(IEnumerable<string> apiResourceNames)
         {
             var key = GetKey(apiResourceNames);
 
-            var apis = await _apisCache.GetAsync(key,
+            var apis = await _apiResourceCache.GetAsync(key,
                 _options.Caching.ResourceStoreExpiration,
-                () => _inner.FindApiResourcesAsync(apiResourceNames),
+                () => _inner.FindApiResourcesByNameAsync(apiResourceNames),
                 _logger);
 
             return apis;
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeAsync(IEnumerable<string> names)
+        public async Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeNameAsync(IEnumerable<string> names)
         {
             var key = GetKey(names);
 
             var identities = await _identityCache.GetAsync(key,
                 _options.Caching.ResourceStoreExpiration,
-                () => _inner.FindIdentityResourcesByScopeAsync(names),
+                () => _inner.FindIdentityResourcesByScopeNameAsync(names),
                 _logger);
 
             return identities;
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<ApiResource>> FindApiResourcesByScopeAsync(IEnumerable<string> names)
+        public async Task<IEnumerable<ApiResource>> FindApiResourcesByScopeNameAsync(IEnumerable<string> names)
         {
             var key = GetKey(names);
 
             var apis = await _apiByScopeCache.GetAsync(key,
                 _options.Caching.ResourceStoreExpiration,
-                () => _inner.FindApiResourcesByScopeAsync(names),
+                () => _inner.FindApiResourcesByScopeNameAsync(names),
                 _logger);
 
             return apis;
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<Scope>> FindScopesAsync(IEnumerable<string> scopeNames)
+        public async Task<IEnumerable<ApiScope>> FindApiScopesByNameAsync(IEnumerable<string> scopeNames)
         {
             var key = GetKey(scopeNames);
 
-            var apis = await _scopeCache.GetAsync(key,
+            var apis = await _apiScopeCache.GetAsync(key,
                 _options.Caching.ResourceStoreExpiration,
-                () => _inner.FindScopesAsync(scopeNames),
+                () => _inner.FindApiScopesByNameAsync(scopeNames),
                 _logger);
 
             return apis;

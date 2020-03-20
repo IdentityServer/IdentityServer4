@@ -55,7 +55,7 @@ namespace IdentityServer.IntegrationTests.Common
         public List<Client> Clients { get; set; } = new List<Client>();
         public List<IdentityResource> IdentityScopes { get; set; } = new List<IdentityResource>();
         public List<ApiResource> ApiResources { get; set; } = new List<ApiResource>();
-        public List<Scope> Scopes { get; set; } = new List<Scope>();
+        public List<ApiScope> ApiScopes { get; set; } = new List<ApiScope>();
         public List<TestUser> Users { get; set; } = new List<TestUser>();
 
         public TestServer Server { get; set; }
@@ -139,7 +139,7 @@ namespace IdentityServer.IntegrationTests.Common
             .AddInMemoryClients(Clients)
             .AddInMemoryIdentityResources(IdentityScopes)
             .AddInMemoryApiResources(ApiResources)
-            .AddInMemoryScopes(Scopes)
+            .AddInMemoryApiScopes(ApiScopes)
             .AddTestUsers(Users)
             .AddDeveloperSigningCredential(persistKey: false);
 

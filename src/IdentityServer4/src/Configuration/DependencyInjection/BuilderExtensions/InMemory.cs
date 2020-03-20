@@ -65,6 +65,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="builder">The builder.</param>
         /// <param name="apiResources">The API resources.</param>
         /// <returns></returns>
+        // todo: brock, review how api resuorces and scopes are registered: diff stores?
         public static IIdentityServerBuilder AddInMemoryApiResources(this IIdentityServerBuilder builder, IEnumerable<ApiResource> apiResources)
         {
             builder.Services.AddSingleton(apiResources);
@@ -88,14 +89,14 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Adds the in memory scopes.
+        /// Adds the in memory API scopes.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        /// <param name="scopes">The scopes.</param>
+        /// <param name="apiScopes">The API scopes.</param>
         /// <returns></returns>
-        public static IIdentityServerBuilder AddInMemoryScopes(this IIdentityServerBuilder builder, IEnumerable<Scope> scopes)
+        public static IIdentityServerBuilder AddInMemoryApiScopes(this IIdentityServerBuilder builder, IEnumerable<ApiScope> apiScopes)
         {
-            builder.Services.AddSingleton(scopes);
+            builder.Services.AddSingleton(apiScopes);
             builder.AddResourceStore<InMemoryResourcesStore>();
 
             return builder;
@@ -107,12 +108,12 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="builder">The builder.</param>
         /// <param name="section">The configuration section containing the configuration data.</param>
         /// <returns></returns>
-        public static IIdentityServerBuilder AddInMemoryScopes(this IIdentityServerBuilder builder, IConfigurationSection section)
+        public static IIdentityServerBuilder AddInMemoryApiScopes(this IIdentityServerBuilder builder, IConfigurationSection section)
         {
-            var resources = new List<Scope>();
+            var resources = new List<ApiScope>();
             section.Bind(resources);
 
-            return builder.AddInMemoryScopes(resources);
+            return builder.AddInMemoryApiScopes(resources);
         }
 
         /// <summary>

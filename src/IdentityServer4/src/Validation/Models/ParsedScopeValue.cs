@@ -34,7 +34,7 @@ namespace IdentityServer4.Validation
         /// </summary>
         public string Name { get; set; }
 
-        // todo: maybe this should be something w/ more structure? dictionary?
+        // future: maybe this should be something w/ more structure? dictionary?
 
         /// <summary>
         /// The value of the parsed scope. If the scope has no structure, then the value will be the same as the name.

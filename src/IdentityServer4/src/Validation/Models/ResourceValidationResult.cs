@@ -70,7 +70,7 @@ namespace IdentityServer4.Validation
             var parsedScopeNamesToKeep = parsedScopesToKeep.Select(x => x.Name).ToArray();
 
             var identityToKeep = Resources.IdentityResources.Where(x => parsedScopeNamesToKeep.Contains(x.Name));
-            var apiScopesToKeep = Resources.Scopes.Where(x => parsedScopeNamesToKeep.Contains(x.Name));
+            var apiScopesToKeep = Resources.ApiScopes.Where(x => parsedScopeNamesToKeep.Contains(x.Name));
 
             var apiScopesNamesToKeep = apiScopesToKeep.Select(x => x.Name).ToArray();
             var apiResourcesToKeep = Resources.ApiResources.Where(x => x.Scopes.Any(y => apiScopesNamesToKeep.Contains(y)));

@@ -14,26 +14,17 @@ namespace Host.Extensions
         {
         }
 
-        public override async Task<IEnumerable<ParsedScopeValue>> ParseRequestedScopes(IEnumerable<string> scopeValues)
+        public override Task<ParsedScopeValue> ParseScopeValue(string scopeValue)
         {
-            const string transactionPrefix = "transaction:";
+            const string transactionScopeName = "transaction";
+            const string transactionScopePrefix = transactionScopeName + ":";
 
-            var transaction = scopeValues.Where(x => x.StartsWith(transactionPrefix)).FirstOrDefault();
-            if (transaction != null)
+            if (scopeValue.StartsWith(transactionScopePrefix))
             {
-                scopeValues = scopeValues.Except(new[] { transaction });
+                return Task.FromResult(new ParsedScopeValue(transactionScopeName, scopeValue));
             }
 
-            var result = await base.ParseRequestedScopes(scopeValues);
-            
-            if (transaction != null)
-            {
-                var list = result.ToList();
-                list.Add(new ParsedScopeValue("transaction", transaction));
-                result = list.AsEnumerable();
-            }
-
-            return result;
+            return base.ParseScopeValue(scopeValue);
         }
     }
 }

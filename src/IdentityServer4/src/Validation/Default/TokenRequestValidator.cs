@@ -647,7 +647,7 @@ namespace IdentityServer4.Validation
             return Valid(result.CustomResponse);
         }
 
-        // todo: brock; do we want to rework the semantics of these ignore params?
+        // todo: do we want to rework the semantics of these ignore params?
         // also seems like other workflows other than CC clients can omit scopes?
         private async Task<bool> ValidateRequestedScopesAsync(NameValueCollection parameters, bool ignoreImplicitIdentityScopes = false, bool ignoreImplicitOfflineAccess = false)
         {
@@ -667,7 +667,7 @@ namespace IdentityServer4.Validation
                     }
                     else
                     {
-                        var apiScopes = await _resourceStore.FindScopesAsync(_validatedRequest.Client.AllowedScopes);
+                        var apiScopes = await _resourceStore.FindApiScopesByNameAsync(_validatedRequest.Client.AllowedScopes);
                         clientAllowedScopes.AddRange(apiScopes.Select(x => x.Name));
                     }
 

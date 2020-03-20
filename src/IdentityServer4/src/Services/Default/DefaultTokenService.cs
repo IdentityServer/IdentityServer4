@@ -233,7 +233,7 @@ namespace IdentityServer4.Services
 
             // todo: brock, consider aud selection/generation moving into resource validator
             var audiences = new List<string>();
-            foreach (var scope in request.ValidatedResources.Resources.Scopes)
+            foreach (var scope in request.ValidatedResources.Resources.ApiScopes)
             {
                 if (scope.Name.IsPresent())
                 {

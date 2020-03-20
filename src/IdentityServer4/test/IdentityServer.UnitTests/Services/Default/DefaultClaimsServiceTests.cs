@@ -169,8 +169,8 @@ namespace IdentityServer.UnitTests.Services.Default
         {
             _resources.IdentityResources.Add(new IdentityResource("id1", new[] { "foo" }));
             _resources.IdentityResources.Add(new IdentityResource("id2", new[] { "bar" }));
-            _resources.Scopes.Add(new Scope("api1"));
-            _resources.Scopes.Add(new Scope("api2"));
+            _resources.ApiScopes.Add(new ApiScope("api1"));
+            _resources.ApiScopes.Add(new ApiScope("api2"));
 
             var claims = await _subject.GetAccessTokenClaimsAsync(_user, ResourceValidationResult, _validatedRequest);
 
@@ -185,12 +185,12 @@ namespace IdentityServer.UnitTests.Services.Default
             _resources.OfflineAccess = false;
             _resources.IdentityResources.Clear();
             _resources.ApiResources.Clear();
-            _resources.Scopes.Clear();
+            _resources.ApiScopes.Clear();
 
             _resources.ApiResources.Add(new ApiResource { Name = "api1", Scopes = { "resource" } });
             _resources.ApiResources.Add(new ApiResource { Name = "api2", Scopes = { "resource" } });
             _resources.ApiResources.Add(new ApiResource { Name = "api3", Scopes = { "resource" } });
-            _resources.Scopes.Add(new Scope("resource"));
+            _resources.ApiScopes.Add(new ApiScope("resource"));
 
             var claims = await _subject.GetAccessTokenClaimsAsync(_user, ResourceValidationResult, _validatedRequest);
 
@@ -285,8 +285,8 @@ namespace IdentityServer.UnitTests.Services.Default
                     Scopes = { "api1" }
                 }
             );
-            _resources.Scopes.Add(
-                new Scope("api1")
+            _resources.ApiScopes.Add(
+                new ApiScope("api1")
                 {
                     UserClaims = { "foo" }
                 }
@@ -307,8 +307,8 @@ namespace IdentityServer.UnitTests.Services.Default
                     Scopes = { "api1" } 
                 }
             );
-            _resources.Scopes.Add(
-                new Scope("api1")
+            _resources.ApiScopes.Add(
+                new ApiScope("api1")
                 {
                     UserClaims = { "bar" }
                 }

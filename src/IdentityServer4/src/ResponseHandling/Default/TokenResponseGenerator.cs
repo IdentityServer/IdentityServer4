@@ -362,8 +362,6 @@ namespace IdentityServer4.ResponseHandling
                     throw new InvalidOperationException("Client does not exist anymore.");
                 }
 
-                // todo: brock, rerun resource validation here to get the parsed scopes?
-                // or just load from parsed scopes
                 // todo: cleanup? add as extension method (like CreateResourceValidationResult)?
                 var parsedScopes = await ResourceValidator.ParseRequestedScopes(request.AuthorizationCode.RequestedScopes);
                 var scopesNames = parsedScopes.Select(x => x.Name);
@@ -436,8 +434,7 @@ namespace IdentityServer4.ResponseHandling
         /// <returns></returns>
         protected virtual async Task<string> CreateIdTokenFromRefreshTokenRequestAsync(ValidatedTokenRequest request, string newAccessToken)
         {
-            // todo: brock maybe call the enabled version?
-            var resources = await Resources.FindResourcesByScopeAsync(request.RefreshToken.Scopes);
+            var resources = await Resources.FindEnabledResourcesByScopeAsync(request.RefreshToken.Scopes);
             if (resources.IdentityResources.Any())
             {
                 var oldAccessToken = request.RefreshToken.AccessToken;

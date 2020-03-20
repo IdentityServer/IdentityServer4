@@ -18,7 +18,7 @@ namespace IdentityServer4.Stores
     {
         private readonly IEnumerable<IdentityResource> _identityResources;
         private readonly IEnumerable<ApiResource> _apiResources;
-        private readonly IEnumerable<Scope> _scopes;
+        private readonly IEnumerable<ApiScope> _apiScopes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InMemoryResourcesStore" /> class.
@@ -26,7 +26,7 @@ namespace IdentityServer4.Stores
         public InMemoryResourcesStore(
             IEnumerable<IdentityResource> identityResources = null, 
             IEnumerable<ApiResource> apiResources = null, 
-            IEnumerable<Scope> scopes = null)
+            IEnumerable<ApiScope> apiScopes = null)
         {
             if (identityResources?.HasDuplicates(m => m.Name) == true)
             {
@@ -38,25 +38,25 @@ namespace IdentityServer4.Stores
                 throw new ArgumentException("Api resources must not contain duplicate names");
             }
             
-            if (scopes?.HasDuplicates(m => m.Name) == true)
+            if (apiScopes?.HasDuplicates(m => m.Name) == true)
             {
                 throw new ArgumentException("Scopes must not contain duplicate names");
             }
 
             _identityResources = identityResources ?? Enumerable.Empty<IdentityResource>();
             _apiResources = apiResources ?? Enumerable.Empty<ApiResource>();
-            _scopes = scopes ?? Enumerable.Empty<Scope>();
+            _apiScopes = apiScopes ?? Enumerable.Empty<ApiScope>();
         }
 
         /// <inheritdoc/>
         public Task<Resources> GetAllResourcesAsync()
         {
-            var result = new Resources(_identityResources, _apiResources, _scopes);
+            var result = new Resources(_identityResources, _apiResources, _apiScopes);
             return Task.FromResult(result);
         }
 
         /// <inheritdoc/>
-        public Task<IEnumerable<ApiResource>> FindApiResourcesAsync(IEnumerable<string> apiResourceNames)
+        public Task<IEnumerable<ApiResource>> FindApiResourcesByNameAsync(IEnumerable<string> apiResourceNames)
         {
             if (apiResourceNames == null) throw new ArgumentNullException(nameof(apiResourceNames));
 
@@ -67,7 +67,7 @@ namespace IdentityServer4.Stores
         }
 
         /// <inheritdoc/>
-        public Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeAsync(IEnumerable<string> scopeNames)
+        public Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeNameAsync(IEnumerable<string> scopeNames)
         {
             if (scopeNames == null) throw new ArgumentNullException(nameof(scopeNames));
 
@@ -79,7 +79,7 @@ namespace IdentityServer4.Stores
         }
 
         /// <inheritdoc/>
-        public Task<IEnumerable<ApiResource>> FindApiResourcesByScopeAsync(IEnumerable<string> scopeNames)
+        public Task<IEnumerable<ApiResource>> FindApiResourcesByScopeNameAsync(IEnumerable<string> scopeNames)
         {
             if (scopeNames == null) throw new ArgumentNullException(nameof(scopeNames));
 
@@ -91,12 +91,12 @@ namespace IdentityServer4.Stores
         }
 
         /// <inheritdoc/>
-        public Task<IEnumerable<Scope>> FindScopesAsync(IEnumerable<string> scopeNames)
+        public Task<IEnumerable<ApiScope>> FindApiScopesByNameAsync(IEnumerable<string> scopeNames)
         {
             if (scopeNames == null) throw new ArgumentNullException(nameof(scopeNames));
 
             var query =
-                from x in _scopes
+                from x in _apiScopes
                 where scopeNames.Contains(x.Name)
                 select x;
             

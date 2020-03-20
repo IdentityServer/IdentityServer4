@@ -65,23 +65,23 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
              };
         }
 
-        private static IEnumerable<Scope> GetScopes()
+        private static IEnumerable<ApiScope> GetScopes()
         {
-            return new Scope[]
+            return new ApiScope[]
             {
-                new Scope
+                new ApiScope
                 {
                     Name = "read",
                     DisplayName = "Read data",
                     Emphasize = false
                 },
-                new Scope
+                new ApiScope
                 {
                     Name = "write",
                     DisplayName = "Write data",
                     Emphasize = true
                 },
-                new Scope
+                new ApiScope
                 {
                     Name = "forbidden",
                     DisplayName = "Forbidden scope",
@@ -327,9 +327,9 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
             };
             var result = await _subject.ProcessConsentAsync(request, consent);
             request.ValidatedResources.Resources.IdentityResources.Count().Should().Be(1);
-            request.ValidatedResources.Resources.Scopes.Count().Should().Be(1);
+            request.ValidatedResources.Resources.ApiScopes.Count().Should().Be(1);
             "openid".Should().Be(request.ValidatedResources.Resources.IdentityResources.Select(x => x.Name).First());
-            "read".Should().Be(request.ValidatedResources.Resources.Scopes.First().Name);
+            "read".Should().Be(request.ValidatedResources.Resources.ApiScopes.First().Name);
             request.WasConsentShown.Should().BeTrue();
             result.IsConsent.Should().BeFalse();
             AssertUpdateConsentNotCalled();
@@ -357,8 +357,8 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
             };
             var result = await _subject.ProcessConsentAsync(request, consent);
             request.ValidatedResources.Resources.IdentityResources.Count().Should().Be(1);
-            request.ValidatedResources.Resources.Scopes.Count().Should().Be(1);
-            "read".Should().Be(request.ValidatedResources.Resources.Scopes.First().Name);
+            request.ValidatedResources.Resources.ApiScopes.Count().Should().Be(1);
+            "read".Should().Be(request.ValidatedResources.Resources.ApiScopes.First().Name);
             request.WasConsentShown.Should().BeTrue();
             result.IsConsent.Should().BeFalse();
             AssertUpdateConsentNotCalled();

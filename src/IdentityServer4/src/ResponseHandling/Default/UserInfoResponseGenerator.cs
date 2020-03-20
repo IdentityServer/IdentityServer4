@@ -160,7 +160,7 @@ namespace IdentityServer4.ResponseHandling
             // todo: brock, if we ever parameterize identity scopes, then we would need to invoke the resource validator's parse API here
             var identityResources = await Resources.FindEnabledIdentityResourcesByScopeAsync(scopes);
             
-            var resources = new Resources(identityResources, Enumerable.Empty<ApiResource>(), Enumerable.Empty<Scope>());
+            var resources = new Resources(identityResources, Enumerable.Empty<ApiResource>(), Enumerable.Empty<ApiScope>());
             var result = new ResourceValidationResult(resources);
             
             return result;

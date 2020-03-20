@@ -61,8 +61,8 @@ namespace IdentityServer.IntegrationTests.Endpoints.Token
                 }
             });
 
-            _mockPipeline.Scopes.AddRange(new[] {
-                new Scope
+            _mockPipeline.ApiScopes.AddRange(new[] {
+                new ApiScope
                 {
                     Name = scope_name
                 }

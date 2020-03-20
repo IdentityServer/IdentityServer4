@@ -15,20 +15,6 @@ namespace IdentityServer4.Models
     /// </summary>
     public static class ResourceExtensions
     {
-        // todo: brock see if this is still used?
-        /// <summary>
-        /// Returns the collection of scope names that are required.
-        /// </summary>
-        /// <param name="resources"></param>
-        /// <returns></returns>
-        public static IEnumerable<string> GetRequiredScopeNames(this Resources resources)
-        {
-            var identity = resources.IdentityResources.Where(x => x.Required).Select(x => x.Name);
-            var scopes = resources.Scopes.Where(x => x.Required).Select(x => x.Name);
-            var requiredScopes = identity.Union(scopes);
-            return requiredScopes;
-        }
-
         /// <summary>
         /// Returns the collection of scope values that are required.
         /// </summary>
@@ -37,7 +23,7 @@ namespace IdentityServer4.Models
         public static IEnumerable<string> GetRequiredScopeValues(this ResourceValidationResult resourceValidationResult)
         {
             var names = resourceValidationResult.Resources.IdentityResources.Where(x => x.Required).Select(x => x.Name).ToList();
-            names.AddRange(resourceValidationResult.Resources.Scopes.Where(x => x.Required).Select(x => x.Name));
+            names.AddRange(resourceValidationResult.Resources.ApiScopes.Where(x => x.Required).Select(x => x.Name));
 
             var values = resourceValidationResult.ParsedScopes.Where(x => names.Contains(x.Name)).Select(x => x.Value);
             return values;
@@ -51,7 +37,7 @@ namespace IdentityServer4.Models
         public static IEnumerable<string> ToScopeNames(this Resources resources)
         {
             var names = resources.IdentityResources.Select(x => x.Name).ToList();
-            names.AddRange(resources.Scopes.Select(x => x.Name));
+            names.AddRange(resources.ApiScopes.Select(x => x.Name));
             if (resources.OfflineAccess)
             {
                 names.Add(IdentityServerConstants.StandardScopes.OfflineAccess);
@@ -94,9 +80,9 @@ namespace IdentityServer4.Models
         /// <param name="resources">The resources.</param>
         /// <param name="name">The name.</param>
         /// <returns></returns>
-        public static Scope FindScope(this Resources resources, string name)
+        public static ApiScope FindApiScope(this Resources resources, string name)
         {
-            var q = from scope in resources.Scopes
+            var q = from scope in resources.ApiScopes
                     where scope.Name == name
                     select scope;
             return q.FirstOrDefault();
@@ -109,7 +95,7 @@ namespace IdentityServer4.Models
             return new Resources(
                 resources.IdentityResources.Where(x => x.Enabled),
                 resources.ApiResources.Where(x => x.Enabled),
-                resources.Scopes.Where(x => x.Enabled))
+                resources.ApiScopes.Where(x => x.Enabled))
             {
                 OfflineAccess = resources.OfflineAccess
             };

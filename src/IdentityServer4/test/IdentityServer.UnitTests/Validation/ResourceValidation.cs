@@ -47,13 +47,13 @@ namespace IdentityServer.UnitTests.Validation
             }
         };
 
-        private List<Scope> _scopes = new List<Scope> {
-            new Scope
+        private List<ApiScope> _scopes = new List<ApiScope> {
+            new ApiScope
             {
                 Name = "resource1",
                 Required = true
             },
-            new Scope
+            new ApiScope
             {
                 Name = "resource2"
             }
@@ -278,7 +278,7 @@ namespace IdentityServer.UnitTests.Validation
 
             result.Succeeded.Should().BeTrue();
             result.Resources.IdentityResources.SelectMany(x => x.Name).Should().Contain("openid");
-            result.Resources.Scopes.Select(x => x.Name).Should().Contain("resource1");
+            result.Resources.ApiScopes.Select(x => x.Name).Should().Contain("resource1");
         }
 
         [Fact]
@@ -296,7 +296,7 @@ namespace IdentityServer.UnitTests.Validation
 
             result.Succeeded.Should().BeTrue();
             result.Resources.IdentityResources.Should().BeEmpty();
-            result.Resources.Scopes.Select(x => x.Name).Should().Contain("resource1");
+            result.Resources.ApiScopes.Select(x => x.Name).Should().Contain("resource1");
         }
 
         [Fact]
@@ -319,25 +319,13 @@ namespace IdentityServer.UnitTests.Validation
 
         [Fact]
         [Trait("Category", Category)]
-        public void GetRequiredScopeNames_should_return_correct_scopes()
-        {
-            var resources = new Resources(_identityResources, _apiResources, _scopes);
-            
-            var result = resources.GetRequiredScopeNames();
-            
-            result.Should().BeEquivalentTo(new string[] { "openid", "resource1" });
-        }
-
-
-        [Fact]
-        [Trait("Category", Category)]
         public async Task Scope_matches_multipls_apis_should_succeed()
         {
             _apiResources.Clear();
             _apiResources.Add(new ApiResource { Name = "api1", Scopes = { "resource" } });
             _apiResources.Add(new ApiResource { Name = "api2", Scopes = { "resource" } });
             _scopes.Clear();
-            _scopes.Add(new Scope("resource"));
+            _scopes.Add(new ApiScope("resource"));
 
             var validator = Factory.CreateResourceValidator(_store);
             var result = await validator.ValidateRequestedResourcesAsync(new IdentityServer4.Validation.ResourceValidationRequest

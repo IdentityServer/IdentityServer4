@@ -22,17 +22,17 @@ namespace IdentityServer.UnitTests.Extensions
 
         private class CustomResourceStore : IResourceStore
         {
-            public Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeAsync(IEnumerable<string> scopeNames)
+            public Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeNameAsync(IEnumerable<string> scopeNames)
             {
                 throw new System.NotImplementedException();
             }
 
-            public Task<IEnumerable<ApiResource>> FindApiResourcesByScopeAsync(IEnumerable<string> scopeNames)
+            public Task<IEnumerable<ApiResource>> FindApiResourcesByScopeNameAsync(IEnumerable<string> scopeNames)
             {
                 throw new System.NotImplementedException();
             }
 
-            public Task<IEnumerable<ApiResource>> FindApiResourcesAsync(IEnumerable<string> names)
+            public Task<IEnumerable<ApiResource>> FindApiResourcesByNameAsync(IEnumerable<string> names)
             {
                 throw new System.NotImplementedException();
             }
@@ -42,7 +42,7 @@ namespace IdentityServer.UnitTests.Extensions
                 throw new System.NotImplementedException();
             }
 
-            public Task<IEnumerable<Scope>> FindScopesAsync(IEnumerable<string> scopeNames)
+            public Task<IEnumerable<ApiScope>> FindApiScopesByNameAsync(IEnumerable<string> scopeNames)
             {
                 throw new System.NotImplementedException();
             }

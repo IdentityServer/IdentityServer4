@@ -9,54 +9,54 @@ using System.Collections.Generic;
 namespace IdentityServer4.Models
 {
     /// <summary>
-    /// Models access to an API resource
+    /// Models access to an API scope
     /// </summary>
-    public class Scope : Resource
+    public class ApiScope : Resource
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Scope"/> class.
+        /// Initializes a new instance of the <see cref="ApiScope"/> class.
         /// </summary>
-        public Scope()
+        public ApiScope()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Scope"/> class.
+        /// Initializes a new instance of the <see cref="ApiScope"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
-        public Scope(string name)
+        public ApiScope(string name)
             : this(name, name, null)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Scope"/> class.
+        /// Initializes a new instance of the <see cref="ApiScope"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="displayName">The display name.</param>
-        public Scope(string name, string displayName)
+        public ApiScope(string name, string displayName)
             : this(name, displayName, null)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Scope"/> class.
+        /// Initializes a new instance of the <see cref="ApiScope"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="claimTypes">The user-claim types.</param>
-        public Scope(string name, IEnumerable<string> claimTypes)
+        public ApiScope(string name, IEnumerable<string> claimTypes)
             : this(name, name, claimTypes)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Scope"/> class.
+        /// Initializes a new instance of the <see cref="ApiScope"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="displayName">The display name.</param>
         /// <param name="claimTypes">The user-claim types.</param>
         /// <exception cref="System.ArgumentNullException">name</exception>
-        public Scope(string name, string displayName, IEnumerable<string> claimTypes)
+        public ApiScope(string name, string displayName, IEnumerable<string> claimTypes)
         {
             if (name.IsMissing()) throw new ArgumentNullException(nameof(name));
 
@@ -81,10 +81,5 @@ namespace IdentityServer4.Models
         /// Specifies whether the consent screen will emphasize this scope. Use this setting for sensitive or important scopes. Defaults to false.
         /// </summary>
         public bool Emphasize { get; set; } = false;
-
-        /// <summary>
-        /// Specifies whether this scope is shown in the discovery document. Defaults to true.
-        /// </summary>
-        public bool ShowInDiscoveryDocument { get; set; } = true;
     }
 }

@@ -101,12 +101,12 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
                     Scopes = { "api1", "api2" }
                 }
             });
-            _mockPipeline.Scopes.AddRange(new Scope[] {
-                new Scope
+            _mockPipeline.ApiScopes.AddRange(new ApiScope[] {
+                new ApiScope
                 {
                     Name = "api1"
                 },
-                new Scope
+                new ApiScope
                 {
                     Name = "api2"
                 }
@@ -1046,8 +1046,8 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
         {
             _mockPipeline.IdentityScopes.Add(new IdentityResource("foo", "Foo", new string[] { "name" }));
             _mockPipeline.IdentityScopes.Add(new IdentityResource("bar", "Bar", new string[] { "name" }));
-            _mockPipeline.Scopes.Add(new Scope("foo", "Foo"));
-            _mockPipeline.Scopes.Add(new Scope("bar", "Bar"));
+            _mockPipeline.ApiScopes.Add(new ApiScope("foo", "Foo"));
+            _mockPipeline.ApiScopes.Add(new ApiScope("bar", "Bar"));
 
             await _mockPipeline.LoginAsync("bob");
 

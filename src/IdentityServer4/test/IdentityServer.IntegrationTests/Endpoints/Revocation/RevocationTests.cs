@@ -92,9 +92,9 @@ namespace IdentityServer.IntegrationTests.Endpoints.Revocation
                 }
             });
 
-            _mockPipeline.Scopes.AddRange(new Scope[]
+            _mockPipeline.ApiScopes.AddRange(new ApiScope[]
             {
-                new Scope
+                new ApiScope
                 {
                     Name = scope_name
                 }
