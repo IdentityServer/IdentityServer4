@@ -180,6 +180,30 @@ namespace Host.Configuration
                     AllowedScopes = {"api1", "api2.read_only"},
                     AccessTokenType = AccessTokenType.Reference
                 },
+                
+                ///////////////////////////////////////////
+                // Device Flow Sample
+                //////////////////////////////////////////
+                new Client
+                {
+                    ClientId = "device",
+                    ClientName = "Device Flow Client",
+
+                    AllowedGrantTypes = GrantTypes.DeviceFlow,
+                    RequireClientSecret = false,
+
+                    AllowOfflineAccess = true,
+
+                    AllowedCorsOrigins = { "http://localhost:5001" }, // JS test client only
+
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
+                        "api1", "api2.read_only", "api2.full_access"
+                    }
+                }
             };
         }
     }
