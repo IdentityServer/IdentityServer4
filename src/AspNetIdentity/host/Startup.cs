@@ -35,7 +35,7 @@ namespace Host
                 .AddDeveloperSigningCredential()
                 .AddInMemoryIdentityResources(Host.Configuration.Resources.IdentityResources)
                 .AddInMemoryApiResources(Host.Configuration.Resources.ApiResources)
-                .AddInMemoryScopes(Host.Configuration.Resources.Scopes)
+                .AddInMemoryApiScopes(Host.Configuration.Resources.ApiScopes)
                 .AddInMemoryClients(Clients.Get())
                 .AddAspNetIdentity<ApplicationUser>();
         }

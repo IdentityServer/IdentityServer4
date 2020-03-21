@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Host.Configuration;
 using IdentityServer4.EntityFramework.Interfaces;
 using IdentityServer4.EntityFramework.Mappers;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,7 +27,7 @@ namespace SqlServer
             if (!context.Clients.Any())
             {
                 Console.WriteLine("Clients being populated");
-                foreach (var client in Config.Clients)
+                foreach (var client in Clients.Get())
                 {
                     context.Clients.Add(client.ToEntity());
                 }
@@ -40,7 +41,7 @@ namespace SqlServer
             if (!context.IdentityResources.Any())
             {
                 Console.WriteLine("IdentityResources being populated");
-                foreach (var resource in Config.IdentityResources)
+                foreach (var resource in Resources.IdentityResources)
                 {
                     context.IdentityResources.Add(resource.ToEntity());
                 }
@@ -54,7 +55,7 @@ namespace SqlServer
             if (!context.ApiResources.Any())
             {
                 Console.WriteLine("ApiResources being populated");
-                foreach (var resource in Config.ApiResources)
+                foreach (var resource in Resources.ApiResources)
                 {
                     context.ApiResources.Add(resource.ToEntity());
                 }
@@ -65,12 +66,12 @@ namespace SqlServer
                 Console.WriteLine("ApiResources already populated");
             }
 
-            if (!context.Scopes.Any())
+            if (!context.ApiScopes.Any())
             {
                 Console.WriteLine("Scopes being populated");
-                foreach (var resource in Config.Scopes)
+                foreach (var resource in Resources.ApiScopes)
                 {
-                    context.Scopes.Add(resource.ToEntity());
+                    context.ApiScopes.Add(resource.ToEntity());
                 }
                 context.SaveChanges();
             }
