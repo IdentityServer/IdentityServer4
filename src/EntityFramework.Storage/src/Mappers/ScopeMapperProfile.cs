@@ -18,16 +18,16 @@ namespace IdentityServer4.EntityFramework.Mappers
         /// </summary>
         public ScopeMapperProfile()
         {
-            CreateMap<Entities.ScopeProperty, KeyValuePair<string, string>>()
+            CreateMap<Entities.ApiScopeProperty, KeyValuePair<string, string>>()
                 .ReverseMap();
 
-            CreateMap<Entities.ScopeClaim, string>()
+            CreateMap<Entities.ApiScopeClaim, string>()
                .ConstructUsing(x => x.Type)
                .ReverseMap()
                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src));
 
-            CreateMap<Entities.Scope, Models.Scope>(MemberList.Destination)
-                .ConstructUsing(src => new Models.Scope())
+            CreateMap<Entities.ApiScope, Models.ApiScope>(MemberList.Destination)
+                .ConstructUsing(src => new Models.ApiScope())
                 .ForMember(x => x.Properties, opts => opts.MapFrom(x => x.Properties))
                 .ForMember(x => x.UserClaims, opts => opts.MapFrom(x => x.UserClaims))
                 .ReverseMap();

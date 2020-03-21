@@ -45,7 +45,7 @@ namespace IdentityServer4.EntityFramework.Interfaces
         /// <value>
         /// The identity resources.
         /// </value>
-        DbSet<Scope> Scopes { get; set; }
+        DbSet<ApiScope> ApiScopes { get; set; }
 
         /// <summary>
         /// Saves the changes.

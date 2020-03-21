@@ -21,7 +21,7 @@ namespace IdentityServer4.EntityFramework.UnitTests.Mappers
         [Fact]
         public void CanMapScope()
         {
-            var model = new Scope();
+            var model = new ApiScope();
             var mappedEntity = model.ToEntity();
             var mappedModel = mappedEntity.ToModel();
 
@@ -32,7 +32,7 @@ namespace IdentityServer4.EntityFramework.UnitTests.Mappers
         [Fact]
         public void Properties_Map()
         {
-            var model = new Scope()
+            var model = new ApiScope()
             {
                 Description = "description",
                 DisplayName = "displayname",

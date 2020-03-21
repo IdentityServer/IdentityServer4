@@ -6,9 +6,9 @@
 
 namespace IdentityServer4.EntityFramework.Entities
 {
-    public class ScopeProperty : Property
+    public class ApiScopeProperty : Property
     {
         public int ScopeId { get; set; }
-        public Scope Scope { get; set; }
+        public ApiScope Scope { get; set; }
     }
 }

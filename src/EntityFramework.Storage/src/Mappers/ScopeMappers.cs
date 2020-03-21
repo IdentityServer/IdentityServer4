@@ -25,9 +25,9 @@ namespace IdentityServer4.EntityFramework.Mappers
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <returns></returns>
-        public static Models.Scope ToModel(this Scope entity)
+        public static Models.ApiScope ToModel(this ApiScope entity)
         {
-            return entity == null ? null : Mapper.Map<Models.Scope>(entity);
+            return entity == null ? null : Mapper.Map<Models.ApiScope>(entity);
         }
 
         /// <summary>
@@ -35,9 +35,9 @@ namespace IdentityServer4.EntityFramework.Mappers
         /// </summary>
         /// <param name="model">The model.</param>
         /// <returns></returns>
-        public static Scope ToEntity(this Models.Scope model)
+        public static ApiScope ToEntity(this Models.ApiScope model)
         {
-            return model == null ? null : Mapper.Map<Scope>(model);
+            return model == null ? null : Mapper.Map<ApiScope>(model);
         }
     }
 }

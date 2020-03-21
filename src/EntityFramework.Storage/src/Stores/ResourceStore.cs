@@ -48,7 +48,7 @@ namespace IdentityServer4.EntityFramework.Stores
         /// </summary>
         /// <param name="apiResourceNames">The names.</param>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<ApiResource>> FindApiResourcesAsync(IEnumerable<string> apiResourceNames)
+        public virtual async Task<IEnumerable<ApiResource>> FindApiResourcesByNameAsync(IEnumerable<string> apiResourceNames)
         {
             if (apiResourceNames == null) throw new ArgumentNullException(nameof(apiResourceNames));
 
@@ -64,18 +64,18 @@ namespace IdentityServer4.EntityFramework.Stores
                 .Include(x => x.Properties)
                 .AsNoTracking();
 
-            var api = await apis.ToArrayAsync();
+            var result = (await apis.ToArrayAsync()).Select(x => x.ToModel()).ToArray();
 
-            if (apis.Any())
+            if (result.Any())
             {
-                Logger.LogDebug("Found {apis} API resource in database", apis.Select(x=>x.Name));
+                Logger.LogDebug("Found {apis} API resource in database", result.Select(x => x.Name));
             }
             else
             {
                 Logger.LogDebug("Did not find {apis} API resource in database", apiResourceNames);
             }
 
-            return apis.Select(x => x.ToModel());
+            return result;
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace IdentityServer4.EntityFramework.Stores
         /// </summary>
         /// <param name="scopeNames"></param>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<ApiResource>> FindApiResourcesByScopeAsync(IEnumerable<string> scopeNames)
+        public virtual async Task<IEnumerable<ApiResource>> FindApiResourcesByScopeNameAsync(IEnumerable<string> scopeNames)
         {
             var names = scopeNames.ToArray();
 
@@ -112,7 +112,7 @@ namespace IdentityServer4.EntityFramework.Stores
         /// </summary>
         /// <param name="scopeNames"></param>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeAsync(IEnumerable<string> scopeNames)
+        public virtual async Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeNameAsync(IEnumerable<string> scopeNames)
         {
             var scopes = scopeNames.ToArray();
 
@@ -138,12 +138,12 @@ namespace IdentityServer4.EntityFramework.Stores
         /// </summary>
         /// <param name="scopeNames"></param>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<Scope>> FindScopesAsync(IEnumerable<string> scopeNames)
+        public virtual async Task<IEnumerable<ApiScope>> FindApiScopesByNameAsync(IEnumerable<string> scopeNames)
         {
             var scopes = scopeNames.ToArray();
 
             var query =
-                from scope in Context.Scopes
+                from scope in Context.ApiScopes
                 where scopes.Contains(scope.Name)
                 select scope;
 
@@ -157,7 +157,6 @@ namespace IdentityServer4.EntityFramework.Stores
             Logger.LogDebug("Found {scopes} scopes in database", results.Select(x => x.Name));
 
             return results.Select(x => x.ToModel()).ToArray();
-
         }
 
         /// <summary>
@@ -177,7 +176,7 @@ namespace IdentityServer4.EntityFramework.Stores
                 .Include(x => x.Properties)
                 .AsNoTracking();
             
-            var scopes = Context.Scopes
+            var scopes = Context.ApiScopes
                 .Include(x => x.UserClaims)
                 .Include(x => x.Properties)
                 .AsNoTracking();
@@ -189,7 +188,7 @@ namespace IdentityServer4.EntityFramework.Stores
             );
 
             Logger.LogDebug("Found {scopes} as all scopes, and {apis} as API resources", 
-                result.IdentityResources.Select(x=>x.Name).Union(result.Scopes.Select(x=>x.Name)),
+                result.IdentityResources.Select(x=>x.Name).Union(result.ApiScopes.Select(x=>x.Name)),
                 result.ApiResources.Select(x=>x.Name));
 
             return result;

@@ -75,12 +75,12 @@ namespace IdentityServer4.EntityFramework.DbContexts
         /// </value>
         public DbSet<ApiResource> ApiResources { get; set; }
         /// <summary>
-        /// Gets or sets the scopes.
+        /// Gets or sets the API scopes.
         /// </summary>
         /// <value>
         /// The API resources.
         /// </value>
-        public DbSet<Scope> Scopes { get; set; }
+        public DbSet<ApiScope> ApiScopes { get; set; }
 
         /// <summary>
         /// Saves the changes.

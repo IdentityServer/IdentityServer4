@@ -33,11 +33,11 @@ namespace IdentityServer4.EntityFramework.Mappers
                 .ReverseMap()
                 .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src));
 
-            CreateMap<Entities.ApiSecret, Models.Secret>(MemberList.Destination)
+            CreateMap<Entities.ApiResourceSecret, Models.Secret>(MemberList.Destination)
                 .ForMember(dest => dest.Type, opt => opt.Condition(srs => srs != null))
                 .ReverseMap();
 
-            CreateMap<Entities.ApiScope, string>()
+            CreateMap<Entities.ApiResourceScope, string>()
                 .ConstructUsing(x => x.Scope)
                 .ReverseMap()
                 .ForMember(dest => dest.Scope, opt => opt.MapFrom(src => src));

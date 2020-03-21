@@ -65,9 +65,9 @@ namespace IdentityServer4.EntityFramework.UnitTests.Mappers
         {
             var entity = new IdentityServer4.EntityFramework.Entities.ApiResource
             {
-                Secrets = new System.Collections.Generic.List<Entities.ApiSecret>
+                Secrets = new System.Collections.Generic.List<Entities.ApiResourceSecret>
                 {
-                    new Entities.ApiSecret
+                    new Entities.ApiResourceSecret
                     {
                     }
                 }
