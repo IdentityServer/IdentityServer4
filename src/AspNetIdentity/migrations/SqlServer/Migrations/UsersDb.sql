@@ -123,7 +123,7 @@ CREATE UNIQUE INDEX [UserNameIndex] ON [AspNetUsers] ([NormalizedUserName]) WHER
 GO
 
 INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-VALUES (N'20190806142834_Users', N'3.0.0-preview7.19362.6');
+VALUES (N'20200323135751_Users', N'3.1.0');
 
 GO
 
