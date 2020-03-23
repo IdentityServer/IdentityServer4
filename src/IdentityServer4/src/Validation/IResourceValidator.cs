@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace IdentityServer4.Validation
 {
     /// <summary>
-    /// Validates requested resources (scopes and resource identifiers)
+    /// Validates requested resources (scopes and resource indicators)
     /// </summary>
     public interface IResourceValidator
     {

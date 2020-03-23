@@ -67,7 +67,7 @@ namespace IdentityServer4.Validation
         public ICollection<string> InvalidScopes { get; set; } = new HashSet<string>();
 
         /// <summary>
-        /// 
+        /// Returns new result filted by the scope values.
         /// </summary>
         /// <param name="scopeValues"></param>
         /// <returns></returns>
