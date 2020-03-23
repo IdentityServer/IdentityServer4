@@ -209,6 +209,12 @@ namespace IdentityServer4.Services
                 AllowedSigningAlgorithms = request.ValidatedResources.Resources.ApiResources.FindMatchingSigningAlgorithms()
             };
 
+            // add aud based on ApiResources in the validated request
+            foreach (var aud in request.ValidatedResources.Resources.ApiResources.Select(x => x.Name).Distinct())
+            {
+                token.Audiences.Add(aud);
+            }
+
             if (Options.EmitLegacyResourceAudienceClaim)
             {
                 token.Audiences.Add(string.Format(IdentityServerConstants.AccessTokenAudience, issuer.EnsureTrailingSlash()));
@@ -229,34 +235,6 @@ namespace IdentityServer4.Services
                         token.Confirmation = clientCertificate.CreateThumbprintCnf();
                     }
                 }
-            }
-
-            // todo: consider aud selection/generation moving into resource validator
-            var audiences = new List<string>();
-            foreach (var scope in request.ValidatedResources.Resources.ApiScopes)
-            {
-                if (scope.Name.IsPresent())
-                {
-                    var apiResources = request.ValidatedResources.Resources.FindApiResourcesByScope(scope.Name);
-                    if (apiResources.Any())
-                    {
-                        audiences.AddRange(apiResources.Select(x => x.Name));
-                    }
-                    else
-                    {
-                        audiences.Add(scope.Name);
-                    }
-                }
-            }
-
-            if (request.ValidatedResources.Resources.ApiResources.Any())
-            {
-                audiences.AddRange(request.ValidatedResources.Resources.ApiResources.Select(x => x.Name));
-            }
-
-            foreach(var aud in audiences.Distinct())
-            {
-                token.Audiences.Add(aud);
             }
 
             return token;

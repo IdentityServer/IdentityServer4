@@ -72,7 +72,7 @@ namespace WindowsConsoleSystemBrowser
             {
                 Authority = Constants.Authority,
                 ClientId = "winconsole",
-                Scope = "openid profile api1",
+                Scope = "openid profile feature1",
                 RedirectUri = redirectUri,
             };
 
