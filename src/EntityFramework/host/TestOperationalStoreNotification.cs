@@ -21,5 +21,14 @@ namespace Host
             }
             return Task.CompletedTask;
         }
+
+        public Task DeviceCodesRemovedAsync(IEnumerable<DeviceFlowCodes> deviceCodes)
+        {
+            foreach (var deviceCode in deviceCodes) 
+            {
+                Console.WriteLine("cleaned device code");
+            }
+            return Task.CompletedTask;
+        }
     }
 }

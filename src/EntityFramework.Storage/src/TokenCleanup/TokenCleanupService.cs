@@ -130,6 +130,11 @@ namespace IdentityServer4.EntityFramework
                     try
                     {
                         await _persistedGrantDbContext.SaveChangesAsync();
+
+                        if (_operationalStoreNotification != null)
+                        {
+                            await _operationalStoreNotification.DeviceCodesRemovedAsync(expiredCodes);
+                        }
                     }
                     catch (DbUpdateConcurrencyException ex)
                     {
