@@ -74,7 +74,7 @@ namespace IdentityServer4.EntityFramework.DbContexts
         /// Saves the changes.
         /// </summary>
         /// <returns></returns>
-        public Task<int> SaveChangesAsync()
+        public virtual Task<int> SaveChangesAsync()
         {
             return base.SaveChangesAsync();
         }

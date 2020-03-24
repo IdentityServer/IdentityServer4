@@ -3,7 +3,6 @@
 
 
 using System;
-using System.Threading.Tasks;
 using IdentityServer4.EntityFramework.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -46,17 +45,5 @@ namespace IdentityServer4.EntityFramework.Interfaces
         /// The identity resources.
         /// </value>
         DbSet<ApiScope> ApiScopes { get; set; }
-
-        /// <summary>
-        /// Saves the changes.
-        /// </summary>
-        /// <returns></returns>
-        int SaveChanges();
-        
-        /// <summary>
-        /// Saves the changes.
-        /// </summary>
-        /// <returns></returns>
-        Task<int> SaveChangesAsync();
     }
 }

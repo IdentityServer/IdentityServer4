@@ -35,12 +35,6 @@ namespace IdentityServer4.EntityFramework.Interfaces
         /// Saves the changes.
         /// </summary>
         /// <returns></returns>
-        int SaveChanges();
-
-        /// <summary>
-        /// Saves the changes.
-        /// </summary>
-        /// <returns></returns>
         Task<int> SaveChangesAsync();
     }
 }
