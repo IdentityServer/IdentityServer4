@@ -73,14 +73,14 @@ namespace IdentityServer4.Endpoints.Results
         {
             // these are the conditions where we can send a response 
             // back directly to the client, otherwise we're only showing the error UI
-            var isPromptNoneError = Response.Error == OidcConstants.AuthorizeErrors.AccountSelectionRequired ||
+            var isSafeError =
+                Response.Error == OidcConstants.AuthorizeErrors.AccessDenied ||
+                Response.Error == OidcConstants.AuthorizeErrors.AccountSelectionRequired ||
                 Response.Error == OidcConstants.AuthorizeErrors.LoginRequired ||
                 Response.Error == OidcConstants.AuthorizeErrors.ConsentRequired ||
                 Response.Error == OidcConstants.AuthorizeErrors.InteractionRequired;
 
-            if (Response.Error == OidcConstants.AuthorizeErrors.AccessDenied ||
-                (isPromptNoneError && Response.Request?.PromptMode == OidcConstants.PromptModes.None)
-            )
+            if (isSafeError)
             {
                 // this scenario we can return back to the client
                 await ProcessResponseAsync(context);
