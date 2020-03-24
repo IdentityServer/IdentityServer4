@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityServer.UnitTests.Common;
@@ -49,8 +50,6 @@ namespace IdentityServer.UnitTests.Services.Default
         [Fact]
         public async Task CreateAccessTokenAsync_should_include_aud_for_each_ApiResource()
         {
-            var scope = new ApiScope() { Name = "resource" };
-
             var request = new TokenCreationRequest { 
                 ValidatedResources = new ResourceValidationResult()
                 {
@@ -58,16 +57,16 @@ namespace IdentityServer.UnitTests.Services.Default
                     {
                         ApiResources = 
                         {
-                            new ApiResource("api1"){ Scopes = { scope.Name } },
-                            new ApiResource("api2"){ Scopes = { scope.Name } },
-                            new ApiResource("api3"){ Scopes = { scope.Name } },
+                            new ApiResource("api1"){ Scopes = { "scope1" } },
+                            new ApiResource("api2"){ Scopes = { "scope2" } },
+                            new ApiResource("api3"){ Scopes = { "scope3" } },
                         },
                     },
                     ParsedScopes =
                     {
-                        new ParsedScopeValue("res1"),
-                        new ParsedScopeValue("res2"),
-                        new ParsedScopeValue("res3"),
+                        new ParsedScopeValue("scope1"),
+                        new ParsedScopeValue("scope2"),
+                        new ParsedScopeValue("scope3"),
                     }
                 },
                 ValidatedRequest = new ValidatedRequest()
@@ -80,6 +79,40 @@ namespace IdentityServer.UnitTests.Services.Default
 
             result.Audiences.Count.Should().Be(3);
             result.Audiences.Should().BeEquivalentTo(new[] { "api1", "api2", "api3" });
+        }
+
+        [Fact]
+        public async Task CreateAccessTokenAsync_when_no_apiresources_should_not_include_any_aud()
+        {
+            var request = new TokenCreationRequest
+            {
+                ValidatedResources = new ResourceValidationResult()
+                {
+                    Resources = new Resources()
+                    {
+                        ApiScopes =
+                        {
+                            new ApiScope("scope1"),
+                            new ApiScope("scope2"),
+                            new ApiScope("scope3"),
+                        },
+                    },
+                    ParsedScopes =
+                    {
+                        new ParsedScopeValue("scope1"),
+                        new ParsedScopeValue("scope2"),
+                        new ParsedScopeValue("scope3"),
+                    }
+                },
+                ValidatedRequest = new ValidatedRequest()
+                {
+                    Client = new Client { }
+                }
+            };
+
+            var result = await _subject.CreateAccessTokenAsync(request);
+
+            result.Audiences.Count.Should().Be(0);
         }
     }
 }

@@ -178,6 +178,53 @@ namespace IdentityServer.UnitTests.Services.Default
             scopes.Count().Should().Be(4);
             scopes.ToArray().Should().BeEquivalentTo(new string[] { "api1", "api2", "id1", "id2" });
         }
+        
+        [Fact]
+        public async Task GetAccessTokenClaimsAsync_should_contain_parameterized_scope_values()
+        {
+            _resources.ApiScopes.Add(new ApiScope("api"));
+            var resourceResult = new ResourceValidationResult()
+            {
+                Resources = _resources,
+                ParsedScopes = { new ParsedScopeValue("api", "api:123") }
+            };
+
+            var claims = await _subject.GetAccessTokenClaimsAsync(_user, resourceResult, _validatedRequest);
+
+            var scopes = claims.Where(x => x.Type == JwtClaimTypes.Scope).Select(x => x.Value);
+            scopes.Count().Should().Be(1);
+            scopes.ToArray().Should().BeEquivalentTo(new string[] { "api:123" });
+        }
+
+        [Fact]
+        public async Task GetAccessTokenClaimsAsync_when_no_ApiScopes_should_not_contain_scopes()
+        {
+            _resources.ApiResources.Add(new ApiResource("api1"));
+
+            var claims = await _subject.GetAccessTokenClaimsAsync(_user, ResourceValidationResult, _validatedRequest);
+
+            var scopes = claims.Where(x => x.Type == JwtClaimTypes.Scope).Select(x => x.Value);
+            scopes.Count().Should().Be(0);
+        }
+        
+        [Fact]
+        public async Task GetAccessTokenClaimsAsync_should_only_consider_parsed_scope_values_and_not_ApiScope()
+        {
+            // arguably, if this situation arises, then the ResourceValidationResult was not populated properly
+            // with ParsedScopes matching ApiScopes
+            _resources.ApiScopes.Add(new ApiScope("api1"));
+            var resourceResult = new ResourceValidationResult()
+            {
+                Resources = _resources,
+                ParsedScopes = { new ParsedScopeValue("api2") }
+            };
+
+            var claims = await _subject.GetAccessTokenClaimsAsync(_user, resourceResult, _validatedRequest);
+
+            var scopes = claims.Where(x => x.Type == JwtClaimTypes.Scope).Select(x => x.Value);
+            scopes.Count().Should().Be(1);
+            scopes.ToArray().Should().BeEquivalentTo(new string[] { "api2" });
+        }
 
         [Fact]
         public async Task GetAccessTokenClaimsAsync_when_multiple_resources_with_same_scope_should_contain_scope_once()
