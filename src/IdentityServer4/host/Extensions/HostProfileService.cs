@@ -1,13 +1,14 @@
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
+using IdentityServer4.Test;
 using Microsoft.Extensions.Logging;
 
 namespace Host.Extensions
 {
-    public class HostProfileService : DefaultProfileService
+    public class HostProfileService : TestUserProfileService
     {
-        public HostProfileService(ILogger<DefaultProfileService> logger) : base(logger)
+        public HostProfileService(TestUserStore users, ILogger<TestUserProfileService> logger) : base(users, logger)
         {
         }
 

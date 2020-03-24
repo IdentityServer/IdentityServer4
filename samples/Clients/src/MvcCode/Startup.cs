@@ -52,7 +52,9 @@ namespace MvcCode
                     options.Scope.Add("openid");
                     options.Scope.Add("profile");
                     options.Scope.Add("email");
-                    options.Scope.Add("api1");
+                    options.Scope.Add("feature1");
+                    //options.Scope.Add("transaction:123");
+                    //options.Scope.Add("transaction");
                     options.Scope.Add("offline_access");
 
                     // not mapped by default

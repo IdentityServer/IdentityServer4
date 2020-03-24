@@ -44,7 +44,7 @@ namespace ConsoleEphemeralMtlsClient
 
                 ClientId = "client",
                 ClientSecret = "secret",
-                Scope = "api1"
+                Scope = "feature1"
             });
 
             if (response.IsError) throw new Exception(response.Error);

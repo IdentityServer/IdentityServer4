@@ -22,12 +22,12 @@ namespace IdentityServer4.Models
         public ClaimsPrincipal Subject { get; set; }
 
         /// <summary>
-        /// Gets or sets the resources.
+        /// Gets or sets the validated resources.
         /// </summary>
         /// <value>
         /// The resources.
         /// </value>
-        public Resources Resources { get; set; }
+        public ResourceValidationResult ValidatedResources { get; set; }
 
         /// <summary>
         /// Gets or sets the validated request.
@@ -82,7 +82,7 @@ namespace IdentityServer4.Models
         /// </summary>
         public void Validate()
         {
-            if (Resources == null) throw new ArgumentNullException(nameof(Resources));
+            if (ValidatedResources == null) throw new ArgumentNullException(nameof(ValidatedResources));
             if (ValidatedRequest == null) throw new ArgumentNullException(nameof(ValidatedRequest));
         }
     }

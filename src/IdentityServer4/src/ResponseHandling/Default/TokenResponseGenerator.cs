@@ -38,6 +38,11 @@ namespace IdentityServer4.ResponseHandling
         protected readonly IRefreshTokenService RefreshTokenService;
 
         /// <summary>
+        /// The resource validator
+        /// </summary>
+        public IResourceValidator ResourceValidator { get; }
+
+        /// <summary>
         /// The resource store
         /// </summary>
         protected readonly IResourceStore Resources;
@@ -58,14 +63,16 @@ namespace IdentityServer4.ResponseHandling
         /// <param name="clock">The clock.</param>
         /// <param name="tokenService">The token service.</param>
         /// <param name="refreshTokenService">The refresh token service.</param>
+        /// <param name="resourceValidator">The resource validator.</param>
         /// <param name="resources">The resources.</param>
         /// <param name="clients">The clients.</param>
         /// <param name="logger">The logger.</param>
-        public TokenResponseGenerator(ISystemClock clock, ITokenService tokenService, IRefreshTokenService refreshTokenService, IResourceStore resources, IClientStore clients, ILogger<TokenResponseGenerator> logger)
+        public TokenResponseGenerator(ISystemClock clock, ITokenService tokenService, IRefreshTokenService refreshTokenService, IResourceValidator resourceValidator, IResourceStore resources, IClientStore clients, ILogger<TokenResponseGenerator> logger)
         {
             Clock = clock;
             TokenService = tokenService;
             RefreshTokenService = refreshTokenService;
+            ResourceValidator = resourceValidator;
             Resources = resources;
             Clients = clients;
             Logger = logger;
@@ -165,12 +172,13 @@ namespace IdentityServer4.ResponseHandling
                     throw new InvalidOperationException("Client does not exist anymore.");
                 }
 
-                var resources = await Resources.FindEnabledResourcesByScopeAsync(request.ValidatedRequest.AuthorizationCode.RequestedScopes);
+                var parsedScopes = await ResourceValidator.ParseRequestedScopesAsync(request.ValidatedRequest.AuthorizationCode.RequestedScopes);
+                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopes);
 
                 var tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.ValidatedRequest.AuthorizationCode.Subject,
-                    Resources = resources,
+                    ValidatedResources = validatedResources,
                     Nonce = request.ValidatedRequest.AuthorizationCode.Nonce,
                     AccessTokenToHash = response.AccessToken,
                     StateHash = request.ValidatedRequest.AuthorizationCode.StateHash,
@@ -201,11 +209,14 @@ namespace IdentityServer4.ResponseHandling
             {
                 var subject = request.ValidatedRequest.RefreshToken.Subject;
 
+                var parsedScopes = await ResourceValidator.ParseRequestedScopesAsync(oldAccessToken.Scopes);
+                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopes);
+
                 var creationRequest = new TokenCreationRequest
                 {
                     Subject = subject,
                     ValidatedRequest = request.ValidatedRequest,
-                    Resources = await Resources.FindEnabledResourcesByScopeAsync(oldAccessToken.Scopes)
+                    ValidatedResources = validatedResources
                 };
 
                 var newAccessToken = await TokenService.CreateAccessTokenAsync(creationRequest);
@@ -277,12 +288,13 @@ namespace IdentityServer4.ResponseHandling
                     throw new InvalidOperationException("Client does not exist anymore.");
                 }
 
-                var resources = await Resources.FindEnabledResourcesByScopeAsync(request.ValidatedRequest.DeviceCode.AuthorizedScopes);
-
+                var parsedScopes = await ResourceValidator.ParseRequestedScopesAsync(request.ValidatedRequest.DeviceCode.AuthorizedScopes);
+                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopes);
+                
                 var tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.ValidatedRequest.DeviceCode.Subject,
-                    Resources = resources,
+                    ValidatedResources = validatedResources,
                     AccessTokenToHash = response.AccessToken,
                     ValidatedRequest = request.ValidatedRequest
                 };
@@ -320,7 +332,7 @@ namespace IdentityServer4.ResponseHandling
                 AccessToken = accessToken,
                 AccessTokenLifetime = validationResult.ValidatedRequest.AccessTokenLifetime,
                 Custom = validationResult.CustomResponse,
-                Scope = validationResult.ValidatedRequest.Scopes.ToSpaceSeparatedString()
+                Scope = validationResult.ValidatedRequest.ValidatedResources.ScopeValues.ToSpaceSeparatedString()
             };
 
             if (refreshToken.IsPresent())
@@ -357,12 +369,13 @@ namespace IdentityServer4.ResponseHandling
                     throw new InvalidOperationException("Client does not exist anymore.");
                 }
 
-                var resources = await Resources.FindEnabledResourcesByScopeAsync(request.AuthorizationCode.RequestedScopes);
+                var parsedScopes = await ResourceValidator.ParseRequestedScopesAsync(request.AuthorizationCode.RequestedScopes);
+                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopes);
 
                 tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.AuthorizationCode.Subject,
-                    Resources = resources,
+                    ValidatedResources = validatedResources,
                     ValidatedRequest = request
                 };
             }
@@ -380,23 +393,24 @@ namespace IdentityServer4.ResponseHandling
                     throw new InvalidOperationException("Client does not exist anymore.");
                 }
 
-                var resources = await Resources.FindEnabledResourcesByScopeAsync(request.DeviceCode.AuthorizedScopes);
+                var parsedScopes = await ResourceValidator.ParseRequestedScopesAsync(request.DeviceCode.AuthorizedScopes);
+                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopes);
 
                 tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.DeviceCode.Subject,
-                    Resources = resources,
+                    ValidatedResources = validatedResources,
                     ValidatedRequest = request
                 };
             }
             else
             {
-                createRefreshToken = request.ValidatedScopes.ContainsOfflineAccessScope;
+                createRefreshToken = request.ValidatedResources.Resources.OfflineAccess;
 
                 tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.Subject,
-                    Resources = request.ValidatedScopes.GrantedResources,
+                    ValidatedResources = request.ValidatedResources,
                     ValidatedRequest = request
                 };
             }
@@ -421,14 +435,18 @@ namespace IdentityServer4.ResponseHandling
         /// <returns></returns>
         protected virtual async Task<string> CreateIdTokenFromRefreshTokenRequestAsync(ValidatedTokenRequest request, string newAccessToken)
         {
-            var resources = await Resources.FindResourcesByScopeAsync(request.RefreshToken.Scopes);
+            var resources = await Resources.FindEnabledResourcesByScopeAsync(request.RefreshToken.Scopes);
             if (resources.IdentityResources.Any())
             {
                 var oldAccessToken = request.RefreshToken.AccessToken;
+                
+                var parsedScopes = await ResourceValidator.ParseRequestedScopesAsync(oldAccessToken.Scopes);
+                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopes);
+
                 var tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.RefreshToken.Subject,
-                    Resources = await Resources.FindEnabledResourcesByScopeAsync(oldAccessToken.Scopes),
+                    ValidatedResources = validatedResources,
                     ValidatedRequest = request,
                     AccessTokenToHash = newAccessToken
                 };

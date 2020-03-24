@@ -153,7 +153,7 @@ namespace IdentityServer4.Services
 
             claims.AddRange(await ClaimsProvider.GetIdentityTokenClaimsAsync(
                 request.Subject,
-                request.Resources,
+                request.ValidatedResources,
                 request.IncludeAllIdentityClaims,
                 request.ValidatedRequest));
 
@@ -189,7 +189,7 @@ namespace IdentityServer4.Services
             var claims = new List<Claim>();
             claims.AddRange(await ClaimsProvider.GetAccessTokenClaimsAsync(
                 request.Subject,
-                request.Resources,
+                request.ValidatedResources,
                 request.ValidatedRequest));
 
             if (request.ValidatedRequest.Client.IncludeJwtId)
@@ -206,8 +206,14 @@ namespace IdentityServer4.Services
                 Claims = claims.Distinct(new ClaimComparer()).ToList(),
                 ClientId = request.ValidatedRequest.Client.ClientId,
                 AccessTokenType = request.ValidatedRequest.AccessTokenType,
-                AllowedSigningAlgorithms = request.Resources.ApiResources.FindMatchingSigningAlgorithms()
+                AllowedSigningAlgorithms = request.ValidatedResources.Resources.ApiResources.FindMatchingSigningAlgorithms()
             };
+
+            // add aud based on ApiResources in the validated request
+            foreach (var aud in request.ValidatedResources.Resources.ApiResources.Select(x => x.Name).Distinct())
+            {
+                token.Audiences.Add(aud);
+            }
 
             if (Options.EmitLegacyResourceAudienceClaim)
             {
@@ -231,14 +237,6 @@ namespace IdentityServer4.Services
                 }
             }
 
-            foreach (var api in request.Resources.ApiResources)
-            {
-                if (api.Name.IsPresent())
-                {
-                    token.Audiences.Add(api.Name);
-                }
-            }
-            
             return token;
         }
 

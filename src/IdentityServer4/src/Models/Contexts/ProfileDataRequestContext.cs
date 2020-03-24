@@ -81,7 +81,7 @@ namespace IdentityServer4.Models
         /// <value>
         /// The resources.
         /// </value>
-        public Resources RequestedResources { get; set; }
+        public ResourceValidationResult RequestedResources { get; set; }
 
         /// <summary>
         /// Gets or sets the issued claims.

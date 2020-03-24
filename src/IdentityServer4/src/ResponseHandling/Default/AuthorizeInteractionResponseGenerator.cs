@@ -237,7 +237,7 @@ namespace IdentityServer4.ResponseHandling
                 throw new ArgumentException("Invalid PromptMode");
             }
 
-            var consentRequired = await Consent.RequiresConsentAsync(request.Subject, request.Client, request.RequestedScopes);
+            var consentRequired = await Consent.RequiresConsentAsync(request.Subject, request.Client, request.ValidatedResources.ParsedScopes);
 
             if (consentRequired && request.PromptMode == OidcConstants.PromptModes.None)
             {
@@ -276,7 +276,8 @@ namespace IdentityServer4.ResponseHandling
                     else
                     {
                         // double check that required scopes are in the list of consented scopes
-                        var valid = request.ValidatedScopes.ValidateRequiredScopes(consent.ScopesConsented);
+                        var requiredScopes = request.ValidatedResources.GetRequiredScopeValues();
+                        var valid = requiredScopes.All(x => consent.ScopesValuesConsented.Contains(x));
                         if (valid == false)
                         {
                             response.Error = OidcConstants.AuthorizeErrors.AccessDenied;
@@ -285,8 +286,8 @@ namespace IdentityServer4.ResponseHandling
                         else
                         {
                             // they said yes, set scopes they chose
-                            request.ValidatedScopes.SetConsentedScopes(consent.ScopesConsented);
-                            Logger.LogInformation("User consented to scopes: {scopes}", consent.ScopesConsented);
+                            request.ValidatedResources = request.ValidatedResources.Filter(consent.ScopesValuesConsented);
+                            Logger.LogInformation("User consented to scopes: {scopes}", consent.ScopesValuesConsented);
 
                             if (request.Client.AllowRememberConsent)
                             {
@@ -295,11 +296,11 @@ namespace IdentityServer4.ResponseHandling
                                 if (consent.RememberConsent)
                                 {
                                     // remember what user actually selected
-                                    scopes = request.ValidatedScopes.GrantedResources.ToScopeNames();
+                                    scopes = request.ValidatedResources.ScopeValues;
                                     Logger.LogDebug("User indicated to remember consent for scopes: {scopes}", scopes);
                                 }
 
-                                await Consent.UpdateConsentAsync(request.Subject, request.Client, scopes);
+                                await Consent.UpdateConsentAsync(request.Subject, request.Client, request.ValidatedResources.ParsedScopes);
                             }
                         }
                     }

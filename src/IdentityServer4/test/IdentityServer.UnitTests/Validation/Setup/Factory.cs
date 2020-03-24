@@ -26,11 +26,6 @@ namespace IdentityServer.UnitTests.Validation.Setup
             return new InMemoryClientStore(TestClients.Get());
         }
 
-        public static ScopeValidator CreateScopeValidator(IResourceStore store)
-        {
-            return new ScopeValidator(store, TestLogger.Create<ScopeValidator>());
-        }
-
         public static TokenRequestValidator CreateTokenRequestValidator(
             IdentityServerOptions options = null,
             IResourceStore resourceStore = null,
@@ -42,7 +37,7 @@ namespace IdentityServer.UnitTests.Validation.Setup
             IEnumerable<IExtensionGrantValidator> extensionGrantValidators = null,
             ICustomTokenRequestValidator customRequestValidator = null,
             ITokenValidator tokenValidator = null,
-            ScopeValidator scopeValidator = null)
+            IResourceValidator resourceValidator = null)
         {
             if (options == null)
             {
@@ -51,7 +46,7 @@ namespace IdentityServer.UnitTests.Validation.Setup
 
             if (resourceStore == null)
             {
-                resourceStore = new InMemoryResourcesStore(TestScopes.GetIdentity(), TestScopes.GetApis());
+                resourceStore = new InMemoryResourcesStore(TestScopes.GetIdentity(), TestScopes.GetApis(), TestScopes.GetScopes());
             }
 
             if (resourceOwnerValidator == null)
@@ -94,10 +89,11 @@ namespace IdentityServer.UnitTests.Validation.Setup
                 refreshTokenStore = CreateRefreshTokenStore();
             }
 
-            if (scopeValidator == null)
+            if (resourceValidator == null)
             {
-                scopeValidator = new ScopeValidator(resourceStore, new LoggerFactory().CreateLogger<ScopeValidator>());
+                resourceValidator = CreateResourceValidator(resourceStore);
             }
+
 
             if (tokenValidator == null)
             {
@@ -112,9 +108,16 @@ namespace IdentityServer.UnitTests.Validation.Setup
                 deviceCodeValidator,
                 aggregateExtensionGrantValidator,
                 customRequestValidator,
-                scopeValidator,
+                resourceValidator,
+                resourceStore,
                 tokenValidator,
                 new TestEventService(), new StubClock(), TestLogger.Create<TokenRequestValidator>());
+        }
+
+        internal static IResourceValidator CreateResourceValidator(IResourceStore store = null)
+        {
+            store = store ?? new InMemoryResourcesStore(TestScopes.GetIdentity(), TestScopes.GetApis(), TestScopes.GetScopes());
+            return new ResourceValidator(store, TestLogger.Create<ResourceValidator>());
         }
 
         internal static ITokenCreationService CreateDefaultTokenCreator()
@@ -130,7 +133,7 @@ namespace IdentityServer.UnitTests.Validation.Setup
         public static DeviceAuthorizationRequestValidator CreateDeviceAuthorizationRequestValidator(
             IdentityServerOptions options = null,
             IResourceStore resourceStore = null,
-            ScopeValidator scopeValidator = null)
+            IResourceValidator resourceValidator = null)
         {
             if (options == null)
             {
@@ -139,17 +142,18 @@ namespace IdentityServer.UnitTests.Validation.Setup
             
             if (resourceStore == null)
             {
-                resourceStore = new InMemoryResourcesStore(TestScopes.GetIdentity(), TestScopes.GetApis());
+                resourceStore = new InMemoryResourcesStore(TestScopes.GetIdentity(), TestScopes.GetApis(), TestScopes.GetScopes());
             }
 
-            if (scopeValidator == null)
+            if (resourceValidator == null)
             {
-                scopeValidator = new ScopeValidator(resourceStore, new LoggerFactory().CreateLogger<ScopeValidator>());
+                resourceValidator = CreateResourceValidator(resourceStore);
             }
+
 
             return new DeviceAuthorizationRequestValidator(
                 options,
-                scopeValidator,
+                resourceValidator,
                 TestLogger.Create<DeviceAuthorizationRequestValidator>());
         }
 
@@ -160,7 +164,7 @@ namespace IdentityServer.UnitTests.Validation.Setup
             IProfileService profile = null,
             ICustomAuthorizeRequestValidator customValidator = null,
             IRedirectUriValidator uriValidator = null,
-            ScopeValidator scopeValidator = null,
+            IResourceValidator resourceValidator = null,
             JwtRequestValidator jwtRequestValidator = null,
             JwtRequestUriHttpClient jwtRequestUriHttpClient = null)
         {
@@ -171,7 +175,7 @@ namespace IdentityServer.UnitTests.Validation.Setup
 
             if (resourceStore == null)
             {
-                resourceStore = new InMemoryResourcesStore(TestScopes.GetIdentity(), TestScopes.GetApis());
+                resourceStore = new InMemoryResourcesStore(TestScopes.GetIdentity(), TestScopes.GetApis(), TestScopes.GetScopes());
             }
 
             if (clients == null)
@@ -189,9 +193,9 @@ namespace IdentityServer.UnitTests.Validation.Setup
                 uriValidator = new StrictRedirectUriValidator();
             }
 
-            if (scopeValidator == null)
+            if (resourceValidator == null)
             {
-                scopeValidator = new ScopeValidator(resourceStore, new LoggerFactory().CreateLogger<ScopeValidator>());
+                resourceValidator = CreateResourceValidator(resourceStore);
             }
 
             if (jwtRequestValidator == null)
@@ -204,6 +208,7 @@ namespace IdentityServer.UnitTests.Validation.Setup
                 jwtRequestUriHttpClient = new JwtRequestUriHttpClient(new HttpClient(new NetworkHandler(new Exception("no jwt request uri response configured"))), new LoggerFactory().CreateLogger<JwtRequestUriHttpClient>());
             }
 
+
             var userSession = new MockUserSession();
 
             return new AuthorizeRequestValidator(
@@ -211,7 +216,7 @@ namespace IdentityServer.UnitTests.Validation.Setup
                 clients,
                 customValidator,
                 uriValidator,
-                scopeValidator,
+                resourceValidator,
                 userSession,
                 jwtRequestValidator,
                 jwtRequestUriHttpClient,

@@ -11,9 +11,8 @@ namespace Host.Configuration
 {
     public class Resources
     {
-        public static IEnumerable<IdentityResource> GetIdentityResources()
-        {
-            return new[]
+        public static IEnumerable<IdentityResource> IdentityResources =
+            new[]
             {
                 // some standard scopes from the OIDC spec
                 new IdentityResources.OpenId(),
@@ -23,22 +22,18 @@ namespace Host.Configuration
                 // custom identity resource with some consolidated claims
                 new IdentityResource("custom.profile", new[] { JwtClaimTypes.Name, JwtClaimTypes.Email, "location" })
             };
-        }
 
-        public static IEnumerable<ApiResource> GetApiResources()
-        {
-            return new[]
+        public static IEnumerable<ApiResource> ApiResources = new[]
             {
-                // local API
-                new ApiResource(LocalApi.ScopeName),
-
                 // simple version with ctor
                 new ApiResource("api1", "Some API 1")
                 {
-                    // this is needed for introspection when using reference tokens
-                    ApiSecrets = { new Secret("secret".Sha256()) },
+                    //// this is needed for introspection when using reference tokens
+                    //ApiSecrets = { new Secret("secret".Sha256()) },
 
                     //AllowedSigningAlgorithms = { "RS256", "ES256" }
+
+                    Scopes = { "feature1" }
                 },
                 
                 // expanded version if more control is needed
@@ -59,30 +54,21 @@ namespace Host.Configuration
                         JwtClaimTypes.Email
                     },
 
-                    Scopes =
-                    {
-                        new Scope
-                        {
-                            Name = "api2.full_access",
-                            DisplayName = "Full access to API 2"
-                        },
-                        new Scope
-                        {
-                            Name = "api2.read_only",
-                            DisplayName = "Read only access to API 2"
-                        },
-                        new Scope
-                        {
-                            Name = "api2.internal",
-                            ShowInDiscoveryDocument = false,
-                            UserClaims =
-                            {
-                                "internal_id"
-                            }
-                        }
-                    }
+                    Scopes = { "feature2", "feature3" }
                 }
             };
-        }
+
+        public static IEnumerable<ApiScope> ApiScopes = new[]
+            {
+                // local API
+                new ApiScope(LocalApi.ScopeName),
+                new ApiScope("feature1"),
+                new ApiScope("feature2"),
+                new ApiScope("feature3"),
+                new ApiScope
+                {
+                    Name = "transaction"
+                }
+            };
     }
 }

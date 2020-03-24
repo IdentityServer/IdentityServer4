@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using IdentityServer4.Extensions;
+using IdentityServer4.Validation;
 
 namespace IdentityServer4.Models
 {
@@ -15,37 +16,62 @@ namespace IdentityServer4.Models
     public static class ResourceExtensions
     {
         /// <summary>
+        /// Returns the collection of scope values that are required.
+        /// </summary>
+        /// <param name="resourceValidationResult"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> GetRequiredScopeValues(this ResourceValidationResult resourceValidationResult)
+        {
+            var names = resourceValidationResult.Resources.IdentityResources.Where(x => x.Required).Select(x => x.Name).ToList();
+            names.AddRange(resourceValidationResult.Resources.ApiScopes.Where(x => x.Required).Select(x => x.Name));
+
+            var values = resourceValidationResult.ParsedScopes.Where(x => names.Contains(x.Name)).Select(x => x.Value);
+            return values;
+        }
+
+        /// <summary>
         /// Converts to scope names.
         /// </summary>
         /// <param name="resources">The resources.</param>
         /// <returns></returns>
         public static IEnumerable<string> ToScopeNames(this Resources resources)
         {
-            var scopes = from api in resources.ApiResources
-                         where api.Scopes != null
-                         from scope in api.Scopes
-                         select scope.Name;
+            var names = resources.IdentityResources.Select(x => x.Name).ToList();
+            names.AddRange(resources.ApiScopes.Select(x => x.Name));
             if (resources.OfflineAccess)
             {
-                scopes = scopes.Union(new[] { IdentityServerConstants.StandardScopes.OfflineAccess });
+                names.Add(IdentityServerConstants.StandardScopes.OfflineAccess);
             }
-            return resources.IdentityResources.Select(x => x.Name).Union(scopes).ToArray();
+            
+            return names;
         }
 
         /// <summary>
-        /// Finds the API resource by scope.
+        /// Finds the IdentityResource that matches the scope.
         /// </summary>
         /// <param name="resources">The resources.</param>
         /// <param name="name">The name.</param>
         /// <returns></returns>
-        public static ApiResource FindApiResourceByScope(this Resources resources, string name)
+        public static IdentityResource FindIdentityResourcesByScope(this Resources resources, string name)
+        {
+            var q = from id in resources.IdentityResources
+                    where id.Name == name
+                    select id;
+            return q.FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Finds the API resources that contain the scope.
+        /// </summary>
+        /// <param name="resources">The resources.</param>
+        /// <param name="name">The name.</param>
+        /// <returns></returns>
+        public static IEnumerable<ApiResource> FindApiResourcesByScope(this Resources resources, string name)
         {
             var q = from api in resources.ApiResources
-                    where api.Scopes != null
-                    from scope in api.Scopes
-                    where scope.Name == name
+                    where api.Scopes != null && api.Scopes.Contains(name)
                     select api;
-            return q.FirstOrDefault();
+            return q.ToArray();
         }
 
         /// <summary>
@@ -54,29 +80,11 @@ namespace IdentityServer4.Models
         /// <param name="resources">The resources.</param>
         /// <param name="name">The name.</param>
         /// <returns></returns>
-        public static Scope FindApiScope(this Resources resources, string name)
+        public static ApiScope FindApiScope(this Resources resources, string name)
         {
-            var q = from api in resources.ApiResources
-                    where api.Scopes != null
-                    from scope in api.Scopes
+            var q = from scope in resources.ApiScopes
                     where scope.Name == name
                     select scope;
-            return q.FirstOrDefault();
-        }
-
-        /// <summary>
-        /// Finds the API scope.
-        /// </summary>
-        /// <param name="api">The API.</param>
-        /// <param name="name">The name.</param>
-        /// <returns></returns>
-        public static Scope FindApiScope(this ApiResource api, string name)
-        {
-            if (api == null || api.Scopes == null) return null;
-
-            var q = from s in api.Scopes
-                    where s.Name == name
-                    select s;
             return q.FirstOrDefault();
         }
 
@@ -84,13 +92,10 @@ namespace IdentityServer4.Models
         {
             if (resources == null) return new Resources();
 
-            var identity = resources.IdentityResources.Where(x => x.Enabled);
-
-            var api = from a in resources.ApiResources
-                      where a.Enabled
-                      select a;
-
-            return new Resources(identity, api)
+            return new Resources(
+                resources.IdentityResources.Where(x => x.Enabled),
+                resources.ApiResources.Where(x => x.Enabled),
+                resources.ApiScopes.Where(x => x.Enabled))
             {
                 OfflineAccess = resources.OfflineAccess
             };

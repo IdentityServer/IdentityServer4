@@ -6,9 +6,9 @@
 
 namespace IdentityServer4.EntityFramework.Entities
 {
-    public class IdentityClaim : UserClaim
+    public class ApiResourceSecret : Secret
     {
-        public int IdentityResourceId { get; set; }
-        public IdentityResource IdentityResource { get; set; }
+        public int ApiResourceId { get; set; }
+        public ApiResource ApiResource { get; set; }
     }
 }

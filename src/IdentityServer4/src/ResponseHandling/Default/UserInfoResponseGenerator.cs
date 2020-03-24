@@ -63,7 +63,9 @@ namespace IdentityServer4.ResponseHandling
 
             // extract scopes and turn into requested claim types
             var scopes = validationResult.TokenValidationResult.Claims.Where(c => c.Type == JwtClaimTypes.Scope).Select(c => c.Value);
-            var requestedClaimTypes = await GetRequestedClaimTypesAsync(scopes);
+
+            var validatedResources = await GetRequestedResourcesAsync(scopes);
+            var requestedClaimTypes = await GetRequestedClaimTypesAsync(validatedResources);
 
             Logger.LogDebug("Requested claim types: {claimTypes}", requestedClaimTypes.ToSpaceSeparatedString());
 
@@ -73,7 +75,7 @@ namespace IdentityServer4.ResponseHandling
                 validationResult.TokenValidationResult.Client,
                 IdentityServerConstants.ProfileDataCallers.UserInfoEndpoint,
                 requestedClaimTypes);
-            context.RequestedResources = await GetRequestedResourcesAsync(scopes);
+            context.RequestedResources = validatedResources;
 
             await Profile.GetProfileDataAsync(context);
             var profileClaims = context.IssuedClaims;
@@ -105,49 +107,12 @@ namespace IdentityServer4.ResponseHandling
             return outgoingClaims.ToClaimsDictionary();
         }
 
-        // TODO v3: merge these two APIs to avoid two DB round trips
-        // GetRequestedClaimTypesAsync & GetRequestedResourcesAsync
-       
-        /// <summary>
-        /// Gets the requested claim types.
-        /// </summary>
-        /// <param name="scopes">The scopes.</param>
-        /// <returns></returns>
-        internal protected virtual async Task<IEnumerable<string>> GetRequestedClaimTypesAsync(IEnumerable<string> scopes)
-        {
-            if (scopes == null || !scopes.Any())
-            {
-                return Enumerable.Empty<string>();
-            }
-
-            var scopeString = string.Join(" ", scopes);
-            Logger.LogDebug("Scopes in access token: {scopes}", scopeString);
-
-            var resources = await GetRequestedResourcesAsync(scopes);
-            if (resources == null) return Enumerable.Empty<string>();
-
-            var identityResources = resources.IdentityResources;
-            var scopeClaims = new List<string>();
-
-            foreach (var scope in scopes)
-            {
-                var scopeDetail = identityResources.FirstOrDefault(s => s.Name == scope);
-                
-                if (scopeDetail != null)
-                {
-                    scopeClaims.AddRange(scopeDetail.UserClaims);
-                }
-            }
-
-            return scopeClaims.Distinct();
-        }
-
         /// <summary>
         ///  Gets the identity resources from the scopes.
         /// </summary>
         /// <param name="scopes"></param>
         /// <returns></returns>
-        internal protected virtual async Task<Resources> GetRequestedResourcesAsync(IEnumerable<string> scopes)
+        internal protected virtual async Task<ResourceValidationResult> GetRequestedResourcesAsync(IEnumerable<string> scopes)
         {
             if (scopes == null || !scopes.Any())
             {
@@ -157,8 +122,35 @@ namespace IdentityServer4.ResponseHandling
             var scopeString = string.Join(" ", scopes);
             Logger.LogDebug("Scopes in access token: {scopes}", scopeString);
 
+            // if we ever parameterize identity scopes, then we would need to invoke the resource validator's parse API here
             var identityResources = await Resources.FindEnabledIdentityResourcesByScopeAsync(scopes);
-            return new Resources(identityResources, Enumerable.Empty<ApiResource>());
+            
+            var resources = new Resources(identityResources, Enumerable.Empty<ApiResource>(), Enumerable.Empty<ApiScope>());
+            var result = new ResourceValidationResult(resources);
+            
+            return result;
+        }
+
+        /// <summary>
+        /// Gets the requested claim types.
+        /// </summary>
+        /// <param name="resourceValidationResult"></param>
+        /// <returns></returns>
+        internal protected virtual Task<IEnumerable<string>> GetRequestedClaimTypesAsync(ResourceValidationResult resourceValidationResult)
+        {
+            IEnumerable<string> result = null;
+
+            if (resourceValidationResult == null)
+            {
+                result = Enumerable.Empty<string>();
+            }
+            else
+            {
+                var identityResources = resourceValidationResult.Resources.IdentityResources;
+                result = identityResources.SelectMany(x => x.UserClaims).Distinct();
+            }
+
+            return Task.FromResult(result);
         }
     }
 }

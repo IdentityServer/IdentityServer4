@@ -41,7 +41,7 @@ namespace Host.Configuration
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Email,
-                        "api1", "api2.read_only", "api2.full_access"
+                        "feature1", "feature1"
                     }
                 },
                 
@@ -73,7 +73,7 @@ namespace Host.Configuration
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Email,
-                        "api1", "api2.read_only"
+                        "feature1", "feature1"
                     }
                 },
                 
@@ -91,6 +91,7 @@ namespace Host.Configuration
                         new Secret("secret".Sha256())
                     },
 
+                    RequireConsent = true,
                     AllowedGrantTypes = GrantTypes.Code,
 
                     RedirectUris = { "https://localhost:44302/signin-oidc" },
@@ -104,7 +105,7 @@ namespace Host.Configuration
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Email,
-                        "api1", "api2.read_only"
+                        "feature1", "feature1"
                     }
                 },
                 
@@ -136,7 +137,7 @@ namespace Host.Configuration
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Email,
-                        "api1", "api2.read_only"
+                        "feature1", "feature1"
                     }
                 }
             };

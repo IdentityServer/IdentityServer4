@@ -26,7 +26,7 @@ namespace IdentityServer4.Validation
         /// <value>
         /// The scopes.
         /// </value>
-        public IEnumerable<string> Scopes { get; set; }
+        public IEnumerable<string> RequestedScopes { get; set; }
 
         /// <summary>
         /// Gets or sets the username used in the request.

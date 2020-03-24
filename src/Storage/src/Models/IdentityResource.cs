@@ -62,10 +62,5 @@ namespace IdentityServer4.Models
         /// Use this setting for sensitive or important scopes. Defaults to false.
         /// </summary>
         public bool Emphasize { get; set; } = false;
-
-        /// <summary>
-        /// Specifies whether this scope is shown in the discovery document. Defaults to true.
-        /// </summary>
-        public bool ShowInDiscoveryDocument { get; set; } = true;
     }
 }

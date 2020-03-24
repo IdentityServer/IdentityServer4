@@ -94,21 +94,21 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
                 new IdentityResources.Profile(),
                 new IdentityResources.Email()
             });
-            _mockPipeline.ApiScopes.AddRange(new ApiResource[] {
+            _mockPipeline.ApiResources.AddRange(new ApiResource[] {
                 new ApiResource
                 {
                     Name = "api",
-                    Scopes =
-                    {
-                        new Scope
-                        {
-                            Name = "api1"
-                        },
-                        new Scope
-                        {
-                            Name = "api2"
-                        }
-                    }
+                    Scopes = { "api1", "api2" }
+                }
+            });
+            _mockPipeline.ApiScopes.AddRange(new ApiScope[] {
+                new ApiScope
+                {
+                    Name = "api1"
+                },
+                new ApiScope
+                {
+                    Name = "api2"
                 }
             });
 
@@ -203,7 +203,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
             var response = await _mockPipeline.BrowserClient.GetAsync(url + "&foo=bar");
 
             _mockPipeline.LoginRequest.Should().NotBeNull();
-            _mockPipeline.LoginRequest.ClientId.Should().Be("client1");
+            _mockPipeline.LoginRequest.Client.ClientId.Should().Be("client1");
             _mockPipeline.LoginRequest.DisplayMode.Should().Be("popup");
             _mockPipeline.LoginRequest.UiLocales.Should().Be("ui_locale_value");
             _mockPipeline.LoginRequest.IdP.Should().Be("idp_value");
@@ -285,7 +285,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
 
             _mockPipeline.ConsentResponse = new ConsentResponse()
             {
-                ScopesConsented = new string[] { "openid", "api1", "profile" }
+                ScopesValuesConsented = new string[] { "openid", "api1", "profile" }
             };
 
             _mockPipeline.BrowserClient.StopRedirectingAfter = 4;
@@ -874,7 +874,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
             await _mockPipeline.BrowserClient.GetAsync(url);
 
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
-            _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.UnauthorizedClient);
+            _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidScope);
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("scope");
             _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
             _mockPipeline.ErrorMessage.ResponseMode.Should().Be("fragment");
@@ -1046,8 +1046,8 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
         {
             _mockPipeline.IdentityScopes.Add(new IdentityResource("foo", "Foo", new string[] { "name" }));
             _mockPipeline.IdentityScopes.Add(new IdentityResource("bar", "Bar", new string[] { "name" }));
-            _mockPipeline.ApiScopes.Add(new ApiResource("foo", "Foo"));
-            _mockPipeline.ApiScopes.Add(new ApiResource("bar", "Bar"));
+            _mockPipeline.ApiScopes.Add(new ApiScope("foo", "Foo"));
+            _mockPipeline.ApiScopes.Add(new ApiScope("bar", "Bar"));
 
             await _mockPipeline.LoginAsync("bob");
 

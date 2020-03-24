@@ -12,6 +12,7 @@
     <PackageReference Include="IdentityServer4.AccessTokenValidation" />
     
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Certificate" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
     
     <PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />
   </ItemGroup>

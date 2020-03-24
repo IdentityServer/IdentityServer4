@@ -23,15 +23,15 @@ namespace IdentityServer4.Models
         /// <value>
         ///   <c>true</c> if consent was granted; otherwise, <c>false</c>.
         /// </value>
-        public bool Granted => ScopesConsented != null && ScopesConsented.Any();
+        public bool Granted => ScopesValuesConsented != null && ScopesValuesConsented.Any();
 
         /// <summary>
-        /// Gets or sets the scopes consented to.
+        /// Gets or sets the scope values consented to.
         /// </summary>
         /// <value>
         /// The scopes.
         /// </value>
-        public IEnumerable<string> ScopesConsented { get; set; }
+        public IEnumerable<string> ScopesValuesConsented { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the user wishes the consent to be remembered.

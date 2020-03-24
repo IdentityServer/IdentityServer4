@@ -45,22 +45,27 @@ namespace IdentityServer4.EntityFramework.IntegrationTests.Stores
             };
         }
 
-        private static ApiResource CreateApiTestResource()
+        private static ApiResource CreateApiResourceTestResource()
         {
             return new ApiResource()
             {
                 Name = Guid.NewGuid().ToString(),
-                ApiSecrets = new List<Secret> {new Secret("secret".ToSha256())},
-                Scopes =
-                    new List<Scope>
-                    {
-                        new Scope
-                        {
-                            Name = Guid.NewGuid().ToString(),
-                            UserClaims = {Guid.NewGuid().ToString()}
-                        }
-                    },
-                UserClaims = 
+                ApiSecrets = new List<Secret> { new Secret("secret".ToSha256()) },
+                Scopes = { Guid.NewGuid().ToString() },
+                UserClaims =
+                {
+                    Guid.NewGuid().ToString(),
+                    Guid.NewGuid().ToString(),
+                }
+            };
+        }
+        
+        private static ApiScope CreateApiScopeTestResource()
+        {
+            return new ApiScope()
+            {
+                Name = Guid.NewGuid().ToString(),
+                UserClaims =
                 {
                     Guid.NewGuid().ToString(),
                     Guid.NewGuid().ToString(),
@@ -68,112 +73,134 @@ namespace IdentityServer4.EntityFramework.IntegrationTests.Stores
             };
         }
 
+
         [Theory, MemberData(nameof(TestDatabaseProviders))]
-        public async Task FindResourcesAsync_WhenResourcesExist_ExpectResourcesReturned(DbContextOptions<ConfigurationDbContext> options)
+        public async Task FindApiResourcesByNameAsync_WhenResourceExists_ExpectResourceAndCollectionsReturned(DbContextOptions<ConfigurationDbContext> options)
         {
-            var testIdentityResource = CreateIdentityTestResource();
-            var testApiResource = CreateApiTestResource();
+            var resource = CreateApiResourceTestResource();
 
             using (var context = new ConfigurationDbContext(options, StoreOptions))
             {
-                context.IdentityResources.Add(testIdentityResource.ToEntity());
-                context.ApiResources.Add(testApiResource.ToEntity());
+                context.ApiResources.Add(resource.ToEntity());
                 context.SaveChanges();
             }
 
-            Resources resources;
+            ApiResource foundResource;
             using (var context = new ConfigurationDbContext(options, StoreOptions))
             {
                 var store = new ResourceStore(context, FakeLogger<ResourceStore>.Create());
-                resources = await store.FindResourcesByScopeAsync(new List<string>
+                foundResource = (await store.FindApiResourcesByNameAsync(new[] { resource.Name })).SingleOrDefault();
+            }
+
+            Assert.NotNull(foundResource);
+            Assert.True(foundResource.Name == resource.Name);
+
+            Assert.NotNull(foundResource.UserClaims);
+            Assert.NotEmpty(foundResource.UserClaims);
+            Assert.NotNull(foundResource.ApiSecrets);
+            Assert.NotEmpty(foundResource.ApiSecrets);
+            Assert.NotNull(foundResource.Scopes);
+            Assert.NotEmpty(foundResource.Scopes);
+        }
+
+        [Theory, MemberData(nameof(TestDatabaseProviders))]
+        public async Task FindApiResourcesByNameAsync_WhenResourcesExist_ExpectOnlyResourcesRequestedReturned(DbContextOptions<ConfigurationDbContext> options)
+        {
+            var resource = CreateApiResourceTestResource();
+
+            using (var context = new ConfigurationDbContext(options, StoreOptions))
+            {
+                context.ApiResources.Add(resource.ToEntity());
+                context.ApiResources.Add(CreateApiResourceTestResource().ToEntity());
+                context.SaveChanges();
+            }
+
+            ApiResource foundResource;
+            using (var context = new ConfigurationDbContext(options, StoreOptions))
+            {
+                var store = new ResourceStore(context, FakeLogger<ResourceStore>.Create());
+                foundResource = (await store.FindApiResourcesByNameAsync(new[] { resource.Name })).SingleOrDefault();
+            }
+
+            Assert.NotNull(foundResource);
+            Assert.True(foundResource.Name == resource.Name);
+
+            Assert.NotNull(foundResource.UserClaims);
+            Assert.NotEmpty(foundResource.UserClaims);
+            Assert.NotNull(foundResource.ApiSecrets);
+            Assert.NotEmpty(foundResource.ApiSecrets);
+            Assert.NotNull(foundResource.Scopes);
+            Assert.NotEmpty(foundResource.Scopes);
+        }
+
+
+
+
+        [Theory, MemberData(nameof(TestDatabaseProviders))]
+        public async Task FindApiResourcesByScopeNameAsync_WhenResourcesExist_ExpectResourcesReturned(DbContextOptions<ConfigurationDbContext> options)
+        {
+            var testApiResource = CreateApiResourceTestResource();
+            var testApiScope = CreateApiScopeTestResource();
+            testApiResource.Scopes.Add(testApiScope.Name);
+
+            using (var context = new ConfigurationDbContext(options, StoreOptions))
+            {
+                context.ApiResources.Add(testApiResource.ToEntity());
+                context.ApiScopes.Add(testApiScope.ToEntity());
+                context.SaveChanges();
+            }
+
+            IEnumerable<ApiResource> resources;
+            using (var context = new ConfigurationDbContext(options, StoreOptions))
+            {
+                var store = new ResourceStore(context, FakeLogger<ResourceStore>.Create());
+                resources = await store.FindApiResourcesByScopeNameAsync(new List<string>
                 {
-                    testIdentityResource.Name,
-                    testApiResource.Scopes.First().Name
+                    testApiScope.Name
                 });
             }
 
             Assert.NotNull(resources);
-            Assert.NotNull(resources.IdentityResources);
-            Assert.NotEmpty(resources.IdentityResources);
-            Assert.NotNull(resources.ApiResources);
-            Assert.NotEmpty(resources.ApiResources);
-            Assert.NotNull(resources.IdentityResources.FirstOrDefault(x => x.Name == testIdentityResource.Name));
-            Assert.NotNull(resources.ApiResources.FirstOrDefault(x => x.Name == testApiResource.Name));
+            Assert.NotEmpty(resources);
+            Assert.NotNull(resources.Single(x => x.Name == testApiResource.Name));
         }
 
         [Theory, MemberData(nameof(TestDatabaseProviders))]
-        public async Task FindResourcesAsync_WhenResourcesExist_ExpectOnlyResourcesRequestedReturned(DbContextOptions<ConfigurationDbContext> options)
+        public async Task FindApiResourcesByScopeNameAsync_WhenResourcesExist_ExpectOnlyResourcesRequestedReturned(DbContextOptions<ConfigurationDbContext> options)
         {
             var testIdentityResource = CreateIdentityTestResource();
-            var testApiResource = CreateApiTestResource();
+            var testApiResource = CreateApiResourceTestResource();
+            var testApiScope = CreateApiScopeTestResource();
+            testApiResource.Scopes.Add(testApiScope.Name);
 
             using (var context = new ConfigurationDbContext(options, StoreOptions))
             {
                 context.IdentityResources.Add(testIdentityResource.ToEntity());
                 context.ApiResources.Add(testApiResource.ToEntity());
+                context.ApiScopes.Add(testApiScope.ToEntity());
                 context.IdentityResources.Add(CreateIdentityTestResource().ToEntity());
-                context.ApiResources.Add(CreateApiTestResource().ToEntity());
+                context.ApiResources.Add(CreateApiResourceTestResource().ToEntity());
+                context.ApiScopes.Add(CreateApiScopeTestResource().ToEntity());
                 context.SaveChanges();
             }
 
-            Resources resources;
+            IEnumerable<ApiResource> resources;
             using (var context = new ConfigurationDbContext(options, StoreOptions))
             {
                 var store = new ResourceStore(context, FakeLogger<ResourceStore>.Create());
-                resources = await store.FindResourcesByScopeAsync(new List<string>
-                {
-                    testIdentityResource.Name,
-                    testApiResource.Scopes.First().Name
-                });
+                resources = await store.FindApiResourcesByScopeNameAsync(new[] { testApiScope.Name });
             }
 
             Assert.NotNull(resources);
-            Assert.NotNull(resources.IdentityResources);
-            Assert.NotEmpty(resources.IdentityResources);
-            Assert.NotNull(resources.ApiResources);
-            Assert.NotEmpty(resources.ApiResources);
-            Assert.Equal(1, resources.IdentityResources.Count);
-            Assert.Equal(1, resources.ApiResources.Count);
+            Assert.NotEmpty(resources);
+            Assert.NotNull(resources.Single(x => x.Name == testApiResource.Name));
         }
 
-        [Theory, MemberData(nameof(TestDatabaseProviders))]
-        public async Task GetAllResources_WhenAllResourcesRequested_ExpectAllResourcesIncludingHidden(DbContextOptions<ConfigurationDbContext> options)
-        {
-            var visibleIdentityResource = CreateIdentityTestResource();
-            var visibleApiResource = CreateApiTestResource();
-            var hiddenIdentityResource = new IdentityResource{Name = Guid.NewGuid().ToString(), ShowInDiscoveryDocument = false};
-            var hiddenApiResource = new ApiResource
-            {
-                Name = Guid.NewGuid().ToString(),
-                Scopes = new List<Scope> {new Scope {Name = Guid.NewGuid().ToString(), ShowInDiscoveryDocument = false}}
-            };
 
-            using (var context = new ConfigurationDbContext(options, StoreOptions))
-            {
-                context.IdentityResources.Add(visibleIdentityResource.ToEntity());
-                context.ApiResources.Add(visibleApiResource.ToEntity());
-                context.IdentityResources.Add(hiddenIdentityResource.ToEntity());
-                context.ApiResources.Add(hiddenApiResource.ToEntity());
-                context.SaveChanges();
-            }
 
-            Resources resources;
-            using (var context = new ConfigurationDbContext(options, StoreOptions))
-            {
-                var store = new ResourceStore(context, FakeLogger<ResourceStore>.Create());
-                resources = await store.GetAllResourcesAsync();
-            }
-
-            Assert.NotNull(resources);
-            Assert.NotEmpty(resources.IdentityResources);
-            Assert.NotEmpty(resources.ApiResources);
-
-            Assert.Contains(resources.IdentityResources, x => !x.ShowInDiscoveryDocument);
-            Assert.Contains(resources.ApiResources, x => !x.Scopes.Any(y => y.ShowInDiscoveryDocument));
-        }
 
         [Theory, MemberData(nameof(TestDatabaseProviders))]
-        public async Task FindIdentityResourcesByScopeAsync_WhenResourceExists_ExpectResourceAndCollectionsReturned(DbContextOptions<ConfigurationDbContext> options)
+        public async Task FindIdentityResourcesByScopeNameAsync_WhenResourceExists_ExpectResourceAndCollectionsReturned(DbContextOptions<ConfigurationDbContext> options)
         {
             var resource = CreateIdentityTestResource();
 
@@ -187,7 +214,7 @@ namespace IdentityServer4.EntityFramework.IntegrationTests.Stores
             using (var context = new ConfigurationDbContext(options, StoreOptions))
             {
                 var store = new ResourceStore(context, FakeLogger<ResourceStore>.Create());
-                resources = (await store.FindIdentityResourcesByScopeAsync(new List<string>
+                resources = (await store.FindIdentityResourcesByScopeNameAsync(new List<string>
                 {
                     resource.Name
                 })).ToList();
@@ -203,7 +230,7 @@ namespace IdentityServer4.EntityFramework.IntegrationTests.Stores
         }
 
         [Theory, MemberData(nameof(TestDatabaseProviders))]
-        public async Task FindIdentityResourcesByScopeAsync_WhenResourcesExist_ExpectOnlyRequestedReturned(DbContextOptions<ConfigurationDbContext> options)
+        public async Task FindIdentityResourcesByScopeNameAsync_WhenResourcesExist_ExpectOnlyRequestedReturned(DbContextOptions<ConfigurationDbContext> options)
         {
             var resource = CreateIdentityTestResource();
 
@@ -218,7 +245,7 @@ namespace IdentityServer4.EntityFramework.IntegrationTests.Stores
             using (var context = new ConfigurationDbContext(options, StoreOptions))
             {
                 var store = new ResourceStore(context, FakeLogger<ResourceStore>.Create());
-                resources = (await store.FindIdentityResourcesByScopeAsync(new List<string>
+                resources = (await store.FindIdentityResourcesByScopeNameAsync(new List<string>
                 {
                     resource.Name
                 })).ToList();
@@ -226,91 +253,123 @@ namespace IdentityServer4.EntityFramework.IntegrationTests.Stores
 
             Assert.NotNull(resources);
             Assert.NotEmpty(resources);
-            Assert.Equal(1, resources.Count);
+            Assert.NotNull(resources.Single(x => x.Name == resource.Name));
         }
 
+
+
         [Theory, MemberData(nameof(TestDatabaseProviders))]
-        public async Task FindApiResourceAsync_WhenResourceExists_ExpectResourceAndCollectionsReturned(DbContextOptions<ConfigurationDbContext> options)
+        public async Task FindApiScopesByNameAsync_WhenResourceExists_ExpectResourceAndCollectionsReturned(DbContextOptions<ConfigurationDbContext> options)
         {
-            var resource = CreateApiTestResource();
+            var resource = CreateApiScopeTestResource();
 
             using (var context = new ConfigurationDbContext(options, StoreOptions))
             {
-                context.ApiResources.Add(resource.ToEntity());
+                context.ApiScopes.Add(resource.ToEntity());
                 context.SaveChanges();
             }
 
-            ApiResource foundResource;
+            IList<ApiScope> resources;
             using (var context = new ConfigurationDbContext(options, StoreOptions))
             {
                 var store = new ResourceStore(context, FakeLogger<ResourceStore>.Create());
-                foundResource = await store.FindApiResourceAsync(resource.Name);
-            }
-
-            Assert.NotNull(foundResource);
-
-            Assert.NotNull(foundResource.UserClaims);
-            Assert.NotEmpty(foundResource.UserClaims);
-            Assert.NotNull(foundResource.ApiSecrets);
-            Assert.NotEmpty(foundResource.ApiSecrets);
-            Assert.NotNull(foundResource.Scopes);
-            Assert.NotEmpty(foundResource.Scopes);
-            Assert.Contains(foundResource.Scopes, x => x.UserClaims.Any());
-        }
-
-        [Theory, MemberData(nameof(TestDatabaseProviders))]
-        public async Task FindApiResourcesByScopeAsync_WhenResourceExists_ExpectResourceAndCollectionsReturned(DbContextOptions<ConfigurationDbContext> options)
-        {
-            var resource = CreateApiTestResource();
-
-            using (var context = new ConfigurationDbContext(options, StoreOptions))
-            {
-                context.ApiResources.Add(resource.ToEntity());
-                context.SaveChanges();
-            }
-
-            IList<ApiResource> resources;
-            using (var context = new ConfigurationDbContext(options, StoreOptions))
-            {
-                var store = new ResourceStore(context, FakeLogger<ResourceStore>.Create());
-                resources = (await store.FindApiResourcesByScopeAsync(new List<string> {resource.Scopes.First().Name})).ToList();
-            }
-
-            Assert.NotEmpty(resources);
-            Assert.NotNull(resources);
-
-            Assert.NotNull(resources.First().UserClaims);
-            Assert.NotEmpty(resources.First().UserClaims);
-            Assert.NotNull(resources.First().ApiSecrets);
-            Assert.NotEmpty(resources.First().ApiSecrets);
-            Assert.NotNull(resources.First().Scopes);
-            Assert.NotEmpty(resources.First().Scopes);
-            Assert.Contains(resources.First().Scopes, x => x.UserClaims.Any());
-        }
-
-        [Theory, MemberData(nameof(TestDatabaseProviders))]
-        public async Task FindApiResourcesByScopeAsync_WhenMultipleResourcesExist_ExpectOnlyRequestedResourcesReturned(DbContextOptions<ConfigurationDbContext> options)
-        {
-            var resource = CreateApiTestResource();
-
-            using (var context = new ConfigurationDbContext(options, StoreOptions))
-            {
-                context.ApiResources.Add(resource.ToEntity());
-                context.ApiResources.Add(CreateApiTestResource().ToEntity());
-                context.ApiResources.Add(CreateApiTestResource().ToEntity());
-                context.SaveChanges();
-            }
-
-            IList<ApiResource> resources;
-            using (var context = new ConfigurationDbContext(options, StoreOptions))
-            {
-                var store = new ResourceStore(context, FakeLogger<ResourceStore>.Create());
-                resources = (await store.FindApiResourcesByScopeAsync(new List<string> {resource.Scopes.First().Name})).ToList();
+                resources = (await store.FindApiScopesByNameAsync(new List<string>
+                {
+                    resource.Name
+                })).ToList();
             }
 
             Assert.NotNull(resources);
             Assert.NotEmpty(resources);
-            Assert.Equal(1, resources.Count);
+            var foundScope = resources.Single();
+
+            Assert.Equal(resource.Name, foundScope.Name);
+            Assert.NotNull(foundScope.UserClaims);
+            Assert.NotEmpty(foundScope.UserClaims);
+        }
+
+        [Theory, MemberData(nameof(TestDatabaseProviders))]
+        public async Task FindApiScopesByNameAsync_WhenResourcesExist_ExpectOnlyRequestedReturned(DbContextOptions<ConfigurationDbContext> options)
+        {
+            var resource = CreateApiScopeTestResource();
+
+            using (var context = new ConfigurationDbContext(options, StoreOptions))
+            {
+                context.ApiScopes.Add(resource.ToEntity());
+                context.ApiScopes.Add(CreateApiScopeTestResource().ToEntity());
+                context.SaveChanges();
+            }
+
+            IList<ApiScope> resources;
+            using (var context = new ConfigurationDbContext(options, StoreOptions))
+            {
+                var store = new ResourceStore(context, FakeLogger<ResourceStore>.Create());
+                resources = (await store.FindApiScopesByNameAsync(new List<string>
+                {
+                    resource.Name
+                })).ToList();
+            }
+
+            Assert.NotNull(resources);
+            Assert.NotEmpty(resources);
+            Assert.NotNull(resources.Single(x => x.Name == resource.Name));
+        }
+
+
+
+
+        [Theory, MemberData(nameof(TestDatabaseProviders))]
+        public async Task GetAllResources_WhenAllResourcesRequested_ExpectAllResourcesIncludingHidden(DbContextOptions<ConfigurationDbContext> options)
+        {
+            var visibleIdentityResource = CreateIdentityTestResource();
+            var visibleApiResource = CreateApiResourceTestResource();
+            var visibleApiScope = CreateApiScopeTestResource();
+            var hiddenIdentityResource = new IdentityResource { Name = Guid.NewGuid().ToString(), ShowInDiscoveryDocument = false };
+            var hiddenApiResource = new ApiResource
+            {
+                Name = Guid.NewGuid().ToString(),
+                Scopes = { Guid.NewGuid().ToString() },
+                ShowInDiscoveryDocument = false
+            };
+            var hiddenApiScope = new ApiScope
+            {
+                Name = Guid.NewGuid().ToString(),
+                ShowInDiscoveryDocument = false
+            };
+
+            using (var context = new ConfigurationDbContext(options, StoreOptions))
+            {
+                context.IdentityResources.Add(visibleIdentityResource.ToEntity());
+                context.ApiResources.Add(visibleApiResource.ToEntity());
+                context.ApiScopes.Add(visibleApiScope.ToEntity());
+
+                context.IdentityResources.Add(hiddenIdentityResource.ToEntity());
+                context.ApiResources.Add(hiddenApiResource.ToEntity());
+                context.ApiScopes.Add(hiddenApiScope.ToEntity());
+                
+                context.SaveChanges();
+            }
+
+            Resources resources;
+            using (var context = new ConfigurationDbContext(options, StoreOptions))
+            {
+                var store = new ResourceStore(context, FakeLogger<ResourceStore>.Create());
+                resources = await store.GetAllResourcesAsync();
+            }
+
+            Assert.NotNull(resources);
+            Assert.NotEmpty(resources.IdentityResources);
+            Assert.NotEmpty(resources.ApiResources);
+            Assert.NotEmpty(resources.ApiScopes);
+
+            Assert.Contains(resources.IdentityResources, x => x.Name == visibleIdentityResource.Name);
+            Assert.Contains(resources.IdentityResources, x => x.Name == hiddenIdentityResource.Name);
+
+            Assert.Contains(resources.ApiResources, x => x.Name == visibleApiResource.Name);
+            Assert.Contains(resources.ApiResources, x => x.Name == hiddenApiResource.Name);
+
+            Assert.Contains(resources.ApiScopes, x => x.Name == visibleApiScope.Name);
+            Assert.Contains(resources.ApiScopes, x => x.Name == hiddenApiScope.Name);
         }
     }
 }

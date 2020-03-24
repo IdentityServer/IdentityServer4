@@ -148,21 +148,21 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
                 new IdentityResources.Profile(),
                 new IdentityResources.Email()
             });
-            _mockPipeline.ApiScopes.AddRange(new ApiResource[] {
+            _mockPipeline.ApiResources.AddRange(new ApiResource[] {
                 new ApiResource
                 {
                     Name = "api",
-                    Scopes =
-                    {
-                        new Scope
-                        {
-                            Name = "api1"
-                        },
-                        new Scope
-                        {
-                            Name = "api2"
-                        }
-                    }
+                    Scopes = { "api1", "api2" }
+                }
+            });
+            _mockPipeline.ApiScopes.AddRange(new ApiScope[] {
+                new ApiScope
+                {
+                    Name = "api1"
+                },
+                new ApiScope
+                {
+                    Name = "api2"
                 }
             });
 
@@ -234,7 +234,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
             var response = await _mockPipeline.BrowserClient.GetAsync(url);
 
             _mockPipeline.LoginRequest.Should().NotBeNull();
-            _mockPipeline.LoginRequest.ClientId.Should().Be(_client.ClientId);
+            _mockPipeline.LoginRequest.Client.ClientId.Should().Be(_client.ClientId);
             _mockPipeline.LoginRequest.DisplayMode.Should().Be("popup");
             _mockPipeline.LoginRequest.UiLocales.Should().Be("ui_locale_value");
             _mockPipeline.LoginRequest.IdP.Should().Be("idp_value");
@@ -282,7 +282,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
             var response = await _mockPipeline.BrowserClient.GetAsync(url);
 
             _mockPipeline.LoginRequest.Should().NotBeNull();
-            _mockPipeline.LoginRequest.ClientId.Should().Be(_client.ClientId);
+            _mockPipeline.LoginRequest.Client.ClientId.Should().Be(_client.ClientId);
             _mockPipeline.LoginRequest.DisplayMode.Should().Be("popup");
             _mockPipeline.LoginRequest.UiLocales.Should().Be("ui_locale_value");
             _mockPipeline.LoginRequest.IdP.Should().Be("idp_value");
@@ -330,7 +330,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
             var response = await _mockPipeline.BrowserClient.GetAsync(url);
 
             _mockPipeline.LoginRequest.Should().NotBeNull();
-            _mockPipeline.LoginRequest.ClientId.Should().Be(_client.ClientId);
+            _mockPipeline.LoginRequest.Client.ClientId.Should().Be(_client.ClientId);
             _mockPipeline.LoginRequest.DisplayMode.Should().Be("popup");
             _mockPipeline.LoginRequest.UiLocales.Should().Be("ui_locale_value");
             _mockPipeline.LoginRequest.IdP.Should().Be("idp_value");
@@ -376,7 +376,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
             var response = await _mockPipeline.BrowserClient.GetAsync(url);
 
             _mockPipeline.LoginRequest.Should().NotBeNull();
-            _mockPipeline.LoginRequest.ClientId.Should().Be(_client.ClientId);
+            _mockPipeline.LoginRequest.Client.ClientId.Should().Be(_client.ClientId);
             _mockPipeline.LoginRequest.DisplayMode.Should().Be("popup");
             _mockPipeline.LoginRequest.UiLocales.Should().Be("ui_locale_value");
             _mockPipeline.LoginRequest.IdP.Should().Be("idp_value");
@@ -433,7 +433,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
             var response = await _mockPipeline.BrowserClient.GetAsync(url);
 
             _mockPipeline.LoginRequest.Should().NotBeNull();
-            _mockPipeline.LoginRequest.ClientId.Should().Be(_client.ClientId);
+            _mockPipeline.LoginRequest.Client.ClientId.Should().Be(_client.ClientId);
             _mockPipeline.LoginRequest.DisplayMode.Should().Be("popup");
             _mockPipeline.LoginRequest.UiLocales.Should().Be("ui_locale_value");
             _mockPipeline.LoginRequest.IdP.Should().Be("idp_value");
@@ -883,7 +883,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
             var response = await _mockPipeline.BrowserClient.GetAsync(url);
 
             _mockPipeline.LoginRequest.Should().NotBeNull();
-            _mockPipeline.LoginRequest.ClientId.Should().Be(_client.ClientId);
+            _mockPipeline.LoginRequest.Client.ClientId.Should().Be(_client.ClientId);
             _mockPipeline.LoginRequest.DisplayMode.Should().Be("popup");
             _mockPipeline.LoginRequest.UiLocales.Should().Be("ui_locale_value");
             _mockPipeline.LoginRequest.IdP.Should().Be("idp_value");
@@ -935,7 +935,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
             var response = await _mockPipeline.BrowserClient.GetAsync(url);
 
             _mockPipeline.LoginRequest.Should().NotBeNull();
-            _mockPipeline.LoginRequest.ClientId.Should().Be(_client.ClientId);
+            _mockPipeline.LoginRequest.Client.ClientId.Should().Be(_client.ClientId);
             _mockPipeline.LoginRequest.DisplayMode.Should().Be("popup");
             _mockPipeline.LoginRequest.UiLocales.Should().Be("ui_locale_value");
             _mockPipeline.LoginRequest.IdP.Should().Be("idp_value");

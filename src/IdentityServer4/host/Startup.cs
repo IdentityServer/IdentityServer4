@@ -14,16 +14,14 @@ using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using System.Linq;
-using System.Reflection;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using Host.Extensions;
-using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.EntityFrameworkCore;
+using IdentityServer4.Validation;
 
 namespace Host
 {
@@ -72,8 +70,9 @@ namespace Host
                 })
                 .AddInMemoryClients(Clients.Get())
                 //.AddInMemoryClients(_config.GetSection("Clients"))
-                .AddInMemoryIdentityResources(Resources.GetIdentityResources())
-                .AddInMemoryApiResources(Resources.GetApiResources())
+                .AddInMemoryIdentityResources(Resources.IdentityResources)
+                .AddInMemoryApiResources(Resources.ApiResources)
+                .AddInMemoryApiScopes(Resources.ApiScopes)
                 .AddSigningCredential()
                 .AddExtensionGrantValidator<Extensions.ExtensionGrantValidator>()
                 .AddExtensionGrantValidator<Extensions.NoSubjectExtensionGrantValidator>()
@@ -82,6 +81,8 @@ namespace Host
                 .AddTestUsers(TestUsers.Users)
                 .AddProfileService<HostProfileService>()
                 .AddMutualTlsSecretValidators();
+
+            services.AddTransient<IResourceValidator, CustomResourceValidator>();
             
             // use this for persisted grants store
             // var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;

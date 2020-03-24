@@ -6,9 +6,9 @@
 
 namespace IdentityServer4.EntityFramework.Entities
 {
-    public class ApiSecret : Secret
+    public class ApiScopeProperty : Property
     {
-        public int ApiResourceId { get; set; }
-        public ApiResource ApiResource { get; set; }
+        public int ScopeId { get; set; }
+        public ApiScope Scope { get; set; }
     }
 }

@@ -51,12 +51,11 @@ namespace IdentityServer.UnitTests.Validation.TokenRequest_Validation
             var result = await validator.ValidateRequestAsync(parameters, client.ToValidationResult());
 
             result.IsError.Should().BeFalse();
-            result.ValidatedRequest.ValidatedScopes.GrantedResources.ApiResources.Count.Should().Be(1);
-            result.ValidatedRequest.ValidatedScopes.GrantedResources.ApiResources.First().Name.Should().Be("api");
+            result.ValidatedRequest.ValidatedResources.Resources.ApiResources.Count.Should().Be(1);
+            result.ValidatedRequest.ValidatedResources.Resources.ApiResources.First().Name.Should().Be("api");
 
-            result.ValidatedRequest.ValidatedScopes.GrantedResources.ApiResources.First().Scopes.Count.Should().Be(2);
-            result.ValidatedRequest.ValidatedScopes.GrantedResources.ApiResources.First().Scopes.First().Name.Should().Be("resource");
-            result.ValidatedRequest.ValidatedScopes.GrantedResources.ApiResources.First().Scopes.Skip(1).First().Name.Should().Be("resource2");
+            result.ValidatedRequest.ValidatedResources.Resources.ApiScopes.Count.Should().Be(2);
+            result.ValidatedRequest.ValidatedResources.Resources.ApiScopes.Select(x=>x.Name).Should().BeEquivalentTo(new[] { "resource", "resource2" });
         }
 
         [Fact]

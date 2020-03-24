@@ -11,11 +11,8 @@ using IdentityServer4.Stores;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Specialized;
-using System.Diagnostics.Eventing.Reader;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using IdentityServer4.Logging.Models;
 
@@ -27,7 +24,7 @@ namespace IdentityServer4.Validation
         private readonly IClientStore _clients;
         private readonly ICustomAuthorizeRequestValidator _customValidator;
         private readonly IRedirectUriValidator _uriValidator;
-        private readonly ScopeValidator _scopeValidator;
+        private readonly IResourceValidator _resourceValidator;
         private readonly IUserSession _userSession;
         private readonly JwtRequestValidator _jwtRequestValidator;
         private readonly JwtRequestUriHttpClient _jwtRequestUriHttpClient;
@@ -41,7 +38,7 @@ namespace IdentityServer4.Validation
             IClientStore clients,
             ICustomAuthorizeRequestValidator customValidator,
             IRedirectUriValidator uriValidator,
-            ScopeValidator scopeValidator,
+            IResourceValidator resourceValidator,
             IUserSession userSession,
             JwtRequestValidator jwtRequestValidator,
             JwtRequestUriHttpClient jwtRequestUriHttpClient,
@@ -51,7 +48,7 @@ namespace IdentityServer4.Validation
             _clients = clients;
             _customValidator = customValidator;
             _uriValidator = uriValidator;
-            _scopeValidator = scopeValidator;
+            _resourceValidator = resourceValidator;
             _jwtRequestValidator = jwtRequestValidator;
             _userSession = userSession;
             _jwtRequestUriHttpClient = jwtRequestUriHttpClient;
@@ -576,39 +573,63 @@ namespace IdentityServer4.Validation
             //////////////////////////////////////////////////////////
             // check if scopes are valid/supported and check for resource scopes
             //////////////////////////////////////////////////////////
-            if (await _scopeValidator.AreScopesValidAsync(request.RequestedScopes) == false)
+            var parasedScopes = await _resourceValidator.ParseRequestedScopesAsync(request.RequestedScopes);
+            var validatedResources = await _resourceValidator.ValidateRequestedResourcesAsync(new ResourceValidationRequest { 
+                Client = request.Client,
+                ParsedScopeValues = parasedScopes
+            });
+            
+            if (!validatedResources.Succeeded)
             {
                 return Invalid(request, OidcConstants.AuthorizeErrors.InvalidScope, "Invalid scope");
             }
 
-            if (_scopeValidator.ContainsOpenIdScopes && !request.IsOpenIdRequest)
+            if (validatedResources.Resources.IdentityResources.Any() && !request.IsOpenIdRequest)
             {
                 LogError("Identity related scope requests, but no openid scope", request);
                 return Invalid(request, OidcConstants.AuthorizeErrors.InvalidScope, "Identity scopes requested, but openid scope is missing");
             }
 
-            if (_scopeValidator.ContainsApiResourceScopes)
+            if (validatedResources.Resources.ApiScopes.Any())
             {
                 request.IsApiResourceRequest = true;
             }
 
             //////////////////////////////////////////////////////////
-            // check scopes and scope restrictions
-            //////////////////////////////////////////////////////////
-            if (await _scopeValidator.AreScopesAllowedAsync(request.Client, request.RequestedScopes) == false)
-            {
-                return Invalid(request, OidcConstants.AuthorizeErrors.UnauthorizedClient, description: "Invalid scope for client");
-            }
-
-            request.ValidatedScopes = _scopeValidator;
-
-            //////////////////////////////////////////////////////////
             // check id vs resource scopes and response types plausability
             //////////////////////////////////////////////////////////
-            if (!_scopeValidator.IsResponseTypeValid(request.ResponseType))
+            var responseTypeValidationCheck = true;
+            switch (requirement)
             {
-                return Invalid(request, OidcConstants.AuthorizeErrors.InvalidScope, "Invalid scope for response type");
+                case Constants.ScopeRequirement.Identity:
+                    if (!validatedResources.Resources.IdentityResources.Any())
+                    {
+                        _logger.LogError("Requests for id_token response type must include identity scopes");
+                        responseTypeValidationCheck = false;
+                    }
+                    break;
+                case Constants.ScopeRequirement.IdentityOnly:
+                    if (!validatedResources.Resources.IdentityResources.Any() || validatedResources.Resources.ApiScopes.Any())
+                    {
+                        _logger.LogError("Requests for id_token response type only must not include resource scopes");
+                        responseTypeValidationCheck = false;
+                    }
+                    break;
+                case Constants.ScopeRequirement.ResourceOnly:
+                    if (validatedResources.Resources.IdentityResources.Any() || !validatedResources.Resources.ApiScopes.Any())
+                    {
+                        _logger.LogError("Requests for token response type only must include resource scopes, but no identity scopes.");
+                        responseTypeValidationCheck = false;
+                    }
+                    break;
             }
+
+            if (!responseTypeValidationCheck)
+            { 
+                return Invalid(request, OidcConstants.AuthorizeErrors.InvalidScope, "Invalid scope for response type"); 
+            }
+
+            request.ValidatedResources = validatedResources;
 
             return Valid(request);
         }

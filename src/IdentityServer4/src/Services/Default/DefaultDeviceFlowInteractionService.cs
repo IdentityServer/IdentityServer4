@@ -3,9 +3,11 @@
 
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
+using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.Services
@@ -15,17 +17,23 @@ namespace IdentityServer4.Services
         private readonly IClientStore _clients;
         private readonly IUserSession _session;
         private readonly IDeviceFlowCodeService _devices;
+        private readonly IResourceStore _resourceStore;
+        private readonly IResourceValidator _resourceValidator;
         private readonly ILogger<DefaultDeviceFlowInteractionService> _logger;
 
         public DefaultDeviceFlowInteractionService(
             IClientStore clients,
             IUserSession session,
             IDeviceFlowCodeService devices,
+            IResourceStore resourceStore,
+            IResourceValidator resourceValidator,
             ILogger<DefaultDeviceFlowInteractionService> logger)
         {
             _clients = clients;
             _session = session;
             _devices = devices;
+            _resourceStore = resourceStore;
+            _resourceValidator = resourceValidator;
             _logger = logger;
         }
 
@@ -34,10 +42,16 @@ namespace IdentityServer4.Services
             var deviceAuth = await _devices.FindByUserCodeAsync(userCode);
             if (deviceAuth == null) return null;
 
+            var client = await _clients.FindClientByIdAsync(deviceAuth.ClientId);
+            if (client == null) return null;
+
+            var parsedScopes = await _resourceValidator.ParseRequestedScopesAsync(deviceAuth.RequestedScopes);
+            var validatedResources = await _resourceStore.CreateResourceValidationResult(parsedScopes);
+
             return new DeviceFlowAuthorizationRequest
             {
-                ClientId = deviceAuth.ClientId,
-                ScopesRequested = deviceAuth.RequestedScopes
+                Client = client,
+                ValidatedResources = validatedResources
             };
         }
 
@@ -57,7 +71,7 @@ namespace IdentityServer4.Services
 
             deviceAuth.IsAuthorized = true;
             deviceAuth.Subject = subject;
-            deviceAuth.AuthorizedScopes = consent.ScopesConsented;
+            deviceAuth.AuthorizedScopes = consent.ScopesValuesConsented;
 
             // TODO: Device Flow - Record consent template
             if (consent.RememberConsent)

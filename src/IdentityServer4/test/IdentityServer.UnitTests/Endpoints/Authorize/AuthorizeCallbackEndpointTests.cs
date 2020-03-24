@@ -163,7 +163,7 @@ namespace IdentityServer.UnitTests.Endpoints.Authorize
                 { "scope", "api1 api2" }
             };
             var request = new ConsentRequest(parameters, _user.GetSubjectId());
-            _mockUserConsentResponseMessageStore.Messages.Add(request.Id, new Message<ConsentResponse>(new ConsentResponse() { ScopesConsented = new string[] { "api1", "api2" } }));
+            _mockUserConsentResponseMessageStore.Messages.Add(request.Id, new Message<ConsentResponse>(new ConsentResponse() { ScopesValuesConsented = new string[] { "api1", "api2" } }));
 
             _mockUserSession.User = _user;
 
@@ -187,7 +187,7 @@ namespace IdentityServer.UnitTests.Endpoints.Authorize
                 { "scope", "api1 api2" }
             };
             var request = new ConsentRequest(parameters, _user.GetSubjectId());
-            _mockUserConsentResponseMessageStore.Messages.Add(request.Id, new Message<ConsentResponse>(new ConsentResponse() { ScopesConsented = new string[] { "api1", "api2" } }));
+            _mockUserConsentResponseMessageStore.Messages.Add(request.Id, new Message<ConsentResponse>(new ConsentResponse() { ScopesValuesConsented = new string[] { "api1", "api2" } }));
 
             _mockUserSession.User = _user;
 

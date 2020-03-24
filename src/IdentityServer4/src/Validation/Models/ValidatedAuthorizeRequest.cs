@@ -50,6 +50,7 @@ namespace IdentityServer4.Validation
         /// <value>
         /// The requested scopes.
         /// </value>
+        // todo: consider replacing with extension method to access Raw collection; would neeed to be done wholesale for all props.
         public List<string> RequestedScopes { get; set; }
 
         /// <summary>

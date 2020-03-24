@@ -52,18 +52,19 @@ namespace IdentityServer.IntegrationTests.Endpoints.Token
                 new IdentityResources.OpenId()
             });
 
-            _mockPipeline.ApiScopes.AddRange(new ApiResource[] {
+            _mockPipeline.ApiResources.AddRange(new ApiResource[] {
                 new ApiResource
                 {
                     Name = "api",
                     ApiSecrets = new List<Secret> { new Secret(scope_secret.Sha256()) },
-                    Scopes =
-                    {
-                        new Scope
-                        {
-                            Name = scope_name
-                        }
-                    }
+                    Scopes = {scope_name}
+                }
+            });
+
+            _mockPipeline.ApiScopes.AddRange(new[] {
+                new ApiScope
+                {
+                    Name = scope_name
                 }
             });
 

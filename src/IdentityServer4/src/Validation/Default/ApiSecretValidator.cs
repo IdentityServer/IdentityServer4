@@ -7,6 +7,7 @@ using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Validation
@@ -63,14 +64,24 @@ namespace IdentityServer4.Validation
             }
 
             // load API resource
-            var api = await _resources.FindApiResourceAsync(parsedSecret.Id);
-            if (api == null)
+            var apis = await _resources.FindApiResourcesByNameAsync(new[] { parsedSecret.Id });
+            if (apis == null || !apis.Any())
             {
                 await RaiseFailureEventAsync(parsedSecret.Id, "Unknown API resource");
 
                 _logger.LogError("No API resource with that name found. aborting");
                 return fail;
             }
+
+            if (apis.Count() > 1)
+            {
+                await RaiseFailureEventAsync(parsedSecret.Id, "Invalid API resource");
+
+                _logger.LogError("More than one API resource with that name found. aborting");
+                return fail;
+            }
+
+            var api = apis.Single();
 
             if (api.Enabled == false)
             {

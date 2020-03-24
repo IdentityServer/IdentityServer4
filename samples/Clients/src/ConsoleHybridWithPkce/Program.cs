@@ -40,7 +40,7 @@ namespace ConsoleClientWithBrowser
                 ClientId = "console.pkce",
 
                 RedirectUri = redirectUri,
-                Scope = "openid profile api1",
+                Scope = "openid profile feature1",
                 FilterClaims = false,
                 Browser = browser
             };

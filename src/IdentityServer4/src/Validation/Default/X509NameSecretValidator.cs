@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using static IdentityServer4.IdentityServerConstants;
 
 namespace IdentityServer4.Validation

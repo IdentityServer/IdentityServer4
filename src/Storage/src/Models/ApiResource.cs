@@ -5,7 +5,6 @@
 using IdentityServer4.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace IdentityServer4.Models
 {
@@ -64,8 +63,6 @@ namespace IdentityServer4.Models
             Name = name;
             DisplayName = displayName;
 
-            Scopes.Add(new Scope(name, displayName));
-
             if (!claimTypes.IsNullOrEmpty())
             {
                 foreach (var type in claimTypes)
@@ -81,9 +78,9 @@ namespace IdentityServer4.Models
         public ICollection<Secret> ApiSecrets { get; set; } = new HashSet<Secret>();
 
         /// <summary>
-        /// An API must have at least one scope. Each scope can have different settings.
+        /// Models the scopes this API resource allows.
         /// </summary>
-        public ICollection<Scope> Scopes { get; set; } = new HashSet<Scope>();
+        public ICollection<string> Scopes { get; set; } = new HashSet<string>();
 
         /// <summary>
         /// Signing algorithm for access token. If empty, will use the server default signing algorithm.
