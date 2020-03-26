@@ -14,7 +14,7 @@ namespace IdentityServer4.Validation
         /// </summary>
         /// <param name="name"></param>
         public ParsedScopeValue(string name)
-            : this(name, name)
+            : this(name, name, null)
         {
         }
 
@@ -23,10 +23,12 @@ namespace IdentityServer4.Validation
         /// </summary>
         /// <param name="name"></param>
         /// <param name="value"></param>
-        public ParsedScopeValue(string name, string value)
+        /// <param name="paramaterValue"></param>
+        public ParsedScopeValue(string name, string value, string paramaterValue)
         {
             Name = name;
             Value = value;
+            ParameterValue = paramaterValue;
         }
 
         /// <summary>
@@ -40,5 +42,10 @@ namespace IdentityServer4.Validation
         /// The value of the parsed scope. If the scope has no structure, then the value will be the same as the name.
         /// </summary>
         public string Value { get; set; }
+        
+        /// <summary>
+        /// The parameter value of the parsed scope. If the scope has no structure, then the value will be null.
+        /// </summary>
+        public string ParameterValue { get; set; }
     }
 }

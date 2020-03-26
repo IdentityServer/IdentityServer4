@@ -21,7 +21,8 @@ namespace Host.Extensions
 
             if (scopeValue.StartsWith(transactionScopePrefix))
             {
-                return Task.FromResult(new ParsedScopeValue(transactionScopeName, scopeValue));
+                var parts = scopeValue.Split(':', StringSplitOptions.RemoveEmptyEntries);
+                return Task.FromResult(new ParsedScopeValue(transactionScopeName, scopeValue, parts[1]));
             }
 
             return base.ParseScopeValue(scopeValue);
