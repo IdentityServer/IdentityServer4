@@ -84,6 +84,14 @@ namespace IdentityServer4.Models
         public string SubjectId => AccessToken.SubjectId;
 
         /// <summary>
+        /// Gets the session identifier.
+        /// </summary>
+        /// <value>
+        /// The session identifier.
+        /// </value>
+        public string SessionId => AccessToken.SessionId;
+
+        /// <summary>
         /// Gets the scopes.
         /// </summary>
         /// <value>

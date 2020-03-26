@@ -47,6 +47,10 @@ namespace SqlServer.Migrations.PersistedGrantDb
                         .IsRequired()
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("SessionId")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
                     b.Property<string>("SubjectId")
                         .HasColumnType("nvarchar(200)")
                         .HasMaxLength(200);
@@ -83,6 +87,10 @@ namespace SqlServer.Migrations.PersistedGrantDb
                     b.Property<DateTime?>("Expiration")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("SessionId")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
                     b.Property<string>("SubjectId")
                         .HasColumnType("nvarchar(200)")
                         .HasMaxLength(200);
@@ -97,6 +105,8 @@ namespace SqlServer.Migrations.PersistedGrantDb
                     b.HasIndex("Expiration");
 
                     b.HasIndex("SubjectId", "ClientId", "Type");
+
+                    b.HasIndex("SubjectId", "SessionId", "Type");
 
                     b.ToTable("PersistedGrants");
                 });

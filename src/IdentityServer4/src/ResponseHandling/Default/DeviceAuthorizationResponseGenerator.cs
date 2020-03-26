@@ -118,7 +118,7 @@ namespace IdentityServer4.ResponseHandling
             {
                 response.VerificationUriComplete =
                     $"{response.VerificationUri}?{Options.UserInteraction.DeviceVerificationUserCodeParameter}={response.UserCode}";
-            } 
+            }
 
             // expiration
             response.DeviceCodeLifetime = validationResult.ValidatedRequest.Client.DeviceCodeLifetime;

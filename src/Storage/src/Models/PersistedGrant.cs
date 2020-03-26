@@ -34,6 +34,14 @@ namespace IdentityServer4.Models
         /// The subject identifier.
         /// </value>
         public string SubjectId { get; set; }
+        
+        /// <summary>
+        /// Gets the session identifier.
+        /// </summary>
+        /// <value>
+        /// The session identifier.
+        /// </value>
+        public string SessionId { get; set; }
 
         /// <summary>
         /// Gets the client identifier.
@@ -42,7 +50,7 @@ namespace IdentityServer4.Models
         /// The client identifier.
         /// </value>
         public string ClientId { get; set; }
-
+        
         /// <summary>
         /// Gets or sets the creation time.
         /// </summary>

@@ -68,9 +68,12 @@ namespace IdentityServer4.Services
 
             var subject = await _session.GetUserAsync();
             if (subject == null) return LogAndReturnError("No user present in device flow request", "Device authorization failure - no user found");
+            
+            var sid = await _session.GetSessionIdAsync();
 
             deviceAuth.IsAuthorized = true;
             deviceAuth.Subject = subject;
+            deviceAuth.SessionId = sid;
             deviceAuth.AuthorizedScopes = consent.ScopesValuesConsented;
 
             // TODO: Device Flow - Record consent template

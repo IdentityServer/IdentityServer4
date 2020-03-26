@@ -76,5 +76,13 @@ namespace IdentityServer4.Models
         /// The subject.
         /// </value>
         public ClaimsPrincipal Subject { get; set; }
+
+        /// <summary>
+        /// Gets or sets the session identifier.
+        /// </summary>
+        /// <value>
+        /// The session identifier.
+        /// </value>
+        public string SessionId { get; set; }
     }
 }

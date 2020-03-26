@@ -32,6 +32,14 @@ namespace IdentityServer4.EntityFramework.Entities
         public string SubjectId { get; set; }
 
         /// <summary>
+        /// Gets or sets the session identifier.
+        /// </summary>
+        /// <value>
+        /// The session identifier.
+        /// </value>
+        public string SessionId { get; set; }
+
+        /// <summary>
         /// Gets or sets the client identifier.
         /// </summary>
         /// <value>
