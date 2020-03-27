@@ -38,6 +38,10 @@ namespace SqlServer.Migrations.PersistedGrantDb
                         .HasColumnType("nvarchar(max)")
                         .HasMaxLength(50000);
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
                     b.Property<string>("DeviceCode")
                         .IsRequired()
                         .HasColumnType("nvarchar(200)")
@@ -83,6 +87,10 @@ namespace SqlServer.Migrations.PersistedGrantDb
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasMaxLength(50000);
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
 
                     b.Property<DateTime?>("Expiration")
                         .HasColumnType("datetime2");

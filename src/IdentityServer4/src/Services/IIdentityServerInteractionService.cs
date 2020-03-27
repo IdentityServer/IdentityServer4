@@ -54,7 +54,7 @@ namespace IdentityServer4.Services
         /// <summary>
         /// Returns a collection representing all of the user's consents and grants.
         /// </summary>
-        Task<IEnumerable<Consent>> GetAllUserConsentsAsync();
+        Task<IEnumerable<Grant>> GetAllUserGrantsAsync();
 
         /// <summary>
         /// Revokes all a user's consents and grants for a client.

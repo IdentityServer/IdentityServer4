@@ -92,6 +92,14 @@ namespace IdentityServer4.Models
         public string SessionId => AccessToken.SessionId;
 
         /// <summary>
+        /// Gets the description the user assigned to the device being authorized.
+        /// </summary>
+        /// <value>
+        /// The description.
+        /// </value>
+        public string Description => AccessToken.Description;
+
+        /// <summary>
         /// Gets the scopes.
         /// </summary>
         /// <value>

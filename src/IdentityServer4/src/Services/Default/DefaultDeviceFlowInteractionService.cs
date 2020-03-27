@@ -74,6 +74,7 @@ namespace IdentityServer4.Services
             deviceAuth.IsAuthorized = true;
             deviceAuth.Subject = subject;
             deviceAuth.SessionId = sid;
+            deviceAuth.Description = consent.Description;
             deviceAuth.AuthorizedScopes = consent.ScopesValuesConsented;
 
             // TODO: Device Flow - Record consent template

@@ -215,6 +215,7 @@ namespace IdentityServer4.ResponseHandling
                 var creationRequest = new TokenCreationRequest
                 {
                     Subject = subject,
+                    Description = request.ValidatedRequest.RefreshToken.Description,
                     ValidatedRequest = request.ValidatedRequest,
                     ValidatedResources = validatedResources
                 };
@@ -375,6 +376,7 @@ namespace IdentityServer4.ResponseHandling
                 tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.AuthorizationCode.Subject,
+                    Description = request.AuthorizationCode.Description,
                     ValidatedResources = validatedResources,
                     ValidatedRequest = request
                 };
@@ -399,6 +401,7 @@ namespace IdentityServer4.ResponseHandling
                 tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.DeviceCode.Subject,
+                    Description = request.DeviceCode.Description,
                     ValidatedResources = validatedResources,
                     ValidatedRequest = request
                 };

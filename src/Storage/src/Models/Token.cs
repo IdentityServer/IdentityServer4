@@ -98,6 +98,14 @@ namespace IdentityServer4.Models
         public AccessTokenType AccessTokenType { get; set; }
 
         /// <summary>
+        /// Gets the description the user assigned to the device being authorized.
+        /// </summary>
+        /// <value>
+        /// The description.
+        /// </value>
+        public string Description { get; set; }
+        
+        /// <summary>
         /// Gets or sets the claims.
         /// </summary>
         /// <value>

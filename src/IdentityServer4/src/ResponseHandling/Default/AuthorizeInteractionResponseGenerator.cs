@@ -286,6 +286,7 @@ namespace IdentityServer4.ResponseHandling
                         else
                         {
                             // they said yes, set scopes they chose
+                            request.Description = consent.Description;
                             request.ValidatedResources = request.ValidatedResources.Filter(consent.ScopesValuesConsented);
                             Logger.LogInformation("User consented to scopes: {scopes}", consent.ScopesValuesConsented);
 

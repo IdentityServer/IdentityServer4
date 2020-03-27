@@ -15,6 +15,7 @@ CREATE TABLE [DeviceCodes] (
     [SubjectId] nvarchar(200) NULL,
     [SessionId] nvarchar(100) NULL,
     [ClientId] nvarchar(200) NOT NULL,
+    [Description] nvarchar(200) NULL,
     [CreationTime] datetime2 NOT NULL,
     [Expiration] datetime2 NOT NULL,
     [Data] nvarchar(max) NOT NULL,
@@ -29,6 +30,7 @@ CREATE TABLE [PersistedGrants] (
     [SubjectId] nvarchar(200) NULL,
     [SessionId] nvarchar(100) NULL,
     [ClientId] nvarchar(200) NOT NULL,
+    [Description] nvarchar(200) NULL,
     [CreationTime] datetime2 NOT NULL,
     [Expiration] datetime2 NULL,
     [Data] nvarchar(max) NOT NULL,
@@ -58,7 +60,7 @@ CREATE INDEX [IX_PersistedGrants_SubjectId_SessionId_Type] ON [PersistedGrants] 
 GO
 
 INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-VALUES (N'20200325232000_Grants', N'3.1.0');
+VALUES (N'20200327191239_Grants', N'3.1.0');
 
 GO
 

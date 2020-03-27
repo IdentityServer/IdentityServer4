@@ -16,6 +16,7 @@ namespace SqlServer.Migrations.PersistedGrantDb
                     SubjectId = table.Column<string>(maxLength: 200, nullable: true),
                     SessionId = table.Column<string>(maxLength: 100, nullable: true),
                     ClientId = table.Column<string>(maxLength: 200, nullable: false),
+                    Description = table.Column<string>(maxLength: 200, nullable: true),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     Expiration = table.Column<DateTime>(nullable: false),
                     Data = table.Column<string>(maxLength: 50000, nullable: false)
@@ -34,6 +35,7 @@ namespace SqlServer.Migrations.PersistedGrantDb
                     SubjectId = table.Column<string>(maxLength: 200, nullable: true),
                     SessionId = table.Column<string>(maxLength: 100, nullable: true),
                     ClientId = table.Column<string>(maxLength: 200, nullable: false),
+                    Description = table.Column<string>(maxLength: 200, nullable: true),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     Expiration = table.Column<DateTime>(nullable: true),
                     Data = table.Column<string>(maxLength: 50000, nullable: false)
