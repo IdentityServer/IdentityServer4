@@ -2,9 +2,13 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System;
+using System.Collections.Specialized;
+using System.Text.Json;
 using IdentityServer4.Infrastructure;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using JsonSerializer = Newtonsoft.Json.JsonSerializer;
 
 namespace IdentityServer4
 {
@@ -29,7 +33,14 @@ namespace IdentityServer4
 
         public static string ToString(object o)
         {
-            return JsonConvert.SerializeObject(o, Settings);
+            if (o is JObject) throw new Exception("fix JObject serialization");
+            if (o is NameValueCollection) throw new Exception("fix NameValueCollection serialization");
+
+            var options = new JsonSerializerOptions {IgnoreNullValues = true};
+
+            return System.Text.Json.JsonSerializer.Serialize(o, options);
+
+            //return JsonConvert.SerializeObject(o, Settings);
         }
 
         public static T FromString<T>(string value)
