@@ -40,19 +40,6 @@ namespace IdentityServer4.Endpoints.Results
             };
 
             await context.Response.WriteJsonAsync(dto);
-            
-            // todo: cleanup
-            // if (Response.Custom.IsNullOrEmpty())
-            // {
-            //     await context.Response.WriteJsonAsync(dto);
-            // }
-            // else
-            // {
-            //     var jobject = ObjectSerializer.ToJObject(dto);
-            //     jobject.AddDictionary(Response.Custom);
-            //
-            //     await context.Response.WriteJsonAsync(jobject);
-            // }
         }
 
         internal class ResultDto
