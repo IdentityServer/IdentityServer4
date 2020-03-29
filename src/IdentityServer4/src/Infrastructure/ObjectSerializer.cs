@@ -2,54 +2,25 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using System;
-using System.Collections.Specialized;
 using System.Text.Json;
-using IdentityServer4.Infrastructure;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using JsonSerializer = Newtonsoft.Json.JsonSerializer;
 
 namespace IdentityServer4
 {
     internal static class ObjectSerializer
     {
-        private static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
+        private static readonly JsonSerializerOptions Options = new JsonSerializerOptions
         {
-            DefaultValueHandling = DefaultValueHandling.Ignore,
-            NullValueHandling = NullValueHandling.Ignore
+            IgnoreNullValues = true
         };
-
-        private static readonly JsonSerializer Serializer = new JsonSerializer
-        {
-            DefaultValueHandling = DefaultValueHandling.Ignore,
-            NullValueHandling = NullValueHandling.Ignore
-        };
-
-        static ObjectSerializer()
-        {
-            // todo: cleanup
-            //Settings.Converters.Add(new NameValueCollectionConverter());
-        }
-
+        
         public static string ToString(object o)
         {
-            if (o is JObject) throw new Exception("fix JObject serialization");
-            if (o is NameValueCollection) throw new Exception("fix NameValueCollection serialization");
-
-            var options = new JsonSerializerOptions {IgnoreNullValues = true};
-
-            return System.Text.Json.JsonSerializer.Serialize(o, options);
-
-            //return JsonConvert.SerializeObject(o, Settings);
+            return JsonSerializer.Serialize(o, Options);
         }
 
         public static T FromString<T>(string value)
         {
-            var options = new JsonSerializerOptions {IgnoreNullValues = true};
-            return System.Text.Json.JsonSerializer.Deserialize<T>(value, options);
-
-            //return JsonConvert.DeserializeObject<T>(value, Settings);
+            return JsonSerializer.Deserialize<T>(value, Options);
         }
     }
 }

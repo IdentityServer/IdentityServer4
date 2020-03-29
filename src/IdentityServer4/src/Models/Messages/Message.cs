@@ -20,7 +20,10 @@ namespace IdentityServer4.Models
         {
         }
 
-        public Message()
+        /// <summary>
+        /// for JSON serializer
+        /// </summary>
+        internal Message()
         {
         }
         
