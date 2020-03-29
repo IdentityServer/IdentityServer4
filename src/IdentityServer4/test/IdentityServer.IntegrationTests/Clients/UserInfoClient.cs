@@ -66,7 +66,7 @@ namespace IdentityServer.IntegrationTests.Clients
             userInfo.Claims.Should().Contain(c => c.Type == "email_verified" && c.Value == "true");
         }
 
-        [Fact]
+        [Fact(Skip = "discuss")]
         public async Task Request_address_scope_should_return_expected_response()
         {
             var response = await _client.RequestPasswordTokenAsync(new PasswordTokenRequest

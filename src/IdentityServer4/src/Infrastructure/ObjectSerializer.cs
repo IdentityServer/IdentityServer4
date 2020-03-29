@@ -28,7 +28,8 @@ namespace IdentityServer4
 
         static ObjectSerializer()
         {
-            Settings.Converters.Add(new NameValueCollectionConverter());
+            // todo: cleanup
+            //Settings.Converters.Add(new NameValueCollectionConverter());
         }
 
         public static string ToString(object o)
@@ -45,12 +46,10 @@ namespace IdentityServer4
 
         public static T FromString<T>(string value)
         {
-            return JsonConvert.DeserializeObject<T>(value, Settings);
-        }
+            var options = new JsonSerializerOptions {IgnoreNullValues = true};
+            return System.Text.Json.JsonSerializer.Deserialize<T>(value, options);
 
-        public static JObject ToJObject(object o)
-        {
-            return JObject.FromObject(o, Serializer);
+            //return JsonConvert.DeserializeObject<T>(value, Settings);
         }
     }
 }
