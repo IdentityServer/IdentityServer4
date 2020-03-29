@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace IdentityServer4.Extensions
 {
@@ -20,9 +20,8 @@ namespace IdentityServer4.Extensions
             {
                 { "x5t#S256", certificate.Thumbprint.ToLowerInvariant() }
             };
-            var cnf = JsonConvert.SerializeObject(values);
 
-            return cnf;
+            return JsonSerializer.Serialize(values);
         }
     }
 }
