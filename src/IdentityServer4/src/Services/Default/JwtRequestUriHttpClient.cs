@@ -21,11 +21,11 @@ namespace IdentityServer4.Services
         /// Constructor for DefaultJwtRequestUriHttpClient.
         /// </summary>
         /// <param name="client"></param>
-        /// <param name="logger"></param>
-        public JwtRequestUriHttpClient(HttpClient client, ILogger<JwtRequestUriHttpClient> logger)
+        /// <param name="loggerFactory"></param>
+        public JwtRequestUriHttpClient(HttpClient client, ILoggerFactory loggerFactory)
         {
             _client = client;
-            _logger = logger;
+            _logger = loggerFactory.CreateLogger<JwtRequestUriHttpClient>();
         }
 
         /// <summary>

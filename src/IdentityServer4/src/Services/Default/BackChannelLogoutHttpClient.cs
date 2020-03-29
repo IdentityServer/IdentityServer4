@@ -22,11 +22,11 @@ namespace IdentityServer4.Services
         /// Constructor for BackChannelLogoutHttpClient.
         /// </summary>
         /// <param name="client"></param>
-        /// <param name="logger"></param>
-        public BackChannelLogoutHttpClient(HttpClient client, ILogger<BackChannelLogoutHttpClient> logger)
+        /// <param name="loggerFactory"></param>
+        public BackChannelLogoutHttpClient(HttpClient client, ILoggerFactory loggerFactory)
         {
             _client = client;
-            _logger = logger;
+            _logger = loggerFactory.CreateLogger<BackChannelLogoutHttpClient>();
         }
 
         /// <summary>

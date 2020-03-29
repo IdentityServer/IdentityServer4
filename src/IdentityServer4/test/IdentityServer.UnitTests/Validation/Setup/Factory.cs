@@ -205,7 +205,7 @@ namespace IdentityServer.UnitTests.Validation.Setup
 
             if (jwtRequestUriHttpClient == null)
             {
-                jwtRequestUriHttpClient = new JwtRequestUriHttpClient(new HttpClient(new NetworkHandler(new Exception("no jwt request uri response configured"))), new LoggerFactory().CreateLogger<JwtRequestUriHttpClient>());
+                jwtRequestUriHttpClient = new JwtRequestUriHttpClient(new HttpClient(new NetworkHandler(new Exception("no jwt request uri response configured"))), new LoggerFactory());
             }
 
 
