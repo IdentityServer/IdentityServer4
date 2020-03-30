@@ -91,7 +91,7 @@ namespace IdentityServer.UnitTests.Validation.EndSessionRequestValidation
         }
 
         [Fact]
-        public async Task no_post_logout_redirect_uri_should_use_single_registered_uri()
+        public async Task no_post_logout_redirect_uri_should_not_use_single_registered_uri()
         {
             _stubTokenValidator.IdentityTokenValidationResult = new TokenValidationResult()
             {
@@ -106,7 +106,7 @@ namespace IdentityServer.UnitTests.Validation.EndSessionRequestValidation
 
             var result = await _subject.ValidateAsync(parameters, _user);
             result.IsError.Should().BeFalse();
-            result.ValidatedRequest.PostLogOutUri.Should().Be("foo");
+            result.ValidatedRequest.PostLogOutUri.Should().BeNull();
         }
 
         [Fact]
