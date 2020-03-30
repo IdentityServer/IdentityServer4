@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Text.Encodings.Web;
-using Microsoft.AspNetCore.SignalR.Protocol;
 
 namespace IdentityServer4.Extensions
 {
