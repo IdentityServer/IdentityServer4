@@ -43,9 +43,8 @@ namespace IdentityServer4.Endpoints.Results
         public Task ExecuteAsync(HttpContext context)
         {
             context.Response.SetNoCache();
-
-            var jobject = ObjectSerializer.ToJObject(Entries);
-            return context.Response.WriteJsonAsync(jobject);
+            
+            return context.Response.WriteJsonAsync(Entries);
         }
     }
 }

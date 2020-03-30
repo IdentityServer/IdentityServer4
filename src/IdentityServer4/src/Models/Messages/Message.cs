@@ -19,6 +19,13 @@ namespace IdentityServer4.Models
         internal Message(TModel data) : this(data, DateTime.UtcNow)
         {
         }
+
+        /// <summary>
+        /// for JSON serializer
+        /// </summary>
+        internal Message()
+        {
+        }
         
         /// <summary>
         /// Initializes a new instance of the <see cref="Message{TModel}"/> class.
