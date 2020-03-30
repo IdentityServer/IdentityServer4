@@ -38,6 +38,14 @@ namespace IdentityServer4.Models
         public string ClientId { get; set; }
 
         /// <summary>
+        /// Gets the description the user assigned to the device being authorized.
+        /// </summary>
+        /// <value>
+        /// The description.
+        /// </value>
+        public string Description { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether this instance is open identifier.
         /// </summary>
         /// <value>
@@ -76,5 +84,13 @@ namespace IdentityServer4.Models
         /// The subject.
         /// </value>
         public ClaimsPrincipal Subject { get; set; }
+
+        /// <summary>
+        /// Gets or sets the session identifier.
+        /// </summary>
+        /// <value>
+        /// The session identifier.
+        /// </value>
+        public string SessionId { get; set; }
     }
 }

@@ -64,9 +64,10 @@ namespace IdentityServer4.Quickstart.UI
 
             if (result.IsRedirect)
             {
-                if (result.Client.IsPkceClient())
+                var context = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl);
+                if (context?.IsNativeClient() == true)
                 {
-                    // if the client is PKCE then we assume it's native, so this change in how to
+                    // The client is native, so this change in how to
                     // return the response is for better UX for the end user.
                     return this.LoadingPage("Redirect", result.RedirectUri);
                 }
@@ -123,7 +124,8 @@ namespace IdentityServer4.Quickstart.UI
                     grantedConsent = new ConsentResponse
                     {
                         RememberConsent = model.RememberConsent,
-                        ScopesValuesConsented = scopes.ToArray()
+                        ScopesValuesConsented = scopes.ToArray(),
+                        Description = model.Description
                     };
 
                     // emit event
@@ -183,6 +185,7 @@ namespace IdentityServer4.Quickstart.UI
             {
                 RememberConsent = model?.RememberConsent ?? true,
                 ScopesConsented = model?.ScopesConsented ?? Enumerable.Empty<string>(),
+                Description = model?.Description,
 
                 ReturnUrl = returnUrl,
 

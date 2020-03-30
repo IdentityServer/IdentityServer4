@@ -114,13 +114,15 @@ namespace IdentityServer4.Stores
         /// <param name="item">The item.</param>
         /// <param name="clientId">The client identifier.</param>
         /// <param name="subjectId">The subject identifier.</param>
+        /// <param name="sessionId">The session identifier.</param>
+        /// <param name="description">The description.</param>
         /// <param name="created">The created.</param>
         /// <param name="lifetime">The lifetime.</param>
         /// <returns></returns>
-        protected virtual async Task<string> CreateItemAsync(T item, string clientId, string subjectId, DateTime created, int lifetime)
+        protected virtual async Task<string> CreateItemAsync(T item, string clientId, string subjectId, string sessionId, string description, DateTime created, int lifetime)
         {
             var handle = await HandleGenerationService.GenerateAsync();
-            await StoreItemAsync(handle, item, clientId, subjectId, created, created.AddSeconds(lifetime));
+            await StoreItemAsync(handle, item, clientId, subjectId, sessionId, description, created, created.AddSeconds(lifetime));
             return handle;
         }
 
@@ -131,12 +133,14 @@ namespace IdentityServer4.Stores
         /// <param name="item">The item.</param>
         /// <param name="clientId">The client identifier.</param>
         /// <param name="subjectId">The subject identifier.</param>
+        /// <param name="sessionId">The session identifier.</param>
+        /// <param name="description">The description.</param>
         /// <param name="created">The created.</param>
         /// <param name="lifetime">The lifetime.</param>
         /// <returns></returns>
-        protected virtual Task StoreItemAsync(string key, T item, string clientId, string subjectId, DateTime created, int lifetime)
+        protected virtual Task StoreItemAsync(string key, T item, string clientId, string subjectId, string sessionId, string description, DateTime created, int lifetime)
         {
-            return StoreItemAsync(key, item, clientId, subjectId, created, created.AddSeconds(lifetime));
+            return StoreItemAsync(key, item, clientId, subjectId, sessionId, description, created, created.AddSeconds(lifetime));
         }
 
         /// <summary>
@@ -146,10 +150,12 @@ namespace IdentityServer4.Stores
         /// <param name="item">The item.</param>
         /// <param name="clientId">The client identifier.</param>
         /// <param name="subjectId">The subject identifier.</param>
+        /// <param name="sessionId">The session identifier.</param>
+        /// <param name="description">The description.</param>
         /// <param name="created">The created.</param>
         /// <param name="expiration">The expiration.</param>
         /// <returns></returns>
-        protected virtual async Task StoreItemAsync(string key, T item, string clientId, string subjectId, DateTime created, DateTime? expiration)
+        protected virtual async Task StoreItemAsync(string key, T item, string clientId, string subjectId, string sessionId, string description, DateTime created, DateTime? expiration)
         {
             key = GetHashedKey(key);
 
@@ -161,6 +167,8 @@ namespace IdentityServer4.Stores
                 Type = GrantType,
                 ClientId = clientId,
                 SubjectId = subjectId,
+                SessionId = sessionId,
+                Description = description,
                 CreationTime = created,
                 Expiration = expiration,
                 Data = json

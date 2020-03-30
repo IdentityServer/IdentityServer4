@@ -160,7 +160,7 @@ namespace IdentityServer4.Services
             return result;
         }
 
-        public async Task<IEnumerable<Consent>> GetAllUserConsentsAsync()
+        public async Task<IEnumerable<Grant>> GetAllUserGrantsAsync()
         {
             var user = await _userSession.GetUserAsync();
             if (user != null)
@@ -169,7 +169,7 @@ namespace IdentityServer4.Services
                 return await _grants.GetAllGrantsAsync(subject);
             }
 
-            return Enumerable.Empty<Consent>();
+            return Enumerable.Empty<Grant>();
         }
 
         public async Task RevokeUserConsentAsync(string clientId)

@@ -78,6 +78,14 @@ namespace IdentityServer4.Models
         public string Nonce { get; set; }
 
         /// <summary>
+        /// Gets the description the user assigned to the device being authorized.
+        /// </summary>
+        /// <value>
+        /// The description.
+        /// </value>
+        public string Description { get; set; }
+
+        /// <summary>
         /// Called to validate the <see cref="TokenCreationRequest"/> before it is processed.
         /// </summary>
         public void Validate()

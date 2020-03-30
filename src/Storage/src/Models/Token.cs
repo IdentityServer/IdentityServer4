@@ -98,6 +98,14 @@ namespace IdentityServer4.Models
         public AccessTokenType AccessTokenType { get; set; }
 
         /// <summary>
+        /// Gets the description the user assigned to the device being authorized.
+        /// </summary>
+        /// <value>
+        /// The description.
+        /// </value>
+        public string Description { get; set; }
+        
+        /// <summary>
         /// Gets or sets the claims.
         /// </summary>
         /// <value>
@@ -120,7 +128,15 @@ namespace IdentityServer4.Models
         /// The subject identifier.
         /// </value>
         public string SubjectId => Claims.Where(x => x.Type == JwtClaimTypes.Subject).Select(x => x.Value).SingleOrDefault();
-      
+
+        /// <summary>
+        /// Gets the session identifier.
+        /// </summary>
+        /// <value>
+        /// The session identifier.
+        /// </value>
+        public string SessionId => Claims.Where(x => x.Type == JwtClaimTypes.SessionId).Select(x => x.Value).SingleOrDefault();
+
         /// <summary>
         /// Gets the scopes.
         /// </summary>

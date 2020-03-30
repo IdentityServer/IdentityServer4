@@ -1,28 +1,16 @@
-﻿using System;
+﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-namespace IdentityServer4.EntityFramework.Entities
+using System;
+using System.Collections.Generic;
+
+namespace IdentityServer4.Models
 {
     /// <summary>
-    /// Entity for device flow codes
+    /// Models a grant the user has given.
     /// </summary>
-    public class DeviceFlowCodes
+    public class Grant
     {
-        /// <summary>
-        /// Gets or sets the device code.
-        /// </summary>
-        /// <value>
-        /// The device code.
-        /// </value>
-        public string DeviceCode { get; set; }
-
-        /// <summary>
-        /// Gets or sets the user code.
-        /// </summary>
-        /// <value>
-        /// The user code.
-        /// </value>
-        public string UserCode { get; set; }
-
         /// <summary>
         /// Gets or sets the subject identifier.
         /// </summary>
@@ -30,14 +18,6 @@ namespace IdentityServer4.EntityFramework.Entities
         /// The subject identifier.
         /// </value>
         public string SubjectId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the session identifier.
-        /// </summary>
-        /// <value>
-        /// The session identifier.
-        /// </value>
-        public string SessionId { get; set; }
 
         /// <summary>
         /// Gets or sets the client identifier.
@@ -56,6 +36,14 @@ namespace IdentityServer4.EntityFramework.Entities
         public string Description { get; set; }
 
         /// <summary>
+        /// Gets or sets the scopes.
+        /// </summary>
+        /// <value>
+        /// The scopes.
+        /// </value>
+        public IEnumerable<string> Scopes { get; set; }
+
+        /// <summary>
         /// Gets or sets the creation time.
         /// </summary>
         /// <value>
@@ -70,13 +58,5 @@ namespace IdentityServer4.EntityFramework.Entities
         /// The expiration.
         /// </value>
         public DateTime? Expiration { get; set; }
-
-        /// <summary>
-        /// Gets or sets the data.
-        /// </summary>
-        /// <value>
-        /// The data.
-        /// </value>
-        public string Data { get; set; }
     }
 }

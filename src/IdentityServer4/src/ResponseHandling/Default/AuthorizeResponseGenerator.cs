@@ -245,6 +245,7 @@ namespace IdentityServer4.ResponseHandling
                 Lifetime = request.Client.AuthorizationCodeLifetime,
                 Subject = request.Subject,
                 SessionId = request.SessionId,
+                Description = request.Description,
                 CodeChallenge = request.CodeChallenge.Sha256(),
                 CodeChallengeMethod = request.CodeChallengeMethod,
 

@@ -108,7 +108,8 @@ namespace IdentityServer4.Quickstart.UI.Device
                     grantedConsent = new ConsentResponse
                     {
                         RememberConsent = model.RememberConsent,
-                        ScopesValuesConsented = scopes.ToArray()
+                        ScopesValuesConsented = scopes.ToArray(),
+                        Description = model.Description
                     };
 
                     // emit event
@@ -158,6 +159,7 @@ namespace IdentityServer4.Quickstart.UI.Device
             var vm = new DeviceAuthorizationViewModel
             {
                 UserCode = userCode,
+                Description = model?.Description,
 
                 RememberConsent = model?.RememberConsent ?? true,
                 ScopesConsented = model?.ScopesConsented ?? Enumerable.Empty<string>(),

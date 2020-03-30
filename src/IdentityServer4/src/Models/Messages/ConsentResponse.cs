@@ -45,6 +45,14 @@ namespace IdentityServer4.Models
         ///   <c>true</c> if consent is to be remembered; otherwise, <c>false</c>.
         /// </value>
         public bool RememberConsent { get; set; }
+
+        /// <summary>
+        /// Gets the description of the device.
+        /// </summary>
+        /// <value>
+        /// The description of the device.
+        /// </value>
+        public string Description { get; set; }
     }
 
     /// <summary>

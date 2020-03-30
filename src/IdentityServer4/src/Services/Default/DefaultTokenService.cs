@@ -210,6 +210,7 @@ namespace IdentityServer4.Services
                 Lifetime = request.ValidatedRequest.AccessTokenLifetime,
                 Claims = claims.Distinct(new ClaimComparer()).ToList(),
                 ClientId = request.ValidatedRequest.Client.ClientId,
+                Description = request.Description,
                 AccessTokenType = request.ValidatedRequest.AccessTokenType,
                 AllowedSigningAlgorithms = request.ValidatedResources.Resources.ApiResources.FindMatchingSigningAlgorithms()
             };
