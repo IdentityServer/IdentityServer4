@@ -21,6 +21,14 @@ namespace IdentityServer4.EntityFramework.Interfaces
         /// The clients.
         /// </value>
         DbSet<Client> Clients { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the clients' CORS origins.
+        /// </summary>
+        /// <value>
+        /// The clients CORS origins.
+        /// </value>
+        DbSet<ClientCorsOrigin> ClientCorsOrigins { get; set; }
 
         /// <summary>
         /// Gets or sets the identity resources.
