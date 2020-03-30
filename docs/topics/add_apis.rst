@@ -56,7 +56,7 @@ Advanced
 ^^^^^^^^
 Under the covers, the ``AddLocalApiAuthentication`` helper does a couple of things:
 
-* adds an authentication handler that validates incoming tokens using IdentityServer's built-in token validation engine (the name of this handlier is ``IdentityServerAccessToken`` or ``IdentityServerConstants.LocalApi.AuthenticationScheme``
+* adds an authentication handler that validates incoming tokens using IdentityServer's built-in token validation engine (the name of this handler is ``IdentityServerAccessToken`` or ``IdentityServerConstants.LocalApi.AuthenticationScheme``
 * configures the authentication handler to require a scope claim inside the access token of value ``IdentityServerApi``
 * sets up an authorization policy that checks for a scope claim of value ``IdentityServerApi``
 

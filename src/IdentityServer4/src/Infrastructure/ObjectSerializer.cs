@@ -2,44 +2,25 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityServer4.Infrastructure;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 
 namespace IdentityServer4
 {
     internal static class ObjectSerializer
     {
-        private static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
+        private static readonly JsonSerializerOptions Options = new JsonSerializerOptions
         {
-            DefaultValueHandling = DefaultValueHandling.Ignore,
-            NullValueHandling = NullValueHandling.Ignore
+            IgnoreNullValues = true
         };
-
-        private static readonly JsonSerializer Serializer = new JsonSerializer
-        {
-            DefaultValueHandling = DefaultValueHandling.Ignore,
-            NullValueHandling = NullValueHandling.Ignore
-        };
-
-        static ObjectSerializer()
-        {
-            Settings.Converters.Add(new NameValueCollectionConverter());
-        }
-
+        
         public static string ToString(object o)
         {
-            return JsonConvert.SerializeObject(o, Settings);
+            return JsonSerializer.Serialize(o, Options);
         }
 
         public static T FromString<T>(string value)
         {
-            return JsonConvert.DeserializeObject<T>(value, Settings);
-        }
-
-        public static JObject ToJObject(object o)
-        {
-            return JObject.FromObject(o, Serializer);
+            return JsonSerializer.Deserialize<T>(value, Options);
         }
     }
 }

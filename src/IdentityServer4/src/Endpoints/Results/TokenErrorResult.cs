@@ -7,6 +7,8 @@ using IdentityServer4.Hosting;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Extensions;
 using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using IdentityServer4.ResponseHandling;
 
 namespace IdentityServer4.Endpoints.Results
@@ -30,26 +32,21 @@ namespace IdentityServer4.Endpoints.Results
             var dto = new ResultDto
             {
                 error = Response.Error,
-                error_description = Response.ErrorDescription
+                error_description = Response.ErrorDescription,
+                
+                custom = Response.Custom
             };
 
-            if (Response.Custom.IsNullOrEmpty())
-            {
-                await context.Response.WriteJsonAsync(dto);
-            }
-            else
-            {
-                var jobject = ObjectSerializer.ToJObject(dto);
-                jobject.AddDictionary(Response.Custom);
-
-                await context.Response.WriteJsonAsync(jobject);
-            }
+            await context.Response.WriteJsonAsync(dto);
         }
 
         internal class ResultDto
         {
             public string error { get; set; }
             public string error_description { get; set; }
+
+            [JsonExtensionData]
+            public Dictionary<string, object> custom { get; set; }
         }    
     }
 }

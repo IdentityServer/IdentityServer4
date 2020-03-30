@@ -8,6 +8,8 @@ using IdentityServer4.Hosting;
 using IdentityServer4.ResponseHandling;
 using Microsoft.AspNetCore.Http;
 using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Endpoints.Results
@@ -18,9 +20,7 @@ namespace IdentityServer4.Endpoints.Results
 
         public TokenResult(TokenResponse response)
         {
-            if (response == null) throw new ArgumentNullException(nameof(response));
-
-            Response = response;
+            Response = response ?? throw new ArgumentNullException(nameof(response));
         }
 
         public async Task ExecuteAsync(HttpContext context)
@@ -34,20 +34,12 @@ namespace IdentityServer4.Endpoints.Results
                 refresh_token = Response.RefreshToken,
                 expires_in = Response.AccessTokenLifetime,
                 token_type = OidcConstants.TokenResponse.BearerTokenType,
-                scope = Response.Scope
+                scope = Response.Scope,
+                
+                Custom = Response.Custom
             };
 
-            if (Response.Custom.IsNullOrEmpty())
-            {
-                await context.Response.WriteJsonAsync(dto);
-            }
-            else
-            {
-                var jobject = ObjectSerializer.ToJObject(dto);
-                jobject.AddDictionary(Response.Custom);
-
-                await context.Response.WriteJsonAsync(jobject);
-            }
+            await context.Response.WriteJsonAsync(dto);
         }
 
         internal class ResultDto
@@ -58,6 +50,9 @@ namespace IdentityServer4.Endpoints.Results
             public string token_type { get; set; }
             public string refresh_token { get; set; }
             public string scope { get; set; }
+
+            [JsonExtensionData]
+            public Dictionary<string, object> Custom { get; set; }
         }
     }
 }

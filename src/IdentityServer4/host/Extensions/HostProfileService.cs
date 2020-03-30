@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
@@ -12,9 +13,15 @@ namespace Host.Extensions
         {
         }
 
-        public override Task GetProfileDataAsync(ProfileDataRequestContext context)
+        public override async Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
-            return base.GetProfileDataAsync(context);
+            await base.GetProfileDataAsync(context);
+
+            var transaction = context.RequestedResources.ParsedScopes.FirstOrDefault(x => x.Name == "transaction");
+            if (transaction != null)
+            {
+                context.IssuedClaims.Add(new System.Security.Claims.Claim("transaction", transaction.ParameterValue));
+            }
         }
 
         public override Task IsActiveAsync(IsActiveContext context)
