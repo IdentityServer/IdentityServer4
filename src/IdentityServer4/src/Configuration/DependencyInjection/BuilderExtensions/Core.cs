@@ -175,8 +175,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
             builder.AddJwtRequestUriHttpClient();
             builder.AddBackChannelLogoutHttpClient();
-            //builder.Services.AddHttpClient<BackChannelLogoutHttpClient>();
-            //builder.Services.AddHttpClient<JwtRequestUriHttpClient>();
 
             builder.Services.AddTransient<IClientSecretValidator, ClientSecretValidator>();
             builder.Services.AddTransient<IApiSecretValidator, ApiSecretValidator>();
