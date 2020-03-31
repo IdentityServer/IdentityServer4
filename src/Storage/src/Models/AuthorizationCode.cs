@@ -9,7 +9,7 @@ using System.Security.Claims;
 namespace IdentityServer4.Models
 {
     /// <summary>
-    /// Modles an authorization code.
+    /// Models an authorization code.
     /// </summary>
     public class AuthorizationCode
     {
@@ -59,6 +59,7 @@ namespace IdentityServer4.Models
         /// <value>
         /// The requested scopes.
         /// </value>
+        // todo: brock, change to parsed scopes
         public IEnumerable<string> RequestedScopes { get; set; }
 
         /// <summary>
@@ -116,6 +117,14 @@ namespace IdentityServer4.Models
         /// The code challenge method
         /// </value>
         public string CodeChallengeMethod { get; set; }
+
+        /// <summary>
+        /// Gets the description the user assigned to the device being authorized.
+        /// </summary>
+        /// <value>
+        /// The description.
+        /// </value>
+        public string Description { get; set; }
 
         /// <summary>
         /// Gets or sets properties

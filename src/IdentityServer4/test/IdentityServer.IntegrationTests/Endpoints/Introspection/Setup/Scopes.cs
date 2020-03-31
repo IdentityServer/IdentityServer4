@@ -2,14 +2,14 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityServer4.Models;
 using System.Collections.Generic;
+using IdentityServer4.Models;
 
-namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
+namespace IdentityServer.IntegrationTests.Endpoints.Introspection.Setup
 {
     internal class Scopes
     {
-        public static IEnumerable<ApiResource> GetApiScopes()
+        public static IEnumerable<ApiResource> GetApis()
         {
             return new ApiResource[]
             {
@@ -20,13 +20,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
                     {
                         new Secret("secret".Sha256())
                     },
-                    Scopes =
-                    {
-                        new Scope
-                        {
-                            Name = "api1"
-                        }
-                    }
+                    Scopes = { "api1" }
                 },
                 new ApiResource
                 {
@@ -35,13 +29,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
                     {
                         new Secret("secret".Sha256())
                     },
-                    Scopes =
-                    {
-                        new Scope
-                        {
-                            Name = "api2"
-                        }
-                    }
+                    Scopes = { "api2" }
                 },
                  new ApiResource
                 {
@@ -50,17 +38,29 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
                     {
                         new Secret("secret".Sha256())
                     },
-                    Scopes =
-                    {
-                        new Scope
-                        {
-                            Name = "api3-a"
-                        },
-                        new Scope
-                        {
-                            Name = "api3-b"
-                        }
-                    }
+                    Scopes = { "api3-a", "api3-b" }
+                }
+            };
+        }
+        public static IEnumerable<ApiScope> GetScopes()
+        {
+            return new ApiScope[]
+            {
+                new ApiScope
+                {
+                    Name = "api1"
+                },
+                new ApiScope
+                {
+                    Name = "api2"
+                },
+                new ApiScope
+                {
+                    Name = "api3-a"
+                },
+                new ApiScope
+                {
+                    Name = "api3-b"
                 }
             };
         }

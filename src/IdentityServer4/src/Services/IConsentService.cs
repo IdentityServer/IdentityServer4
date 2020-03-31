@@ -3,6 +3,7 @@
 
 
 using IdentityServer4.Models;
+using IdentityServer4.Validation;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -19,19 +20,19 @@ namespace IdentityServer4.Services
         /// </summary>
         /// <param name="subject">The user.</param>
         /// <param name="client">The client.</param>
-        /// <param name="scopes">The scopes.</param>
+        /// <param name="parsedScopes">The parsed scopes.</param>
         /// <returns>
         /// Boolean if consent is required.
         /// </returns>
-        Task<bool> RequiresConsentAsync(ClaimsPrincipal subject, Client client, IEnumerable<string> scopes);
+        Task<bool> RequiresConsentAsync(ClaimsPrincipal subject, Client client, IEnumerable<ParsedScopeValue> parsedScopes);
 
         /// <summary>
         /// Updates the consent.
         /// </summary>
         /// <param name="subject">The subject.</param>
         /// <param name="client">The client.</param>
-        /// <param name="scopes">The scopes.</param>
+        /// <param name="parsedScopes">The parsed scopes.</param>
         /// <returns></returns>
-        Task UpdateConsentAsync(ClaimsPrincipal subject, Client client, IEnumerable<string> scopes);
+        Task UpdateConsentAsync(ClaimsPrincipal subject, Client client, IEnumerable<ParsedScopeValue> parsedScopes);
     }
 }

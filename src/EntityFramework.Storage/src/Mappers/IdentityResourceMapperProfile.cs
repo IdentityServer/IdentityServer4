@@ -25,7 +25,7 @@ namespace IdentityServer4.EntityFramework.Mappers
                 .ConstructUsing(src => new Models.IdentityResource())
                 .ReverseMap();
 
-            CreateMap<Entities.IdentityClaim, string>()
+            CreateMap<Entities.IdentityResourceClaim, string>()
                .ConstructUsing(x => x.Type)
                .ReverseMap()
                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src));

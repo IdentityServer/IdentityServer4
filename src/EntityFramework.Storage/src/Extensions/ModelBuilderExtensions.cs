@@ -45,6 +45,7 @@ namespace IdentityServer4.EntityFramework.Extensions
                 client.Property(x => x.ClientClaimsPrefix).HasMaxLength(200);
                 client.Property(x => x.PairWiseSubjectSalt).HasMaxLength(200);
                 client.Property(x => x.UserCodeType).HasMaxLength(100);
+                client.Property(x => x.AllowedIdentityTokenSigningAlgorithms).HasMaxLength(100);
 
                 client.HasIndex(x => x.ClientId).IsUnique();
 
@@ -134,7 +135,9 @@ namespace IdentityServer4.EntityFramework.Extensions
                 grant.Property(x => x.Key).HasMaxLength(200).ValueGeneratedNever();
                 grant.Property(x => x.Type).HasMaxLength(50).IsRequired();
                 grant.Property(x => x.SubjectId).HasMaxLength(200);
+                grant.Property(x => x.SessionId).HasMaxLength(100);
                 grant.Property(x => x.ClientId).HasMaxLength(200).IsRequired();
+                grant.Property(x => x.Description).HasMaxLength(200);
                 grant.Property(x => x.CreationTime).IsRequired();
                 // 50000 chosen to be explicit to allow enough size to avoid truncation, yet stay beneath the MySql row size limit of ~65K
                 // apparently anything over 4K converts to nvarchar(max) on SqlServer
@@ -143,6 +146,7 @@ namespace IdentityServer4.EntityFramework.Extensions
                 grant.HasKey(x => x.Key);
 
                 grant.HasIndex(x => new { x.SubjectId, x.ClientId, x.Type });
+                grant.HasIndex(x => new { x.SubjectId, x.SessionId, x.Type });
                 grant.HasIndex(x => x.Expiration);
             });
 
@@ -153,7 +157,9 @@ namespace IdentityServer4.EntityFramework.Extensions
                 codes.Property(x => x.DeviceCode).HasMaxLength(200).IsRequired();
                 codes.Property(x => x.UserCode).HasMaxLength(200).IsRequired();
                 codes.Property(x => x.SubjectId).HasMaxLength(200);
+                codes.Property(x => x.SessionId).HasMaxLength(100);
                 codes.Property(x => x.ClientId).HasMaxLength(200).IsRequired();
+                codes.Property(x => x.Description).HasMaxLength(200);
                 codes.Property(x => x.CreationTime).IsRequired();
                 codes.Property(x => x.Expiration).IsRequired();
                 // 50000 chosen to be explicit to allow enough size to avoid truncation, yet stay beneath the MySql row size limit of ~65K
@@ -190,9 +196,9 @@ namespace IdentityServer4.EntityFramework.Extensions
                 identityResource.HasMany(x => x.Properties).WithOne(x => x.IdentityResource).HasForeignKey(x => x.IdentityResourceId).IsRequired().OnDelete(DeleteBehavior.Cascade);
             });
 
-            modelBuilder.Entity<IdentityClaim>(claim =>
+            modelBuilder.Entity<IdentityResourceClaim>(claim =>
             {
-                claim.ToTable(storeOptions.IdentityClaim).HasKey(x => x.Id);
+                claim.ToTable(storeOptions.IdentityResourceClaim).HasKey(x => x.Id);
 
                 claim.Property(x => x.Type).HasMaxLength(200).IsRequired();
             });
@@ -213,6 +219,7 @@ namespace IdentityServer4.EntityFramework.Extensions
                 apiResource.Property(x => x.Name).HasMaxLength(200).IsRequired();
                 apiResource.Property(x => x.DisplayName).HasMaxLength(200);
                 apiResource.Property(x => x.Description).HasMaxLength(1000);
+                apiResource.Property(x => x.AllowedAccessTokenSigningAlgorithms).HasMaxLength(100);
 
                 apiResource.HasIndex(x => x.Name).IsUnique();
 
@@ -222,9 +229,9 @@ namespace IdentityServer4.EntityFramework.Extensions
                 apiResource.HasMany(x => x.Properties).WithOne(x => x.ApiResource).HasForeignKey(x => x.ApiResourceId).IsRequired().OnDelete(DeleteBehavior.Cascade);
             });
 
-            modelBuilder.Entity<ApiSecret>(apiSecret =>
+            modelBuilder.Entity<ApiResourceSecret>(apiSecret =>
             {
-                apiSecret.ToTable(storeOptions.ApiSecret).HasKey(x => x.Id);
+                apiSecret.ToTable(storeOptions.ApiResourceSecret).HasKey(x => x.Id);
 
                 apiSecret.Property(x => x.Description).HasMaxLength(1000);
                 apiSecret.Property(x => x.Value).HasMaxLength(4000).IsRequired();
@@ -233,30 +240,17 @@ namespace IdentityServer4.EntityFramework.Extensions
 
             modelBuilder.Entity<ApiResourceClaim>(apiClaim =>
             {
-                apiClaim.ToTable(storeOptions.ApiClaim).HasKey(x => x.Id);
+                apiClaim.ToTable(storeOptions.ApiResourceClaim).HasKey(x => x.Id);
 
                 apiClaim.Property(x => x.Type).HasMaxLength(200).IsRequired();
             });
 
-            modelBuilder.Entity<ApiScope>(apiScope =>
+            modelBuilder.Entity<ApiResourceScope>((System.Action<EntityTypeBuilder<ApiResourceScope>>)(apiScope =>
             {
-                apiScope.ToTable(storeOptions.ApiScope).HasKey(x => x.Id);
+                apiScope.ToTable((TableConfiguration)storeOptions.ApiResourceScope).HasKey(x => x.Id);
 
-                apiScope.Property(x => x.Name).HasMaxLength(200).IsRequired();
-                apiScope.Property(x => x.DisplayName).HasMaxLength(200);
-                apiScope.Property(x => x.Description).HasMaxLength(1000);
-
-                apiScope.HasIndex(x => x.Name).IsUnique();
-
-                apiScope.HasMany(x => x.UserClaims).WithOne(x => x.ApiScope).HasForeignKey(x => x.ApiScopeId).IsRequired().OnDelete(DeleteBehavior.Cascade);
-            });
-
-            modelBuilder.Entity<ApiScopeClaim>(apiScopeClaim =>
-            {
-                apiScopeClaim.ToTable(storeOptions.ApiScopeClaim).HasKey(x => x.Id);
-
-                apiScopeClaim.Property(x => x.Type).HasMaxLength(200).IsRequired();
-            });
+                apiScope.Property(x => x.Scope).HasMaxLength(200).IsRequired();
+            }));
 
             modelBuilder.Entity<ApiResourceProperty>(property =>
             {
@@ -264,6 +258,33 @@ namespace IdentityServer4.EntityFramework.Extensions
                 property.Property(x => x.Key).HasMaxLength(250).IsRequired();
                 property.Property(x => x.Value).HasMaxLength(2000).IsRequired();
             });
+
+
+            modelBuilder.Entity<ApiScope>(scope =>
+            {
+                scope.ToTable(storeOptions.ApiScope).HasKey(x => x.Id);
+
+                scope.Property(x => x.Name).HasMaxLength(200).IsRequired();
+                scope.Property(x => x.DisplayName).HasMaxLength(200);
+                scope.Property(x => x.Description).HasMaxLength(1000);
+
+                scope.HasIndex(x => x.Name).IsUnique();
+
+                scope.HasMany(x => x.UserClaims).WithOne(x => x.Scope).HasForeignKey(x => x.ScopeId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+            });
+            modelBuilder.Entity<ApiScopeClaim>(scopeClaim =>
+            {
+                scopeClaim.ToTable(storeOptions.ApiScopeClaim).HasKey(x => x.Id);
+
+                scopeClaim.Property(x => x.Type).HasMaxLength(200).IsRequired();
+            });
+            modelBuilder.Entity<ApiScopeProperty>(property =>
+            {
+                property.ToTable(storeOptions.ApiScopeProperty).HasKey(x => x.Id);
+                property.Property(x => x.Key).HasMaxLength(250).IsRequired();
+                property.Property(x => x.Value).HasMaxLength(2000).IsRequired();
+            });
+
 
         }
     }

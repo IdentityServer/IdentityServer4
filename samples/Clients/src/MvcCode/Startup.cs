@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http;
+using IdentityModel.Client;
 
 namespace MvcCode
 {
@@ -16,6 +18,14 @@ namespace MvcCode
             JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
             services.AddControllersWithViews();
+            
+            services.AddHttpClient();
+
+            services.AddSingleton<IDiscoveryCache>(r =>
+            {
+                var factory = r.GetRequiredService<IHttpClientFactory>();
+                return new DiscoveryCache(Constants.Authority, () => factory.CreateClient());
+            });
 
             services.AddAuthentication(options =>
             {
@@ -42,7 +52,9 @@ namespace MvcCode
                     options.Scope.Add("openid");
                     options.Scope.Add("profile");
                     options.Scope.Add("email");
-                    options.Scope.Add("api1");
+                    options.Scope.Add("feature1");
+                    //options.Scope.Add("transaction:123");
+                    //options.Scope.Add("transaction");
                     options.Scope.Add("offline_access");
 
                     // not mapped by default

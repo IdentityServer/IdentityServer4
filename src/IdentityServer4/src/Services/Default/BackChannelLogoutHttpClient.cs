@@ -16,17 +16,17 @@ namespace IdentityServer4.Services
     public class BackChannelLogoutHttpClient
     {
         private readonly HttpClient _client;
-        private readonly ILogger<JwtRequestUriHttpClient> _logger;
+        private readonly ILogger<BackChannelLogoutHttpClient> _logger;
 
         /// <summary>
         /// Constructor for BackChannelLogoutHttpClient.
         /// </summary>
         /// <param name="client"></param>
-        /// <param name="logger"></param>
-        public BackChannelLogoutHttpClient(HttpClient client, ILogger<JwtRequestUriHttpClient> logger)
+        /// <param name="loggerFactory"></param>
+        public BackChannelLogoutHttpClient(HttpClient client, ILoggerFactory loggerFactory)
         {
             _client = client;
-            _logger = logger;
+            _logger = loggerFactory.CreateLogger<BackChannelLogoutHttpClient>();
         }
 
         /// <summary>

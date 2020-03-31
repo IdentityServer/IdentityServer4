@@ -72,7 +72,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return builder;
         }
-
+        
         /// <summary>
         /// Adds the in memory API resources.
         /// </summary>
@@ -85,6 +85,34 @@ namespace Microsoft.Extensions.DependencyInjection
             section.Bind(resources);
 
             return builder.AddInMemoryApiResources(resources);
+        }
+
+        /// <summary>
+        /// Adds the in memory API scopes.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="apiScopes">The API scopes.</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddInMemoryApiScopes(this IIdentityServerBuilder builder, IEnumerable<ApiScope> apiScopes)
+        {
+            builder.Services.AddSingleton(apiScopes);
+            builder.AddResourceStore<InMemoryResourcesStore>();
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds the in memory scopes.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="section">The configuration section containing the configuration data.</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddInMemoryApiScopes(this IIdentityServerBuilder builder, IConfigurationSection section)
+        {
+            var resources = new List<ApiScope>();
+            section.Bind(resources);
+
+            return builder.AddInMemoryApiScopes(resources);
         }
 
         /// <summary>

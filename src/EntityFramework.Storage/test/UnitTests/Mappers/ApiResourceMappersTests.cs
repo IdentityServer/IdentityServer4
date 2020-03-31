@@ -38,7 +38,7 @@ namespace IdentityServer4.EntityFramework.UnitTests.Mappers
                Description = "description",
                DisplayName = "displayname",
                Name = "foo",
-               Scopes = { new Scope("foo1"), new Scope("foo2") },
+               Scopes = { "foo1", "foo2" },
                Enabled = false
             };
 
@@ -46,9 +46,9 @@ namespace IdentityServer4.EntityFramework.UnitTests.Mappers
             var mappedEntity = model.ToEntity();
 
             mappedEntity.Scopes.Count.Should().Be(2);
-            var foo1 = mappedEntity.Scopes.FirstOrDefault(x => x.Name == "foo1");
+            var foo1 = mappedEntity.Scopes.FirstOrDefault(x => x.Scope == "foo1");
             foo1.Should().NotBeNull();
-            var foo2 = mappedEntity.Scopes.FirstOrDefault(x => x.Name == "foo2");
+            var foo2 = mappedEntity.Scopes.FirstOrDefault(x => x.Scope == "foo2");
             foo2.Should().NotBeNull();
             
 
@@ -58,6 +58,28 @@ namespace IdentityServer4.EntityFramework.UnitTests.Mappers
             mappedModel.DisplayName.Should().Be("displayname");
             mappedModel.Enabled.Should().BeFalse();
             mappedModel.Name.Should().Be("foo");
+        }
+
+        [Fact]
+        public void missing_values_should_use_defaults()
+        {
+            var entity = new IdentityServer4.EntityFramework.Entities.ApiResource
+            {
+                Secrets = new System.Collections.Generic.List<Entities.ApiResourceSecret>
+                {
+                    new Entities.ApiResourceSecret
+                    {
+                    }
+                }
+            };
+
+            var def = new ApiResource
+            {
+                ApiSecrets = { new Models.Secret("foo") }
+            };
+
+            var model = entity.ToModel();
+            model.ApiSecrets.First().Type.Should().Be(def.ApiSecrets.First().Type);
         }
     }
 }

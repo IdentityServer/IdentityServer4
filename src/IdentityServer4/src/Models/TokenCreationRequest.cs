@@ -22,12 +22,12 @@ namespace IdentityServer4.Models
         public ClaimsPrincipal Subject { get; set; }
 
         /// <summary>
-        /// Gets or sets the resources.
+        /// Gets or sets the validated resources.
         /// </summary>
         /// <value>
         /// The resources.
         /// </value>
-        public Resources Resources { get; set; }
+        public ResourceValidationResult ValidatedResources { get; set; }
 
         /// <summary>
         /// Gets or sets the validated request.
@@ -78,11 +78,19 @@ namespace IdentityServer4.Models
         public string Nonce { get; set; }
 
         /// <summary>
+        /// Gets the description the user assigned to the device being authorized.
+        /// </summary>
+        /// <value>
+        /// The description.
+        /// </value>
+        public string Description { get; set; }
+
+        /// <summary>
         /// Called to validate the <see cref="TokenCreationRequest"/> before it is processed.
         /// </summary>
         public void Validate()
         {
-            if (Resources == null) throw new ArgumentNullException(nameof(Resources));
+            if (ValidatedResources == null) throw new ArgumentNullException(nameof(ValidatedResources));
             if (ValidatedRequest == null) throw new ArgumentNullException(nameof(ValidatedRequest));
         }
     }

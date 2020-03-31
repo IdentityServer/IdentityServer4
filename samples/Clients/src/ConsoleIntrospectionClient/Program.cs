@@ -34,7 +34,7 @@ namespace ConsoleIntrospectionClient
 
                 UserName = "bob",
                 Password = "bob",
-                Scope = "api1 api2.read_only"
+                Scope = "feature1 feature2"
             });
 
             if (response.IsError) throw new Exception(response.Error);

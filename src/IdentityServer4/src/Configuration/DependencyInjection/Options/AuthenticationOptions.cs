@@ -12,7 +12,7 @@ namespace IdentityServer4.Configuration
     public class AuthenticationOptions
     {
         /// <summary>
-        /// Sets the cookie authenitcation scheme confgured by the host used for interactive users. If not set, the scheme will inferred from the host's default authentication scheme.
+        /// Sets the cookie authentication scheme configured by the host used for interactive users. If not set, the scheme will inferred from the host's default authentication scheme.
         /// This setting is typically used when AddPolicyScheme is used in the host as the default scheme.
         /// </summary>
         public string CookieAuthenticationScheme { get; set; }
@@ -39,13 +39,6 @@ namespace IdentityServer4.Configuration
         /// Gets or sets the name of the cookie used for the check session endpoint.
         /// </summary>
         public string CheckSessionCookieName { get; set; } = IdentityServerConstants.DefaultCheckSessionCookieName;
-
-        /// <summary>
-        /// Gets or sets the timeout on the back channel logout HTTP call.
-        /// </summary>
-        // todo: remove in 3.0
-        [Obsolete("Replaced by the use of BackChannelLogoutHttpClient. Use the new AddBackChannelLogoutHttpClient to configure the HttpClient settings.")]
-        public TimeSpan BackChannelLogoutTimeOut { get; set; } = TimeSpan.FromSeconds(30);
 
         /// <summary>
         /// If set, will require frame-src CSP headers being emitting on the end session callback endpoint which renders iframes to clients for front-channel signout notification.

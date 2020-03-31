@@ -38,7 +38,7 @@ namespace IdentityServer4.Stores
         /// <returns></returns>
         public Task<string> StoreReferenceTokenAsync(Token token)
         {
-            return CreateItemAsync(token, token.ClientId, token.SubjectId, token.CreationTime, token.Lifetime);
+            return CreateItemAsync(token, token.ClientId, token.SubjectId, token.SessionId, token.Description, token.CreationTime, token.Lifetime);
         }
 
         /// <summary>

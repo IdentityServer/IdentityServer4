@@ -31,7 +31,7 @@ namespace IdentityServer4.Services
         /// <summary>
         /// The HTTP context accessor
         /// </summary>
-        protected readonly IHttpContextAccessor Context;
+        protected readonly IHttpContextAccessor ContextAccessor;
 
         /// <summary>
         /// The claims provider
@@ -75,16 +75,16 @@ namespace IdentityServer4.Services
         /// <param name="options">The IdentityServer options</param>
         /// <param name="logger">The logger.</param>
         public DefaultTokenService(
-            IClaimsService claimsProvider, 
-            IReferenceTokenStore referenceTokenStore, 
-            ITokenCreationService creationService,  
-            IHttpContextAccessor contextAccessor, 
-            ISystemClock clock, 
+            IClaimsService claimsProvider,
+            IReferenceTokenStore referenceTokenStore,
+            ITokenCreationService creationService,
+            IHttpContextAccessor contextAccessor,
+            ISystemClock clock,
             IKeyMaterialService keyMaterialService,
             IdentityServerOptions options,
             ILogger<DefaultTokenService> logger)
         {
-            Context = contextAccessor;
+            ContextAccessor = contextAccessor;
             ClaimsProvider = claimsProvider;
             ReferenceTokenStore = referenceTokenStore;
             CreationService = creationService;
@@ -106,7 +106,8 @@ namespace IdentityServer4.Services
             Logger.LogTrace("Creating identity token");
             request.Validate();
 
-            var credential = await KeyMaterialService.GetSigningCredentialsAsync();
+            // todo: Dom, add a test for this. validate the at and c hashes are correct for the id_token when the client's alg doesn't match the server default.
+            var credential = await KeyMaterialService.GetSigningCredentialsAsync(request.ValidatedRequest.Client.AllowedIdentityTokenSigningAlgorithms);
             if (credential == null)
             {
                 throw new InvalidOperationException("No signing credential is configured.");
@@ -141,7 +142,6 @@ namespace IdentityServer4.Services
             // add s_hash claim
             if (request.StateHash.IsPresent())
             {
-                // todo: need constant
                 claims.Add(new Claim(JwtClaimTypes.StateHash, request.StateHash));
             }
 
@@ -153,11 +153,11 @@ namespace IdentityServer4.Services
 
             claims.AddRange(await ClaimsProvider.GetIdentityTokenClaimsAsync(
                 request.Subject,
-                request.Resources,
+                request.ValidatedResources,
                 request.IncludeAllIdentityClaims,
                 request.ValidatedRequest));
 
-            var issuer = Context.HttpContext.GetIdentityServerIssuerUri();
+            var issuer = ContextAccessor.HttpContext.GetIdentityServerIssuerUri();
 
             var token = new Token(OidcConstants.TokenTypes.IdentityToken)
             {
@@ -167,7 +167,8 @@ namespace IdentityServer4.Services
                 Lifetime = request.ValidatedRequest.Client.IdentityTokenLifetime,
                 Claims = claims.Distinct(new ClaimComparer()).ToList(),
                 ClientId = request.ValidatedRequest.Client.ClientId,
-                AccessTokenType = request.ValidatedRequest.AccessTokenType
+                AccessTokenType = request.ValidatedRequest.AccessTokenType,
+                AllowedSigningAlgorithms = request.ValidatedRequest.Client.AllowedIdentityTokenSigningAlgorithms
             };
 
             return token;
@@ -188,15 +189,20 @@ namespace IdentityServer4.Services
             var claims = new List<Claim>();
             claims.AddRange(await ClaimsProvider.GetAccessTokenClaimsAsync(
                 request.Subject,
-                request.Resources,
+                request.ValidatedResources,
                 request.ValidatedRequest));
 
             if (request.ValidatedRequest.Client.IncludeJwtId)
             {
-                claims.Add(new Claim(JwtClaimTypes.JwtId, CryptoRandom.CreateUniqueId(16)));
+                claims.Add(new Claim(JwtClaimTypes.JwtId, CryptoRandom.CreateUniqueId(16, CryptoRandom.OutputFormat.Hex)));
             }
 
-            var issuer = Context.HttpContext.GetIdentityServerIssuerUri();
+            if (request.ValidatedRequest.SessionId.IsPresent())
+            {
+                claims.Add(new Claim(JwtClaimTypes.SessionId, request.ValidatedRequest.SessionId));
+            }
+
+            var issuer = ContextAccessor.HttpContext.GetIdentityServerIssuerUri();
             var token = new Token(OidcConstants.TokenTypes.AccessToken)
             {
                 CreationTime = Clock.UtcNow.UtcDateTime,
@@ -204,22 +210,39 @@ namespace IdentityServer4.Services
                 Lifetime = request.ValidatedRequest.AccessTokenLifetime,
                 Claims = claims.Distinct(new ClaimComparer()).ToList(),
                 ClientId = request.ValidatedRequest.Client.ClientId,
-                AccessTokenType = request.ValidatedRequest.AccessTokenType
+                Description = request.Description,
+                AccessTokenType = request.ValidatedRequest.AccessTokenType,
+                AllowedSigningAlgorithms = request.ValidatedResources.Resources.ApiResources.FindMatchingSigningAlgorithms()
             };
+
+            // add aud based on ApiResources in the validated request
+            foreach (var aud in request.ValidatedResources.Resources.ApiResources.Select(x => x.Name).Distinct())
+            {
+                token.Audiences.Add(aud);
+            }
 
             if (Options.EmitLegacyResourceAudienceClaim)
             {
                 token.Audiences.Add(string.Format(IdentityServerConstants.AccessTokenAudience, issuer.EnsureTrailingSlash()));
             }
 
-            foreach(var api in request.Resources.ApiResources)
+            // add cnf if present
+            if (request.ValidatedRequest.Confirmation.IsPresent())
             {
-                if (api.Name.IsPresent())
+                token.Confirmation = request.ValidatedRequest.Confirmation;
+            }
+            else
+            {
+                if (Options.MutualTls.AlwaysEmitConfirmationClaim)
                 {
-                    token.Audiences.Add(api.Name);
+                    var clientCertificate = await ContextAccessor.HttpContext.Connection.GetClientCertificateAsync();
+                    if (clientCertificate != null)
+                    {
+                        token.Confirmation = clientCertificate.CreateThumbprintCnf();
+                    }
                 }
             }
-
+            
             return token;
         }
 

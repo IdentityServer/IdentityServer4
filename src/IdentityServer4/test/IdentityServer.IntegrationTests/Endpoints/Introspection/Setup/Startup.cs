@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
+namespace IdentityServer.IntegrationTests.Endpoints.Introspection.Setup
 {
     public class Startup
     {
@@ -19,7 +19,8 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Introspection
             });
 
             builder.AddInMemoryClients(Clients.Get());
-            builder.AddInMemoryApiResources(Scopes.GetApiScopes());
+            builder.AddInMemoryApiResources(Scopes.GetApis());
+            builder.AddInMemoryApiScopes(Scopes.GetScopes());
             builder.AddTestUsers(Users.Get());
             builder.AddDeveloperSigningCredential(persistKey: false);
         }

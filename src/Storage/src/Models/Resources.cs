@@ -24,7 +24,7 @@ namespace IdentityServer4.Models
         /// </summary>
         /// <param name="other">The other.</param>
         public Resources(Resources other)
-            : this(other.IdentityResources, other.ApiResources)
+            : this(other.IdentityResources, other.ApiResources, other.ApiScopes)
         {
             OfflineAccess = other.OfflineAccess;
         }
@@ -34,10 +34,21 @@ namespace IdentityServer4.Models
         /// </summary>
         /// <param name="identityResources">The identity resources.</param>
         /// <param name="apiResources">The API resources.</param>
-        public Resources(IEnumerable<IdentityResource> identityResources, IEnumerable<ApiResource> apiResources)
+        /// <param name="apiScopes">The API scopes.</param>
+        public Resources(IEnumerable<IdentityResource> identityResources, IEnumerable<ApiResource> apiResources, IEnumerable<ApiScope> apiScopes)
         {
-            IdentityResources = new HashSet<IdentityResource>(identityResources.ToArray());
-            ApiResources = new HashSet<ApiResource>(apiResources.ToArray());
+            if (identityResources?.Any() == true)
+            {
+                IdentityResources = new HashSet<IdentityResource>(identityResources.ToArray());
+            }
+            if (apiResources?.Any() == true)
+            {
+                ApiResources = new HashSet<ApiResource>(apiResources.ToArray());
+            }
+            if (apiScopes?.Any() == true)
+            {
+                ApiScopes = new HashSet<ApiScope>(apiScopes.ToArray());
+            }
         }
 
         /// <summary>
@@ -52,10 +63,15 @@ namespace IdentityServer4.Models
         /// Gets or sets the identity resources.
         /// </summary>
         public ICollection<IdentityResource> IdentityResources { get; set; } = new HashSet<IdentityResource>();
-        
+
         /// <summary>
         /// Gets or sets the API resources.
         /// </summary>
         public ICollection<ApiResource> ApiResources { get; set; } = new HashSet<ApiResource>();
+        
+        /// <summary>
+        /// Gets or sets the API scopes.
+        /// </summary>
+        public ICollection<ApiScope> ApiScopes { get; set; } = new HashSet<ApiScope>();
     }
 }

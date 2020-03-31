@@ -26,10 +26,20 @@ namespace IdentityServer.UnitTests.Stores
                 new ApiResource { Name = "C" }
             };
 
-            Action act = () => new InMemoryResourcesStore(identityResources, null);
+            List<ApiScope> scopes = new List<ApiScope>
+            {
+                new ApiScope { Name = "B" },
+                new ApiScope { Name = "C" },
+                new ApiScope { Name = "C" },
+            };
+
+            Action act = () => new InMemoryResourcesStore(identityResources, null, null);
             act.Should().Throw<ArgumentException>();
 
-            act = () => new InMemoryResourcesStore(null, apiResources);
+            act = () => new InMemoryResourcesStore(null, apiResources, null);
+            act.Should().Throw<ArgumentException>();
+            
+            act = () => new InMemoryResourcesStore(null, null, scopes);
             act.Should().Throw<ArgumentException>();
         }
 
@@ -50,8 +60,16 @@ namespace IdentityServer.UnitTests.Stores
                 new ApiResource { Name = "C" }
             };
 
-            new InMemoryResourcesStore(identityResources, null);
-            new InMemoryResourcesStore(null, apiResources);
+            List<ApiScope> apiScopes = new List<ApiScope>
+            {
+                new ApiScope { Name = "A" },
+                new ApiScope { Name = "B" },
+                new ApiScope { Name = "C" },
+            };
+            
+            new InMemoryResourcesStore(identityResources, null, null);
+            new InMemoryResourcesStore(null, apiResources, null);
+            new InMemoryResourcesStore(null, null, apiScopes);
         }
     }
 }

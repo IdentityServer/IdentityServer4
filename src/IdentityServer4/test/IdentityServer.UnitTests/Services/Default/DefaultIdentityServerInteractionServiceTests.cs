@@ -2,18 +2,19 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using FluentAssertions;
-using IdentityServer4.Configuration;
-using IdentityServer4.Models;
-using IdentityServer4.Services;
-using IdentityServer4.UnitTests.Common;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Xunit;
+using FluentAssertions;
 using IdentityServer.UnitTests.Common;
+using IdentityServer4;
+using IdentityServer4.Configuration;
+using IdentityServer4.Models;
+using IdentityServer4.Services;
+using IdentityServer4.Validation;
+using Xunit;
 
-namespace IdentityServer4.UnitTests.Services.Default
+namespace IdentityServer.UnitTests.Services.Default
 {
     public class DefaultIdentityServerInteractionServiceTests
     {
@@ -29,6 +30,8 @@ namespace IdentityServer4.UnitTests.Services.Default
         private MockUserSession _mockUserSession = new MockUserSession();
         private MockReturnUrlParser _mockReturnUrlParser = new MockReturnUrlParser();
 
+        private ResourceValidationResult _resourceValidationResult;
+
         public DefaultIdentityServerInteractionServiceTests()
         {
             _mockMockHttpContextAccessor = new MockHttpContextAccessor(_options, _mockUserSession, _mockEndSessionStore);
@@ -43,6 +46,10 @@ namespace IdentityServer4.UnitTests.Services.Default
                 _mockReturnUrlParser,
                 TestLogger.Create<DefaultIdentityServerInteractionService>()
             );
+
+            _resourceValidationResult = new ResourceValidationResult();
+            _resourceValidationResult.Resources.IdentityResources.Add(new IdentityResources.OpenId());
+            _resourceValidationResult.ParsedScopes.Add(new ParsedScopeValue("openid"));
         }
         
         [Fact]
@@ -107,7 +114,7 @@ namespace IdentityServer4.UnitTests.Services.Default
         {
             Func<Task> act = () => _subject.GrantConsentAsync(
                 new AuthorizationRequest(), 
-                new ConsentResponse() { ScopesConsented = new[] { "openid" } }, 
+                new ConsentResponse() { ScopesValuesConsented = new[] { "openid" } }, 
                 null);
 
             act.Should().Throw<ArgumentNullException>()
@@ -117,7 +124,12 @@ namespace IdentityServer4.UnitTests.Services.Default
         [Fact]
         public async Task GrantConsentAsync_should_allow_deny_for_anonymous_users()
         {
-            await _subject.GrantConsentAsync(new AuthorizationRequest(), ConsentResponse.Denied, null);
+            var req = new AuthorizationRequest()
+            {
+                Client = new Client { ClientId = "client" },
+                ValidatedResources = _resourceValidationResult
+            };
+            await _subject.GrantConsentAsync(req, new ConsentResponse { Error = AuthorizationError.AccessDenied }, null);
         }
 
         [Fact]
@@ -125,7 +137,10 @@ namespace IdentityServer4.UnitTests.Services.Default
         {
             _mockUserSession.User = new IdentityServerUser("bob").CreatePrincipal();
 
-            var req = new AuthorizationRequest() { ClientId = "client" };
+            var req = new AuthorizationRequest() { 
+                Client = new Client { ClientId = "client" },
+                ValidatedResources = _resourceValidationResult
+            };
             await _subject.GrantConsentAsync(req, new ConsentResponse(), null);
 
             _mockConsentStore.Messages.Should().NotBeEmpty();

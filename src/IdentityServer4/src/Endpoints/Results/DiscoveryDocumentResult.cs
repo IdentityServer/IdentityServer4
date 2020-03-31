@@ -57,7 +57,7 @@ namespace IdentityServer4.Endpoints.Results
                 context.Response.SetCache(MaxAge.Value, "Origin");
             }
 
-            return context.Response.WriteJsonAsync(ObjectSerializer.ToJObject(Entries));
+            return context.Response.WriteJsonAsync(Entries);
         }
     }
 }

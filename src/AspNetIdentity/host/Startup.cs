@@ -33,8 +33,9 @@ namespace Host
 
             services.AddIdentityServer()
                 .AddDeveloperSigningCredential()
-                .AddInMemoryIdentityResources(Host.Configuration.Resources.GetIdentityResources())
-                .AddInMemoryApiResources(Host.Configuration.Resources.GetApiResources())
+                .AddInMemoryIdentityResources(Host.Configuration.Resources.IdentityResources)
+                .AddInMemoryApiResources(Host.Configuration.Resources.ApiResources)
+                .AddInMemoryApiScopes(Host.Configuration.Resources.ApiScopes)
                 .AddInMemoryClients(Clients.Get())
                 .AddAspNetIdentity<ApplicationUser>();
         }

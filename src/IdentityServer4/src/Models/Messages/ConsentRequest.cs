@@ -24,9 +24,9 @@ namespace IdentityServer4.Models
         /// <param name="subject">The subject.</param>
         public ConsentRequest(AuthorizationRequest request, string subject)
         {
-            ClientId = request.ClientId;
+            ClientId = request.Client.ClientId;
             Nonce = request.Parameters[OidcConstants.AuthorizeRequest.Nonce];
-            ScopesRequested = request.ScopesRequested;
+            ScopesRequested = request.ValidatedResources.ScopeValues;
             Subject = subject;
         }
 

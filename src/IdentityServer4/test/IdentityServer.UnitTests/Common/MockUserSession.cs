@@ -2,14 +2,14 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityServer4.Services;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using System;
+using System.Collections.Generic;
 using System.Security.Claims;
+using System.Threading.Tasks;
+using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authentication;
 
-namespace IdentityServer4.UnitTests.Common
+namespace IdentityServer.UnitTests.Common
 {
     public class MockUserSession : IUserSession
     {
@@ -24,12 +24,12 @@ namespace IdentityServer4.UnitTests.Common
         public AuthenticationProperties Properties { get; set; }
 
 
-        public Task CreateSessionIdAsync(ClaimsPrincipal principal, AuthenticationProperties properties)
+        public Task<string> CreateSessionIdAsync(ClaimsPrincipal principal, AuthenticationProperties properties)
         {
             CreateSessionIdWasCalled = true;
             User = principal;
             SessionId = Guid.NewGuid().ToString();
-            return Task.CompletedTask;
+            return Task.FromResult(SessionId);
         }
 
         public Task<ClaimsPrincipal> GetUserAsync()

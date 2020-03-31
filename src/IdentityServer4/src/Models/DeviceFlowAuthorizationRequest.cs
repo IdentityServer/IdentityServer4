@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using IdentityServer4.Validation;
 using System.Collections.Generic;
 
 namespace IdentityServer4.Models
@@ -12,19 +13,19 @@ namespace IdentityServer4.Models
     public class DeviceFlowAuthorizationRequest
     {
         /// <summary>
-        /// Gets or sets the client identifier.
+        /// Gets or sets the client.
         /// </summary>
         /// <value>
-        /// The client identifier.
+        /// The client.
         /// </value>
-        public string ClientId { get; set; }
+        public Client Client { get; set; }
 
         /// <summary>
-        /// Gets or sets the scopes requested.
+        /// Gets or sets the validated resources.
         /// </summary>
         /// <value>
         /// The scopes requested.
         /// </value>
-        public IEnumerable<string> ScopesRequested { get; set; }
+        public ResourceValidationResult ValidatedResources { get; set; }
     }
 }

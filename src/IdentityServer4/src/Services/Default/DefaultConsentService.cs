@@ -12,6 +12,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
+using IdentityServer4.Validation;
 
 namespace IdentityServer4.Services
 {
@@ -54,7 +55,7 @@ namespace IdentityServer4.Services
         /// </summary>
         /// <param name="subject">The user.</param>
         /// <param name="client">The client.</param>
-        /// <param name="scopes">The scopes.</param>
+        /// <param name="parsedScopes">The parsed scopes.</param>
         /// <returns>
         /// Boolean if consent is required.
         /// </returns>
@@ -63,7 +64,7 @@ namespace IdentityServer4.Services
         /// or
         /// subject
         /// </exception>
-        public virtual async Task<bool> RequiresConsentAsync(ClaimsPrincipal subject, Client client, IEnumerable<string> scopes)
+        public virtual async Task<bool> RequiresConsentAsync(ClaimsPrincipal subject, Client client, IEnumerable<ParsedScopeValue> parsedScopes)
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
             if (subject == null) throw new ArgumentNullException(nameof(subject));
@@ -74,17 +75,25 @@ namespace IdentityServer4.Services
                 return false;
             }
 
+            if (parsedScopes == null || !parsedScopes.Any())
+            {
+                Logger.LogDebug("No scopes being requested, no consent is required");
+                return false;
+            }
+
             if (!client.AllowRememberConsent)
             {
                 Logger.LogDebug("Client is configured to not allow remembering consent, consent is required");
                 return true;
             }
-
-            if (scopes == null || !scopes.Any())
+            
+            if (parsedScopes.Any(x => x.Name != x.Value))
             {
-                Logger.LogDebug("No scopes being requested, no consent is required");
-                return false;
+                Logger.LogDebug("Scopes contains parameterized values, consent is required");
+                return true;
             }
+
+            var scopes = parsedScopes.Select(x => x.Value).ToArray();
 
             // we always require consent for offline access if
             // the client has not disabled RequireConsent 
@@ -93,7 +102,7 @@ namespace IdentityServer4.Services
                 Logger.LogDebug("Scopes contains offline_access, consent is required");
                 return true;
             }
-            
+
             var consent = await UserConsentStore.GetUserConsentAsync(subject.GetSubjectId(), client.ClientId);
 
             if (consent == null)
@@ -136,14 +145,14 @@ namespace IdentityServer4.Services
         /// </summary>
         /// <param name="client">The client.</param>
         /// <param name="subject">The subject.</param>
-        /// <param name="scopes">The scopes.</param>
+        /// <param name="parsedScopes">The parsed scopes.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException">
         /// client
         /// or
         /// subject
         /// </exception>
-        public virtual async Task UpdateConsentAsync(ClaimsPrincipal subject, Client client, IEnumerable<string> scopes)
+        public virtual async Task UpdateConsentAsync(ClaimsPrincipal subject, Client client, IEnumerable<ParsedScopeValue> parsedScopes)
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
             if (subject == null) throw new ArgumentNullException(nameof(subject));
@@ -153,6 +162,7 @@ namespace IdentityServer4.Services
                 var subjectId = subject.GetSubjectId();
                 var clientId = client.ClientId;
 
+                var scopes = parsedScopes?.Select(x => x.Value).ToArray();
                 if (scopes != null && scopes.Any())
                 {
                     Logger.LogDebug("Client allows remembering consent, and consent given. Updating consent store for subject: {subject}", subject.GetSubjectId());

@@ -3,7 +3,6 @@
 
 
 using System;
-using System.Threading.Tasks;
 using IdentityServer4.EntityFramework.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,13 +23,21 @@ namespace IdentityServer4.EntityFramework.Interfaces
         DbSet<Client> Clients { get; set; }
         
         /// <summary>
+        /// Gets or sets the clients' CORS origins.
+        /// </summary>
+        /// <value>
+        /// The clients CORS origins.
+        /// </value>
+        DbSet<ClientCorsOrigin> ClientCorsOrigins { get; set; }
+
+        /// <summary>
         /// Gets or sets the identity resources.
         /// </summary>
         /// <value>
         /// The identity resources.
         /// </value>
         DbSet<IdentityResource> IdentityResources { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the API resources.
         /// </summary>
@@ -40,15 +47,11 @@ namespace IdentityServer4.EntityFramework.Interfaces
         DbSet<ApiResource> ApiResources { get; set; }
 
         /// <summary>
-        /// Saves the changes.
+        /// Gets or sets the scopes.
         /// </summary>
-        /// <returns></returns>
-        int SaveChanges();
-        
-        /// <summary>
-        /// Saves the changes.
-        /// </summary>
-        /// <returns></returns>
-        Task<int> SaveChangesAsync();
+        /// <value>
+        /// The identity resources.
+        /// </value>
+        DbSet<ApiScope> ApiScopes { get; set; }
     }
 }

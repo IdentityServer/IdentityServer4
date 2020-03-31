@@ -19,16 +19,16 @@ namespace IdentityServer4.Validation
     internal class DeviceAuthorizationRequestValidator : IDeviceAuthorizationRequestValidator
     {
         private readonly IdentityServerOptions _options;
-        private readonly ScopeValidator _scopeValidator;
+        private readonly IResourceValidator _resourceValidator;
         private readonly ILogger<DeviceAuthorizationRequestValidator> _logger;
         
         public DeviceAuthorizationRequestValidator(
             IdentityServerOptions options,
-            ScopeValidator scopeValidator,
+            IResourceValidator resourceValidator,
             ILogger<DeviceAuthorizationRequestValidator> logger)
         {
             _options = options;
-            _scopeValidator = scopeValidator;
+            _resourceValidator = resourceValidator;
             _logger = logger;
         }
 
@@ -152,26 +152,29 @@ namespace IdentityServer4.Validation
             //////////////////////////////////////////////////////////
             // check if scopes are valid/supported
             //////////////////////////////////////////////////////////
-            if (await _scopeValidator.AreScopesValidAsync(request.RequestedScopes) == false)
+            var parsedScopes = await _resourceValidator.ParseRequestedScopesAsync(request.RequestedScopes);
+            var validatedResources = await _resourceValidator.ValidateRequestedResourcesAsync(new ResourceValidationRequest{
+                Client = request.Client, 
+                ParsedScopeValues = parsedScopes
+            });
+
+            if (!validatedResources.Succeeded)
             {
-                return Invalid(request, OidcConstants.AuthorizeErrors.InvalidScope);
+                if (validatedResources.InvalidScopes.Count > 0)
+                {
+                    return Invalid(request, OidcConstants.AuthorizeErrors.InvalidScope);
+                }
+                
+                return Invalid(request, OidcConstants.AuthorizeErrors.UnauthorizedClient, "Invalid scope");
             }
 
-            if (_scopeValidator.ContainsOpenIdScopes && !request.IsOpenIdRequest)
+            if (validatedResources.Resources.IdentityResources.Any() && !request.IsOpenIdRequest)
             {
                 LogError("Identity related scope requests, but no openid scope", request);
                 return Invalid(request, OidcConstants.AuthorizeErrors.InvalidScope);
             }
 
-            //////////////////////////////////////////////////////////
-            // check scopes and scope restrictions
-            //////////////////////////////////////////////////////////
-            if (await _scopeValidator.AreScopesAllowedAsync(request.Client, request.RequestedScopes) == false)
-            {
-                return Invalid(request, OidcConstants.AuthorizeErrors.UnauthorizedClient, "Invalid scope");
-            }
-
-            request.ValidatedScopes = _scopeValidator;
+            request.ValidatedResources = validatedResources;
             
             return Valid(request);
         }

@@ -3,7 +3,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Certificate;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace SampleApi
 {
@@ -17,54 +22,86 @@ namespace SampleApi
             services.AddDistributedMemoryCache();
 
             services.AddAuthentication("token")
-                .AddIdentityServerAuthentication("token", options =>
+                .AddJwtBearer("token", options =>
                 {
                     options.Authority = Constants.Authority;
-                    options.RequireHttpsMetadata = false;
-
-                    options.ApiName = "api1";
-                    options.ApiSecret = "secret";
-
-                    options.JwtBearerEvents = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
-                    {
-                        OnTokenValidated = e =>
-                        {
-                            var jwt = e.SecurityToken as JwtSecurityToken;
-                            var type = jwt.Header.Typ;
-
-                            if (!string.Equals(type, "at+jwt", StringComparison.Ordinal))
-                            {
-                                e.Fail("JWT is not an access token");
-                            }
-
-                            return Task.CompletedTask;
-                        }
-                    };
+                    options.TokenValidationParameters.ValidateAudience = false;
+                    options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
                 });
-                //.AddCertificate("x509", options =>
-                //{
-                //    options.RevocationMode = System.Security.Cryptography.X509Certificates.X509RevocationMode.NoCheck;
 
-                //    options.Events = new CertificateAuthenticationEvents
-                //    {
-                //        OnValidateCertificate = context =>
-                //        {
-                //            context.Principal = Principal.CreateFromCertificate(context.ClientCertificate, includeAllClaims: true);
-                //            context.Success();
+            services.AddAuthorization(options => {
+                options.AddPolicy("scope", policy => {
+                    policy.AddAuthenticationSchemes("token")
+                        .RequireAuthenticatedUser()
+                        .RequireClaim("scope", "feature1");
+                });
+            });
 
-                //            return Task.CompletedTask;
-                //        }
-                //    };
-                //});
+            //    .AddIdentityServerAuthentication("token", options =>
+            //    {
+            //        options.Authority = Constants.Authority;
+
+            //        // enable for MTLS scenarios
+            //        // options.Authority = Constants.AuthorityMtls;
+
+            //        options.ApiName = "api1";
+            //        options.ApiSecret = "secret";
+
+            //        options.JwtBearerEvents = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
+            //        {
+            //            OnTokenValidated = e =>
+            //            {
+            //                var jwt = e.SecurityToken as JwtSecurityToken;
+            //                var type = jwt.Header.Typ;
+
+            //                if (!string.Equals(type, "at+jwt", StringComparison.Ordinal))
+            //                {
+            //                    e.Fail("JWT is not an access token");
+            //                }
+
+            //                return Task.CompletedTask;
+            //            }
+            //        };
+            //    })
+            //    .AddCertificate(options =>
+            //    {
+            //        options.AllowedCertificateTypes = CertificateTypes.All;
+            //    });
+
+            //// enable for MTLS scenarios
+            ////services.AddCertificateForwarding(options =>
+            ////{
+            ////    options.CertificateHeader = "X-SSL-CERT";
+
+            ////    options.HeaderConverter = (headerValue) =>
+            ////    {
+            ////        X509Certificate2 clientCertificate = null;
+
+            ////        if (!string.IsNullOrWhiteSpace(headerValue))
+            ////        {
+            ////            byte[] bytes = Encoding.UTF8.GetBytes(Uri.UnescapeDataString(headerValue));
+            ////            clientCertificate = new X509Certificate2(bytes);
+            ////        }
+
+            ////        return clientCertificate;
+            ////    };
+            ////});
         }
 
         public void Configure(IApplicationBuilder app)
         {
+            // enable for MTLS scenarios
+            //app.UseForwardedHeaders(new ForwardedHeadersOptions
+            //{
+            //    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            //});
+
+            //app.UseCertificateForwarding();
+
             app.UseCors(policy =>
             {
                 policy.WithOrigins(
-                    "http://localhost:28895",
-                    "http://localhost:7017");
+                    "https://localhost:44300");
 
                 policy.AllowAnyHeader();
                 policy.AllowAnyMethod();
@@ -73,12 +110,20 @@ namespace SampleApi
 
             app.UseRouting();
             app.UseAuthentication();
+
+            // enable for MTLS scenarios
+            //app.UseConfirmationValidation(new ConfirmationValidationMiddlewareOptions
+            //{
+            //    CertificateSchemeName = CertificateAuthenticationDefaults.AuthenticationScheme,
+            //    JwtBearerSchemeName = "token"
+            //});
+
             app.UseAuthorization();
-            //app.UseMiddleware<ConfirmationValidationMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllers()
+                    .RequireAuthorization("scope");
             });
         }
     }
