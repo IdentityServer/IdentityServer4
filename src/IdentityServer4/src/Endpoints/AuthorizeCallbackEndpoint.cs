@@ -52,7 +52,7 @@ namespace IdentityServer4.Endpoints
             {
                 var messageStoreId = parameters[Constants.AuthorizationParamsStore.MessageStoreIdParameterName];
                 var entry = await _authorizationParametersMessageStore.ReadAsync(messageStoreId);
-                parameters = entry?.Data ?? new NameValueCollection();
+                parameters = entry?.Data.FromFullDictionary() ?? new NameValueCollection();
 
                 await _authorizationParametersMessageStore.DeleteAsync(messageStoreId);
             }

@@ -41,7 +41,7 @@ namespace IdentityServer4.Services
                 {
                     var messageStoreId = parameters[Constants.AuthorizationParamsStore.MessageStoreIdParameterName];
                     var entry = await _authorizationParametersMessageStore.ReadAsync(messageStoreId);
-                    parameters = entry?.Data ?? new NameValueCollection();
+                    parameters = entry?.Data.FromFullDictionary() ?? new NameValueCollection();
                 }
 
                 var user = await _userSession.GetUserAsync();

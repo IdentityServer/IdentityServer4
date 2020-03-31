@@ -83,7 +83,7 @@ namespace IdentityServer4.ResponseHandling
             response.Add("active", true);
 
             // calculate scopes the caller is allowed to see
-            var allowedScopes = validationResult.Api.Scopes.Select(x => x.Name);
+            var allowedScopes = validationResult.Api.Scopes;
             var scopes = validationResult.Claims.Where(c => c.Type == JwtClaimTypes.Scope).Select(x => x.Value);
             scopes = scopes.Where(x => allowedScopes.Contains(x));
             response.Add("scope", scopes.ToSpaceSeparatedString());
@@ -99,7 +99,7 @@ namespace IdentityServer4.ResponseHandling
         /// <returns></returns>
         protected virtual async Task<bool> AreExpectedScopesPresentAsync(IntrospectionRequestValidationResult validationResult)
         {
-            var apiScopes = validationResult.Api.Scopes.Select(x => x.Name);
+            var apiScopes = validationResult.Api.Scopes;
             var tokenScopes = validationResult.Claims.Where(c => c.Type == JwtClaimTypes.Scope);
 
             var tokenScopesThatMatchApi = tokenScopes.Where(c => apiScopes.Contains(c.Value));

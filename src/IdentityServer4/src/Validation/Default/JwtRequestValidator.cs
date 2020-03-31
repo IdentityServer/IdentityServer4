@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using IdentityModel;
 using IdentityServer4.Extensions;
@@ -20,12 +19,20 @@ using Newtonsoft.Json.Linq;
 namespace IdentityServer4.Validation
 {
     /// <summary>
-    /// Validates JWT requwest objects
+    /// Validates JWT authorization request objects
     /// </summary>
     public class JwtRequestValidator
     {
         private readonly string _audienceUri;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        
+        /// <summary>
+        /// JWT handler
+        /// </summary>
+        protected JwtSecurityTokenHandler Handler = new JwtSecurityTokenHandler()
+        {
+            MapInboundClaims = false
+        };
 
         /// <summary>
         /// The audience URI to use
@@ -129,6 +136,19 @@ namespace IdentityServer4.Validation
         }
 
         /// <summary>
+        /// Tries to extract client_id from JWT request
+        /// </summary>
+        /// <param name="jwtRequest"></param>
+        /// <returns></returns>
+        public virtual Task<string> LoadClientId(string jwtRequest)
+        {
+            var token = Handler.ReadJwtToken(jwtRequest);
+
+            return Task.FromResult(token.Payload.Claims
+                .FirstOrDefault(c => c.Type == OidcConstants.AuthorizeRequest.ClientId)?.Value);
+        }
+
+        /// <summary>
         /// Retrieves keys for a given client
         /// </summary>
         /// <param name="client">The client</param>
@@ -162,8 +182,7 @@ namespace IdentityServer4.Validation
                 RequireExpirationTime = true
             };
 
-            var handler = new JwtSecurityTokenHandler();
-            handler.ValidateToken(jwtTokenString, tokenValidationParameters, out var token);
+            Handler.ValidateToken(jwtTokenString, tokenValidationParameters, out var token);
 
             return Task.FromResult((JwtSecurityToken)token);
         }

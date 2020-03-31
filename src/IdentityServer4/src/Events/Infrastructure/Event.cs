@@ -48,7 +48,6 @@ namespace IdentityServer4.Events
         /// <value>
         /// The category.
         /// </value>
-        [Newtonsoft.Json.JsonProperty(Order = -99)]
         public string Category { get; set; }
 
         /// <summary>
@@ -57,7 +56,6 @@ namespace IdentityServer4.Events
         /// <value>
         /// The name.
         /// </value>
-        [Newtonsoft.Json.JsonProperty(Order = -100)]
         public string Name { get; set; }
 
         /// <summary>
@@ -66,7 +64,6 @@ namespace IdentityServer4.Events
         /// <value>
         /// The type of the event.
         /// </value>
-        [Newtonsoft.Json.JsonProperty(Order = -98)]
         public EventTypes EventType { get; set; }
 
         /// <summary>
@@ -75,7 +72,6 @@ namespace IdentityServer4.Events
         /// <value>
         /// The identifier.
         /// </value>
-        [Newtonsoft.Json.JsonProperty(Order = -97)]
         public int Id { get; set; }
 
         /// <summary>

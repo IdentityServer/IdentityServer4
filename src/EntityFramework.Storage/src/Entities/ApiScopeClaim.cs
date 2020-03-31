@@ -7,7 +7,7 @@ namespace IdentityServer4.EntityFramework.Entities
 {
     public class ApiScopeClaim : UserClaim
     {
-        public int ApiScopeId { get; set; }
-        public ApiScope ApiScope { get; set; }
+        public int ScopeId { get; set; }
+        public ApiScope Scope { get; set; }
     }
 }

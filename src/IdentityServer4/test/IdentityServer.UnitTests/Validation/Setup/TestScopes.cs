@@ -2,10 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityServer4.Models;
 using System.Collections.Generic;
+using IdentityServer4.Models;
 
-namespace IdentityServer4.UnitTests.Validation
+namespace IdentityServer.UnitTests.Validation.Setup
 {
     internal class TestScopes
     {
@@ -25,19 +25,24 @@ namespace IdentityServer4.UnitTests.Validation
                 new ApiResource
                 {
                     Name = "api",
-                    Scopes =
-                    {
-                        new Scope
-                        {
-                            Name = "resource",
-                            Description = "resource scope"
-                        },
-                        new Scope
-                        {
-                            Name = "resource2",
-                            Description = "resource scope"
-                        }
-                    }
+                    Scopes =  { "resource", "resource2" }
+                }
+            };
+        }
+
+        public static IEnumerable<ApiScope> GetScopes()
+        {
+            return new ApiScope[]
+            {
+                new ApiScope
+                {
+                    Name = "resource",
+                    Description = "resource scope"
+                },
+                new ApiScope
+                {
+                    Name = "resource2",
+                    Description = "resource scope"
                 }
             };
         }

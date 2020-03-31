@@ -22,12 +22,13 @@ namespace IdentityServer4.EntityFramework.Entities
         public string Description { get; set; }
         public string ClientUri { get; set; }
         public string LogoUri { get; set; }
-        public bool RequireConsent { get; set; } = true;
+        public bool RequireConsent { get; set; } = false;
         public bool AllowRememberConsent { get; set; } = true;
         public bool AlwaysIncludeUserClaimsInIdToken { get; set; }
         public List<ClientGrantType> AllowedGrantTypes { get; set; }
-        public bool RequirePkce { get; set; }
+        public bool RequirePkce { get; set; } = true;
         public bool AllowPlainTextPkce { get; set; }
+        public bool RequireRequestObject { get; set; }
         public bool AllowAccessTokensViaBrowser { get; set; }
         public List<ClientRedirectUri> RedirectUris { get; set; }
         public List<ClientPostLogoutRedirectUri> PostLogoutRedirectUris { get; set; }
@@ -38,6 +39,7 @@ namespace IdentityServer4.EntityFramework.Entities
         public bool AllowOfflineAccess { get; set; }
         public List<ClientScope> AllowedScopes { get; set; }
         public int IdentityTokenLifetime { get; set; } = 300;
+        public string AllowedIdentityTokenSigningAlgorithms { get; set; }
         public int AccessTokenLifetime { get; set; } = 3600;
         public int AuthorizationCodeLifetime { get; set; } = 300;
         public int? ConsentLifetime { get; set; } = null;

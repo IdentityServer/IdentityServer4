@@ -1,4 +1,5 @@
-﻿using System.Collections.Specialized;
+﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Threading.Tasks;
 using IdentityModel;
 using IdentityServer4.Models;
@@ -29,7 +30,7 @@ namespace IdentityServer4.Stores.Default
         private string CacheKeyPrefix => "DistributedCacheAuthorizationParametersMessageStore";
         
         /// <inheritdoc/>
-        public async Task<string> WriteAsync(Message<NameValueCollection> message)
+        public async Task<string> WriteAsync(Message<IDictionary<string, string[]>> message)
         {
             // since this store is trusted and the JWT request processing has provided redundant entries
             // in the NameValueCollection, we are removing the JWT "request_uri" param so that when they
@@ -39,6 +40,7 @@ namespace IdentityServer4.Stores.Default
 
             var key = await _handleGenerationService.GenerateAsync();
             var cacheKey = $"{CacheKeyPrefix}-{key}";
+            
             var json = ObjectSerializer.ToString(message);
 
             var options = new DistributedCacheEntryOptions();
@@ -50,17 +52,17 @@ namespace IdentityServer4.Stores.Default
         }
 
         /// <inheritdoc/>
-        public async Task<Message<NameValueCollection>> ReadAsync(string id)
+        public async Task<Message<IDictionary<string, string[]>>> ReadAsync(string id)
         {
             var cacheKey = $"{CacheKeyPrefix}-{id}";
             var json = await _distributedCache.GetStringAsync(cacheKey);
 
             if (json == null)
             {
-                return new Message<NameValueCollection>(new NameValueCollection());
+                return new Message<IDictionary<string, string[]>>(new Dictionary<string, string[]>());
             }
 
-            return ObjectSerializer.FromString<Message<NameValueCollection>>(json);
+            return ObjectSerializer.FromString<Message<IDictionary<string, string[]>>>(json);
         }
 
         /// <inheritdoc/>

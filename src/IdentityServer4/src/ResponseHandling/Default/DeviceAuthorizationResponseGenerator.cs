@@ -118,7 +118,7 @@ namespace IdentityServer4.ResponseHandling
             {
                 response.VerificationUriComplete =
                     $"{response.VerificationUri}?{Options.UserInteraction.DeviceVerificationUserCodeParameter}={response.UserCode}";
-            } 
+            }
 
             // expiration
             response.DeviceCodeLifetime = validationResult.ValidatedRequest.Client.DeviceCodeLifetime;
@@ -129,11 +129,12 @@ namespace IdentityServer4.ResponseHandling
             // store device request (device code & user code)
             response.DeviceCode = await DeviceFlowCodeService.StoreDeviceAuthorizationAsync(response.UserCode, new DeviceCode
             {
+                Description = validationResult.ValidatedRequest.Description,
                 ClientId = validationResult.ValidatedRequest.Client.ClientId,
                 IsOpenId = validationResult.ValidatedRequest.IsOpenIdRequest,
                 Lifetime = response.DeviceCodeLifetime,
                 CreationTime = Clock.UtcNow.UtcDateTime,
-                RequestedScopes = validationResult.ValidatedRequest.RequestedScopes
+                RequestedScopes = validationResult.ValidatedRequest.ValidatedResources.ScopeValues
             });
 
             return response;

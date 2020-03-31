@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using Host.Configuration;
+using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Interfaces;
 using IdentityServer4.EntityFramework.Mappers;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,21 +14,21 @@ namespace SqlServer
         {
             using (var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                using (var context = scope.ServiceProvider.GetService<IConfigurationDbContext>())
+                using (var context = scope.ServiceProvider.GetService<ConfigurationDbContext>())
                 {
                     EnsureSeedData(context);
                 }
             }
         }
 
-        private static void EnsureSeedData(IConfigurationDbContext context)
+        private static void EnsureSeedData(ConfigurationDbContext context)
         {
             Console.WriteLine("Seeding database...");
 
             if (!context.Clients.Any())
             {
                 Console.WriteLine("Clients being populated");
-                foreach (var client in Config.Clients)
+                foreach (var client in Clients.Get())
                 {
                     context.Clients.Add(client.ToEntity());
                 }
@@ -40,7 +42,7 @@ namespace SqlServer
             if (!context.IdentityResources.Any())
             {
                 Console.WriteLine("IdentityResources being populated");
-                foreach (var resource in Config.IdentityResources)
+                foreach (var resource in Resources.IdentityResources)
                 {
                     context.IdentityResources.Add(resource.ToEntity());
                 }
@@ -54,7 +56,7 @@ namespace SqlServer
             if (!context.ApiResources.Any())
             {
                 Console.WriteLine("ApiResources being populated");
-                foreach (var resource in Config.ApiResources)
+                foreach (var resource in Resources.ApiResources)
                 {
                     context.ApiResources.Add(resource.ToEntity());
                 }
@@ -63,6 +65,20 @@ namespace SqlServer
             else
             {
                 Console.WriteLine("ApiResources already populated");
+            }
+
+            if (!context.ApiScopes.Any())
+            {
+                Console.WriteLine("Scopes being populated");
+                foreach (var resource in Resources.ApiScopes)
+                {
+                    context.ApiScopes.Add(resource.ToEntity());
+                }
+                context.SaveChanges();
+            }
+            else
+            {
+                Console.WriteLine("Scopes already populated");
             }
 
             Console.WriteLine("Done seeding database.");

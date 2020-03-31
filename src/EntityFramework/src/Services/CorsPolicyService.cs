@@ -40,25 +40,22 @@ namespace IdentityServer4.EntityFramework.Services
         /// </summary>
         /// <param name="origin">The origin.</param>
         /// <returns></returns>
-        public Task<bool> IsOriginAllowedAsync(string origin)
+        public async Task<bool> IsOriginAllowedAsync(string origin)
         {
+            origin = origin.ToLowerInvariant();
+
             // doing this here and not in the ctor because: https://github.com/aspnet/CORS/issues/105
             var dbContext = _context.HttpContext.RequestServices.GetRequiredService<IConfigurationDbContext>();
 
-            var origins = dbContext.Clients
-                .Include(x => x.AllowedCorsOrigins)
-                .AsNoTracking()
-                .ToList()
-                .SelectMany(x => x.AllowedCorsOrigins.Select(y => y.Origin))
-                .ToList();
-
-            var distinctOrigins = origins.Where(x => x != null).Distinct();
-
-            var isAllowed = distinctOrigins.Contains(origin, StringComparer.OrdinalIgnoreCase);
+            var query = from o in dbContext.ClientCorsOrigins
+                        where o.Origin == origin
+                        select o;
+            
+            var isAllowed = await query.AnyAsync();
 
             _logger.LogDebug("Origin {origin} is allowed: {originAllowed}", origin, isAllowed);
 
-            return Task.FromResult(isAllowed);
+            return isAllowed;
         }
     }
 }

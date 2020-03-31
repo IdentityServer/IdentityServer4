@@ -2,8 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace IdentityServer4.Logging
 {
@@ -12,16 +12,15 @@ namespace IdentityServer4.Logging
     /// </summary>
     internal static class LogSerializer
     {
-        private static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
+        static readonly JsonSerializerOptions Options = new JsonSerializerOptions
         {
-            NullValueHandling = NullValueHandling.Ignore,
-            DateFormatHandling = DateFormatHandling.IsoDateFormat,
-            Formatting = Formatting.Indented
+            IgnoreNullValues = true,
+            WriteIndented = true
         };
 
         static LogSerializer()
         {
-            JsonSettings.Converters.Add(new StringEnumConverter());
+            Options.Converters.Add(new JsonStringEnumConverter());
         }
 
         /// <summary>
@@ -31,7 +30,7 @@ namespace IdentityServer4.Logging
         /// <returns></returns>
         public static string Serialize(object logObject)
         {
-            return JsonConvert.SerializeObject(logObject, JsonSettings);
+            return JsonSerializer.Serialize(logObject, Options);
         }
     }
 }

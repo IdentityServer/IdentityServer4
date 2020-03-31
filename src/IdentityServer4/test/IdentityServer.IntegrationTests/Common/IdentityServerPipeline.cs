@@ -2,30 +2,31 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
+using FluentAssertions;
+using IdentityModel.Client;
+using IdentityServer4;
 using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
+using IdentityServer4.Services;
 using IdentityServer4.Test;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using IdentityServer4.Services;
-using System.Linq;
-using Microsoft.AspNetCore.Authentication;
-using System.Security.Claims;
-using System.Net;
-using IdentityModel.Client;
-using FluentAssertions;
-using System.Threading;
 using Microsoft.Extensions.Logging;
 
-namespace IdentityServer4.IntegrationTests.Common
+namespace IdentityServer.IntegrationTests.Common
 {
     public class IdentityServerPipeline
     {
@@ -53,7 +54,8 @@ namespace IdentityServer4.IntegrationTests.Common
         public IdentityServerOptions Options { get; set; }
         public List<Client> Clients { get; set; } = new List<Client>();
         public List<IdentityResource> IdentityScopes { get; set; } = new List<IdentityResource>();
-        public List<ApiResource> ApiScopes { get; set; } = new List<ApiResource>();
+        public List<ApiResource> ApiResources { get; set; } = new List<ApiResource>();
+        public List<ApiScope> ApiScopes { get; set; } = new List<ApiScope>();
         public List<TestUser> Users { get; set; } = new List<TestUser>();
 
         public TestServer Server { get; set; }
@@ -136,7 +138,8 @@ namespace IdentityServer4.IntegrationTests.Common
             })
             .AddInMemoryClients(Clients)
             .AddInMemoryIdentityResources(IdentityScopes)
-            .AddInMemoryApiResources(ApiScopes)
+            .AddInMemoryApiResources(ApiResources)
+            .AddInMemoryApiScopes(ApiScopes)
             .AddTestUsers(Users)
             .AddDeveloperSigningCredential(persistKey: false);
 

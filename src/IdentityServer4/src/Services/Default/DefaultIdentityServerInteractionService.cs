@@ -134,6 +134,16 @@ namespace IdentityServer4.Services
             await _consentMessageStore.WriteAsync(consentRequest.Id, new Message<ConsentResponse>(consent, _clock.UtcNow.UtcDateTime));
         }
 
+        public Task DenyAuthorizationAsync(AuthorizationRequest request, AuthorizationError error, string errorDescription = null)
+        {
+            var response = new ConsentResponse 
+            {
+                Error = error,
+                ErrorDescription = errorDescription
+            };
+            return GrantConsentAsync(request, response);
+        }
+
         public bool IsValidReturnUrl(string returnUrl)
         {
             var result = _returnUrlParser.IsValidReturnUrl(returnUrl);
@@ -150,7 +160,7 @@ namespace IdentityServer4.Services
             return result;
         }
 
-        public async Task<IEnumerable<Consent>> GetAllUserConsentsAsync()
+        public async Task<IEnumerable<Grant>> GetAllUserGrantsAsync()
         {
             var user = await _userSession.GetUserAsync();
             if (user != null)
@@ -159,7 +169,7 @@ namespace IdentityServer4.Services
                 return await _grants.GetAllGrantsAsync(subject);
             }
 
-            return Enumerable.Empty<Consent>();
+            return Enumerable.Empty<Grant>();
         }
 
         public async Task RevokeUserConsentAsync(string clientId)

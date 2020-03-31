@@ -70,13 +70,21 @@ namespace IdentityServer4.ResponseHandling
         {
             Logger.LogTrace("ProcessInteractionAsync");
 
-            if (consent != null && consent.Granted == false && request.Subject.IsAuthenticated() == false)
+            if (consent != null && consent.Granted == false && consent.Error.HasValue && request.Subject.IsAuthenticated() == false)
             {
-                // special case when anonymous user has issued a deny prior to authenticating
-                Logger.LogInformation("Error: User denied consent");
+                // special case when anonymous user has issued an error prior to authenticating
+                Logger.LogInformation("Error: User consent result: {error}", consent.Error);
+
+                var error = consent.Error == AuthorizationError.AccountSelectionRequired ? OidcConstants.AuthorizeErrors.AccountSelectionRequired :
+                    consent.Error == AuthorizationError.ConsentRequired ? OidcConstants.AuthorizeErrors.ConsentRequired :
+                    consent.Error == AuthorizationError.InteractionRequired ? OidcConstants.AuthorizeErrors.InteractionRequired :
+                    consent.Error == AuthorizationError.LoginRequired ? OidcConstants.AuthorizeErrors.LoginRequired : 
+                        OidcConstants.AuthorizeErrors.AccessDenied;
+                
                 return new InteractionResponse
                 {
-                    Error = OidcConstants.AuthorizeErrors.AccessDenied
+                    Error = error,
+                    ErrorDescription = consent.ErrorDescription
                 };
             }
 
@@ -98,10 +106,10 @@ namespace IdentityServer4.ResponseHandling
         /// <returns></returns>
         protected internal virtual async Task<InteractionResponse> ProcessLoginAsync(ValidatedAuthorizeRequest request)
         {
-            if (request.PromptMode == OidcConstants.PromptModes.Login ||
-                request.PromptMode == OidcConstants.PromptModes.SelectAccount)
+            if (request.PromptModes.Contains(OidcConstants.PromptModes.Login) ||
+                request.PromptModes.Contains(OidcConstants.PromptModes.SelectAccount))
             {
-                Logger.LogInformation("Showing login: request contains prompt={0}", request.PromptMode);
+                Logger.LogInformation("Showing login: request contains prompt={0}", request.PromptModes.ToSpaceSeparatedString());
 
                 // remove prompt so when we redirect back in from login page
                 // we won't think we need to force a prompt again
@@ -127,7 +135,7 @@ namespace IdentityServer4.ResponseHandling
             if (!isAuthenticated || !isActive)
             {
                 // prompt=none means user must be signed in already
-                if (request.PromptMode == OidcConstants.PromptModes.None)
+                if (request.PromptModes.Contains(OidcConstants.PromptModes.None))
                 {
                     if (!isAuthenticated)
                     {
@@ -229,17 +237,17 @@ namespace IdentityServer4.ResponseHandling
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
-            if (request.PromptMode != null &&
-                request.PromptMode != OidcConstants.PromptModes.None &&
-                request.PromptMode != OidcConstants.PromptModes.Consent)
+            if (request.PromptModes.Any() &&
+                !request.PromptModes.Contains(OidcConstants.PromptModes.None) &&
+                !request.PromptModes.Contains(OidcConstants.PromptModes.Consent))
             {
-                Logger.LogError("Invalid prompt mode: {promptMode}", request.PromptMode);
+                Logger.LogError("Invalid prompt mode: {promptMode}", request.PromptModes.ToSpaceSeparatedString());
                 throw new ArgumentException("Invalid PromptMode");
             }
 
-            var consentRequired = await Consent.RequiresConsentAsync(request.Subject, request.Client, request.RequestedScopes);
+            var consentRequired = await Consent.RequiresConsentAsync(request.Subject, request.Client, request.ValidatedResources.ParsedScopes);
 
-            if (consentRequired && request.PromptMode == OidcConstants.PromptModes.None)
+            if (consentRequired && request.PromptModes.Contains(OidcConstants.PromptModes.None))
             {
                 Logger.LogInformation("Error: prompt=none requested, but consent is required.");
 
@@ -249,7 +257,7 @@ namespace IdentityServer4.ResponseHandling
                 };
             }
 
-            if (request.PromptMode == OidcConstants.PromptModes.Consent || consentRequired)
+            if (request.PromptModes.Contains(OidcConstants.PromptModes.Consent) || consentRequired)
             {
                 var response = new InteractionResponse();
 
@@ -269,14 +277,23 @@ namespace IdentityServer4.ResponseHandling
                     if (consent.Granted == false)
                     {
                         // no need to show consent screen again
-                        // build access denied error to return to client
-                        response.Error = OidcConstants.AuthorizeErrors.AccessDenied;
-                        Logger.LogInformation("Error: User denied consent");
+                        // build error to return to client
+                        Logger.LogInformation("Error: User consent result: {error}", consent.Error);
+
+                        var error = consent.Error == AuthorizationError.AccountSelectionRequired ? OidcConstants.AuthorizeErrors.AccountSelectionRequired :
+                            consent.Error == AuthorizationError.ConsentRequired ? OidcConstants.AuthorizeErrors.ConsentRequired :
+                            consent.Error == AuthorizationError.InteractionRequired ? OidcConstants.AuthorizeErrors.InteractionRequired :
+                            consent.Error == AuthorizationError.LoginRequired ? OidcConstants.AuthorizeErrors.LoginRequired :
+                                OidcConstants.AuthorizeErrors.AccessDenied;
+
+                        response.Error = error;
+                        response.ErrorDescription = consent.ErrorDescription;
                     }
                     else
                     {
                         // double check that required scopes are in the list of consented scopes
-                        var valid = request.ValidatedScopes.ValidateRequiredScopes(consent.ScopesConsented);
+                        var requiredScopes = request.ValidatedResources.GetRequiredScopeValues();
+                        var valid = requiredScopes.All(x => consent.ScopesValuesConsented.Contains(x));
                         if (valid == false)
                         {
                             response.Error = OidcConstants.AuthorizeErrors.AccessDenied;
@@ -285,8 +302,9 @@ namespace IdentityServer4.ResponseHandling
                         else
                         {
                             // they said yes, set scopes they chose
-                            request.ValidatedScopes.SetConsentedScopes(consent.ScopesConsented);
-                            Logger.LogInformation("User consented to scopes: {scopes}", consent.ScopesConsented);
+                            request.Description = consent.Description;
+                            request.ValidatedResources = request.ValidatedResources.Filter(consent.ScopesValuesConsented);
+                            Logger.LogInformation("User consented to scopes: {scopes}", consent.ScopesValuesConsented);
 
                             if (request.Client.AllowRememberConsent)
                             {
@@ -295,11 +313,11 @@ namespace IdentityServer4.ResponseHandling
                                 if (consent.RememberConsent)
                                 {
                                     // remember what user actually selected
-                                    scopes = request.ValidatedScopes.GrantedResources.ToScopeNames();
+                                    scopes = request.ValidatedResources.ScopeValues;
                                     Logger.LogDebug("User indicated to remember consent for scopes: {scopes}", scopes);
                                 }
 
-                                await Consent.UpdateConsentAsync(request.Subject, request.Client, scopes);
+                                await Consent.UpdateConsentAsync(request.Subject, request.Client, request.ValidatedResources.ParsedScopes);
                             }
                         }
                     }

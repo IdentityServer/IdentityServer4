@@ -138,6 +138,7 @@ namespace IdentityServer4.Validation
             if (error == TokenRequestErrors.InvalidScope) return OidcConstants.TokenErrors.InvalidScope;
             if (error == TokenRequestErrors.UnauthorizedClient) return OidcConstants.TokenErrors.UnauthorizedClient;
             if (error == TokenRequestErrors.UnsupportedGrantType) return OidcConstants.TokenErrors.UnsupportedGrantType;
+            if (error == TokenRequestErrors.InvalidTarget) return OidcConstants.TokenErrors.InvalidTarget;
 
             throw new InvalidOperationException("invalid token error");
         }

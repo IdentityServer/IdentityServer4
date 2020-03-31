@@ -85,12 +85,12 @@ namespace IdentityServer4.Validation
         public IdentityServerOptions Options { get; set; }
 
         /// <summary>
-        /// Gets or sets the validated scopes.
+        /// Gets or sets the validated resources for the request.
         /// </summary>
         /// <value>
-        /// The validated scopes.
+        /// The validated resources.
         /// </value>
-        public ScopeValidator ValidatedScopes { get; set; }
+        public ResourceValidationResult ValidatedResources { get; set; }
 
         /// <summary>
         /// Gets or sets the value of the confirmation method (will become the cnf claim). Must be a JSON object.
@@ -124,7 +124,7 @@ namespace IdentityServer4.Validation
 
             AccessTokenLifetime = client.AccessTokenLifetime;
             AccessTokenType = client.AccessTokenType;
-            ClientClaims = client.Claims.Select(c => new Claim(c.Type, c.Value, c.ValueType, c.Issuer)).ToList();
+            ClientClaims = client.Claims.Select(c => new Claim(c.Type, c.Value, c.ValueType)).ToList();
         }
     }
 }

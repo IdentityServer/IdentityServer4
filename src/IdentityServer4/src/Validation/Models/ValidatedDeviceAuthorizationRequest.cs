@@ -26,5 +26,13 @@ namespace IdentityServer4.Validation
         ///   <c>true</c> if this instance is open identifier request; otherwise, <c>false</c>.
         /// </value>
         public bool IsOpenIdRequest { get; set; }
+
+        /// <summary>
+        /// Gets the description the user assigned to the device being authorized.
+        /// </summary>
+        /// <value>
+        /// The description.
+        /// </value>
+        public string Description { get; set; }
     }
 }

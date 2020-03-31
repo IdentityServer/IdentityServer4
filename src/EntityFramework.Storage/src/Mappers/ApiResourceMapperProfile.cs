@@ -24,25 +24,23 @@ namespace IdentityServer4.EntityFramework.Mappers
             CreateMap<Entities.ApiResource, Models.ApiResource>(MemberList.Destination)
                 .ConstructUsing(src => new Models.ApiResource())
                 .ForMember(x => x.ApiSecrets, opts => opts.MapFrom(x => x.Secrets))
-                .ReverseMap();
+                .ForMember(x=>x.AllowedAccessTokenSigningAlgorithms, opts => opts.ConvertUsing(AllowedSigningAlgorithmsConverter.Converter, x=>x.AllowedAccessTokenSigningAlgorithms))
+                .ReverseMap()
+                .ForMember(x => x.AllowedAccessTokenSigningAlgorithms, opts => opts.ConvertUsing(AllowedSigningAlgorithmsConverter.Converter, x => x.AllowedAccessTokenSigningAlgorithms));
 
             CreateMap<Entities.ApiResourceClaim, string>()
                 .ConstructUsing(x => x.Type)
                 .ReverseMap()
                 .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src));
 
-            CreateMap<Entities.ApiSecret, Models.Secret>(MemberList.Destination)
+            CreateMap<Entities.ApiResourceSecret, Models.Secret>(MemberList.Destination)
                 .ForMember(dest => dest.Type, opt => opt.Condition(srs => srs != null))
                 .ReverseMap();
 
-            CreateMap<Entities.ApiScope, Models.Scope>(MemberList.Destination)
-                .ConstructUsing(src => new Models.Scope())
-                .ReverseMap();
-
-            CreateMap<Entities.ApiScopeClaim, string>()
-               .ConstructUsing(x => x.Type)
-               .ReverseMap()
-               .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src));
+            CreateMap<Entities.ApiResourceScope, string>()
+                .ConstructUsing(x => x.Scope)
+                .ReverseMap()
+                .ForMember(dest => dest.Scope, opt => opt.MapFrom(src => src));
         }
     }
 }

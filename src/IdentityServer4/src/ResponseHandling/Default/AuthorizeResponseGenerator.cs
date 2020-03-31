@@ -163,7 +163,7 @@ namespace IdentityServer4.ResponseHandling
                 var tokenRequest = new TokenCreationRequest
                 {
                     Subject = request.Subject,
-                    Resources = request.ValidatedScopes.GrantedResources,
+                    ValidatedResources = request.ValidatedResources,
 
                     ValidatedRequest = request
                 };
@@ -180,7 +180,7 @@ namespace IdentityServer4.ResponseHandling
                 string stateHash = null;
                 if (request.State.IsPresent())
                 {
-                    var credential = await KeyMaterialService.GetSigningCredentialsAsync();
+                    var credential = await KeyMaterialService.GetSigningCredentialsAsync(request.Client.AllowedIdentityTokenSigningAlgorithms);
                     if (credential == null)
                     {
                         throw new InvalidOperationException("No signing credential is configured.");
@@ -194,7 +194,7 @@ namespace IdentityServer4.ResponseHandling
                 {
                     ValidatedRequest = request,
                     Subject = request.Subject,
-                    Resources = request.ValidatedScopes.GrantedResources,
+                    ValidatedResources = request.ValidatedResources,
                     Nonce = request.Raw.Get(OidcConstants.AuthorizeRequest.Nonce),
                     IncludeAllIdentityClaims = !request.AccessTokenRequested,
                     AccessTokenToHash = accessTokenValue,
@@ -228,7 +228,7 @@ namespace IdentityServer4.ResponseHandling
             string stateHash = null;
             if (request.State.IsPresent())
             {
-                var credential = await KeyMaterialService.GetSigningCredentialsAsync();
+                var credential = await KeyMaterialService.GetSigningCredentialsAsync(request.Client.AllowedIdentityTokenSigningAlgorithms);
                 if (credential == null)
                 {
                     throw new InvalidOperationException("No signing credential is configured.");
@@ -245,11 +245,12 @@ namespace IdentityServer4.ResponseHandling
                 Lifetime = request.Client.AuthorizationCodeLifetime,
                 Subject = request.Subject,
                 SessionId = request.SessionId,
+                Description = request.Description,
                 CodeChallenge = request.CodeChallenge.Sha256(),
                 CodeChallengeMethod = request.CodeChallengeMethod,
 
                 IsOpenId = request.IsOpenIdRequest,
-                RequestedScopes = request.ValidatedScopes.GrantedResources.ToScopeNames(),
+                RequestedScopes = request.ValidatedResources.ScopeValues,
                 RedirectUri = request.RedirectUri,
                 Nonce = request.Nonce,
                 StateHash = stateHash,

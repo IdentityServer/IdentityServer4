@@ -113,6 +113,8 @@ namespace IdentityServer4.Validation
             }
 
             context.Request.DeviceCode = deviceCode;
+            context.Request.SessionId = deviceCode.SessionId;
+
             context.Result = new TokenRequestValidationResult(context.Request);
             await _devices.RemoveByDeviceCodeAsync(context.DeviceCode);
         }

@@ -20,7 +20,6 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
 using IdentityServer4.Models;
-using IdentityServer4.Infrastructure;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using static IdentityServer4.Constants;
@@ -126,11 +125,6 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddTransient<BearerTokenUsageValidator>();
             builder.Services.AddTransient<JwtRequestValidator>();
 
-            // todo: remove in 3.0
-#pragma warning disable CS0618 // Type or member is obsolete
-            builder.Services.AddTransient<BackChannelHttpClient>();
-#pragma warning restore CS0618 // Type or member is obsolete
-
             builder.Services.AddTransient<ReturnUrlParser>();
             builder.Services.AddTransient<IdentityServerTools>();
 
@@ -178,11 +172,10 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IUserCodeService, DefaultUserCodeService>();
             builder.Services.TryAddTransient<IUserCodeGenerator, NumericUserCodeGenerator>();
             builder.Services.TryAddTransient<IBackChannelLogoutService, DefaultBackChannelLogoutService>();
+            builder.Services.TryAddTransient<IResourceValidator, ResourceValidator>();
 
             builder.AddJwtRequestUriHttpClient();
             builder.AddBackChannelLogoutHttpClient();
-            //builder.Services.AddHttpClient<BackChannelLogoutHttpClient>();
-            //builder.Services.AddHttpClient<JwtRequestUriHttpClient>();
 
             builder.Services.AddTransient<IClientSecretValidator, ClientSecretValidator>();
             builder.Services.AddTransient<IApiSecretValidator, ApiSecretValidator>();

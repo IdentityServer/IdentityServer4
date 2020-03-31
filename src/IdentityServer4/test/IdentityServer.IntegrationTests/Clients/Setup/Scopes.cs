@@ -2,10 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityServer4.Models;
 using System.Collections.Generic;
+using IdentityServer4.Models;
 
-namespace IdentityServer4.IntegrationTests.Clients
+namespace IdentityServer.IntegrationTests.Clients.Setup
 {
     internal class Scopes
     {
@@ -20,7 +20,7 @@ namespace IdentityServer4.IntegrationTests.Clients
             };
         }
 
-        public static IEnumerable<ApiResource> GetApiScopes()
+        public static IEnumerable<ApiResource> GetApiResources()
         {
             return new List<ApiResource>
             {
@@ -31,28 +31,40 @@ namespace IdentityServer4.IntegrationTests.Clients
                     {
                         new Secret("secret".Sha256())
                     },
-                    Scopes =
-                    {
-                        new Scope
-                        {
-                            Name = "api1"
-                        },
-                        new Scope
-                        {
-                            Name = "api2"
-                        },
-                        new Scope
-                        {
-                            Name = "api3"
-                        },
-                        new Scope
-                        {
-                            Name = "api4.with.roles",
-                            UserClaims = { "role" }
-                        }
-                    }
+                    Scopes = { "api1", "api2", "api3", "api4.with.roles" }
                 },
                 new ApiResource("other_api")
+                {
+                    Scopes = { "other_api" }
+                }
+            };
+        }
+
+        public static IEnumerable<ApiScope> GetApiScopes()
+        {
+            return new ApiScope[]
+            {
+                new ApiScope
+                {
+                    Name = "api1"
+                },
+                new ApiScope
+                {
+                    Name = "api2"
+                },
+                new ApiScope
+                {
+                    Name = "api3"
+                },
+                new ApiScope
+                {
+                    Name = "api4.with.roles",
+                    UserClaims = { "role" }
+                },
+                new ApiScope
+                {
+                    Name = "other_api",
+                },
             };
         }
     }

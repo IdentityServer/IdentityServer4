@@ -9,20 +9,19 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityServer.UnitTests.Common;
+using IdentityServer4;
 using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
 using IdentityServer4.Services;
-using IdentityServer4.UnitTests.Common;
 using Microsoft.AspNetCore.Authentication;
 using Xunit;
 
-namespace IdentityServer4.UnitTests.Services.Default
+namespace IdentityServer.UnitTests.Services.Default
 {
     public class DefaultUserSessionTests
     {
         private DefaultUserSession _subject;
         private MockHttpContextAccessor _mockHttpContext = new MockHttpContextAccessor();
-        private MockAuthenticationSchemeProvider _mockAuthenticationSchemeProvider = new MockAuthenticationSchemeProvider();
         private MockAuthenticationHandlerProvider _mockAuthenticationHandlerProvider = new MockAuthenticationHandlerProvider();
         private MockAuthenticationHandler _mockAuthenticationHandler = new MockAuthenticationHandler();
 
@@ -37,7 +36,6 @@ namespace IdentityServer4.UnitTests.Services.Default
             _user = new IdentityServerUser("123").CreatePrincipal();
             _subject = new DefaultUserSession(
                 _mockHttpContext, 
-                _mockAuthenticationSchemeProvider,
                 _mockAuthenticationHandlerProvider,
                 _options,
                 new StubClock(), 

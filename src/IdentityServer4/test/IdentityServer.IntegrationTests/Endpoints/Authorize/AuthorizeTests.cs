@@ -2,23 +2,24 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using System.Threading.Tasks;
-using Xunit;
-using FluentAssertions;
-using System.Net;
-using System.Collections.Generic;
-using IdentityServer4.Models;
-using System.Security.Claims;
-using IdentityServer4.IntegrationTests.Common;
-using IdentityServer4.Test;
-using System.Net.Http;
-using IdentityModel;
 using System;
-using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using FluentAssertions;
+using IdentityModel;
+using IdentityServer.IntegrationTests.Common;
+using IdentityServer4;
+using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using IdentityServer4.Stores.Default;
+using IdentityServer4.Test;
+using Microsoft.Extensions.DependencyInjection;
+using Xunit;
 
-namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
+namespace IdentityServer.IntegrationTests.Endpoints.Authorize
 {
     public class AuthorizeTests
     {
@@ -36,6 +37,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                     ClientId = "client1",
                     AllowedGrantTypes = GrantTypes.Implicit,
                     RequireConsent = false,
+                    
                     AllowedScopes = new List<string> { "openid", "profile" },
                     RedirectUris = new List<string> { "https://client1/callback" },
                     AllowAccessTokensViaBrowser = true
@@ -45,6 +47,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                     ClientId = "client2",
                     AllowedGrantTypes = GrantTypes.Implicit,
                     RequireConsent = true,
+                    
                     AllowedScopes = new List<string> { "openid", "profile", "api1", "api2" },
                     RedirectUris = new List<string> { "https://client2/callback" },
                     AllowAccessTokensViaBrowser = true
@@ -54,6 +57,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                     ClientId = "client3",
                     AllowedGrantTypes = GrantTypes.Implicit,
                     RequireConsent = false,
+                    
                     AllowedScopes = new List<string> { "openid", "profile", "api1", "api2" },
                     RedirectUris = new List<string> { "https://client3/callback" },
                     AllowAccessTokensViaBrowser = true,
@@ -66,6 +70,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                     AllowedGrantTypes = GrantTypes.Code,
                     RequireClientSecret = false,
                     RequireConsent = false,
+                    RequirePkce = false,
                     AllowedScopes = new List<string> { "openid", "profile", "api1", "api2" },
                     RedirectUris = new List<string> { "https://client4/callback" },
                 },
@@ -89,21 +94,21 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
                 new IdentityResources.Profile(),
                 new IdentityResources.Email()
             });
-            _mockPipeline.ApiScopes.AddRange(new ApiResource[] {
+            _mockPipeline.ApiResources.AddRange(new ApiResource[] {
                 new ApiResource
                 {
                     Name = "api",
-                    Scopes =
-                    {
-                        new Scope
-                        {
-                            Name = "api1"
-                        },
-                        new Scope
-                        {
-                            Name = "api2"
-                        }
-                    }
+                    Scopes = { "api1", "api2" }
+                }
+            });
+            _mockPipeline.ApiScopes.AddRange(new ApiScope[] {
+                new ApiScope
+                {
+                    Name = "api1"
+                },
+                new ApiScope
+                {
+                    Name = "api2"
                 }
             });
 
@@ -198,7 +203,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             var response = await _mockPipeline.BrowserClient.GetAsync(url + "&foo=bar");
 
             _mockPipeline.LoginRequest.Should().NotBeNull();
-            _mockPipeline.LoginRequest.ClientId.Should().Be("client1");
+            _mockPipeline.LoginRequest.Client.ClientId.Should().Be("client1");
             _mockPipeline.LoginRequest.DisplayMode.Should().Be("popup");
             _mockPipeline.LoginRequest.UiLocales.Should().Be("ui_locale_value");
             _mockPipeline.LoginRequest.IdP.Should().Be("idp_value");
@@ -280,7 +285,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
 
             _mockPipeline.ConsentResponse = new ConsentResponse()
             {
-                ScopesConsented = new string[] { "openid", "api1", "profile" }
+                ScopesValuesConsented = new string[] { "openid", "api1", "profile" }
             };
 
             _mockPipeline.BrowserClient.StopRedirectingAfter = 4;
@@ -414,7 +419,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             await _mockPipeline.BrowserClient.GetAsync(url);
 
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
-            _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.UnauthorizedClient);
+            _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidRequest);
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("redirect_uri");
         }
 
@@ -869,7 +874,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
             await _mockPipeline.BrowserClient.GetAsync(url);
 
             _mockPipeline.ErrorWasCalled.Should().BeTrue();
-            _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.UnauthorizedClient);
+            _mockPipeline.ErrorMessage.Error.Should().Be(OidcConstants.AuthorizeErrors.InvalidScope);
             _mockPipeline.ErrorMessage.ErrorDescription.Should().Contain("scope");
             _mockPipeline.ErrorMessage.RedirectUri.Should().StartWith("https://client1/callback");
             _mockPipeline.ErrorMessage.ResponseMode.Should().Be("fragment");
@@ -1041,8 +1046,8 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Authorize
         {
             _mockPipeline.IdentityScopes.Add(new IdentityResource("foo", "Foo", new string[] { "name" }));
             _mockPipeline.IdentityScopes.Add(new IdentityResource("bar", "Bar", new string[] { "name" }));
-            _mockPipeline.ApiScopes.Add(new ApiResource("foo", "Foo"));
-            _mockPipeline.ApiScopes.Add(new ApiResource("bar", "Bar"));
+            _mockPipeline.ApiScopes.Add(new ApiScope("foo", "Foo"));
+            _mockPipeline.ApiScopes.Add(new ApiScope("bar", "Bar"));
 
             await _mockPipeline.LoginAsync("bob");
 

@@ -8,7 +8,7 @@ using IdentityServer4.Stores;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace IdentityServer4.UnitTests.Extensions
+namespace IdentityServer.UnitTests.Extensions
 {
     public class IdentityServerBuilderExtensionsCacheStoreTests
     {
@@ -22,22 +22,27 @@ namespace IdentityServer4.UnitTests.Extensions
 
         private class CustomResourceStore : IResourceStore
         {
-            public Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeAsync(IEnumerable<string> scopeNames)
+            public Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeNameAsync(IEnumerable<string> scopeNames)
             {
                 throw new System.NotImplementedException();
             }
 
-            public Task<IEnumerable<ApiResource>> FindApiResourcesByScopeAsync(IEnumerable<string> scopeNames)
+            public Task<IEnumerable<ApiResource>> FindApiResourcesByScopeNameAsync(IEnumerable<string> scopeNames)
             {
                 throw new System.NotImplementedException();
             }
 
-            public Task<ApiResource> FindApiResourceAsync(string name)
+            public Task<IEnumerable<ApiResource>> FindApiResourcesByNameAsync(IEnumerable<string> names)
             {
                 throw new System.NotImplementedException();
             }
 
             public Task<Resources> GetAllResourcesAsync()
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public Task<IEnumerable<ApiScope>> FindApiScopesByNameAsync(IEnumerable<string> scopeNames)
             {
                 throw new System.NotImplementedException();
             }

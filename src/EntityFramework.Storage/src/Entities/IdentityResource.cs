@@ -19,7 +19,7 @@ namespace IdentityServer4.EntityFramework.Entities
         public bool Required { get; set; }
         public bool Emphasize { get; set; }
         public bool ShowInDiscoveryDocument { get; set; } = true;
-        public List<IdentityClaim> UserClaims { get; set; }
+        public List<IdentityResourceClaim> UserClaims { get; set; }
         public List<IdentityResourceProperty> Properties { get; set; }
         public DateTime Created { get; set; } = DateTime.UtcNow;
         public DateTime? Updated { get; set; }

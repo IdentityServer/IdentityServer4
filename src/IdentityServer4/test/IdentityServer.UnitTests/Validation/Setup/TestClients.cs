@@ -2,10 +2,11 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityServer4.Models;
 using System.Collections.Generic;
+using IdentityServer4;
+using IdentityServer4.Models;
 
-namespace IdentityServer4.UnitTests.Validation
+namespace IdentityServer.UnitTests.Validation.Setup
 {
     internal class TestClients
     {
@@ -27,6 +28,7 @@ namespace IdentityServer4.UnitTests.Validation
                     AllowedScopes = { "openid", "profile", "resource", "resource2" },
 
                     RequireConsent = false,
+                    RequirePkce = false,
 
                     RedirectUris = new List<string>
                     {
@@ -120,6 +122,7 @@ namespace IdentityServer4.UnitTests.Validation
                         AllowAccessTokensViaBrowser = true,
 
                         RequireConsent = false,
+                        RequirePkce = false,
 
                         RedirectUris = new List<string>
                         {
@@ -167,6 +170,7 @@ namespace IdentityServer4.UnitTests.Validation
                         AllowAccessTokensViaBrowser = false,
 
                         RequireConsent = false,
+                        RequirePkce = false,
 
                         RedirectUris = new List<string>
                         {
@@ -238,6 +242,7 @@ namespace IdentityServer4.UnitTests.Validation
 
                         AllowedGrantTypes = GrantTypes.Code,
                         RequireConsent = false,
+                        RequirePkce = false,
 
                         AllowedScopes = new List<string>
                         {

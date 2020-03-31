@@ -7,7 +7,7 @@ using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace IdentityServer4.IntegrationTests.Clients
+namespace IdentityServer.IntegrationTests.Clients.Setup
 {
     public class StartupWithCustomTokenResponses
     {
@@ -30,7 +30,8 @@ namespace IdentityServer4.IntegrationTests.Clients
 
             builder.AddInMemoryClients(Clients.Get());
             builder.AddInMemoryIdentityResources(Scopes.GetIdentityScopes());
-            builder.AddInMemoryApiResources(Scopes.GetApiScopes());
+            builder.AddInMemoryApiResources(Scopes.GetApiResources());
+            builder.AddInMemoryApiScopes(Scopes.GetApiScopes());
 
             builder.AddDeveloperSigningCredential(persistKey: false);
 

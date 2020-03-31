@@ -2,19 +2,21 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using System.Linq;
 using FluentAssertions;
 using IdentityModel.Client;
-using IdentityServer4.IntegrationTests.Common;
-using Newtonsoft.Json.Linq;
-using System.Threading.Tasks;
+using IdentityServer.IntegrationTests.Common;
+using IdentityServer4;
 using IdentityServer4.Configuration;
 using IdentityServer4.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
+using JsonWebKey = Microsoft.IdentityModel.Tokens.JsonWebKey;
 
-namespace IdentityServer4.IntegrationTests.Endpoints.Discovery
+namespace IdentityServer.IntegrationTests.Endpoints.Discovery
 {
     public class DiscoveryEndpointTests
     {
@@ -38,6 +40,29 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Discovery
 
         [Fact]
         [Trait("Category", Category)]
+        public async Task when_lower_case_issuer_option_disabled_issuer_uri_should_be_preserved()
+        {
+            IdentityServerPipeline pipeline = new IdentityServerPipeline();
+            pipeline.Initialize("/ROOT");
+
+            pipeline.Options.LowerCaseIssuerUri = false;
+
+            var result = await pipeline.BackChannelClient.GetAsync("HTTPS://SERVER/ROOT/.WELL-KNOWN/OPENID-CONFIGURATION");
+
+            var json = await result.Content.ReadAsStringAsync();
+            var data = JObject.Parse(json);
+            var issuer = data["issuer"].ToString();
+
+            issuer.Should().Be("https://server/ROOT");
+        }
+
+        private void Pipeline_OnPostConfigureServices(IServiceCollection obj)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
         public async Task Algorithms_supported_should_match_signing_key()
         {
             var key = CryptoHelper.CreateECDsaSecurityKey(JsonWebKeyECTypes.P256);
@@ -46,6 +71,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Discovery
             IdentityServerPipeline pipeline = new IdentityServerPipeline();
             pipeline.OnPostConfigureServices += services =>
             {
+                // add key to standard RSA key
                 services.AddIdentityServerBuilder()
                     .AddSigningCredential(key, expectedAlgorithm);
             };
@@ -55,9 +81,60 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Discovery
 
             var json = await result.Content.ReadAsStringAsync();
             var data = JObject.Parse(json);
-            var algorithmsSupported = data["id_token_signing_alg_values_supported"].Values<string>();
+            var algorithmsSupported = data["id_token_signing_alg_values_supported"];
 
-            algorithmsSupported.Should().Contain(expectedAlgorithm);
+            algorithmsSupported.Count().Should().Be(2);
+
+            algorithmsSupported.Values().Should().Contain(SecurityAlgorithms.RsaSha256);
+            algorithmsSupported.Values().Should().Contain(SecurityAlgorithms.EcdsaSha256);
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task Jwks_entries_should_countain_crv()
+        {
+            var ecdsaKey = CryptoHelper.CreateECDsaSecurityKey(JsonWebKeyECTypes.P256);
+            var parameters = ecdsaKey.ECDsa.ExportParameters(true);
+
+            IdentityServerPipeline pipeline = new IdentityServerPipeline();
+
+            var jsonWebKeyFromECDsa = new JsonWebKey()
+            {
+                Kty = JsonWebAlgorithmsKeyTypes.EllipticCurve,
+                Use = "sig",
+                Kid = ecdsaKey.KeyId,
+                KeyId = ecdsaKey.KeyId,
+                X = Base64UrlEncoder.Encode(parameters.Q.X),
+                Y = Base64UrlEncoder.Encode(parameters.Q.Y),
+                D = Base64UrlEncoder.Encode(parameters.D),
+                Crv = JsonWebKeyECTypes.P256,
+                Alg = SecurityAlgorithms.EcdsaSha256
+            };
+            pipeline.OnPostConfigureServices += services =>
+            {
+                // add ECDsa as JsonWebKey
+                services.AddIdentityServerBuilder()
+                    .AddSigningCredential(jsonWebKeyFromECDsa, SecurityAlgorithms.EcdsaSha256);
+            };
+
+            pipeline.Initialize("/ROOT");
+
+            var result = await pipeline.BackChannelClient.GetAsync("https://server/root/.well-known/openid-configuration/jwks");
+
+            var json = await result.Content.ReadAsStringAsync();
+            var data = JObject.Parse(json);
+
+            var keys = data["keys"];
+            keys.Should().NotBeNull();
+
+            var key = keys[1];
+            key.Should().NotBeNull();
+
+            var crv = key["crv"];
+            crv.Should().NotBeNull();
+
+            crv.Value<string>().Should().Be(JsonWebKeyECTypes.P256);
+
         }
 
         [Fact]
@@ -123,7 +200,7 @@ namespace IdentityServer4.IntegrationTests.Endpoints.Discovery
             {
                 services.AddIdentityServerBuilder()
                     .AddSigningCredential(ecdsaKey, "ES256")
-                    .AddValidationKey(new SecurityKeyInfo {Key = rsaKey, SigningAlgorithm = "RS256"});
+                    .AddValidationKey(new SecurityKeyInfo { Key = rsaKey, SigningAlgorithm = "RS256" });
             };
             pipeline.Initialize("/ROOT");
 

@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityServer.UnitTests.Common;
@@ -13,17 +14,17 @@ using IdentityServer4.ResponseHandling;
 using IdentityServer4.Services;
 using IdentityServer4.Services.Default;
 using IdentityServer4.Stores;
-using IdentityServer4.UnitTests.Common;
 using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
-namespace IdentityServer4.UnitTests.ResponseHandling
+namespace IdentityServer.UnitTests.ResponseHandling
 {
     public class DeviceAuthorizationResponseGeneratorTests
     {
         private readonly List<IdentityResource> identityResources = new List<IdentityResource> {new IdentityResources.OpenId(), new IdentityResources.Profile()};
-        private readonly List<ApiResource> apiResources = new List<ApiResource> {new ApiResource("resource") {Scopes = new List<Scope> {new Scope("api1")}}};
+        private readonly List<ApiResource> apiResources = new List<ApiResource> { new ApiResource("resource") { Scopes = {"api1" } } };
+        private readonly List<ApiScope> scopes = new List<ApiScope> { new ApiScope("api1") };
 
         private readonly FakeUserCodeGenerator fakeUserCodeGenerator = new FakeUserCodeGenerator();
         private readonly IDeviceFlowCodeService deviceFlowCodeService = new DefaultDeviceFlowCodeService(new InMemoryDeviceFlowStore(), new StubHandleGenerationService());
@@ -36,14 +37,11 @@ namespace IdentityServer4.UnitTests.ResponseHandling
 
         public DeviceAuthorizationResponseGeneratorTests()
         {
-            var resourceStore = new InMemoryResourcesStore(identityResources, apiResources);
-            var scopeValidator = new ScopeValidator(resourceStore, new NullLogger<ScopeValidator>());
-            
             testResult = new DeviceAuthorizationRequestValidationResult(new ValidatedDeviceAuthorizationRequest
             {
                 Client = new Client {ClientId = Guid.NewGuid().ToString()},
                 IsOpenIdRequest = true,
-                ValidatedScopes = scopeValidator
+                ValidatedResources = new ResourceValidationResult()
             });
 
             generator = new DeviceAuthorizationResponseGenerator(
@@ -109,7 +107,11 @@ namespace IdentityServer4.UnitTests.ResponseHandling
             var creationTime = DateTime.UtcNow;
             clock.UtcNowFunc = () => creationTime;
 
-            testResult.ValidatedRequest.RequestedScopes = new List<string> { "openid", "resource" };
+            testResult.ValidatedRequest.RequestedScopes = new List<string> { "openid", "api1" };
+            testResult.ValidatedRequest.ValidatedResources = new ResourceValidationResult(new Resources(
+                identityResources.Where(x=>x.Name == "openid"), 
+                apiResources.Where(x=>x.Name == "resource"), 
+                scopes.Where(x=>x.Name == "api1")));
 
             var response = await generator.ProcessAsync(testResult, TestBaseUrl);
 

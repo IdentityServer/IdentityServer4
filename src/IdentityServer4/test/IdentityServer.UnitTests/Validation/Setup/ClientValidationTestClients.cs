@@ -2,14 +2,15 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityServer4.Models;
-using IdentityServer4.UnitTests.Common;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
+using IdentityServer.UnitTests.Common;
+using IdentityServer4;
+using IdentityServer4.Models;
 using static IdentityServer4.IdentityServerConstants;
 
-namespace IdentityServer4.UnitTests.Validation
+namespace IdentityServer.UnitTests.Validation.Setup
 {
     internal static class ClientValidationTestClients
     {
@@ -197,11 +198,11 @@ namespace IdentityServer4.UnitTests.Validation
 
                     ClientSecrets = new List<Secret>
                     {
-                        new Secret(@"CN=idsrv3test", "mtls.test")
+                        new Secret(@"CN=identityserver_testing", "mtls.test")
                         {
                             Type = SecretTypes.X509CertificateName
                         },
-                        new Secret("6B7ACC520305BFDB4F7252DAEB2177CC091FAAE1", "mtls.test")
+                        new Secret("4B5FE072C7AD8A9B5DCFDD1A20608BB54DE0954F", "mtls.test")
                         {
                             Type = SecretTypes.X509CertificateThumbprint
                         },

@@ -38,7 +38,7 @@ namespace IdentityServer4.Stores
         /// <returns></returns>
         public async Task<string> StoreRefreshTokenAsync(RefreshToken refreshToken)
         {
-            return await CreateItemAsync(refreshToken, refreshToken.ClientId, refreshToken.SubjectId, refreshToken.CreationTime, refreshToken.Lifetime);
+            return await CreateItemAsync(refreshToken, refreshToken.ClientId, refreshToken.SubjectId, refreshToken.SessionId, refreshToken.Description, refreshToken.CreationTime, refreshToken.Lifetime);
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace IdentityServer4.Stores
         /// <returns></returns>
         public Task UpdateRefreshTokenAsync(string handle, RefreshToken refreshToken)
         {
-            return StoreItemAsync(handle, refreshToken, refreshToken.ClientId, refreshToken.SubjectId, refreshToken.CreationTime, refreshToken.Lifetime);
+            return StoreItemAsync(handle, refreshToken, refreshToken.ClientId, refreshToken.SubjectId, refreshToken.SessionId, refreshToken.Description, refreshToken.CreationTime, refreshToken.Lifetime);
         }
 
         /// <summary>

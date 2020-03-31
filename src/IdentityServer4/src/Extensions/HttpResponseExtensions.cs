@@ -45,7 +45,11 @@ namespace IdentityServer4.Extensions
                 if (varyBy?.Any() == true)
                 {
                     var vary = varyBy.Aggregate((x, y) => x + "," + y);
-                    response.Headers.Add("Vary", vary);
+                    if (response.Headers.ContainsKey("Vary"))
+                    {
+                        vary = response.Headers["Vary"].ToString() + "," + vary;
+                    }
+                    response.Headers["Vary"] = vary;
                 }
             }
         }

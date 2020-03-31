@@ -10,6 +10,8 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Http;
 using System;
 using System.Net.Http;
+using IdentityServer4;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -274,6 +276,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IIdentityServerBuilder AddJwtBearerClientAuthentication(this IIdentityServerBuilder builder)
         {
+            builder.Services.TryAddTransient<IReplayCache, DefaultReplayCache>();
             builder.AddSecretParser<JwtBearerClientAssertionSecretParser>();
             builder.AddSecretValidator<PrivateKeyJwtSecretValidator>();
 
@@ -331,7 +334,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IHttpClientBuilder AddBackChannelLogoutHttpClient(this IIdentityServerBuilder builder, Action<HttpClient> configureClient = null)
         {
-            var name = typeof(BackChannelLogoutHttpClient).Name;
+            const string name = IdentityServerConstants.HttpClients.BackChannelLogoutHttpClient;
             IHttpClientBuilder httpBuilder;
 
             if (configureClient != null)
@@ -343,13 +346,13 @@ namespace Microsoft.Extensions.DependencyInjection
                 httpBuilder = builder.Services.AddHttpClient(name);
             }
 
-            httpBuilder.Services.AddTransient<BackChannelLogoutHttpClient>(s =>
+            builder.Services.AddTransient<BackChannelLogoutHttpClient>(s =>
             {
                 var httpClientFactory = s.GetRequiredService<IHttpClientFactory>();
                 var httpClient = httpClientFactory.CreateClient(name);
-
-                var typedClientFactory = s.GetRequiredService<ITypedHttpClientFactory<BackChannelLogoutHttpClient>>();
-                return typedClientFactory.CreateClient(httpClient);
+                var loggerFactory = s.GetRequiredService<ILoggerFactory>();
+                
+                return new BackChannelLogoutHttpClient(httpClient, loggerFactory);
             });
 
             return httpBuilder;
@@ -365,7 +368,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IHttpClientBuilder AddJwtRequestUriHttpClient(this IIdentityServerBuilder builder, Action<HttpClient> configureClient = null)
         {
-            var name = typeof(JwtRequestUriHttpClient).Name;
+            const string name = IdentityServerConstants.HttpClients.JwtRequestUriHttpClient;
             IHttpClientBuilder httpBuilder;
 
             if (configureClient != null)
@@ -376,14 +379,14 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 httpBuilder = builder.Services.AddHttpClient(name);
             }
-
-            httpBuilder.Services.AddTransient<JwtRequestUriHttpClient>(s =>
+            
+            builder.Services.AddTransient<JwtRequestUriHttpClient>(s =>
             {
                 var httpClientFactory = s.GetRequiredService<IHttpClientFactory>();
                 var httpClient = httpClientFactory.CreateClient(name);
+                var loggerFactory = s.GetRequiredService<ILoggerFactory>();
 
-                var typedClientFactory = s.GetRequiredService<ITypedHttpClientFactory<JwtRequestUriHttpClient>>();
-                return typedClientFactory.CreateClient(httpClient);
+                return new JwtRequestUriHttpClient(httpClient, loggerFactory);
             });
 
             return httpBuilder;
@@ -399,6 +402,22 @@ namespace Microsoft.Extensions.DependencyInjection
             where T : class, IAuthorizationParametersMessageStore
         {
             builder.Services.AddTransient<IAuthorizationParametersMessageStore, T>();
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds a custom user session.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddUserSession<T>(this IIdentityServerBuilder builder)
+            where T : class, IUserSession
+        {
+            // This is added as scoped due to the note regarding the AuthenticateAsync
+            // method in the IdentityServer4.Services.DefaultUserSession implementation.
+            builder.Services.AddScoped<IUserSession, T>();
 
             return builder;
         }

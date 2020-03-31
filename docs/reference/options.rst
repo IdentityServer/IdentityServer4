@@ -6,6 +6,9 @@ IdentityServer Options
     Set the issuer name that will appear in the discovery document and the issued JWT tokens.
     It is recommended to not set this property, which infers the issuer name from the host name that is used by the clients.
 
+* ``LowerCaseIssuerUri``
+    Set to ``false`` to preserve the original casing of the IssuerUri. Defaults to ``true``.
+
 * ``PublicOrigin``
     The origin of this server instance, e.g. https://myorigin.com. If not set, the origin name is inferred from the request.
 
@@ -32,7 +35,7 @@ The ``CustomEntries`` dictionary allows adding custom elements to the discovery 
 Authentication
 ^^^^^^^^^^^^^^
 * ``CookieAuthenticationScheme``
-    Sets the cookie authenitcation scheme confgured by the host used for interactive users. If not set, the scheme will inferred from the host's default authentication scheme. This setting is typically used when AddPolicyScheme is used in the host as the default scheme.
+    Sets the cookie authentication scheme configured by the host used for interactive users. If not set, the scheme will be inferred from the host's default authentication scheme. This setting is typically used when AddPolicyScheme is used in the host as the default scheme.
 
 * ``CookieLifetime``
     The authentication cookie lifetime (only effective if the IdentityServer-provided cookie handler is used).
@@ -83,7 +86,7 @@ UserInteraction
 
 Caching
 ^^^^^^^
-These setting only apply if the respective caching has been enabled in the services configuration in startup.
+These settings only apply if the respective caching has been enabled in the services configuration in startup.
 
 * ``ClientStoreExpiration``
     Cache duration of client configuration loaded from the client store.
@@ -134,3 +137,11 @@ Mutual TLS
     Specifies if MTLS support should be enabled. Defaults to ``false``.
 * ``ClientCertificateAuthenticationScheme``
     Specifies the name of the authentication handler for X.509 client certificates. Defaults to ``"Certificate"``.
+* ``DomainName``
+    Specifies either the name of the sub-domain or full domain for running the MTLS endpoints (will use path-based endpoints if not set).
+    Use a simple string (e.g. "mtls") to set a sub-domain, use a full domain name (e.g. "identityserver-mtls.io") to set a full domain name.
+    When a full domain name is used, you also need to set the ``IssuerName`` to a fixed value.
+* ``AlwaysEmitConfirmationClaim``
+    Specifies whether a cnf claim gets emitted for access tokens if a client certificate was present.
+    Normally the cnf claims only gets emitted if the client used the client certificate for authentication,
+    setting this to true, will set the claim regardless of the authentication method. (defaults to false).

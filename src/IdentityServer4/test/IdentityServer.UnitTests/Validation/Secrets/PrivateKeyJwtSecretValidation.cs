@@ -9,17 +9,23 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityModel;
+using IdentityServer.UnitTests.Common;
+using IdentityServer.UnitTests.Services.Default;
+using IdentityServer.UnitTests.Validation.Setup;
+using IdentityServer4;
 using IdentityServer4.Configuration;
 using IdentityServer4.Models;
+using IdentityServer4.Services;
 using IdentityServer4.Stores;
-using IdentityServer4.UnitTests.Common;
-using IdentityServer4.UnitTests.Validation;
 using IdentityServer4.Validation;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Xunit;
 
-namespace IdentityServer4.Tests.Validation.Secrets
+namespace IdentityServer.UnitTests.Validation.Secrets
 {
     public class PrivateKeyJwtSecretValidation
     {
@@ -35,6 +41,7 @@ namespace IdentityServer4.Tests.Validation.Secrets
                             IssuerUri = "https://idsrv3.com"
                         }
                     ),
+                    new DefaultReplayCache(new TestCache()), 
                     new LoggerFactory().CreateLogger<PrivateKeyJwtSecretValidator>()
                 );
             _clients = new InMemoryClientStore(ClientValidationTestClients.Get());
@@ -117,6 +124,27 @@ namespace IdentityServer4.Tests.Validation.Secrets
             var result = await _validator.ValidateAsync(client.ClientSecrets, secret);
 
             result.Success.Should().BeTrue();
+        }
+        
+        [Fact]
+        public async Task Invalid_Replay()
+        {
+            var clientId = "certificate_base64_valid";
+            var client = await _clients.FindEnabledClientByIdAsync(clientId);
+            var token = new JwtSecurityTokenHandler().WriteToken(CreateToken(clientId));
+            
+            var secret = new ParsedSecret
+            {
+                Id = clientId,
+                Credential = token,
+                Type = IdentityServerConstants.ParsedSecretTypes.JwtBearer
+            };
+
+            var result = await _validator.ValidateAsync(client.ClientSecrets, secret);
+            result.Success.Should().BeTrue();
+            
+            result = await _validator.ValidateAsync(client.ClientSecrets, secret);
+            result.Success.Should().BeFalse();
         }
 
         [Fact]

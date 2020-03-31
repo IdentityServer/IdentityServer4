@@ -49,7 +49,14 @@ namespace IdentityServer4.EntityFramework.Options
         /// <value>
         /// The identity claim.
         /// </value>
-        public TableConfiguration IdentityClaim { get; set; } = new TableConfiguration("IdentityClaims");
+        public TableConfiguration IdentityResourceClaim { get; set; } = new TableConfiguration("IdentityResourceClaims");
+        /// <summary>
+        /// Gets or sets the identity resource property table configuration.
+        /// </summary>
+        /// <value>
+        /// The client property.
+        /// </value>
+        public TableConfiguration IdentityResourceProperty { get; set; } = new TableConfiguration("IdentityResourceProperties");
 
         /// <summary>
         /// Gets or sets the API resource table configuration.
@@ -64,28 +71,28 @@ namespace IdentityServer4.EntityFramework.Options
         /// <value>
         /// The API secret.
         /// </value>
-        public TableConfiguration ApiSecret { get; set; } = new TableConfiguration("ApiSecrets");
+        public TableConfiguration ApiResourceSecret { get; set; } = new TableConfiguration("ApiResourceSecrets");
         /// <summary>
         /// Gets or sets the API scope table configuration.
         /// </summary>
         /// <value>
         /// The API scope.
         /// </value>
-        public TableConfiguration ApiScope { get; set; } = new TableConfiguration("ApiScopes");
+        public TableConfiguration ApiResourceScope { get; set; } = new TableConfiguration("ApiResourceScopes");
         /// <summary>
         /// Gets or sets the API claim table configuration.
         /// </summary>
         /// <value>
         /// The API claim.
         /// </value>
-        public TableConfiguration ApiClaim { get; set; } = new TableConfiguration("ApiClaims");
+        public TableConfiguration ApiResourceClaim { get; set; } = new TableConfiguration("ApiResourceClaims");
         /// <summary>
-        /// Gets or sets the API scope claim table configuration.
+        /// Gets or sets the API resource property table configuration.
         /// </summary>
         /// <value>
-        /// The API scope claim.
+        /// The client property.
         /// </value>
-        public TableConfiguration ApiScopeClaim { get; set; } = new TableConfiguration("ApiScopeClaims");
+        public TableConfiguration ApiResourceProperty { get; set; } = new TableConfiguration("ApiResourceProperties");
 
         /// <summary>
         /// Gets or sets the client table configuration.
@@ -157,19 +164,28 @@ namespace IdentityServer4.EntityFramework.Options
         /// The client property.
         /// </value>
         public TableConfiguration ClientProperty { get; set; } = new TableConfiguration("ClientProperties");
+
+        /// <summary>
+        /// Gets or sets the scope table configuration.
+        /// </summary>
+        /// <value>
+        /// The API resource.
+        /// </value>
+        public TableConfiguration ApiScope { get; set; } = new TableConfiguration("ApiScopes");
+        /// <summary>
+        /// Gets or sets the scope claim table configuration.
+        /// </summary>
+        /// <value>
+        /// The API scope claim.
+        /// </value>
+        public TableConfiguration ApiScopeClaim { get; set; } = new TableConfiguration("ApiScopeClaims");
         /// <summary>
         /// Gets or sets the API resource property table configuration.
         /// </summary>
         /// <value>
         /// The client property.
         /// </value>
-        public TableConfiguration ApiResourceProperty { get; set; } = new TableConfiguration("ApiProperties");
-        /// <summary>
-        /// Gets or sets the identity resource property table configuration.
-        /// </summary>
-        /// <value>
-        /// The client property.
-        /// </value>
-        public TableConfiguration IdentityResourceProperty { get; set; } = new TableConfiguration("IdentityProperties");
+        public TableConfiguration ApiScopeProperty { get; set; } = new TableConfiguration("ApiScopeProperties");
+
     }
 }
