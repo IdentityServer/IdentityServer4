@@ -80,11 +80,11 @@ namespace IdentityServer4.AspNetIdentity
         /// Called to get the claims for the subject based on the profile request.
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="sub"></param>
+        /// <param name="subjectId"></param>
         /// <returns></returns>
-        protected virtual async Task GetProfileDataAsync(ProfileDataRequestContext context, string sub)
+        protected virtual async Task GetProfileDataAsync(ProfileDataRequestContext context, string subjectId)
         {
-            var user = await FindUserAsync(sub);
+            var user = await FindUserAsync(subjectId);
             if (user != null)
             {
                 await GetProfileDataAsync(context, user);
@@ -161,6 +161,16 @@ namespace IdentityServer4.AspNetIdentity
         }
 
         /// <summary>
+        /// Returns if the user is active.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public virtual Task<bool> IsUserActiveAsync(TUser user)
+        {
+            return Task.FromResult(true);
+        }
+
+        /// <summary>
         /// Loads the user by the subject id.
         /// </summary>
         /// <param name="subjectId"></param>
@@ -174,16 +184,6 @@ namespace IdentityServer4.AspNetIdentity
             }
 
             return user;
-        }
-
-        /// <summary>
-        /// Returns if the user is active.
-        /// </summary>
-        /// <param name="user"></param>
-        /// <returns></returns>
-        public virtual Task<bool> IsUserActiveAsync(TUser user)
-        {
-            return Task.FromResult(true);
         }
     }
 }
