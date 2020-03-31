@@ -814,7 +814,7 @@ namespace IdentityServer4.Validation
 
         private Task RaiseFailedResourceOwnerAuthenticationEventAsync(string userName, string error, string clientId)
         {
-            return _events.RaiseAsync(new UserLoginFailureEvent(userName, error, clientId: clientId));
+            return _events.RaiseAsync(new UserLoginFailureEvent(userName, error, interactive: false, clientId: clientId));
         }
     }
 }
