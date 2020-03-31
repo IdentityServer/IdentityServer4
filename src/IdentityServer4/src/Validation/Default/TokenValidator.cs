@@ -107,29 +107,6 @@ namespace IdentityServer4.Validation
                 return result;
             }
 
-            _log.Claims = result.Claims.ToClaimsDictionary();
-
-            // make sure user is still active (if sub claim is present)
-            var subClaim = result.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject);
-            if (subClaim != null)
-            {
-                var principal = Principal.Create("tokenvalidator", result.Claims.ToArray());
-
-                var isActiveCtx = new IsActiveContext(principal, result.Client, IdentityServerConstants.ProfileIsActiveCallers.IdentityTokenValidation);
-                await _profile.IsActiveAsync(isActiveCtx);
-
-                if (isActiveCtx.IsActive == false)
-                {
-                    _logger.LogError("User marked as not active: {subject}", subClaim.Value);
-
-                    result.IsError = true;
-                    result.Error = OidcConstants.ProtectedResourceErrors.InvalidToken;
-                    result.Claims = null;
-
-                    return result;
-                }
-            }
-
             _logger.LogDebug("Calling into custom token validator: {type}", _customValidator.GetType().FullName);
             var customResult = await _customValidator.ValidateIdentityTokenAsync(result);
 
