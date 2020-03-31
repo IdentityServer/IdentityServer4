@@ -118,8 +118,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IIdentityServerBuilder AddCoreServices(this IIdentityServerBuilder builder)
         {
-            builder.Services.AddTransient<SecretParser>();
-            builder.Services.AddTransient<SecretValidator>();
+            builder.Services.AddTransient<ISecretsListParser, SecretParser>();
+            builder.Services.AddTransient<ISecretsListValidator, SecretValidator>();
             builder.Services.AddTransient<ExtensionGrantValidator>();
             builder.Services.AddTransient<BearerTokenUsageValidator>();
             builder.Services.AddTransient<JwtRequestValidator>();

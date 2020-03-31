@@ -20,8 +20,8 @@ namespace IdentityServer4.Validation
         private readonly ILogger _logger;
         private readonly IResourceStore _resources;
         private readonly IEventService _events;
-        private readonly SecretParser _parser;
-        private readonly SecretValidator _validator;
+        private readonly ISecretsListParser _parser;
+        private readonly ISecretsListValidator _validator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiSecretValidator"/> class.
@@ -31,7 +31,7 @@ namespace IdentityServer4.Validation
         /// <param name="validator">The validator.</param>
         /// <param name="events">The events.</param>
         /// <param name="logger">The logger.</param>
-        public ApiSecretValidator(IResourceStore resources, SecretParser parsers, SecretValidator validator, IEventService events, ILogger<ApiSecretValidator> logger)
+        public ApiSecretValidator(IResourceStore resources, ISecretsListParser parsers, ISecretsListValidator validator, IEventService events, ILogger<ApiSecretValidator> logger)
         {
             _resources = resources;
             _parser = parsers;
@@ -91,7 +91,7 @@ namespace IdentityServer4.Validation
                 return fail;
             }
 
-            var result = await _validator.ValidateAsync(parsedSecret, api.ApiSecrets);
+            var result = await _validator.ValidateAsync(api.ApiSecrets, parsedSecret);
             if (result.Success)
             {
                 _logger.LogDebug("API resource validation success");
