@@ -36,6 +36,8 @@ namespace IdentityServer.UnitTests.Validation
         [InlineData("http://127.0.0.1:123?q=123")]
         [InlineData("http://127.0.0.1:443/?q=123")]
         [InlineData("http://127.0.0.1:443/a/b?q=123")]
+        [InlineData("http://127.0.0.1:443#abc")]
+        [InlineData("http://127.0.0.1:443/a/b?q=123#abc")]
         public async Task Loopback_Redirect_URIs_Should_Be_AllowedAsync(string requestedUri)
         {
             var strictRedirectUriValidatorAppAuthValidator = new StrictRedirectUriValidatorAppAuth(TestLogger.Create<StrictRedirectUriValidatorAppAuth>());
@@ -61,22 +63,13 @@ namespace IdentityServer.UnitTests.Validation
         [InlineData("http://127.0.0.1:443a/")]
         [InlineData("http://127.0.0.1:443a?")]
         [InlineData("http://127.0.0.2:443")]
+        [InlineData("http://127.0.0.1#abc")]
+        [InlineData("http://127.0.0.1:#abc")]
         public async Task Loopback_Redirect_URIs_Should_Not_Be_AllowedAsync(string requestedUri)
         {
             var strictRedirectUriValidatorAppAuthValidator = new StrictRedirectUriValidatorAppAuth(TestLogger.Create<StrictRedirectUriValidatorAppAuth>());
 
             var result = await strictRedirectUriValidatorAppAuthValidator.IsRedirectUriValidAsync(requestedUri, clientWithValidLoopbackRedirectUri);
-
-            result.Should().BeFalse();
-        }
-
-        [Fact]
-        [Trait("Category", Category)]
-        public async Task Client_With_No_Redirect_Uris_Should_Not_Be_AllowedAsync()
-        {
-            var strictRedirectUriValidatorAppAuthValidator = new StrictRedirectUriValidatorAppAuth(TestLogger.Create<StrictRedirectUriValidatorAppAuth>());
-
-            var result = await strictRedirectUriValidatorAppAuthValidator.IsRedirectUriValidAsync("http://127.0.0.1", clientWithNoRedirectUris);
 
             result.Should().BeFalse();
         }
