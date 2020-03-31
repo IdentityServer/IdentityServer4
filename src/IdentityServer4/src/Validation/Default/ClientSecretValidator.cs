@@ -20,8 +20,8 @@ namespace IdentityServer4.Validation
         private readonly ILogger _logger;
         private readonly IClientStore _clients;
         private readonly IEventService _events;
-        private readonly SecretValidator _validator;
-        private readonly SecretParser _parser;
+        private readonly ISecretsListValidator _validator;
+        private readonly ISecretsListParser _parser;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClientSecretValidator"/> class.
@@ -31,7 +31,7 @@ namespace IdentityServer4.Validation
         /// <param name="validator">The validator.</param>
         /// <param name="events">The events.</param>
         /// <param name="logger">The logger.</param>
-        public ClientSecretValidator(IClientStore clients, SecretParser parser, SecretValidator validator, IEventService events, ILogger<ClientSecretValidator> logger)
+        public ClientSecretValidator(IClientStore clients, ISecretsListParser parser, ISecretsListValidator validator, IEventService events, ILogger<ClientSecretValidator> logger)
         {
             _clients = clients;
             _parser = parser;
@@ -80,7 +80,7 @@ namespace IdentityServer4.Validation
             }
             else
             {
-                secretValidationResult = await _validator.ValidateAsync(parsedSecret, client.ClientSecrets);
+                secretValidationResult = await _validator.ValidateAsync(client.ClientSecrets, parsedSecret);
                 if (secretValidationResult.Success == false)
                 {
                     await RaiseFailureEventAsync(client.ClientId, "Invalid client secret");
