@@ -49,7 +49,7 @@ namespace ConsoleDeviceFlow
             Console.WriteLine($"\nPress enter to launch browser ({response.VerificationUri})");
             Console.ReadLine();
 
-            Process.Start(new ProcessStartInfo(response.VerificationUri) { UseShellExecute = true });
+            Process.Start(new ProcessStartInfo(response.VerificationUriComplete) { UseShellExecute = true });
             return response;
         }
 
