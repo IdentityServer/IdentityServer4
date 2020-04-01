@@ -71,25 +71,27 @@ namespace IdentityServer4.AspNetIdentity
                 {
                     _logger.LogInformation("Authentication failed for username: {username}, reason: locked out", context.UserName);
                     await _events.RaiseAsync(new UserLoginFailureEvent(context.UserName, "locked out", false, clientId));
+                    context.Result = new GrantValidationResult(TokenRequestErrors.InvalidGrant, "locked out");
                 }
                 else if (result.IsNotAllowed)
                 {
                     _logger.LogInformation("Authentication failed for username: {username}, reason: not allowed", context.UserName);
                     await _events.RaiseAsync(new UserLoginFailureEvent(context.UserName, "not allowed", false, clientId));
+                    context.Result = new GrantValidationResult(TokenRequestErrors.InvalidGrant, "not allowed");
                 }
                 else
                 {
                     _logger.LogInformation("Authentication failed for username: {username}, reason: invalid credentials", context.UserName);
                     await _events.RaiseAsync(new UserLoginFailureEvent(context.UserName, "invalid credentials", false, clientId));
+                    context.Result = new GrantValidationResult(TokenRequestErrors.InvalidGrant, "invalid credentials");
                 }
             }
             else
             {
                 _logger.LogInformation("No user found matching username: {username}", context.UserName);
                 await _events.RaiseAsync(new UserLoginFailureEvent(context.UserName, "invalid username", false, clientId));
+                context.Result = new GrantValidationResult(TokenRequestErrors.InvalidGrant, "invalid username");
             }
-
-            context.Result = new GrantValidationResult(TokenRequestErrors.InvalidGrant);
         }
     }
 }
