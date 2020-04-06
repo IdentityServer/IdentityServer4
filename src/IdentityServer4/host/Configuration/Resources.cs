@@ -73,8 +73,8 @@ namespace Host.Configuration
 
                     Scopes =
                     {
-                        "api2.scope1",
-                        "api2.scope2"
+                        "scope1",
+                        "scope2"
                     }
                 }
             };
