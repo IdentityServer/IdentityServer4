@@ -33,7 +33,7 @@ namespace SampleApi
                 options.AddPolicy("scope", policy => {
                     policy.AddAuthenticationSchemes("token")
                         .RequireAuthenticatedUser()
-                        .RequireClaim("scope", "feature1");
+                        .RequireClaim("scope", "scope1");
                 });
             });
 
