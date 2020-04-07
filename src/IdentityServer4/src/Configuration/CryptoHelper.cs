@@ -199,25 +199,6 @@ namespace IdentityServer4.Configuration
 
             return certificate;
         }
-
-        // used for serialization to temporary RSA key
-        internal class TemporaryRsaKey
-        {
-            public string KeyId { get; set; }
-            public RSAParameters Parameters { get; set; }
-        }
-
-        internal class RsaKeyContractResolver : DefaultContractResolver
-        {
-            protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
-            {
-                var property = base.CreateProperty(member, memberSerialization);
-
-                property.Ignored = false;
-
-                return property;
-            }
-        }
     }
 
     /// <summary>
