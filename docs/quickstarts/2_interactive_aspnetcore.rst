@@ -41,6 +41,13 @@ Creating an MVC client
 ^^^^^^^^^^^^^^^^^^^^^^
 Next you will create an MVC application.
 Use the ASP.NET Core "Web Application" (i.e. MVC) template for that. 
+
+run from the src folder::
+
+    dotnet new mvc -n MVCClient
+    cd ..
+    dotnet sln add .\src\MVCClient\MVCClient.csproj
+
 Once you've created the project, configure the application to run on port 5002.
 
 To add support for OpenID Connect authentication to the MVC application, you first need to add the nuget package containing the OpenID Connect handler to your project, e.g.::
