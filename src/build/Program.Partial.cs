@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using McMaster.Extensions.CommandLineUtils;
 using static Bullseye.Targets;
 using static SimpleExec.Command;
 
@@ -9,120 +8,100 @@ namespace build
 {
     partial class Program
     {
-        private const bool RequireTests = false;
+        private const string packOutput = "./artifacts";
+        private const string packOutputCopy = "../../nuget";
+        private const string envVarMissing = " environment variable is missing. Aborting.";
 
-        private const string ArtifactsDir = "artifacts";
-        private const string Build = "build";
-        private const string Test = "test";
-        private const string Pack = "pack";
-        
-        static void Main(string[] args)
+        private static class Targets
         {
-            var app = new CommandLineApplication
-            {
-                UnrecognizedArgumentHandling = UnrecognizedArgumentHandling.StopParsingAndCollect
-            };
-
-            var sign = app.Option<(bool hasValue, int theValue)>("--sign", "Sign binaries and nuget package", CommandOptionType.SingleOrNoValue);
-
-            CleanArtifacts();
-
-            app.OnExecute(() =>
-            {
-                Target(Build, () => 
-                {
-                    Run("dotnet", $"build -c Release", echoPrefix: Prefix);
-
-                    if (sign.HasValue())
-                    {
-                        Sign("*.dll", "./src/bin/release");
-                    }
-                });
-
-                Target(Test, DependsOn(Build), () => 
-                {
-                    Run("dotnet", $"test -c Release --no-build", echoPrefix: Prefix);
-                        
-                });
-                
-                Target(Pack, DependsOn(Build), () => 
-                {
-                    var project = Directory.GetFiles("./src", "*.csproj", SearchOption.TopDirectoryOnly).OrderBy(_ => _).First();
-
-                    Run("dotnet", $"pack {project} -c Release -o ./{ArtifactsDir} --no-build", echoPrefix: Prefix);
-                    
-                    if (sign.HasValue())
-                    {
-                        Sign("*.nupkg", $"./{ArtifactsDir}");
-                    }
-
-                    CopyArtifacts();
-                });
-
-                Target("quick", () => 
-                {
-                    var project = Directory.GetFiles("./src", "*.csproj", SearchOption.TopDirectoryOnly).OrderBy(_ => _).First();
-
-                    Run("dotnet", $"pack {project} -c Release -o ./{ArtifactsDir}", echoPrefix: Prefix);
-                    
-                    CopyArtifacts();
-                });
-
-
-                Target("default", DependsOn(Test, Pack));
-                RunTargetsAndExit(app.RemainingArguments, logPrefix: Prefix);
-            });
-
-            app.Execute(args);
+            public const string CleanBuildOutput = "clean-build-output";
+            public const string CleanPackOutput = "clean-pack-output";
+            public const string Build = "build";
+            public const string Test = "test";
+            public const string Pack = "pack";
+            public const string SignBinary = "sign-binary";
+            public const string SignPackage = "sign-package";
+            public const string CopyPackOutput = "copy-pack-output";
         }
 
-        private static void Sign(string extension, string directory)
+        static void Main(string[] args)
+        {
+            Target(Targets.CleanBuildOutput, () =>
+            {
+                Run("dotnet", "clean -c Release -v m --nologo", echoPrefix: Prefix);
+            });
+
+            Target(Targets.Build, DependsOn(Targets.CleanBuildOutput), () =>
+            {
+                Run("dotnet", "build -c Release --nologo", echoPrefix: Prefix);
+            });
+
+            Target(Targets.SignBinary, DependsOn(Targets.Build), () =>
+            {
+                Sign("./src/bin/Release", "*.dll");
+            });
+
+            Target(Targets.Test, DependsOn(Targets.Build), () =>
+            {
+                Run("dotnet", $"test -c Release --no-build", echoPrefix: Prefix);
+            });
+
+            Target(Targets.CleanPackOutput, () =>
+            {
+                if (Directory.Exists(packOutput))
+                {
+                    Directory.Delete(packOutput, true);
+                }
+            });
+
+            Target(Targets.Pack, DependsOn(Targets.Build, Targets.CleanPackOutput), () =>
+            {
+                var project = Directory.GetFiles("./src", "*.csproj", SearchOption.TopDirectoryOnly).OrderBy(_ => _).First();
+
+                Run("dotnet", $"pack {project} -c Release -o {Directory.CreateDirectory(packOutput).FullName} --no-build --nologo", echoPrefix: Prefix);
+            });
+
+            Target(Targets.SignPackage, DependsOn(Targets.Pack), () =>
+            {
+                Sign(packOutput, "*.nupkg");
+            });
+
+            Target(Targets.CopyPackOutput, DependsOn(Targets.Pack), () =>
+            {
+                Directory.CreateDirectory(packOutputCopy);
+
+                foreach (var file in Directory.GetFiles(packOutput))
+                {
+                    File.Copy(file, Path.Combine(packOutputCopy, Path.GetFileName(file)), true);
+                }
+            });
+
+            Target("default", DependsOn(Targets.Test, Targets.CopyPackOutput));
+
+            Target("sign", DependsOn(Targets.SignBinary, Targets.Test, Targets.SignPackage, Targets.CopyPackOutput));
+
+            RunTargetsAndExit(args, ex => ex is SimpleExec.NonZeroExitCodeException || ex.Message.EndsWith(envVarMissing), Prefix);
+        }
+
+        private static void Sign(string path, string searchTerm)
         {
             var signClientConfig = Environment.GetEnvironmentVariable("SignClientConfig");
             var signClientSecret = Environment.GetEnvironmentVariable("SignClientSecret");
 
             if (string.IsNullOrWhiteSpace(signClientConfig))
             {
-                throw new Exception("SignClientConfig environment variable is missing. Aborting.");
+                throw new Exception($"SignClientConfig{envVarMissing}");
             }
 
             if (string.IsNullOrWhiteSpace(signClientSecret))
             {
-                throw new Exception("SignClientSecret environment variable is missing. Aborting.");
+                throw new Exception($"SignClientSecret{envVarMissing}");
             }
 
-            var files = Directory.GetFiles(directory, extension, SearchOption.AllDirectories);
-            if (files.Count() == 0)
+            foreach (var file in Directory.GetFiles(path, searchTerm, SearchOption.AllDirectories))
             {
-                throw new Exception($"File to sign not found: {extension}");
-            }
-
-            foreach (var file in files)
-            {
-                Console.WriteLine("  Signing " + file);
+                Console.WriteLine($"  Signing {file}");
                 Run("dotnet", $"SignClient sign -c {signClientConfig} -i {file} -r sc-ids@dotnetfoundation.org -s \"{signClientSecret}\" -n 'IdentityServer4'", noEcho: true);
-            }
-        }
-
-        private static void CopyArtifacts()
-        {
-            var files = Directory.GetFiles($"./{ArtifactsDir}");
-
-            foreach (string s in files)
-            {
-                var fileName = Path.GetFileName(s);
-                var destFile = Path.Combine("../../nuget", fileName);
-                File.Copy(s, destFile, true);
-            }
-        }
-
-        private static void CleanArtifacts()
-        {
-            Directory.CreateDirectory($"./{ArtifactsDir}");
-
-            foreach (var file in Directory.GetFiles($"./{ArtifactsDir}"))
-            {
-                File.Delete(file);
             }
         }
     }

@@ -1,2 +1,2 @@
 ./clean.sh
-./build.sh quick
+./build.sh copy-pack-output
