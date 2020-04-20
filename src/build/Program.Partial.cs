@@ -76,6 +76,8 @@ namespace build
                 }
             });
 
+            Target("quick", DependsOn(Targets.CopyPackOutput));
+
             Target("default", DependsOn(Targets.Test, Targets.CopyPackOutput));
 
             Target("sign", DependsOn(Targets.SignBinary, Targets.Test, Targets.SignPackage, Targets.CopyPackOutput));
