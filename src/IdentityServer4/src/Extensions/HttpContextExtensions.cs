@@ -166,7 +166,7 @@ namespace IdentityServer4.Extensions
             {
                 var clientIds = logoutMessage?.ClientIds;
 
-                // check if current user is same, since we migth have new clients (albeit unlikely)
+                // check if current user is same, since we might have new clients (albeit unlikely)
                 if (currentSubId == logoutMessage?.SubjectId)
                 {
                     clientIds = clientIds.Union(await userSession.GetClientListAsync());
