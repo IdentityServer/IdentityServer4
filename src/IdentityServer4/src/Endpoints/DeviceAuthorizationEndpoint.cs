@@ -81,7 +81,7 @@ namespace IdentityServer4.Endpoints
                 return Error(requestResult.Error, requestResult.ErrorDescription);
             }
 
-            var baseUrl = context.GetIdentityServerBaseUrl().EnsureTrailingSlash();
+            var baseUrl = context.GetIdentityServerHost().EnsureTrailingSlash();
 
             // create response
             _logger.LogTrace("Calling into device authorize response generator: {type}", _responseGenerator.GetType().FullName);
