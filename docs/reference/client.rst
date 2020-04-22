@@ -104,7 +104,7 @@ Consent Screen
 ^^^^^^^^^^^^^^
 
 ``RequireConsent``
-    Specifies whether a consent screen is required. Defaults to ``false``.
+    Specifies whether a consent screen is required. Defaults to ``true``.
 ``AllowRememberConsent``
     Specifies whether user can choose to store consent decisions. Defaults to ``true``.
 ``ConsentLifetime``
