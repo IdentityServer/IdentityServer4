@@ -52,7 +52,7 @@ You can see a list of our current sponsors [here](https://github.com/IdentitySer
 ## Acknowledgements
 IdentityServer4 is built using the following great open source projects and free services:
 
-* [ASP.NET Core](https://github.com/dotnet)
+* [ASP.NET Core](https://github.com/dotnet/aspnetcore)
 * [Bullseye](https://github.com/adamralph/bullseye)
 * [SimpleExec](https://github.com/adamralph/simple-exec)
 * [MinVer](https://github.com/adamralph/minver)
