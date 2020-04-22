@@ -82,17 +82,19 @@ namespace IdentityServer4.Endpoints.Results
 
             var redirect = _options.UserInteraction.LogoutUrl;
 
-            if (redirect.IsLocalUrl())
-            {
-                redirect = context.GetIdentityServerRelativeUrl(redirect);
-            }
-
             if (id != null)
             {
                 redirect = redirect.AddQueryString(_options.UserInteraction.LogoutIdParameter, id);
             }
 
-            context.Response.Redirect(redirect);
+            if (redirect.IsLocalUrl())
+            {
+                context.Response.RedirectToAbsoluteUrl(redirect);
+            }
+            else
+            {
+                context.Response.Redirect(redirect);
+            }
         }
     }
 }

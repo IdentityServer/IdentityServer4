@@ -78,20 +78,7 @@ namespace IdentityServer.IntegrationTests.Common
         {
             var builder = new WebHostBuilder();
             builder.ConfigureServices(ConfigureServices);
-            builder.Configure(app=>
-            {
-                if (basePath != null)
-                {
-                    app.Map(basePath, map =>
-                    {
-                        ConfigureApp(map);
-                    });
-                }
-                else
-                {
-                    ConfigureApp(app);
-                }
-            });
+            builder.Configure(app => ConfigureApp(app, basePath));
 
             if (enableLogging)
             {
@@ -153,11 +140,21 @@ namespace IdentityServer.IntegrationTests.Common
             OnPostConfigureServices(services);
         }
 
-        public void ConfigureApp(IApplicationBuilder app)
+        public void ConfigureApp(IApplicationBuilder app, string basePath)
         {
             OnPreConfigure(app);
 
-            app.UseIdentityServer();
+            if (basePath != null)
+            {
+                app.Map(basePath, map =>
+                {
+                    map.UseIdentityServer();
+                });
+            }
+            else
+            {
+                app.UseIdentityServer();
+            }
 
             // UI endpoints
             app.Map(Constants.UIConstants.DefaultRoutePaths.Login.EnsureLeadingSlash(), path =>
