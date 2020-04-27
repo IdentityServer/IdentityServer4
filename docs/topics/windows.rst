@@ -56,11 +56,11 @@ trigger authentication, and if successful convert the information into a standar
                 Items =
                 {
                     { "returnUrl", returnUrl },
-                    { "scheme", AccountOptions.WindowsAuthenticationSchemeName },
+                    { "scheme", "Windows" },
                 }
             };
 
-            var id = new ClaimsIdentity(AccountOptions.WindowsAuthenticationSchemeName);
+            var id = new ClaimsIdentity("Windows");
 
             // the sid is a good sub value
             id.AddClaim(new Claim(JwtClaimTypes.Subject, wp.FindFirst(ClaimTypes.PrimarySid).Value));
