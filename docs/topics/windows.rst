@@ -44,7 +44,7 @@ trigger authentication, and if successful convert the information into a standar
     private async Task<IActionResult> ChallengeWindowsAsync(string returnUrl)
     {
         // see if windows auth has already been requested and succeeded
-        var result = await HttpContext.AuthenticateAsync(AccountOptions.WindowsAuthenticationSchemeName);
+        var result = await HttpContext.AuthenticateAsync("Windows");
         if (result?.Principal is WindowsPrincipal wp)
         {
             // we will issue the external cookie and then redirect the
@@ -90,6 +90,6 @@ trigger authentication, and if successful convert the information into a standar
             // trigger windows auth
             // since windows auth don't support the redirect uri,
             // this URL is re-triggered when we call challenge
-            return Challenge(AccountOptions.WindowsAuthenticationSchemeName);
+            return Challenge("Windows");
         }
     }
