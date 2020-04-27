@@ -32,7 +32,7 @@ This is done in ``ConfigureServices`` (details vary depending on in-proc vs out-
         iis.AutomaticAuthentication = false;
     });
 
-You trigger Windows authentication by calling ``ChallengeAsync`` on ``Windows`` scheme (or if you want to use a constant: ``Microsoft.AspNetCore.Server.IISIntegration.IISDefaults.AuthenticationScheme``).
+You trigger Windows authentication by calling ``ChallengeAsync`` on the ``Windows`` scheme (or if you want to use a constant: ``Microsoft.AspNetCore.Server.IISIntegration.IISDefaults.AuthenticationScheme``).
 
 This will send the ``Www-Authenticate`` header back to the browser which will then re-load the current URL including the Windows identity.
 You can tell that Windows authentication was successful, when you call ``AuthenticateAsync`` on the ``Windows`` scheme and the principal returned
