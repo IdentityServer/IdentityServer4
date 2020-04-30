@@ -37,6 +37,11 @@ namespace IdentityServer4.Configuration
         public bool EmitLegacyResourceAudienceClaim { get; set; } = false;
 
         /// <summary>
+        /// Specifies whether scopes in JWTs are emitted as array or string
+        /// </summary>
+        public bool EmitScopesAsSpaceDelimitedStringInJwt { get; set; } = false;
+
+        /// <summary>
         /// Gets or sets the endpoint configuration.
         /// </summary>
         /// <value>
