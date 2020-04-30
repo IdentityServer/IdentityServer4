@@ -238,6 +238,51 @@ namespace IdentityServer.IntegrationTests.Clients
             var scopes = payload["scope"] as JArray;
             scopes.First().ToString().Should().Be("api1");
         }
+        
+        [Fact]
+        public async Task Valid_client_no_subject_with_clientId_subject_should_succeed()
+        {
+            var builder = new WebHostBuilder()
+                .UseSetting(Startup.EmitSubSetting, "true")
+                .UseStartup<Startup>();
+            var server = new TestServer(builder);
+
+            var client = server.CreateClient();
+            
+            var response = await client.RequestTokenAsync(new TokenRequest
+            {
+                Address = TokenEndpoint,
+                GrantType = "custom.nosubject",
+
+                ClientId = "client.custom",
+                ClientSecret = "secret",
+
+                Parameters =
+                {
+                    { "custom_credential", "custom credential"},
+                    { "scope", "api1" }
+                }
+            });
+
+            response.IsError.Should().BeFalse();
+            response.HttpStatusCode.Should().Be(HttpStatusCode.OK);
+            response.ExpiresIn.Should().Be(3600);
+            response.TokenType.Should().Be("Bearer");
+            response.IdentityToken.Should().BeNull();
+            response.RefreshToken.Should().BeNull();
+
+            var payload = GetPayload(response);
+
+            payload.Count().Should().Be(7);
+            payload.Should().Contain("iss", "https://idsvr4");
+            payload.Should().Contain("client_id", "client.custom");
+            payload.Should().Contain("sub", "client.custom");
+            
+            payload["aud"].Should().Be("api");
+
+            var scopes = payload["scope"] as JArray;
+            scopes.First().ToString().Should().Be("api1");
+        }
 
         [Fact]
         public async Task Valid_client_with_default_scopes_should_succeed()
@@ -467,6 +512,47 @@ namespace IdentityServer.IntegrationTests.Clients
 
             var jwt = new JwtSecurityToken(response.AccessToken);
             jwt.Payload["client_id"].Should().Be("impersonated_client_id");
+        }
+        
+        [Fact]
+        public async Task Impersonate_client_with_client_sub_should_succeed()
+        {
+            var builder = new WebHostBuilder()
+                .UseSetting(Startup.EmitSubSetting, "true")
+                .UseStartup<Startup>();
+            var server = new TestServer(builder);
+
+            var client = server.CreateClient();
+            
+            var response = await client.RequestTokenAsync(new TokenRequest
+            {
+                Address = TokenEndpoint,
+                GrantType = "dynamic",
+
+                ClientId = "client.dynamic",
+                ClientSecret = "secret",
+
+                Parameters =
+                {
+                    { "scope", "api1" },
+
+                    { "type", "jwt"},
+                    { "impersonated_client", "impersonated_client_id"}
+                }
+            });
+
+            response.IsError.Should().BeFalse();
+            response.HttpStatusCode.Should().Be(HttpStatusCode.OK);
+            response.ExpiresIn.Should().Be(3600);
+            response.TokenType.Should().Be("Bearer");
+            response.IdentityToken.Should().BeNull();
+            response.RefreshToken.Should().BeNull();
+
+            response.AccessToken.Should().Contain(".");
+
+            var jwt = new JwtSecurityToken(response.AccessToken);
+            jwt.Payload["client_id"].Should().Be("impersonated_client_id");
+            jwt.Payload["sub"].Should().Be("impersonated_client_id");
         }
 
         [Fact]

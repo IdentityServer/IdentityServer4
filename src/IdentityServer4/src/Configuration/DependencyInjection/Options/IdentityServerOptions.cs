@@ -37,6 +37,11 @@ namespace IdentityServer4.Configuration
         public bool EmitLegacyResourceAudienceClaim { get; set; } = false;
 
         /// <summary>
+        /// Specifies whether the client ID should be emitted as the sub claim in access tokens for flows where no user is present
+        /// </summary>
+        public bool EmitClientIdAsSubForNonInteracticeFlows { get; set; } = false;
+
+        /// <summary>
         /// Gets or sets the endpoint configuration.
         /// </summary>
         /// <value>

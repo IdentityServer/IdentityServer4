@@ -5,12 +5,22 @@
 using IdentityServer4.Configuration;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace IdentityServer.IntegrationTests.Clients.Setup
 {
     public class Startup
     {
+        public const string EmitSubSetting = "test-emit-sub-setting";
+        
+        private readonly IConfiguration _configuration;
+
+        public Startup(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+        
         static public ICustomTokenRequestValidator CustomTokenRequestValidator { get; set; } 
 
         public void ConfigureServices(IServiceCollection services)
@@ -28,6 +38,11 @@ namespace IdentityServer.IntegrationTests.Clients.Setup
                     RaiseInformationEvents = true,
                     RaiseSuccessEvents = true
                 };
+
+                if (_configuration[EmitSubSetting] == "true")
+                {
+                    options.EmitClientIdAsSubForNonInteracticeFlows = true;
+                }
             });
 
             builder.AddInMemoryClients(Clients.Get());

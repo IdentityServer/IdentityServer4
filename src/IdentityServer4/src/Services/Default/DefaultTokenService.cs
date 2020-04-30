@@ -201,7 +201,17 @@ namespace IdentityServer4.Services
             {
                 claims.Add(new Claim(JwtClaimTypes.SessionId, request.ValidatedRequest.SessionId));
             }
-
+            
+            // if no sub claim is present, check config if the client ID should be emitted as a sub
+            var sub = claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject);
+            if (sub is null)
+            {
+                if (Options.EmitClientIdAsSubForNonInteracticeFlows)
+                {
+                    claims.Add(new Claim(JwtClaimTypes.Subject, request.ValidatedRequest.ClientId));
+                }
+            }
+            
             var issuer = ContextAccessor.HttpContext.GetIdentityServerIssuerUri();
             var token = new Token(OidcConstants.TokenTypes.AccessToken)
             {

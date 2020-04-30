@@ -74,6 +74,44 @@ namespace IdentityServer.IntegrationTests.Clients
             payload.Count().Should().Be(6);
             payload.Should().Contain("iss", "https://idsvr4");
             payload.Should().Contain("client_id", "client");
+            payload.Should().NotContain("sub", "client");
+
+            payload["aud"].Should().Be("api");
+
+            var scopes = payload["scope"] as JArray;
+            scopes.First().ToString().Should().Be("api1");
+        }
+        
+        [Fact]
+        public async Task Valid_request_single_audience_and_client_sub_should_return_expected_payload()
+        {
+            var builder = new WebHostBuilder()
+                .UseSetting(Startup.EmitSubSetting, "true")
+                .UseStartup<Startup>();
+            var server = new TestServer(builder);
+
+            var client = server.CreateClient();
+            
+            var response = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+            {
+                Address = TokenEndpoint,
+                ClientId = "client",
+                ClientSecret = "secret",
+                Scope = "api1"
+            });
+
+            response.IsError.Should().Be(false);
+            response.ExpiresIn.Should().Be(3600);
+            response.TokenType.Should().Be("Bearer");
+            response.IdentityToken.Should().BeNull();
+            response.RefreshToken.Should().BeNull();
+
+            var payload = GetPayload(response);
+
+            payload.Count().Should().Be(7);
+            payload.Should().Contain("iss", "https://idsvr4");
+            payload.Should().Contain("client_id", "client");
+            payload.Should().Contain("sub", "client");
 
             payload["aud"].Should().Be("api");
 
