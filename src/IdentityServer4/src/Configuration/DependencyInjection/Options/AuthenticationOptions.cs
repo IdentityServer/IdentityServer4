@@ -3,6 +3,7 @@
 
 
 using System;
+using Microsoft.AspNetCore.Http;
 
 namespace IdentityServer4.Configuration
 {
@@ -26,6 +27,11 @@ namespace IdentityServer4.Configuration
         /// Specified if the cookie should be sliding or not (only effective if the built-in cookie middleware is used)
         /// </summary>
         public bool CookieSlidingExpiration { get; set; } = false;
+        
+        /// <summary>
+        /// Specifies the SameSite mode for the internal authentication and temp cookie
+        /// </summary>
+        public SameSiteMode CookieSameSiteMode { get; set; } = SameSiteMode.None;
 
         /// <summary>
         /// Indicates if user must be authenticated to accept parameters to end session endpoint. Defaults to false.
