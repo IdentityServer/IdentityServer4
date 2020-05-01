@@ -39,7 +39,10 @@ Authentication
     The authentication cookie lifetime (only effective if the IdentityServer-provided cookie handler is used).
 
 * ``CookieSlidingExpiration``
-    Specified if the cookie should be sliding or not (only effective if the IdentityServer-provided cookie handler is used).
+    Specifies if the cookie should be sliding or not (only effective if the IdentityServer-provided cookie handler is used).
+
+* ``CookieSameSiteMode``
+    Specifies the SameSite mode for the internal cookies.
 
 * ``RequireAuthenticatedUserForSignOutMessage``
     Indicates if user must be authenticated to accept parameters to end session endpoint. Defaults to false.
