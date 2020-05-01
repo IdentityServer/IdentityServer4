@@ -24,7 +24,7 @@ namespace IdentityServer4.Configuration
         public bool LowerCaseIssuerUri { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets the value for the JWT typ header for access tokens.
+        /// Gets or sets the value for the JWT type header for access tokens.
         /// </summary>
         /// <value>
         /// The JWT typ value.
