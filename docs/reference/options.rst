@@ -15,6 +15,9 @@ IdentityServer Options
 * ``EmitLegacyResourceAudienceClaim``
     Emits an ``aud`` claim with the format issuer/resources. That's needed for some older access token validation plumbing. Defaults to false.
 
+* ``EmitClientIdAsSubForNonInteracticeFlows``
+    Emits a sub claim that contains the client ID for flows where no user is involved (e.g. client credentials).
+
 Endpoints
 ^^^^^^^^^
 Allows enabling/disabling individual endpoints, e.g. token, authorize, userinfo etc.
