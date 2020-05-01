@@ -122,7 +122,7 @@ namespace IdentityServer4.Services
         /// <returns>The JWT payload</returns>
         protected virtual Task<JwtPayload> CreatePayloadAsync(Token token)
         {
-            var payload = token.CreateJwtPayload(Clock, Logger);
+            var payload = token.CreateJwtPayload(Clock, Options, Logger);
             return Task.FromResult(payload);
         }
 

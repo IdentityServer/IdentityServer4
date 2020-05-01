@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using IdentityServer4.Configuration;
 
 namespace IdentityServer4.Extensions
 {
@@ -25,11 +26,12 @@ namespace IdentityServer4.Extensions
         /// </summary>
         /// <param name="token">The token.</param>
         /// <param name="clock">The clock.</param>
+        /// <param name="options">The options</param>
         /// <param name="logger">The logger.</param>
         /// <returns></returns>
         /// <exception cref="Exception">
         /// </exception>
-        public static JwtPayload CreateJwtPayload(this Token token, ISystemClock clock, ILogger logger)
+        public static JwtPayload CreateJwtPayload(this Token token, ISystemClock clock, IdentityServerOptions options, ILogger logger)
         {
             var payload = new JwtPayload(
                 token.Issuer,
@@ -64,7 +66,15 @@ namespace IdentityServer4.Extensions
             if (!scopeClaims.IsNullOrEmpty())
             {
                 var scopeValues = scopeClaims.Select(x => x.Value).ToArray();
-                payload.Add(JwtClaimTypes.Scope, scopeValues);
+
+                if (options.EmitScopesAsSpaceDelimitedStringInJwt)
+                {
+                    payload.Add(JwtClaimTypes.Scope, string.Join(" ", scopeValues));
+                }
+                else
+                {
+                    payload.Add(JwtClaimTypes.Scope, scopeValues);
+                }
             }
 
             // amr claims
