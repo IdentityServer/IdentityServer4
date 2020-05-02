@@ -67,10 +67,9 @@ namespace Host
                 .AddTestUsers(TestUsers.Users)
                 .AddProfileService<HostProfileService>()
                 .AddCustomTokenRequestValidator<ParameterizedScopeTokenRequestValidator>()
+                .AddResourceValidator<ParameterizedScopeValidator>()
                 .AddMutualTlsSecretValidators();
 
-            services.AddTransient<IResourceValidator, ParameterizedScopeValidator>();
-            
             // use this for persisted grants store
             // var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
             // const string connectionString = "DataSource=identityserver.db";

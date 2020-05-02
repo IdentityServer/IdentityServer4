@@ -85,6 +85,20 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return builder;
         }
+        
+        /// <summary>
+        /// Adds a resource validator.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddResourceValidator<T>(this IIdentityServerBuilder builder)
+            where T : class, IResourceValidator
+        {
+            builder.Services.AddTransient<IResourceValidator, T>();
+
+            return builder;
+        }
 
         /// <summary>
         /// Adds a client store.
