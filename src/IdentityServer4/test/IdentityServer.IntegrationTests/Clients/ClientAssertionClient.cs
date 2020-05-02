@@ -205,9 +205,11 @@ namespace IdentityServer.IntegrationTests.Clients
 
             var payload = GetPayload(response);
             
-            payload.Count().Should().Be(7);
+            payload.Count().Should().Be(8);
             payload.Should().Contain("iss", "https://idsvr4");
             payload.Should().Contain("client_id", ClientId);
+            payload.Keys.Should().Contain("iat");
+            
             var scopes = payload["scope"] as JArray;
             scopes.First().ToString().Should().Be("api1");
 

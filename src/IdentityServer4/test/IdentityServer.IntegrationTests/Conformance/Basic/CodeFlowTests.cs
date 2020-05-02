@@ -107,15 +107,14 @@ namespace IdentityServer.IntegrationTests.Conformance.Basic
             tokenResult.IdentityToken.Should().NotBeNull();
 
             var token = new JwtSecurityToken(tokenResult.IdentityToken);
-
-            token.Claims.Count().Should().Be(12);
+            
             var s_hash = token.Claims.FirstOrDefault(c => c.Type == "s_hash");
             s_hash.Should().BeNull();
         }
 
         [Fact]
         [Trait("Category", Category)]
-        public async Task State_should_not_result_in_shash()
+        public async Task State_should_result_in_shash()
         {
             await _pipeline.LoginAsync("bob");
 
@@ -157,8 +156,7 @@ namespace IdentityServer.IntegrationTests.Conformance.Basic
             tokenResult.IdentityToken.Should().NotBeNull();
 
             var token = new JwtSecurityToken(tokenResult.IdentityToken);
-
-            token.Claims.Count().Should().Be(13);
+            
             var s_hash = token.Claims.FirstOrDefault(c => c.Type == "s_hash");
             s_hash.Should().NotBeNull();
             s_hash.Value.Should().Be(CryptoHelper.CreateHashClaimValue("state", "RS256"));
