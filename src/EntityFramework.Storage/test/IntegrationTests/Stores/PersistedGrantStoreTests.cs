@@ -11,6 +11,7 @@ using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.EntityFramework.Options;
 using IdentityServer4.EntityFramework.Stores;
 using IdentityServer4.Models;
+using IdentityServer4.Stores;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
@@ -95,7 +96,7 @@ namespace IdentityServer4.EntityFramework.IntegrationTests.Stores
             using (var context = new PersistedGrantDbContext(options, StoreOptions))
             {
                 var store = new PersistedGrantStore(context, FakeLogger<PersistedGrantStore>.Create());
-                foundPersistedGrants = (await store.GetAllAsync(persistedGrant.SubjectId)).ToList();
+                foundPersistedGrants = (await store.GetAllAsync(new PersistedGrantFilter { SubjectId = persistedGrant.SubjectId })).ToList();
             }
 
             Assert.NotNull(foundPersistedGrants);
@@ -140,7 +141,7 @@ namespace IdentityServer4.EntityFramework.IntegrationTests.Stores
             using (var context = new PersistedGrantDbContext(options, StoreOptions))
             {
                 var store = new PersistedGrantStore(context, FakeLogger<PersistedGrantStore>.Create());
-                await store.RemoveAllAsync(persistedGrant.SubjectId, persistedGrant.ClientId);
+                await store.RemoveAllAsync(new PersistedGrantFilter { SubjectId = persistedGrant.SubjectId, ClientId = persistedGrant.ClientId });
             }
 
             using (var context = new PersistedGrantDbContext(options, StoreOptions))
@@ -164,7 +165,7 @@ namespace IdentityServer4.EntityFramework.IntegrationTests.Stores
             using (var context = new PersistedGrantDbContext(options, StoreOptions))
             {
                 var store = new PersistedGrantStore(context, FakeLogger<PersistedGrantStore>.Create());
-                await store.RemoveAllAsync(persistedGrant.SubjectId, persistedGrant.ClientId, persistedGrant.Type);
+                await store.RemoveAllAsync(new PersistedGrantFilter { SubjectId = persistedGrant.SubjectId, ClientId = persistedGrant.ClientId, Type = persistedGrant.Type });
             }
 
             using (var context = new PersistedGrantDbContext(options, StoreOptions))
