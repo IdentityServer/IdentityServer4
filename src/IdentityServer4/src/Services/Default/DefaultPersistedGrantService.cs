@@ -37,14 +37,10 @@ namespace IdentityServer4.Services
             _logger = logger;
         }
 
-        /// <summary>
-        /// Gets all grants for a given subject ID.
-        /// </summary>
-        /// <param name="subjectId">The subject identifier.</param>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public async Task<IEnumerable<Grant>> GetAllGrantsAsync(string subjectId)
         {
-            var grants = (await _store.GetAllAsync(subjectId)).ToArray();
+            var grants = (await _store.GetAllAsync(new PersistedGrantFilter { SubjectId = subjectId })).ToArray();
 
             try
             {
@@ -148,15 +144,13 @@ namespace IdentityServer4.Services
             return list;
         }
 
-        /// <summary>
-        /// Removes all grants for a given subject id and client id combination.
-        /// </summary>
-        /// <param name="subjectId">The subject identifier.</param>
-        /// <param name="clientId">The client identifier.</param>
-        /// <returns></returns>
-        public Task RemoveAllGrantsAsync(string subjectId, string clientId)
+        /// <inheritdoc/>
+        public Task RemoveAllGrantsAsync(string subjectId, string clientId, string sessionId = null)
         {
-            return _store.RemoveAllAsync(subjectId, clientId);
+            return _store.RemoveAllAsync(new PersistedGrantFilter {
+                SubjectId = subjectId,
+                ClientId = clientId
+            });
         }
     }
 }

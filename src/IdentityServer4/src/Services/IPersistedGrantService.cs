@@ -25,7 +25,8 @@ namespace IdentityServer4.Services
         /// </summary>
         /// <param name="subjectId">The subject identifier.</param>
         /// <param name="clientId">The client identifier.</param>
+        /// <param name="sessionId">The sesion id (optional).</param>
         /// <returns></returns>
-        Task RemoveAllGrantsAsync(string subjectId, string clientId);
+        Task RemoveAllGrantsAsync(string subjectId, string clientId, string sessionId = null);
     }
 }
