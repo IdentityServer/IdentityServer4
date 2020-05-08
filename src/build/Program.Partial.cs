@@ -28,7 +28,7 @@ namespace build
         {
             Target(Targets.CleanBuildOutput, () =>
             {
-                Run("dotnet", "clean -c Release -v m --nologo", echoPrefix: Prefix);
+                //Run("dotnet", "clean -c Release -v m --nologo", echoPrefix: Prefix);
             });
 
             Target(Targets.Build, DependsOn(Targets.CleanBuildOutput), () =>
