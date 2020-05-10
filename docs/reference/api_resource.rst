@@ -74,24 +74,6 @@ For example::
 
     new ApiResource("api1", "Some API 1")
 
-Using the convenience constructor is equivalent to this::
-
-    new ApiResource
-    {
-        Name = "api1",
-        DisplayName = "Some API 1",
-
-        Scopes =
-        {
-            new Scope()
-            {
-                Name = "api1",
-                DisplayName = "Some API 1"
-            }
-        }
-    }
-
-
 Defining API resources in appsettings.json
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
