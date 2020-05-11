@@ -8,7 +8,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityModel;
-using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 
@@ -61,9 +60,9 @@ namespace IdentityServer4.Services
         }
 
         /// <inheritdoc/>
-        public virtual Task SendLogoutNotificationsAsync(IEnumerable<BackChannelLogoutModel> clients)
+        public virtual Task SendLogoutNotificationsAsync(IEnumerable<BackChannelLogoutRequest> clients)
         {
-            clients = clients ?? Enumerable.Empty<BackChannelLogoutModel>();
+            clients = clients ?? Enumerable.Empty<BackChannelLogoutRequest>();
             var tasks = clients.Select(SendLogoutNotificationAsync).ToArray();
             return Task.WhenAll(tasks);
         }
@@ -72,7 +71,7 @@ namespace IdentityServer4.Services
         /// Performs the back-channel logout for a single client.
         /// </summary>
         /// <param name="client"></param>
-        protected virtual async Task SendLogoutNotificationAsync(BackChannelLogoutModel client)
+        protected virtual async Task SendLogoutNotificationAsync(BackChannelLogoutRequest client)
         {
             var data = await CreateFormPostPayloadAsync(client);
             await HttpClient.PostAsync(client.LogoutUri, data);
@@ -83,7 +82,7 @@ namespace IdentityServer4.Services
         /// </summary>
         /// <param name="client"></param>
         /// <returns></returns>
-        protected async Task<Dictionary<string, string>> CreateFormPostPayloadAsync(BackChannelLogoutModel client)
+        protected async Task<Dictionary<string, string>> CreateFormPostPayloadAsync(BackChannelLogoutRequest client)
         {
             var token = await CreateTokenAsync(client);
 
@@ -99,7 +98,7 @@ namespace IdentityServer4.Services
         /// </summary>
         /// <param name="client"></param>
         /// <returns>The token.</returns>
-        protected virtual async Task<string> CreateTokenAsync(BackChannelLogoutModel client)
+        protected virtual async Task<string> CreateTokenAsync(BackChannelLogoutRequest client)
         {
             var claims = await CreateClaimsForTokenAsync(client);
             if (claims.Any(x => x.Type == JwtClaimTypes.Nonce))
@@ -115,7 +114,7 @@ namespace IdentityServer4.Services
         /// </summary>
         /// <param name="client"></param>
         /// <returns>The claims to include in the token.</returns>
-        protected Task<IEnumerable<Claim>> CreateClaimsForTokenAsync(BackChannelLogoutModel client)
+        protected Task<IEnumerable<Claim>> CreateClaimsForTokenAsync(BackChannelLogoutRequest client)
         {
             var json = "{\"" + OidcConstants.Events.BackChannelLogout + "\":{} }";
 

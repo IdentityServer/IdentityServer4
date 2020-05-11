@@ -12,22 +12,26 @@ using System.Net;
 using System;
 using IdentityServer4.Extensions;
 using IdentityServer4.Configuration;
+using System.Collections.Generic;
 
 namespace IdentityServer4.Endpoints.Results
 {
     internal class EndSessionCallbackResult : IEndpointResult
     {
         private readonly EndSessionCallbackValidationResult _result;
+        private readonly IEnumerable<string> _urls;
 
-        public EndSessionCallbackResult(EndSessionCallbackValidationResult result)
+        public EndSessionCallbackResult(EndSessionCallbackValidationResult result, IEnumerable<string> urls = null)
         {
             _result = result ?? throw new ArgumentNullException(nameof(result));
+            _urls = urls;
         }
 
         internal EndSessionCallbackResult(
             EndSessionCallbackValidationResult result,
+            IEnumerable<string> urls,
             IdentityServerOptions options)
-            : this(result)
+            : this(result, urls)
         {
             _options = options;
         }
@@ -43,7 +47,7 @@ namespace IdentityServer4.Endpoints.Results
         {
             Init(context);
 
-            if (_result.IsError)
+            if (_result?.IsError == true)
             {
                 context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             }
@@ -62,7 +66,7 @@ namespace IdentityServer4.Endpoints.Results
             if (_options.Authentication.RequireCspFrameSrcForSignout)
             {
                 string frameSources = null;
-                var origins = _result.FrontChannelLogoutUrls?.Select(x => x.GetOrigin());
+                var origins = _urls?.Select(x => x.GetOrigin());
                 if (origins != null && origins.Any())
                 {
                     frameSources = origins.Distinct().Aggregate((x, y) => $"{x} {y}");
@@ -77,9 +81,9 @@ namespace IdentityServer4.Endpoints.Results
         {
             string framesHtml = null;
 
-            if (_result.FrontChannelLogoutUrls != null && _result.FrontChannelLogoutUrls.Any())
+            if (_urls?.Any() == true)
             {
-                var frameUrls = _result.FrontChannelLogoutUrls.Select(url => $"<iframe src='{url}'></iframe>");
+                var frameUrls = _urls.Select(url => $"<iframe src='{url}'></iframe>");
                 framesHtml = frameUrls.Aggregate((x, y) => x + y);
             }
 

@@ -4,8 +4,9 @@
 
 using System.Threading.Tasks;
 using FluentAssertions;
+using IdentityServer.UnitTests.Common;
 using IdentityServer4.Endpoints;
-using IdentityServer4.Validation;
+using IdentityServer4.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Xunit;
@@ -16,7 +17,7 @@ namespace IdentityServer.UnitTests.Endpoints.EndSession
     {
         private const string Category = "End Session Callback Endpoint";
 
-        StubBackChannelLogoutClient _stubBackChannelLogoutClient = new StubBackChannelLogoutClient();
+        MockLogoutNotificationService _mockLogoutNotificationService = new MockLogoutNotificationService();
         StubEndSessionRequestValidator _stubEndSessionRequestValidator = new StubEndSessionRequestValidator();
         EndSessionCallbackEndpoint _subject;
 
@@ -24,7 +25,7 @@ namespace IdentityServer.UnitTests.Endpoints.EndSession
         {
             _subject = new EndSessionCallbackEndpoint(
                 _stubEndSessionRequestValidator,
-                _stubBackChannelLogoutClient,
+                _mockLogoutNotificationService,
                 new LoggerFactory().CreateLogger<EndSessionCallbackEndpoint>());
         }
 
@@ -35,17 +36,17 @@ namespace IdentityServer.UnitTests.Endpoints.EndSession
             ctx.Request.Method = "GET";
 
             _stubEndSessionRequestValidator.EndSessionCallbackValidationResult.IsError = false;
-            _stubEndSessionRequestValidator.EndSessionCallbackValidationResult.BackChannelLogouts =
-                new BackChannelLogoutModel[] {
-                    new BackChannelLogoutModel { LogoutUri = "foo" }
-                };
+            _stubEndSessionRequestValidator.EndSessionCallbackValidationResult.LogoutContext = new LogoutNotificationContext()
+            {
+                SubjectId = "sub", SessionId = "sid", ClientIds = new[] { "client" }
+            };
 
             var result = await _subject.ProcessAsync(ctx);
 
             // this is a deliberable hack since we have a fire-and-forget to calling back-channel clients
             await Task.Delay(100);
 
-            _stubBackChannelLogoutClient.SendLogoutsWasCalled.Should().BeTrue();
+            _mockLogoutNotificationService.SendBackChannelLogoutNotificationsCalled.Should().BeTrue();
         }
 
         [Fact]
@@ -61,7 +62,7 @@ namespace IdentityServer.UnitTests.Endpoints.EndSession
             // this is a deliberable hack since we have a fire-and-forget to calling back-channel clients
             await Task.Delay(100);
 
-            _stubBackChannelLogoutClient.SendLogoutsWasCalled.Should().BeFalse();
+            _mockLogoutNotificationService.SendBackChannelLogoutNotificationsCalled.Should().BeFalse();
         }
     }
 }

@@ -22,7 +22,7 @@ namespace IdentityServer.UnitTests.Common
         public MockHttpContextAccessor(
             IdentityServerOptions options = null,
             IUserSession userSession = null,
-            IMessageStore<EndSession> endSessionStore = null)
+            IMessageStore<LogoutNotificationContext> endSessionStore = null)
         {
             options = options ?? TestIdentityServerOptions.Create();
 
@@ -48,7 +48,7 @@ namespace IdentityServer.UnitTests.Common
 
             if (endSessionStore == null)
             {
-                services.AddTransient<IMessageStore<EndSession>, ProtectedDataMessageStore<EndSession>>();
+                services.AddTransient<IMessageStore<LogoutNotificationContext>, ProtectedDataMessageStore<LogoutNotificationContext>>();
             }
             else
             {

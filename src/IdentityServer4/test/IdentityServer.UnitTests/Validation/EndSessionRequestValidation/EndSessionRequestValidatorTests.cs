@@ -26,7 +26,7 @@ namespace IdentityServer.UnitTests.Validation.EndSessionRequestValidation
         private StubRedirectUriValidator _stubRedirectUriValidator = new StubRedirectUriValidator();
         private MockHttpContextAccessor _context = new MockHttpContextAccessor();
         private MockUserSession _userSession = new MockUserSession();
-        private MockMessageStore<EndSession> _mockEndSessionMessageStore = new MockMessageStore<EndSession>();
+        private MockMessageStore<LogoutNotificationContext> _mockEndSessionMessageStore = new MockMessageStore<LogoutNotificationContext>();
         private InMemoryClientStore _clientStore;
 
         private ClaimsPrincipal _user;

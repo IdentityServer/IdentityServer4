@@ -13,7 +13,7 @@ namespace IdentityServer.UnitTests.Endpoints.EndSession
     {
         public bool SendLogoutsWasCalled { get; set; }
 
-        public Task SendLogoutNotificationsAsync(IEnumerable<BackChannelLogoutModel> clients)
+        public Task SendLogoutNotificationsAsync(IEnumerable<BackChannelLogoutRequest> clients)
         {
             SendLogoutsWasCalled = true;
             return Task.CompletedTask;

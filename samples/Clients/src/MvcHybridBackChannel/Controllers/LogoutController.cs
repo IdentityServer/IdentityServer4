@@ -76,15 +76,17 @@ namespace MvcHybrid.Controllers
             var keys = new List<SecurityKey>();
             foreach (var webKey in disco.KeySet.Keys)
             {
-                var e = Base64Url.Decode(webKey.E);
-                var n = Base64Url.Decode(webKey.N);
-
-                var key = new RsaSecurityKey(new RSAParameters { Exponent = e, Modulus = n })
+                if (webKey.Kty == "RSA")
                 {
-                    KeyId = webKey.Kid
-                };
+                    var e = Base64Url.Decode(webKey.E);
+                    var n = Base64Url.Decode(webKey.N);
 
-                keys.Add(key);
+                    var key = new RsaSecurityKey(new RSAParameters { Exponent = e, Modulus = n })
+                    {
+                        KeyId = webKey.Kid
+                    };
+                    keys.Add(key);
+                }
             }
 
             var parameters = new TokenValidationParameters

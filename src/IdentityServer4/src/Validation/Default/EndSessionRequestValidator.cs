@@ -59,7 +59,7 @@ namespace IdentityServer4.Validation
         /// <summary>
         /// The end session message store.
         /// </summary>
-        protected readonly IMessageStore<EndSession> EndSessionMessageStore;
+        protected readonly IMessageStore<LogoutNotificationContext> EndSessionMessageStore;
 
         /// <summary>
         /// The HTTP context accessor.
@@ -84,7 +84,7 @@ namespace IdentityServer4.Validation
             IRedirectUriValidator uriValidator,
             IUserSession userSession,
             IClientStore clientStore,
-            IMessageStore<EndSession> endSessionMessageStore,
+            IMessageStore<LogoutNotificationContext> endSessionMessageStore,
             ILogger<EndSessionRequestValidator> logger)
         {
             Context = context;
@@ -226,13 +226,14 @@ namespace IdentityServer4.Validation
 
             var endSessionId = parameters[Constants.UIConstants.DefaultRoutePathParams.EndSessionCallback];
             var endSessionMessage = await EndSessionMessageStore.ReadAsync(endSessionId);
-            if (endSessionMessage?.Data?.ClientIds?.Any() == true)
+            if (endSessionMessage?.Data != null)
             {
                 result.IsError = false;
-
-                var (frontChannel, backChannel) = await GetClientEndSessionUrlsAsync(endSessionMessage.Data);
-                result.FrontChannelLogoutUrls = frontChannel;
-                result.BackChannelLogouts = backChannel;
+                result.LogoutContext = endSessionMessage.Data;
+            }
+            else
+            {
+                result.Error = "Failed to read end session callback message";
             }
 
             return result;
@@ -243,10 +244,10 @@ namespace IdentityServer4.Validation
         /// </summary>
         /// <param name="endSession"></param>
         /// <returns></returns>
-        protected virtual async Task<(IEnumerable<string> frontChannel, IEnumerable<BackChannelLogoutModel> backChannel)> GetClientEndSessionUrlsAsync(EndSession endSession)
+        protected virtual async Task<(IEnumerable<string> frontChannel, IEnumerable<BackChannelLogoutRequest> backChannel)> GetClientEndSessionUrlsAsync(LogoutNotificationContext endSession)
         {
             var frontChannelUrls = new List<string>();
-            var backChannelLogouts = new List<BackChannelLogoutModel>();
+            var backChannelLogouts = new List<BackChannelLogoutRequest>();
             foreach (var clientId in endSession.ClientIds)
             {
                 var client = await ClientStore.FindEnabledClientByIdAsync(clientId);
@@ -275,7 +276,7 @@ namespace IdentityServer4.Validation
 
                     if (client.BackChannelLogoutUri.IsPresent())
                     {
-                        var back = new BackChannelLogoutModel
+                        var back = new BackChannelLogoutRequest
                         {
                             ClientId = clientId,
                             LogoutUri = client.BackChannelLogoutUri,
