@@ -233,13 +233,14 @@ Below is a simple middleware that checks the claims::
                         return;
                     }
 
-                    var thumbprint = certResult.Principal.FindFirst(ClaimTypes.Thumbprint).Value;
+                    var certificate = await ctx.Connection.GetClientCertificateAsync();
+                    var thumbprint = Base64UrlTextEncoder.Encode(certificate.GetCertHash(HashAlgorithmName.SHA256));
 
                     var cnf = JObject.Parse(cnfJson);
                     var sha256 = cnf.Value<string>("x5t#S256");
 
                     if (String.IsNullOrWhiteSpace(sha256) ||
-                        !thumbprint.Equals(sha256, StringComparison.OrdinalIgnoreCase))
+                        !thumbprint.Equals(sha256, StringComparison.Ordinal))
                     {
                         await ctx.ChallengeAsync(_options.JwtBearerSchemeName);
                         return;
@@ -249,7 +250,6 @@ Below is a simple middleware that checks the claims::
 
             await _next(ctx);
         }
-    }
 
 Below is an example pipeline for an API::
 
