@@ -20,7 +20,7 @@ Basics
 ``AllowedGrantTypes``
     Specifies the grant types the client is allowed to use. Use the ``GrantTypes`` class for common combinations.
 ``RequirePkce``
-    Specifies whether clients using an authorization code based grant type must send a proof key (defaults to ``true``).
+    Specifies whether clients using an authorization code based grant type must send a proof key (defaults to ``false``).
 ``AllowPlainTextPkce``
     Specifies whether clients using PKCE can use a plain text code challenge (not recommended - and default to ``false``)
 ``RedirectUris``
