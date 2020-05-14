@@ -7,7 +7,6 @@ using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,7 +20,6 @@ namespace IdentityServer4.Services
     {
         private readonly IClientStore _clientStore;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IBackChannelLogoutService _backChannelLogoutService;
         private readonly ILogger<LogoutNotificationService> _logger;
 
 
@@ -31,12 +29,10 @@ namespace IdentityServer4.Services
         public LogoutNotificationService(
             IClientStore clientStore,
             IHttpContextAccessor httpContextAccessor, 
-            IBackChannelLogoutService backChannelLogoutService,
             ILogger<LogoutNotificationService> logger)
         {
             _clientStore = clientStore;
             _httpContextAccessor = httpContextAccessor;
-            _backChannelLogoutService = backChannelLogoutService;
             _logger = logger;
         }
 
@@ -86,7 +82,7 @@ namespace IdentityServer4.Services
         }
 
         /// <inheritdoc/>
-        public async Task SendBackChannelLogoutNotificationsAsync(LogoutNotificationContext context)
+        public async Task<IEnumerable<BackChannelLogoutRequest>> GetBackChannelLogoutNotificationsAsync(LogoutNotificationContext context)
         {
             var backChannelLogouts = new List<BackChannelLogoutRequest>();
             foreach (var clientId in context.ClientIds)
@@ -114,21 +110,13 @@ namespace IdentityServer4.Services
             {
                 var msg = backChannelLogouts.Select(x => x.LogoutUri).Aggregate((x, y) => x + ", " + y);
                 _logger.LogDebug("Client back-channel logout URLs: {0}", msg);
-
-                // best-effort
-                try
-                {
-                    await _backChannelLogoutService.SendLogoutNotificationsAsync(backChannelLogouts);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error calling backchannel sign-out urls");
-                }
             }
             else
             {
                 _logger.LogDebug("No client back-channel logout URLs");
             }
+
+            return backChannelLogouts;
         }
     }
 }

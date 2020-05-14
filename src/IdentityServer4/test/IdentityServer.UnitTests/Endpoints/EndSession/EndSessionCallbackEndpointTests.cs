@@ -17,7 +17,6 @@ namespace IdentityServer.UnitTests.Endpoints.EndSession
     {
         private const string Category = "End Session Callback Endpoint";
 
-        MockLogoutNotificationService _mockLogoutNotificationService = new MockLogoutNotificationService();
         StubEndSessionRequestValidator _stubEndSessionRequestValidator = new StubEndSessionRequestValidator();
         EndSessionCallbackEndpoint _subject;
 
@@ -25,44 +24,7 @@ namespace IdentityServer.UnitTests.Endpoints.EndSession
         {
             _subject = new EndSessionCallbackEndpoint(
                 _stubEndSessionRequestValidator,
-                _mockLogoutNotificationService,
                 new LoggerFactory().CreateLogger<EndSessionCallbackEndpoint>());
-        }
-
-        [Fact]
-        public async Task callback_validation_success_should_invoke_back_channel_clients()
-        {
-            var ctx = new DefaultHttpContext();
-            ctx.Request.Method = "GET";
-
-            _stubEndSessionRequestValidator.EndSessionCallbackValidationResult.IsError = false;
-            _stubEndSessionRequestValidator.EndSessionCallbackValidationResult.LogoutContext = new LogoutNotificationContext()
-            {
-                SubjectId = "sub", SessionId = "sid", ClientIds = new[] { "client" }
-            };
-
-            var result = await _subject.ProcessAsync(ctx);
-
-            // this is a deliberable hack since we have a fire-and-forget to calling back-channel clients
-            await Task.Delay(100);
-
-            _mockLogoutNotificationService.SendBackChannelLogoutNotificationsCalled.Should().BeTrue();
-        }
-
-        [Fact]
-        public async Task callback_validation_error_should_not_invoke_back_channel_clients()
-        {
-            var ctx = new DefaultHttpContext();
-            ctx.Request.Method = "GET";
-
-            _stubEndSessionRequestValidator.EndSessionCallbackValidationResult.IsError = true;
-
-            var result = await _subject.ProcessAsync(ctx);
-
-            // this is a deliberable hack since we have a fire-and-forget to calling back-channel clients
-            await Task.Delay(100);
-
-            _mockLogoutNotificationService.SendBackChannelLogoutNotificationsCalled.Should().BeFalse();
         }
     }
 }

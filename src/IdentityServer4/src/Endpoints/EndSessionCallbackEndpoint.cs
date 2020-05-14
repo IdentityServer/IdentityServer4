@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
-using IdentityServer4.Services;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -16,16 +15,13 @@ namespace IdentityServer4.Endpoints
     internal class EndSessionCallbackEndpoint : IEndpointHandler
     {
         private readonly IEndSessionRequestValidator _endSessionRequestValidator;
-        private readonly ILogoutNotificationService _logoutNotificationService;
         private readonly ILogger _logger;
 
         public EndSessionCallbackEndpoint(
             IEndSessionRequestValidator endSessionRequestValidator,
-            ILogoutNotificationService logoutNotificationService,
             ILogger<EndSessionCallbackEndpoint> logger)
         {
             _endSessionRequestValidator = endSessionRequestValidator;
-            _logoutNotificationService = logoutNotificationService;
             _logger = logger;
         }
 
@@ -45,13 +41,12 @@ namespace IdentityServer4.Endpoints
             if (!result.IsError)
             {
                 _logger.LogInformation("Successful signout callback.");
-
-                var frontChannel = await _logoutNotificationService.GetFrontChannelLogoutNotificationsUrlsAsync(result.LogoutContext);
-                await _logoutNotificationService.SendBackChannelLogoutNotificationsAsync(result.LogoutContext);
-                return new EndSessionCallbackResult(result, frontChannel);
             }
-
-            _logger.LogError("Error validating signout callback: {error}", result.Error);
+            else
+            {
+                _logger.LogError("Error validating signout callback: {error}", result.Error);
+            }
+            
             return new EndSessionCallbackResult(result);
         }
     }

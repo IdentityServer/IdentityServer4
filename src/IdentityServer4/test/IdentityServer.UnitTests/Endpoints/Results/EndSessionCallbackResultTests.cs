@@ -23,7 +23,6 @@ namespace IdentityServer.UnitTests.Endpoints.Results
         private EndSessionCallbackResult _subject;
 
         private EndSessionCallbackValidationResult _result = new EndSessionCallbackValidationResult();
-        private List<string> _urls = new List<string>();
         private IdentityServerOptions _options = TestIdentityServerOptions.Create();
 
         private DefaultHttpContext _context = new DefaultHttpContext();
@@ -34,7 +33,7 @@ namespace IdentityServer.UnitTests.Endpoints.Results
             _context.SetIdentityServerBasePath("/");
             _context.Response.Body = new MemoryStream();
 
-            _subject = new EndSessionCallbackResult(_result, _urls, _options);
+            _subject = new EndSessionCallbackResult(_result, _options);
         }
 
         [Fact]
@@ -51,7 +50,7 @@ namespace IdentityServer.UnitTests.Endpoints.Results
         public async Task success_should_render_html_and_iframes()
         {
             _result.IsError = false;
-            _urls.AddRange(new string[] { "http://foo.com", "http://bar.com" });
+            _result.FrontChannelLogoutUrls = new string[] { "http://foo.com", "http://bar.com" };
 
             await _subject.ExecuteAsync(_context);
 

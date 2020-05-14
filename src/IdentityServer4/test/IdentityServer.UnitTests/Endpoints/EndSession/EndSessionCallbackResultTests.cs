@@ -19,7 +19,6 @@ namespace IdentityServer.UnitTests.Endpoints.EndSession
         private const string Category = "End Session Callback Result";
 
         private readonly EndSessionCallbackValidationResult _validationResult;
-        private readonly List<string> _urls = new List<string>();
         private readonly IdentityServerOptions _options;
         private readonly EndSessionCallbackResult _subject;
 
@@ -30,13 +29,13 @@ namespace IdentityServer.UnitTests.Endpoints.EndSession
                 IsError = false,
             };
             _options = new IdentityServerOptions();
-            _subject = new EndSessionCallbackResult(_validationResult, _urls, _options);
+            _subject = new EndSessionCallbackResult(_validationResult, _options);
         }
 
         [Fact]
         public async Task default_options_should_emit_frame_src_csp_headers()
         {
-            _urls.AddRange(new[] { "http://foo" });
+            _validationResult.FrontChannelLogoutUrls = new[] { "http://foo" };
 
             var ctx = new DefaultHttpContext();
             ctx.Request.Method = "GET";
@@ -50,7 +49,7 @@ namespace IdentityServer.UnitTests.Endpoints.EndSession
         public async Task relax_csp_options_should_prevent_frame_src_csp_headers()
         {
             _options.Authentication.RequireCspFrameSrcForSignout = false;
-            _urls.AddRange(new[] { "http://foo" });
+            _validationResult.FrontChannelLogoutUrls = new[] { "http://foo" };
 
             var ctx = new DefaultHttpContext();
             ctx.Request.Method = "GET";
