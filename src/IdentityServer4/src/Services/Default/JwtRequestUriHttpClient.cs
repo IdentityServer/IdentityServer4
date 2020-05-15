@@ -10,30 +10,26 @@ using System.Threading.Tasks;
 namespace IdentityServer4.Services
 {
     /// <summary>
-    /// Models making HTTP requests for JWTs from the authorize endpoint.
+    /// Default JwtRequest client
     /// </summary>
-    public class JwtRequestUriHttpClient
+    public class DefaultJwtRequestUriHttpClient : IJwtRequestUriHttpClient
     {
         private readonly HttpClient _client;
-        private readonly ILogger<JwtRequestUriHttpClient> _logger;
+        private readonly ILogger<DefaultJwtRequestUriHttpClient> _logger;
 
         /// <summary>
-        /// Constructor for DefaultJwtRequestUriHttpClient.
+        /// ctor
         /// </summary>
-        /// <param name="client"></param>
-        /// <param name="loggerFactory"></param>
-        public JwtRequestUriHttpClient(HttpClient client, ILoggerFactory loggerFactory)
+        /// <param name="client">An HTTP client</param>
+        /// <param name="loggerFactory">The logger factory</param>
+        public DefaultJwtRequestUriHttpClient(HttpClient client, ILoggerFactory loggerFactory)
         {
             _client = client;
-            _logger = loggerFactory.CreateLogger<JwtRequestUriHttpClient>();
+            _logger = loggerFactory.CreateLogger<DefaultJwtRequestUriHttpClient>();
         }
 
-        /// <summary>
-        /// Gets a JWT from the url.
-        /// </summary>
-        /// <param name="url"></param>
-        /// <param name="client"></param>
-        /// <returns></returns>
+
+        /// <inheritdoc />
         public async Task<string> GetJwtAsync(string url, Client client)
         {
             var req = new HttpRequestMessage(HttpMethod.Get, url);

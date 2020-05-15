@@ -393,13 +393,13 @@ namespace Microsoft.Extensions.DependencyInjection
                 httpBuilder = builder.Services.AddHttpClient(name);
             }
             
-            builder.Services.AddTransient<JwtRequestUriHttpClient>(s =>
+            builder.Services.AddTransient<IJwtRequestUriHttpClient, DefaultJwtRequestUriHttpClient>(s =>
             {
                 var httpClientFactory = s.GetRequiredService<IHttpClientFactory>();
                 var httpClient = httpClientFactory.CreateClient(name);
                 var loggerFactory = s.GetRequiredService<ILoggerFactory>();
 
-                return new JwtRequestUriHttpClient(httpClient, loggerFactory);
+                return new DefaultJwtRequestUriHttpClient(httpClient, loggerFactory);
             });
 
             return httpBuilder;
