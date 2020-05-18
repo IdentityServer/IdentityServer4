@@ -42,7 +42,7 @@ namespace IdentityServer4.Services
         /// <summary>
         /// HttpClient to make the outbound HTTP calls.
         /// </summary>
-        protected BackChannelLogoutHttpClient HttpClient { get; }
+        protected IBackChannelLogoutHttpClient HttpClient { get; }
 
         /// <summary>
         /// The logger.
@@ -61,7 +61,7 @@ namespace IdentityServer4.Services
             ISystemClock clock,
             IdentityServerTools tools,
             ILogoutNotificationService logoutNotificationService,
-            BackChannelLogoutHttpClient backChannelLogoutHttpClient,
+            IBackChannelLogoutHttpClient backChannelLogoutHttpClient,
             ILogger<IBackChannelLogoutService> logger)
         {
             Clock = clock;

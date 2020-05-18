@@ -360,13 +360,13 @@ namespace Microsoft.Extensions.DependencyInjection
                 httpBuilder = builder.Services.AddHttpClient(name);
             }
 
-            builder.Services.AddTransient<BackChannelLogoutHttpClient>(s =>
+            builder.Services.AddTransient<IBackChannelLogoutHttpClient>(s =>
             {
                 var httpClientFactory = s.GetRequiredService<IHttpClientFactory>();
                 var httpClient = httpClientFactory.CreateClient(name);
                 var loggerFactory = s.GetRequiredService<ILoggerFactory>();
                 
-                return new BackChannelLogoutHttpClient(httpClient, loggerFactory);
+                return new DefaultBackChannelLogoutHttpClient(httpClient, loggerFactory);
             });
 
             return httpBuilder;
