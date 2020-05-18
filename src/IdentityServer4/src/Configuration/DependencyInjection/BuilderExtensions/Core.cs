@@ -156,7 +156,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IProfileService, DefaultProfileService>();
             builder.Services.TryAddTransient<IConsentMessageStore, ConsentMessageStore>();
             builder.Services.TryAddTransient<IMessageStore<LogoutMessage>, ProtectedDataMessageStore<LogoutMessage>>();
-            builder.Services.TryAddTransient<IMessageStore<EndSession>, ProtectedDataMessageStore<EndSession>>();
+            builder.Services.TryAddTransient<IMessageStore<LogoutNotificationContext>, ProtectedDataMessageStore<LogoutNotificationContext>>();
             builder.Services.TryAddTransient<IMessageStore<ErrorMessage>, ProtectedDataMessageStore<ErrorMessage>>();
             builder.Services.TryAddTransient<IIdentityServerInteractionService, DefaultIdentityServerInteractionService>();
             builder.Services.TryAddTransient<IDeviceFlowInteractionService, DefaultDeviceFlowInteractionService>();
@@ -170,6 +170,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IEventSink, DefaultEventSink>();
             builder.Services.TryAddTransient<IUserCodeService, DefaultUserCodeService>();
             builder.Services.TryAddTransient<IUserCodeGenerator, NumericUserCodeGenerator>();
+            builder.Services.TryAddTransient<ILogoutNotificationService, LogoutNotificationService>();
             builder.Services.TryAddTransient<IBackChannelLogoutService, DefaultBackChannelLogoutService>();
             builder.Services.TryAddTransient<IResourceValidator, ResourceValidator>();
 

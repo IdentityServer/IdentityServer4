@@ -143,11 +143,10 @@ namespace IdentityServer.IntegrationTests.Common
             .AddTestUsers(Users)
             .AddDeveloperSigningCredential(persistKey: false);
 
-            services.AddHttpClient()
-                .AddHttpClient<BackChannelLogoutHttpClient>()
+            services.AddHttpClient(IdentityServerConstants.HttpClients.BackChannelLogoutHttpClient)
                 .AddHttpMessageHandler(() => BackChannelMessageHandler);
 
-            services.AddHttpClient<JwtRequestUriHttpClient>()
+            services.AddHttpClient(IdentityServerConstants.HttpClients.JwtRequestUriHttpClient)
                 .AddHttpMessageHandler(() => JwtRequestMessageHandler);
 
             OnPostConfigureServices(services);
@@ -220,6 +219,7 @@ namespace IdentityServer.IntegrationTests.Common
         {
             LogoutWasCalled = true;
             await ReadLogoutRequest(ctx);
+            await ctx.SignOutAsync();
         }
 
         private async Task ReadLogoutRequest(HttpContext ctx)

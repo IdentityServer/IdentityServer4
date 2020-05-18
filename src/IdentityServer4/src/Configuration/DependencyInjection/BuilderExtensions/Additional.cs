@@ -356,16 +356,19 @@ namespace Microsoft.Extensions.DependencyInjection
             }
             else
             {
-                httpBuilder = builder.Services.AddHttpClient(name);
+                httpBuilder = builder.Services.AddHttpClient(name)
+                    .ConfigureHttpClient(client => {
+                        client.Timeout = TimeSpan.FromSeconds(IdentityServerConstants.HttpClients.DefaultTimeoutSeconds);
+                    });
             }
 
-            builder.Services.AddTransient<BackChannelLogoutHttpClient>(s =>
+            builder.Services.AddTransient<IBackChannelLogoutHttpClient>(s =>
             {
                 var httpClientFactory = s.GetRequiredService<IHttpClientFactory>();
                 var httpClient = httpClientFactory.CreateClient(name);
                 var loggerFactory = s.GetRequiredService<ILoggerFactory>();
                 
-                return new BackChannelLogoutHttpClient(httpClient, loggerFactory);
+                return new DefaultBackChannelLogoutHttpClient(httpClient, loggerFactory);
             });
 
             return httpBuilder;
@@ -390,9 +393,12 @@ namespace Microsoft.Extensions.DependencyInjection
             }
             else
             {
-                httpBuilder = builder.Services.AddHttpClient(name);
+                httpBuilder = builder.Services.AddHttpClient(name)
+                    .ConfigureHttpClient(client => {
+                        client.Timeout = TimeSpan.FromSeconds(IdentityServerConstants.HttpClients.DefaultTimeoutSeconds);
+                    });
             }
-            
+
             builder.Services.AddTransient<JwtRequestUriHttpClient>(s =>
             {
                 var httpClientFactory = s.GetRequiredService<IHttpClientFactory>();
