@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,7 +23,6 @@ namespace IdentityServer.UnitTests.Endpoints.Results
         private EndSessionCallbackResult _subject;
 
         private EndSessionCallbackValidationResult _result = new EndSessionCallbackValidationResult();
-        private MockUserSession _mockUserSession = new MockUserSession();
         private IdentityServerOptions _options = TestIdentityServerOptions.Create();
 
         private DefaultHttpContext _context = new DefaultHttpContext();

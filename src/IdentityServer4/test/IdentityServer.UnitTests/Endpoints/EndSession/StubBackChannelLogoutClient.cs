@@ -2,10 +2,9 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using IdentityServer4.Models;
 using IdentityServer4.Services;
-using IdentityServer4.Validation;
 
 namespace IdentityServer.UnitTests.Endpoints.EndSession
 {
@@ -13,7 +12,7 @@ namespace IdentityServer.UnitTests.Endpoints.EndSession
     {
         public bool SendLogoutsWasCalled { get; set; }
 
-        public Task SendLogoutNotificationsAsync(IEnumerable<BackChannelLogoutModel> clients)
+        public Task SendLogoutNotificationsAsync(LogoutNotificationContext context)
         {
             SendLogoutsWasCalled = true;
             return Task.CompletedTask;

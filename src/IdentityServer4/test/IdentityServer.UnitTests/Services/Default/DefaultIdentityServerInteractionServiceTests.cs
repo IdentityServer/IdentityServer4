@@ -22,7 +22,7 @@ namespace IdentityServer.UnitTests.Services.Default
 
         private IdentityServerOptions _options = new IdentityServerOptions();
         private MockHttpContextAccessor _mockMockHttpContextAccessor;
-        private MockMessageStore<EndSession> _mockEndSessionStore = new MockMessageStore<EndSession>();
+        private MockMessageStore<LogoutNotificationContext> _mockEndSessionStore = new MockMessageStore<LogoutNotificationContext>();
         private MockMessageStore<LogoutMessage> _mockLogoutMessageStore = new MockMessageStore<LogoutMessage>();
         private MockMessageStore<ErrorMessage> _mockErrorMessageStore = new MockMessageStore<ErrorMessage>();
         private MockConsentMessageStore _mockConsentStore = new MockConsentMessageStore();

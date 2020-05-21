@@ -30,6 +30,7 @@ namespace IdentityServer4.Hosting
         private readonly IAuthenticationSchemeProvider _schemes;
         private readonly ISystemClock _clock;
         private readonly IUserSession _session;
+        private readonly IBackChannelLogoutService _backChannelLogoutService;
         private readonly IdentityServerOptions _options;
         private readonly ILogger<IdentityServerAuthenticationService> _logger;
 
@@ -38,6 +39,7 @@ namespace IdentityServer4.Hosting
             IAuthenticationSchemeProvider schemes,
             ISystemClock clock,
             IUserSession session,
+            IBackChannelLogoutService backChannelLogoutService,
             IdentityServerOptions options,
             ILogger<IdentityServerAuthenticationService> logger)
         {
@@ -46,6 +48,7 @@ namespace IdentityServer4.Hosting
             _schemes = schemes;
             _clock = clock;
             _session = session;
+            _backChannelLogoutService = backChannelLogoutService;
             _options = options;
             _logger = logger;
         }
@@ -83,6 +86,13 @@ namespace IdentityServer4.Hosting
             {
                 // this sets a flag used by the FederatedSignoutAuthenticationHandlerProvider
                 context.SetSignOutCalled();
+                
+                // back channel logout
+                var logoutContext = await _session.GetLogoutNotificationContext();
+                if (logoutContext != null)
+                {
+                    await _backChannelLogoutService.SendLogoutNotificationsAsync(logoutContext);
+                }
                 
                 // this clears our session id cookie so JS clients can detect the user has signed out
                 await _session.RemoveSessionIdCookieAsync();

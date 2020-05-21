@@ -13,11 +13,9 @@ using IdentityServer4.Configuration;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
 using System;
 using IdentityServer4.Logging.Models;
 using IdentityServer4.Models;
-using static IdentityServer4.IdentityServerConstants;
 
 namespace IdentityServer4.Validation
 {
@@ -52,14 +50,14 @@ namespace IdentityServer4.Validation
         protected readonly IUserSession UserSession;
 
         /// <summary>
-        /// The client store.
+        /// The logout notification service.
         /// </summary>
-        protected readonly IClientStore ClientStore;
+        public ILogoutNotificationService LogoutNotificationService { get; }
 
         /// <summary>
         /// The end session message store.
         /// </summary>
-        protected readonly IMessageStore<EndSession> EndSessionMessageStore;
+        protected readonly IMessageStore<LogoutNotificationContext> EndSessionMessageStore;
 
         /// <summary>
         /// The HTTP context accessor.
@@ -74,7 +72,7 @@ namespace IdentityServer4.Validation
         /// <param name="tokenValidator"></param>
         /// <param name="uriValidator"></param>
         /// <param name="userSession"></param>
-        /// <param name="clientStore"></param>
+        /// <param name="logoutNotificationService"></param>
         /// <param name="endSessionMessageStore"></param>
         /// <param name="logger"></param>
         public EndSessionRequestValidator(
@@ -83,8 +81,8 @@ namespace IdentityServer4.Validation
             ITokenValidator tokenValidator,
             IRedirectUriValidator uriValidator,
             IUserSession userSession,
-            IClientStore clientStore,
-            IMessageStore<EndSession> endSessionMessageStore,
+            ILogoutNotificationService logoutNotificationService,
+            IMessageStore<LogoutNotificationContext> endSessionMessageStore,
             ILogger<EndSessionRequestValidator> logger)
         {
             Context = context;
@@ -92,7 +90,7 @@ namespace IdentityServer4.Validation
             TokenValidator = tokenValidator;
             UriValidator = uriValidator;
             UserSession = userSession;
-            ClientStore = clientStore;
+            LogoutNotificationService = logoutNotificationService;
             EndSessionMessageStore = endSessionMessageStore;
             Logger = logger;
         }
@@ -229,87 +227,14 @@ namespace IdentityServer4.Validation
             if (endSessionMessage?.Data?.ClientIds?.Any() == true)
             {
                 result.IsError = false;
-
-                var (frontChannel, backChannel) = await GetClientEndSessionUrlsAsync(endSessionMessage.Data);
-                result.FrontChannelLogoutUrls = frontChannel;
-                result.BackChannelLogouts = backChannel;
+                result.FrontChannelLogoutUrls = await LogoutNotificationService.GetFrontChannelLogoutNotificationsUrlsAsync(endSessionMessage.Data);
+            }
+            else
+            {
+                result.Error = "Failed to read end session callback message";
             }
 
             return result;
-        }
-
-        /// <summary>
-        /// Creates the data structures for front-channel and back-channel sign-out notifications.
-        /// </summary>
-        /// <param name="endSession"></param>
-        /// <returns></returns>
-        protected virtual async Task<(IEnumerable<string> frontChannel, IEnumerable<BackChannelLogoutModel> backChannel)> GetClientEndSessionUrlsAsync(EndSession endSession)
-        {
-            var frontChannelUrls = new List<string>();
-            var backChannelLogouts = new List<BackChannelLogoutModel>();
-            foreach (var clientId in endSession.ClientIds)
-            {
-                var client = await ClientStore.FindEnabledClientByIdAsync(clientId);
-                if (client != null)
-                {
-                    if (client.FrontChannelLogoutUri.IsPresent())
-                    {
-                        var url = client.FrontChannelLogoutUri;
-
-                        // add session id if required
-                        if (client.ProtocolType == ProtocolTypes.OpenIdConnect)
-                        {
-                            if (client.FrontChannelLogoutSessionRequired)
-                            {
-                                url = url.AddQueryString(OidcConstants.EndSessionRequest.Sid, endSession.SessionId);
-                                url = url.AddQueryString(OidcConstants.EndSessionRequest.Issuer, Context.HttpContext.GetIdentityServerIssuerUri());
-                            }
-                        }
-                        else if (client.ProtocolType == ProtocolTypes.WsFederation)
-                        {
-                            url = url.AddQueryString(Constants.WsFedSignOut.LogoutUriParameterName, Constants.WsFedSignOut.LogoutUriParameterValue);
-                        }
-
-                        frontChannelUrls.Add(url);
-                    }
-
-                    if (client.BackChannelLogoutUri.IsPresent())
-                    {
-                        var back = new BackChannelLogoutModel
-                        {
-                            ClientId = clientId,
-                            LogoutUri = client.BackChannelLogoutUri,
-                            SubjectId = endSession.SubjectId,
-                            SessionId = endSession.SessionId,
-                            SessionIdRequired = client.BackChannelLogoutSessionRequired
-                        };
-
-                        backChannelLogouts.Add(back);
-                    }
-                }
-            }
-
-            if (frontChannelUrls.Any())
-            {
-                var msg = frontChannelUrls.Aggregate((x, y) => x + ", " + y);
-                Logger.LogDebug("Client front-channel logout URLs: {0}", msg);
-            }
-            else
-            {
-                Logger.LogDebug("No client front-channel logout URLs");
-            }
-
-            if (backChannelLogouts.Any())
-            {
-                var msg = backChannelLogouts.Select(x => x.LogoutUri).Aggregate((x, y) => x + ", " + y);
-                Logger.LogDebug("Client back-channel logout URLs: {0}", msg);
-            }
-            else
-            {
-                Logger.LogDebug("No client back-channel logout URLs");
-            }
-
-            return (frontChannelUrls, backChannelLogouts);
         }
     }
 }

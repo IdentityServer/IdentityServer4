@@ -6,9 +6,9 @@ using System.Collections.Generic;
 namespace IdentityServer4.Models
 {
     /// <summary>
-    /// Models the data necessary for end session to trigger single signout.
+    /// Provides the context necessary to construct a logout notificaiton.
     /// </summary>
-    public class EndSession
+    public class LogoutNotificationContext
     {
         /// <summary>
         ///  The SubjectId of the user.

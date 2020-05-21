@@ -161,6 +161,7 @@ namespace IdentityServer4
 
         public static class HttpClients
         {
+            public const int DefaultTimeoutSeconds = 10;
             public const string JwtRequestUriHttpClient = "IdentityServer:JwtRequestUriClient";
             public const string BackChannelLogoutHttpClient = "IdentityServer:BackChannelLogoutClient";
         }

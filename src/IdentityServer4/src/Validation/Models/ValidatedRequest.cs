@@ -10,6 +10,7 @@ using System.Security.Claims;
 using IdentityModel;
 using System.Linq;
 using System;
+using System.Linq.Expressions;
 
 namespace IdentityServer4.Validation
 {
@@ -90,7 +91,7 @@ namespace IdentityServer4.Validation
         /// <value>
         /// The validated resources.
         /// </value>
-        public ResourceValidationResult ValidatedResources { get; set; }
+        public ResourceValidationResult ValidatedResources { get; set; } = new ResourceValidationResult();
 
         /// <summary>
         /// Gets or sets the value of the confirmation method (will become the cnf claim). Must be a JSON object.

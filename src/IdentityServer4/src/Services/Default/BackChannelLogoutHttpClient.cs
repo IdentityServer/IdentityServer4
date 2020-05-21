@@ -13,20 +13,20 @@ namespace IdentityServer4.Services
     /// <summary>
     /// Models making HTTP requests for back-channel logout notification.
     /// </summary>
-    public class BackChannelLogoutHttpClient
+    public class DefaultBackChannelLogoutHttpClient : IBackChannelLogoutHttpClient
     {
         private readonly HttpClient _client;
-        private readonly ILogger<BackChannelLogoutHttpClient> _logger;
+        private readonly ILogger<DefaultBackChannelLogoutHttpClient> _logger;
 
         /// <summary>
         /// Constructor for BackChannelLogoutHttpClient.
         /// </summary>
         /// <param name="client"></param>
         /// <param name="loggerFactory"></param>
-        public BackChannelLogoutHttpClient(HttpClient client, ILoggerFactory loggerFactory)
+        public DefaultBackChannelLogoutHttpClient(HttpClient client, ILoggerFactory loggerFactory)
         {
             _client = client;
-            _logger = loggerFactory.CreateLogger<BackChannelLogoutHttpClient>();
+            _logger = loggerFactory.CreateLogger<DefaultBackChannelLogoutHttpClient>();
         }
 
         /// <summary>
