@@ -1,4 +1,3 @@
-@using System.Reflection
 @using System.Diagnostics
 
 @{
@@ -6,33 +5,25 @@
 }
 
 <div class="welcome-page">
-    <div class="row page-header">
-        <div class="col">
-            <h1>
-                <img class="icon" src="~/icon.jpg">
-                Welcome to IdentityServer4
-                <small>(version @version)</small>
-            </h1>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col">
-            <ul>
-                <li>
-                    IdentityServer publishes a
-                    <a href="~/.well-known/openid-configuration">discovery document</a>
-                    where you can find metadata and links to all the endpoints, key material, etc.
-                </li>
-                <li>
-                    Click <a href="~/grants">here</a> to manage your stored grants.
-                </li>
-                <li>
-                    Here are links to the
-                    <a href="https://github.com/identityserver/IdentityServer4">source code repository</a>,
-                    and <a href="https://github.com/IdentityServer/IdentityServer4/tree/master/samples">ready to use samples</a>.
-                </li>
-            </ul>
-        </div>
-    </div>
+    <h1>
+        <img class="icon" src="~/icon.jpg">
+        Welcome to IdentityServer4
+        <small class="text-muted">(version @version)</small>
+    </h1>
+    `
+    <ul>
+        <li>
+            IdentityServer publishes a
+            <a href="~/.well-known/openid-configuration">discovery document</a>
+            where you can find metadata and links to all the endpoints, key material, etc.
+        </li>
+        <li>
+            Click <a href="~/grants">here</a> to manage your stored grants.
+        </li>
+        <li>
+            Here are links to the
+            <a href="https://github.com/identityserver/IdentityServer4">source code repository</a>,
+            and <a href="https://github.com/IdentityServer/IdentityServer4/tree/master/samples">ready to use samples</a>.
+        </li>
+    </ul>
 </div>
