@@ -1,5 +1,6 @@
 ﻿.body-container {
-  margin-top: 65px; }
+  margin-top: 60px;
+  padding-bottom: 40px; }
 
 .welcome-page li {
   list-style: none;
