@@ -30,6 +30,14 @@ namespace IdentityServer4.Models
         public int Lifetime { get; set; }
 
         /// <summary>
+        /// Gets or sets the consumed time.
+        /// </summary>
+        /// <value>
+        /// The consumed time.
+        /// </value>
+        public DateTime? ConsumedTime { get; set; }
+
+        /// <summary>
         /// Gets or sets the access token.
         /// </summary>
         /// <value>

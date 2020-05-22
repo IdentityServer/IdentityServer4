@@ -135,27 +135,11 @@ namespace IdentityServer4.Stores
         /// <param name="subjectId">The subject identifier.</param>
         /// <param name="sessionId">The session identifier.</param>
         /// <param name="description">The description.</param>
-        /// <param name="created">The created.</param>
-        /// <param name="lifetime">The lifetime.</param>
-        /// <returns></returns>
-        protected virtual Task StoreItemAsync(string key, T item, string clientId, string subjectId, string sessionId, string description, DateTime created, int lifetime)
-        {
-            return StoreItemAsync(key, item, clientId, subjectId, sessionId, description, created, created.AddSeconds(lifetime));
-        }
-
-        /// <summary>
-        /// Stores the item.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="item">The item.</param>
-        /// <param name="clientId">The client identifier.</param>
-        /// <param name="subjectId">The subject identifier.</param>
-        /// <param name="sessionId">The session identifier.</param>
-        /// <param name="description">The description.</param>
-        /// <param name="created">The created.</param>
+        /// <param name="created">The created time.</param>
         /// <param name="expiration">The expiration.</param>
+        /// <param name="consumedTime">The consumed time.</param>
         /// <returns></returns>
-        protected virtual async Task StoreItemAsync(string key, T item, string clientId, string subjectId, string sessionId, string description, DateTime created, DateTime? expiration)
+        protected virtual async Task StoreItemAsync(string key, T item, string clientId, string subjectId, string sessionId, string description, DateTime created, DateTime? expiration, DateTime? consumedTime = null)
         {
             key = GetHashedKey(key);
 
@@ -171,6 +155,7 @@ namespace IdentityServer4.Stores
                 Description = description,
                 CreationTime = created,
                 Expiration = expiration,
+                ConsumedTime = consumedTime,
                 Data = json
             };
 
