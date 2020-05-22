@@ -8,6 +8,7 @@ using Host.Data;
 using Host.Configuration;
 using IdentityServer4.Models;
 using Microsoft.Extensions.Hosting;
+using IdentityServer4;
 
 namespace Host
 {
@@ -38,6 +39,19 @@ namespace Host
                 .AddInMemoryApiScopes(Host.Configuration.Resources.ApiScopes)
                 .AddInMemoryClients(Clients.Get())
                 .AddAspNetIdentity<ApplicationUser>();
+
+            services.AddAuthentication()
+                .AddOpenIdConnect("Google", "Google", options =>
+                {
+                    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                    options.ForwardSignOut = IdentityServerConstants.DefaultCookieAuthenticationScheme;
+
+                    options.Authority = "https://accounts.google.com/";
+                    options.ClientId = "708996912208-9m4dkjb5hscn7cjrn5u0r4tbgkbj1fko.apps.googleusercontent.com";
+
+                    options.CallbackPath = "/signin-google";
+                    options.Scope.Add("email");
+                });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
