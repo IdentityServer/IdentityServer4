@@ -119,7 +119,7 @@ namespace Host.Configuration
                     RequirePkce = false,
 
                     RedirectUris = { "https://localhost:44303/signin-oidc" },
-                    BackChannelLogoutUri = "http://localhost:44303/logout",
+                    BackChannelLogoutUri = "https://localhost:44303/logout",
                     PostLogoutRedirectUris = { "https://localhost:44303/signout-callback-oidc" },
 
                     AllowOfflineAccess = true,

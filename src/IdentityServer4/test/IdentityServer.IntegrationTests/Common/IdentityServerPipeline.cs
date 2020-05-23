@@ -219,6 +219,7 @@ namespace IdentityServer.IntegrationTests.Common
         {
             LogoutWasCalled = true;
             await ReadLogoutRequest(ctx);
+            await ctx.SignOutAsync();
         }
 
         private async Task ReadLogoutRequest(HttpContext ctx)

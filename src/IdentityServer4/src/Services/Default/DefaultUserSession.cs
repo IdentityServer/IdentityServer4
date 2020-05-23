@@ -19,9 +19,6 @@ namespace IdentityServer4.Services
     /// <seealso cref="IdentityServer4.Services.IUserSession" />
     public class DefaultUserSession : IUserSession
     {
-        internal const string SessionIdKey = "session_id";
-        internal const string ClientListKey = "client_list";
-
         /// <summary>
         /// The HTTP context accessor
         /// </summary>
@@ -148,17 +145,18 @@ namespace IdentityServer4.Services
             var currentSubjectId = (await GetUserAsync())?.GetSubjectId();
             var newSubjectId = principal.GetSubjectId();
 
-            if (!properties.Items.ContainsKey(SessionIdKey) || currentSubjectId != newSubjectId)
+            if (properties.GetSessionId() == null || currentSubjectId != newSubjectId)
             {
-                properties.Items[SessionIdKey] = CryptoRandom.CreateUniqueId(16, CryptoRandom.OutputFormat.Hex);
+                properties.SetSessionId(CryptoRandom.CreateUniqueId(16, CryptoRandom.OutputFormat.Hex));
             }
 
-            IssueSessionIdCookie(properties.Items[SessionIdKey]);
+            var sid = properties.GetSessionId();
+            IssueSessionIdCookie(sid);
 
             Principal = principal;
             Properties = properties;
 
-            return properties.Items[SessionIdKey];
+            return sid;
         }
 
         /// <summary>
@@ -180,12 +178,7 @@ namespace IdentityServer4.Services
         {
             await AuthenticateAsync();
 
-            if (Properties?.Items.ContainsKey(SessionIdKey) == true)
-            {
-                return Properties.Items[SessionIdKey];
-            }
-
-            return null;
+            return Properties?.GetSessionId();
         }
 
         /// <summary>
@@ -271,14 +264,9 @@ namespace IdentityServer4.Services
         {
             if (clientId == null) throw new ArgumentNullException(nameof(clientId));
 
-            var clients = await GetClientListAsync();
-            if (!clients.Contains(clientId))
-            {
-                var update = clients.ToList();
-                update.Add(clientId);
-
-                await SetClientsAsync(update);
-            }
+            await AuthenticateAsync();
+            Properties?.AddClientId(clientId);
+            await UpdateSessionCookie();
         }
 
         /// <summary>
@@ -287,82 +275,32 @@ namespace IdentityServer4.Services
         /// <returns></returns>
         public virtual async Task<IEnumerable<string>> GetClientListAsync()
         {
-            var value = await GetClientListPropertyValueAsync();
+            await AuthenticateAsync();
+
             try
             {
-                return DecodeList(value);
+                return Properties.GetClientList();
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Error decoding client list");
                 // clear so we don't keep failing
-                await SetClientsAsync(null);
+                Properties.RemoveClientList();
+                await UpdateSessionCookie();
             }
 
             return Enumerable.Empty<string>();
         }
 
         // client list helpers
-        private async Task<string> GetClientListPropertyValueAsync()
-        {
-            await AuthenticateAsync();
-
-            if (Properties?.Items.ContainsKey(ClientListKey) == true)
-            {
-                return Properties.Items[ClientListKey];
-            }
-
-            return null;
-        }
-
-        private async Task SetClientsAsync(IEnumerable<string> clients)
-        {
-            var value = EncodeList(clients);
-            await SetClientListPropertyValueAsync(value);
-        }
-
-        private async Task SetClientListPropertyValueAsync(string value)
+        private async Task UpdateSessionCookie()
         {
             await AuthenticateAsync();
 
             if (Principal == null || Properties == null) throw new InvalidOperationException("User is not currently authenticated");
 
-            if (value == null)
-            {
-                Properties.Items.Remove(ClientListKey);
-            }
-            else
-            {
-                Properties.Items[ClientListKey] = value;
-            }
-
             var scheme = await HttpContext.GetCookieAuthenticationSchemeAsync();
             await HttpContext.SignInAsync(scheme, Principal, Properties);
-        }
-
-        private IEnumerable<string> DecodeList(string value)
-        {
-            if (value.IsPresent())
-            {
-                var bytes = Base64Url.Decode(value);
-                value = Encoding.UTF8.GetString(bytes);
-                return ObjectSerializer.FromString<string[]>(value);
-            }
-
-            return Enumerable.Empty<string>();
-        }
-
-        private string EncodeList(IEnumerable<string> list)
-        {
-            if (list != null && list.Any())
-            {
-                var value = ObjectSerializer.ToString(list);
-                var bytes = Encoding.UTF8.GetBytes(value);
-                value = Base64Url.Encode(bytes);
-                return value;
-            }
-
-            return null;
         }
     }
 }
