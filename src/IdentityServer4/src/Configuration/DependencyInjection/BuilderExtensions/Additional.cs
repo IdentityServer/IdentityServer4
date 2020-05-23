@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 using System.Net.Http;
 using IdentityServer4;
+using IdentityServer4.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -404,8 +405,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 var httpClientFactory = s.GetRequiredService<IHttpClientFactory>();
                 var httpClient = httpClientFactory.CreateClient(name);
                 var loggerFactory = s.GetRequiredService<ILoggerFactory>();
+                var options = s.GetRequiredService<IdentityServerOptions>();
 
-                return new DefaultJwtRequestUriHttpClient(httpClient, loggerFactory);
+                return new DefaultJwtRequestUriHttpClient(httpClient, options, loggerFactory);
             });
 
             return httpBuilder;
