@@ -80,6 +80,9 @@ namespace SqlServer.Migrations.PersistedGrantDb
                         .HasColumnType("nvarchar(200)")
                         .HasMaxLength(200);
 
+                    b.Property<DateTime?>("ConsumedTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 

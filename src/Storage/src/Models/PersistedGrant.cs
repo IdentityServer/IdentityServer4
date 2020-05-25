@@ -74,7 +74,15 @@ namespace IdentityServer4.Models
         /// The expiration.
         /// </value>
         public DateTime? Expiration { get; set; }
-       
+        
+        /// <summary>
+        /// Gets or sets the consumed time.
+        /// </summary>
+        /// <value>
+        /// The consumed time.
+        /// </value>
+        public DateTime? ConsumedTime { get; set; }
+
         /// <summary>
         /// Gets or sets the data.
         /// </summary>

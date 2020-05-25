@@ -33,6 +33,7 @@ CREATE TABLE [PersistedGrants] (
     [Description] nvarchar(200) NULL,
     [CreationTime] datetime2 NOT NULL,
     [Expiration] datetime2 NULL,
+    [ConsumedTime] datetime2 NULL,
     [Data] nvarchar(max) NOT NULL,
     CONSTRAINT [PK_PersistedGrants] PRIMARY KEY ([Key])
 );
@@ -60,7 +61,7 @@ CREATE INDEX [IX_PersistedGrants_SubjectId_SessionId_Type] ON [PersistedGrants] 
 GO
 
 INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-VALUES (N'20200327191239_Grants', N'3.1.0');
+VALUES (N'20200522172538_Grants', N'3.1.0');
 
 GO
 

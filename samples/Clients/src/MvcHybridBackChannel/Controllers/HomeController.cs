@@ -60,7 +60,7 @@ namespace MvcHybrid.Controllers
             {
                 Address = disco.TokenEndpoint,
 
-                ClientId = "mvc.hybrid",
+                ClientId = "mvc.hybrid.backchannel",
                 ClientSecret = "secret",
                 RefreshToken = rt
             });

@@ -42,7 +42,6 @@ namespace IdentityServer4.EntityFramework
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
             _operationalStoreNotification = operationalStoreNotification;
-
         }
 
         /// <summary>
