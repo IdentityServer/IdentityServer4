@@ -56,7 +56,13 @@ namespace IdentityServer4.Services
             Logger = logger;
         }
         
-        public async Task<TokenValidationResult> ValidateRefreshTokenAsync(string tokenHandle, Client client = null)
+        /// <summary>
+        /// Validates a refresh token
+        /// </summary>
+        /// <param name="tokenHandle">The token handle.</param>
+        /// <param name="client">The client.</param>
+        /// <returns></returns>
+        public async Task<TokenValidationResult> ValidateRefreshTokenAsync(string tokenHandle, Client client)
         {
             var invalidGrant = new TokenValidationResult
             {

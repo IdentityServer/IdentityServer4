@@ -103,7 +103,8 @@ namespace IdentityServer.UnitTests.Validation.Setup
             if (refreshTokenService == null)
             {
                 refreshTokenService = CreateRefreshTokenService(
-                    refreshTokenStore);
+                    refreshTokenStore,
+                    profile);
             }
 
             return new TokenRequestValidator(
@@ -118,14 +119,16 @@ namespace IdentityServer.UnitTests.Validation.Setup
                 resourceStore,
                 tokenValidator,
                 refreshTokenService,
-                new TestEventService(), new StubClock(), TestLogger.Create<TokenRequestValidator>());
+                new TestEventService(), 
+                new StubClock(), 
+                TestLogger.Create<TokenRequestValidator>());
         }
 
-        private static IRefreshTokenService CreateRefreshTokenService(IRefreshTokenStore store)
+        private static IRefreshTokenService CreateRefreshTokenService(IRefreshTokenStore store, IProfileService profile)
         {
             var service = new DefaultRefreshTokenService(
                 store,
-                new TestProfileService(),
+                profile,
                 new StubClock(),
                 TestLogger.Create<DefaultRefreshTokenService>());
 

@@ -524,6 +524,8 @@ namespace IdentityServer4.Validation
             _validatedRequest.Subject = result.RefreshToken.Subject;
 
             _logger.LogDebug("Validation of refresh token request success");
+            // todo: more logging - similar to TokenValidator before
+            
             return Valid();
         }
 
