@@ -19,15 +19,7 @@ namespace IdentityServer4.Validation
         /// <param name="expectedScope">The expected scope.</param>
         /// <returns></returns>
         Task<TokenValidationResult> ValidateAccessTokenAsync(string token, string expectedScope = null);
-
-        /// <summary>
-        /// Validates a refresh token.
-        /// </summary>
-        /// <param name="token">The refresh token.</param>
-        /// <param name="client">The client.</param>
-        /// <returns></returns>
-        Task<TokenValidationResult> ValidateRefreshTokenAsync(string token, Client client = null);
-
+        
         /// <summary>
         /// Validates an identity token.
         /// </summary>

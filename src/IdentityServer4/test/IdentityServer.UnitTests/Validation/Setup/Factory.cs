@@ -37,6 +37,7 @@ namespace IdentityServer.UnitTests.Validation.Setup
             IEnumerable<IExtensionGrantValidator> extensionGrantValidators = null,
             ICustomTokenRequestValidator customRequestValidator = null,
             ITokenValidator tokenValidator = null,
+            IRefreshTokenService refreshTokenService = null,
             IResourceValidator resourceValidator = null)
         {
             if (options == null)
@@ -93,11 +94,16 @@ namespace IdentityServer.UnitTests.Validation.Setup
             {
                 resourceValidator = CreateResourceValidator(resourceStore);
             }
-
-
+            
             if (tokenValidator == null)
             {
                 tokenValidator = CreateTokenValidator(refreshTokenStore: refreshTokenStore, profile: profile);
+            }
+
+            if (refreshTokenService == null)
+            {
+                refreshTokenService = CreateRefreshTokenService(
+                    refreshTokenStore);
             }
 
             return new TokenRequestValidator(
@@ -111,7 +117,19 @@ namespace IdentityServer.UnitTests.Validation.Setup
                 resourceValidator,
                 resourceStore,
                 tokenValidator,
+                refreshTokenService,
                 new TestEventService(), new StubClock(), TestLogger.Create<TokenRequestValidator>());
+        }
+
+        private static IRefreshTokenService CreateRefreshTokenService(IRefreshTokenStore store)
+        {
+            var service = new DefaultRefreshTokenService(
+                store,
+                new TestProfileService(),
+                new StubClock(),
+                TestLogger.Create<DefaultRefreshTokenService>());
+
+            return service;
         }
 
         internal static IResourceValidator CreateResourceValidator(IResourceStore store = null)

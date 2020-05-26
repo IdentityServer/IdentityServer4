@@ -46,11 +46,11 @@ namespace IdentityServer4.Services
         /// <param name="profile"></param>
         /// <param name="clock">The clock</param>
         /// <param name="logger">The logger</param>
-        public DefaultRefreshTokenService(IRefreshTokenStore refreshTokenStore, /* IProfileService profile,*/ ISystemClock clock,
+        public DefaultRefreshTokenService(IRefreshTokenStore refreshTokenStore, IProfileService profile, ISystemClock clock,
             ILogger<DefaultRefreshTokenService> logger)
         {
             RefreshTokenStore = refreshTokenStore;
-            //Profile = profile;
+            Profile = profile;
             Clock = clock;
             
             Logger = logger;
@@ -120,7 +120,7 @@ namespace IdentityServer4.Services
                 IdentityServerConstants.ProfileIsActiveCallers.RefreshTokenValidation);
             
             // todo
-            //await Profile.IsActiveAsync(isActiveCtx);
+            await Profile.IsActiveAsync(isActiveCtx);
 
             if (isActiveCtx.IsActive == false)
             {
