@@ -29,10 +29,8 @@ namespace IdentityServer.UnitTests.Services.Default
                 new DefaultHandleGenerationService(),
                 TestLogger.Create<DefaultRefreshTokenStore>());
 
-            _subject = new DefaultRefreshTokenService(
-                _clock,
-                _store,
-                TestLogger.Create<DefaultRefreshTokenService>());
+            _subject = new DefaultRefreshTokenService(_store,
+                _clock, TestLogger.Create<DefaultRefreshTokenService>());
         }
 
         [Fact]
