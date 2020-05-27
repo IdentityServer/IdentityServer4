@@ -91,6 +91,18 @@ namespace IdentityServer4.Services
                 Logger.LogWarning("Refresh token has expired.");
                 return invalidGrant;
             }
+            
+            /////////////////////////////////////////////
+            // check if refresh token has been consumed
+            /////////////////////////////////////////////
+            if (refreshToken.ConsumedTime.HasValue)
+            {
+                if (!AcceptConsumedToken(refreshToken))
+                {
+                    Logger.LogWarning("Refresh token has been consumed already.");
+                    return invalidGrant;
+                }
+            }
 
             /////////////////////////////////////////////
             // check if client belongs to requested refresh token
@@ -127,6 +139,13 @@ namespace IdentityServer4.Services
             }
             
             return new TokenValidationResult { IsError = false, RefreshToken = refreshToken };
+        }
+
+        protected virtual bool AcceptConsumedToken(RefreshToken refreshToken)
+        {
+            // by default we will not accept consumed tokens
+            // change the behavior here to implement a time window
+            return false;
         }
 
         /// <summary>
