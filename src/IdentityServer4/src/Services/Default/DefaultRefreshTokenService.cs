@@ -64,7 +64,7 @@ namespace IdentityServer4.Services
         /// <param name="tokenHandle">The token handle.</param>
         /// <param name="client">The client.</param>
         /// <returns></returns>
-        public async Task<TokenValidationResult> ValidateRefreshTokenAsync(string tokenHandle, Client client)
+        public virtual async Task<TokenValidationResult> ValidateRefreshTokenAsync(string tokenHandle, Client client)
         {
             var invalidGrant = new TokenValidationResult
             {
@@ -99,11 +99,11 @@ namespace IdentityServer4.Services
             {
                 if (!AcceptConsumedToken(refreshToken))
                 {
-                    Logger.LogWarning("Refresh token has been consumed already.");
+                    Logger.LogWarning("Rejecting refresh token because it has been consumed already.");
                     return invalidGrant;
                 }
             }
-
+            
             /////////////////////////////////////////////
             // check if client belongs to requested refresh token
             /////////////////////////////////////////////
@@ -145,6 +145,7 @@ namespace IdentityServer4.Services
         {
             // by default we will not accept consumed tokens
             // change the behavior here to implement a time window
+            // you can also implement additional revocation logic here
             return false;
         }
 
@@ -213,10 +214,11 @@ namespace IdentityServer4.Services
 
             if (client.RefreshTokenUsage == TokenUsage.OneTimeOnly)
             {
-                Logger.LogDebug("Token usage is one-time only. Generating new handle");
+                Logger.LogDebug("Token usage is one-time only. Setting current handle as consumed, and generating new handle");
 
-                // delete old one
-                await RefreshTokenStore.RemoveRefreshTokenAsync(handle);
+                // flag as consumed
+                refreshToken.ConsumedTime = Clock.UtcNow.DateTime;
+                await RefreshTokenStore.UpdateRefreshTokenAsync(handle, refreshToken);
 
                 // create new one
                 needsCreate = true;
