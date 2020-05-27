@@ -66,8 +66,6 @@ namespace IdentityServer4.Services
         /// <returns></returns>
         public async Task<TokenValidationResult> ValidateRefreshTokenAsync(string tokenHandle, Client client)
         {
-            var log = new TokenValidationLog();
-
             var invalidGrant = new TokenValidationResult
             {
                 IsError = true, Error = OidcConstants.TokenErrors.InvalidGrant
@@ -90,9 +88,7 @@ namespace IdentityServer4.Services
             /////////////////////////////////////////////
             if (refreshToken.CreationTime.HasExceeded(refreshToken.Lifetime, Clock.UtcNow.DateTime))
             {
-                Logger.LogWarning("Refresh token has expired. Removing from store.");
-
-                await RefreshTokenStore.RemoveRefreshTokenAsync(tokenHandle);
+                Logger.LogWarning("Refresh token has expired.");
                 return invalidGrant;
             }
 
@@ -114,9 +110,6 @@ namespace IdentityServer4.Services
                 return invalidGrant;
             }
 
-            log.ClientId = client.ClientId;
-            log.ClientName = client.ClientName;
-            
             /////////////////////////////////////////////
             // make sure user is enabled
             /////////////////////////////////////////////
@@ -132,10 +125,7 @@ namespace IdentityServer4.Services
                 Logger.LogError("{subjectId} has been disabled", refreshToken.Subject.GetSubjectId());
                 return invalidGrant;
             }
-
-            log.Claims = refreshToken.Subject.Claims.ToClaimsDictionary();
-            Logger.LogDebug("Refresh token validation success\n{@logMessage}", log);
-
+            
             return new TokenValidationResult { IsError = false, RefreshToken = refreshToken };
         }
 
