@@ -28,7 +28,6 @@ namespace IdentityServer4.Validation
         private readonly IdentityServerOptions _options;
         private readonly IHttpContextAccessor _context;
         private readonly IReferenceTokenStore _referenceTokenStore;
-        private readonly IRefreshTokenStore _refreshTokenStore;
         private readonly ICustomTokenValidator _customValidator;
         private readonly IClientStore _clients;
         private readonly IProfileService _profile;
@@ -53,7 +52,6 @@ namespace IdentityServer4.Validation
             _clients = clients;
             _profile = profile;
             _referenceTokenStore = referenceTokenStore;
-            _refreshTokenStore = refreshTokenStore;
             _customValidator = customValidator;
             _keys = keys;
             _clock = clock;
