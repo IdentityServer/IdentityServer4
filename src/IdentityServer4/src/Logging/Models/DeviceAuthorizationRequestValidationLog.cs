@@ -3,6 +3,7 @@
 
 
 using System.Collections.Generic;
+using System.Linq;
 using IdentityModel;
 using IdentityServer4.Extensions;
 using IdentityServer4.Validation;
@@ -17,14 +18,9 @@ namespace IdentityServer4.Logging
 
         public Dictionary<string, string> Raw { get; set; }
 
-        private static readonly string[] SensitiveValuesFilter = {
-            OidcConstants.TokenRequest.ClientSecret,
-            OidcConstants.TokenRequest.ClientAssertion
-        };
-
-        public DeviceAuthorizationRequestValidationLog(ValidatedDeviceAuthorizationRequest request)
+        public DeviceAuthorizationRequestValidationLog(ValidatedDeviceAuthorizationRequest request, IEnumerable<string> sensitiveValuesFilter)
         {
-            Raw = request.Raw.ToScrubbedDictionary(SensitiveValuesFilter);
+            Raw = request.Raw.ToScrubbedDictionary(sensitiveValuesFilter.ToArray());
 
             if (request.Client != null)
             {
