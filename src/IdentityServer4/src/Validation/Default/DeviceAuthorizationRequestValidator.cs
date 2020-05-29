@@ -70,13 +70,13 @@ namespace IdentityServer4.Validation
 
         private void LogError(string message, ValidatedDeviceAuthorizationRequest request)
         {
-            var requestDetails = new DeviceAuthorizationRequestValidationLog(request, _options.Logging.TokenRequestSensitiveValuesFilter);
+            var requestDetails = new DeviceAuthorizationRequestValidationLog(request);
             _logger.LogError(message + "\n{requestDetails}", requestDetails);
         }
 
         private void LogError(string message, string detail, ValidatedDeviceAuthorizationRequest request)
         {
-            var requestDetails = new DeviceAuthorizationRequestValidationLog(request, _options.Logging.TokenRequestSensitiveValuesFilter);
+            var requestDetails = new DeviceAuthorizationRequestValidationLog(request);
             _logger.LogError(message + ": {detail}\n{requestDetails}", detail, requestDetails);
         }
 
