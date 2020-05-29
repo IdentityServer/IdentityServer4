@@ -233,6 +233,13 @@ With ``ApiResource`` you can now create two logical APIs and their correponding 
         };
     }
 
+Using the API resource grouping gives you the following additional features
+
+* support for the JWT *aud* claim. The value(s) of the audience claim will be the name of the API resource
+* support for adding common user claims across all contained scopes
+* support for introspection by assigning a API secret to the resource
+* support for configuring the access token signing algorithm for the resource
+
 
 
 
