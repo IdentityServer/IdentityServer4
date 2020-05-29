@@ -2,18 +2,20 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Validation
 {
     /// <summary>
-    /// Validates requested resources (scopes and resource indicators)
+    /// Allows parsing raw scopes values into structured scope values.
     /// </summary>
-    public interface IResourceValidator
+    public interface IScopeParser
     {
+        // todo: async?
         /// <summary>
-        /// Validates the requested resources for the client.
+        /// Parses the requested scopes.
         /// </summary>
-        Task<ResourceValidationResult> ValidateRequestedResourcesAsync(ResourceValidationRequest request);
+        IEnumerable<ParsedScopeValue> ParseScopeValues(IEnumerable<string> scopeValues);
     }
 }

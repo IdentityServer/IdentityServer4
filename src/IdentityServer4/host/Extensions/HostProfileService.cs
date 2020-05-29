@@ -17,10 +17,10 @@ namespace Host.Extensions
         {
             await base.GetProfileDataAsync(context);
 
-            var transaction = context.RequestedResources.ParsedScopes.FirstOrDefault(x => x.Name == "transaction");
-            if (transaction?.ParameterValue != null)
+            var transaction = context.RequestedResources.ParsedScopes.FirstOrDefault(x => x.ParsedName == "transaction");
+            if (transaction?.ParsedValue != null)
             {
-                context.IssuedClaims.Add(new Claim("transaction_id", transaction.ParameterValue));
+                context.IssuedClaims.Add(new Claim("transaction_id", transaction.ParsedValue));
             }
         }
     }

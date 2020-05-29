@@ -59,7 +59,7 @@ namespace IdentityServer4.Validation
         /// <summary>
         /// All scope values represented by the result.
         /// </summary>
-        public IEnumerable<string> ScopeValues => ParsedScopes.Select(x => x.Value);
+        public IEnumerable<string> ScopeValues => ParsedScopes.Select(x => x.RawValue);
 
         /// <summary>
         /// The requested scopes that are invalid.
@@ -77,8 +77,8 @@ namespace IdentityServer4.Validation
 
             var offline = scopeValues.Contains(IdentityServerConstants.StandardScopes.OfflineAccess);
 
-            var parsedScopesToKeep = ParsedScopes.Where(x => scopeValues.Contains(x.Value)).ToArray();
-            var parsedScopeNamesToKeep = parsedScopesToKeep.Select(x => x.Name).ToArray();
+            var parsedScopesToKeep = ParsedScopes.Where(x => scopeValues.Contains(x.RawValue)).ToArray();
+            var parsedScopeNamesToKeep = parsedScopesToKeep.Select(x => x.ParsedName).ToArray();
 
             var identityToKeep = Resources.IdentityResources.Where(x => parsedScopeNamesToKeep.Contains(x.Name));
             var apiScopesToKeep = Resources.ApiScopes.Where(x => parsedScopeNamesToKeep.Contains(x.Name));

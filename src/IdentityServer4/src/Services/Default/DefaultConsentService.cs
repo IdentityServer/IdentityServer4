@@ -87,13 +87,13 @@ namespace IdentityServer4.Services
                 return true;
             }
             
-            if (parsedScopes.Any(x => x.Name != x.Value))
+            if (parsedScopes.Any(x => x.ParsedName != x.RawValue))
             {
                 Logger.LogDebug("Scopes contains parameterized values, consent is required");
                 return true;
             }
 
-            var scopes = parsedScopes.Select(x => x.Value).ToArray();
+            var scopes = parsedScopes.Select(x => x.RawValue).ToArray();
 
             // we always require consent for offline access if
             // the client has not disabled RequireConsent 
@@ -162,7 +162,7 @@ namespace IdentityServer4.Services
                 var subjectId = subject.GetSubjectId();
                 var clientId = client.ClientId;
 
-                var scopes = parsedScopes?.Select(x => x.Value).ToArray();
+                var scopes = parsedScopes?.Select(x => x.RawValue).ToArray();
                 if (scopes != null && scopes.Any())
                 {
                     Logger.LogDebug("Client allows remembering consent, and consent given. Updating consent store for subject: {subject}", subject.GetSubjectId());

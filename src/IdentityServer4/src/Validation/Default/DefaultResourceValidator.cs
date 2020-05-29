@@ -6,7 +6,6 @@ using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,19 +14,22 @@ namespace IdentityServer4.Validation
     /// <summary>
     /// Default implementation of IResourceValidator.
     /// </summary>
-    public class ResourceValidator : IResourceValidator
+    public class DefaultResourceValidator : IResourceValidator
     {
         private readonly ILogger _logger;
+        private readonly IScopeParser _scopeParser;
         private readonly IResourceStore _store;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ResourceValidator"/> class.
+        /// Initializes a new instance of the <see cref="DefaultResourceValidator"/> class.
         /// </summary>
         /// <param name="store">The store.</param>
+        /// <param name="scopeParser"></param>
         /// <param name="logger">The logger.</param>
-        public ResourceValidator(IResourceStore store, ILogger<ResourceValidator> logger)
+        public DefaultResourceValidator(IResourceStore store, IScopeParser scopeParser, ILogger<DefaultResourceValidator> logger)
         {
             _logger = logger;
+            _scopeParser = scopeParser;
             _store = store;
         }
 
@@ -36,11 +38,27 @@ namespace IdentityServer4.Validation
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
-            var scopeNames = request.ParsedScopeValues.Select(x => x.Name).Distinct().ToArray();
-            var resourcesFromStore = await _store.FindEnabledResourcesByScopeAsync(scopeNames);
+            var parsedScopes = _scopeParser.ParseScopeValues(request.Scopes);
 
             var result = new ResourceValidationResult();
-            foreach (var scope in request.ParsedScopeValues)
+            
+            var invalidParsedScopes = parsedScopes.Where(x => !x.IsValid).ToArray();
+            if (invalidParsedScopes.Any())
+            {
+                foreach (var invalidScope in invalidParsedScopes)
+                {
+                    // todo: warning?
+                    _logger.LogWarning("Invalid parsed scope {scope}, message: {error}", invalidScope.RawValue, invalidScope.ValidationError);
+                    result.InvalidScopes.Add(invalidScope.RawValue);
+                }
+
+                return result;
+            }
+
+            var scopeNames = parsedScopes.Select(x => x.ParsedName).Distinct().ToArray();
+            var resourcesFromStore = await _store.FindEnabledResourcesByScopeAsync(scopeNames);
+
+            foreach (var scope in parsedScopes)
             {
                 await ValidateScopeAsync(request.Client, resourcesFromStore, scope, result);
             }
@@ -57,34 +75,6 @@ namespace IdentityServer4.Validation
         }
 
         /// <summary>
-        /// Parses the requested scopes.
-        /// </summary>
-        /// <param name="scopeValues"></param>
-        /// <returns></returns>
-        public virtual async Task<IEnumerable<ParsedScopeValue>> ParseRequestedScopesAsync(IEnumerable<string> scopeValues)
-        {
-            var list = new List<ParsedScopeValue>();
-
-            foreach(var scopeValue in scopeValues)
-            {
-                var parsedScopeValue = await ParseScopeValue(scopeValue);
-                list.Add(parsedScopeValue);
-            }
-
-            return list;
-        }
-
-        /// <summary>
-        /// Parses a scope value.
-        /// </summary>
-        /// <param name="scopeValue"></param>
-        /// <returns></returns>
-        public virtual Task<ParsedScopeValue> ParseScopeValue(string scopeValue)
-        {
-            return Task.FromResult(new ParsedScopeValue(scopeValue));
-        }
-
-        /// <summary>
         /// Validates that the requested scopes is contained in the store, and the client is allowed to request it.
         /// </summary>
         /// <param name="client"></param>
@@ -98,7 +88,7 @@ namespace IdentityServer4.Validation
             ParsedScopeValue requestedScope, 
             ResourceValidationResult result)
         {
-            if (requestedScope.Name == IdentityServerConstants.StandardScopes.OfflineAccess)
+            if (requestedScope.ParsedName == IdentityServerConstants.StandardScopes.OfflineAccess)
             {
                 if (await IsClientAllowedOfflineAccessAsync(client))
                 {
@@ -112,7 +102,7 @@ namespace IdentityServer4.Validation
             }
             else
             {
-                var identity = resourcesFromStore.FindIdentityResourcesByScope(requestedScope.Name);
+                var identity = resourcesFromStore.FindIdentityResourcesByScope(requestedScope.ParsedName);
                 if (identity != null)
                 {
                     if (await IsClientAllowedIdentityResourceAsync(client, identity))
@@ -122,12 +112,12 @@ namespace IdentityServer4.Validation
                     }
                     else
                     {
-                        result.InvalidScopes.Add(requestedScope.Value);
+                        result.InvalidScopes.Add(requestedScope.RawValue);
                     }
                 }
                 else
                 {
-                    var apiScope = resourcesFromStore.FindApiScope(requestedScope.Name);
+                    var apiScope = resourcesFromStore.FindApiScope(requestedScope.ParsedName);
                     if (apiScope != null)
                     {
                         if (await IsClientAllowedApiScopeAsync(client, apiScope))
@@ -143,13 +133,13 @@ namespace IdentityServer4.Validation
                         }
                         else
                         {
-                            result.InvalidScopes.Add(requestedScope.Value);
+                            result.InvalidScopes.Add(requestedScope.RawValue);
                         }
                     }
                     else
                     {
-                        _logger.LogError("Scope {scope} not found in store.", requestedScope.Name);
-                        result.InvalidScopes.Add(requestedScope.Value);
+                        _logger.LogError("Scope {scope} not found in store.", requestedScope.ParsedName);
+                        result.InvalidScopes.Add(requestedScope.RawValue);
                     }
                 }
             }

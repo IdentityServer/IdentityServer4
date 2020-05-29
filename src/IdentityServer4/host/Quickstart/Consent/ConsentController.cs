@@ -199,10 +199,10 @@ namespace Host.Quickstart.UI
             var apiScopes = new List<ScopeViewModel>();
             foreach(var parsedScope in request.ValidatedResources.ParsedScopes)
             {
-                var apiScope = request.ValidatedResources.Resources.FindApiScope(parsedScope.Name);
+                var apiScope = request.ValidatedResources.Resources.FindApiScope(parsedScope.ParsedName);
                 if (apiScope != null)
                 {
-                    var scopeVm = CreateScopeViewModel(parsedScope, apiScope, vm.ScopesConsented.Contains(parsedScope.Value) || model == null);
+                    var scopeVm = CreateScopeViewModel(parsedScope, apiScope, vm.ScopesConsented.Contains(parsedScope.RawValue) || model == null);
                     apiScopes.Add(scopeVm);
                 }
             }
@@ -231,14 +231,14 @@ namespace Host.Quickstart.UI
         public ScopeViewModel CreateScopeViewModel(ParsedScopeValue parsedScopeValue, ApiScope apiScope, bool check)
         {
             var displayName = apiScope.DisplayName ?? apiScope.Name;
-            if (!String.IsNullOrWhiteSpace(parsedScopeValue.ParameterValue))
+            if (!String.IsNullOrWhiteSpace(parsedScopeValue.ParsedValue))
             {
-                displayName += ":" + parsedScopeValue.ParameterValue;
+                displayName += ":" + parsedScopeValue.ParsedValue;
             }
 
             return new ScopeViewModel
             {
-                Value = parsedScopeValue.Value,
+                Value = parsedScopeValue.RawValue,
                 DisplayName = displayName,
                 Description = apiScope.Description,
                 Emphasize = apiScope.Emphasize,

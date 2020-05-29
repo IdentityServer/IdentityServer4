@@ -38,9 +38,9 @@ namespace IdentityServer4.ResponseHandling
         protected readonly IRefreshTokenService RefreshTokenService;
 
         /// <summary>
-        /// The resource validator
+        /// The scope parser
         /// </summary>
-        public IResourceValidator ResourceValidator { get; }
+        public IScopeParser ScopeParser { get; }
 
         /// <summary>
         /// The resource store
@@ -63,16 +63,16 @@ namespace IdentityServer4.ResponseHandling
         /// <param name="clock">The clock.</param>
         /// <param name="tokenService">The token service.</param>
         /// <param name="refreshTokenService">The refresh token service.</param>
-        /// <param name="resourceValidator">The resource validator.</param>
+        /// <param name="scopeParser">The scope parser.</param>
         /// <param name="resources">The resources.</param>
         /// <param name="clients">The clients.</param>
         /// <param name="logger">The logger.</param>
-        public TokenResponseGenerator(ISystemClock clock, ITokenService tokenService, IRefreshTokenService refreshTokenService, IResourceValidator resourceValidator, IResourceStore resources, IClientStore clients, ILogger<TokenResponseGenerator> logger)
+        public TokenResponseGenerator(ISystemClock clock, ITokenService tokenService, IRefreshTokenService refreshTokenService, IScopeParser scopeParser, IResourceStore resources, IClientStore clients, ILogger<TokenResponseGenerator> logger)
         {
             Clock = clock;
             TokenService = tokenService;
             RefreshTokenService = refreshTokenService;
-            ResourceValidator = resourceValidator;
+            ScopeParser = scopeParser;
             Resources = resources;
             Clients = clients;
             Logger = logger;
@@ -172,7 +172,7 @@ namespace IdentityServer4.ResponseHandling
                     throw new InvalidOperationException("Client does not exist anymore.");
                 }
 
-                var parsedScopes = await ResourceValidator.ParseRequestedScopesAsync(request.ValidatedRequest.AuthorizationCode.RequestedScopes);
+                var parsedScopes = ScopeParser.ParseScopeValues(request.ValidatedRequest.AuthorizationCode.RequestedScopes);
                 var validatedResources = await Resources.CreateResourceValidationResult(parsedScopes);
 
                 var tokenRequest = new TokenCreationRequest
@@ -209,7 +209,7 @@ namespace IdentityServer4.ResponseHandling
             {
                 var subject = request.ValidatedRequest.RefreshToken.Subject;
 
-                var parsedScopes = await ResourceValidator.ParseRequestedScopesAsync(oldAccessToken.Scopes);
+                var parsedScopes = ScopeParser.ParseScopeValues(oldAccessToken.Scopes);
                 var validatedResources = await Resources.CreateResourceValidationResult(parsedScopes);
 
                 var creationRequest = new TokenCreationRequest
@@ -289,7 +289,7 @@ namespace IdentityServer4.ResponseHandling
                     throw new InvalidOperationException("Client does not exist anymore.");
                 }
 
-                var parsedScopes = await ResourceValidator.ParseRequestedScopesAsync(request.ValidatedRequest.DeviceCode.AuthorizedScopes);
+                var parsedScopes = ScopeParser.ParseScopeValues(request.ValidatedRequest.DeviceCode.AuthorizedScopes);
                 var validatedResources = await Resources.CreateResourceValidationResult(parsedScopes);
                 
                 var tokenRequest = new TokenCreationRequest
@@ -370,7 +370,7 @@ namespace IdentityServer4.ResponseHandling
                     throw new InvalidOperationException("Client does not exist anymore.");
                 }
 
-                var parsedScopes = await ResourceValidator.ParseRequestedScopesAsync(request.AuthorizationCode.RequestedScopes);
+                var parsedScopes = ScopeParser.ParseScopeValues(request.AuthorizationCode.RequestedScopes);
                 var validatedResources = await Resources.CreateResourceValidationResult(parsedScopes);
 
                 tokenRequest = new TokenCreationRequest
@@ -395,7 +395,7 @@ namespace IdentityServer4.ResponseHandling
                     throw new InvalidOperationException("Client does not exist anymore.");
                 }
 
-                var parsedScopes = await ResourceValidator.ParseRequestedScopesAsync(request.DeviceCode.AuthorizedScopes);
+                var parsedScopes = ScopeParser.ParseScopeValues(request.DeviceCode.AuthorizedScopes);
                 var validatedResources = await Resources.CreateResourceValidationResult(parsedScopes);
 
                 tokenRequest = new TokenCreationRequest
@@ -438,12 +438,15 @@ namespace IdentityServer4.ResponseHandling
         /// <returns></returns>
         protected virtual async Task<string> CreateIdTokenFromRefreshTokenRequestAsync(ValidatedTokenRequest request, string newAccessToken)
         {
-            var resources = await Resources.FindEnabledResourcesByScopeAsync(request.RefreshToken.Scopes);
-            if (resources.IdentityResources.Any())
+            // todo: can we just check for "openid" scope?
+            //var identityResources = await Resources.FindEnabledIdentityResourcesByScopeAsync(request.RefreshToken.Scopes);
+            //if (identityResources.Any())
+            
+            if (request.RefreshToken.Scopes.Contains(OidcConstants.StandardScopes.OpenId))
             {
                 var oldAccessToken = request.RefreshToken.AccessToken;
                 
-                var parsedScopes = await ResourceValidator.ParseRequestedScopesAsync(oldAccessToken.Scopes);
+                var parsedScopes = ScopeParser.ParseScopeValues(oldAccessToken.Scopes);
                 var validatedResources = await Resources.CreateResourceValidationResult(parsedScopes);
 
                 var tokenRequest = new TokenCreationRequest

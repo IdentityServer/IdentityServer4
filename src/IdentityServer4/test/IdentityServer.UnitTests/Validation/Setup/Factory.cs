@@ -138,7 +138,7 @@ namespace IdentityServer.UnitTests.Validation.Setup
         internal static IResourceValidator CreateResourceValidator(IResourceStore store = null)
         {
             store = store ?? new InMemoryResourcesStore(TestScopes.GetIdentity(), TestScopes.GetApis(), TestScopes.GetScopes());
-            return new ResourceValidator(store, TestLogger.Create<ResourceValidator>());
+            return new DefaultResourceValidator(store, new DefaultScopeParser(), TestLogger.Create<DefaultResourceValidator>());
         }
 
         internal static ITokenCreationService CreateDefaultTokenCreator(IdentityServerOptions options = null)

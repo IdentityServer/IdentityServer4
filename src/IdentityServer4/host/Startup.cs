@@ -66,7 +66,7 @@ namespace Host
                 .AddTestUsers(TestUsers.Users)
                 .AddProfileService<HostProfileService>()
                 .AddCustomTokenRequestValidator<ParameterizedScopeTokenRequestValidator>()
-                .AddResourceValidator<ParameterizedScopeValidator>()
+                .AddScopeParser<ParameterizedScopeParser>()
                 .AddMutualTlsSecretValidators();
 
             // use this for persisted grants store

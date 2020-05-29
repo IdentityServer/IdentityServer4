@@ -25,7 +25,7 @@ namespace IdentityServer4.Models
             var names = resourceValidationResult.Resources.IdentityResources.Where(x => x.Required).Select(x => x.Name).ToList();
             names.AddRange(resourceValidationResult.Resources.ApiScopes.Where(x => x.Required).Select(x => x.Name));
 
-            var values = resourceValidationResult.ParsedScopes.Where(x => names.Contains(x.Name)).Select(x => x.Value);
+            var values = resourceValidationResult.ParsedScopes.Where(x => names.Contains(x.ParsedName)).Select(x => x.RawValue);
             return values;
         }
 

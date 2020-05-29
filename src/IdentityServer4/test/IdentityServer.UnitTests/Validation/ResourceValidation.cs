@@ -78,11 +78,6 @@ namespace IdentityServer.UnitTests.Validation
             _store = new InMemoryResourcesStore(_identityResources, _apiResources, _scopes);
         }
 
-        IEnumerable<ParsedScopeValue> ParseScopes(IEnumerable<string> scopes)
-        {
-            return scopes.Select(x => new ParsedScopeValue(x));
-        }
-
         [Fact]
         [Trait("Category", Category)]
         public void Parse_Scopes_with_Empty_Scope_List()
@@ -141,7 +136,7 @@ namespace IdentityServer.UnitTests.Validation
             var result = await validator.ValidateRequestedResourcesAsync(new IdentityServer4.Validation.ResourceValidationRequest
             {
                 Client = _restrictedClient,
-                ParsedScopeValues = ParseScopes(scopes)
+                Scopes = scopes
             });
 
             result.Succeeded.Should().BeFalse();
@@ -158,7 +153,7 @@ namespace IdentityServer.UnitTests.Validation
             var result = await validator.ValidateRequestedResourcesAsync(new IdentityServer4.Validation.ResourceValidationRequest
             {
                 Client = _restrictedClient,
-                ParsedScopeValues = ParseScopes(scopes)
+                Scopes = scopes
             });
 
             result.Succeeded.Should().BeTrue();
@@ -176,7 +171,7 @@ namespace IdentityServer.UnitTests.Validation
                 var result = await validator.ValidateRequestedResourcesAsync(new IdentityServer4.Validation.ResourceValidationRequest
                 {
                     Client = _restrictedClient,
-                    ParsedScopeValues = ParseScopes(scopes)
+                    Scopes = scopes
                 });
 
                 result.Succeeded.Should().BeFalse();
@@ -190,7 +185,7 @@ namespace IdentityServer.UnitTests.Validation
                 var result = await validator.ValidateRequestedResourcesAsync(new IdentityServer4.Validation.ResourceValidationRequest
                 {
                     Client = _restrictedClient,
-                    ParsedScopeValues = ParseScopes(scopes)
+                    Scopes = scopes
                 });
 
                 result.Succeeded.Should().BeFalse();
@@ -203,7 +198,7 @@ namespace IdentityServer.UnitTests.Validation
                 var result = await validator.ValidateRequestedResourcesAsync(new IdentityServer4.Validation.ResourceValidationRequest
                 {
                     Client = _restrictedClient,
-                    ParsedScopeValues = ParseScopes(scopes)
+                    Scopes = scopes
                 });
 
                 result.Succeeded.Should().BeFalse();
@@ -221,7 +216,7 @@ namespace IdentityServer.UnitTests.Validation
             var result = await validator.ValidateRequestedResourcesAsync(new IdentityServer4.Validation.ResourceValidationRequest
             {
                 Client = _restrictedClient,
-                ParsedScopeValues = ParseScopes(scopes)
+                Scopes = scopes
             });
 
             result.Succeeded.Should().BeFalse();
@@ -238,7 +233,7 @@ namespace IdentityServer.UnitTests.Validation
             var result = await validator.ValidateRequestedResourcesAsync(new IdentityServer4.Validation.ResourceValidationRequest
             {
                 Client = _restrictedClient,
-                ParsedScopeValues = ParseScopes(scopes)
+                Scopes = scopes
             });
 
             result.Succeeded.Should().BeTrue();
@@ -255,7 +250,7 @@ namespace IdentityServer.UnitTests.Validation
             var result = await validator.ValidateRequestedResourcesAsync(new IdentityServer4.Validation.ResourceValidationRequest
             {
                 Client = _restrictedClient,
-                ParsedScopeValues = ParseScopes(scopes)
+                Scopes = scopes
             });
 
             result.Succeeded.Should().BeFalse();
@@ -273,7 +268,7 @@ namespace IdentityServer.UnitTests.Validation
             var result = await validator.ValidateRequestedResourcesAsync(new IdentityServer4.Validation.ResourceValidationRequest
             {
                 Client = _restrictedClient,
-                ParsedScopeValues = ParseScopes(scopes)
+                Scopes = scopes
             });
 
             result.Succeeded.Should().BeTrue();
@@ -291,7 +286,7 @@ namespace IdentityServer.UnitTests.Validation
             var result = await validator.ValidateRequestedResourcesAsync(new IdentityServer4.Validation.ResourceValidationRequest
             {
                 Client = _restrictedClient,
-                ParsedScopeValues = ParseScopes(scopes)
+                Scopes = scopes
             });
 
             result.Succeeded.Should().BeTrue();
@@ -309,7 +304,7 @@ namespace IdentityServer.UnitTests.Validation
             var result = await validator.ValidateRequestedResourcesAsync(new IdentityServer4.Validation.ResourceValidationRequest
             {
                 Client = _restrictedClient,
-                ParsedScopeValues = ParseScopes(scopes)
+                Scopes = scopes
             });
 
             result.Succeeded.Should().BeTrue();
@@ -331,7 +326,7 @@ namespace IdentityServer.UnitTests.Validation
             var result = await validator.ValidateRequestedResourcesAsync(new IdentityServer4.Validation.ResourceValidationRequest
             {
                 Client = new Client { AllowedScopes = { "resource" } },
-                ParsedScopeValues = ParseScopes(new[] { "resource" })
+                Scopes = new[] { "resource" }
             });
 
             result.Succeeded.Should().BeTrue();

@@ -101,6 +101,20 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
+        /// Adds a scope parser.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddScopeParser<T>(this IIdentityServerBuilder builder)
+            where T : class, IScopeParser
+        {
+            builder.Services.AddTransient<IScopeParser, T>();
+
+            return builder;
+        }
+
+        /// <summary>
         /// Adds a client store.
         /// </summary>
         /// <typeparam name="T"></typeparam>

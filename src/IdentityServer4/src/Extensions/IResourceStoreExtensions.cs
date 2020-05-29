@@ -107,22 +107,10 @@ namespace IdentityServer4.Stores
         /// <returns></returns>
         public static async Task<ResourceValidationResult> CreateResourceValidationResult(this IResourceStore store, IEnumerable<ParsedScopeValue> parsedScopeValues)
         {
-            var scopes = parsedScopeValues.Select(x => x.Name).ToArray();
+            var validScopeValues = parsedScopeValues.Where(x => x.IsValid).ToArray();
+            var scopes = validScopeValues.Select(x => x.ParsedName).ToArray();
             var resources = await store.FindEnabledResourcesByScopeAsync(scopes);
-            return new ResourceValidationResult(resources, parsedScopeValues);
-        }
-
-        /// <summary>
-        /// Gets the names of the scopes
-        /// </summary>
-        /// <param name="resourceValidator"></param>
-        /// <param name="scopeValues">The scope names.</param>
-        /// <returns></returns>
-        public static async Task<(IEnumerable<ParsedScopeValue> parsedScopes, IEnumerable<string> scopeNames)> GetParsedScopes(this IResourceValidator resourceValidator, IEnumerable<string> scopeValues)
-        {
-            var parsedScopes = await resourceValidator.ParseRequestedScopesAsync(scopeValues);
-            var scopeNames = parsedScopes.Select(x => x.Name).ToArray();
-            return (parsedScopes, scopeNames);
+            return new ResourceValidationResult(resources, validScopeValues);
         }
 
         /// <summary>

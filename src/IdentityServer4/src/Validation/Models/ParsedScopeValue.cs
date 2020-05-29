@@ -2,6 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System;
+
 namespace IdentityServer4.Validation
 {
     /// <summary>
@@ -12,40 +14,74 @@ namespace IdentityServer4.Validation
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="name"></param>
-        public ParsedScopeValue(string name)
-            : this(name, name, null)
+        /// <param name="rawValue"></param>
+        /// <param name="validationError"></param>
+        public ParsedScopeValue(string rawValue, string validationError)
+            : this(rawValue, rawValue, null)
+        {
+            if (String.IsNullOrWhiteSpace(validationError))
+            {
+                throw new ArgumentNullException(nameof(validationError));
+            }
+
+            ValidationError = validationError;
+        }
+
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="rawValue"></param>
+        public ParsedScopeValue(string rawValue)
+            : this(rawValue, rawValue, null)
         {
         }
 
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="value"></param>
-        /// <param name="paramaterValue"></param>
-        public ParsedScopeValue(string name, string value, string paramaterValue)
+        /// <param name="rawValue"></param>
+        /// <param name="parsedName"></param>
+        /// <param name="parsedValue"></param>
+        public ParsedScopeValue(string rawValue, string parsedName, string parsedValue)
         {
-            Name = name;
-            Value = value;
-            ParameterValue = paramaterValue;
+            if (String.IsNullOrWhiteSpace(rawValue))
+            {
+                throw new ArgumentNullException(nameof(rawValue));
+            }
+            if (String.IsNullOrWhiteSpace(parsedName))
+            {
+                throw new ArgumentNullException(nameof(parsedName));
+            }
+
+            RawValue = rawValue;
+            ParsedName = parsedName;
+            ParsedValue = parsedValue;
         }
 
         /// <summary>
-        /// The name of the scope.
+        /// The original (raw) value of the scope.
         /// </summary>
-        public string Name { get; set; }
+        public string RawValue { get; set; }
+
+        /// <summary>
+        /// The parsed name of the scope. If the scope has no structure, the parsed name will be the same as the raw value.
+        /// </summary>
+        public string ParsedName { get; set; }
 
         // future: maybe this should be something w/ more structure? dictionary?
+        /// <summary>
+        /// The parsed value of the scope. If the scope has no structure, then the value will be null.
+        /// </summary>
+        public string ParsedValue { get; set; }
 
         /// <summary>
-        /// The value of the parsed scope. If the scope has no structure, then the value will be the same as the name.
+        /// Validation error message if the raw scope failed to be parsed.
         /// </summary>
-        public string Value { get; set; }
-        
+        public string ValidationError { get; set; }
+
         /// <summary>
-        /// The parameter value of the parsed scope. If the scope has no structure, then the value will be null.
+        /// Indicates if the parsed scope was successfully parsed.
         /// </summary>
-        public string ParameterValue { get; set; }
+        public bool IsValid => String.IsNullOrWhiteSpace(ValidationError);
     }
 }
