@@ -30,6 +30,7 @@ namespace IdentityServer4.Validation
         private readonly IResourceValidator _resourceValidator;
         private readonly IResourceStore _resourceStore;
         private readonly ITokenValidator _tokenValidator;
+        private readonly IRefreshTokenService _refreshTokenService;
         private readonly IEventService _events;
         private readonly IResourceOwnerPasswordValidator _resourceOwnerValidator;
         private readonly IProfileService _profile;
@@ -52,6 +53,7 @@ namespace IdentityServer4.Validation
         /// <param name="resourceValidator">The resource validator.</param>
         /// <param name="resourceStore">The resource store.</param>
         /// <param name="tokenValidator">The token validator.</param>
+        /// <param name="refreshTokenService"></param>
         /// <param name="events">The events.</param>
         /// <param name="clock">The clock.</param>
         /// <param name="logger">The logger.</param>
@@ -65,6 +67,7 @@ namespace IdentityServer4.Validation
             IResourceValidator resourceValidator,
             IResourceStore resourceStore,
             ITokenValidator tokenValidator, 
+            IRefreshTokenService refreshTokenService,
             IEventService events, 
             ISystemClock clock, 
             ILogger<TokenRequestValidator> logger)
@@ -81,6 +84,7 @@ namespace IdentityServer4.Validation
             _resourceValidator = resourceValidator;
             _resourceStore = resourceStore;
             _tokenValidator = tokenValidator;
+            _refreshTokenService = refreshTokenService;
             _events = events;
         }
 
@@ -507,7 +511,7 @@ namespace IdentityServer4.Validation
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
-            var result = await _tokenValidator.ValidateRefreshTokenAsync(refreshTokenHandle, _validatedRequest.Client);
+            var result = await _refreshTokenService.ValidateRefreshTokenAsync(refreshTokenHandle, _validatedRequest.Client);
 
             if (result.IsError)
             {
@@ -520,6 +524,8 @@ namespace IdentityServer4.Validation
             _validatedRequest.Subject = result.RefreshToken.Subject;
 
             _logger.LogDebug("Validation of refresh token request success");
+            // todo: more logging - similar to TokenValidator before
+            
             return Valid();
         }
 

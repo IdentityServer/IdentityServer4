@@ -5,6 +5,7 @@
 using IdentityServer4.Models;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using IdentityServer4.Validation;
 
 namespace IdentityServer4.Services
 {
@@ -13,6 +14,14 @@ namespace IdentityServer4.Services
     /// </summary>
     public interface IRefreshTokenService
     {
+        /// <summary>
+        /// Validates a refresh token.
+        /// </summary>
+        /// <param name="token">The refresh token.</param>
+        /// <param name="client">The client.</param>
+        /// <returns></returns>
+        Task<TokenValidationResult> ValidateRefreshTokenAsync(string token, Client client);
+        
         /// <summary>
         /// Creates the refresh token.
         /// </summary>

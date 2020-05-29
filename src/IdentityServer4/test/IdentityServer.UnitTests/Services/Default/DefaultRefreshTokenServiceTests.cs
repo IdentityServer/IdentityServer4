@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using IdentityServer.UnitTests.Validation.Setup;
 using Xunit;
 
 namespace IdentityServer.UnitTests.Services.Default
@@ -30,8 +31,9 @@ namespace IdentityServer.UnitTests.Services.Default
                 TestLogger.Create<DefaultRefreshTokenStore>());
 
             _subject = new DefaultRefreshTokenService(
-                _clock,
-                _store,
+                _store, 
+                new TestProfileService(),
+                _clock, 
                 TestLogger.Create<DefaultRefreshTokenService>());
         }
 

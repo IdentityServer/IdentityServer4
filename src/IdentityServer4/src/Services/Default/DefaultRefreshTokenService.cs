@@ -8,6 +8,9 @@ using IdentityServer4.Stores;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using IdentityModel;
+using IdentityServer4.Logging.Models;
+using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer4.Services
@@ -20,12 +23,17 @@ namespace IdentityServer4.Services
         /// <summary>
         /// The logger
         /// </summary>
-        private readonly ILogger _logger;
+        protected readonly ILogger Logger;
 
         /// <summary>
         /// The refresh token store
         /// </summary>
         protected IRefreshTokenStore RefreshTokenStore { get; }
+
+        /// <summary>
+        /// The profile service
+        /// </summary>
+        protected IProfileService Profile { get; }
 
         /// <summary>
         /// The clock
@@ -35,14 +43,115 @@ namespace IdentityServer4.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultRefreshTokenService" /> class.
         /// </summary>
-        /// <param name="clock">The clock</param>
         /// <param name="refreshTokenStore">The refresh token store</param>
+        /// <param name="profile"></param>
+        /// <param name="clock">The clock</param>
         /// <param name="logger">The logger</param>
-        public DefaultRefreshTokenService(ISystemClock clock, IRefreshTokenStore refreshTokenStore, ILogger<DefaultRefreshTokenService> logger)
+        public DefaultRefreshTokenService(IRefreshTokenStore refreshTokenStore, IProfileService profile,
+            ISystemClock clock,
+            ILogger<DefaultRefreshTokenService> logger)
         {
-            Clock = clock;
-            _logger = logger;
             RefreshTokenStore = refreshTokenStore;
+            Profile = profile;
+            Clock = clock;
+
+            Logger = logger;
+        }
+
+        /// <summary>
+        /// Validates a refresh token
+        /// </summary>
+        /// <param name="tokenHandle">The token handle.</param>
+        /// <param name="client">The client.</param>
+        /// <returns></returns>
+        public virtual async Task<TokenValidationResult> ValidateRefreshTokenAsync(string tokenHandle, Client client)
+        {
+            var invalidGrant = new TokenValidationResult
+            {
+                IsError = true, Error = OidcConstants.TokenErrors.InvalidGrant
+            };
+
+            Logger.LogTrace("Start refresh token validation");
+
+            /////////////////////////////////////////////
+            // check if refresh token is valid
+            /////////////////////////////////////////////
+            var refreshToken = await RefreshTokenStore.GetRefreshTokenAsync(tokenHandle);
+            if (refreshToken == null)
+            {
+                Logger.LogWarning("Invalid refresh token");
+                return invalidGrant;
+            }
+
+            /////////////////////////////////////////////
+            // check if refresh token has expired
+            /////////////////////////////////////////////
+            if (refreshToken.CreationTime.HasExceeded(refreshToken.Lifetime, Clock.UtcNow.DateTime))
+            {
+                Logger.LogWarning("Refresh token has expired.");
+                return invalidGrant;
+            }
+            
+            /////////////////////////////////////////////
+            // check if client belongs to requested refresh token
+            /////////////////////////////////////////////
+            if (client.ClientId != refreshToken.ClientId)
+            {
+                Logger.LogError("{0} tries to refresh token belonging to {1}", client.ClientId, refreshToken.ClientId);
+                return invalidGrant;
+            }
+
+            /////////////////////////////////////////////
+            // check if client still has offline_access scope
+            /////////////////////////////////////////////
+            if (!client.AllowOfflineAccess)
+            {
+                Logger.LogError("{clientId} does not have access to offline_access scope anymore", client.ClientId);
+                return invalidGrant;
+            }
+            
+            /////////////////////////////////////////////
+            // check if refresh token has been consumed
+            /////////////////////////////////////////////
+            if (refreshToken.ConsumedTime.HasValue)
+            {
+                if ((await AcceptConsumedTokenAsync(refreshToken)) == false)
+                {
+                    Logger.LogWarning("Rejecting refresh token because it has been consumed already.");
+                    return invalidGrant;
+                }
+            }
+            
+            /////////////////////////////////////////////
+            // make sure user is enabled
+            /////////////////////////////////////////////
+            var isActiveCtx = new IsActiveContext(
+                refreshToken.Subject,
+                client,
+                IdentityServerConstants.ProfileIsActiveCallers.RefreshTokenValidation);
+
+            await Profile.IsActiveAsync(isActiveCtx);
+
+            if (isActiveCtx.IsActive == false)
+            {
+                Logger.LogError("{subjectId} has been disabled", refreshToken.Subject.GetSubjectId());
+                return invalidGrant;
+            }
+            
+            return new TokenValidationResult { IsError = false, RefreshToken = refreshToken };
+        }
+
+        /// <summary>
+        /// Callback to decide if an already consumed token should be accepted.
+        /// </summary>
+        /// <param name="refreshToken"></param>
+        /// <returns></returns>
+        protected virtual Task<bool> AcceptConsumedTokenAsync(RefreshToken refreshToken)
+        {
+            // by default we will not accept consumed tokens
+            // change the behavior here to implement a time window
+            // you can also implement additional revocation logic here
+            return Task.FromResult(false);
         }
 
         /// <summary>
@@ -54,14 +163,16 @@ namespace IdentityServer4.Services
         /// <returns>
         /// The refresh token handle
         /// </returns>
-        public virtual async Task<string> CreateRefreshTokenAsync(ClaimsPrincipal subject, Token accessToken, Client client)
+        public virtual async Task<string> CreateRefreshTokenAsync(ClaimsPrincipal subject, Token accessToken,
+            Client client)
         {
-            _logger.LogDebug("Creating refresh token");
+            Logger.LogDebug("Creating refresh token");
 
             int lifetime;
             if (client.RefreshTokenExpiration == TokenExpiration.Absolute)
             {
-                _logger.LogDebug("Setting an absolute lifetime: {absoluteLifetime}", client.AbsoluteRefreshTokenLifetime);
+                Logger.LogDebug("Setting an absolute lifetime: {absoluteLifetime}",
+                    client.AbsoluteRefreshTokenLifetime);
                 lifetime = client.AbsoluteRefreshTokenLifetime;
             }
             else
@@ -69,18 +180,20 @@ namespace IdentityServer4.Services
                 lifetime = client.SlidingRefreshTokenLifetime;
                 if (client.AbsoluteRefreshTokenLifetime > 0 && lifetime > client.AbsoluteRefreshTokenLifetime)
                 {
-                    _logger.LogWarning("Client {clientId}'s configured " + nameof(client.SlidingRefreshTokenLifetime) + " of {slidingLifetime} exceeds its " + nameof(client.AbsoluteRefreshTokenLifetime) + " of {absoluteLifetime}. The refresh_token's sliding lifetime will be capped to the absolute lifetime", client.ClientId, lifetime, client.AbsoluteRefreshTokenLifetime);
+                    Logger.LogWarning(
+                        "Client {clientId}'s configured " + nameof(client.SlidingRefreshTokenLifetime) +
+                        " of {slidingLifetime} exceeds its " + nameof(client.AbsoluteRefreshTokenLifetime) +
+                        " of {absoluteLifetime}. The refresh_token's sliding lifetime will be capped to the absolute lifetime",
+                        client.ClientId, lifetime, client.AbsoluteRefreshTokenLifetime);
                     lifetime = client.AbsoluteRefreshTokenLifetime;
                 }
 
-                _logger.LogDebug("Setting a sliding lifetime: {slidingLifetime}", lifetime);
+                Logger.LogDebug("Setting a sliding lifetime: {slidingLifetime}", lifetime);
             }
 
             var refreshToken = new RefreshToken
             {
-                CreationTime = Clock.UtcNow.UtcDateTime,
-                Lifetime = lifetime,
-                AccessToken = accessToken
+                CreationTime = Clock.UtcNow.UtcDateTime, Lifetime = lifetime, AccessToken = accessToken
             };
 
             var handle = await RefreshTokenStore.StoreRefreshTokenAsync(refreshToken);
@@ -96,19 +209,21 @@ namespace IdentityServer4.Services
         /// <returns>
         /// The refresh token handle
         /// </returns>
-        public virtual async Task<string> UpdateRefreshTokenAsync(string handle, RefreshToken refreshToken, Client client)
+        public virtual async Task<string> UpdateRefreshTokenAsync(string handle, RefreshToken refreshToken,
+            Client client)
         {
-            _logger.LogDebug("Updating refresh token");
+            Logger.LogDebug("Updating refresh token");
 
             bool needsCreate = false;
             bool needsUpdate = false;
 
             if (client.RefreshTokenUsage == TokenUsage.OneTimeOnly)
             {
-                _logger.LogDebug("Token usage is one-time only. Generating new handle");
+                Logger.LogDebug("Token usage is one-time only. Setting current handle as consumed, and generating new handle");
 
-                // delete old one
-                await RefreshTokenStore.RemoveRefreshTokenAsync(handle);
+                // flag as consumed
+                refreshToken.ConsumedTime = Clock.UtcNow.DateTime;
+                await RefreshTokenStore.UpdateRefreshTokenAsync(handle, refreshToken);
 
                 // create new one
                 needsCreate = true;
@@ -116,22 +231,23 @@ namespace IdentityServer4.Services
 
             if (client.RefreshTokenExpiration == TokenExpiration.Sliding)
             {
-                _logger.LogDebug("Refresh token expiration is sliding - extending lifetime");
+                Logger.LogDebug("Refresh token expiration is sliding - extending lifetime");
 
                 // if absolute exp > 0, make sure we don't exceed absolute exp
                 // if absolute exp = 0, allow indefinite slide
                 var currentLifetime = refreshToken.CreationTime.GetLifetimeInSeconds(Clock.UtcNow.UtcDateTime);
-                _logger.LogDebug("Current lifetime: {currentLifetime}", currentLifetime.ToString());
+                Logger.LogDebug("Current lifetime: {currentLifetime}", currentLifetime.ToString());
 
                 var newLifetime = currentLifetime + client.SlidingRefreshTokenLifetime;
-                _logger.LogDebug("New lifetime: {slidingLifetime}", newLifetime.ToString());
+                Logger.LogDebug("New lifetime: {slidingLifetime}", newLifetime.ToString());
 
                 // zero absolute refresh token lifetime represents unbounded absolute lifetime
                 // if absolute lifetime > 0, cap at absolute lifetime
                 if (client.AbsoluteRefreshTokenLifetime > 0 && newLifetime > client.AbsoluteRefreshTokenLifetime)
                 {
                     newLifetime = client.AbsoluteRefreshTokenLifetime;
-                    _logger.LogDebug("New lifetime exceeds absolute lifetime, capping it to {newLifetime}", newLifetime.ToString());
+                    Logger.LogDebug("New lifetime exceeds absolute lifetime, capping it to {newLifetime}",
+                        newLifetime.ToString());
                 }
 
                 refreshToken.Lifetime = newLifetime;
@@ -141,16 +257,16 @@ namespace IdentityServer4.Services
             if (needsCreate)
             {
                 handle = await RefreshTokenStore.StoreRefreshTokenAsync(refreshToken);
-                _logger.LogDebug("Created refresh token in store");
+                Logger.LogDebug("Created refresh token in store");
             }
             else if (needsUpdate)
             {
                 await RefreshTokenStore.UpdateRefreshTokenAsync(handle, refreshToken);
-                _logger.LogDebug("Updated refresh token in store");
+                Logger.LogDebug("Updated refresh token in store");
             }
             else
             {
-                _logger.LogDebug("No updates to refresh token done");
+                Logger.LogDebug("No updates to refresh token done");
             }
 
             return handle;
