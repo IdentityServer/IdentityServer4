@@ -54,7 +54,7 @@ namespace ConsoleResourceOwnerFlowRefreshToken
                 UserName = "bob",
                 Password = "bob",
 
-                Scope = "scope1 offline_access",
+                Scope = "resource1.scope1 offline_access",
             });
 
             if (response.IsError) throw new Exception(response.Error);

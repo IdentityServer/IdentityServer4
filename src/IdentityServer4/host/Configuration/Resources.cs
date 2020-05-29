@@ -28,16 +28,20 @@ namespace Host.Configuration
         public static readonly IEnumerable<ApiScope> ApiScopes =
             new[]
             {
-                // local feature
+                // local API scope
                 new ApiScope(LocalApi.ScopeName),
 
-                // some generic scopes
-                new ApiScope("scope1"),
-                new ApiScope("scope2"), 
+                // resource specific scopes
+                new ApiScope("resource1.scope1"),
+                new ApiScope("resource2.scope1"), 
+                
+                // a scope without resource association
                 new ApiScope("scope3"),
+                
+                // a scope shared by multiple resources
                 new ApiScope("shared.scope"),
 
-                // used as a dynamic scope
+                // a parameterized scope
                 new ApiScope("transaction", "Transaction")
                 {
                     Description = "Some Transaction"
@@ -48,15 +52,11 @@ namespace Host.Configuration
         public static readonly IEnumerable<ApiResource> ApiResources = 
             new[]
             {
-                // simple version with ctor
                 new ApiResource("resource1", "Resource 1")
                 {
-                    // this is needed for introspection when using reference tokens
                     ApiSecrets = { new Secret("secret".Sha256()) },
 
-                    //AllowedSigningAlgorithms = { "RS256", "ES256" }
-
-                    Scopes = { "scope1", "shared.scope" }
+                    Scopes = { "resource1.scope1", "shared.scope" }
                 },
                 
                 // expanded version if more control is needed
@@ -67,15 +67,14 @@ namespace Host.Configuration
                         new Secret("secret".Sha256())
                     },
 
-                    //AllowedSigningAlgorithms = { "PS256", "ES256", "RS256" },
-
+                    // additional claims to put into access token
                     UserClaims =
                     {
                         JwtClaimTypes.Name,
                         JwtClaimTypes.Email
                     },
 
-                    Scopes = { "scope2", "shared.scope" }
+                    Scopes = { "resource2.scope1", "shared.scope" }
                 }
             };
     }
