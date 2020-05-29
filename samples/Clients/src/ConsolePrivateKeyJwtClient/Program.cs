@@ -52,7 +52,7 @@ namespace ConsolePrivateKeyJwtClient
             var response = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
             {
                 Address = disco.TokenEndpoint,
-                Scope = "scope1",
+                Scope = "resource1.scope1",
 
                 ClientAssertion =
                 {
