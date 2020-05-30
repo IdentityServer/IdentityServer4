@@ -25,7 +25,7 @@ namespace IdentityServer4.Events
             ClientId = request.ValidatedRequest.Client?.ClientId;
             ClientName = request.ValidatedRequest.Client?.ClientName;
             Endpoint = Constants.EndpointNames.DeviceAuthorization;
-            Scopes = request.ValidatedRequest.ValidatedResources?.ScopeValues.ToSpaceSeparatedString();
+            Scopes = request.ValidatedRequest.ValidatedResources?.RawScopeValues.ToSpaceSeparatedString();
         }
 
         /// <summary>

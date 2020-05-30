@@ -134,7 +134,7 @@ namespace IdentityServer4.ResponseHandling
                 IsOpenId = validationResult.ValidatedRequest.IsOpenIdRequest,
                 Lifetime = response.DeviceCodeLifetime,
                 CreationTime = Clock.UtcNow.UtcDateTime,
-                RequestedScopes = validationResult.ValidatedRequest.ValidatedResources.ScopeValues
+                RequestedScopes = validationResult.ValidatedRequest.ValidatedResources.RawScopeValues
             });
 
             return response;

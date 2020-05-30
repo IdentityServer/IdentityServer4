@@ -5,7 +5,7 @@ namespace Host.Extensions
 {
     public class ParameterizedScopeParser : DefaultScopeParser
     {
-        public override ParsedScopeValue ParseScopeValue(string scopeValue)
+        public override ParseScopeResult ParseScopeValue(string scopeValue)
         {
             const string transactionScopeName = "transaction";
             const string separator = ":";
@@ -16,10 +16,10 @@ namespace Host.Extensions
                 var parts = scopeValue.Split(separator, StringSplitOptions.RemoveEmptyEntries);
                 if (parts.Length == 2)
                 {
-                    return new ParsedScopeValue(scopeValue, transactionScopeName, parts[1]);
+                    return new ParseScopeResult(new ParsedScopeValue(scopeValue, transactionScopeName, parts[1]));
                 }
 
-                return new ParsedScopeValue(scopeValue, "transaction scope missing transaction parameter value");
+                return new ParseScopeResult(new ParsedScopeValidationError(scopeValue, "transaction scope missing transaction parameter value"));
             }
 
             return base.ParseScopeValue(scopeValue);

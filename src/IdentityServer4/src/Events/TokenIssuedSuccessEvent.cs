@@ -72,7 +72,7 @@ namespace IdentityServer4.Events
             }
             else
             {
-                Scopes = request.ValidatedRequest.ValidatedResources?.ScopeValues.ToSpaceSeparatedString();
+                Scopes = request.ValidatedRequest.ValidatedResources?.RawScopeValues.ToSpaceSeparatedString();
             }
 
             var tokens = new List<Token>();

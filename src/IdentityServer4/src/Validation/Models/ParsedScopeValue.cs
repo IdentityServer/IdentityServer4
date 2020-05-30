@@ -15,22 +15,6 @@ namespace IdentityServer4.Validation
         /// Ctor
         /// </summary>
         /// <param name="rawValue"></param>
-        /// <param name="validationError"></param>
-        public ParsedScopeValue(string rawValue, string validationError)
-            : this(rawValue, rawValue, null)
-        {
-            if (String.IsNullOrWhiteSpace(validationError))
-            {
-                throw new ArgumentNullException(nameof(validationError));
-            }
-
-            ValidationError = validationError;
-        }
-
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="rawValue"></param>
         public ParsedScopeValue(string rawValue)
             : this(rawValue, rawValue, null)
         {
@@ -73,15 +57,5 @@ namespace IdentityServer4.Validation
         /// The parsed value of the scope. If the scope has no structure, then the value will be null.
         /// </summary>
         public string ParsedValue { get; set; }
-
-        /// <summary>
-        /// Validation error message if the raw scope failed to be parsed.
-        /// </summary>
-        public string ValidationError { get; set; }
-
-        /// <summary>
-        /// Indicates if the parsed scope was successfully parsed.
-        /// </summary>
-        public bool IsValid => String.IsNullOrWhiteSpace(ValidationError);
     }
 }

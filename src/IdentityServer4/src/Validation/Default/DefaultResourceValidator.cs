@@ -38,27 +38,26 @@ namespace IdentityServer4.Validation
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
-            var parsedScopes = _scopeParser.ParseScopeValues(request.Scopes);
+            var parsedScopesResult = _scopeParser.ParseScopeValues(request.Scopes);
 
             var result = new ResourceValidationResult();
             
-            var invalidParsedScopes = parsedScopes.Where(x => !x.IsValid).ToArray();
-            if (invalidParsedScopes.Any())
+            if (!parsedScopesResult.Succeeded)
             {
-                foreach (var invalidScope in invalidParsedScopes)
+                foreach (var invalidScope in parsedScopesResult.Errors)
                 {
                     // todo: warning?
-                    _logger.LogWarning("Invalid parsed scope {scope}, message: {error}", invalidScope.RawValue, invalidScope.ValidationError);
+                    _logger.LogWarning("Invalid parsed scope {scope}, message: {error}", invalidScope.RawValue, invalidScope.Error);
                     result.InvalidScopes.Add(invalidScope.RawValue);
                 }
 
                 return result;
             }
 
-            var scopeNames = parsedScopes.Select(x => x.ParsedName).Distinct().ToArray();
+            var scopeNames = parsedScopesResult.ParsedScopes.Select(x => x.ParsedName).Distinct().ToArray();
             var resourcesFromStore = await _store.FindEnabledResourcesByScopeAsync(scopeNames);
 
-            foreach (var scope in parsedScopes)
+            foreach (var scope in parsedScopesResult.ParsedScopes)
             {
                 await ValidateScopeAsync(request.Client, resourcesFromStore, scope, result);
             }

@@ -13,22 +13,26 @@ namespace IdentityServer4.Validation
     public class DefaultScopeParser : IScopeParser
     {
         /// <inheritdoc/>
-        public IEnumerable<ParsedScopeValue> ParseScopeValues(IEnumerable<string> scopeValues)
+        public ParsedScopesResult ParseScopeValues(IEnumerable<string> scopeValues)
         {
             if (scopeValues == null) throw new ArgumentNullException(nameof(scopeValues));
 
-            var list = new List<ParsedScopeValue>();
+            var result = new ParsedScopesResult();
 
             foreach (var scopeValue in scopeValues)
             {
-                var parsedScopeValue = ParseScopeValue(scopeValue);
-                if (parsedScopeValue != null)
+                var parsedScopeResult = ParseScopeValue(scopeValue);
+                if (parsedScopeResult.Succeeded)
                 {
-                    list.Add(parsedScopeValue);
+                    result.ParsedScopes.Add(parsedScopeResult.ParsedScope);
+                }
+                else if (parsedScopeResult.Error != null)
+                {
+                    result.Errors.Add(parsedScopeResult.Error);
                 }
             }
 
-            return list;
+            return result;
         }
 
         /// <summary>
@@ -36,9 +40,55 @@ namespace IdentityServer4.Validation
         /// </summary>
         /// <param name="scopeValue"></param>
         /// <returns></returns>
-        public virtual ParsedScopeValue ParseScopeValue(string scopeValue)
+        public virtual ParseScopeResult ParseScopeValue(string scopeValue)
         {
-            return new ParsedScopeValue(scopeValue);
+            return new ParseScopeResult(new ParsedScopeValue(scopeValue));
+        }
+
+        /// <summary>
+        /// Models the result of parsing a scope.
+        /// </summary>
+        public class ParseScopeResult
+        {
+            /// <summary>
+            /// Ctor
+            /// </summary>
+            public ParseScopeResult()
+            {
+            }
+
+            /// <summary>
+            /// Ctor
+            /// </summary>
+            /// <param name="parsedScope"></param>
+            public ParseScopeResult(ParsedScopeValue parsedScope)
+            {
+                ParsedScope = parsedScope ?? throw new ArgumentNullException(nameof(parsedScope));
+            }
+            
+            /// <summary>
+            /// Ctor
+            /// </summary>
+            /// <param name="error"></param>
+            public ParseScopeResult(ParsedScopeValidationError error)
+            {
+                Error = error ?? throw new ArgumentNullException(nameof(error));
+            }
+            
+            /// <summary>
+            /// The parsed scopes.
+            /// </summary>
+            public ParsedScopeValue ParsedScope { get; set; }
+
+            /// <summary>
+            /// The error from parsing the scope.
+            /// </summary>
+            public ParsedScopeValidationError Error { get; set; }
+
+            /// <summary>
+            /// Indicates if parsing the scope was successful.
+            /// </summary>
+            public bool Succeeded => ParsedScope != null && Error == null;
         }
     }
 }

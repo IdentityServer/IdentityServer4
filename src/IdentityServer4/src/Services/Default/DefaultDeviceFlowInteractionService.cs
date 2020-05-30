@@ -44,8 +44,8 @@ namespace IdentityServer4.Services
             var client = await _clients.FindClientByIdAsync(deviceAuth.ClientId);
             if (client == null) return null;
 
-            var parsedScopes = _scopeParser.ParseScopeValues(deviceAuth.RequestedScopes);
-            var validatedResources = await _resourceStore.CreateResourceValidationResult(parsedScopes);
+            var parsedScopesResult = _scopeParser.ParseScopeValues(deviceAuth.RequestedScopes);
+            var validatedResources = await _resourceStore.CreateResourceValidationResult(parsedScopesResult);
 
             return new DeviceFlowAuthorizationRequest
             {

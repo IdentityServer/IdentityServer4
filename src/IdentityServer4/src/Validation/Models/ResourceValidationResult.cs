@@ -57,9 +57,9 @@ namespace IdentityServer4.Validation
         public ICollection<ParsedScopeValue> ParsedScopes { get; set; } = new HashSet<ParsedScopeValue>();
 
         /// <summary>
-        /// All scope values represented by the result.
+        /// All the original (raw) scope values represented by the result.
         /// </summary>
-        public IEnumerable<string> ScopeValues => ParsedScopes.Select(x => x.RawValue);
+        public IEnumerable<string> RawScopeValues => ParsedScopes.Select(x => x.RawValue);
 
         /// <summary>
         /// The requested scopes that are invalid.

@@ -172,8 +172,8 @@ namespace IdentityServer4.ResponseHandling
                     throw new InvalidOperationException("Client does not exist anymore.");
                 }
 
-                var parsedScopes = ScopeParser.ParseScopeValues(request.ValidatedRequest.AuthorizationCode.RequestedScopes);
-                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopes);
+                var parsedScopesResult = ScopeParser.ParseScopeValues(request.ValidatedRequest.AuthorizationCode.RequestedScopes);
+                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopesResult);
 
                 var tokenRequest = new TokenCreationRequest
                 {
@@ -209,8 +209,8 @@ namespace IdentityServer4.ResponseHandling
             {
                 var subject = request.ValidatedRequest.RefreshToken.Subject;
 
-                var parsedScopes = ScopeParser.ParseScopeValues(oldAccessToken.Scopes);
-                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopes);
+                var parsedScopesResult = ScopeParser.ParseScopeValues(oldAccessToken.Scopes);
+                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopesResult);
 
                 var creationRequest = new TokenCreationRequest
                 {
@@ -289,8 +289,8 @@ namespace IdentityServer4.ResponseHandling
                     throw new InvalidOperationException("Client does not exist anymore.");
                 }
 
-                var parsedScopes = ScopeParser.ParseScopeValues(request.ValidatedRequest.DeviceCode.AuthorizedScopes);
-                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopes);
+                var parsedScopesResult = ScopeParser.ParseScopeValues(request.ValidatedRequest.DeviceCode.AuthorizedScopes);
+                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopesResult);
                 
                 var tokenRequest = new TokenCreationRequest
                 {
@@ -333,7 +333,7 @@ namespace IdentityServer4.ResponseHandling
                 AccessToken = accessToken,
                 AccessTokenLifetime = validationResult.ValidatedRequest.AccessTokenLifetime,
                 Custom = validationResult.CustomResponse,
-                Scope = validationResult.ValidatedRequest.ValidatedResources.ScopeValues.ToSpaceSeparatedString()
+                Scope = validationResult.ValidatedRequest.ValidatedResources.RawScopeValues.ToSpaceSeparatedString()
             };
 
             if (refreshToken.IsPresent())
@@ -370,8 +370,8 @@ namespace IdentityServer4.ResponseHandling
                     throw new InvalidOperationException("Client does not exist anymore.");
                 }
 
-                var parsedScopes = ScopeParser.ParseScopeValues(request.AuthorizationCode.RequestedScopes);
-                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopes);
+                var parsedScopesResult = ScopeParser.ParseScopeValues(request.AuthorizationCode.RequestedScopes);
+                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopesResult);
 
                 tokenRequest = new TokenCreationRequest
                 {
@@ -395,8 +395,8 @@ namespace IdentityServer4.ResponseHandling
                     throw new InvalidOperationException("Client does not exist anymore.");
                 }
 
-                var parsedScopes = ScopeParser.ParseScopeValues(request.DeviceCode.AuthorizedScopes);
-                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopes);
+                var parsedScopesResult = ScopeParser.ParseScopeValues(request.DeviceCode.AuthorizedScopes);
+                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopesResult);
 
                 tokenRequest = new TokenCreationRequest
                 {
@@ -445,9 +445,9 @@ namespace IdentityServer4.ResponseHandling
             if (request.RefreshToken.Scopes.Contains(OidcConstants.StandardScopes.OpenId))
             {
                 var oldAccessToken = request.RefreshToken.AccessToken;
-                
-                var parsedScopes = ScopeParser.ParseScopeValues(oldAccessToken.Scopes);
-                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopes);
+
+                var parsedScopesResult = ScopeParser.ParseScopeValues(oldAccessToken.Scopes);
+                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopesResult);
 
                 var tokenRequest = new TokenCreationRequest
                 {
