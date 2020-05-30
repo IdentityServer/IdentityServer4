@@ -5,14 +5,14 @@ The ultimate job of an OpenID Connect/OAuth token service is to control access t
 
 The two fundamental resource types in IdentityServer are:
 
-* **identity resources:** these are claims about a user like user ID, display name, email address etc…
-* **API resources:** this is functionality a client wants to access. Typically, they are HTTP-based endpoints (aka APIs), but could be also message queuing endpoints or similar.
+* **identity resources:** represent claims about a user like user ID, display name, email address etc…
+* **API resources:** represent functionality a client wants to access. Typically, they are HTTP-based endpoints (aka APIs), but could be also message queuing endpoints or similar.
 
 .. note:: You can define resources using a C# object model - or load them from a data store. An implementation of ``IResourceStore`` deals with these low-level details. For this document we are using the in-memory implementation.
 
 Identity Resources
 ------------------
-An identity resource is a named logical grouping of claims and can be requested using the *scope* parameter.
+An identity resource is a named group of claims that can be requested using the *scope* parameter.
 
 The OpenID Connect specification `suggests <https://openid.net/specs/openid-connect-core-1_0.html#ScopeClaims>`_ a couple of standard 
 scope name to claim type mappings that might be useful to you for inspiration, but you can freely design them yourself.
@@ -44,7 +44,7 @@ But since this is one of the standard scopes from the spec you can shorten that 
 
 .. note:: see the reference section for more information on ``IdentityResource``.
 
-The following example shows custom identity resource called *profile* that represents the display name, email address and website claim::
+The following example shows a custom identity resource called *profile* that represents the display name, email address and website claim::
 
     public static IEnumerable<IdentityResource> GetIdentityResources()
     {
