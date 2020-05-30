@@ -245,7 +245,7 @@ Using the API resource grouping gives you the following additional features
 
 Let's have a look at some example access tokens for the above resource configuration.
 
-**Client requests: invoice.read and invoice.pay**::
+**Client requests** invoice.read and invoice.pay::
 
     {
         "typ": "at+jwt"
@@ -258,7 +258,7 @@ Let's have a look at some example access tokens for the above resource configura
         "scope": "invoice.read invoice.pay"
     }
 
-**Client requests: invoice.read and customer.read**::
+**Client requests** invoice.read and customer.read::
 
     {
         "typ": "at+jwt"
@@ -271,7 +271,7 @@ Let's have a look at some example access tokens for the above resource configura
         "scope": "invoice.read customer.read"
     }
 
-**Client requests: manage**::
+**Client requests** manage::
 
     {
         "typ": "at+jwt"

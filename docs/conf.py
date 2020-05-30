@@ -59,7 +59,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'IdentityServer4'
-copyright = '2016, Brock Allen & Dominick Baier'
+copyright = '2020, Brock Allen & Dominick Baier'
 author = 'Brock Allen & Dominick Baier'
 
 # The version info for the project you're documenting, acts as replacement for
