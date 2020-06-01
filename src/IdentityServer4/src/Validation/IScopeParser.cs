@@ -14,6 +14,7 @@ namespace IdentityServer4.Validation
     public interface IScopeParser
     {
         // todo: async?
+        // todo: test return no error, and no parsed scopes. how do callers behave?
         /// <summary>
         /// Parses the requested scopes.
         /// </summary>

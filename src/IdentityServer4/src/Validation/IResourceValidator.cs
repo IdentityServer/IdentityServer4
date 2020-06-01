@@ -11,6 +11,8 @@ namespace IdentityServer4.Validation
     /// </summary>
     public interface IResourceValidator
     {
+        // todo: should this be used anywhere we re-create tokens? do we need to re-run scope validation?
+
         /// <summary>
         /// Validates the requested resources for the client.
         /// </summary>

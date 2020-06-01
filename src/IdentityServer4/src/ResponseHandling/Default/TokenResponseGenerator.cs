@@ -209,6 +209,8 @@ namespace IdentityServer4.ResponseHandling
             {
                 var subject = request.ValidatedRequest.RefreshToken.Subject;
 
+                // todo: do we want to just parse here and build up validated result
+                // or do we want to fully re-run validation here.
                 var parsedScopesResult = ScopeParser.ParseScopeValues(oldAccessToken.Scopes);
                 var validatedResources = await Resources.CreateResourceValidationResult(parsedScopesResult);
 

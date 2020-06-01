@@ -51,14 +51,14 @@ namespace IdentityServer4.Validation
         public class ParseScopeResult
         {
             /// <summary>
-            /// Ctor
+            /// Ctor. Indicates success, but the scope should not be included in result.
             /// </summary>
             public ParseScopeResult()
             {
             }
 
             /// <summary>
-            /// Ctor
+            /// Ctor. Indicates success and includes parsed scope in result.
             /// </summary>
             /// <param name="parsedScope"></param>
             public ParseScopeResult(ParsedScopeValue parsedScope)
@@ -67,7 +67,7 @@ namespace IdentityServer4.Validation
             }
             
             /// <summary>
-            /// Ctor
+            /// Ctor. Indicates error in parsing scope.
             /// </summary>
             /// <param name="error"></param>
             public ParseScopeResult(ParsedScopeValidationError error)

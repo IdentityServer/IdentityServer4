@@ -18,9 +18,9 @@ namespace Host.Extensions
             await base.GetProfileDataAsync(context);
 
             var transaction = context.RequestedResources.ParsedScopes.FirstOrDefault(x => x.ParsedName == "transaction");
-            if (transaction?.ParsedValue != null)
+            if (transaction?.ParameterValue != null)
             {
-                context.IssuedClaims.Add(new Claim("transaction_id", transaction.ParsedValue));
+                context.IssuedClaims.Add(new Claim("transaction_id", transaction.ParameterValue));
             }
         }
     }

@@ -10,9 +10,9 @@ namespace Host.Extensions
         public Task ValidateAsync(CustomTokenRequestValidationContext context)
         {
             var transaction = context.Result.ValidatedRequest.ValidatedResources.ParsedScopes.FirstOrDefault(x => x.ParsedName == "transaction");
-            if (transaction?.ParsedValue != null)
+            if (transaction?.ParameterValue != null)
             {
-                context.Result.ValidatedRequest.ClientClaims.Add(new Claim(transaction.ParsedName, transaction.ParsedValue));
+                context.Result.ValidatedRequest.ClientClaims.Add(new Claim(transaction.ParsedName, transaction.ParameterValue));
             }
 
             return Task.CompletedTask;

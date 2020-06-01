@@ -231,9 +231,9 @@ namespace Host.Quickstart.UI
         public ScopeViewModel CreateScopeViewModel(ParsedScopeValue parsedScopeValue, ApiScope apiScope, bool check)
         {
             var displayName = apiScope.DisplayName ?? apiScope.Name;
-            if (!String.IsNullOrWhiteSpace(parsedScopeValue.ParsedValue))
+            if (!String.IsNullOrWhiteSpace(parsedScopeValue.ParameterValue))
             {
-                displayName += ":" + parsedScopeValue.ParsedValue;
+                displayName += ":" + parsedScopeValue.ParameterValue;
             }
 
             return new ScopeViewModel

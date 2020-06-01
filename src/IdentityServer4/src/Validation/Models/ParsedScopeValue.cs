@@ -25,8 +25,8 @@ namespace IdentityServer4.Validation
         /// </summary>
         /// <param name="rawValue"></param>
         /// <param name="parsedName"></param>
-        /// <param name="parsedValue"></param>
-        public ParsedScopeValue(string rawValue, string parsedName, string parsedValue)
+        /// <param name="parameterValue"></param>
+        public ParsedScopeValue(string rawValue, string parsedName, string parameterValue)
         {
             if (String.IsNullOrWhiteSpace(rawValue))
             {
@@ -39,7 +39,7 @@ namespace IdentityServer4.Validation
 
             RawValue = rawValue;
             ParsedName = parsedName;
-            ParsedValue = parsedValue;
+            ParameterValue = parameterValue;
         }
 
         /// <summary>
@@ -54,8 +54,8 @@ namespace IdentityServer4.Validation
 
         // future: maybe this should be something w/ more structure? dictionary?
         /// <summary>
-        /// The parsed value of the scope. If the scope has no structure, then the value will be null.
+        /// The parameter value of the parsed scope. If the scope has no structure, then the value will be null.
         /// </summary>
-        public string ParsedValue { get; set; }
+        public string ParameterValue { get; set; }
     }
 }
