@@ -37,14 +37,11 @@ William Grow
 James Roberts  
 Chris Simmons ([@netchrisdotcom](https://twitter.com/netchrisdotcom))  
 Shawn Wildermuth  
-Thomas C  
-Ben	Cull  
 Johan Boström ([@zarx](https://twitter.com/zarx))  
 Chris White  
 Albert ([@DerAlbert](https://twitter.com/DerAlbert))  
 Hugo Biarge ([@hbiarge](https://twitter.com/hbiarge))  
 Ibrahim Šuta ([@ibrahimsuta](https://twitter.com/ibrahimsuta))  
-Dave Noderer  ([@davenoderer](https://twitter.com/davenoderer))  
 VIJAYA PAL NALLALA  
 Martijn Boland  
 Giuseppe Turitto  
