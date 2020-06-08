@@ -51,7 +51,7 @@ All that's left to do now in the client is to ask for the additional resources v
         .AddCookie("Cookies")
         .AddOpenIdConnect("oidc", options =>
         {
-            options.Authority = "http://localhost:5000";
+            options.Authority = "https://localhost:5001";
             options.RequireHttpsMetadata = false;
 
             options.ClientId = "mvc";
@@ -82,7 +82,7 @@ For accessing the API using the access token, all you need to do is retrieve the
 
         var client = new HttpClient();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-        var content = await client.GetStringAsync("http://localhost:5001/identity");
+        var content = await client.GetStringAsync("https://localhost:6001/identity");
 
         ViewBag.Json = JArray.Parse(content).ToString();
         return View("json");
