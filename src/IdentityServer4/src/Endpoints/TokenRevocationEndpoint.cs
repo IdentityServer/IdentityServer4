@@ -66,7 +66,7 @@ namespace IdentityServer4.Endpoints
                 return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
             }
 
-            if (!context.Request.HasFormContentType)
+            if (!context.Request.HasApplicationFormContentType())
             {
                 _logger.LogWarning("Invalid media type");
                 return new StatusCodeResult(HttpStatusCode.UnsupportedMediaType);
