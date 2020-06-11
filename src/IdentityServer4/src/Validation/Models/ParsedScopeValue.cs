@@ -32,6 +32,7 @@ namespace IdentityServer4.Validation
             {
                 throw new ArgumentNullException(nameof(rawValue));
             }
+            
             if (String.IsNullOrWhiteSpace(parsedName))
             {
                 throw new ArgumentNullException(nameof(parsedName));
