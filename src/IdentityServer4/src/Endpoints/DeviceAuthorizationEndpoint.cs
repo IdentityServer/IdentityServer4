@@ -54,7 +54,7 @@ namespace IdentityServer4.Endpoints
             _logger.LogTrace("Processing device authorize request.");
 
             // validate HTTP
-            if (!HttpMethods.IsPost(context.Request.Method) || !context.Request.HasFormContentType)
+            if (!HttpMethods.IsPost(context.Request.Method) || !context.Request.HasApplicationFormContentType())
             {
                 _logger.LogWarning("Invalid HTTP request for device authorize endpoint");
                 return Error(OidcConstants.TokenErrors.InvalidRequest);
