@@ -2,8 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
+using Microsoft.Net.Http.Headers;
 
 #pragma warning disable 1591
 
@@ -25,6 +27,19 @@ namespace IdentityServer4.Extensions
             }
 
             return null;
+        }
+        
+        internal static bool HasApplicationFormContentType(this HttpRequest request)
+        {
+            if (request.ContentType is null) return false;
+            
+            if (MediaTypeHeaderValue.TryParse(request.ContentType, out var header))
+            {
+                // Content-Type: application/x-www-form-urlencoded; charset=utf-8
+                return header.MediaType.Equals("application/x-www-form-urlencoded", StringComparison.OrdinalIgnoreCase);
+            }
+
+            return false;
         }
     }
 }
