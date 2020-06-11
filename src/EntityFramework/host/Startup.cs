@@ -49,7 +49,6 @@ namespace Host
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseMiddleware<Logging.RequestLoggerMiddleware>();
             app.UseDeveloperExceptionPage();
 
             app.UseStaticFiles();

@@ -14,8 +14,8 @@ namespace Host.Configuration
             IdentityServerConstants.StandardScopes.OpenId,
             IdentityServerConstants.StandardScopes.Profile,
             IdentityServerConstants.StandardScopes.Email,
-            "scope1", 
-            "scope2",
+            "resource1.scope1", 
+            "resource2.scope1",
             "transaction"
         };
         
