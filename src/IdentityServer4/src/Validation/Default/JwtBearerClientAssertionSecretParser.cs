@@ -54,7 +54,7 @@ namespace IdentityServer4.Validation
         {
             _logger.LogDebug("Start parsing for JWT client assertion in post body");
 
-            if (!context.Request.HasFormContentType)
+            if (!context.Request.HasApplicationFormContentType())
             {
                 _logger.LogDebug("Content type is not a form");
                 return null;

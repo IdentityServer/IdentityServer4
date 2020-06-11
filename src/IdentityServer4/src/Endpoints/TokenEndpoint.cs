@@ -61,7 +61,7 @@ namespace IdentityServer4.Endpoints
             _logger.LogTrace("Processing token request.");
 
             // validate HTTP
-            if (!HttpMethods.IsPost(context.Request.Method) || !context.Request.HasFormContentType)
+            if (!HttpMethods.IsPost(context.Request.Method) || !context.Request.HasApplicationFormContentType())
             {
                 _logger.LogWarning("Invalid HTTP request for token endpoint");
                 return Error(OidcConstants.TokenErrors.InvalidRequest);

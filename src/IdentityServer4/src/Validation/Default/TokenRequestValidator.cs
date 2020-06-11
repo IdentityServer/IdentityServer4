@@ -235,7 +235,18 @@ namespace IdentityServer4.Validation
                 LogError("Invalid authorization code", new { code });
                 return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
+            
+            /////////////////////////////////////////////
+            // validate client binding
+            /////////////////////////////////////////////
+            if (authZcode.ClientId != _validatedRequest.Client.ClientId)
+            {
+                LogError("Client is trying to use a code from a different client", new { clientId = _validatedRequest.Client.ClientId, codeClient = authZcode.ClientId });
+                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+            }
 
+            // remove code from store
+            // todo: set to consumed in the future?
             await _authorizationCodeStore.RemoveAuthorizationCodeAsync(code);
 
             if (authZcode.CreationTime.HasExceeded(authZcode.Lifetime, _clock.UtcNow.UtcDateTime))
@@ -250,15 +261,6 @@ namespace IdentityServer4.Validation
             if (authZcode.SessionId.IsPresent())
             {
                 _validatedRequest.SessionId = authZcode.SessionId;
-            }
-
-            /////////////////////////////////////////////
-            // validate client binding
-            /////////////////////////////////////////////
-            if (authZcode.ClientId != _validatedRequest.Client.ClientId)
-            {
-                LogError("Client is trying to use a code from a different client", new { clientId = _validatedRequest.Client.ClientId, codeClient = authZcode.ClientId });
-                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
             }
 
             /////////////////////////////////////////////

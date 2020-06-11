@@ -5,14 +5,14 @@ The ultimate job of an OpenID Connect/OAuth token service is to control access t
 
 The two fundamental resource types in IdentityServer are:
 
-* identity resources: these are claims about a user like user ID, display name, email address etc…
-* API resources: this is functionality a client wants to access. Typically, they are HTTP-based endpoints (aka APIs), but could be also message queuing endpoint or similar.
+* **identity resources:** represent claims about a user like user ID, display name, email address etc…
+* **API resources:** represent functionality a client wants to access. Typically, they are HTTP-based endpoints (aka APIs), but could be also message queuing endpoints or similar.
 
 .. note:: You can define resources using a C# object model - or load them from a data store. An implementation of ``IResourceStore`` deals with these low-level details. For this document we are using the in-memory implementation.
 
 Identity Resources
 ------------------
-An identity resource is a named logical grouping of claims.
+An identity resource is a named group of claims that can be requested using the *scope* parameter.
 
 The OpenID Connect specification `suggests <https://openid.net/specs/openid-connect-core-1_0.html#ScopeClaims>`_ a couple of standard 
 scope name to claim type mappings that might be useful to you for inspiration, but you can freely design them yourself.
@@ -44,7 +44,7 @@ But since this is one of the standard scopes from the spec you can shorten that 
 
 .. note:: see the reference section for more information on ``IdentityResource``.
 
-The following example shows custom identity resource called *profile* that represents the display name, email address and website claim::
+The following example shows a custom identity resource called *profile* that represents the display name, email address and website claim::
 
     public static IEnumerable<IdentityResource> GetIdentityResources()
     {
@@ -82,7 +82,7 @@ The original OAuth 2.0 specification has the concept of scopes, which is just de
 Technically speaking, the *scope* parameter is a list of space delimited values - you need to provide the structure and semantics of it.
 
 In more complex systems, often the notion of a *resource* is introduced. This might be e.g. a physical or logical API. 
-In turn each API can potentially have scopes as well. Some scope might be exclusive to that resource, and some scope might be shared.
+In turn each API can potentially have scopes as well. Some scopes might be exclusive to that resource, and some scopes might be shared.
 
 Let's start with simple scopes first, and then we'll have a look how resources can help structure scopes.
 
@@ -102,7 +102,7 @@ You can define them using the ``ApiScope`` class::
         };
     }
 
-You can then assign the scope to various clients, e.g.::
+You can then assign the scopes to various clients, e.g.::
 
     var webViewer = new Client
     {
@@ -125,7 +125,7 @@ the value of that scope will be included in the resulting access token as a clai
 
     {
         "typ": "at+jwt"
-    }
+    }.
     {
         "client_id": "mobile_app",
         "sub": "123",
@@ -135,7 +135,7 @@ the value of that scope will be included in the resulting access token as a clai
 
 The consumer of the access token can use that data to make sure that the client is actually allowed to invoke the corresponding functionality.
 
-.. note:: Be aware, that scopes are purely for authorizing clients - not users. IOW - the *write* scope allows the client to invoke the functionality associated with that. Still that client can most probably only write the data the belongs to the current user.
+.. note:: Be aware, that scopes are purely for authorizing clients - not users. IOW - the *write* scope allows the client to invoke the functionality associated with that. Still that client can most probably only write the data the belongs to the current user. This additional user centric authorization is application logic and not covered by OAuth.
 
 You can add more identity information about the user by deriving additional claims from the scope request. The following scope definition tells the configuration system,
 that when a *write* scope gets granted, the *user_level* claim should be added to the access token::
@@ -143,7 +143,7 @@ that when a *write* scope gets granted, the *user_level* claim should be added t
     var writeScope = new ApiScope(
         name: "write",
         displayName: "Write your data.",
-        claimTypes: new[] { "user_level" });
+        userClaims: new[] { "user_level" });
 
 This will pass the *user_level* claim as a requested claim type to the profile service, 
 so that the consumer of the access token can use this data as input for authorization decisions or business logic.
@@ -153,7 +153,7 @@ Parameterized Scopes
 Sometimes scopes have a certain structure, e.g. a scope name with an additional parameter: *transaction:id* or *read_patient:patientid*.
 
 In this case you would create a scope without the parameter part and assign that name to a client, but in addition provide some logic to parse the structure
-of the scope at runtime using the ``IResourceValidator`` interace, e.g.::
+of the scope at runtime using the ``IResourceValidator`` interface, e.g.::
 
     public class ParameterizedScopeValidator : ResourceValidator
     {
@@ -205,12 +205,15 @@ In IdentityServer, the ``ApiResource`` class allows some additional organization
     {
         return new List<ApiScope>
         {
+            // invoice API specific scopes
             new ApiScope(name: "invoice.read",   displayName: "Reads your invoices."),
             new ApiScope(name: "invoice.pay",    displayName: "Pays your invoices."),
 
+            // customer API specific scopes
             new ApiScope(name: "customer.read",    displayName: "Reads you customers information."),
             new ApiScope(name: "customer.contact", displayName: "Allows contacting one of your customers.")
 
+            // shared scope
             new ApiScope(name: "manage", displayName: "Provides administrative access to invoice and customer data.")
         };
     }
@@ -235,7 +238,48 @@ With ``ApiResource`` you can now create two logical APIs and their correponding 
 
 Using the API resource grouping gives you the following additional features
 
-* support for the JWT *aud* claim. The value(s) of the audience claim will be the name of the API resource
+* support for the JWT *aud* claim. The value(s) of the audience claim will be the name of the API resource(s)
 * support for adding common user claims across all contained scopes
 * support for introspection by assigning a API secret to the resource
 * support for configuring the access token signing algorithm for the resource
+
+Let's have a look at some example access tokens for the above resource configuration.
+
+**Client requests** invoice.read and invoice.pay::
+
+    {
+        "typ": "at+jwt"
+    }.
+    {
+        "client_id": "client",
+        "sub": "123",
+
+        "aud": "invoice",
+        "scope": "invoice.read invoice.pay"
+    }
+
+**Client requests** invoice.read and customer.read::
+
+    {
+        "typ": "at+jwt"
+    }.
+    {
+        "client_id": "client",
+        "sub": "123",
+
+        "aud": [ "invoice", "customer" ]
+        "scope": "invoice.read customer.read"
+    }
+
+**Client requests** manage::
+
+    {
+        "typ": "at+jwt"
+    }.
+    {
+        "client_id": "client",
+        "sub": "123",
+
+        "aud": [ "invoice", "customer" ]
+        "scope": "manage"
+    }

@@ -40,7 +40,7 @@ namespace IdentityServer4.Endpoints
             }
             else if (HttpMethods.IsPost(context.Request.Method))
             {
-                if (!context.Request.HasFormContentType)
+                if (!context.Request.HasApplicationFormContentType())
                 {
                     return new StatusCodeResult(HttpStatusCode.UnsupportedMediaType);
                 }

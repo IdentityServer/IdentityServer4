@@ -41,7 +41,7 @@ namespace IdentityServer4.Validation
                 return result;
             }
 
-            if (context.Request.HasFormContentType)
+            if (context.Request.HasApplicationFormContentType())
             {
                 result = await ValidatePostBodyAsync(context);
                 if (result.TokenFound)
