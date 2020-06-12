@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 
@@ -12,6 +13,17 @@ namespace IdentityServer4.Validation
     /// </summary>
     public class DefaultScopeParser : IScopeParser
     {
+        private readonly ILogger<DefaultScopeParser> _logger;
+
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="logger"></param>
+        public DefaultScopeParser(ILogger<DefaultScopeParser> logger)
+        {
+            _logger = logger;
+        }
+
         /// <inheritdoc/>
         public ParsedScopesResult ParseScopeValues(IEnumerable<string> scopeValues)
         {
@@ -27,7 +39,7 @@ namespace IdentityServer4.Validation
                 if (ctx.Succeeded)
                 {
                     var parsedScope = ctx.ParsedName != null ?
-                        new ParsedScopeValue(ctx.RawValue, ctx.ParsedName, ctx.ParameterValue) :
+                        new ParsedScopeValue(ctx.RawValue, ctx.ParsedName, ctx.ParsedParameter) :
                         new ParsedScopeValue(ctx.RawValue);
 
                     result.ParsedScopes.Add(parsedScope);
@@ -35,6 +47,10 @@ namespace IdentityServer4.Validation
                 else if (!ctx.Ignore)
                 {
                     result.Errors.Add(new ParsedScopeValidationError(scopeValue, ctx.Error));
+                }
+                else
+                {
+                    _logger.LogDebug("Scope parsing ignoring scope {scope}", scopeValue);
                 }
             }
 
@@ -62,14 +78,14 @@ namespace IdentityServer4.Validation
             public string RawValue { get; }
 
             /// <summary>
-            /// The parsed name of the scope. If the scope has no structure, the parsed name will be the same as the raw value.
+            /// The parsed name of the scope. 
             /// </summary>
             public string ParsedName { get; private set; }
 
             /// <summary>
-            /// The parameter value of the parsed scope. If the scope has no structure, then the value will be null.
+            /// The parsed parameter value of the scope. 
             /// </summary>
-            public string ParameterValue { get; private set; }
+            public string ParsedParameter { get; private set; }
 
             /// <summary>
             /// The error encountered parsing the scope.
@@ -96,19 +112,23 @@ namespace IdentityServer4.Validation
             }
 
             /// <summary>
-            /// Sets the parsed name and optional parsed parameter value for the scope.
+            /// Sets the parsed name and parsed parameter value for the scope.
             /// </summary>
             /// <param name="parsedName"></param>
-            /// <param name="parameterValue"></param>
-            public void SetParsedValues(string parsedName, string parameterValue = null)
+            /// <param name="parsedParameter"></param>
+            public void SetParsedValues(string parsedName, string parsedParameter)
             {
                 if (String.IsNullOrWhiteSpace(parsedName))
                 {
                     throw new ArgumentNullException(nameof(parsedName));
                 }
+                if (String.IsNullOrWhiteSpace(parsedParameter))
+                {
+                    throw new ArgumentNullException(nameof(parsedParameter));
+                }
 
                 ParsedName = parsedName;
-                ParameterValue = parameterValue;
+                ParsedParameter = parsedParameter;
                 Error = null;
                 Ignore = false;
             }
@@ -120,7 +140,7 @@ namespace IdentityServer4.Validation
             public void SetError(string error)
             {
                 ParsedName = null;
-                ParameterValue = null;
+                ParsedParameter = null;
                 Error = error;
                 Ignore = false;
             }
@@ -131,7 +151,7 @@ namespace IdentityServer4.Validation
             public void SetIgnore()
             {
                 ParsedName = null;
-                ParameterValue = null;
+                ParsedParameter = null;
                 Error = null;
                 Ignore = true;
             }

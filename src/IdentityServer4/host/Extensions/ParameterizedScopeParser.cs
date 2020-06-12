@@ -1,10 +1,15 @@
 ﻿using IdentityServer4.Validation;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace Host.Extensions
 {
     public class ParameterizedScopeParser : DefaultScopeParser
     {
+        public ParameterizedScopeParser(ILogger<DefaultScopeParser> logger) : base(logger)
+        {
+        }
+
         public override void ParseScopeValue(ParseScopeContext scopeContext)
         {
             const string transactionScopeName = "transaction";
@@ -23,7 +28,6 @@ namespace Host.Extensions
                 }
                 else
                 {
-                    //scopeContext.SetIgnore();
                     scopeContext.SetError("transaction scope missing transaction parameter value");
                 }
             }

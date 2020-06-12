@@ -25,14 +25,14 @@ namespace IdentityServer4.Validation
         /// </summary>
         /// <param name="rawValue"></param>
         /// <param name="parsedName"></param>
-        /// <param name="parameterValue"></param>
-        public ParsedScopeValue(string rawValue, string parsedName, string parameterValue)
+        /// <param name="parsedParameter"></param>
+        public ParsedScopeValue(string rawValue, string parsedName, string parsedParameter)
         {
             if (String.IsNullOrWhiteSpace(rawValue))
             {
                 throw new ArgumentNullException(nameof(rawValue));
             }
-            
+
             if (String.IsNullOrWhiteSpace(parsedName))
             {
                 throw new ArgumentNullException(nameof(parsedName));
@@ -40,7 +40,7 @@ namespace IdentityServer4.Validation
 
             RawValue = rawValue;
             ParsedName = parsedName;
-            ParameterValue = parameterValue;
+            ParsedParameter = parsedParameter;
         }
 
         /// <summary>
@@ -57,6 +57,6 @@ namespace IdentityServer4.Validation
         /// <summary>
         /// The parameter value of the parsed scope. If the scope has no structure, then the value will be null.
         /// </summary>
-        public string ParameterValue { get; set; }
+        public string ParsedParameter { get; set; }
     }
 }

@@ -46,8 +46,7 @@ namespace IdentityServer4.Validation
             {
                 foreach (var invalidScope in parsedScopesResult.Errors)
                 {
-                    // todo: warning?
-                    _logger.LogWarning("Invalid parsed scope {scope}, message: {error}", invalidScope.RawValue, invalidScope.Error);
+                    _logger.LogError("Invalid parsed scope {scope}, message: {error}", invalidScope.RawValue, invalidScope.Error);
                     result.InvalidScopes.Add(invalidScope.RawValue);
                 }
 

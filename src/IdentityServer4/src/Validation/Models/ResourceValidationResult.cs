@@ -57,7 +57,7 @@ namespace IdentityServer4.Validation
         public ICollection<ParsedScopeValue> ParsedScopes { get; set; } = new HashSet<ParsedScopeValue>();
 
         /// <summary>
-        /// All the original (raw) scope values represented by the result.
+        /// The original (raw) scope values represented by the validated result.
         /// </summary>
         public IEnumerable<string> RawScopeValues => ParsedScopes.Select(x => x.RawValue);
 
