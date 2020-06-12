@@ -26,7 +26,7 @@ namespace Host.Configuration
                     ClientId = "client",
                     ClientSecrets = {new Secret("secret".Sha256())},
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    AllowedScopes = { "scope1", "scope2", IdentityServerConstants.LocalApi.ScopeName}
+                    AllowedScopes = { "resource1.scope1", "resource2.scope1", IdentityServerConstants.LocalApi.ScopeName}
                 },
                 
                 ///////////////////////////////////////////
@@ -60,7 +60,7 @@ namespace Host.Configuration
                     
                     AccessTokenType = AccessTokenType.Jwt,
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    AllowedScopes = { "scope1", "scope2" }
+                    AllowedScopes = { "resource1.scope1", "resource2.scope1" }
                 },
 
                 ///////////////////////////////////////////
@@ -86,7 +86,7 @@ namespace Host.Configuration
                     },
                     
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    AllowedScopes = { "scope1", "scope2" }
+                    AllowedScopes = { "resource1.scope1", "resource2.scope1" }
                 },
 
                 ///////////////////////////////////////////
@@ -97,7 +97,7 @@ namespace Host.Configuration
                     ClientId = "client.custom",
                     ClientSecrets = {new Secret("secret".Sha256())},
                     AllowedGrantTypes = {"custom", "custom.nosubject"},
-                    AllowedScopes = { "scope1", "scope2" }
+                    AllowedScopes = { "resource1.scope1", "resource2.scope1" }
                 },
 
                 ///////////////////////////////////////////
@@ -113,7 +113,7 @@ namespace Host.Configuration
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         "custom.profile",
-                        "scope1", "scope2"
+                        "resource1.scope1", "resource2.scope1"
                     }
                 },
 
@@ -130,7 +130,7 @@ namespace Host.Configuration
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Email,
-                        "scope1", "scope2"
+                        "resource1.scope1", "resource2.scope1"
                     }
                 },
 
@@ -151,7 +151,7 @@ namespace Host.Configuration
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Email,
-                        "scope1", "scope2"
+                        "resource1.scope1", "resource2.scope1"
                     }
                 },
                 ///////////////////////////////////////////
@@ -173,7 +173,7 @@ namespace Host.Configuration
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Email,
-                        "scope1", "scope2"
+                        "resource1.scope1", "resource2.scope1"
                     }
                 },
 
@@ -186,7 +186,7 @@ namespace Host.Configuration
                     ClientId = "roclient.reference",
                     ClientSecrets = {new Secret("secret".Sha256())},
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
-                    AllowedScopes = {"scope1", "scope2"},
+                    AllowedScopes = { "resource1.scope1", "resource2.scope1" },
                     AccessTokenType = AccessTokenType.Reference
                 },
                 
@@ -208,7 +208,7 @@ namespace Host.Configuration
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Email,
-                        "scope1", "scope2"
+                        "resource1.scope1", "resource2.scope1"
                     }
                 }
             };

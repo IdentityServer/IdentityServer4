@@ -159,7 +159,7 @@ namespace IdentityServer.IntegrationTests.Endpoints.Authorize
             _mockPipeline.ConsentRequest.AcrValues.Should().BeEquivalentTo(new string[] { "acr_2", "acr_1" });
             _mockPipeline.ConsentRequest.Parameters.AllKeys.Should().Contain("custom_foo");
             _mockPipeline.ConsentRequest.Parameters["custom_foo"].Should().Be("foo_value");
-            _mockPipeline.ConsentRequest.ValidatedResources.ScopeValues.Should().BeEquivalentTo(new string[] { "api2", "openid", "api1" });
+            _mockPipeline.ConsentRequest.ValidatedResources.RawScopeValues.Should().BeEquivalentTo(new string[] { "api2", "openid", "api1" });
         }
 
         [Theory]

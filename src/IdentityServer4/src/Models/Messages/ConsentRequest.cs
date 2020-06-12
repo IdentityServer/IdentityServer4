@@ -26,7 +26,7 @@ namespace IdentityServer4.Models
         {
             ClientId = request.Client.ClientId;
             Nonce = request.Parameters[OidcConstants.AuthorizeRequest.Nonce];
-            ScopesRequested = request.ValidatedResources.ScopeValues;
+            ScopesRequested = request.Parameters[OidcConstants.AuthorizeRequest.Scope].ParseScopesString();
             Subject = subject;
         }
 

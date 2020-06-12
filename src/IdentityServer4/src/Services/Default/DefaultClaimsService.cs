@@ -147,7 +147,7 @@ namespace IdentityServer4.Services
             // add scopes (filter offline_access)
             // we use the ScopeValues collection rather than the Resources.Scopes because we support dynamic scope values 
             // from the request, so this issues those in the token.
-            foreach (var scope in resourceResult.ScopeValues.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess))
+            foreach (var scope in resourceResult.RawScopeValues.Where(x => x != IdentityServerConstants.StandardScopes.OfflineAccess))
             {
                 outputClaims.Add(new Claim(JwtClaimTypes.Scope, scope));
             }

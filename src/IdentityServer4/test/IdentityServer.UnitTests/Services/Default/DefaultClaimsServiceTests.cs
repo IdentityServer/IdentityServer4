@@ -186,7 +186,7 @@ namespace IdentityServer.UnitTests.Services.Default
             var resourceResult = new ResourceValidationResult()
             {
                 Resources = _resources,
-                ParsedScopes = { new ParsedScopeValue("api", "api:123", "123") }
+                ParsedScopes = { new ParsedScopeValue("api:123", "api", "123") }
             };
 
             var claims = await _subject.GetAccessTokenClaimsAsync(_user, resourceResult, _validatedRequest);

@@ -29,7 +29,7 @@ namespace IdentityServer.UnitTests.Common
         {
             ConsentSubject = subject;
             ConsentClient = client;
-            ConsentScopes = parsedScopes?.Select(x => x.Value);
+            ConsentScopes = parsedScopes?.Select(x => x.RawValue);
 
             return Task.CompletedTask;
         }

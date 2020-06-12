@@ -14,7 +14,7 @@ namespace IdentityServer4.ResponseHandling
         public ValidatedAuthorizeRequest Request { get; set; }
         public string RedirectUri => Request?.RedirectUri;
         public string State => Request?.State;
-        public string Scope => Request?.ValidatedResources?.ScopeValues.ToSpaceSeparatedString();
+        public string Scope => Request?.ValidatedResources?.RawScopeValues.ToSpaceSeparatedString();
 
         public string IdentityToken { get; set; }
         public string AccessToken { get; set; }

@@ -172,7 +172,8 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddTransient<IUserCodeGenerator, NumericUserCodeGenerator>();
             builder.Services.TryAddTransient<ILogoutNotificationService, LogoutNotificationService>();
             builder.Services.TryAddTransient<IBackChannelLogoutService, DefaultBackChannelLogoutService>();
-            builder.Services.TryAddTransient<IResourceValidator, ResourceValidator>();
+            builder.Services.TryAddTransient<IResourceValidator, DefaultResourceValidator>();
+            builder.Services.TryAddTransient<IScopeParser, DefaultScopeParser>();
 
             builder.AddJwtRequestUriHttpClient();
             builder.AddBackChannelLogoutHttpClient();

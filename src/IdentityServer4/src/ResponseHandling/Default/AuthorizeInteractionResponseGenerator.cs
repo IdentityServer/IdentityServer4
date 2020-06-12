@@ -312,7 +312,7 @@ namespace IdentityServer4.ResponseHandling
                                 if (consent.RememberConsent)
                                 {
                                     // remember what user actually selected
-                                    scopes = request.ValidatedResources.ScopeValues;
+                                    scopes = request.ValidatedResources.RawScopeValues;
                                     Logger.LogDebug("User indicated to remember consent for scopes: {scopes}", scopes);
                                 }
 
