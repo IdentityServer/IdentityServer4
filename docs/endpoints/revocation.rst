@@ -8,6 +8,8 @@ It implements the token revocation specification `(RFC 7009) <https://tools.ietf
     the token to revoke (required)
 ``token_type_hint``
     either ``access_token`` or ``refresh_token`` (optional)
+    
+.. Note:: IdentityServer supports `client authentication <https://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication>`_ for token request parameters. If using client authentication for token request you must use it here as well to revoke the access token.
 
 Example
 ^^^^^^^
