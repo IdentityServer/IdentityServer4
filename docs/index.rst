@@ -92,7 +92,7 @@ It enables the following features in your applications:
    topics/events
    topics/crypto
    topics/grant_types
-   topics/secrets
+   topics/client_authentication
    topics/extension_grants
    topics/resource_owner
    topics/refresh_tokens
