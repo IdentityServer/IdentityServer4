@@ -62,7 +62,7 @@ This flow gives you the best security because the access tokens are transmitted 
         },
     };
 
-.. Note:: see the <grant types `refGrantTypes`>__ topic for more information on choosing the right grant type for your client.
+.. Note:: see the :ref:`grant types <refGrantTypes>` topic for more information on choosing the right grant type for your client.
 
 Defining clients in appsettings.json
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
