@@ -126,6 +126,7 @@ It enables the following features in your applications:
    :hidden:
    :caption: Reference
 
+   reference/options
    reference/identity_resource
    reference/api_resource
    reference/client
@@ -133,7 +134,6 @@ It enables the following features in your applications:
    reference/profileservice
    reference/interactionservice
    reference/deviceflow_interactionservice
-   reference/options
    reference/ef
    reference/aspnet_identity
 

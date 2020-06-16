@@ -148,6 +148,8 @@ that when a *write* scope gets granted, the *user_level* claim should be added t
 This will pass the *user_level* claim as a requested claim type to the profile service, 
 so that the consumer of the access token can use this data as input for authorization decisions or business logic.
 
+.. note:: When using the scope-only model, no aud (audience) claim will be added to the token, since this concept does not apply. If you need an aud claim, you can enable the ``EmitStaticAudience`` setting on the options. This will emit an aud claim in the ``issuer_name/resources`` format. If you need more control of the aud claim, use API resources.
+
 Parameterized Scopes
 ^^^^^^^^^^^^^^^^^^^^
 Sometimes scopes have a certain structure, e.g. a scope name with an additional parameter: *transaction:id* or *read_patient:patientid*.
