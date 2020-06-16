@@ -30,10 +30,25 @@ The ``AddInMemoryApiResource`` extensions method also supports adding API resour
         "ApiResources": [
             {
                 "Name": "resource1",
+                "DisplayName": "Resource #1",
 
                 "Scopes": [
                     "resource1.scope1",
-                    "resource1.scope2"
+                    "shared.scope"
+                ]
+            },
+            {
+                "Name": "resource2",
+                "DisplayName": "Resource #2",
+                
+                "UserClaims": [
+                    "name",
+                    "email"
+                ],
+
+                "Scopes": [
+                    "resource2.scope1",
+                    "shared.scope"
                 ]
             }
         ]
