@@ -14,7 +14,7 @@ Additional client settings
 ``RefreshTokenUsage``
     ``ReUse`` the refresh token handle will stay the same when refreshing tokens
     
-    ``OneTime`` the refresh token handle will be updated when refreshing tokens
+    ``OneTimeOnly`` the refresh token handle will be updated when refreshing tokens
 ``RefreshTokenExpiration``
     ``Absolute`` the refresh token will expire on a fixed point in time (specified by the AbsoluteRefreshTokenLifetime)
     
