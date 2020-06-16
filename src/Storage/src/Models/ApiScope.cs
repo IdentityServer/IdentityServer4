@@ -5,14 +5,18 @@
 using IdentityServer4.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace IdentityServer4.Models
 {
     /// <summary>
     /// Models access to an API scope
     /// </summary>
+    [DebuggerDisplay("{" + nameof(DebuggerDisplay) + ",nq}")]
     public class ApiScope : Resource
     {
+        private string DebuggerDisplay => Name ?? $"{{{typeof(ApiScope)}}}";
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiScope"/> class.
         /// </summary>

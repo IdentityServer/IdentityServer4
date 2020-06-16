@@ -5,14 +5,18 @@
 using IdentityServer4.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace IdentityServer4.Models
 {
     /// <summary>
     /// Models a web API resource.
     /// </summary>
+    [DebuggerDisplay("{" + nameof(DebuggerDisplay) + ",nq}")]
     public class ApiResource : Resource
     {
+        private string DebuggerDisplay => Name ?? $"{{{typeof(ApiResource)}}}";
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiResource"/> class.
         /// </summary>
