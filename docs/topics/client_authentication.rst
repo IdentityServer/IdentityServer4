@@ -1,7 +1,6 @@
-Secrets
-=======
-
-In certain situations, clients need to authenticate with identityserver, e.g.
+Client Authentication
+=====================
+In certain situations, clients need to authenticate with IdentityServer, e.g.
 
 * confidential applications (aka clients) requesting tokens at the token endpoint
 * APIs validating reference tokens at the introspection endpoint
@@ -26,7 +25,7 @@ Notice that both do not only support a single secret, but multiple. This is usef
         ClientSecrets = new List<Secret> { secret },
 
         AllowedGrantTypes = GrantTypes.ClientCredentials,
-        AllowedScopes = new List<string>
+        AllowedScopes = 
         {
             "api1", "api2"
         }
@@ -66,13 +65,14 @@ You can manually create a basic authentication header using the following C# cod
     var client = new HttpClient();
     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", headerValue);
 
-The `IdentityModel <https://github.com/IdentityModel/IdentityModel2>`_ library has helper classes called ``TokenClient`` and ``IntrospectionClient`` that encapsulate
+The `IdentityModel <https://github.com/IdentityModel/IdentityModel>`_ library has helper classes called ``TokenClient`` and ``IntrospectionClient`` that encapsulate
 both authentication and protocol messages.
 
-Beyond shared secrets
-^^^^^^^^^^^^^^^^^^^^^
+Authentication using an asymmetric Key
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 There are other techniques to authenticate clients, e.g. based on public/private key cryptography.
-IdentityServer includes support for private key JWT client secrets (see `RFC 7523 <https://tools.ietf.org/html/rfc7523>`_).
+IdentityServer includes support for private key JWT client secrets (see `RFC 7523 <https://tools.ietf.org/html/rfc7523>`_
+and `here <https://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication>`_).
 
 Secret extensibility typically consists of three things:
 
@@ -86,8 +86,8 @@ To make them available to IdentityServer, you need to register them with the DI 
     builder.AddSecretParser<JwtBearerClientAssertionSecretParser>()
     builder.AddSecretValidator<PrivateKeyJwtSecretValidator>()
 
-Our default private key JWT secret validator expects the full (leaf) certificate as base64 on the secret definition.
-This certificate will then be used to validate the signature on the self-signed JWT, e.g.::
+Our default private key JWT secret validator expects the full (leaf) certificate as base64 on the secret definition 
+or an ESA/EC JSON web key::
 
     var client = new Client
     {
@@ -99,10 +99,13 @@ This certificate will then be used to validate the signature on the self-signed 
                 Type = IdentityServerConstants.SecretTypes.X509CertificateBase64,
                 Value = "MIIDATCCAe2gAwIBAgIQoHUYAquk9rBJcq8W+F0FAzAJBgUrDgMCHQUAMBIxEDAOBgNVBAMTB0RldlJvb3QwHhcNMTAwMTIwMjMwMDAwWhcNMjAwMTIwMjMwMDAwWjARMQ8wDQYDVQQDEwZDbGllbnQwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDSaY4x1eXqjHF1iXQcF3pbFrIbmNw19w/IdOQxbavmuPbhY7jX0IORu/GQiHjmhqWt8F4G7KGLhXLC1j7rXdDmxXRyVJBZBTEaSYukuX7zGeUXscdpgODLQVay/0hUGz54aDZPAhtBHaYbog+yH10sCXgV1Mxtzx3dGelA6pPwiAmXwFxjJ1HGsS/hdbt+vgXhdlzud3ZSfyI/TJAnFeKxsmbJUyqMfoBl1zFKG4MOvgHhBjekp+r8gYNGknMYu9JDFr1ue0wylaw9UwG8ZXAkYmYbn2wN/CpJl3gJgX42/9g87uLvtVAmz5L+rZQTlS1ibv54ScR2lcRpGQiQav/LAgMBAAGjXDBaMBMGA1UdJQQMMAoGCCsGAQUFBwMCMEMGA1UdAQQ8MDqAENIWANpX5DZ3bX3WvoDfy0GhFDASMRAwDgYDVQQDEwdEZXZSb290ghAsWTt7E82DjU1E1p427Qj2MAkGBSsOAwIdBQADggEBADLje0qbqGVPaZHINLn+WSM2czZk0b5NG80btp7arjgDYoWBIe2TSOkkApTRhLPfmZTsaiI3Ro/64q+Dk3z3Kt7w+grHqu5nYhsn7xQFAQUf3y2KcJnRdIEk0jrLM4vgIzYdXsoC6YO+9QnlkNqcN36Y8IpSVSTda6gRKvGXiAhu42e2Qey/WNMFOL+YzMXGt/nDHL/qRKsuXBOarIb++43DV3YnxGTx22llhOnPpuZ9/gnNY7KLjODaiEciKhaKqt/b57mTEz4jTF4kIg6BP03MUfDXeVlM1Qf1jB43G2QQ19n5lUiqTpmQkcfLfyci2uBZ8BkOhXr3Vk9HIk/xBXQ="
             }
+            new Secret
+            {
+                Type = IdentityServerConstants.SecretTypes.JsonWebKey,
+                Value = "{'e':'AQAB','kid':'ZzAjSnraU3bkWGnnAqLapYGpTyNfLbjbzgAPbbW2GEA','kty':'RSA','n':'wWwQFtSzeRjjerpEM5Rmqz_DsNaZ9S1Bw6UbZkDLowuuTCjBWUax0vBMMxdy6XjEEK4Oq9lKMvx9JzjmeJf1knoqSNrox3Ka0rnxXpNAz6sATvme8p9mTXyp0cX4lF4U2J54xa2_S9NF5QWvpXvBeC4GAJx7QaSw4zrUkrc6XyaAiFnLhQEwKJCwUw4NOqIuYvYp_IXhw-5Ti_icDlZS-282PcccnBeOcX7vc21pozibIdmZJKqXNsL1Ibx5Nkx1F1jLnekJAmdaACDjYRLL_6n3W4wUp19UvzB1lGtXcJKLLkqB6YDiZNu16OSiSprfmrRXvYmvD8m6Fnl5aetgKw'}"
+            }
         },
 
         AllowedGrantTypes = GrantTypes.ClientCredentials,
         AllowedScopes = { "api1", "api2" }
     };
-
-You could implement your own secret validator (or extend ours) to implement e.g. chain trust validation instead.

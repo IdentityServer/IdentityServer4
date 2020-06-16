@@ -54,10 +54,9 @@ namespace IdentityServerHost
                     //options.MutualTls.AlwaysEmitConfirmationClaim = true;
                 })
                 .AddInMemoryClients(Clients.Get())
-                //.AddInMemoryClients(_config.GetSection("Clients"))
                 .AddInMemoryIdentityResources(Resources.IdentityResources)
-                .AddInMemoryApiResources(Resources.ApiResources)
                 .AddInMemoryApiScopes(Resources.ApiScopes)
+                .AddInMemoryApiResources(Resources.ApiResources)
                 .AddSigningCredential()
                 .AddExtensionGrantValidator<Extensions.ExtensionGrantValidator>()
                 .AddExtensionGrantValidator<Extensions.NoSubjectExtensionGrantValidator>()

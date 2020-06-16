@@ -1,6 +1,5 @@
 Defining Clients
 ================
-
 Clients represent applications that can request tokens from your identityserver.
 
 The details vary, but you typically define the following common settings for a client:
@@ -36,24 +35,22 @@ In this scenario no interactive user is present - a service (aka client) wants t
     }
 
 .. _startClientsMVC:
-Defining a server-side web application (e.g. MVC) for use authentication and delegated API access
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Interactive server side (or native desktop/mobile) applications use the hybrid flow.
+Defining an interactive application for use authentication and delegated API access
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Interactive applications (e.g. web applications or native desktop/mobile) applications use the authorization code flow.
 This flow gives you the best security because the access tokens are transmitted via back-channel calls only (and gives you access to refresh tokens)::
 
-    var mvcClient = new Client
+    var interactiveClient = new Client
     {
-        ClientId = "mvc",
-        ClientName = "MVC Client",
-        ClientUri = "http://identityserver.io",
+        ClientId = "interactive",
 
-        AllowedGrantTypes = GrantTypes.Hybrid,
+        AllowedGrantTypes = GrantTypes.Code,
         AllowOfflineAccess = true,
         ClientSecrets = { new Secret("secret".Sha256()) },
         
         RedirectUris =           { "http://localhost:21402/signin-oidc" },
         PostLogoutRedirectUris = { "http://localhost:21402/" },
-        FrontChannelLogoutUri =  "http://localhost:21402/signout-oidc",
+        FrontChannelLogoutUri =    "http://localhost:21402/signout-oidc",
 
         AllowedScopes = 
         {
@@ -64,6 +61,8 @@ This flow gives you the best security because the access tokens are transmitted 
             "api1", "api2.read_only"
         },
     };
+
+.. Note:: see the :ref:`grant types <refGrantTypes>` topic for more information on choosing the right grant type for your client.
 
 Defining clients in appsettings.json
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -78,10 +77,8 @@ The ``AddInMemoryClients`` extensions method also supports adding clients from t
           "ClientId": "local-dev",
           "ClientName": "Local Development",
           "ClientSecrets": [ { "Value": "<Insert Sha256 hash of the secret encoded as Base64 string>" } ],
-          "AllowedGrantTypes": [ "implicit" ],
-          "AllowedScopes": [ "openid", "profile" ],
-          "RedirectUris": [ "https://localhost:5001/signin-oidc" ],
-          "RequireConsent": false
+          "AllowedGrantTypes": [ "client_credentials" ],
+          "AllowedScopes": [ "api1" ],
         }
       ]
     }

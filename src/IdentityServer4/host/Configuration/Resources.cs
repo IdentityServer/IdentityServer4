@@ -59,7 +59,6 @@ namespace IdentityServerHost.Configuration
                     Scopes = { "resource1.scope1", "shared.scope" }
                 },
                 
-                // expanded version if more control is needed
                 new ApiResource("resource2", "Resource 2")
                 {
                     ApiSecrets =
