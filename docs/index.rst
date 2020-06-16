@@ -128,6 +128,7 @@ It enables the following features in your applications:
 
    reference/options
    reference/identity_resource
+   reference/api_scope
    reference/api_resource
    reference/client
    reference/grant_validation_result
