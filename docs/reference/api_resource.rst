@@ -18,7 +18,7 @@ This class model an API resource.
 ``UserClaims``
     List of associated user claim types that should be included in the access token.
 ``Scopes``
-    List of API scope names (if any).
+    List of API scope names.
 
 Defining API resources in appsettings.json
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
