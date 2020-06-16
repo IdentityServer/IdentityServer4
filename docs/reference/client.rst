@@ -1,14 +1,11 @@
 .. _refClient:
 Client
 ======
-
 The ``Client`` class models an OpenID Connect or OAuth 2.0 client - 
 e.g. a native application, a web application or a JS-based application.
 
-
 Basics
 ^^^^^^
-
 ``Enabled``
     Specifies if client is enabled. Defaults to `true`.
 ``ClientId``
@@ -17,6 +14,8 @@ Basics
     List of client secrets - credentials to access the token endpoint.
 ``RequireClientSecret``
     Specifies whether this client needs a secret to request tokens from the token endpoint (defaults to ``true``)
+``RequireRequestObject``
+    Specifies whether this client needs to wrap the authorize request parameters in a JWT (defaults to ``false``)
 ``AllowedGrantTypes``
     Specifies the grant types the client is allowed to use. Use the ``GrantTypes`` class for common combinations.
 ``RequirePkce``
@@ -39,7 +38,6 @@ Basics
 
 Authentication/Logout
 ^^^^^^^^^^^^^^^^^^^^^
-
 ``PostLogoutRedirectUris``
     Specifies allowed URIs to redirect to after logout. See the `OIDC Connect Session Management spec <https://openid.net/specs/openid-connect-session-1_0.html>`_ for more details.
 ``FrontChannelLogoutUri``
@@ -60,7 +58,6 @@ Authentication/Logout
 
 Token
 ^^^^^
-
 ``IdentityTokenLifetime``
     Lifetime to identity token in seconds (defaults to 300 seconds / 5 minutes)
 ``AllowedIdentityTokenSigningAlgorithms``
@@ -102,7 +99,6 @@ Token
 
 Consent Screen
 ^^^^^^^^^^^^^^
-
 ``RequireConsent``
     Specifies whether a consent screen is required. Defaults to ``false``.
 ``AllowRememberConsent``
@@ -118,7 +114,6 @@ Consent Screen
 
 Device flow
 ^^^^^^^^^^^
-
 ``UserCodeType``
     Specifies the type of user code to use for the client. Otherwise falls back to default.
 ``DeviceCodeLifetime``

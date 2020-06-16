@@ -1,13 +1,11 @@
 Authorize Request Objects
 =========================
+Instead of providing the parameters for an authorize request as individual query string key/value pairs, you can package them up in signed JWTs.
+This makes the parameters tamper proof and you can authenticate the client already on the front-channel.
 
-Instead of providing all parameters for an authorize request as individual query string parameters, you can package them up in signed JWTs.
 You can either transmit them by value or by reference to the authorize endpoint - see the `spec <https://openid.net/specs/openid-connect-core-1_0.html#JWTRequests>`_ for more details.
 
-IdentityServer requires the request JWTs to be signed. We support X509 certificates, symmetric and RSA keys. 
-For symmetric and RSA you need to add a `JWK <https://tools.ietf.org/html/rfc7517>`_ secret to the corresponding client, e.g.::
-
-    private readonly string _symmetricJwk = @"{ 'kty': 'oct', 'use': 'sig', 'kid': '1', 'k': 'nYA-IFt8xTsdBHe9hunvizcp3Dt7f6qGqudq18kZHNtvqEGjJ9Ud-9x3kbQ-LYfLHS3xM2MpFQFg1JzT_0U_F8DI40oby4TvBDGszP664UgA8_5GjB7Flnrlsap1NlitvNpgQX3lpyTvC2zVuQ-UVsXbBDAaSBUSlnw7SE4LM8Ye2WYZrdCCXL8yAX9vIR7vf77yvNTEcBCI6y4JlvZaqMB4YKVSfygs8XqGGCHjLpE5bvI-A4ESbAUX26cVFvCeDg9pR6HK7BmwPMlO96krgtKZcXEJtUELYPys6-rbwAIdmxJxKxpgRpt0FRv_9fm6YPwG7QivYBX-vRwaodL1TA', 'alg': 'HS256'}";
+IdentityServer requires the request JWTs to be signed. We support X509 certificates and JSON web keys, e.g.::
 
     var client = new Client
     {
@@ -17,31 +15,21 @@ For symmetric and RSA you need to add a `JWK <https://tools.ietf.org/html/rfc751
         {
             new Secret
             {
+                // X509 cert base64-encoded
+                Type = IdentityServerConstants.SecretTypes.X509CertificateBase64,
+                Value = Convert.ToBase64String(cert.Export(X509ContentType.Cert))
+            },
+            new Secret
+            {
+                // RSA key as JWK
                 Type = IdentityServerConstants.SecretTypes.JsonWebKey,
-                Value = _symmetricJwk
+                Value =
+                    "{'e':'AQAB','kid':'ZzAjSnraU3bkWGnnAqLapYGpTyNfLbjbzgAPbbW2GEA','kty':'RSA','n':'wWwQFtSzeRjjerpEM5Rmqz_DsNaZ9S1Bw6UbZkDLowuuTCjBWUax0vBMMxdy6XjEEK4Oq9lKMvx9JzjmeJf1knoqSNrox3Ka0rnxXpNAz6sATvme8p9mTXyp0cX4lF4U2J54xa2_S9NF5QWvpXvBeC4GAJx7QaSw4zrUkrc6XyaAiFnLhQEwKJCwUw4NOqIuYvYp_IXhw-5Ti_icDlZS-282PcccnBeOcX7vc21pozibIdmZJKqXNsL1Ibx5Nkx1F1jLnekJAmdaACDjYRLL_6n3W4wUp19UvzB1lGtXcJKLLkqB6YDiZNu16OSiSprfmrRXvYmvD8m6Fnl5aetgKw'}"
             }
         }
     }
 
 .. note:: Microsoft.IdentityModel.Tokens.JsonWebKeyConverter has various helpers to convert keys to JWKs
-
-X.509 certificates are supported both in base64 or JWK representation::
-
-    ClientSecrets =     
-    {
-        new Secret
-        {
-            // base64 
-            Type = IdentityServerConstants.SecretTypes.X509CertificateBase64,
-            Value = Convert.ToBase64String(cert.Export(X509ContentType.Cert))
-        },
-        new Secret
-        {
-            // JWK
-            Type = IdentityServerConstants.SecretTypes.JsonWebKey,
-            Value = JsonConvert.SerializeObject(JsonWebKeyConverter.ConvertFromX509SecurityKey(new X509SecurityKey(TestCert.Load())))
-        }
-    }
 
 Passing request JWTs by reference
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -60,7 +48,7 @@ You can customize the HTTP client used for this outgoing connection, e.g. to add
             TimeSpan.FromSeconds(3)
         }));
 
-.. note:: Request URI processing is disabled by default. Enable on the :ref:`IdentityServer Options <refOptions>` under ``Endpoints``.
+.. note:: Request URI processing is disabled by default. Enable on the :ref:`IdentityServer Options <refOptions>` under ``Endpoints``. Also see the security considerations from the JAR `specification <https://tools.ietf.org/html/draft-ietf-oauth-jwsreq-23#section-10.4>`_.
 
 Accessing the request object data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
