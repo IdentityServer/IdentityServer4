@@ -17,8 +17,7 @@ This class model an OAuth scope.
 Defining API scope in appsettings.json
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The ``AddInMemoryApiResource`` extensions method also supports adding clients from the ASP.NET Core configuration file. 
-This allows you to define API scopes directly from the appsettings.json file::
+The ``AddInMemoryApiResource`` extensions method also supports adding clients from the ASP.NET Core configuration file::
 
     "IdentityServer": {
         "IssuerUri": "urn:sso.company.com",
