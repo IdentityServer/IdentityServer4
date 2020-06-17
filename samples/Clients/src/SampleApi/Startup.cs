@@ -122,8 +122,8 @@ namespace SampleApi
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers()
-                    .RequireAuthorization("scope");
+                endpoints.MapControllers();
+
             });
         }
     }
