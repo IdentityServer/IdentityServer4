@@ -1,5 +1,5 @@
 trigger:
-- master
+- main
 - features/*
 
 jobs:
@@ -39,7 +39,7 @@ jobs:
       packagesToPush: 'nuget/*.nupkg'
       nuGetFeedType: external
       publishFeedCredentials: 'MyGet'
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
   - task: NuGetCommand@2
     displayName: 'Push to AzureArtifacts'
     inputs:
@@ -48,7 +48,7 @@ jobs:
       nuGetFeedType: 'internal'
       publishVstsFeed: 'e845e192-3505-4ec1-8b52-7e11e77d5e2a/e94fc75b-9e25-43e7-bfbc-f0af758115c1'
       allowPackageConflicts: true
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
   - task: NuGetCommand@2
     displayName: 'Push to GitHub packages'
     inputs:
@@ -56,4 +56,4 @@ jobs:
       packagesToPush: 'nuget/*.nupkg'
       nuGetFeedType: external
       publishFeedCredentials: 'GitHub Packages'
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
