@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Test;
@@ -13,7 +14,7 @@ namespace IdentityServerHost.Extensions
         {
         }
 
-        public override async Task GetProfileDataAsync(ProfileDataRequestContext context)
+        public override async Task GetProfileDataAsync(ProfileDataRequestContext context, CancellationToken cancellationToken = default)
         {
             await base.GetProfileDataAsync(context);
 
