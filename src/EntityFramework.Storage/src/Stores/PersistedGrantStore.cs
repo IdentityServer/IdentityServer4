@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using System;
 using IdentityServer4.Extensions;
+using System.Threading;
 
 namespace IdentityServer4.EntityFramework.Stores
 {
@@ -44,9 +45,9 @@ namespace IdentityServer4.EntityFramework.Stores
         }
 
         /// <inheritdoc/>
-        public virtual async Task StoreAsync(PersistedGrant token)
+        public virtual async Task StoreAsync(PersistedGrant token, CancellationToken cancellationToken = default)
         {
-            var existing = await Context.PersistedGrants.SingleOrDefaultAsync(x => x.Key == token.Key);
+            var existing = await Context.PersistedGrants.SingleOrDefaultAsync(x => x.Key == token.Key, cancellationToken);
             if (existing == null)
             {
                 Logger.LogDebug("{persistedGrantKey} not found in database", token.Key);
@@ -63,7 +64,7 @@ namespace IdentityServer4.EntityFramework.Stores
 
             try
             {
-                await Context.SaveChangesAsync();
+                await Context.SaveChangesAsync(cancellationToken);
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -72,9 +73,9 @@ namespace IdentityServer4.EntityFramework.Stores
         }
 
         /// <inheritdoc/>
-        public virtual async Task<PersistedGrant> GetAsync(string key)
+        public virtual async Task<PersistedGrant> GetAsync(string key, CancellationToken cancellationToken = default)
         {
-            var persistedGrant = await Context.PersistedGrants.AsNoTracking().FirstOrDefaultAsync(x => x.Key == key);
+            var persistedGrant = await Context.PersistedGrants.AsNoTracking().FirstOrDefaultAsync(x => x.Key == key, cancellationToken);
             var model = persistedGrant?.ToModel();
 
             Logger.LogDebug("{persistedGrantKey} found in database: {persistedGrantKeyFound}", key, model != null);
@@ -83,11 +84,11 @@ namespace IdentityServer4.EntityFramework.Stores
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<PersistedGrant>> GetAllAsync(PersistedGrantFilter filter)
+        public async Task<IEnumerable<PersistedGrant>> GetAllAsync(PersistedGrantFilter filter, CancellationToken cancellationToken = default)
         {
             filter.Validate();
 
-            var persistedGrants = await Filter(filter).ToArrayAsync();
+            var persistedGrants = await Filter(filter).ToArrayAsync(cancellationToken);
             var model = persistedGrants.Select(x => x.ToModel());
 
             Logger.LogDebug("{persistedGrantCount} persisted grants found for {@filter}", persistedGrants.Length, filter);
@@ -96,9 +97,9 @@ namespace IdentityServer4.EntityFramework.Stores
         }
 
         /// <inheritdoc/>
-        public virtual async Task RemoveAsync(string key)
+        public virtual async Task RemoveAsync(string key, CancellationToken cancellationToken = default)
         {
-            var persistedGrant = await Context.PersistedGrants.FirstOrDefaultAsync(x => x.Key == key);
+            var persistedGrant = await Context.PersistedGrants.FirstOrDefaultAsync(x => x.Key == key, cancellationToken);
             if (persistedGrant!= null)
             {
                 Logger.LogDebug("removing {persistedGrantKey} persisted grant from database", key);
@@ -107,7 +108,7 @@ namespace IdentityServer4.EntityFramework.Stores
 
                 try
                 {
-                    await Context.SaveChangesAsync();
+                    await Context.SaveChangesAsync(cancellationToken);
                 }
                 catch(DbUpdateConcurrencyException ex)
                 {
@@ -121,11 +122,11 @@ namespace IdentityServer4.EntityFramework.Stores
         }
 
         /// <inheritdoc/>
-        public async Task RemoveAllAsync(PersistedGrantFilter filter)
+        public async Task RemoveAllAsync(PersistedGrantFilter filter, CancellationToken cancellationToken = default)
         {
             filter.Validate();
 
-            var persistedGrants = await Filter(filter).ToArrayAsync();
+            var persistedGrants = await Filter(filter).ToArrayAsync(cancellationToken);
 
             Logger.LogDebug("removing {persistedGrantCount} persisted grants from database for {@filter}", persistedGrants.Length, filter);
 
@@ -133,14 +134,13 @@ namespace IdentityServer4.EntityFramework.Stores
 
             try
             {
-                await Context.SaveChangesAsync();
+                await Context.SaveChangesAsync(cancellationToken);
             }
             catch (DbUpdateConcurrencyException ex)
             {
                 Logger.LogInformation("removing {persistedGrantCount} persisted grants from database for subject {@filter}: {error}", persistedGrants.Length, filter, ex.Message);
             }
         }
-
 
         private IQueryable<Entities.PersistedGrant> Filter(PersistedGrantFilter filter)
         {

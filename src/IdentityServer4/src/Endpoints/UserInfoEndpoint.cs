@@ -11,6 +11,7 @@ using IdentityServer4.Endpoints.Results;
 using IdentityModel;
 using Microsoft.AspNetCore.Http;
 using System.Net;
+using System.Threading;
 
 namespace IdentityServer4.Endpoints
 {
@@ -44,12 +45,8 @@ namespace IdentityServer4.Endpoints
             _logger = logger;
         }
 
-        /// <summary>
-        /// Processes the request.
-        /// </summary>
-        /// <param name="context">The HTTP context.</param>
-        /// <returns></returns>
-        public async Task<IEndpointResult> ProcessAsync(HttpContext context)
+        /// <inheritdoc/>
+        public async Task<IEndpointResult> ProcessAsync(HttpContext context, CancellationToken cancellationToken = default)
         {
             if (!HttpMethods.IsGet(context.Request.Method) && !HttpMethods.IsPost(context.Request.Method))
             {
@@ -57,10 +54,10 @@ namespace IdentityServer4.Endpoints
                 return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
             }
 
-            return await ProcessUserInfoRequestAsync(context);
+            return await ProcessUserInfoRequestAsync(context, cancellationToken);
         }
 
-        private async Task<IEndpointResult> ProcessUserInfoRequestAsync(HttpContext context)
+        private async Task<IEndpointResult> ProcessUserInfoRequestAsync(HttpContext context, CancellationToken cancellationToken = default)
         {
             _logger.LogDebug("Start userinfo request");
 
@@ -76,7 +73,7 @@ namespace IdentityServer4.Endpoints
 
             // validate the request
             _logger.LogTrace("Calling into userinfo request validator: {type}", _requestValidator.GetType().FullName);
-            var validationResult = await _requestValidator.ValidateRequestAsync(tokenUsageResult.Token);
+            var validationResult = await _requestValidator.ValidateRequestAsync(tokenUsageResult.Token, cancellationToken);
 
             if (validationResult.IsError)
             {
@@ -86,7 +83,7 @@ namespace IdentityServer4.Endpoints
 
             // generate response
             _logger.LogTrace("Calling into userinfo response generator: {type}", _responseGenerator.GetType().FullName);
-            var response = await _responseGenerator.ProcessAsync(validationResult);
+            var response = await _responseGenerator.ProcessAsync(validationResult, cancellationToken);
 
             _logger.LogDebug("End userinfo request");
             return new UserInfoResult(response);

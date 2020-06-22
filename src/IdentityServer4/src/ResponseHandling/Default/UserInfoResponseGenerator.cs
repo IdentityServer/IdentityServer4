@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.ResponseHandling
@@ -51,20 +52,15 @@ namespace IdentityServer4.ResponseHandling
             Logger = logger;
         }
 
-        /// <summary>
-        /// Creates the response.
-        /// </summary>
-        /// <param name="validationResult">The userinfo request validation result.</param>
-        /// <returns></returns>
-        /// <exception cref="System.InvalidOperationException">Profile service returned incorrect subject value</exception>
-        public virtual async Task<Dictionary<string, object>> ProcessAsync(UserInfoRequestValidationResult validationResult)
+        /// <inheritdoc/>
+        public virtual async Task<Dictionary<string, object>> ProcessAsync(UserInfoRequestValidationResult validationResult, CancellationToken cancellationToken = default)
         {
             Logger.LogDebug("Creating userinfo response");
 
             // extract scopes and turn into requested claim types
             var scopes = validationResult.TokenValidationResult.Claims.Where(c => c.Type == JwtClaimTypes.Scope).Select(c => c.Value);
 
-            var validatedResources = await GetRequestedResourcesAsync(scopes);
+            var validatedResources = await GetRequestedResourcesAsync(scopes, cancellationToken);
             var requestedClaimTypes = await GetRequestedClaimTypesAsync(validatedResources);
 
             Logger.LogDebug("Requested claim types: {claimTypes}", requestedClaimTypes.ToSpaceSeparatedString());
@@ -77,7 +73,7 @@ namespace IdentityServer4.ResponseHandling
                 requestedClaimTypes);
             context.RequestedResources = validatedResources;
 
-            await Profile.GetProfileDataAsync(context);
+            await Profile.GetProfileDataAsync(context, cancellationToken);
             var profileClaims = context.IssuedClaims;
 
             // construct outgoing claims
@@ -111,8 +107,9 @@ namespace IdentityServer4.ResponseHandling
         ///  Gets the identity resources from the scopes.
         /// </summary>
         /// <param name="scopes"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        protected internal virtual async Task<ResourceValidationResult> GetRequestedResourcesAsync(IEnumerable<string> scopes)
+        protected internal virtual async Task<ResourceValidationResult> GetRequestedResourcesAsync(IEnumerable<string> scopes, CancellationToken cancellationToken = default)
         {
             if (scopes == null || !scopes.Any())
             {
@@ -123,7 +120,7 @@ namespace IdentityServer4.ResponseHandling
             Logger.LogDebug("Scopes in access token: {scopes}", scopeString);
 
             // if we ever parameterize identity scopes, then we would need to invoke the resource validator's parse API here
-            var identityResources = await Resources.FindEnabledIdentityResourcesByScopeAsync(scopes);
+            var identityResources = await Resources.FindEnabledIdentityResourcesByScopeAsync(scopes, cancellationToken);
             
             var resources = new Resources(identityResources, Enumerable.Empty<ApiResource>(), Enumerable.Empty<ApiScope>());
             var result = new ResourceValidationResult(resources);

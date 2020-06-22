@@ -1,8 +1,9 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using System.Collections.Specialized;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityServer.UnitTests.Common;
@@ -199,7 +200,7 @@ namespace IdentityServer.UnitTests.Endpoints.Authorize
             {
             }
 
-            public override Task<IEndpointResult> ProcessAsync(HttpContext context)
+            public override Task<IEndpointResult> ProcessAsync(HttpContext context, CancellationToken cancellationToken = default)
             {
                 throw new System.NotImplementedException();
             }

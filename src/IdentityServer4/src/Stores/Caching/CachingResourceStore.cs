@@ -10,6 +10,7 @@ using IdentityServer4.Configuration;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 
 namespace IdentityServer4.Stores
 {
@@ -70,65 +71,65 @@ namespace IdentityServer4.Stores
         }
 
         /// <inheritdoc/>
-        public async Task<Resources> GetAllResourcesAsync()
+        public async Task<Resources> GetAllResourcesAsync(CancellationToken cancellationToken = default)
         {
             var key = AllKey;
 
             var all = await _allCache.GetAsync(key,
                 _options.Caching.ResourceStoreExpiration,
-                () => _inner.GetAllResourcesAsync(),
+                () => _inner.GetAllResourcesAsync(cancellationToken),
                 _logger);
 
             return all;
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<ApiResource>> FindApiResourcesByNameAsync(IEnumerable<string> apiResourceNames)
+        public async Task<IEnumerable<ApiResource>> FindApiResourcesByNameAsync(IEnumerable<string> apiResourceNames, CancellationToken cancellationToken = default)
         {
             var key = GetKey(apiResourceNames);
 
             var apis = await _apiResourceCache.GetAsync(key,
                 _options.Caching.ResourceStoreExpiration,
-                () => _inner.FindApiResourcesByNameAsync(apiResourceNames),
+                () => _inner.FindApiResourcesByNameAsync(apiResourceNames, cancellationToken),
                 _logger);
 
             return apis;
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeNameAsync(IEnumerable<string> names)
+        public async Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeNameAsync(IEnumerable<string> names, CancellationToken cancellationToken = default)
         {
             var key = GetKey(names);
 
             var identities = await _identityCache.GetAsync(key,
                 _options.Caching.ResourceStoreExpiration,
-                () => _inner.FindIdentityResourcesByScopeNameAsync(names),
+                () => _inner.FindIdentityResourcesByScopeNameAsync(names, cancellationToken),
                 _logger);
 
             return identities;
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<ApiResource>> FindApiResourcesByScopeNameAsync(IEnumerable<string> names)
+        public async Task<IEnumerable<ApiResource>> FindApiResourcesByScopeNameAsync(IEnumerable<string> names, CancellationToken cancellationToken = default)
         {
             var key = GetKey(names);
 
             var apis = await _apiByScopeCache.GetAsync(key,
                 _options.Caching.ResourceStoreExpiration,
-                () => _inner.FindApiResourcesByScopeNameAsync(names),
+                () => _inner.FindApiResourcesByScopeNameAsync(names, cancellationToken),
                 _logger);
 
             return apis;
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<ApiScope>> FindApiScopesByNameAsync(IEnumerable<string> scopeNames)
+        public async Task<IEnumerable<ApiScope>> FindApiScopesByNameAsync(IEnumerable<string> scopeNames, CancellationToken cancellationToken = default)
         {
             var key = GetKey(scopeNames);
 
             var apis = await _apiScopeCache.GetAsync(key,
                 _options.Caching.ResourceStoreExpiration,
-                () => _inner.FindApiScopesByNameAsync(scopeNames),
+                () => _inner.FindApiScopesByNameAsync(scopeNames, cancellationToken),
                 _logger);
 
             return apis;

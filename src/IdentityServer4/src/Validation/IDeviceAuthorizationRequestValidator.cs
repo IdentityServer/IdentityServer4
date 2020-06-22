@@ -3,6 +3,7 @@
 
 
 using System.Collections.Specialized;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Validation
@@ -17,7 +18,8 @@ namespace IdentityServer4.Validation
         /// </summary>
         /// <param name="parameters"></param>
         /// <param name="clientValidationResult"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        Task<DeviceAuthorizationRequestValidationResult> ValidateAsync(NameValueCollection parameters, ClientSecretValidationResult clientValidationResult);
+        Task<DeviceAuthorizationRequestValidationResult> ValidateAsync(NameValueCollection parameters, ClientSecretValidationResult clientValidationResult, CancellationToken cancellationToken = default);
     }
 }

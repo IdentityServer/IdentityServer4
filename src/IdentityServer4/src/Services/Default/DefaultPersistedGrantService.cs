@@ -10,6 +10,7 @@ using IdentityServer4.Stores.Serialization;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using System.Threading;
 
 namespace IdentityServer4.Services
 {
@@ -38,11 +39,11 @@ namespace IdentityServer4.Services
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<Grant>> GetAllGrantsAsync(string subjectId)
+        public async Task<IEnumerable<Grant>> GetAllGrantsAsync(string subjectId, CancellationToken cancellationToken = default)
         {
             if (String.IsNullOrWhiteSpace(subjectId)) throw new ArgumentNullException(nameof(subjectId));
-            
-            var grants = (await _store.GetAllAsync(new PersistedGrantFilter { SubjectId = subjectId })).ToArray();
+
+            var grants = (await _store.GetAllAsync(new PersistedGrantFilter { SubjectId = subjectId }, cancellationToken)).ToArray();
 
             try
             {
@@ -147,7 +148,7 @@ namespace IdentityServer4.Services
         }
 
         /// <inheritdoc/>
-        public Task RemoveAllGrantsAsync(string subjectId, string clientId = null, string sessionId = null)
+        public Task RemoveAllGrantsAsync(string subjectId, string clientId = null, string sessionId = null, CancellationToken cancellationToken = default)
         {
             if (String.IsNullOrWhiteSpace(subjectId)) throw new ArgumentNullException(nameof(subjectId));
 
@@ -155,7 +156,7 @@ namespace IdentityServer4.Services
                 SubjectId = subjectId,
                 ClientId = clientId,
                 SessionId = sessionId
-            });
+            }, cancellationToken);
         }
     }
 }

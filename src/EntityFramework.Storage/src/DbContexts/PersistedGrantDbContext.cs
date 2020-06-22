@@ -1,8 +1,9 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer4.EntityFramework.Entities;
 using IdentityServer4.EntityFramework.Extensions;
@@ -73,10 +74,11 @@ namespace IdentityServer4.EntityFramework.DbContexts
         /// <summary>
         /// Saves the changes.
         /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        public virtual Task<int> SaveChangesAsync()
+        public virtual new Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            return base.SaveChangesAsync();
+            return base.SaveChangesAsync(cancellationToken);
         }
 
         /// <summary>

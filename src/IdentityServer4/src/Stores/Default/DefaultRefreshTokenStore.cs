@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -7,6 +7,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Stores.Serialization;
 using Microsoft.Extensions.Logging;
 using IdentityServer4.Services;
+using System.Threading;
 
 namespace IdentityServer4.Stores
 {
@@ -31,56 +32,34 @@ namespace IdentityServer4.Stores
         {
         }
 
-        /// <summary>
-        /// Stores the refresh token.
-        /// </summary>
-        /// <param name="refreshToken">The refresh token.</param>
-        /// <returns></returns>
-        public async Task<string> StoreRefreshTokenAsync(RefreshToken refreshToken)
+        /// <inheritdoc/>
+        public async Task<string> StoreRefreshTokenAsync(RefreshToken refreshToken, CancellationToken cancellationToken = default)
         {
-            return await CreateItemAsync(refreshToken, refreshToken.ClientId, refreshToken.SubjectId, refreshToken.SessionId, refreshToken.Description, refreshToken.CreationTime, refreshToken.Lifetime);
+            return await CreateItemAsync(refreshToken, refreshToken.ClientId, refreshToken.SubjectId, refreshToken.SessionId, refreshToken.Description, refreshToken.CreationTime, refreshToken.Lifetime, cancellationToken);
         }
 
-        /// <summary>
-        /// Updates the refresh token.
-        /// </summary>
-        /// <param name="handle">The handle.</param>
-        /// <param name="refreshToken">The refresh token.</param>
-        /// <returns></returns>
-        public Task UpdateRefreshTokenAsync(string handle, RefreshToken refreshToken)
+        /// <inheritdoc/>
+        public Task UpdateRefreshTokenAsync(string handle, RefreshToken refreshToken, CancellationToken cancellationToken = default)
         {
-            return StoreItemAsync(handle, refreshToken, refreshToken.ClientId, refreshToken.SubjectId, refreshToken.SessionId, refreshToken.Description, refreshToken.CreationTime, refreshToken.CreationTime.AddSeconds(refreshToken.Lifetime), refreshToken.ConsumedTime);
+            return StoreItemAsync(handle, refreshToken, refreshToken.ClientId, refreshToken.SubjectId, refreshToken.SessionId, refreshToken.Description, refreshToken.CreationTime, refreshToken.CreationTime.AddSeconds(refreshToken.Lifetime), refreshToken.ConsumedTime, cancellationToken);
         }
 
-        /// <summary>
-        /// Gets the refresh token.
-        /// </summary>
-        /// <param name="refreshTokenHandle">The refresh token handle.</param>
-        /// <returns></returns>
-        public Task<RefreshToken> GetRefreshTokenAsync(string refreshTokenHandle)
+        /// <inheritdoc/>
+        public Task<RefreshToken> GetRefreshTokenAsync(string refreshTokenHandle, CancellationToken cancellationToken = default)
         {
-            return GetItemAsync(refreshTokenHandle);
+            return GetItemAsync(refreshTokenHandle, cancellationToken);
         }
 
-        /// <summary>
-        /// Removes the refresh token.
-        /// </summary>
-        /// <param name="refreshTokenHandle">The refresh token handle.</param>
-        /// <returns></returns>
-        public Task RemoveRefreshTokenAsync(string refreshTokenHandle)
+        /// <inheritdoc/>
+        public Task RemoveRefreshTokenAsync(string refreshTokenHandle, CancellationToken cancellationToken = default)
         {
-            return RemoveItemAsync(refreshTokenHandle);
+            return RemoveItemAsync(refreshTokenHandle, cancellationToken);
         }
 
-        /// <summary>
-        /// Removes the refresh tokens.
-        /// </summary>
-        /// <param name="subjectId">The subject identifier.</param>
-        /// <param name="clientId">The client identifier.</param>
-        /// <returns></returns>
-        public Task RemoveRefreshTokensAsync(string subjectId, string clientId)
+        /// <inheritdoc/>
+        public Task RemoveRefreshTokensAsync(string subjectId, string clientId, CancellationToken cancellationToken = default)
         {
-            return RemoveAllAsync(subjectId, clientId);
+            return RemoveAllAsync(subjectId, clientId, cancellationToken);
         }
     }
 }

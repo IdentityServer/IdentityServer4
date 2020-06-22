@@ -1,9 +1,10 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
 using IdentityServer4.Models;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.ResponseHandling
@@ -18,7 +19,8 @@ namespace IdentityServer4.ResponseHandling
         /// </summary>
         /// <param name="baseUrl">The base URL.</param>
         /// <param name="issuerUri">The issuer URI.</param>
-        Task<Dictionary<string, object>> CreateDiscoveryDocumentAsync(string baseUrl, string issuerUri);
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        Task<Dictionary<string, object>> CreateDiscoveryDocumentAsync(string baseUrl, string issuerUri, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Creates the JWK document.

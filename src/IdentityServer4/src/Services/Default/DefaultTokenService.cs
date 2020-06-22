@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Services
@@ -94,14 +95,8 @@ namespace IdentityServer4.Services
             Logger = logger;
         }
 
-        /// <summary>
-        /// Creates an identity token.
-        /// </summary>
-        /// <param name="request">The token creation request.</param>
-        /// <returns>
-        /// An identity token
-        /// </returns>
-        public virtual async Task<Token> CreateIdentityTokenAsync(TokenCreationRequest request)
+        /// <inheritdoc/>
+        public virtual async Task<Token> CreateIdentityTokenAsync(TokenCreationRequest request, CancellationToken cancellationToken = default)
         {
             Logger.LogTrace("Creating identity token");
             request.Validate();
@@ -174,14 +169,8 @@ namespace IdentityServer4.Services
             return token;
         }
 
-        /// <summary>
-        /// Creates an access token.
-        /// </summary>
-        /// <param name="request">The token creation request.</param>
-        /// <returns>
-        /// An access token
-        /// </returns>
-        public virtual async Task<Token> CreateAccessTokenAsync(TokenCreationRequest request)
+        /// <inheritdoc/>
+        public virtual async Task<Token> CreateAccessTokenAsync(TokenCreationRequest request, CancellationToken cancellationToken = default)
         {
             Logger.LogTrace("Creating access token");
             request.Validate();
@@ -250,15 +239,8 @@ namespace IdentityServer4.Services
             return token;
         }
 
-        /// <summary>
-        /// Creates a serialized and protected security token.
-        /// </summary>
-        /// <param name="token">The token.</param>
-        /// <returns>
-        /// A security token in serialized form
-        /// </returns>
-        /// <exception cref="System.InvalidOperationException">Invalid token type.</exception>
-        public virtual async Task<string> CreateSecurityTokenAsync(Token token)
+        /// <inheritdoc/>
+        public virtual async Task<string> CreateSecurityTokenAsync(Token token, CancellationToken cancellationToken = default)
         {
             string tokenResult;
 
@@ -274,7 +256,7 @@ namespace IdentityServer4.Services
                 {
                     Logger.LogTrace("Creating reference access token");
 
-                    var handle = await ReferenceTokenStore.StoreReferenceTokenAsync(token);
+                    var handle = await ReferenceTokenStore.StoreReferenceTokenAsync(token, cancellationToken);
 
                     tokenResult = handle;
                 }

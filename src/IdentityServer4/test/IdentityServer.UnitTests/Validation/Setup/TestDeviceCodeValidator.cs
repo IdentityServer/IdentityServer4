@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer4.Validation;
 
@@ -12,7 +13,7 @@ namespace IdentityServer.UnitTests.Validation.Setup
             this.shouldError = shouldError;
         }
 
-        public Task ValidateAsync(DeviceCodeValidationContext context)
+        public Task ValidateAsync(DeviceCodeValidationContext context, CancellationToken cancellationToken = default)
         {
             if (shouldError) context.Result = new TokenRequestValidationResult(context.Request, "error");
             else context.Result = new TokenRequestValidationResult(context.Request);

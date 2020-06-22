@@ -7,6 +7,7 @@ using IdentityServer4.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Endpoints
@@ -20,7 +21,8 @@ namespace IdentityServer4.Endpoints
             _logger = logger;
         }
 
-        public Task<IEndpointResult> ProcessAsync(HttpContext context)
+        /// <inheritdoc/>
+        public Task<IEndpointResult> ProcessAsync(HttpContext context, CancellationToken cancellationToken = default)
         {
             IEndpointResult result;
 

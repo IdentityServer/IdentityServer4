@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer4.Validation;
 
@@ -17,7 +18,8 @@ namespace IdentityServer4.ResponseHandling
         /// </summary>
         /// <param name="validationResult">The validation result.</param>
         /// <param name="baseUrl">The base URL.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        Task<DeviceAuthorizationResponse> ProcessAsync(DeviceAuthorizationRequestValidationResult validationResult, string baseUrl);
+        Task<DeviceAuthorizationResponse> ProcessAsync(DeviceAuthorizationRequestValidationResult validationResult, string baseUrl, CancellationToken cancellationToken = default);
     }
 }

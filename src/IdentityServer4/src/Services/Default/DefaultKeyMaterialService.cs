@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -10,6 +10,7 @@ using IdentityServer4.Models;
 using System.Linq;
 using System;
 using IdentityServer4.Extensions;
+using System.Threading;
 
 namespace IdentityServer4.Services
 {
@@ -34,13 +35,13 @@ namespace IdentityServer4.Services
         }
 
         /// <inheritdoc/>
-        public async Task<SigningCredentials> GetSigningCredentialsAsync(IEnumerable<string> allowedAlgorithms = null)
+        public async Task<SigningCredentials> GetSigningCredentialsAsync(IEnumerable<string> allowedAlgorithms = null, CancellationToken cancellationToken = default)
         {
             if (_signingCredentialStores.Any())
             {
                 if (allowedAlgorithms.IsNullOrEmpty())
                 {
-                    return await _signingCredentialStores.First().GetSigningCredentialsAsync();
+                    return await _signingCredentialStores.First().GetSigningCredentialsAsync(cancellationToken);
                 }
 
                 var credential = (await GetAllSigningCredentialsAsync()).FirstOrDefault(c => allowedAlgorithms.Contains(c.Algorithm));
@@ -56,26 +57,26 @@ namespace IdentityServer4.Services
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<SigningCredentials>> GetAllSigningCredentialsAsync()
+        public async Task<IEnumerable<SigningCredentials>> GetAllSigningCredentialsAsync(CancellationToken cancellationToken = default)
         {
             var credentials = new List<SigningCredentials>();
 
             foreach (var store in _signingCredentialStores)
             {
-                credentials.Add(await store.GetSigningCredentialsAsync());
+                credentials.Add(await store.GetSigningCredentialsAsync(cancellationToken));
             }
 
             return credentials;
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<SecurityKeyInfo>> GetValidationKeysAsync()
+        public async Task<IEnumerable<SecurityKeyInfo>> GetValidationKeysAsync(CancellationToken cancellationToken = default)
         {
             var keys = new List<SecurityKeyInfo>();
 
             foreach (var store in _validationKeysStores)
             {
-                keys.AddRange(await store.GetValidationKeysAsync());
+                keys.AddRange(await store.GetValidationKeysAsync(cancellationToken));
             }
 
             return keys;

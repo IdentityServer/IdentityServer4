@@ -3,6 +3,7 @@
 
 
 using IdentityServer4.Models;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Stores
@@ -17,10 +18,11 @@ namespace IdentityServer4.Stores
         /// </summary>
         /// <param name="store">The store.</param>
         /// <param name="clientId">The client identifier.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        public static async Task<Client> FindEnabledClientByIdAsync(this IClientStore store, string clientId)
+        public static async Task<Client> FindEnabledClientByIdAsync(this IClientStore store, string clientId, CancellationToken cancellationToken = default)
         {
-            var client = await store.FindClientByIdAsync(clientId);
+            var client = await store.FindClientByIdAsync(clientId, cancellationToken);
             if (client != null && client.Enabled) return client;
 
             return null;

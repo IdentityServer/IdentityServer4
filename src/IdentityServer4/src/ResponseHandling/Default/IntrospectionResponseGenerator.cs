@@ -10,6 +10,7 @@ using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.ResponseHandling
@@ -44,12 +45,8 @@ namespace IdentityServer4.ResponseHandling
             Logger = logger;
         }
 
-        /// <summary>
-        /// Processes the response.
-        /// </summary>
-        /// <param name="validationResult">The validation result.</param>
-        /// <returns></returns>
-        public virtual async Task<Dictionary<string, object>> ProcessAsync(IntrospectionRequestValidationResult validationResult)
+        /// <inheritdoc/>
+        public virtual async Task<Dictionary<string, object>> ProcessAsync(IntrospectionRequestValidationResult validationResult, CancellationToken cancellationToken = default)
         {
             Logger.LogTrace("Creating introspection response");
 

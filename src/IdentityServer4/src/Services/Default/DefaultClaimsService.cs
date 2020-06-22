@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Services
@@ -40,17 +41,8 @@ namespace IdentityServer4.Services
             Profile = profile;
         }
 
-        /// <summary>
-        /// Returns claims for an identity token
-        /// </summary>
-        /// <param name="subject">The subject</param>
-        /// <param name="resources">The requested resources</param>
-        /// <param name="includeAllIdentityClaims">Specifies if all claims should be included in the token, or if the userinfo endpoint can be used to retrieve them</param>
-        /// <param name="request">The raw request</param>
-        /// <returns>
-        /// Claims for the identity token
-        /// </returns>
-        public virtual async Task<IEnumerable<Claim>> GetIdentityTokenClaimsAsync(ClaimsPrincipal subject, ResourceValidationResult resources, bool includeAllIdentityClaims, ValidatedRequest request)
+        /// <inheritdoc/>
+        public virtual async Task<IEnumerable<Claim>> GetIdentityTokenClaimsAsync(ClaimsPrincipal subject, ResourceValidationResult resources, bool includeAllIdentityClaims, ValidatedRequest request, CancellationToken cancellationToken = default)
         {
             Logger.LogDebug("Getting claims for identity token for subject: {subject} and client: {clientId}",
                 subject.GetSubjectId(),
@@ -85,7 +77,7 @@ namespace IdentityServer4.Services
                     ValidatedRequest = request
                 };
 
-                await Profile.GetProfileDataAsync(context);
+                await Profile.GetProfileDataAsync(context, cancellationToken);
 
                 var claims = FilterProtocolClaims(context.IssuedClaims);
                 if (claims != null)
@@ -101,16 +93,8 @@ namespace IdentityServer4.Services
             return outputClaims;
         }
 
-        /// <summary>
-        /// Returns claims for an identity token.
-        /// </summary>
-        /// <param name="subject">The subject.</param>
-        /// <param name="resourceResult">The validated resource result</param>
-        /// <param name="request">The raw request.</param>
-        /// <returns>
-        /// Claims for the access token
-        /// </returns>
-        public virtual async Task<IEnumerable<Claim>> GetAccessTokenClaimsAsync(ClaimsPrincipal subject, ResourceValidationResult resourceResult, ValidatedRequest request)
+        /// <inheritdoc/>
+        public virtual async Task<IEnumerable<Claim>> GetAccessTokenClaimsAsync(ClaimsPrincipal subject, ResourceValidationResult resourceResult, ValidatedRequest request, CancellationToken cancellationToken = default)
         {
             Logger.LogDebug("Getting claims for access token for client: {clientId}", request.Client.ClientId);
 
@@ -204,7 +188,7 @@ namespace IdentityServer4.Services
                     ValidatedRequest = request
                 };
 
-                await Profile.GetProfileDataAsync(context);
+                await Profile.GetProfileDataAsync(context, cancellationToken);
 
                 var claims = FilterProtocolClaims(context.IssuedClaims);
                 if (claims != null)

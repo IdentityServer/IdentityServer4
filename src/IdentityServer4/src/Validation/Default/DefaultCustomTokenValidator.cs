@@ -5,6 +5,7 @@
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Validation
@@ -29,26 +30,14 @@ namespace IdentityServer4.Validation
         /// </summary>
         protected readonly IClientStore Clients;
 
-        /// <summary>
-        /// Custom validation logic for access tokens.
-        /// </summary>
-        /// <param name="result">The validation result so far.</param>
-        /// <returns>
-        /// The validation result
-        /// </returns>
-        public virtual Task<TokenValidationResult> ValidateAccessTokenAsync(TokenValidationResult result)
+        /// <inheritdoc/>
+        public virtual Task<TokenValidationResult> ValidateAccessTokenAsync(TokenValidationResult result, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(result);
         }
 
-        /// <summary>
-        /// Custom validation logic for identity tokens.
-        /// </summary>
-        /// <param name="result">The validation result so far.</param>
-        /// <returns>
-        /// The validation result
-        /// </returns>
-        public virtual Task<TokenValidationResult> ValidateIdentityTokenAsync(TokenValidationResult result)
+        /// <inheritdoc/>
+        public virtual Task<TokenValidationResult> ValidateIdentityTokenAsync(TokenValidationResult result, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(result);
         }

@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 using Microsoft.Extensions.Logging;
@@ -29,12 +30,8 @@ namespace IdentityServer4.Services
             Logger = logger;
         }
 
-        /// <summary>
-        /// This method is called whenever claims about the user are requested (e.g. during token creation or via the userinfo endpoint)
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <returns></returns>
-        public virtual Task GetProfileDataAsync(ProfileDataRequestContext context)
+        /// <inheritdoc/>
+        public virtual Task GetProfileDataAsync(ProfileDataRequestContext context, CancellationToken cancellationToken = default)
         {
             context.LogProfileRequest(Logger);
             context.AddRequestedClaims(context.Subject.Claims);
@@ -43,13 +40,8 @@ namespace IdentityServer4.Services
             return Task.CompletedTask;
         }
 
-        /// <summary>
-        /// This method gets called whenever identity server needs to determine if the user is valid or active (e.g. if the user's account has been deactivated since they logged in).
-        /// (e.g. during token issuance or validation).
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <returns></returns>
-        public virtual Task IsActiveAsync(IsActiveContext context)
+        /// <inheritdoc/>s
+        public virtual Task IsActiveAsync(IsActiveContext context, CancellationToken cancellationToken = default)
         {
             Logger.LogDebug("IsActive called from: {caller}", context.Caller);
 

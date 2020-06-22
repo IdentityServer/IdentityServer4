@@ -16,6 +16,7 @@ using IdentityServer4.Stores;
 using IdentityServer4.ResponseHandling;
 using Microsoft.AspNetCore.Authentication;
 using System.Text.Encodings.Web;
+using System.Threading;
 
 namespace IdentityServer4.Endpoints.Results
 {

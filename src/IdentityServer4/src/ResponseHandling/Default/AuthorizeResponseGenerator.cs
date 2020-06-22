@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -14,6 +14,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using IdentityServer4.Configuration;
+using System.Threading;
 
 namespace IdentityServer4.ResponseHandling
 {
@@ -78,25 +79,20 @@ namespace IdentityServer4.ResponseHandling
             Logger = logger;
         }
 
-        /// <summary>
-        /// Creates the response
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
-        /// <exception cref="System.InvalidOperationException">invalid grant type: " + request.GrantType</exception>
-        public virtual async Task<AuthorizeResponse> CreateResponseAsync(ValidatedAuthorizeRequest request)
+        /// <inheritdoc/>
+        public virtual async Task<AuthorizeResponse> CreateResponseAsync(ValidatedAuthorizeRequest request, CancellationToken cancellationToken = default)
         {
             if (request.GrantType == GrantType.AuthorizationCode)
             {
-                return await CreateCodeFlowResponseAsync(request);
+                return await CreateCodeFlowResponseAsync(request, cancellationToken);
             }
             if (request.GrantType == GrantType.Implicit)
             {
-                return await CreateImplicitFlowResponseAsync(request);
+                return await CreateImplicitFlowResponseAsync(request, cancellationToken: cancellationToken);
             }
             if (request.GrantType == GrantType.Hybrid)
             {
-                return await CreateHybridFlowResponseAsync(request);
+                return await CreateHybridFlowResponseAsync(request, cancellationToken);
             }
 
             Logger.LogError("Unsupported grant type: " + request.GrantType);
@@ -107,15 +103,16 @@ namespace IdentityServer4.ResponseHandling
         /// Creates the response for a hybrid flow request
         /// </summary>
         /// <param name="request"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        protected virtual async Task<AuthorizeResponse> CreateHybridFlowResponseAsync(ValidatedAuthorizeRequest request)
+        protected virtual async Task<AuthorizeResponse> CreateHybridFlowResponseAsync(ValidatedAuthorizeRequest request, CancellationToken cancellationToken = default)
         {
             Logger.LogDebug("Creating Hybrid Flow response.");
 
             var code = await CreateCodeAsync(request);
-            var id = await AuthorizationCodeStore.StoreAuthorizationCodeAsync(code);
+            var id = await AuthorizationCodeStore.StoreAuthorizationCodeAsync(code, cancellationToken);
 
-            var response = await CreateImplicitFlowResponseAsync(request, id);
+            var response = await CreateImplicitFlowResponseAsync(request, id, cancellationToken);
             response.Code = id;
 
             return response;
@@ -125,13 +122,14 @@ namespace IdentityServer4.ResponseHandling
         /// Creates the response for a code flow request
         /// </summary>
         /// <param name="request"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        protected virtual async Task<AuthorizeResponse> CreateCodeFlowResponseAsync(ValidatedAuthorizeRequest request)
+        protected virtual async Task<AuthorizeResponse> CreateCodeFlowResponseAsync(ValidatedAuthorizeRequest request, CancellationToken cancellationToken = default)
         {
             Logger.LogDebug("Creating Authorization Code Flow response.");
 
             var code = await CreateCodeAsync(request);
-            var id = await AuthorizationCodeStore.StoreAuthorizationCodeAsync(code);
+            var id = await AuthorizationCodeStore.StoreAuthorizationCodeAsync(code, cancellationToken);
 
             var response = new AuthorizeResponse
             {
@@ -148,8 +146,9 @@ namespace IdentityServer4.ResponseHandling
         /// </summary>
         /// <param name="request"></param>
         /// <param name="authorizationCode"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        protected virtual async Task<AuthorizeResponse> CreateImplicitFlowResponseAsync(ValidatedAuthorizeRequest request, string authorizationCode = null)
+        protected virtual async Task<AuthorizeResponse> CreateImplicitFlowResponseAsync(ValidatedAuthorizeRequest request, string authorizationCode = null, CancellationToken cancellationToken = default)
         {
             Logger.LogDebug("Creating Implicit Flow response.");
 
@@ -168,10 +167,10 @@ namespace IdentityServer4.ResponseHandling
                     ValidatedRequest = request
                 };
 
-                var accessToken = await TokenService.CreateAccessTokenAsync(tokenRequest);
+                var accessToken = await TokenService.CreateAccessTokenAsync(tokenRequest, cancellationToken);
                 accessTokenLifetime = accessToken.Lifetime;
 
-                accessTokenValue = await TokenService.CreateSecurityTokenAsync(accessToken);
+                accessTokenValue = await TokenService.CreateSecurityTokenAsync(accessToken, cancellationToken);
             }
 
             string jwt = null;

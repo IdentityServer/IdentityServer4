@@ -3,6 +3,7 @@
 
 using System.Collections.Specialized;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Extensions;
@@ -28,7 +29,8 @@ namespace IdentityServer4.Endpoints
         {
         }
 
-        public override async Task<IEndpointResult> ProcessAsync(HttpContext context)
+        /// <inheritdoc/>
+        public override async Task<IEndpointResult> ProcessAsync(HttpContext context, CancellationToken cancellationToken = default)
         {
             Logger.LogDebug("Start authorize request");
 
@@ -53,7 +55,7 @@ namespace IdentityServer4.Endpoints
             }
 
             var user = await UserSession.GetUserAsync();
-            var result = await ProcessAuthorizeRequestAsync(values, user, null);
+            var result = await ProcessAuthorizeRequestAsync(values, user, null, cancellationToken);
 
             Logger.LogTrace("End authorize request. result type: {0}", result?.GetType().ToString() ?? "-none-");
 

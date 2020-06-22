@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+using System.Threading;
+using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Test;
 using Microsoft.Extensions.Logging;
@@ -10,7 +11,7 @@ namespace IdentityServer.IntegrationTests.Clients.Setup
         public CustomProfileService(TestUserStore users, ILogger<TestUserProfileService> logger) : base(users, logger)
         { }
 
-        public override async Task GetProfileDataAsync(ProfileDataRequestContext context)
+        public override async Task GetProfileDataAsync(ProfileDataRequestContext context, CancellationToken cancellationToken = default)
         {
             await base.GetProfileDataAsync(context);
 

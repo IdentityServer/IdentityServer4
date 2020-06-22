@@ -13,6 +13,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
+using System.Threading;
 
 namespace IdentityServer4.ResponseHandling
 {
@@ -78,27 +79,23 @@ namespace IdentityServer4.ResponseHandling
             Logger = logger;
         }
 
-        /// <summary>
-        /// Processes the response.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
-        public virtual async Task<TokenResponse> ProcessAsync(TokenRequestValidationResult request)
+        /// <inheritdoc/>
+        public virtual async Task<TokenResponse> ProcessAsync(TokenRequestValidationResult request, CancellationToken cancellationToken = default)
         {
             switch (request.ValidatedRequest.GrantType)
             {
                 case OidcConstants.GrantTypes.ClientCredentials:
-                    return await ProcessClientCredentialsRequestAsync(request);
+                    return await ProcessClientCredentialsRequestAsync(request, cancellationToken);
                 case OidcConstants.GrantTypes.Password:
                     return await ProcessPasswordRequestAsync(request);
                 case OidcConstants.GrantTypes.AuthorizationCode:
-                    return await ProcessAuthorizationCodeRequestAsync(request);
+                    return await ProcessAuthorizationCodeRequestAsync(request, cancellationToken);
                 case OidcConstants.GrantTypes.RefreshToken:
-                    return await ProcessRefreshTokenRequestAsync(request);
+                    return await ProcessRefreshTokenRequestAsync(request, cancellationToken);
                 case OidcConstants.GrantTypes.DeviceCode:
-                    return await ProcessDeviceCodeRequestAsync(request);
+                    return await ProcessDeviceCodeRequestAsync(request, cancellationToken);
                 default:
-                    return await ProcessExtensionGrantRequestAsync(request);
+                    return await ProcessExtensionGrantRequestAsync(request, cancellationToken);
             }
         }
 
@@ -106,40 +103,43 @@ namespace IdentityServer4.ResponseHandling
         /// Creates the response for an client credentials request.
         /// </summary>
         /// <param name="request">The request.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        protected virtual Task<TokenResponse> ProcessClientCredentialsRequestAsync(TokenRequestValidationResult request)
+        protected virtual Task<TokenResponse> ProcessClientCredentialsRequestAsync(TokenRequestValidationResult request, CancellationToken cancellationToken = default)
         {
             Logger.LogTrace("Creating response for client credentials request");
 
-            return ProcessTokenRequestAsync(request);
+            return ProcessTokenRequestAsync(request, cancellationToken);
         }
 
         /// <summary>
         /// Creates the response for a password request.
         /// </summary>
         /// <param name="request">The request.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        protected virtual Task<TokenResponse> ProcessPasswordRequestAsync(TokenRequestValidationResult request)
+        protected virtual Task<TokenResponse> ProcessPasswordRequestAsync(TokenRequestValidationResult request, CancellationToken cancellationToken = default)
         {
             Logger.LogTrace("Creating response for password request");
 
-            return ProcessTokenRequestAsync(request);
+            return ProcessTokenRequestAsync(request, cancellationToken);
         }
 
         /// <summary>
         /// Creates the response for an authorization code request.
         /// </summary>
         /// <param name="request">The request.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
         /// <exception cref="System.InvalidOperationException">Client does not exist anymore.</exception>
-        protected virtual async Task<TokenResponse> ProcessAuthorizationCodeRequestAsync(TokenRequestValidationResult request)
+        protected virtual async Task<TokenResponse> ProcessAuthorizationCodeRequestAsync(TokenRequestValidationResult request, CancellationToken cancellationToken = default)
         {
             Logger.LogTrace("Creating response for authorization code request");
 
             //////////////////////////
             // access token
             /////////////////////////
-            var (accessToken, refreshToken) = await CreateAccessTokenAsync(request.ValidatedRequest);
+            var (accessToken, refreshToken) = await CreateAccessTokenAsync(request.ValidatedRequest, cancellationToken);
             var response = new TokenResponse
             {
                 AccessToken = accessToken,
@@ -165,7 +165,7 @@ namespace IdentityServer4.ResponseHandling
                 Client client = null;
                 if (request.ValidatedRequest.AuthorizationCode.ClientId != null)
                 {
-                    client = await Clients.FindEnabledClientByIdAsync(request.ValidatedRequest.AuthorizationCode.ClientId);
+                    client = await Clients.FindEnabledClientByIdAsync(request.ValidatedRequest.AuthorizationCode.ClientId, cancellationToken);
                 }
                 if (client == null)
                 {
@@ -173,7 +173,7 @@ namespace IdentityServer4.ResponseHandling
                 }
 
                 var parsedScopesResult = ScopeParser.ParseScopeValues(request.ValidatedRequest.AuthorizationCode.RequestedScopes);
-                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopesResult);
+                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopesResult, cancellationToken);
 
                 var tokenRequest = new TokenCreationRequest
                 {
@@ -185,8 +185,8 @@ namespace IdentityServer4.ResponseHandling
                     ValidatedRequest = request.ValidatedRequest
                 };
 
-                var idToken = await TokenService.CreateIdentityTokenAsync(tokenRequest);
-                var jwt = await TokenService.CreateSecurityTokenAsync(idToken);
+                var idToken = await TokenService.CreateIdentityTokenAsync(tokenRequest, cancellationToken);
+                var jwt = await TokenService.CreateSecurityTokenAsync(idToken, cancellationToken);
                 response.IdentityToken = jwt;
             }
 
@@ -197,8 +197,9 @@ namespace IdentityServer4.ResponseHandling
         /// Creates the response for a refresh token request.
         /// </summary>
         /// <param name="request">The request.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        protected virtual async Task<TokenResponse> ProcessRefreshTokenRequestAsync(TokenRequestValidationResult request)
+        protected virtual async Task<TokenResponse> ProcessRefreshTokenRequestAsync(TokenRequestValidationResult request, CancellationToken cancellationToken = default)
         {
             Logger.LogTrace("Creating response for refresh token request");
 
@@ -212,7 +213,7 @@ namespace IdentityServer4.ResponseHandling
                 // todo: do we want to just parse here and build up validated result
                 // or do we want to fully re-run validation here.
                 var parsedScopesResult = ScopeParser.ParseScopeValues(oldAccessToken.Scopes);
-                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopesResult);
+                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopesResult, cancellationToken);
 
                 var creationRequest = new TokenCreationRequest
                 {
@@ -222,22 +223,22 @@ namespace IdentityServer4.ResponseHandling
                     ValidatedResources = validatedResources
                 };
 
-                var newAccessToken = await TokenService.CreateAccessTokenAsync(creationRequest);
-                accessTokenString = await TokenService.CreateSecurityTokenAsync(newAccessToken);
+                var newAccessToken = await TokenService.CreateAccessTokenAsync(creationRequest, cancellationToken);
+                accessTokenString = await TokenService.CreateSecurityTokenAsync(newAccessToken, cancellationToken);
             }
             else
             {
                 oldAccessToken.CreationTime = Clock.UtcNow.UtcDateTime;
                 oldAccessToken.Lifetime = request.ValidatedRequest.AccessTokenLifetime;
 
-                accessTokenString = await TokenService.CreateSecurityTokenAsync(oldAccessToken);
+                accessTokenString = await TokenService.CreateSecurityTokenAsync(oldAccessToken, cancellationToken);
             }
 
-            var handle = await RefreshTokenService.UpdateRefreshTokenAsync(request.ValidatedRequest.RefreshTokenHandle, request.ValidatedRequest.RefreshToken, request.ValidatedRequest.Client);
+            var handle = await RefreshTokenService.UpdateRefreshTokenAsync(request.ValidatedRequest.RefreshTokenHandle, request.ValidatedRequest.RefreshToken, request.ValidatedRequest.Client, cancellationToken);
 
             return new TokenResponse
             {
-                IdentityToken = await CreateIdTokenFromRefreshTokenRequestAsync(request.ValidatedRequest, accessTokenString),
+                IdentityToken = await CreateIdTokenFromRefreshTokenRequestAsync(request.ValidatedRequest, accessTokenString, cancellationToken),
                 AccessToken = accessTokenString,
                 AccessTokenLifetime = request.ValidatedRequest.AccessTokenLifetime,
                 RefreshToken = handle,
@@ -250,15 +251,16 @@ namespace IdentityServer4.ResponseHandling
         /// Processes the response for device code grant request.
         /// </summary>
         /// <param name="request">The request.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        protected virtual async Task<TokenResponse> ProcessDeviceCodeRequestAsync(TokenRequestValidationResult request)
+        protected virtual async Task<TokenResponse> ProcessDeviceCodeRequestAsync(TokenRequestValidationResult request, CancellationToken cancellationToken = default)
         {
             Logger.LogTrace("Creating response for device code request");
 
             //////////////////////////
             // access token
             /////////////////////////
-            var (accessToken, refreshToken) = await CreateAccessTokenAsync(request.ValidatedRequest);
+            var (accessToken, refreshToken) = await CreateAccessTokenAsync(request.ValidatedRequest, cancellationToken);
             var response = new TokenResponse
             {
                 AccessToken = accessToken,
@@ -284,7 +286,7 @@ namespace IdentityServer4.ResponseHandling
                 Client client = null;
                 if (request.ValidatedRequest.DeviceCode.ClientId != null)
                 {
-                    client = await Clients.FindEnabledClientByIdAsync(request.ValidatedRequest.DeviceCode.ClientId);
+                    client = await Clients.FindEnabledClientByIdAsync(request.ValidatedRequest.DeviceCode.ClientId, cancellationToken);
                 }
                 if (client == null)
                 {
@@ -292,7 +294,7 @@ namespace IdentityServer4.ResponseHandling
                 }
 
                 var parsedScopesResult = ScopeParser.ParseScopeValues(request.ValidatedRequest.DeviceCode.AuthorizedScopes);
-                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopesResult);
+                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopesResult, cancellationToken);
                 
                 var tokenRequest = new TokenCreationRequest
                 {
@@ -302,8 +304,8 @@ namespace IdentityServer4.ResponseHandling
                     ValidatedRequest = request.ValidatedRequest
                 };
 
-                var idToken = await TokenService.CreateIdentityTokenAsync(tokenRequest);
-                var jwt = await TokenService.CreateSecurityTokenAsync(idToken);
+                var idToken = await TokenService.CreateIdentityTokenAsync(tokenRequest, cancellationToken);
+                var jwt = await TokenService.CreateSecurityTokenAsync(idToken, cancellationToken);
                 response.IdentityToken = jwt;
             }
 
@@ -314,22 +316,24 @@ namespace IdentityServer4.ResponseHandling
         /// Creates the response for an extension grant request.
         /// </summary>
         /// <param name="request">The request.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        protected virtual Task<TokenResponse> ProcessExtensionGrantRequestAsync(TokenRequestValidationResult request)
+        protected virtual Task<TokenResponse> ProcessExtensionGrantRequestAsync(TokenRequestValidationResult request, CancellationToken cancellationToken = default)
         {
             Logger.LogTrace("Creating response for extension grant request");
 
-            return ProcessTokenRequestAsync(request);
+            return ProcessTokenRequestAsync(request, cancellationToken);
         }
 
         /// <summary>
         /// Creates the response for a token request.
         /// </summary>
         /// <param name="validationResult">The validation result.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        protected virtual async Task<TokenResponse> ProcessTokenRequestAsync(TokenRequestValidationResult validationResult)
+        protected virtual async Task<TokenResponse> ProcessTokenRequestAsync(TokenRequestValidationResult validationResult, CancellationToken cancellationToken = default)
         {
-            (var accessToken, var refreshToken) = await CreateAccessTokenAsync(validationResult.ValidatedRequest);
+            (var accessToken, var refreshToken) = await CreateAccessTokenAsync(validationResult.ValidatedRequest, cancellationToken);
             var response = new TokenResponse
             {
                 AccessToken = accessToken,
@@ -350,9 +354,10 @@ namespace IdentityServer4.ResponseHandling
         /// Creates the access/refresh token.
         /// </summary>
         /// <param name="request">The request.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        /// <exception cref="System.InvalidOperationException">Client does not exist anymore.</exception>
-        protected virtual async Task<(string accessToken, string refreshToken)> CreateAccessTokenAsync(ValidatedTokenRequest request)
+        /// <exception cref="InvalidOperationException">Client does not exist anymore.</exception>
+        protected virtual async Task<(string accessToken, string refreshToken)> CreateAccessTokenAsync(ValidatedTokenRequest request, CancellationToken cancellationToken = default)
         {
             TokenCreationRequest tokenRequest;
             bool createRefreshToken;
@@ -365,7 +370,7 @@ namespace IdentityServer4.ResponseHandling
                 Client client = null;
                 if (request.AuthorizationCode.ClientId != null)
                 {
-                    client = await Clients.FindEnabledClientByIdAsync(request.AuthorizationCode.ClientId);
+                    client = await Clients.FindEnabledClientByIdAsync(request.AuthorizationCode.ClientId, cancellationToken);
                 }
                 if (client == null)
                 {
@@ -373,7 +378,7 @@ namespace IdentityServer4.ResponseHandling
                 }
 
                 var parsedScopesResult = ScopeParser.ParseScopeValues(request.AuthorizationCode.RequestedScopes);
-                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopesResult);
+                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopesResult, cancellationToken);
 
                 tokenRequest = new TokenCreationRequest
                 {
@@ -390,7 +395,7 @@ namespace IdentityServer4.ResponseHandling
                 Client client = null;
                 if (request.DeviceCode.ClientId != null)
                 {
-                    client = await Clients.FindEnabledClientByIdAsync(request.DeviceCode.ClientId);
+                    client = await Clients.FindEnabledClientByIdAsync(request.DeviceCode.ClientId, cancellationToken);
                 }
                 if (client == null)
                 {
@@ -398,7 +403,7 @@ namespace IdentityServer4.ResponseHandling
                 }
 
                 var parsedScopesResult = ScopeParser.ParseScopeValues(request.DeviceCode.AuthorizedScopes);
-                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopesResult);
+                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopesResult, cancellationToken);
 
                 tokenRequest = new TokenCreationRequest
                 {
@@ -420,12 +425,12 @@ namespace IdentityServer4.ResponseHandling
                 };
             }
 
-            var at = await TokenService.CreateAccessTokenAsync(tokenRequest);
-            var accessToken = await TokenService.CreateSecurityTokenAsync(at);
+            var at = await TokenService.CreateAccessTokenAsync(tokenRequest, cancellationToken);
+            var accessToken = await TokenService.CreateSecurityTokenAsync(at, cancellationToken);
 
             if (createRefreshToken)
             {
-                var refreshToken = await RefreshTokenService.CreateRefreshTokenAsync(tokenRequest.Subject, at, request.Client);
+                var refreshToken = await RefreshTokenService.CreateRefreshTokenAsync(tokenRequest.Subject, at, request.Client, cancellationToken);
                 return (accessToken, refreshToken);
             }
 
@@ -437,8 +442,9 @@ namespace IdentityServer4.ResponseHandling
         /// </summary>
         /// <param name="request">The request.</param>
         /// <param name="newAccessToken">The new access token.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        protected virtual async Task<string> CreateIdTokenFromRefreshTokenRequestAsync(ValidatedTokenRequest request, string newAccessToken)
+        protected virtual async Task<string> CreateIdTokenFromRefreshTokenRequestAsync(ValidatedTokenRequest request, string newAccessToken, CancellationToken cancellationToken = default)
         {
             // todo: can we just check for "openid" scope?
             //var identityResources = await Resources.FindEnabledIdentityResourcesByScopeAsync(request.RefreshToken.Scopes);
@@ -449,7 +455,7 @@ namespace IdentityServer4.ResponseHandling
                 var oldAccessToken = request.RefreshToken.AccessToken;
 
                 var parsedScopesResult = ScopeParser.ParseScopeValues(oldAccessToken.Scopes);
-                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopesResult);
+                var validatedResources = await Resources.CreateResourceValidationResult(parsedScopesResult, cancellationToken);
 
                 var tokenRequest = new TokenCreationRequest
                 {
@@ -459,8 +465,8 @@ namespace IdentityServer4.ResponseHandling
                     AccessTokenToHash = newAccessToken
                 };
 
-                var idToken = await TokenService.CreateIdentityTokenAsync(tokenRequest);
-                return await TokenService.CreateSecurityTokenAsync(idToken);
+                var idToken = await TokenService.CreateIdentityTokenAsync(tokenRequest, cancellationToken);
+                return await TokenService.CreateSecurityTokenAsync(idToken, cancellationToken);
             }
 
             return null;

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Http;
 using IdentityServer4.Events;
 using IdentityServer4.ResponseHandling;
 using IdentityServer4.Extensions;
+using System.Threading;
 
 namespace IdentityServer4.Endpoints
 {
@@ -51,12 +52,8 @@ namespace IdentityServer4.Endpoints
             _events = events;
         }
 
-        /// <summary>
-        /// Processes the request.
-        /// </summary>
-        /// <param name="context">The HTTP context.</param>
-        /// <returns></returns>
-        public async Task<IEndpointResult> ProcessAsync(HttpContext context)
+        /// <inheritdoc/>
+        public async Task<IEndpointResult> ProcessAsync(HttpContext context, CancellationToken cancellationToken = default)
         {
             _logger.LogTrace("Processing revocation request.");
 
@@ -72,17 +69,17 @@ namespace IdentityServer4.Endpoints
                 return new StatusCodeResult(HttpStatusCode.UnsupportedMediaType);
             }
 
-            var response = await ProcessRevocationRequestAsync(context);
+            var response = await ProcessRevocationRequestAsync(context, cancellationToken);
 
             return response;
         }
 
-        private async Task<IEndpointResult> ProcessRevocationRequestAsync(HttpContext context)
+        private async Task<IEndpointResult> ProcessRevocationRequestAsync(HttpContext context, CancellationToken cancellationToken = default)
         {
             _logger.LogDebug("Start revocation request.");
 
             // validate client
-            var clientValidationResult = await _clientValidator.ValidateAsync(context);
+            var clientValidationResult = await _clientValidator.ValidateAsync(context, cancellationToken);
 
             if (clientValidationResult.IsError)
             {
@@ -103,7 +100,7 @@ namespace IdentityServer4.Endpoints
             }
 
             _logger.LogTrace("Calling into token revocation response generator: {type}", _responseGenerator.GetType().FullName);
-            var response = await _responseGenerator.ProcessAsync(requestValidationResult);
+            var response = await _responseGenerator.ProcessAsync(requestValidationResult, cancellationToken);
 
             if (response.Success)
             {

@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 
@@ -17,14 +18,8 @@ namespace IdentityServer4.Stores
     {
         private readonly List<InMemoryDeviceAuthorization> _repository = new List<InMemoryDeviceAuthorization>();
 
-        /// <summary>
-        /// Stores the device authorization request.
-        /// </summary>
-        /// <param name="deviceCode">The device code.</param>
-        /// <param name="userCode">The user code.</param>
-        /// <param name="data">The data.</param>
-        /// <returns></returns>
-        public Task StoreDeviceAuthorizationAsync(string deviceCode, string userCode, DeviceCode data)
+        /// <inheritdoc/>
+        public Task StoreDeviceAuthorizationAsync(string deviceCode, string userCode, DeviceCode data, CancellationToken cancellation = default)
         {
             lock (_repository)
             {
@@ -34,11 +29,8 @@ namespace IdentityServer4.Stores
             return Task.CompletedTask;
         }
 
-        /// <summary>
-        /// Finds device authorization by user code.
-        /// </summary>
-        /// <param name="userCode">The user code.</param>
-        public Task<DeviceCode> FindByUserCodeAsync(string userCode)
+        /// <inheritdoc/>
+        public Task<DeviceCode> FindByUserCodeAsync(string userCode, CancellationToken cancellationToken = default)
         {
             DeviceCode foundDeviceCode;
 
@@ -50,11 +42,8 @@ namespace IdentityServer4.Stores
             return Task.FromResult(foundDeviceCode);
         }
 
-        /// <summary>
-        /// Finds device authorization by device code.
-        /// </summary>
-        /// <param name="deviceCode">The device code.</param>
-        public Task<DeviceCode> FindByDeviceCodeAsync(string deviceCode)
+        /// <inheritdoc/>
+        public Task<DeviceCode> FindByDeviceCodeAsync(string deviceCode, CancellationToken cancellationToken = default)
         {
             DeviceCode foundDeviceCode;
 
@@ -66,12 +55,8 @@ namespace IdentityServer4.Stores
             return Task.FromResult(foundDeviceCode);
         }
 
-        /// <summary>
-        /// Updates device authorization, searching by user code.
-        /// </summary>
-        /// <param name="userCode">The user code.</param>
-        /// <param name="data">The data.</param>
-        public Task UpdateByUserCodeAsync(string userCode, DeviceCode data)
+        /// <inheritdoc/>
+        public Task UpdateByUserCodeAsync(string userCode, DeviceCode data, CancellationToken cancellationToken = default)
         {
             lock (_repository)
             {
@@ -86,12 +71,8 @@ namespace IdentityServer4.Stores
             return Task.CompletedTask;
         }
 
-        /// <summary>
-        /// Removes the device authorization, searching by device code.
-        /// </summary>
-        /// <param name="deviceCode">The device code.</param>
-        /// <returns></returns>
-        public Task RemoveByDeviceCodeAsync(string deviceCode)
+        /// <inheritdoc/>
+        public Task RemoveByDeviceCodeAsync(string deviceCode, CancellationToken cancellationToken = default)
         {
             lock (_repository)
             {

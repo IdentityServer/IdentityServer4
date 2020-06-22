@@ -7,6 +7,7 @@ using IdentityServer4.Stores;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Validation
@@ -34,7 +35,7 @@ namespace IdentityServer4.Validation
         }
 
         /// <inheritdoc/>
-        public virtual async Task<ResourceValidationResult> ValidateRequestedResourcesAsync(ResourceValidationRequest request)
+        public virtual async Task<ResourceValidationResult> ValidateRequestedResourcesAsync(ResourceValidationRequest request, CancellationToken cancellationToken = default)
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
@@ -54,7 +55,7 @@ namespace IdentityServer4.Validation
             }
 
             var scopeNames = parsedScopesResult.ParsedScopes.Select(x => x.ParsedName).Distinct().ToArray();
-            var resourcesFromStore = await _store.FindEnabledResourcesByScopeAsync(scopeNames);
+            var resourcesFromStore = await _store.FindEnabledResourcesByScopeAsync(scopeNames, cancellationToken);
 
             foreach (var scope in parsedScopesResult.ParsedScopes)
             {

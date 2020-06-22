@@ -1,5 +1,6 @@
-﻿using IdentityServer4.Models;
+using IdentityServer4.Models;
 using IdentityServer4.Validation;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityServer.UnitTests.Validation.Setup
@@ -13,17 +14,17 @@ namespace IdentityServer.UnitTests.Validation.Setup
             _result = result;
         }
 
-        public Task<TokenValidationResult> ValidateAccessTokenAsync(string token, string expectedScope = null)
+        public Task<TokenValidationResult> ValidateAccessTokenAsync(string token, string expectedScope = null, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(_result);
         }
 
-        public Task<TokenValidationResult> ValidateIdentityTokenAsync(string token, string clientId = null, bool validateLifetime = true)
+        public Task<TokenValidationResult> ValidateIdentityTokenAsync(string token, string clientId = null, bool validateLifetime = true, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(_result);
         }
 
-        public Task<TokenValidationResult> ValidateRefreshTokenAsync(string token, Client client = null)
+        public Task<TokenValidationResult> ValidateRefreshTokenAsync(string token, Client client = null, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(_result);
         }

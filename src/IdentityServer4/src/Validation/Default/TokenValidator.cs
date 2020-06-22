@@ -19,6 +19,7 @@ using IdentityServer4.Configuration;
 using IdentityServer4.Logging.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authentication;
+using System.Threading;
 
 namespace IdentityServer4.Validation
 {
@@ -60,7 +61,8 @@ namespace IdentityServer4.Validation
             _log = new TokenValidationLog();
         }
 
-        public async Task<TokenValidationResult> ValidateIdentityTokenAsync(string token, string clientId = null, bool validateLifetime = true)
+        /// <inheritdoc/>
+        public async Task<TokenValidationResult> ValidateIdentityTokenAsync(string token, string clientId = null, bool validateLifetime = true, CancellationToken cancellationToken = default)
         {
             _logger.LogDebug("Start identity token validation");
 
@@ -84,7 +86,7 @@ namespace IdentityServer4.Validation
             _log.ClientId = clientId;
             _log.ValidateLifetime = validateLifetime;
 
-            var client = await _clients.FindEnabledClientByIdAsync(clientId);
+            var client = await _clients.FindEnabledClientByIdAsync(clientId, cancellationToken);
             if (client == null)
             {
                 _logger.LogError("Unknown or disabled client: {clientId}.", clientId);
@@ -120,7 +122,8 @@ namespace IdentityServer4.Validation
             return customResult;
         }
 
-        public async Task<TokenValidationResult> ValidateAccessTokenAsync(string token, string expectedScope = null)
+        /// <inheritdoc/>
+        public async Task<TokenValidationResult> ValidateAccessTokenAsync(string token, string expectedScope = null, CancellationToken cancellationToken = default)
         {
             _logger.LogTrace("Start access token validation");
 
@@ -177,7 +180,7 @@ namespace IdentityServer4.Validation
             var clientClaim = result.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.ClientId);
             if (clientClaim != null)
             {
-                var client = await _clients.FindEnabledClientByIdAsync(clientClaim.Value);
+                var client = await _clients.FindEnabledClientByIdAsync(clientClaim.Value, cancellationToken);
                 if (client == null)
                 {
                     _logger.LogError("Client deleted or disabled: {clientId}", clientClaim.Value);
@@ -202,7 +205,7 @@ namespace IdentityServer4.Validation
                 }
 
                 var isActiveCtx = new IsActiveContext(principal, result.Client, IdentityServerConstants.ProfileIsActiveCallers.AccessTokenValidation);
-                await _profile.IsActiveAsync(isActiveCtx);
+                await _profile.IsActiveAsync(isActiveCtx, cancellationToken);
 
                 if (isActiveCtx.IsActive == false)
                 {
@@ -243,7 +246,7 @@ namespace IdentityServer4.Validation
             return customResult;
         }
 
-        private async Task<TokenValidationResult> ValidateJwtAsync(string jwt, IEnumerable<SecurityKeyInfo> validationKeys, bool validateLifetime = true, string audience = null)
+        private async Task<TokenValidationResult> ValidateJwtAsync(string jwt, IEnumerable<SecurityKeyInfo> validationKeys, bool validateLifetime = true, string audience = null, CancellationToken cancellationToken = default)
         {
             var handler = new JwtSecurityTokenHandler();
             handler.InboundClaimTypeMap.Clear();
@@ -299,7 +302,7 @@ namespace IdentityServer4.Validation
                 var clientId = id.FindFirst(JwtClaimTypes.ClientId);
                 if (clientId != null)
                 {
-                    client = await _clients.FindEnabledClientByIdAsync(clientId.Value);
+                    client = await _clients.FindEnabledClientByIdAsync(clientId.Value, cancellationToken);
                     if (client == null)
                     {
                         throw new InvalidOperationException("Client does not exist anymore.");
@@ -348,10 +351,10 @@ namespace IdentityServer4.Validation
             }
         }
 
-        private async Task<TokenValidationResult> ValidateReferenceAccessTokenAsync(string tokenHandle)
+        private async Task<TokenValidationResult> ValidateReferenceAccessTokenAsync(string tokenHandle, CancellationToken cancellationToken = default)
         {
             _log.TokenHandle = tokenHandle;
-            var token = await _referenceTokenStore.GetReferenceTokenAsync(tokenHandle);
+            var token = await _referenceTokenStore.GetReferenceTokenAsync(tokenHandle, cancellationToken);
 
             if (token == null)
             {
@@ -363,7 +366,7 @@ namespace IdentityServer4.Validation
             {
                 LogError("Token expired.");
 
-                await _referenceTokenStore.RemoveReferenceTokenAsync(tokenHandle);
+                await _referenceTokenStore.RemoveReferenceTokenAsync(tokenHandle, cancellationToken);
                 return Invalid(OidcConstants.ProtectedResourceErrors.ExpiredToken);
             }
 
@@ -371,7 +374,7 @@ namespace IdentityServer4.Validation
             Client client = null;
             if (token.ClientId != null)
             {
-                client = await _clients.FindEnabledClientByIdAsync(token.ClientId);
+                client = await _clients.FindEnabledClientByIdAsync(token.ClientId, cancellationToken);
             }
 
             if (client == null)

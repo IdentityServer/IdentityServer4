@@ -3,6 +3,7 @@
 
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer4.Configuration;
 using IdentityServer4.Extensions;
@@ -62,15 +63,8 @@ namespace IdentityServer4.ResponseHandling
             Logger = logger;
         }
 
-        /// <summary>
-        /// Processes the response.
-        /// </summary>
-        /// <param name="validationResult">The validation result.</param>
-        /// <param name="baseUrl">The base URL.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">validationResult or Client</exception>
-        /// <exception cref="ArgumentException">Value cannot be null or whitespace. - baseUrl</exception>
-        public virtual async Task<DeviceAuthorizationResponse> ProcessAsync(DeviceAuthorizationRequestValidationResult validationResult, string baseUrl)
+        /// <inheritdoc/>
+        public virtual async Task<DeviceAuthorizationResponse> ProcessAsync(DeviceAuthorizationRequestValidationResult validationResult, string baseUrl, CancellationToken cancellationToken = default)
         {
             if (validationResult == null) throw new ArgumentNullException(nameof(validationResult));
             if (validationResult.ValidatedRequest.Client == null) throw new ArgumentNullException(nameof(validationResult.ValidatedRequest.Client));
@@ -91,7 +85,7 @@ namespace IdentityServer4.ResponseHandling
             {
                 var userCode = await userCodeGenerator.GenerateAsync();
                 
-                var deviceCode = await DeviceFlowCodeService.FindByUserCodeAsync(userCode);
+                var deviceCode = await DeviceFlowCodeService.FindByUserCodeAsync(userCode, cancellationToken);
                 if (deviceCode == null)
                 {
                     response.UserCode = userCode;
@@ -135,7 +129,7 @@ namespace IdentityServer4.ResponseHandling
                 Lifetime = response.DeviceCodeLifetime,
                 CreationTime = Clock.UtcNow.UtcDateTime,
                 RequestedScopes = validationResult.ValidatedRequest.ValidatedResources.RawScopeValues
-            });
+            }, cancellationToken);
 
             return response;
         }

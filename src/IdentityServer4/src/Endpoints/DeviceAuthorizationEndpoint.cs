@@ -3,6 +3,7 @@
 
 
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using IdentityModel;
 using IdentityServer4.Endpoints.Results;
@@ -43,13 +44,8 @@ namespace IdentityServer4.Endpoints
             _logger = logger;
         }
 
-        /// <summary>
-        /// Processes the request.
-        /// </summary>
-        /// <param name="context">The HTTP context.</param>
-        /// <returns></returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public async Task<IEndpointResult> ProcessAsync(HttpContext context)
+        /// <inheritdoc/>
+        public async Task<IEndpointResult> ProcessAsync(HttpContext context, CancellationToken cancellationToken = default)
         {
             _logger.LogTrace("Processing device authorize request.");
 
@@ -60,20 +56,20 @@ namespace IdentityServer4.Endpoints
                 return Error(OidcConstants.TokenErrors.InvalidRequest);
             }
 
-            return await ProcessDeviceAuthorizationRequestAsync(context);
+            return await ProcessDeviceAuthorizationRequestAsync(context, cancellationToken);
         }
 
-        private async Task<IEndpointResult> ProcessDeviceAuthorizationRequestAsync(HttpContext context)
+        private async Task<IEndpointResult> ProcessDeviceAuthorizationRequestAsync(HttpContext context, CancellationToken cancellationToken = default)
         {
             _logger.LogDebug("Start device authorize request.");
 
             // validate client
-            var clientResult = await _clientValidator.ValidateAsync(context);
+            var clientResult = await _clientValidator.ValidateAsync(context, cancellationToken);
             if (clientResult.Client == null) return Error(OidcConstants.TokenErrors.InvalidClient);
 
             // validate request
             var form = (await context.Request.ReadFormAsync()).AsNameValueCollection();
-            var requestResult = await _requestValidator.ValidateAsync(form, clientResult);
+            var requestResult = await _requestValidator.ValidateAsync(form, clientResult, cancellationToken);
 
             if (requestResult.IsError)
             {
@@ -85,7 +81,7 @@ namespace IdentityServer4.Endpoints
 
             // create response
             _logger.LogTrace("Calling into device authorize response generator: {type}", _responseGenerator.GetType().FullName);
-            var response = await _responseGenerator.ProcessAsync(requestResult, baseUrl);
+            var response = await _responseGenerator.ProcessAsync(requestResult, baseUrl, cancellationToken);
 
             await _events.RaiseAsync(new DeviceAuthorizationSuccessEvent(response, requestResult));
 

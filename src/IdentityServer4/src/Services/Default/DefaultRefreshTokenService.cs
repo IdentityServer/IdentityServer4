@@ -12,6 +12,7 @@ using IdentityModel;
 using IdentityServer4.Logging.Models;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Authentication;
+using System.Threading;
 
 namespace IdentityServer4.Services
 {
@@ -47,7 +48,9 @@ namespace IdentityServer4.Services
         /// <param name="profile"></param>
         /// <param name="clock">The clock</param>
         /// <param name="logger">The logger</param>
-        public DefaultRefreshTokenService(IRefreshTokenStore refreshTokenStore, IProfileService profile,
+        public DefaultRefreshTokenService(
+            IRefreshTokenStore refreshTokenStore,
+            IProfileService profile,
             ISystemClock clock,
             ILogger<DefaultRefreshTokenService> logger)
         {
@@ -58,13 +61,8 @@ namespace IdentityServer4.Services
             Logger = logger;
         }
 
-        /// <summary>
-        /// Validates a refresh token
-        /// </summary>
-        /// <param name="tokenHandle">The token handle.</param>
-        /// <param name="client">The client.</param>
-        /// <returns></returns>
-        public virtual async Task<TokenValidationResult> ValidateRefreshTokenAsync(string tokenHandle, Client client)
+        /// <inheritdoc/>
+        public virtual async Task<TokenValidationResult> ValidateRefreshTokenAsync(string tokenHandle, Client client, CancellationToken cancellationToken = default)
         {
             var invalidGrant = new TokenValidationResult
             {
@@ -76,7 +74,7 @@ namespace IdentityServer4.Services
             /////////////////////////////////////////////
             // check if refresh token is valid
             /////////////////////////////////////////////
-            var refreshToken = await RefreshTokenStore.GetRefreshTokenAsync(tokenHandle);
+            var refreshToken = await RefreshTokenStore.GetRefreshTokenAsync(tokenHandle, cancellationToken);
             if (refreshToken == null)
             {
                 Logger.LogWarning("Invalid refresh token");
@@ -130,7 +128,7 @@ namespace IdentityServer4.Services
                 client,
                 IdentityServerConstants.ProfileIsActiveCallers.RefreshTokenValidation);
 
-            await Profile.IsActiveAsync(isActiveCtx);
+            await Profile.IsActiveAsync(isActiveCtx, cancellationToken);
 
             if (isActiveCtx.IsActive == false)
             {
@@ -154,17 +152,8 @@ namespace IdentityServer4.Services
             return Task.FromResult(false);
         }
 
-        /// <summary>
-        /// Creates the refresh token.
-        /// </summary>
-        /// <param name="subject">The subject.</param>
-        /// <param name="accessToken">The access token.</param>
-        /// <param name="client">The client.</param>
-        /// <returns>
-        /// The refresh token handle
-        /// </returns>
-        public virtual async Task<string> CreateRefreshTokenAsync(ClaimsPrincipal subject, Token accessToken,
-            Client client)
+        /// <inheritdoc/>
+        public virtual async Task<string> CreateRefreshTokenAsync(ClaimsPrincipal subject, Token accessToken, Client client, CancellationToken cancellationToken = default)
         {
             Logger.LogDebug("Creating refresh token");
 
@@ -196,21 +185,12 @@ namespace IdentityServer4.Services
                 CreationTime = Clock.UtcNow.UtcDateTime, Lifetime = lifetime, AccessToken = accessToken
             };
 
-            var handle = await RefreshTokenStore.StoreRefreshTokenAsync(refreshToken);
+            var handle = await RefreshTokenStore.StoreRefreshTokenAsync(refreshToken, cancellationToken);
             return handle;
         }
 
-        /// <summary>
-        /// Updates the refresh token.
-        /// </summary>
-        /// <param name="handle">The handle.</param>
-        /// <param name="refreshToken">The refresh token.</param>
-        /// <param name="client">The client.</param>
-        /// <returns>
-        /// The refresh token handle
-        /// </returns>
-        public virtual async Task<string> UpdateRefreshTokenAsync(string handle, RefreshToken refreshToken,
-            Client client)
+        /// <inheritdoc/>
+        public virtual async Task<string> UpdateRefreshTokenAsync(string handle, RefreshToken refreshToken, Client client, CancellationToken cancellationToken = default)
         {
             Logger.LogDebug("Updating refresh token");
 
@@ -223,7 +203,7 @@ namespace IdentityServer4.Services
 
                 // flag as consumed
                 refreshToken.ConsumedTime = Clock.UtcNow.DateTime;
-                await RefreshTokenStore.UpdateRefreshTokenAsync(handle, refreshToken);
+                await RefreshTokenStore.UpdateRefreshTokenAsync(handle, refreshToken, cancellationToken);
 
                 // create new one
                 needsCreate = true;
@@ -258,12 +238,12 @@ namespace IdentityServer4.Services
             {
                 // set it to null so that we save non-consumed token
                 refreshToken.ConsumedTime = null;
-                handle = await RefreshTokenStore.StoreRefreshTokenAsync(refreshToken);
+                handle = await RefreshTokenStore.StoreRefreshTokenAsync(refreshToken, cancellationToken);
                 Logger.LogDebug("Created refresh token in store");
             }
             else if (needsUpdate)
             {
-                await RefreshTokenStore.UpdateRefreshTokenAsync(handle, refreshToken);
+                await RefreshTokenStore.UpdateRefreshTokenAsync(handle, refreshToken, cancellationToken);
                 Logger.LogDebug("Updated refresh token in store");
             }
             else

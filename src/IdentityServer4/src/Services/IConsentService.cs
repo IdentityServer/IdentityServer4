@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -6,6 +6,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Validation;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Services
@@ -21,10 +22,11 @@ namespace IdentityServer4.Services
         /// <param name="subject">The user.</param>
         /// <param name="client">The client.</param>
         /// <param name="parsedScopes">The parsed scopes.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>
         /// Boolean if consent is required.
         /// </returns>
-        Task<bool> RequiresConsentAsync(ClaimsPrincipal subject, Client client, IEnumerable<ParsedScopeValue> parsedScopes);
+        Task<bool> RequiresConsentAsync(ClaimsPrincipal subject, Client client, IEnumerable<ParsedScopeValue> parsedScopes, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Updates the consent.
@@ -32,7 +34,8 @@ namespace IdentityServer4.Services
         /// <param name="subject">The subject.</param>
         /// <param name="client">The client.</param>
         /// <param name="parsedScopes">The parsed scopes.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        Task UpdateConsentAsync(ClaimsPrincipal subject, Client client, IEnumerable<ParsedScopeValue> parsedScopes);
+        Task UpdateConsentAsync(ClaimsPrincipal subject, Client client, IEnumerable<ParsedScopeValue> parsedScopes, CancellationToken cancellationToken = default);
     }
 }

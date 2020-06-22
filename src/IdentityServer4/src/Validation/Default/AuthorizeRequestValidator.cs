@@ -15,6 +15,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityServer4.Logging.Models;
+using System.Threading;
 
 namespace IdentityServer4.Validation
 {
@@ -30,8 +31,7 @@ namespace IdentityServer4.Validation
         private readonly IJwtRequestUriHttpClient _jwtRequestUriHttpClient;
         private readonly ILogger _logger;
 
-        private readonly ResponseTypeEqualityComparer
-            _responseTypeEqualityComparer = new ResponseTypeEqualityComparer();
+        private readonly ResponseTypeEqualityComparer _responseTypeEqualityComparer = new ResponseTypeEqualityComparer();
 
         public AuthorizeRequestValidator(
             IdentityServerOptions options,
@@ -55,7 +55,7 @@ namespace IdentityServer4.Validation
             _logger = logger;
         }
 
-        public async Task<AuthorizeRequestValidationResult> ValidateAsync(NameValueCollection parameters, ClaimsPrincipal subject = null)
+        public async Task<AuthorizeRequestValidationResult> ValidateAsync(NameValueCollection parameters, ClaimsPrincipal subject = null, CancellationToken cancellationToken = default)
         {
             _logger.LogDebug("Start authorize request protocol validation");
 
@@ -68,7 +68,7 @@ namespace IdentityServer4.Validation
             
             // load client_id
             // client_id must always be present on the request
-            var loadClientResult = await LoadClientAsync(request);
+            var loadClientResult = await LoadClientAsync(request, cancellationToken);
             if (loadClientResult.IsError)
             {
                 return loadClientResult;
@@ -188,7 +188,7 @@ namespace IdentityServer4.Validation
             return Valid(request);
         }
 
-        private async Task<AuthorizeRequestValidationResult> LoadClientAsync(ValidatedAuthorizeRequest request)
+        private async Task<AuthorizeRequestValidationResult> LoadClientAsync(ValidatedAuthorizeRequest request, CancellationToken cancellationToken = default)
         {
             //////////////////////////////////////////////////////////
             // client_id must be present
@@ -206,7 +206,7 @@ namespace IdentityServer4.Validation
             //////////////////////////////////////////////////////////
             // check for valid client
             //////////////////////////////////////////////////////////
-            var client = await _clients.FindEnabledClientByIdAsync(request.ClientId);
+            var client = await _clients.FindEnabledClientByIdAsync(request.ClientId, cancellationToken);
             if (client == null)
             {
                 LogError("Unknown client or not enabled", request.ClientId, request);

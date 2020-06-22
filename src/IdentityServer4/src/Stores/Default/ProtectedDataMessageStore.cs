@@ -9,6 +9,7 @@ using IdentityModel;
 using System.Text;
 using System;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 
 namespace IdentityServer4.Stores
 {

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.AspNetIdentity
@@ -63,12 +64,8 @@ namespace IdentityServer4.AspNetIdentity
             Logger = logger;
         }
 
-        /// <summary>
-        /// This method is called whenever claims about the user are requested (e.g. during token creation or via the userinfo endpoint)
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <returns></returns>
-        public virtual async Task GetProfileDataAsync(ProfileDataRequestContext context)
+        /// <inheritdoc/>
+        public virtual async Task GetProfileDataAsync(ProfileDataRequestContext context, CancellationToken cancellationToken = default)
         {
             var sub = context.Subject?.GetSubjectId();
             if (sub == null) throw new Exception("No sub claim present");
@@ -81,8 +78,9 @@ namespace IdentityServer4.AspNetIdentity
         /// </summary>
         /// <param name="context"></param>
         /// <param name="subjectId"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        protected virtual async Task GetProfileDataAsync(ProfileDataRequestContext context, string subjectId)
+        protected virtual async Task GetProfileDataAsync(ProfileDataRequestContext context, string subjectId, CancellationToken cancellationToken = default)
         {
             var user = await FindUserAsync(subjectId);
             if (user != null)
@@ -96,8 +94,9 @@ namespace IdentityServer4.AspNetIdentity
         /// </summary>
         /// <param name="context"></param>
         /// <param name="user"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        protected virtual async Task GetProfileDataAsync(ProfileDataRequestContext context, TUser user)
+        protected virtual async Task GetProfileDataAsync(ProfileDataRequestContext context, TUser user, CancellationToken cancellationToken = default)
         {
             var principal = await GetUserClaimsAsync(user);
             context.AddRequestedClaims(principal.Claims);
@@ -107,8 +106,9 @@ namespace IdentityServer4.AspNetIdentity
         /// Gets the claims for a user.
         /// </summary>
         /// <param name="user"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        protected virtual async Task<ClaimsPrincipal> GetUserClaimsAsync(TUser user)
+        protected virtual async Task<ClaimsPrincipal> GetUserClaimsAsync(TUser user, CancellationToken cancellationToken = default)
         {
             var principal = await ClaimsFactory.CreateAsync(user);
             if (principal == null) throw new Exception("ClaimsFactory failed to create a principal");
@@ -116,13 +116,8 @@ namespace IdentityServer4.AspNetIdentity
             return principal;
         }
 
-        /// <summary>
-        /// This method gets called whenever identity server needs to determine if the user is valid or active (e.g. if the user's account has been deactivated since they logged in).
-        /// (e.g. during token issuance or validation).
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <returns></returns>
-        public virtual async Task IsActiveAsync(IsActiveContext context)
+        /// <inheritdoc/>
+        public virtual async Task IsActiveAsync(IsActiveContext context, CancellationToken cancellationToken = default)
         {
             var sub = context.Subject?.GetSubjectId();
             if (sub == null) throw new Exception("No subject Id claim present");
@@ -135,8 +130,9 @@ namespace IdentityServer4.AspNetIdentity
         /// </summary>
         /// <param name="context"></param>
         /// <param name="subjectId"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        protected virtual async Task IsActiveAsync(IsActiveContext context, string subjectId)
+        protected virtual async Task IsActiveAsync(IsActiveContext context, string subjectId, CancellationToken cancellationToken = default)
         {
             var user = await FindUserAsync(subjectId);
             if (user != null)

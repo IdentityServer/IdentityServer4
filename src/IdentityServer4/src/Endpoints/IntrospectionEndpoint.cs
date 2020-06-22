@@ -13,6 +13,7 @@ using System.Net;
 using IdentityServer4.Services;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;
+using System.Threading;
 
 namespace IdentityServer4.Endpoints
 {
@@ -50,12 +51,8 @@ namespace IdentityServer4.Endpoints
             _logger = logger;
         }
 
-        /// <summary>
-        /// Processes the request.
-        /// </summary>
-        /// <param name="context">The HTTP context.</param>
-        /// <returns></returns>
-        public async Task<IEndpointResult> ProcessAsync(HttpContext context)
+        /// <inheritdoc/>
+        public async Task<IEndpointResult> ProcessAsync(HttpContext context, CancellationToken cancellationToken = default)
         {
             _logger.LogTrace("Processing introspection request.");
 
@@ -72,15 +69,15 @@ namespace IdentityServer4.Endpoints
                 return new StatusCodeResult(HttpStatusCode.UnsupportedMediaType);
             }
 
-            return await ProcessIntrospectionRequestAsync(context);
+            return await ProcessIntrospectionRequestAsync(context, cancellationToken);
         }
 
-        private async Task<IEndpointResult> ProcessIntrospectionRequestAsync(HttpContext context)
+        private async Task<IEndpointResult> ProcessIntrospectionRequestAsync(HttpContext context, CancellationToken cancellationToken = default)
         {
             _logger.LogDebug("Starting introspection request.");
 
             // caller validation
-            var apiResult = await _apiSecretValidator.ValidateAsync(context);
+            var apiResult = await _apiSecretValidator.ValidateAsync(context, cancellationToken);
             if (apiResult.Resource == null)
             {
                 _logger.LogError("API unauthorized to call introspection endpoint. aborting.");
@@ -98,7 +95,7 @@ namespace IdentityServer4.Endpoints
 
             // request validation
             _logger.LogTrace("Calling into introspection request validator: {type}", _requestValidator.GetType().FullName);
-            var validationResult = await _requestValidator.ValidateAsync(body.AsNameValueCollection(), apiResult.Resource);
+            var validationResult = await _requestValidator.ValidateAsync(body.AsNameValueCollection(), apiResult.Resource, cancellationToken);
             if (validationResult.IsError)
             {
                 LogFailure(validationResult.Error, apiResult.Resource.Name);
@@ -109,7 +106,7 @@ namespace IdentityServer4.Endpoints
 
             // response generation
             _logger.LogTrace("Calling into introspection response generator: {type}", _responseGenerator.GetType().FullName);
-            var response = await _responseGenerator.ProcessAsync(validationResult);
+            var response = await _responseGenerator.ProcessAsync(validationResult, cancellationToken);
 
             // render result
             LogSuccess(validationResult.IsActive, validationResult.Api.Name);

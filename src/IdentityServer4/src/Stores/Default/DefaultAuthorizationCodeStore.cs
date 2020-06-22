@@ -2,12 +2,13 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System.Threading;
 using System.Threading.Tasks;
+using IdentityServer4.Extensions;
 using IdentityServer4.Models;
+using IdentityServer4.Services;
 using IdentityServer4.Stores.Serialization;
 using Microsoft.Extensions.Logging;
-using IdentityServer4.Extensions;
-using IdentityServer4.Services;
 
 namespace IdentityServer4.Stores
 {
@@ -32,34 +33,22 @@ namespace IdentityServer4.Stores
         {
         }
 
-        /// <summary>
-        /// Stores the authorization code asynchronous.
-        /// </summary>
-        /// <param name="code">The code.</param>
-        /// <returns></returns>
-        public Task<string> StoreAuthorizationCodeAsync(AuthorizationCode code)
+        /// <inheritdoc/>
+        public Task<string> StoreAuthorizationCodeAsync(AuthorizationCode code, CancellationToken cancellationToken = default)
         {
-            return CreateItemAsync(code, code.ClientId, code.Subject.GetSubjectId(), code.SessionId, code.Description, code.CreationTime, code.Lifetime);
+            return CreateItemAsync(code, code.ClientId, code.Subject.GetSubjectId(), code.SessionId, code.Description, code.CreationTime, code.Lifetime, cancellationToken);
         }
 
-        /// <summary>
-        /// Gets the authorization code asynchronous.
-        /// </summary>
-        /// <param name="code">The code.</param>
-        /// <returns></returns>
-        public Task<AuthorizationCode> GetAuthorizationCodeAsync(string code)
+        /// <inheritdoc/>
+        public Task<AuthorizationCode> GetAuthorizationCodeAsync(string code, CancellationToken cancellationToken = default)
         {
-            return GetItemAsync(code);
+            return GetItemAsync(code, cancellationToken);
         }
 
-        /// <summary>
-        /// Removes the authorization code asynchronous.
-        /// </summary>
-        /// <param name="code">The code.</param>
-        /// <returns></returns>
-        public Task RemoveAuthorizationCodeAsync(string code)
+        /// <inheritdoc/>
+        public Task RemoveAuthorizationCodeAsync(string code, CancellationToken cancellationToken = default)
         {
-            return RemoveItemAsync(code);
+            return RemoveItemAsync(code, cancellationToken);
         }
     }
 }

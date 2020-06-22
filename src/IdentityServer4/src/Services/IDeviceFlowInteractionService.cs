@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 
@@ -16,15 +17,17 @@ namespace IdentityServer4.Services
         /// Gets the authorization context asynchronous.
         /// </summary>
         /// <param name="userCode">The user code.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        Task<DeviceFlowAuthorizationRequest> GetAuthorizationContextAsync(string userCode);
+        Task<DeviceFlowAuthorizationRequest> GetAuthorizationContextAsync(string userCode, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Handles the request asynchronous.
         /// </summary>
         /// <param name="userCode">The user code.</param>
         /// <param name="consent">The consent.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        Task<DeviceFlowInteractionResult> HandleRequestAsync(string userCode, ConsentResponse consent);
+        Task<DeviceFlowInteractionResult> HandleRequestAsync(string userCode, ConsentResponse consent, CancellationToken cancellationToken = default);
     }
 }

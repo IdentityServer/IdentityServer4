@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System;
 using IdentityServer4.Validation;
+using System.Threading;
 
 namespace IdentityServer4.Stores
 {
@@ -21,12 +22,13 @@ namespace IdentityServer4.Stores
         /// </summary>
         /// <param name="store">The store.</param>
         /// <param name="scopeNames">The scope names.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        public static async Task<Resources> FindResourcesByScopeAsync(this IResourceStore store, IEnumerable<string> scopeNames)
+        public static async Task<Resources> FindResourcesByScopeAsync(this IResourceStore store, IEnumerable<string> scopeNames, CancellationToken cancellationToken = default)
         {
-            var identity = await store.FindIdentityResourcesByScopeNameAsync(scopeNames);
-            var apiResources = await store.FindApiResourcesByScopeNameAsync(scopeNames);
-            var scopes = await store.FindApiScopesByNameAsync(scopeNames);
+            var identity = await store.FindIdentityResourcesByScopeNameAsync(scopeNames, cancellationToken);
+            var apiResources = await store.FindApiResourcesByScopeNameAsync(scopeNames, cancellationToken);
+            var scopes = await store.FindApiScopesByNameAsync(scopeNames, cancellationToken);
 
             Validate(identity, apiResources, scopes);
 
@@ -93,10 +95,11 @@ namespace IdentityServer4.Stores
         /// </summary>
         /// <param name="store">The store.</param>
         /// <param name="scopeNames">The scope names.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        public static async Task<Resources> FindEnabledResourcesByScopeAsync(this IResourceStore store, IEnumerable<string> scopeNames)
+        public static async Task<Resources> FindEnabledResourcesByScopeAsync(this IResourceStore store, IEnumerable<string> scopeNames, CancellationToken cancellationToken = default)
         {
-            return (await store.FindResourcesByScopeAsync(scopeNames)).FilterEnabled();
+            return (await store.FindResourcesByScopeAsync(scopeNames, cancellationToken)).FilterEnabled();
         }
 
         /// <summary>
@@ -104,12 +107,13 @@ namespace IdentityServer4.Stores
         /// </summary>
         /// <param name="store">The store.</param>
         /// <param name="parsedScopesResult">The parsed scopes.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        public static async Task<ResourceValidationResult> CreateResourceValidationResult(this IResourceStore store, ParsedScopesResult parsedScopesResult)
+        public static async Task<ResourceValidationResult> CreateResourceValidationResult(this IResourceStore store, ParsedScopesResult parsedScopesResult, CancellationToken cancellationToken = default)
         {
             var validScopeValues = parsedScopesResult.ParsedScopes;
             var scopes = validScopeValues.Select(x => x.ParsedName).ToArray();
-            var resources = await store.FindEnabledResourcesByScopeAsync(scopes);
+            var resources = await store.FindEnabledResourcesByScopeAsync(scopes, cancellationToken);
             return new ResourceValidationResult(resources, validScopeValues);
         }
 
@@ -117,10 +121,11 @@ namespace IdentityServer4.Stores
         /// Gets all enabled resources.
         /// </summary>
         /// <param name="store">The store.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        public static async Task<Resources> GetAllEnabledResourcesAsync(this IResourceStore store)
+        public static async Task<Resources> GetAllEnabledResourcesAsync(this IResourceStore store, CancellationToken cancellationToken = default)
         {
-            var resources = await store.GetAllResourcesAsync();
+            var resources = await store.GetAllResourcesAsync(cancellationToken);
             Validate(resources.IdentityResources, resources.ApiResources, resources.ApiScopes);
 
             return resources.FilterEnabled();
@@ -131,10 +136,11 @@ namespace IdentityServer4.Stores
         /// </summary>
         /// <param name="store">The store.</param>
         /// <param name="scopeNames">The scope names.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        public static async Task<IEnumerable<IdentityResource>> FindEnabledIdentityResourcesByScopeAsync(this IResourceStore store, IEnumerable<string> scopeNames)
+        public static async Task<IEnumerable<IdentityResource>> FindEnabledIdentityResourcesByScopeAsync(this IResourceStore store, IEnumerable<string> scopeNames, CancellationToken cancellationToken = default)
         {
-            return (await store.FindIdentityResourcesByScopeNameAsync(scopeNames)).Where(x => x.Enabled).ToArray();
+            return (await store.FindIdentityResourcesByScopeNameAsync(scopeNames, cancellationToken)).Where(x => x.Enabled).ToArray();
         }
     }
 }

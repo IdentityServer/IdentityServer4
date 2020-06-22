@@ -1,8 +1,9 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityServer4.Models;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Services
@@ -16,13 +17,15 @@ namespace IdentityServer4.Services
         /// Builds the URLs needed for front-channel logout notification.
         /// </summary>
         /// <param name="context">The context for the logout notification.</param>
-        Task<IEnumerable<string>> GetFrontChannelLogoutNotificationsUrlsAsync(LogoutNotificationContext context);
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        Task<IEnumerable<string>> GetFrontChannelLogoutNotificationsUrlsAsync(LogoutNotificationContext context, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Builds the http back-channel logout request data for the collection of clients.
         /// </summary>
         /// <param name="context">The context for the logout notification.</param>
-        Task<IEnumerable<BackChannelLogoutRequest>> GetBackChannelLogoutNotificationsAsync(LogoutNotificationContext context);
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        Task<IEnumerable<BackChannelLogoutRequest>> GetBackChannelLogoutNotificationsAsync(LogoutNotificationContext context, CancellationToken cancellationToken = default);
     }
 
     /// <summary>

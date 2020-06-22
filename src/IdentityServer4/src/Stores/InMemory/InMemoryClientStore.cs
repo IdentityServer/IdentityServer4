@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -7,6 +7,7 @@ using IdentityServer4.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Stores
@@ -31,14 +32,8 @@ namespace IdentityServer4.Stores
             _clients = clients;
         }
 
-        /// <summary>
-        /// Finds a client by id
-        /// </summary>
-        /// <param name="clientId">The client id</param>
-        /// <returns>
-        /// The client
-        /// </returns>
-        public Task<Client> FindClientByIdAsync(string clientId)
+        /// <inheritdoc/>
+        public Task<Client> FindClientByIdAsync(string clientId, CancellationToken cancellationToken = default)
         {
             var query =
                 from client in _clients

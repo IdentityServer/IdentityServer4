@@ -5,6 +5,7 @@
 using IdentityServer4.Models;
 using Microsoft.Extensions.Logging;
 using System.Collections.Specialized;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Validation
@@ -29,13 +30,8 @@ namespace IdentityServer4.Validation
             _logger = logger;
         }
 
-        /// <summary>
-        /// Validates the request.
-        /// </summary>
-        /// <param name="parameters">The parameters.</param>
-        /// <param name="api">The API.</param>
-        /// <returns></returns>
-        public async Task<IntrospectionRequestValidationResult> ValidateAsync(NameValueCollection parameters, ApiResource api)
+        /// <inheritdoc/>
+        public async Task<IntrospectionRequestValidationResult> ValidateAsync(NameValueCollection parameters, ApiResource api, CancellationToken cancellationToken = default)
         {
             _logger.LogDebug("Introspection request validation started.");
 
@@ -55,7 +51,7 @@ namespace IdentityServer4.Validation
             }
 
             // validate token
-            var tokenValidationResult = await _tokenValidator.ValidateAccessTokenAsync(token);
+            var tokenValidationResult = await _tokenValidator.ValidateAccessTokenAsync(token, cancellationToken: cancellationToken);
 
             // invalid or unknown token
             if (tokenValidationResult.IsError)

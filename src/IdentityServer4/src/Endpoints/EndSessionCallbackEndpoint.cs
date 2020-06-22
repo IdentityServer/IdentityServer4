@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Extensions;
@@ -25,7 +26,8 @@ namespace IdentityServer4.Endpoints
             _logger = logger;
         }
 
-        public async Task<IEndpointResult> ProcessAsync(HttpContext context)
+        /// <inheritdoc/>
+        public async Task<IEndpointResult> ProcessAsync(HttpContext context, CancellationToken cancellationToken = default)
         {
             if (!HttpMethods.IsGet(context.Request.Method))
             {
@@ -36,7 +38,7 @@ namespace IdentityServer4.Endpoints
             _logger.LogDebug("Processing signout callback request");
 
             var parameters = context.Request.Query.AsNameValueCollection();
-            var result = await _endSessionRequestValidator.ValidateCallbackAsync(parameters);
+            var result = await _endSessionRequestValidator.ValidateCallbackAsync(parameters, cancellationToken);
 
             if (!result.IsError)
             {

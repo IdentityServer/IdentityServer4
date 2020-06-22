@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -8,6 +8,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Services;
 using Microsoft.Extensions.Logging;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Validation
@@ -38,18 +39,14 @@ namespace IdentityServer4.Validation
             _logger = logger;
         }
 
-        /// <summary>
-        /// Validates a userinfo request.
-        /// </summary>
-        /// <param name="accessToken">The access token.</param>
-        /// <returns></returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public async Task<UserInfoRequestValidationResult> ValidateRequestAsync(string accessToken)
+        /// <inheritdoc/>
+        public async Task<UserInfoRequestValidationResult> ValidateRequestAsync(string accessToken, CancellationToken cancellationToken = default)
         {
             // the access token needs to be valid and have at least the openid scope
             var tokenResult = await _tokenValidator.ValidateAccessTokenAsync(
                 accessToken,
-                IdentityServerConstants.StandardScopes.OpenId);
+                IdentityServerConstants.StandardScopes.OpenId,
+                cancellationToken);
 
             if (tokenResult.IsError)
             {
@@ -79,7 +76,7 @@ namespace IdentityServer4.Validation
 
             // make sure user is still active
             var isActiveContext = new IsActiveContext(subject, tokenResult.Client, IdentityServerConstants.ProfileIsActiveCallers.UserInfoRequestValidation);
-            await _profile.IsActiveAsync(isActiveContext);
+            await _profile.IsActiveAsync(isActiveContext, cancellationToken);
 
             if (isActiveContext.IsActive == false)
             {

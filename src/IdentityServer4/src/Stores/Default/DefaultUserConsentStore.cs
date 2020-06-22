@@ -7,6 +7,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Stores.Serialization;
 using Microsoft.Extensions.Logging;
 using IdentityServer4.Services;
+using System.Threading;
 
 namespace IdentityServer4.Stores
 {
@@ -36,39 +37,25 @@ namespace IdentityServer4.Stores
             return clientId + "|" + subjectId;
         }
 
-        /// <summary>
-        /// Stores the user consent asynchronous.
-        /// </summary>
-        /// <param name="consent">The consent.</param>
-        /// <returns></returns>
-        public Task StoreUserConsentAsync(Consent consent)
+        /// <inheritdoc/>
+        public Task StoreUserConsentAsync(Consent consent, CancellationToken cancellationToken = default)
         {
             var key = GetConsentKey(consent.SubjectId, consent.ClientId);
-            return StoreItemAsync(key, consent, consent.ClientId, consent.SubjectId, null, null, consent.CreationTime, consent.Expiration);
+            return StoreItemAsync(key, consent, consent.ClientId, consent.SubjectId, null, null, consent.CreationTime, consent.Expiration, cancellationToken: cancellationToken);
         }
 
-        /// <summary>
-        /// Gets the user consent asynchronous.
-        /// </summary>
-        /// <param name="subjectId">The subject identifier.</param>
-        /// <param name="clientId">The client identifier.</param>
-        /// <returns></returns>
-        public Task<Consent> GetUserConsentAsync(string subjectId, string clientId)
+        /// <inheritdoc/>
+        public Task<Consent> GetUserConsentAsync(string subjectId, string clientId, CancellationToken cancellationToken = default)
         {
             var key = GetConsentKey(subjectId, clientId);
-            return GetItemAsync(key);
+            return GetItemAsync(key, cancellationToken);
         }
 
-        /// <summary>
-        /// Removes the user consent asynchronous.
-        /// </summary>
-        /// <param name="subjectId">The subject identifier.</param>
-        /// <param name="clientId">The client identifier.</param>
-        /// <returns></returns>
-        public Task RemoveUserConsentAsync(string subjectId, string clientId)
+        /// <inheritdoc/>
+        public Task RemoveUserConsentAsync(string subjectId, string clientId, CancellationToken cancellationToken = default)
         {
             var key = GetConsentKey(subjectId, clientId);
-            return RemoveItemAsync(key);
+            return RemoveItemAsync(key, cancellationToken);
         }
     }
 }

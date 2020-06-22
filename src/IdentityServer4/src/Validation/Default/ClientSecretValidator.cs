@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Stores;
 using IdentityServer4.Models;
+using System.Threading;
 
 namespace IdentityServer4.Validation
 {
@@ -40,12 +41,8 @@ namespace IdentityServer4.Validation
             _logger = logger;
         }
 
-        /// <summary>
-        /// Validates the current request.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <returns></returns>
-        public async Task<ClientSecretValidationResult> ValidateAsync(HttpContext context)
+        /// <inheritdoc/>
+        public async Task<ClientSecretValidationResult> ValidateAsync(HttpContext context, CancellationToken cancellationToken = default)
         {
             _logger.LogDebug("Start client validation");
 
@@ -64,7 +61,7 @@ namespace IdentityServer4.Validation
             }
 
             // load client
-            var client = await _clients.FindEnabledClientByIdAsync(parsedSecret.Id);
+            var client = await _clients.FindEnabledClientByIdAsync(parsedSecret.Id, cancellationToken);
             if (client == null)
             {
                 await RaiseFailureEventAsync(parsedSecret.Id, "Unknown client");

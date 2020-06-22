@@ -1,7 +1,8 @@
-﻿using IdentityServer4.Models;
+using IdentityServer4.Models;
 using IdentityServer4.Services;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityServer.UnitTests.Common
@@ -14,13 +15,13 @@ namespace IdentityServer.UnitTests.Common
         public bool SendBackChannelLogoutNotificationsCalled { get; set; }
         public List<BackChannelLogoutRequest> BackChannelLogoutRequests { get; set; } = new List<BackChannelLogoutRequest>();
 
-        public Task<IEnumerable<string>> GetFrontChannelLogoutNotificationsUrlsAsync(LogoutNotificationContext context)
+        public Task<IEnumerable<string>> GetFrontChannelLogoutNotificationsUrlsAsync(LogoutNotificationContext context, CancellationToken cancellationToken = default)
         {
             GetFrontChannelLogoutNotificationsUrlsCalled = true;
             return Task.FromResult(FrontChannelLogoutNotificationsUrls.AsEnumerable());
         }
 
-        public Task<IEnumerable<BackChannelLogoutRequest>> GetBackChannelLogoutNotificationsAsync(LogoutNotificationContext context)
+        public Task<IEnumerable<BackChannelLogoutRequest>> GetBackChannelLogoutNotificationsAsync(LogoutNotificationContext context, CancellationToken cancellationToken = default)
         {
             SendBackChannelLogoutNotificationsCalled = true;
             return Task.FromResult(BackChannelLogoutRequests.AsEnumerable());

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using IdentityModel;
 using IdentityServer4.Configuration;
@@ -32,7 +33,8 @@ namespace IdentityServer4.Validation
             _logger = logger;
         }
 
-        public async Task<DeviceAuthorizationRequestValidationResult> ValidateAsync(NameValueCollection parameters, ClientSecretValidationResult clientValidationResult)
+        /// <inheritdoc/>
+        public async Task<DeviceAuthorizationRequestValidationResult> ValidateAsync(NameValueCollection parameters, ClientSecretValidationResult clientValidationResult, CancellationToken cancellationToken = default)
         {
             _logger.LogDebug("Start device authorization request validation");
 
@@ -48,7 +50,7 @@ namespace IdentityServer4.Validation
                 return clientResult;
             }
 
-            var scopeResult = await ValidateScopeAsync(request);
+            var scopeResult = await ValidateScopeAsync(request, cancellationToken);
             if (scopeResult.IsError)
             {
                 return scopeResult;
@@ -109,7 +111,7 @@ namespace IdentityServer4.Validation
             return Valid(request);
         }
 
-        private async Task<DeviceAuthorizationRequestValidationResult> ValidateScopeAsync(ValidatedDeviceAuthorizationRequest request)
+        private async Task<DeviceAuthorizationRequestValidationResult> ValidateScopeAsync(ValidatedDeviceAuthorizationRequest request, CancellationToken cancellationToken = default)
         {
             //////////////////////////////////////////////////////////
             // scope must be present
@@ -155,7 +157,7 @@ namespace IdentityServer4.Validation
             var validatedResources = await _resourceValidator.ValidateRequestedResourcesAsync(new ResourceValidationRequest{
                 Client = request.Client, 
                 Scopes = request.RequestedScopes
-            });
+            }, cancellationToken);
 
             if (!validatedResources.Succeeded)
             {

@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.ResponseHandling
@@ -87,12 +88,8 @@ namespace IdentityServer4.ResponseHandling
             Logger = logger;
         }
 
-        /// <summary>
-        /// Creates the discovery document.
-        /// </summary>
-        /// <param name="baseUrl">The base URL.</param>
-        /// <param name="issuerUri">The issuer URI.</param>
-        public virtual async Task<Dictionary<string, object>> CreateDiscoveryDocumentAsync(string baseUrl, string issuerUri)
+        /// <inheritdoc/>
+        public virtual async Task<Dictionary<string, object>> CreateDiscoveryDocumentAsync(string baseUrl, string issuerUri, CancellationToken cancellationToken = default)
         {
             var entries = new Dictionary<string, object>
             {
@@ -214,7 +211,7 @@ namespace IdentityServer4.ResponseHandling
                 Options.Discovery.ShowApiScopes ||
                 Options.Discovery.ShowClaims)
             {
-                var resources = await ResourceStore.GetAllEnabledResourcesAsync();
+                var resources = await ResourceStore.GetAllEnabledResourcesAsync(cancellationToken);
                 var scopes = new List<string>();
 
                 // scopes

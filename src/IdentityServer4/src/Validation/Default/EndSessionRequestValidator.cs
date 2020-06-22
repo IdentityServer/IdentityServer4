@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Http;
 using System;
 using IdentityServer4.Logging.Models;
 using IdentityServer4.Models;
+using System.Threading;
 
 namespace IdentityServer4.Validation
 {
@@ -96,7 +97,7 @@ namespace IdentityServer4.Validation
         }
 
         /// <inheritdoc />
-        public async Task<EndSessionValidationResult> ValidateAsync(NameValueCollection parameters, ClaimsPrincipal subject)
+        public async Task<EndSessionValidationResult> ValidateAsync(NameValueCollection parameters, ClaimsPrincipal subject, CancellationToken cancellationToken = default)
         {
             Logger.LogDebug("Start end session request validation");
 
@@ -116,7 +117,7 @@ namespace IdentityServer4.Validation
             if (idTokenHint.IsPresent())
             {
                 // validate id_token - no need to validate token life time
-                var tokenValidationResult = await TokenValidator.ValidateIdentityTokenAsync(idTokenHint, null, false);
+                var tokenValidationResult = await TokenValidator.ValidateIdentityTokenAsync(idTokenHint, null, false, cancellationToken);
                 if (tokenValidationResult.IsError)
                 {
                     return Invalid("Error validating id token hint", validatedRequest);
@@ -215,7 +216,7 @@ namespace IdentityServer4.Validation
         }
 
         /// <inheritdoc />
-        public async Task<EndSessionCallbackValidationResult> ValidateCallbackAsync(NameValueCollection parameters)
+        public async Task<EndSessionCallbackValidationResult> ValidateCallbackAsync(NameValueCollection parameters, CancellationToken cancellationToken = default)
         {
             var result = new EndSessionCallbackValidationResult
             {
@@ -227,7 +228,7 @@ namespace IdentityServer4.Validation
             if (endSessionMessage?.Data?.ClientIds?.Any() == true)
             {
                 result.IsError = false;
-                result.FrontChannelLogoutUrls = await LogoutNotificationService.GetFrontChannelLogoutNotificationsUrlsAsync(endSessionMessage.Data);
+                result.FrontChannelLogoutUrls = await LogoutNotificationService.GetFrontChannelLogoutNotificationsUrlsAsync(endSessionMessage.Data, cancellationToken);
             }
             else
             {

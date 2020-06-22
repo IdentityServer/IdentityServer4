@@ -7,6 +7,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Validation;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Stores
@@ -44,12 +45,13 @@ namespace IdentityServer4.Stores
         /// Finds a client by id (and runs the validation logic)
         /// </summary>
         /// <param name="clientId">The client id</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>
         /// The client or an InvalidOperationException
         /// </returns>
-        public async Task<Client> FindClientByIdAsync(string clientId)
+        public async Task<Client> FindClientByIdAsync(string clientId, CancellationToken cancellationToken = default)
         {
-            var client = await _inner.FindClientByIdAsync(clientId);
+            var client = await _inner.FindClientByIdAsync(clientId, cancellationToken);
 
             if (client != null)
             {
@@ -66,7 +68,7 @@ namespace IdentityServer4.Stores
 
                 _logger.LogError("Invalid client configuration for client {clientId}: {errorMessage}", client.ClientId, context.ErrorMessage);
                 await _events.RaiseAsync(new InvalidClientConfigurationEvent(client, context.ErrorMessage));
-                    
+
                 return null;
             }
 

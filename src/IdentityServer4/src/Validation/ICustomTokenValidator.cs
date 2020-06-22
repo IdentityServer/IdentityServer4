@@ -1,7 +1,8 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Validation
@@ -15,14 +16,16 @@ namespace IdentityServer4.Validation
         /// Custom validation logic for access tokens.
         /// </summary>
         /// <param name="result">The validation result so far.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The validation result</returns>
-        Task<TokenValidationResult> ValidateAccessTokenAsync(TokenValidationResult result);
+        Task<TokenValidationResult> ValidateAccessTokenAsync(TokenValidationResult result, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Custom validation logic for identity tokens.
         /// </summary>
         /// <param name="result">The validation result so far.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The validation result</returns>
-        Task<TokenValidationResult> ValidateIdentityTokenAsync(TokenValidationResult result);
+        Task<TokenValidationResult> ValidateIdentityTokenAsync(TokenValidationResult result, CancellationToken cancellationToken = default);
     }
 }

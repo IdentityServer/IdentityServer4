@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel;
@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Services
@@ -22,9 +23,8 @@ namespace IdentityServer4.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<LogoutNotificationService> _logger;
 
-
         /// <summary>
-        /// Ctor.
+        /// Initializes a new instance of the <see cref="LogoutNotificationService"/> class.
         /// </summary>
         public LogoutNotificationService(
             IClientStore clientStore,
@@ -37,12 +37,12 @@ namespace IdentityServer4.Services
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<string>> GetFrontChannelLogoutNotificationsUrlsAsync(LogoutNotificationContext context)
+        public async Task<IEnumerable<string>> GetFrontChannelLogoutNotificationsUrlsAsync(LogoutNotificationContext context, CancellationToken cancellationToken = default)
         {
             var frontChannelUrls = new List<string>();
             foreach (var clientId in context.ClientIds)
             {
-                var client = await _clientStore.FindEnabledClientByIdAsync(clientId);
+                var client = await _clientStore.FindEnabledClientByIdAsync(clientId, cancellationToken);
                 if (client != null)
                 {
                     if (client.FrontChannelLogoutUri.IsPresent())
@@ -82,12 +82,12 @@ namespace IdentityServer4.Services
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<BackChannelLogoutRequest>> GetBackChannelLogoutNotificationsAsync(LogoutNotificationContext context)
+        public async Task<IEnumerable<BackChannelLogoutRequest>> GetBackChannelLogoutNotificationsAsync(LogoutNotificationContext context, CancellationToken cancellationToken = default)
         {
             var backChannelLogouts = new List<BackChannelLogoutRequest>();
             foreach (var clientId in context.ClientIds)
             {
-                var client = await _clientStore.FindEnabledClientByIdAsync(clientId);
+                var client = await _clientStore.FindEnabledClientByIdAsync(clientId, cancellationToken);
                 if (client != null)
                 {
                     if (client.BackChannelLogoutUri.IsPresent())

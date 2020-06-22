@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -8,6 +8,7 @@ using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Validation
@@ -40,12 +41,8 @@ namespace IdentityServer4.Validation
             _logger = logger;
         }
 
-        /// <summary>
-        /// Validates the secret on the current request.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <returns></returns>
-        public async Task<ApiSecretValidationResult> ValidateAsync(HttpContext context)
+        /// <inheritdoc/>
+        public async Task<ApiSecretValidationResult> ValidateAsync(HttpContext context, CancellationToken cancellationToken = default)
         {
             _logger.LogTrace("Start API validation");
 
@@ -64,7 +61,7 @@ namespace IdentityServer4.Validation
             }
 
             // load API resource
-            var apis = await _resources.FindApiResourcesByNameAsync(new[] { parsedSecret.Id });
+            var apis = await _resources.FindApiResourcesByNameAsync(new[] { parsedSecret.Id }, cancellationToken);
             if (apis == null || !apis.Any())
             {
                 await RaiseFailureEventAsync(parsedSecret.Id, "Unknown API resource");

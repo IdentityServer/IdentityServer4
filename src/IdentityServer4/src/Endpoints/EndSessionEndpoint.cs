@@ -3,6 +3,7 @@
 
 using System.Collections.Specialized;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Extensions;
@@ -17,9 +18,7 @@ namespace IdentityServer4.Endpoints
     internal class EndSessionEndpoint : IEndpointHandler
     {
         private readonly IEndSessionRequestValidator _endSessionRequestValidator;
-
         private readonly ILogger _logger;
-
         private readonly IUserSession _userSession;
 
         public EndSessionEndpoint(
@@ -32,7 +31,8 @@ namespace IdentityServer4.Endpoints
             _logger = logger;
         }
 
-        public async Task<IEndpointResult> ProcessAsync(HttpContext context)
+        /// <inheritdoc/>
+        public async Task<IEndpointResult> ProcessAsync(HttpContext context, CancellationToken cancellationToken = default)
         {
             NameValueCollection parameters;
             if (HttpMethods.IsGet(context.Request.Method))
@@ -53,7 +53,7 @@ namespace IdentityServer4.Endpoints
 
             _logger.LogDebug("Processing signout request for {subjectId}", user?.GetSubjectId() ?? "anonymous");
 
-            var result = await _endSessionRequestValidator.ValidateAsync(parameters, user);
+            var result = await _endSessionRequestValidator.ValidateAsync(parameters, user, cancellationToken);
 
             if (result.IsError)
             {

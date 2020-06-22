@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using IdentityServer4.Validation;
+using System.Threading;
 
 namespace IdentityServer4.Services
 {
@@ -50,21 +51,8 @@ namespace IdentityServer4.Services
             Logger = logger;
         }
 
-        /// <summary>
-        /// Checks if consent is required.
-        /// </summary>
-        /// <param name="subject">The user.</param>
-        /// <param name="client">The client.</param>
-        /// <param name="parsedScopes">The parsed scopes.</param>
-        /// <returns>
-        /// Boolean if consent is required.
-        /// </returns>
-        /// <exception cref="System.ArgumentNullException">
-        /// client
-        /// or
-        /// subject
-        /// </exception>
-        public virtual async Task<bool> RequiresConsentAsync(ClaimsPrincipal subject, Client client, IEnumerable<ParsedScopeValue> parsedScopes)
+        /// <inheritdoc/>
+        public virtual async Task<bool> RequiresConsentAsync(ClaimsPrincipal subject, Client client, IEnumerable<ParsedScopeValue> parsedScopes, CancellationToken cancellationToken = default)
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
             if (subject == null) throw new ArgumentNullException(nameof(subject));
@@ -103,7 +91,7 @@ namespace IdentityServer4.Services
                 return true;
             }
 
-            var consent = await UserConsentStore.GetUserConsentAsync(subject.GetSubjectId(), client.ClientId);
+            var consent = await UserConsentStore.GetUserConsentAsync(subject.GetSubjectId(), client.ClientId, cancellationToken);
 
             if (consent == null)
             {
@@ -114,7 +102,7 @@ namespace IdentityServer4.Services
             if (consent.Expiration.HasExpired(Clock.UtcNow.UtcDateTime))
             {
                 Logger.LogDebug("Consent found in consent store is expired, consent is required");
-                await UserConsentStore.RemoveUserConsentAsync(consent.SubjectId, consent.ClientId);
+                await UserConsentStore.RemoveUserConsentAsync(consent.SubjectId, consent.ClientId, cancellationToken);
                 return true;
             }
 
@@ -140,19 +128,8 @@ namespace IdentityServer4.Services
             return true;
         }
 
-        /// <summary>
-        /// Updates the consent asynchronous.
-        /// </summary>
-        /// <param name="client">The client.</param>
-        /// <param name="subject">The subject.</param>
-        /// <param name="parsedScopes">The parsed scopes.</param>
-        /// <returns></returns>
-        /// <exception cref="System.ArgumentNullException">
-        /// client
-        /// or
-        /// subject
-        /// </exception>
-        public virtual async Task UpdateConsentAsync(ClaimsPrincipal subject, Client client, IEnumerable<ParsedScopeValue> parsedScopes)
+        /// <inheritdoc/>
+        public virtual async Task UpdateConsentAsync(ClaimsPrincipal subject, Client client, IEnumerable<ParsedScopeValue> parsedScopes, CancellationToken cancellationToken = default)
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
             if (subject == null) throw new ArgumentNullException(nameof(subject));
@@ -180,13 +157,13 @@ namespace IdentityServer4.Services
                         consent.Expiration = consent.CreationTime.AddSeconds(client.ConsentLifetime.Value);
                     }
 
-                    await UserConsentStore.StoreUserConsentAsync(consent);
+                    await UserConsentStore.StoreUserConsentAsync(consent, cancellationToken);
                 }
                 else
                 {
                     Logger.LogDebug("Client allows remembering consent, and no scopes provided. Removing consent from consent store for subject: {subject}", subject.GetSubjectId());
 
-                    await UserConsentStore.RemoveUserConsentAsync(subjectId, clientId);
+                    await UserConsentStore.RemoveUserConsentAsync(subjectId, clientId, cancellationToken);
                 }
             }
         }

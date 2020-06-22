@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityServer.UnitTests.Common;
@@ -111,7 +112,7 @@ namespace IdentityServer.UnitTests.Hosting
 
         private class MyEndpointHandler : IEndpointHandler
         {
-            public Task<IEndpointResult> ProcessAsync(HttpContext context)
+            public Task<IEndpointResult> ProcessAsync(HttpContext context, CancellationToken cancellationToken = default)
             {
                 throw new NotImplementedException();
             }
@@ -119,7 +120,7 @@ namespace IdentityServer.UnitTests.Hosting
 
         private class MyOtherEndpointHandler : IEndpointHandler
         {
-            public Task<IEndpointResult> ProcessAsync(HttpContext context)
+            public Task<IEndpointResult> ProcessAsync(HttpContext context, CancellationToken cancellationToken = default)
             {
                 throw new NotImplementedException();
             }

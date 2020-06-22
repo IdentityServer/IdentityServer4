@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
@@ -18,67 +19,46 @@ namespace IdentityServer4.Services.Default
         /// </summary>
         /// <param name="store">The store.</param>
         /// <param name="handleGenerationService">The handle generation service.</param>
-        public DefaultDeviceFlowCodeService(IDeviceFlowStore store,
+        public DefaultDeviceFlowCodeService(
+            IDeviceFlowStore store,
             IHandleGenerationService handleGenerationService)
         {
             _store = store;
             _handleGenerationService = handleGenerationService;
         }
 
-        /// <summary>
-        /// Stores the device authorization request.
-        /// </summary>
-        /// <param name="userCode">The user code.</param>
-        /// <param name="data">The data.</param>
-        /// <returns></returns>
-        public async Task<string> StoreDeviceAuthorizationAsync(string userCode, DeviceCode data)
+        /// <inheritdoc/>
+        public async Task<string> StoreDeviceAuthorizationAsync(string userCode, DeviceCode data, CancellationToken cancellationToken = default)
         {
             var deviceCode = await _handleGenerationService.GenerateAsync();
 
-            await _store.StoreDeviceAuthorizationAsync(deviceCode.Sha256(), userCode.Sha256(), data);
+            await _store.StoreDeviceAuthorizationAsync(deviceCode.Sha256(), userCode.Sha256(), data, cancellationToken);
 
             return deviceCode;
         }
 
-        /// <summary>
-        /// Finds device authorization by user code.
-        /// </summary>
-        /// <param name="userCode">The user code.</param>
-        /// <returns></returns>
-        public Task<DeviceCode> FindByUserCodeAsync(string userCode)
+        /// <inheritdoc/>
+        public Task<DeviceCode> FindByUserCodeAsync(string userCode, CancellationToken cancellationToken = default)
         {
-            return _store.FindByUserCodeAsync(userCode.Sha256());
+            return _store.FindByUserCodeAsync(userCode.Sha256(), cancellationToken);
         }
 
-        /// <summary>
-        /// Finds device authorization by device code.
-        /// </summary>
-        /// <param name="deviceCode">The device code.</param>
-        /// <returns></returns>
-        public Task<DeviceCode> FindByDeviceCodeAsync(string deviceCode)
+        /// <inheritdoc/>
+        public Task<DeviceCode> FindByDeviceCodeAsync(string deviceCode, CancellationToken cancellationToken = default)
         {
-            return _store.FindByDeviceCodeAsync(deviceCode.Sha256());
+            return _store.FindByDeviceCodeAsync(deviceCode.Sha256(), cancellationToken);
         }
 
-        /// <summary>
-        /// Updates device authorization, searching by user code.
-        /// </summary>
-        /// <param name="userCode">The user code.</param>
-        /// <param name="data">The data.</param>
-        /// <returns></returns>
-        public Task UpdateByUserCodeAsync(string userCode, DeviceCode data)
+        /// <inheritdoc/>
+        public Task UpdateByUserCodeAsync(string userCode, DeviceCode data, CancellationToken cancellationToken = default)
         {
-            return _store.UpdateByUserCodeAsync(userCode.Sha256(), data);
+            return _store.UpdateByUserCodeAsync(userCode.Sha256(), data, cancellationToken);
         }
 
-        /// <summary>
-        /// Removes the device authorization, searching by device code.
-        /// </summary>
-        /// <param name="deviceCode">The device code.</param>
-        /// <returns></returns>
-        public Task RemoveByDeviceCodeAsync(string deviceCode)
+        /// <inheritdoc/>
+        public Task RemoveByDeviceCodeAsync(string deviceCode, CancellationToken cancellationToken = default)
         {
-            return _store.RemoveByDeviceCodeAsync(deviceCode.Sha256());
+            return _store.RemoveByDeviceCodeAsync(deviceCode.Sha256(), cancellationToken);
         }
     }
 }

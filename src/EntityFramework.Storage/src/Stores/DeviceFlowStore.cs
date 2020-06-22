@@ -1,8 +1,9 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using IdentityModel;
 using IdentityServer4.EntityFramework.Entities;
@@ -52,28 +53,18 @@ namespace IdentityServer4.EntityFramework.Stores
             Logger = logger;
         }
 
-        /// <summary>
-        /// Stores the device authorization request.
-        /// </summary>
-        /// <param name="deviceCode">The device code.</param>
-        /// <param name="userCode">The user code.</param>
-        /// <param name="data">The data.</param>
-        /// <returns></returns>
-        public virtual async Task StoreDeviceAuthorizationAsync(string deviceCode, string userCode, DeviceCode data)
+        /// <inheritdoc/>
+        public virtual async Task StoreDeviceAuthorizationAsync(string deviceCode, string userCode, DeviceCode data, CancellationToken cancellationToken = default)
         {
             Context.DeviceFlowCodes.Add(ToEntity(data, deviceCode, userCode));
 
-            await Context.SaveChangesAsync();
+            await Context.SaveChangesAsync(cancellationToken);
         }
 
-        /// <summary>
-        /// Finds device authorization by user code.
-        /// </summary>
-        /// <param name="userCode">The user code.</param>
-        /// <returns></returns>
-        public virtual async Task<DeviceCode> FindByUserCodeAsync(string userCode)
+        /// <inheritdoc/>
+        public virtual async Task<DeviceCode> FindByUserCodeAsync(string userCode, CancellationToken cancellationToken = default)
         {
-            var deviceFlowCodes = await Context.DeviceFlowCodes.AsNoTracking().FirstOrDefaultAsync(x => x.UserCode == userCode);
+            var deviceFlowCodes = await Context.DeviceFlowCodes.AsNoTracking().FirstOrDefaultAsync(x => x.UserCode == userCode, cancellationToken);
             var model = ToModel(deviceFlowCodes?.Data);
 
             Logger.LogDebug("{userCode} found in database: {userCodeFound}", userCode, model != null);
@@ -81,14 +72,10 @@ namespace IdentityServer4.EntityFramework.Stores
             return model;
         }
 
-        /// <summary>
-        /// Finds device authorization by device code.
-        /// </summary>
-        /// <param name="deviceCode">The device code.</param>
-        /// <returns></returns>
-        public virtual async Task<DeviceCode> FindByDeviceCodeAsync(string deviceCode)
+        /// <inheritdoc/>
+        public virtual async Task<DeviceCode> FindByDeviceCodeAsync(string deviceCode, CancellationToken cancellationToken = default)
         {
-            var deviceFlowCodes = await Context.DeviceFlowCodes.AsNoTracking().FirstOrDefaultAsync(x => x.DeviceCode == deviceCode);
+            var deviceFlowCodes = await Context.DeviceFlowCodes.AsNoTracking().FirstOrDefaultAsync(x => x.DeviceCode == deviceCode, cancellationToken);
             var model = ToModel(deviceFlowCodes?.Data);
 
             Logger.LogDebug("{deviceCode} found in database: {deviceCodeFound}", deviceCode, model != null);
@@ -96,15 +83,10 @@ namespace IdentityServer4.EntityFramework.Stores
             return model;
         }
 
-        /// <summary>
-        /// Updates device authorization, searching by user code.
-        /// </summary>
-        /// <param name="userCode">The user code.</param>
-        /// <param name="data">The data.</param>
-        /// <returns></returns>
-        public virtual async Task UpdateByUserCodeAsync(string userCode, DeviceCode data)
+        /// <inheritdoc/>
+        public virtual async Task UpdateByUserCodeAsync(string userCode, DeviceCode data, CancellationToken cancellationToken = default)
         {
-            var existing = await Context.DeviceFlowCodes.SingleOrDefaultAsync(x => x.UserCode == userCode);
+            var existing = await Context.DeviceFlowCodes.SingleOrDefaultAsync(x => x.UserCode == userCode, cancellationToken);
             if (existing == null)
             {
                 Logger.LogError("{userCode} not found in database", userCode);
@@ -119,7 +101,7 @@ namespace IdentityServer4.EntityFramework.Stores
 
             try
             {
-                await Context.SaveChangesAsync();
+                await Context.SaveChangesAsync(cancellationToken);
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -127,14 +109,10 @@ namespace IdentityServer4.EntityFramework.Stores
             }
         }
 
-        /// <summary>
-        /// Removes the device authorization, searching by device code.
-        /// </summary>
-        /// <param name="deviceCode">The device code.</param>
-        /// <returns></returns>
-        public virtual async Task RemoveByDeviceCodeAsync(string deviceCode)
+        /// <inheritdoc/>
+        public virtual async Task RemoveByDeviceCodeAsync(string deviceCode, CancellationToken cancellationToken = default)
         {
-            var deviceFlowCodes = await Context.DeviceFlowCodes.FirstOrDefaultAsync(x => x.DeviceCode == deviceCode);
+            var deviceFlowCodes = await Context.DeviceFlowCodes.FirstOrDefaultAsync(x => x.DeviceCode == deviceCode, cancellationToken);
 
             if(deviceFlowCodes != null)
             {
@@ -144,7 +122,7 @@ namespace IdentityServer4.EntityFramework.Stores
 
                 try
                 {
-                    await Context.SaveChangesAsync();
+                    await Context.SaveChangesAsync(cancellationToken);
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {

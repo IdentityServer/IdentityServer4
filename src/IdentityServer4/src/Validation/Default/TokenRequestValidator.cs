@@ -18,6 +18,7 @@ using System.Text;
 using System.Threading.Tasks;
 using IdentityServer4.Logging.Models;
 using Microsoft.AspNetCore.Authentication;
+using System.Threading;
 
 namespace IdentityServer4.Validation
 {
@@ -93,13 +94,14 @@ namespace IdentityServer4.Validation
         /// </summary>
         /// <param name="parameters">The parameters.</param>
         /// <param name="clientValidationResult">The client validation result.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException">
         /// parameters
         /// or
         /// client
         /// </exception>
-        public async Task<TokenRequestValidationResult> ValidateRequestAsync(NameValueCollection parameters, ClientSecretValidationResult clientValidationResult)
+        public async Task<TokenRequestValidationResult> ValidateRequestAsync(NameValueCollection parameters, ClientSecretValidationResult clientValidationResult, CancellationToken cancellationToken = default)
         {
             _logger.LogDebug("Start token request validation");
 
@@ -150,24 +152,24 @@ namespace IdentityServer4.Validation
             switch (grantType)
             {
                 case OidcConstants.GrantTypes.AuthorizationCode:
-                    return await RunValidationAsync(ValidateAuthorizationCodeRequestAsync, parameters);
+                    return await RunValidationAsync(ValidateAuthorizationCodeRequestAsync, parameters, cancellationToken);
                 case OidcConstants.GrantTypes.ClientCredentials:
-                    return await RunValidationAsync(ValidateClientCredentialsRequestAsync, parameters);
+                    return await RunValidationAsync(ValidateClientCredentialsRequestAsync, parameters, cancellationToken);
                 case OidcConstants.GrantTypes.Password:
-                    return await RunValidationAsync(ValidateResourceOwnerCredentialRequestAsync, parameters);
+                    return await RunValidationAsync(ValidateResourceOwnerCredentialRequestAsync, parameters, cancellationToken);
                 case OidcConstants.GrantTypes.RefreshToken:
-                    return await RunValidationAsync(ValidateRefreshTokenRequestAsync, parameters);
+                    return await RunValidationAsync(ValidateRefreshTokenRequestAsync, parameters, cancellationToken);
                 case OidcConstants.GrantTypes.DeviceCode:
-                    return await RunValidationAsync(ValidateDeviceCodeRequestAsync, parameters);
+                    return await RunValidationAsync(ValidateDeviceCodeRequestAsync, parameters, cancellationToken);
                 default:
-                    return await RunValidationAsync(ValidateExtensionGrantRequestAsync, parameters);
+                    return await RunValidationAsync(ValidateExtensionGrantRequestAsync, parameters, cancellationToken);
             }
         }
 
-        private async Task<TokenRequestValidationResult> RunValidationAsync(Func<NameValueCollection, Task<TokenRequestValidationResult>> validationFunc, NameValueCollection parameters)
+        private async Task<TokenRequestValidationResult> RunValidationAsync(Func<NameValueCollection, CancellationToken, Task<TokenRequestValidationResult>> validationFunc, NameValueCollection parameters, CancellationToken cancellationToken = default)
         {
             // run standard validation
-            var result = await validationFunc(parameters);
+            var result = await validationFunc(parameters, cancellationToken);
             if (result.IsError)
             {
                 return result;
@@ -197,7 +199,7 @@ namespace IdentityServer4.Validation
             return customValidationContext.Result;
         }
 
-        private async Task<TokenRequestValidationResult> ValidateAuthorizationCodeRequestAsync(NameValueCollection parameters)
+        private async Task<TokenRequestValidationResult> ValidateAuthorizationCodeRequestAsync(NameValueCollection parameters, CancellationToken cancellationToken = default)
         {
             _logger.LogDebug("Start validation of authorization code token request");
 
@@ -229,7 +231,7 @@ namespace IdentityServer4.Validation
 
             _validatedRequest.AuthorizationCodeHandle = code;
 
-            var authZcode = await _authorizationCodeStore.GetAuthorizationCodeAsync(code);
+            var authZcode = await _authorizationCodeStore.GetAuthorizationCodeAsync(code, cancellationToken);
             if (authZcode == null)
             {
                 LogError("Invalid authorization code", new { code });
@@ -247,7 +249,7 @@ namespace IdentityServer4.Validation
 
             // remove code from store
             // todo: set to consumed in the future?
-            await _authorizationCodeStore.RemoveAuthorizationCodeAsync(code);
+            await _authorizationCodeStore.RemoveAuthorizationCodeAsync(code, cancellationToken);
 
             if (authZcode.CreationTime.HasExceeded(authZcode.Lifetime, _clock.UtcNow.UtcDateTime))
             {
@@ -330,7 +332,7 @@ namespace IdentityServer4.Validation
             // make sure user is enabled
             /////////////////////////////////////////////
             var isActiveCtx = new IsActiveContext(_validatedRequest.AuthorizationCode.Subject, _validatedRequest.Client, IdentityServerConstants.ProfileIsActiveCallers.AuthorizationCodeValidation);
-            await _profile.IsActiveAsync(isActiveCtx);
+            await _profile.IsActiveAsync(isActiveCtx, cancellationToken);
 
             if (isActiveCtx.IsActive == false)
             {
@@ -343,7 +345,7 @@ namespace IdentityServer4.Validation
             return Valid();
         }
 
-        private async Task<TokenRequestValidationResult> ValidateClientCredentialsRequestAsync(NameValueCollection parameters)
+        private async Task<TokenRequestValidationResult> ValidateClientCredentialsRequestAsync(NameValueCollection parameters, CancellationToken cancellationToken = default)
         {
             _logger.LogDebug("Start client credentials token request validation");
 
@@ -359,7 +361,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // check if client is allowed to request scopes
             /////////////////////////////////////////////
-            if (!await ValidateRequestedScopesAsync(parameters, ignoreImplicitIdentityScopes: true, ignoreImplicitOfflineAccess: true))
+            if (!await ValidateRequestedScopesAsync(parameters, ignoreImplicitIdentityScopes: true, ignoreImplicitOfflineAccess: true, cancellationToken))
             {
                 return Invalid(OidcConstants.TokenErrors.InvalidScope);
             }
@@ -380,7 +382,7 @@ namespace IdentityServer4.Validation
             return Valid();
         }
 
-        private async Task<TokenRequestValidationResult> ValidateResourceOwnerCredentialRequestAsync(NameValueCollection parameters)
+        private async Task<TokenRequestValidationResult> ValidateResourceOwnerCredentialRequestAsync(NameValueCollection parameters, CancellationToken cancellationToken = default)
         {
             _logger.LogDebug("Start resource owner password token request validation");
 
@@ -396,7 +398,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // check if client is allowed to request scopes
             /////////////////////////////////////////////
-            if (!(await ValidateRequestedScopesAsync(parameters)))
+            if (!(await ValidateRequestedScopesAsync(parameters, cancellationToken: cancellationToken)))
             {
                 return Invalid(OidcConstants.TokenErrors.InvalidScope);
             }
@@ -478,7 +480,7 @@ namespace IdentityServer4.Validation
             // make sure user is enabled
             /////////////////////////////////////////////
             var isActiveCtx = new IsActiveContext(resourceOwnerContext.Result.Subject, _validatedRequest.Client, IdentityServerConstants.ProfileIsActiveCallers.ResourceOwnerValidation);
-            await _profile.IsActiveAsync(isActiveCtx);
+            await _profile.IsActiveAsync(isActiveCtx, cancellationToken);
 
             if (isActiveCtx.IsActive == false)
             {
@@ -496,7 +498,7 @@ namespace IdentityServer4.Validation
             return Valid(resourceOwnerContext.Result.CustomResponse);
         }
 
-        private async Task<TokenRequestValidationResult> ValidateRefreshTokenRequestAsync(NameValueCollection parameters)
+        private async Task<TokenRequestValidationResult> ValidateRefreshTokenRequestAsync(NameValueCollection parameters, CancellationToken cancellationToken = default)
         {
             _logger.LogDebug("Start validation of refresh token request");
 
@@ -531,7 +533,7 @@ namespace IdentityServer4.Validation
             return Valid();
         }
 
-        private async Task<TokenRequestValidationResult> ValidateDeviceCodeRequestAsync(NameValueCollection parameters)
+        private async Task<TokenRequestValidationResult> ValidateDeviceCodeRequestAsync(NameValueCollection parameters, CancellationToken cancellationToken = default)
         {
             _logger.LogDebug("Start validation of device code request");
 
@@ -573,7 +575,7 @@ namespace IdentityServer4.Validation
             return Valid();
         }
 
-        private async Task<TokenRequestValidationResult> ValidateExtensionGrantRequestAsync(NameValueCollection parameters)
+        private async Task<TokenRequestValidationResult> ValidateExtensionGrantRequestAsync(NameValueCollection parameters, CancellationToken cancellationToken = default)
         {
             _logger.LogDebug("Start validation of custom grant token request");
 
@@ -598,7 +600,7 @@ namespace IdentityServer4.Validation
             /////////////////////////////////////////////
             // check if client is allowed to request scopes
             /////////////////////////////////////////////
-            if (!await ValidateRequestedScopesAsync(parameters))
+            if (!await ValidateRequestedScopesAsync(parameters, cancellationToken: cancellationToken))
             {
                 return Invalid(OidcConstants.TokenErrors.InvalidScope);
             }
@@ -638,7 +640,7 @@ namespace IdentityServer4.Validation
                     _validatedRequest.Client,
                     IdentityServerConstants.ProfileIsActiveCallers.ExtensionGrantValidation);
 
-                await _profile.IsActiveAsync(isActiveCtx);
+                await _profile.IsActiveAsync(isActiveCtx, cancellationToken);
 
                 if (isActiveCtx.IsActive == false)
                 {
@@ -657,7 +659,7 @@ namespace IdentityServer4.Validation
 
         // todo: do we want to rework the semantics of these ignore params?
         // also seems like other workflows other than CC clients can omit scopes?
-        private async Task<bool> ValidateRequestedScopesAsync(NameValueCollection parameters, bool ignoreImplicitIdentityScopes = false, bool ignoreImplicitOfflineAccess = false)
+        private async Task<bool> ValidateRequestedScopesAsync(NameValueCollection parameters, bool ignoreImplicitIdentityScopes = false, bool ignoreImplicitOfflineAccess = false, CancellationToken cancellationToken = default)
         {
             var scopes = parameters.Get(OidcConstants.TokenRequest.Scope);
             if (scopes.IsMissing())
@@ -670,12 +672,12 @@ namespace IdentityServer4.Validation
                     var clientAllowedScopes = new List<string>();
                     if (!ignoreImplicitIdentityScopes)
                     {
-                        var resources = await _resourceStore.FindResourcesByScopeAsync(_validatedRequest.Client.AllowedScopes);
+                        var resources = await _resourceStore.FindResourcesByScopeAsync(_validatedRequest.Client.AllowedScopes, cancellationToken);
                         clientAllowedScopes.AddRange(resources.ToScopeNames().Where(x => _validatedRequest.Client.AllowedScopes.Contains(x)));
                     }
                     else
                     {
-                        var apiScopes = await _resourceStore.FindApiScopesByNameAsync(_validatedRequest.Client.AllowedScopes);
+                        var apiScopes = await _resourceStore.FindApiScopesByNameAsync(_validatedRequest.Client.AllowedScopes, cancellationToken);
                         clientAllowedScopes.AddRange(apiScopes.Select(x => x.Name));
                     }
 

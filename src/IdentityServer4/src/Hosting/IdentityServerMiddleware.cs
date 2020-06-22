@@ -5,6 +5,7 @@
 using IdentityServer4.Events;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
@@ -51,7 +52,9 @@ namespace IdentityServer4.Hosting
                 {
                     _logger.LogInformation("Invoking IdentityServer endpoint: {endpointType} for {url}", endpoint.GetType().FullName, context.Request.Path.ToString());
 
-                    var result = await endpoint.ProcessAsync(context);
+                    var cancellationToken = context.Features.Get<IHttpRequestLifetimeFeature>()?.RequestAborted ?? default;
+
+                    var result = await endpoint.ProcessAsync(context, cancellationToken);
 
                     if (result != null)
                     {

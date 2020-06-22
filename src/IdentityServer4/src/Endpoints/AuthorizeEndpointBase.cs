@@ -1,9 +1,10 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using System;
 using System.Collections.Specialized;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using IdentityModel;
 using IdentityServer4.Endpoints.Results;
@@ -23,11 +24,8 @@ namespace IdentityServer4.Endpoints
     internal abstract class AuthorizeEndpointBase : IEndpointHandler
     {
         private readonly IAuthorizeResponseGenerator _authorizeResponseGenerator;
-
         private readonly IEventService _events;
-
         private readonly IAuthorizeInteractionResponseGenerator _interactionGenerator;
-
         private readonly IAuthorizeRequestValidator _validator;
 
         protected AuthorizeEndpointBase(
@@ -50,9 +48,9 @@ namespace IdentityServer4.Endpoints
 
         protected IUserSession UserSession { get; private set; }
 
-        public abstract Task<IEndpointResult> ProcessAsync(HttpContext context);
+        public abstract Task<IEndpointResult> ProcessAsync(HttpContext context, CancellationToken cancellationToken = default);
 
-        internal async Task<IEndpointResult> ProcessAuthorizeRequestAsync(NameValueCollection parameters, ClaimsPrincipal user, ConsentResponse consent)
+        internal async Task<IEndpointResult> ProcessAuthorizeRequestAsync(NameValueCollection parameters, ClaimsPrincipal user, ConsentResponse consent, CancellationToken cancellationToken = default)
         {
             if (user != null)
             {
@@ -64,7 +62,7 @@ namespace IdentityServer4.Endpoints
             }
 
             // validate request
-            var result = await _validator.ValidateAsync(parameters, user);
+            var result = await _validator.ValidateAsync(parameters, user, cancellationToken);
             if (result.IsError)
             {
                 return await CreateErrorResultAsync(
@@ -78,7 +76,7 @@ namespace IdentityServer4.Endpoints
             LogRequest(request);
 
             // determine user interaction
-            var interactionResult = await _interactionGenerator.ProcessInteractionAsync(request, consent);
+            var interactionResult = await _interactionGenerator.ProcessInteractionAsync(request, consent, cancellationToken);
             if (interactionResult.IsError)
             {
                 return await CreateErrorResultAsync("Interaction generator error", request, interactionResult.Error, interactionResult.ErrorDescription, false);
@@ -96,7 +94,7 @@ namespace IdentityServer4.Endpoints
                 return new CustomRedirectResult(request, interactionResult.RedirectUrl);
             }
 
-            var response = await _authorizeResponseGenerator.CreateResponseAsync(request);
+            var response = await _authorizeResponseGenerator.CreateResponseAsync(request, cancellationToken);
 
             await RaiseResponseEventAsync(response);
 

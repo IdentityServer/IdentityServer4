@@ -3,6 +3,7 @@
 
 
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using IdentityModel;
 using IdentityServer4.Extensions;
@@ -46,12 +47,8 @@ namespace IdentityServer4.Validation
             _logger = logger;
         }
 
-        /// <summary>
-        /// Validates the device code.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <returns></returns>
-        public async Task ValidateAsync(DeviceCodeValidationContext context)
+        /// <inheritdoc/>
+        public async Task ValidateAsync(DeviceCodeValidationContext context, CancellationToken cancellationToken = default)
         {
             var deviceCode = await _devices.FindByDeviceCodeAsync(context.DeviceCode);
 
@@ -103,7 +100,7 @@ namespace IdentityServer4.Validation
 
             // make sure user is enabled
             var isActiveCtx = new IsActiveContext(deviceCode.Subject, context.Request.Client, IdentityServerConstants.ProfileIsActiveCallers.DeviceCodeValidation);
-            await _profile.IsActiveAsync(isActiveCtx);
+            await _profile.IsActiveAsync(isActiveCtx, cancellationToken);
 
             if (isActiveCtx.IsActive == false)
             {
@@ -116,7 +113,7 @@ namespace IdentityServer4.Validation
             context.Request.SessionId = deviceCode.SessionId;
 
             context.Result = new TokenRequestValidationResult(context.Request);
-            await _devices.RemoveByDeviceCodeAsync(context.DeviceCode);
+            await _devices.RemoveByDeviceCodeAsync(context.DeviceCode, cancellationToken);
         }
     }
 }

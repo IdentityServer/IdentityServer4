@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -16,17 +16,20 @@ namespace IdentityServer4.Stores
             Cookie = cookie;
         }
 
+        /// <inheritdoc/>
         public virtual Task DeleteAsync(string id)
         {
             Cookie.Clear(id);
             return Task.CompletedTask;
         }
 
+        /// <inheritdoc/>
         public virtual Task<Message<ConsentResponse>> ReadAsync(string id)
         {
             return Task.FromResult(Cookie.Read(id));
         }
 
+        /// <inheritdoc/>
         public virtual Task WriteAsync(string id, Message<ConsentResponse> message)
         {
             Cookie.Write(id, message);

@@ -1,9 +1,10 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
 using IdentityServer4.Models;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Services
@@ -17,8 +18,9 @@ namespace IdentityServer4.Services
         /// Gets all grants for a given subject ID.
         /// </summary>
         /// <param name="subjectId">The subject identifier.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        Task<IEnumerable<Grant>> GetAllGrantsAsync(string subjectId);
+        Task<IEnumerable<Grant>> GetAllGrantsAsync(string subjectId, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Removes all grants for a given subject id, and optionally client id and session id combination.
@@ -26,7 +28,8 @@ namespace IdentityServer4.Services
         /// <param name="subjectId">The subject identifier.</param>
         /// <param name="clientId">The client identifier (optional).</param>
         /// <param name="sessionId">The sesion id (optional).</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        Task RemoveAllGrantsAsync(string subjectId, string clientId = null, string sessionId = null);
+        Task RemoveAllGrantsAsync(string subjectId, string clientId = null, string sessionId = null, CancellationToken cancellationToken = default);
     }
 }

@@ -1,10 +1,11 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
@@ -16,7 +17,7 @@ namespace IdentityServer.UnitTests.Common
     {
         public bool RequiresConsentResult { get; set; }
 
-        public Task<bool> RequiresConsentAsync(ClaimsPrincipal subject, Client client, IEnumerable<ParsedScopeValue> parsedScopes)
+        public Task<bool> RequiresConsentAsync(ClaimsPrincipal subject, Client client, IEnumerable<ParsedScopeValue> parsedScopes, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(RequiresConsentResult);
         }
@@ -25,7 +26,7 @@ namespace IdentityServer.UnitTests.Common
         public Client ConsentClient { get; set; }
         public IEnumerable<string> ConsentScopes { get; set; }
 
-        public Task UpdateConsentAsync(ClaimsPrincipal subject, Client client, IEnumerable<ParsedScopeValue> parsedScopes)
+        public Task UpdateConsentAsync(ClaimsPrincipal subject, Client client, IEnumerable<ParsedScopeValue> parsedScopes, CancellationToken cancellationToken = default)
         {
             ConsentSubject = subject;
             ConsentClient = client;

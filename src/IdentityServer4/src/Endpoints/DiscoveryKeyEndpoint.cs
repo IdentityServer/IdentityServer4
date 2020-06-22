@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer4.Configuration;
 using IdentityServer4.Endpoints.Results;
@@ -15,9 +16,7 @@ namespace IdentityServer4.Endpoints
     internal class DiscoveryKeyEndpoint : IEndpointHandler
     {
         private readonly ILogger _logger;
-
         private readonly IdentityServerOptions _options;
-
         private readonly IDiscoveryResponseGenerator _responseGenerator;
 
         public DiscoveryKeyEndpoint(
@@ -30,7 +29,8 @@ namespace IdentityServer4.Endpoints
             _responseGenerator = responseGenerator;
         }
 
-        public async Task<IEndpointResult> ProcessAsync(HttpContext context)
+        /// <inheritdoc/>
+        public async Task<IEndpointResult> ProcessAsync(HttpContext context, CancellationToken cancellationToken = default)
         {
             _logger.LogTrace("Processing discovery request.");
 

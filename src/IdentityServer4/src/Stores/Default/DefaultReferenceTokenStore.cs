@@ -7,6 +7,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Stores.Serialization;
 using Microsoft.Extensions.Logging;
 using IdentityServer4.Services;
+using System.Threading;
 
 namespace IdentityServer4.Stores
 {
@@ -31,45 +32,28 @@ namespace IdentityServer4.Stores
         {
         }
 
-        /// <summary>
-        /// Stores the reference token asynchronous.
-        /// </summary>
-        /// <param name="token">The token.</param>
-        /// <returns></returns>
-        public Task<string> StoreReferenceTokenAsync(Token token)
+        /// <inheritdoc/>
+        public Task<string> StoreReferenceTokenAsync(Token token, CancellationToken cancellationToken = default)
         {
-            return CreateItemAsync(token, token.ClientId, token.SubjectId, token.SessionId, token.Description, token.CreationTime, token.Lifetime);
+            return CreateItemAsync(token, token.ClientId, token.SubjectId, token.SessionId, token.Description, token.CreationTime, token.Lifetime, cancellationToken);
         }
 
-        /// <summary>
-        /// Gets the reference token asynchronous.
-        /// </summary>
-        /// <param name="handle">The handle.</param>
-        /// <returns></returns>
-        public Task<Token> GetReferenceTokenAsync(string handle)
+        /// <inheritdoc/>
+        public Task<Token> GetReferenceTokenAsync(string handle, CancellationToken cancellationToken = default)
         {
-            return GetItemAsync(handle);
+            return GetItemAsync(handle, cancellationToken);
         }
 
-        /// <summary>
-        /// Removes the reference token asynchronous.
-        /// </summary>
-        /// <param name="handle">The handle.</param>
-        /// <returns></returns>
-        public Task RemoveReferenceTokenAsync(string handle)
+        /// <inheritdoc/>
+        public Task RemoveReferenceTokenAsync(string handle, CancellationToken cancellationToken = default)
         {
-            return RemoveItemAsync(handle);
+            return RemoveItemAsync(handle, cancellationToken);
         }
 
-        /// <summary>
-        /// Removes the reference tokens asynchronous.
-        /// </summary>
-        /// <param name="subjectId">The subject identifier.</param>
-        /// <param name="clientId">The client identifier.</param>
-        /// <returns></returns>
-        public Task RemoveReferenceTokensAsync(string subjectId, string clientId)
+        /// <inheritdoc/>
+        public Task RemoveReferenceTokensAsync(string subjectId, string clientId, CancellationToken cancellationToken = default)
         {
-            return RemoveAllAsync(subjectId, clientId);
+            return RemoveAllAsync(subjectId, clientId, cancellationToken);
         }
     }
 }

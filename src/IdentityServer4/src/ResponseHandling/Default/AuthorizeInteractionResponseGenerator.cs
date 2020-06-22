@@ -12,6 +12,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
+using System.Threading;
 
 namespace IdentityServer4.ResponseHandling
 {
@@ -60,13 +61,8 @@ namespace IdentityServer4.ResponseHandling
             Profile = profile;
         }
 
-        /// <summary>
-        /// Processes the interaction logic.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <param name="consent">The consent.</param>
-        /// <returns></returns>
-        public virtual async Task<InteractionResponse> ProcessInteractionAsync(ValidatedAuthorizeRequest request, ConsentResponse consent = null)
+        /// <inheritdoc/>
+        public virtual async Task<InteractionResponse> ProcessInteractionAsync(ValidatedAuthorizeRequest request, ConsentResponse consent = null, CancellationToken cancellationToken = default)
         {
             Logger.LogTrace("ProcessInteractionAsync");
 
@@ -91,7 +87,7 @@ namespace IdentityServer4.ResponseHandling
                 };
             }
 
-            var result = await ProcessLoginAsync(request);
+            var result = await ProcessLoginAsync(request, cancellationToken);
 
             if (result.IsLogin && request.PromptModes.Contains(OidcConstants.PromptModes.None))
             {
@@ -108,7 +104,7 @@ namespace IdentityServer4.ResponseHandling
                 return result;
             }
 
-            result = await ProcessConsentAsync(request, consent);
+            result = await ProcessConsentAsync(request, consent, cancellationToken);
 
             return result;
         }
@@ -117,8 +113,9 @@ namespace IdentityServer4.ResponseHandling
         /// Processes the login logic.
         /// </summary>
         /// <param name="request">The request.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
-        protected internal virtual async Task<InteractionResponse> ProcessLoginAsync(ValidatedAuthorizeRequest request)
+        protected internal virtual async Task<InteractionResponse> ProcessLoginAsync(ValidatedAuthorizeRequest request, CancellationToken cancellationToken = default)
         {
             if (request.PromptModes.Contains(OidcConstants.PromptModes.Login) ||
                 request.PromptModes.Contains(OidcConstants.PromptModes.SelectAccount))
@@ -141,7 +138,7 @@ namespace IdentityServer4.ResponseHandling
             if (isAuthenticated)
             {
                 var isActiveCtx = new IsActiveContext(request.Subject, request.Client, IdentityServerConstants.ProfileIsActiveCallers.AuthorizeEndpoint);
-                await Profile.IsActiveAsync(isActiveCtx);
+                await Profile.IsActiveAsync(isActiveCtx, cancellationToken);
                 
                 isActive = isActiveCtx.IsActive;
             }
@@ -226,10 +223,11 @@ namespace IdentityServer4.ResponseHandling
         /// </summary>
         /// <param name="request">The request.</param>
         /// <param name="consent">The consent.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentException">Invalid PromptMode</exception>
-        protected internal virtual async Task<InteractionResponse> ProcessConsentAsync(ValidatedAuthorizeRequest request, ConsentResponse consent = null)
+        protected internal virtual async Task<InteractionResponse> ProcessConsentAsync(ValidatedAuthorizeRequest request, ConsentResponse consent = null, CancellationToken cancellationToken = default)
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
@@ -241,7 +239,7 @@ namespace IdentityServer4.ResponseHandling
                 throw new ArgumentException("Invalid PromptMode");
             }
 
-            var consentRequired = await Consent.RequiresConsentAsync(request.Subject, request.Client, request.ValidatedResources.ParsedScopes);
+            var consentRequired = await Consent.RequiresConsentAsync(request.Subject, request.Client, request.ValidatedResources.ParsedScopes, cancellationToken);
 
             if (consentRequired && request.PromptModes.Contains(OidcConstants.PromptModes.None))
             {
@@ -316,7 +314,7 @@ namespace IdentityServer4.ResponseHandling
                                     Logger.LogDebug("User indicated to remember consent for scopes: {scopes}", scopes);
                                 }
 
-                                await Consent.UpdateConsentAsync(request.Subject, request.Client, request.ValidatedResources.ParsedScopes);
+                                await Consent.UpdateConsentAsync(request.Subject, request.Client, request.ValidatedResources.ParsedScopes, cancellationToken);
                             }
                         }
                     }

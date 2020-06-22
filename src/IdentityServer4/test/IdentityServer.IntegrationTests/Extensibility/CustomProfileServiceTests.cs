@@ -1,6 +1,7 @@
-﻿using System.Net;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityModel;
@@ -82,7 +83,7 @@ namespace IdentityServer.IntegrationTests.Extensibility
 
     public class CustomProfileService : IProfileService
     {
-        public Task GetProfileDataAsync(ProfileDataRequestContext context)
+        public Task GetProfileDataAsync(ProfileDataRequestContext context, CancellationToken cancellationToken = default)
         {
             var claims = new Claim[]
             {
@@ -92,7 +93,7 @@ namespace IdentityServer.IntegrationTests.Extensibility
             return Task.CompletedTask;
         }
 
-        public Task IsActiveAsync(IsActiveContext context)
+        public Task IsActiveAsync(IsActiveContext context, CancellationToken cancellationToken = default)
         {
             context.IsActive = true;
             return Task.CompletedTask;

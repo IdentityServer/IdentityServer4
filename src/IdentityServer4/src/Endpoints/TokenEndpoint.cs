@@ -13,6 +13,7 @@ using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityServer4.Endpoints
@@ -51,12 +52,8 @@ namespace IdentityServer4.Endpoints
             _logger = logger;
         }
 
-        /// <summary>
-        /// Processes the request.
-        /// </summary>
-        /// <param name="context">The HTTP context.</param>
-        /// <returns></returns>
-        public async Task<IEndpointResult> ProcessAsync(HttpContext context)
+        /// <inheritdoc/>
+        public async Task<IEndpointResult> ProcessAsync(HttpContext context, CancellationToken cancellationToken = default)
         {
             _logger.LogTrace("Processing token request.");
 
@@ -67,15 +64,15 @@ namespace IdentityServer4.Endpoints
                 return Error(OidcConstants.TokenErrors.InvalidRequest);
             }
 
-            return await ProcessTokenRequestAsync(context);
+            return await ProcessTokenRequestAsync(context, cancellationToken);
         }
 
-        private async Task<IEndpointResult> ProcessTokenRequestAsync(HttpContext context)
+        private async Task<IEndpointResult> ProcessTokenRequestAsync(HttpContext context, CancellationToken cancellationToken = default)
         {
             _logger.LogDebug("Start token request.");
 
             // validate client
-            var clientResult = await _clientValidator.ValidateAsync(context);
+            var clientResult = await _clientValidator.ValidateAsync(context, cancellationToken);
 
             if (clientResult.Client == null)
             {
@@ -85,7 +82,7 @@ namespace IdentityServer4.Endpoints
             // validate request
             var form = (await context.Request.ReadFormAsync()).AsNameValueCollection();
             _logger.LogTrace("Calling into token request validator: {type}", _requestValidator.GetType().FullName);
-            var requestResult = await _requestValidator.ValidateRequestAsync(form, clientResult);
+            var requestResult = await _requestValidator.ValidateRequestAsync(form, clientResult, cancellationToken);
 
             if (requestResult.IsError)
             {
@@ -95,7 +92,7 @@ namespace IdentityServer4.Endpoints
 
             // create response
             _logger.LogTrace("Calling into token request response generator: {type}", _responseGenerator.GetType().FullName);
-            var response = await _responseGenerator.ProcessAsync(requestResult);
+            var response = await _responseGenerator.ProcessAsync(requestResult, cancellationToken);
 
             await _events.RaiseAsync(new TokenIssuedSuccessEvent(response, requestResult));
             LogTokens(response, requestResult);

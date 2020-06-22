@@ -1,10 +1,11 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer4.EntityFramework.Interfaces;
 using IdentityServer4.EntityFramework.Mappers;
@@ -43,12 +44,8 @@ namespace IdentityServer4.EntityFramework.Stores
             Logger = logger;
         }
 
-        /// <summary>
-        /// Finds the API resources by name.
-        /// </summary>
-        /// <param name="apiResourceNames">The names.</param>
-        /// <returns></returns>
-        public virtual async Task<IEnumerable<ApiResource>> FindApiResourcesByNameAsync(IEnumerable<string> apiResourceNames)
+        /// <inheritdoc/>
+        public virtual async Task<IEnumerable<ApiResource>> FindApiResourcesByNameAsync(IEnumerable<string> apiResourceNames, CancellationToken cancellationToken = default)
         {
             if (apiResourceNames == null) throw new ArgumentNullException(nameof(apiResourceNames));
 
@@ -64,7 +61,7 @@ namespace IdentityServer4.EntityFramework.Stores
                 .Include(x => x.Properties)
                 .AsNoTracking();
 
-            var result = (await apis.ToArrayAsync()).Select(x => x.ToModel()).ToArray();
+            var result = (await apis.ToArrayAsync(cancellationToken)).Select(x => x.ToModel()).ToArray();
 
             if (result.Any())
             {
@@ -78,12 +75,8 @@ namespace IdentityServer4.EntityFramework.Stores
             return result;
         }
 
-        /// <summary>
-        /// Gets API resources by scope name.
-        /// </summary>
-        /// <param name="scopeNames"></param>
-        /// <returns></returns>
-        public virtual async Task<IEnumerable<ApiResource>> FindApiResourcesByScopeNameAsync(IEnumerable<string> scopeNames)
+        /// <inheritdoc/>
+        public virtual async Task<IEnumerable<ApiResource>> FindApiResourcesByScopeNameAsync(IEnumerable<string> scopeNames, CancellationToken cancellationToken = default)
         {
             var names = scopeNames.ToArray();
 
@@ -99,7 +92,7 @@ namespace IdentityServer4.EntityFramework.Stores
                 .Include(x => x.Properties)
                 .AsNoTracking();
 
-            var results = await apis.ToArrayAsync();
+            var results = await apis.ToArrayAsync(cancellationToken);
             var models = results.Select(x => x.ToModel()).ToArray();
 
             Logger.LogDebug("Found {apis} API resources in database", models.Select(x => x.Name));
@@ -107,12 +100,8 @@ namespace IdentityServer4.EntityFramework.Stores
             return models;
         }
 
-        /// <summary>
-        /// Gets identity resources by scope name.
-        /// </summary>
-        /// <param name="scopeNames"></param>
-        /// <returns></returns>
-        public virtual async Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeNameAsync(IEnumerable<string> scopeNames)
+        /// <inheritdoc/>
+        public virtual async Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeNameAsync(IEnumerable<string> scopeNames, CancellationToken cancellationToken = default)
         {
             var scopes = scopeNames.ToArray();
 
@@ -126,19 +115,15 @@ namespace IdentityServer4.EntityFramework.Stores
                 .Include(x => x.Properties)
                 .AsNoTracking();
 
-            var results = await resources.ToArrayAsync();
+            var results = await resources.ToArrayAsync(cancellationToken);
 
             Logger.LogDebug("Found {scopes} identity scopes in database", results.Select(x => x.Name));
 
             return results.Select(x => x.ToModel()).ToArray();
         }
 
-        /// <summary>
-        /// Gets scopes by scope name.
-        /// </summary>
-        /// <param name="scopeNames"></param>
-        /// <returns></returns>
-        public virtual async Task<IEnumerable<ApiScope>> FindApiScopesByNameAsync(IEnumerable<string> scopeNames)
+        /// <inheritdoc/>
+        public virtual async Task<IEnumerable<ApiScope>> FindApiScopesByNameAsync(IEnumerable<string> scopeNames, CancellationToken cancellationToken = default)
         {
             var scopes = scopeNames.ToArray();
 
@@ -152,18 +137,15 @@ namespace IdentityServer4.EntityFramework.Stores
                 .Include(x => x.Properties)
                 .AsNoTracking();
 
-            var results = await resources.ToArrayAsync();
+            var results = await resources.ToArrayAsync(cancellationToken);
 
             Logger.LogDebug("Found {scopes} scopes in database", results.Select(x => x.Name));
 
             return results.Select(x => x.ToModel()).ToArray();
         }
 
-        /// <summary>
-        /// Gets all resources.
-        /// </summary>
-        /// <returns></returns>
-        public virtual async Task<Resources> GetAllResourcesAsync()
+        /// <inheritdoc/>
+        public virtual async Task<Resources> GetAllResourcesAsync(CancellationToken cancellationToken = default)
         {
             var identity = Context.IdentityResources
               .Include(x => x.UserClaims)
@@ -182,9 +164,9 @@ namespace IdentityServer4.EntityFramework.Stores
                 .AsNoTracking();
 
             var result = new Resources(
-                (await identity.ToArrayAsync()).Select(x => x.ToModel()),
-                (await apis.ToArrayAsync()).Select(x => x.ToModel()),
-                (await scopes.ToArrayAsync()).Select(x => x.ToModel())
+                (await identity.ToArrayAsync(cancellationToken)).Select(x => x.ToModel()),
+                (await apis.ToArrayAsync(cancellationToken)).Select(x => x.ToModel()),
+                (await scopes.ToArrayAsync(cancellationToken)).Select(x => x.ToModel())
             );
 
             Logger.LogDebug("Found {scopes} as all scopes, and {apis} as API resources", 

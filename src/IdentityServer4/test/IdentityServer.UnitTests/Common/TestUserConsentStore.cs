@@ -1,7 +1,8 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
@@ -24,17 +25,17 @@ namespace IdentityServer.UnitTests.Common
                TestLogger.Create<DefaultUserConsentStore>());
         }
 
-        public Task StoreUserConsentAsync(Consent consent)
+        public Task StoreUserConsentAsync(Consent consent, CancellationToken cancellationToken = default)
         {
             return _userConsentStore.StoreUserConsentAsync(consent);
         }
 
-        public Task<Consent> GetUserConsentAsync(string subjectId, string clientId)
+        public Task<Consent> GetUserConsentAsync(string subjectId, string clientId, CancellationToken cancellationToken = default)
         {
             return _userConsentStore.GetUserConsentAsync(subjectId, clientId);
         }
 
-        public Task RemoveUserConsentAsync(string subjectId, string clientId)
+        public Task RemoveUserConsentAsync(string subjectId, string clientId, CancellationToken cancellationToken = default)
         {
             return _userConsentStore.RemoveUserConsentAsync(subjectId, clientId);
         }

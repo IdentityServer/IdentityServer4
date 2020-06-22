@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using IdentityServer4.Validation;
 using IdentityServer4.Stores;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 
 namespace IdentityServer4.ResponseHandling
 {
@@ -52,12 +53,8 @@ namespace IdentityServer4.ResponseHandling
             Logger = logger;
         }
 
-        /// <summary>
-        /// Creates the revocation endpoint response and processes the revocation request.
-        /// </summary>
-        /// <param name="validationResult">The userinfo request validation result.</param>
-        /// <returns></returns>
-        public virtual async Task<TokenRevocationResponse> ProcessAsync(TokenRevocationRequestValidationResult validationResult)
+        /// <inheritdoc/>
+        public virtual async Task<TokenRevocationResponse> ProcessAsync(TokenRevocationRequestValidationResult validationResult, CancellationToken cancellationToken = default)
         {
             var response = new TokenRevocationResponse
             {
@@ -69,22 +66,22 @@ namespace IdentityServer4.ResponseHandling
             if (validationResult.TokenTypeHint == Constants.TokenTypeHints.AccessToken)
             {
                 Logger.LogTrace("Hint was for access token");
-                response.Success = await RevokeAccessTokenAsync(validationResult);
+                response.Success = await RevokeAccessTokenAsync(validationResult, cancellationToken);
             }
             else if (validationResult.TokenTypeHint == Constants.TokenTypeHints.RefreshToken)
             {
                 Logger.LogTrace("Hint was for refresh token");
-                response.Success = await RevokeRefreshTokenAsync(validationResult);
+                response.Success = await RevokeRefreshTokenAsync(validationResult, cancellationToken);
             }
             else
             {
                 Logger.LogTrace("No hint for token type");
 
-                response.Success = await RevokeAccessTokenAsync(validationResult);
+                response.Success = await RevokeAccessTokenAsync(validationResult, cancellationToken);
 
                 if (!response.Success)
                 {
-                    response.Success = await RevokeRefreshTokenAsync(validationResult);
+                    response.Success = await RevokeRefreshTokenAsync(validationResult, cancellationToken);
                     response.TokenType = Constants.TokenTypeHints.RefreshToken;
                 }
                 else
@@ -99,16 +96,16 @@ namespace IdentityServer4.ResponseHandling
         /// <summary>
         /// Revoke access token only if it belongs to client doing the request.
         /// </summary>
-        protected virtual async Task<bool> RevokeAccessTokenAsync(TokenRevocationRequestValidationResult validationResult)
+        protected virtual async Task<bool> RevokeAccessTokenAsync(TokenRevocationRequestValidationResult validationResult, CancellationToken cancellationToken = default)
         {
-            var token = await ReferenceTokenStore.GetReferenceTokenAsync(validationResult.Token);
+            var token = await ReferenceTokenStore.GetReferenceTokenAsync(validationResult.Token, cancellationToken);
 
             if (token != null)
             {
                 if (token.ClientId == validationResult.Client.ClientId)
                 {
                     Logger.LogDebug("Access token revoked");
-                    await ReferenceTokenStore.RemoveReferenceTokenAsync(validationResult.Token);
+                    await ReferenceTokenStore.RemoveReferenceTokenAsync(validationResult.Token, cancellationToken);
                 }
                 else
                 {
@@ -124,17 +121,17 @@ namespace IdentityServer4.ResponseHandling
         /// <summary>
         /// Revoke refresh token only if it belongs to client doing the request
         /// </summary>
-        protected virtual async Task<bool> RevokeRefreshTokenAsync(TokenRevocationRequestValidationResult validationResult)
+        protected virtual async Task<bool> RevokeRefreshTokenAsync(TokenRevocationRequestValidationResult validationResult, CancellationToken cancellationToken = default)
         {
-            var token = await RefreshTokenStore.GetRefreshTokenAsync(validationResult.Token);
+            var token = await RefreshTokenStore.GetRefreshTokenAsync(validationResult.Token, cancellationToken);
 
             if (token != null)
             {
                 if (token.ClientId == validationResult.Client.ClientId)
                 {
                     Logger.LogDebug("Refresh token revoked");
-                    await RefreshTokenStore.RemoveRefreshTokenAsync(validationResult.Token);
-                    await ReferenceTokenStore.RemoveReferenceTokensAsync(token.SubjectId, token.ClientId);
+                    await RefreshTokenStore.RemoveRefreshTokenAsync(validationResult.Token, cancellationToken);
+                    await ReferenceTokenStore.RemoveReferenceTokensAsync(token.SubjectId, token.ClientId, cancellationToken);
                 }
                 else
                 {
