@@ -125,7 +125,7 @@ In `Startup.cs` add this method to help initialize the database::
 
             if (!context.IdentityResources.Any())
             {
-                foreach (var resource in Config.Ids)
+                foreach (var resource in Config.IdentityResources)
                 {
                     context.IdentityResources.Add(resource.ToEntity());
                 }
