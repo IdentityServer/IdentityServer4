@@ -74,7 +74,7 @@ If you want to customize certain behavior, it is more recommended to derive from
 
 The most common customization that you probably want to do is how to deal with refresh token replays.
 This is for situations where the token usage has been set to one-time only, but the same token gets sent more than once.
-This could either point to a replay attack of the refresh token, or faulty client code like logic bugs or race conditions.
+This could either point to a replay attack of the refresh token, or to faulty client code like logic bugs or race conditions.
 
 It is important to note, that a refresh token is never deleted in the database. 
 Once it has been used, the ``ConsumedTime`` property will be set.
