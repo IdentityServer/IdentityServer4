@@ -40,8 +40,8 @@ IIdentityServerInteractionService APIs
 
 AuthorizationRequest
 ^^^^^^^^^^^^^^^^^^^^
-``ClientId``
-    The client identifier that initiated the request.
+``Client``
+    The client that initiated the request.
 ``RedirectUri``
     The URI to redirect the user to after successful authorization.
 ``DisplayMode``
