@@ -49,6 +49,8 @@ namespace IdentityServerHost
                     options.Events.RaiseErrorEvents = true;
                     options.Events.RaiseInformationEvents = true;
 
+                    options.EmitScopesAsSpaceDelimitedStringInJwt = true;
+
                     options.MutualTls.Enabled = true;
                     options.MutualTls.DomainName = "mtls";
                     //options.MutualTls.AlwaysEmitConfirmationClaim = true;

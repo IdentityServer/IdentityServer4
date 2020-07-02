@@ -6,6 +6,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using IdentityModel.AspNetCore.AccessTokenValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 
@@ -42,6 +43,8 @@ namespace ResourceBasedApi
                     options.ClientId = "resource1";
                     options.ClientSecret = "secret";
                 });
+
+            services.AddScopeTransformation();
         }
 
         public void Configure(IApplicationBuilder app)
