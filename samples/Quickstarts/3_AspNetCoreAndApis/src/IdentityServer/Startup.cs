@@ -41,7 +41,7 @@ namespace IdentityServer
                     options.SaveTokens = true;
 
                     options.Authority = "https://demo.identityserver.io/";
-                    options.ClientId = "native.code";
+                    options.ClientId = "interactive.confidential";
                     options.ClientSecret = "secret";
                     options.ResponseType = "code";
 
