@@ -188,7 +188,7 @@ namespace IdentityServerHost
                     options.SignOutScheme = IdentityServerConstants.SignoutScheme;
 
                     options.Authority = "https://demo.identityserver.io/";
-                    options.ClientId = "implicit";
+                    options.ClientId = "login";
                     options.ResponseType = "id_token";
                     options.SaveTokens = true;
                     options.CallbackPath = "/signin-idsrv";
