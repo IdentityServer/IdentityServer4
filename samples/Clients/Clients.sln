@@ -59,6 +59,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleParameterizedScopeCl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleApi", "src\APIs\SimpleApi\SimpleApi.csproj", "{215D863E-9D87-42F4-AD17-209C330C6ECB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResourceBasedApi", "src\APIs\ResourceBasedApi\ResourceBasedApi.csproj", "{933613BD-35B0-4F79-A7A7-02F663C55B61}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -157,6 +159,10 @@ Global
 		{215D863E-9D87-42F4-AD17-209C330C6ECB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{215D863E-9D87-42F4-AD17-209C330C6ECB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{215D863E-9D87-42F4-AD17-209C330C6ECB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{933613BD-35B0-4F79-A7A7-02F663C55B61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{933613BD-35B0-4F79-A7A7-02F663C55B61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{933613BD-35B0-4F79-A7A7-02F663C55B61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{933613BD-35B0-4F79-A7A7-02F663C55B61}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -188,6 +194,7 @@ Global
 		{D027D36B-262B-450A-B444-5B7893B5142E} = {187AC294-0420-4726-808B-ED49148C0632}
 		{AE8D301D-BDDD-4E04-A487-FD08BAF18B75} = {D027D36B-262B-450A-B444-5B7893B5142E}
 		{215D863E-9D87-42F4-AD17-209C330C6ECB} = {AFE7085F-051E-4829-955F-3426FE643BDD}
+		{933613BD-35B0-4F79-A7A7-02F663C55B61} = {AFE7085F-051E-4829-955F-3426FE643BDD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BAD78470-3D66-466E-9C17-2A67F0905B18}
