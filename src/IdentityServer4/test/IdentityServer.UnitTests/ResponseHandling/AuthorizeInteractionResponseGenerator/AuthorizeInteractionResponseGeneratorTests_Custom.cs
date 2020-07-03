@@ -34,6 +34,16 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
 
             return base.ProcessLoginAsync(request);
         }
+
+        public InteractionResponse ProcessConsentResponse { get; set; }
+        protected internal override Task<InteractionResponse> ProcessConsentAsync(ValidatedAuthorizeRequest request, ConsentResponse consent = null)
+        {
+            if (ProcessConsentResponse != null)
+            {
+                return Task.FromResult(ProcessConsentResponse);
+            }
+            return base.ProcessConsentAsync(request, consent);
+        }
     }
 
     public class AuthorizeInteractionResponseGeneratorTests_Custom
@@ -132,6 +142,33 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
             result.IsError.Should().BeTrue();
             result.Error.Should().Be("interaction_required");
             result.RedirectUrl.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task ProcessInteractionAsync_with_prompt_none_and_consent_returns_consent_should_return_error()
+        {
+            var request = new ValidatedAuthorizeRequest
+            {
+                ClientId = "foo",
+                Subject = new IdentityServerUser("123")
+                {
+                    IdentityProvider = IdentityServerConstants.LocalIdentityProvider
+                }.CreatePrincipal(),
+                Client = new Client
+                {
+                },
+                PromptModes = new[] { PromptModes.None },
+            };
+
+            _subject.ProcessConsentResponse = new InteractionResponse
+            {
+                IsConsent = true
+            };
+
+            var result = await _subject.ProcessInteractionAsync(request);
+
+            result.IsError.Should().BeTrue();
+            result.Error.Should().Be("consent_required");
         }
     }
 }
