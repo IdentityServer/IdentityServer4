@@ -214,7 +214,7 @@ Update `Startup` to look like this::
 * ``UseAuthentication`` adds the authentication middleware to the pipeline so authentication will be performed automatically on every call into the host.
 * ``UseAuthorization`` adds the authorization middleware to make sure, our API endpoint cannot be accessed by anonymous clients.
 
-Navigating to the controller ``https://localhost:6001/identity`` on a browser should return a 401 status code. 
+Navigating to the controller ``https://localhost:5001/identity`` on a browser should return a 401 status code. 
 This means your API requires a credential and is now protected by IdentityServer.
 
 .. note:: If you are wondering, why the above code disables audience validation, have a look :ref:`here <refResources>` for a more in-depth discussion.
@@ -283,7 +283,7 @@ To send the access token to the API you typically use the HTTP Authorization hea
     var apiClient = new HttpClient();
     apiClient.SetBearerToken(tokenResponse.AccessToken);
 
-    var response = await apiClient.GetAsync("https://localhost:6001/identity");
+    var response = await apiClient.GetAsync("https://localhost:5001/identity");
     if (!response.IsSuccessStatusCode)
     {
         Console.WriteLine(response.StatusCode);
