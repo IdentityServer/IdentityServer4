@@ -55,11 +55,10 @@ If you need to change the schema for the Migration History Table, you can chain 
         b.UseSqlServer(connectionString,
             sql => sql.MigrationsAssembly(migrationsAssembly).MigrationsHistoryTable("MyConfigurationMigrationTable", "myConfigurationSchema"));
 
-Operational Store support for authorization grants, consents, and tokens (refresh and reference)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Operational Store support for persisted grants
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If authorization grants, consents, and tokens (refresh and reference) are desired to be loaded from a EF-supported database 
-(rather than the default in-memory database), then the operational store can be used.
+If :ref:`persisted grants <refPersistedGrants>` are desired to be loaded from a EF-supported database (rather than the default in-memory database), then the operational store can be used.
 This support provides implementations of the ``IPersistedGrantStore`` extensibility point.
 The implementation uses a ``DbContext``-derived class called ``PersistedGrantDbContext`` to model the table in the database.
 
@@ -96,10 +95,11 @@ This options class contains properties to control the operational store and ``Pe
 ``DefaultSchema``
     Allows setting the default database schema name for all the tables in the ``PersistedGrantDbContext``.
 ``EnableTokenCleanup``
-    Indicates whether stale entries will be automatically cleaned up from the database. The default is ``false``.
+    Indicates whether expired grants will be automatically cleaned up from the database. The default is ``false``.
 ``TokenCleanupInterval``
     The token cleanup interval (in seconds). The default is 3600 (1 hour).
 
+.. note:: The token cleanup feature does *not* remove persisted grants that are *consumed* (see :ref:`persisted grants <refPersistedGrants>`).
 
 Database creation and schema changes across different versions of IdentityServer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

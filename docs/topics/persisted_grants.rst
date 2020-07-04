@@ -1,3 +1,4 @@
+.. _refPersistedGrants:
 Persisted Grants
 ================
 Many grant types require persistence in IdentityServer.
