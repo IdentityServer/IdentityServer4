@@ -53,7 +53,7 @@ namespace IdentityServer4.EntityFramework.Stores
                 from apiResource in Context.ApiResources
                 where apiResourceNames.Contains(apiResource.Name)
                 select apiResource;
-
+            
             var apis = query
                 .Include(x => x.Secrets)
                 .Include(x => x.Scopes)
@@ -61,7 +61,9 @@ namespace IdentityServer4.EntityFramework.Stores
                 .Include(x => x.Properties)
                 .AsNoTracking();
 
-            var result = (await apis.ToArrayAsync(cancellationToken)).Select(x => x.ToModel()).ToArray();
+            var result = (await apis.ToArrayAsync(cancellationToken))
+                .Where(x => apiResourceNames.Contains(x.Name))
+                .Select(x => x.ToModel()).ToArray();
 
             if (result.Any())
             {
@@ -92,7 +94,8 @@ namespace IdentityServer4.EntityFramework.Stores
                 .Include(x => x.Properties)
                 .AsNoTracking();
 
-            var results = await apis.ToArrayAsync(cancellationToken);
+            var results = (await apis.ToArrayAsync(cancellationToken))
+                .Where(api => api.Scopes.Any(x => names.Contains(x.Scope)));
             var models = results.Select(x => x.ToModel()).ToArray();
 
             Logger.LogDebug("Found {apis} API resources in database", models.Select(x => x.Name));
@@ -115,7 +118,8 @@ namespace IdentityServer4.EntityFramework.Stores
                 .Include(x => x.Properties)
                 .AsNoTracking();
 
-            var results = await resources.ToArrayAsync(cancellationToken);
+            var results = (await resources.ToArrayAsync(cancellationToken))
+                .Where(x => scopes.Contains(x.Name));
 
             Logger.LogDebug("Found {scopes} identity scopes in database", results.Select(x => x.Name));
 
@@ -137,7 +141,8 @@ namespace IdentityServer4.EntityFramework.Stores
                 .Include(x => x.Properties)
                 .AsNoTracking();
 
-            var results = await resources.ToArrayAsync(cancellationToken);
+            var results = (await resources.ToArrayAsync(cancellationToken))
+                .Where(x => scopes.Contains(x.Name));
 
             Logger.LogDebug("Found {scopes} scopes in database", results.Select(x => x.Name));
 

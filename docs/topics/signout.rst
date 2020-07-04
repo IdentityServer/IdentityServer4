@@ -36,8 +36,8 @@ This API returns a ``LogoutRequest`` object with a ``SignOutIFrameUrl`` property
 
 **Back-channel server-side clients**
 
-To signout the user from the server-side client applications via the back-channel spec, the ``SignOutIFrameUrl`` endpoint in IdentityServer will automatically trigger server-to-server invocation passing a signed sign-out request to the client.
-This means that even if there are no front-channel clients, the "logged out" page in IdentityServer must still render an ``<iframe>`` to the ``SignOutIFrameUrl`` as described above.
+To signout the user from the server-side client applications via the back-channel spec the ``IBackChannelLogoutService`` service can be used. 
+IdentityServer will automatically use this service when your logout page removes the user's authentication cookie via a call to ``HttpContext.SignOutAsync``.
 Clients that wish to be notified must have the ``BackChannelLogoutUri`` configuration value set.
 
 **Browser-based JavaScript clients**

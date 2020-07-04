@@ -11,8 +11,10 @@ Authentication is tracked with a cookie managed by the `cookie authentication <h
 IdentityServer registers two cookie handlers (one for the authentication session and one for temporary external cookies). These are used by default and you can get their
 names from the ``IdentityServerConstants`` class (``DefaultCookieAuthenticationScheme`` and ``ExternalCookieAuthenticationScheme``) if you want to reference them manually.
 
-We only expose basic settings for these cookies (expiration and sliding), and you can register your own cookie handlers if you need more control.
+Only the basic settings are exposed for these cookies (expiration and sliding), but you can register your own cookie handlers if you need more control.
 IdentityServer uses whichever cookie handler matches the ``DefaultAuthenticateScheme`` as configured on the ``AuthenticationOptions`` when using ``AddAuthentication`` from ASP.NET Core.
+
+.. note:: In addition to the authentication cookie, IdentityServer will issue an additional cookie which defaults to the name "idsrv.session". This cookie is derived from the main authentication cookie, and it used for the check session endpoint for :ref:`browser-based JavaScript clients at signout time <refSignOut>`. It is kept in sync with the authentication cookie, and is removed when the user signs out.
 
 Overriding cookie handler configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

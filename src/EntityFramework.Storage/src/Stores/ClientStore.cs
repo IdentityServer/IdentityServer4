@@ -47,10 +47,11 @@ namespace IdentityServer4.EntityFramework.Stores
         public virtual async Task<Client> FindClientByIdAsync(string clientId, CancellationToken cancellationToken = default)
         {
             IQueryable<Entities.Client> baseQuery = Context.Clients
-                .Where(x => x.ClientId == clientId)
-                .Take(1);
+                .Where(x => x.ClientId == clientId);
 
-            var client = await baseQuery.FirstOrDefaultAsync(cancellationToken);
+            var client = (await baseQuery.ToArrayAsync(cancellationToken))
+                .SingleOrDefault(x => x.ClientId == clientId);
+
             if (client == null) return null;
 
             await baseQuery.Include(x => x.AllowedCorsOrigins).SelectMany(c => c.AllowedCorsOrigins).LoadAsync(cancellationToken);

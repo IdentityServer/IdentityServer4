@@ -237,7 +237,7 @@ namespace IdentityServer4.Models
         public ICollection<string> IdentityProviderRestrictions { get; set; } = new HashSet<string>();
 
         /// <summary>
-        /// Gets or sets a value indicating whether JWT access tokens should include an identifier. Defaults to <c>false</c>.
+        /// Gets or sets a value indicating whether JWT access tokens should include an identifier. Defaults to <c>true</c>.
         /// </summary>
         /// <value>
         /// <c>true</c> to add an id; otherwise, <c>false</c>.

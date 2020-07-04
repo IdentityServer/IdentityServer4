@@ -71,7 +71,6 @@ To add support for OpenID Connect authentication to the MVC application, you fir
         .AddOpenIdConnect("oidc", options =>
         {
             options.Authority = "https://localhost:5001";
-            options.RequireHttpsMetadata = false;
 
             options.ClientId = "mvc";
             options.ClientSecret = "secret";
@@ -108,7 +107,8 @@ And then to ensure the authentication services execute on each request, add ``Us
             .RequireAuthorization();
     });
 
-.. note:: The ``RequireAuthorization`` method disables anonymous access for the entire application. You can also use the ``[Authorize]`` attribute, if you want to specify that on a per controller or action method basis.
+.. note:: The ``RequireAuthorization`` method disables anonymous access for the entire application. 
+You can also use the ``[Authorize]`` attribute, if you want to specify that on a per controller or action method basis.
 
 Also modify the home view to display the claims of the user as well as the cookie properties::
 
@@ -145,9 +145,9 @@ In contrast to OAuth, scopes in OIDC don't represent APIs, but identity data lik
 name or email address.
 
 Add support for the standard ``openid`` (subject id) and ``profile`` (first name, last name etc..) scopes
-by ammending the ``Ids`` property in ``Config.cs``::
+by ammending the ``IdentityResources`` property in ``Config.cs``::
 
-    public static IEnumerable<IdentityResource> Ids =>
+    public static IEnumerable<IdentityResource> IdentityResources =>
         new List<IdentityResource>
         {
             new IdentityResources.OpenId(),
@@ -157,8 +157,8 @@ by ammending the ``Ids`` property in ``Config.cs``::
 Register the identity resources with IdentityServer in ``startup.cs``::
 
     var builder = services.AddIdentityServer()
-        .AddInMemoryIdentityResources(Config.Ids)
-        .AddInMemoryApiResources(Config.Apis)
+        .AddInMemoryIdentityResources(Config.IdentityResources)
+        .AddInMemoryApiScopes(Config.ApiScopes)
         .AddInMemoryClients(Config.Clients);
 
 .. note:: All standard scopes and their corresponding claims can be found in the OpenID Connect `specification <https://openid.net/specs/openid-connect-core-1_0.html#ScopeClaims>`_
@@ -168,7 +168,7 @@ Adding Test Users
 The sample UI also comes with an in-memory "user database". You can enable this in IdentityServer by adding the ``AddTestUsers`` extension method::
 
     var builder = services.AddIdentityServer()
-        .AddInMemoryIdentityResources(Config.Ids)
+        .AddInMemoryIdentityResources(Config.IdentityResources)
         .AddInMemoryApiResources(Config.Apis)
         .AddInMemoryClients(Config.Clients)
         .AddTestUsers(TestUsers.Users);
@@ -205,14 +205,12 @@ The client list should look like this::
                 ClientSecrets = { new Secret("secret".Sha256()) },
 
                 AllowedGrantTypes = GrantTypes.Code,
-                RequireConsent = false,
-                RequirePkce = true,
                 
                 // where to redirect to after login
-                RedirectUris = { "http://localhost:5002/signin-oidc" },
+                RedirectUris = { "https://localhost:5002/signin-oidc" },
 
                 // where to redirect to after logout
-                PostLogoutRedirectUris = { "http://localhost:5002/signout-callback-oidc" },
+                PostLogoutRedirectUris = { "https://localhost:5002/signout-callback-oidc" },
 
                 AllowedScopes = new List<string>
                 {
@@ -335,7 +333,7 @@ Add the OpenId Connect handler to DI::
             options.SaveTokens = true;
 
             options.Authority = "https://demo.identityserver.io/";
-            options.ClientId = "native.code";
+            options.ClientId = "interactive.confidential";
             options.ClientSecret = "secret";
             options.ResponseType = "code";
 

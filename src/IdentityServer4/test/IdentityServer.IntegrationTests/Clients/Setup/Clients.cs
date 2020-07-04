@@ -119,6 +119,7 @@ namespace IdentityServer.IntegrationTests.Clients.Setup
                     },
 
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+                    RefreshTokenUsage = TokenUsage.OneTimeOnly,
 
                     AllowOfflineAccess = true,
                     AllowedScopes =

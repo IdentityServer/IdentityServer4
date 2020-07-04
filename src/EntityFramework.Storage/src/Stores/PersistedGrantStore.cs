@@ -47,7 +47,8 @@ namespace IdentityServer4.EntityFramework.Stores
         /// <inheritdoc/>
         public virtual async Task StoreAsync(PersistedGrant token, CancellationToken cancellationToken = default)
         {
-            var existing = await Context.PersistedGrants.SingleOrDefaultAsync(x => x.Key == token.Key, cancellationToken);
+            var existing = (await Context.PersistedGrants.Where(x => x.Key == token.Key).ToArrayAsync(cancellationToken))
+                .SingleOrDefault(x => x.Key == token.Key);
             if (existing == null)
             {
                 Logger.LogDebug("{persistedGrantKey} not found in database", token.Key);
@@ -75,7 +76,8 @@ namespace IdentityServer4.EntityFramework.Stores
         /// <inheritdoc/>
         public virtual async Task<PersistedGrant> GetAsync(string key, CancellationToken cancellationToken = default)
         {
-            var persistedGrant = await Context.PersistedGrants.AsNoTracking().FirstOrDefaultAsync(x => x.Key == key, cancellationToken);
+            var persistedGrant = (await Context.PersistedGrants.AsNoTracking().Where(x => x.Key == key).ToArrayAsync(cancellationToken))
+                .SingleOrDefault(x => x.Key == key);
             var model = persistedGrant?.ToModel();
 
             Logger.LogDebug("{persistedGrantKey} found in database: {persistedGrantKeyFound}", key, model != null);
@@ -88,7 +90,9 @@ namespace IdentityServer4.EntityFramework.Stores
         {
             filter.Validate();
 
-            var persistedGrants = await Filter(filter).ToArrayAsync(cancellationToken);
+            var persistedGrants = await Filter(Context.PersistedGrants.AsQueryable(), filter).ToArrayAsync(cancellationToken);
+            persistedGrants = Filter(persistedGrants.AsQueryable(), filter).ToArray();
+            
             var model = persistedGrants.Select(x => x.ToModel());
 
             Logger.LogDebug("{persistedGrantCount} persisted grants found for {@filter}", persistedGrants.Length, filter);
@@ -99,7 +103,8 @@ namespace IdentityServer4.EntityFramework.Stores
         /// <inheritdoc/>
         public virtual async Task RemoveAsync(string key, CancellationToken cancellationToken = default)
         {
-            var persistedGrant = await Context.PersistedGrants.FirstOrDefaultAsync(x => x.Key == key, cancellationToken);
+            var persistedGrant = (await Context.PersistedGrants.Where(x => x.Key == key).ToArrayAsync(cancellationToken))
+                .SingleOrDefault(x => x.Key == key);
             if (persistedGrant!= null)
             {
                 Logger.LogDebug("removing {persistedGrantKey} persisted grant from database", key);
@@ -126,7 +131,8 @@ namespace IdentityServer4.EntityFramework.Stores
         {
             filter.Validate();
 
-            var persistedGrants = await Filter(filter).ToArrayAsync(cancellationToken);
+            var persistedGrants = await Filter(Context.PersistedGrants.AsQueryable(), filter).ToArrayAsync(cancellationToken);
+            persistedGrants = Filter(persistedGrants.AsQueryable(), filter).ToArray();
 
             Logger.LogDebug("removing {persistedGrantCount} persisted grants from database for {@filter}", persistedGrants.Length, filter);
 
@@ -142,10 +148,9 @@ namespace IdentityServer4.EntityFramework.Stores
             }
         }
 
-        private IQueryable<Entities.PersistedGrant> Filter(PersistedGrantFilter filter)
-        {
-            var query = Context.PersistedGrants.AsQueryable();
 
+        private IQueryable<Entities.PersistedGrant> Filter(IQueryable<Entities.PersistedGrant> query, PersistedGrantFilter filter)
+        {
             if (!String.IsNullOrWhiteSpace(filter.ClientId))
             {
                 query = query.Where(x => x.ClientId == filter.ClientId);

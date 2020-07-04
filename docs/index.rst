@@ -97,6 +97,7 @@ It enables the following features in your applications:
    topics/resource_owner
    topics/refresh_tokens
    topics/reference_tokens
+   topics/persisted_grants
    topics/pop
    topics/mtls
    topics/request_object

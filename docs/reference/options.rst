@@ -53,6 +53,9 @@ Authentication
 * ``CheckSessionCookieName``
     The name of the cookie used for the check session endpoint.
 
+* ``CheckSessionCookieDomain``
+    The domain of the cookie used for the check session endpoint.
+
 * ``RequireCspFrameSrcForSignout``
     If set, will require frame-src CSP headers being emitting on the end session callback endpoint which renders iframes to clients for front-channel signout notification. Defaults to true.
 

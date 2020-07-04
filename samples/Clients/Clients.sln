@@ -35,7 +35,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleResourceOwnerFlowPub
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsolePrivateKeyJwtClient", "src\ConsolePrivateKeyJwtClient\ConsolePrivateKeyJwtClient.csproj", "{1EC25581-781E-4FEA-A8AC-72BBD599FB87}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleHybridWithPkce", "src\ConsoleHybridWithPkce\ConsoleHybridWithPkce.csproj", "{BB38F47A-1BBF-47E1-9872-088FC81DC825}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleCode", "src\ConsoleCode\ConsoleCode.csproj", "{BB38F47A-1BBF-47E1-9872-088FC81DC825}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvcHybridBackChannel", "src\MvcHybridBackChannel\MvcHybridBackChannel.csproj", "{57F395AD-48D2-48BF-A117-881E112D947E}"
 EndProject
