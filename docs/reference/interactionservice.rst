@@ -102,6 +102,8 @@ ConsentResponse
     The collection of scopes the user consented to.
 ``RememberConsent``
     Flag indicating if the user's consent is to be persisted.
+``Description``
+    Optional description the user can set for the grant (e.g. the name of the device being used when consent is given). This can presented back to the user from the :ref:`persisted grant service <refPersistedGrants>`.
 
 Grant
 ^^^^^
