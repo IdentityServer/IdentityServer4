@@ -261,7 +261,7 @@ Using the API resource grouping gives you the following additional features
 
 * support for the JWT *aud* claim. The value(s) of the audience claim will be the name of the API resource(s)
 * support for adding common user claims across all contained scopes
-* support for introspection by assigning a API secret to the resource
+* support for introspection by assigning an API secret to the resource
 * support for configuring the access token signing algorithm for the resource
 
 Let's have a look at some example access tokens for the above resource configuration.
@@ -275,7 +275,7 @@ Let's have a look at some example access tokens for the above resource configura
         "client_id": "client",
         "sub": "123",
 
-        "aud": "invoice",
+        "aud": "invoices",
         "scope": "invoice.read invoice.pay"
     }
 
@@ -288,7 +288,7 @@ Let's have a look at some example access tokens for the above resource configura
         "client_id": "client",
         "sub": "123",
 
-        "aud": [ "invoice", "customer" ]
+        "aud": [ "invoices", "customers" ]
         "scope": "invoice.read customer.read"
     }
 
@@ -301,7 +301,7 @@ Let's have a look at some example access tokens for the above resource configura
         "client_id": "client",
         "sub": "123",
 
-        "aud": [ "invoice", "customer" ]
+        "aud": [ "invoices", "customers" ]
         "scope": "manage"
     }
 
