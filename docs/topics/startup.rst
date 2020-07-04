@@ -48,6 +48,8 @@ This style of configuration might also be appropriate for production scenarios i
     Registers ``IClientStore`` and ``ICorsPolicyService`` implementations based on the in-memory collection of ``Client`` configuration objects.
 * ``AddInMemoryIdentityResources``
     Registers ``IResourceStore`` implementation based on the in-memory collection of ``IdentityResource`` configuration objects.
+* ``AddInMemoryApiScopes``
+    Registers ``IResourceStore`` implementation based on the in-memory collection of ``ApiScope`` configuration objects.
 * ``AddInMemoryApiResources``
     Registers ``IResourceStore`` implementation based on the in-memory collection of ``ApiResource`` configuration objects.
 
