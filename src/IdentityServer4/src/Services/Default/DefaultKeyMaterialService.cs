@@ -46,7 +46,7 @@ namespace IdentityServer4.Services
                 var credential = (await GetAllSigningCredentialsAsync()).FirstOrDefault(c => allowedAlgorithms.Contains(c.Algorithm));
                 if (credential is null)
                 {
-                    throw new InvalidOperationException($"No signing credential for algorithms ({allowedAlgorithms}) registered.");
+                    throw new InvalidOperationException($"No signing credential for algorithms ({allowedAlgorithms.ToSpaceSeparatedString()}) registered.");
                 }
 
                 return credential;
