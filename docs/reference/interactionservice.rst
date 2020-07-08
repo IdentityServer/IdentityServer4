@@ -52,14 +52,14 @@ AuthorizationRequest
 ``UiLocales``
     The UI locales passed from the authorization request.
 ``IdP``
-    The external identity provider requested. 
-    This is used to bypass home realm discovery (HRD). 
+    The external identity provider requested.
+    This is used to bypass home realm discovery (HRD).
     This is provided via the "idp:" prefix to the ``acr_values`` parameter on the authorize request.
 ``Tenant``
     The tenant requested.
     This is provided via the "tenant:" prefix to the ``acr_values`` parameter on the authorize request.
 ``LoginHint``
-    The expected username the user will use to login. 
+    The expected username the user will use to login.
     This is requested from the client via the ``login_hint`` parameter on the authorize request.
 ``PromptMode``
     The prompt mode requested from the authorization request.
@@ -103,7 +103,7 @@ ConsentResponse
 ``RememberConsent``
     Flag indicating if the user's consent is to be persisted.
 ``Description``
-    Optional description the user can set for the grant (e.g. the name of the device being used when consent is given). This can presented back to the user from the :ref:`persisted grant service <refPersistedGrants>`.
+    Optional description the user can set for the grant (e.g. the name of the device being used when consent is given). This can be presented back to the user from the :ref:`persisted grant service <refPersistedGrants>`.
 
 Grant
 ^^^^^
