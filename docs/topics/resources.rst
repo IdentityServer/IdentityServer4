@@ -256,6 +256,9 @@ With ``ApiResource`` you can now create two logical APIs and their correponding 
             }
         };
     }
+    
+    NB! ApiResource has constructor with takes three parameters! But! Third parameter is a claims and not Scopes!
+    That's why Scops initialized not from a constructor!
 
 Using the API resource grouping gives you the following additional features
 
