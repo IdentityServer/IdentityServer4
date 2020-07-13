@@ -108,13 +108,15 @@ namespace IdentityServer4.Services
         // just reading the incoming cookie
         //
         // this design requires this to be in DI as scoped
-
+        
+        private bool _authenticating = false;
+        
         /// <summary>
         /// Authenticates the authentication cookie for the current HTTP request and caches the user and properties results.
         /// </summary>
         protected virtual async Task AuthenticateAsync()
         {
-            if (Principal == null || Properties == null)
+            if (!_authenticating && (Principal == null || Properties == null))
             {
                 var scheme = await HttpContext.GetCookieAuthenticationSchemeAsync();
 
@@ -124,7 +126,10 @@ namespace IdentityServer4.Services
                     throw new InvalidOperationException($"No authentication handler is configured to authenticate for the scheme: {scheme}");
                 }
 
+                _authenticating = true;
                 var result = await handler.AuthenticateAsync();
+                _authenticating = false;
+
                 if (result != null && result.Succeeded)
                 {
                     Principal = result.Principal;
