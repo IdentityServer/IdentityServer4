@@ -33,13 +33,22 @@ namespace IdentityServer4.Models
             {
                 if (request.Raw != null)
                 {
-                    Parameters = request.Raw;
-                }
+                    // optimize params sent to logout page, since we'd like to send them in URL (not as cookie)
+                    var optimizationParameters = new[]
+                    {
+                        OidcConstants.EndSessionRequest.IdTokenHint,
+                        OidcConstants.EndSessionRequest.PostLogoutRedirectUri,
+                        OidcConstants.EndSessionRequest.State
+                    };
 
-                // optimize params sent to logout page, since we'd like to send them in URL (not as cookie)
-                Parameters.Remove(OidcConstants.EndSessionRequest.IdTokenHint);
-                Parameters.Remove(OidcConstants.EndSessionRequest.PostLogoutRedirectUri);
-                Parameters.Remove(OidcConstants.EndSessionRequest.State);
+                    foreach (var (key, value) in request.Raw.ToDictionary())
+                    {
+                        if (!Parameters.ContainsKey(key) && !optimizationParameters.Contains(key))
+                        {
+                            Parameters.Add(key, value);
+                        }
+                    }
+                }
 
                 ClientId = request.Client?.ClientId;
                 ClientName = request.Client?.ClientName;
@@ -91,7 +100,7 @@ namespace IdentityServer4.Models
         /// <summary>
         /// Gets the entire parameter collection.
         /// </summary>
-        public NameValueCollection Parameters { get; } = new NameValueCollection();
+        public Dictionary<string, string> Parameters { get; set; } = new Dictionary<string, string>();
 
         /// <summary>
         ///  Flag to indicate if the payload contains useful information or not to avoid serailization.
@@ -119,7 +128,7 @@ namespace IdentityServer4.Models
                 SubjectId = message.SubjectId;
                 SessionId = message.SessionId;
                 ClientIds = message.ClientIds;
-                Parameters = message.Parameters;
+                Parameters = message.Parameters.ToNameValueCollection();
             }
 
             SignOutIFrameUrl = iframeUrl;
