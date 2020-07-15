@@ -74,6 +74,7 @@ The client can then request the resource using the scope parameter (other parame
 IdentityServer will then use the scope names to create a list of requested claim types, 
 and present that to your implementation of the :ref:`profile service <refProfileService>`.
 
+.. _refApiResources:
 APIs
 ----
 Designing your API surface can be a complicated task. IdentityServer provides a couple of primitives to help you with that.
