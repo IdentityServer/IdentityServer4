@@ -15,9 +15,8 @@ For project documentation, please visit [readthedocs](https://identityserver4.re
 Active development happens on the main branch. This always contains the latest version. Each (pre-) release is tagged with the corresponding version. The [aspnetcore1](https://github.com/IdentityServer/IdentityServer4/tree/aspnetcore1) and [aspnetcore2](https://github.com/IdentityServer/IdentityServer4/tree/aspnetcore2) branches contain the latest versions of the older ASP.NET Core based versions.
 
 ## How to build
-IdentityServer is built against the latest ASP.NET Core 3.
 
-* [Install](https://www.microsoft.com/net/download/core#/current) the [required](https://github.com/IdentityServer/IdentityServer4/blob/main/global.json) .NET Core SDK
+* [Install](https://www.microsoft.com/net/download/core#/current) the latest .NET Core 3.1 SDK
 * Install Git
 * Run `build.ps1` or `build.sh` in the root of the repo
 
