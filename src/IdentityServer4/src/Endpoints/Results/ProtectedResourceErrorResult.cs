@@ -42,12 +42,12 @@ namespace IdentityServer4.Endpoints.Results
             var errorString = string.Format($"error=\"{Error}\"");
             if (ErrorDescription.IsMissing())
             {
-                context.Response.Headers.Add(HeaderNames.WWWAuthenticate, new StringValues(new[] { "Bearer realm=\"IdentityServer4\"", errorString }));
+                context.Response.Headers.Add(HeaderNames.WWWAuthenticate, new StringValues(new[] { "Bearer realm=\"Restricted\"", errorString }));
             }
             else
             {
                 var errorDescriptionString = string.Format($"error_description=\"{ErrorDescription}\"");
-                context.Response.Headers.Add(HeaderNames.WWWAuthenticate, new StringValues(new[] { "Bearer realm=\"IdentityServer4\"", errorString, errorDescriptionString }));
+                context.Response.Headers.Add(HeaderNames.WWWAuthenticate, new StringValues(new[] { "Bearer realm=\"Restricted\"", errorString, errorDescriptionString }));
             }
 
             return Task.CompletedTask;
