@@ -3,6 +3,7 @@
 
 
 using IdentityServer4.Events;
+using IdentityServer4.Extensions;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -37,12 +38,31 @@ namespace IdentityServer4.Hosting
         /// <param name="router">The router.</param>
         /// <param name="session">The user session.</param>
         /// <param name="events">The event service.</param>
+        /// <param name="backChannelLogoutService"></param>
         /// <returns></returns>
-        public async Task Invoke(HttpContext context, IEndpointRouter router, IUserSession session, IEventService events)
+        public async Task Invoke(HttpContext context, IEndpointRouter router, IUserSession session, IEventService events, IBackChannelLogoutService backChannelLogoutService)
         {
             // this will check the authentication session and from it emit the check session
             // cookie needed from JS-based signout clients.
             await session.EnsureSessionIdCookieAsync();
+
+            context.Response.OnStarting(async () =>
+            {
+                if (context.GetSignOutCalled())
+                {
+                    _logger.LogDebug("SignOutCalled set; processing post-signout session cleanup.");
+
+                    // this clears our session id cookie so JS clients can detect the user has signed out
+                    await session.RemoveSessionIdCookieAsync();
+
+                    // back channel logout
+                    var logoutContext = await session.GetLogoutNotificationContext();
+                    if (logoutContext != null)
+                    {
+                        await backChannelLogoutService.SendLogoutNotificationsAsync(logoutContext);
+                    }
+                }
+            });
 
             try
             {

@@ -84,18 +84,8 @@ namespace IdentityServer4.Hosting
 
             if ((scheme == null && defaultScheme?.Name == cookieScheme) || scheme == cookieScheme)
             {
-                // this sets a flag used by the FederatedSignoutAuthenticationHandlerProvider
+                // this sets a flag used by middleware to do post-signout work.
                 context.SetSignOutCalled();
-                
-                // back channel logout
-                var logoutContext = await _session.GetLogoutNotificationContext();
-                if (logoutContext != null)
-                {
-                    await _backChannelLogoutService.SendLogoutNotificationsAsync(logoutContext);
-                }
-                
-                // this clears our session id cookie so JS clients can detect the user has signed out
-                await _session.RemoveSessionIdCookieAsync();
             }
 
             await _inner.SignOutAsync(context, scheme, properties);
