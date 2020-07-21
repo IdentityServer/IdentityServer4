@@ -48,7 +48,7 @@ namespace IdentityServer4.Validation
             if (expiredSecrets.Any())
             {
                 expiredSecrets.ForEach(
-                    ex => _logger.LogWarning("Secret [{description}] is expired", ex.Description ?? "no description"));
+                    ex => _logger.LogInformation("Secret [{description}] is expired", ex.Description ?? "no description"));
             }
 
             var currentSecrets = secretsArray.Where(s => !s.Expiration.HasExpired(_clock.UtcNow.UtcDateTime)).ToArray();
