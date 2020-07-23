@@ -13,13 +13,15 @@ Team posts
 * `Hardening OpenID Connect/OAuth Authorize Requests (and Responses) <https://leastprivilege.com/2020/02/04/hardening-openid-connect-oauth-authorize-requests-and-responses/>`_
 * `Hardening Refresh Tokens <https://leastprivilege.com/2020/01/21/hardening-refresh-tokens/>`_
 * `OAuth 2.0: The long Road to Proof-of-Possession Access Tokens <https://leastprivilege.com/2020/01/15/oauth-2-0-the-long-road-to-proof-of-possession-access-tokens/>`_
+* `Outsourcing IdentityServer4 Token Signing to Azure Key Vault <https://www.scottbrady91.com/Identity-Server/Outsourcing-IdentityServer4-Token-Signing-to-Azure-Key-Vault>`_
+* `Using ECDSA in IdentityServer4 <https://www.scottbrady91.com/Identity-Server/Using-ECDSA-in-IdentityServer4>`_
 
 2019
 ----
 * `Scope and claims design in IdentityServer <https://brockallen.com/2019/02/25/scope-and-claims-design-in-identityserver/>`_
 * `Try Device Flow with IdentityServer4 <https://leastprivilege.com/2019/02/08/try-device-flow-with-identityserver4/>`_
 * `The State of the Implicit Flow in OAuth2 <https://brockallen.com/2019/01/03/the-state-of-the-implicit-flow-in-oauth2/>`_
-* `An alternative way to secure SPAs (with ASP.NET Core, OpenID Connect, OAuth 2.0 and ProxyKit  <https://leastprivilege.com/2019/01/18/an-alternative-way-to-secure-spas-with-asp-net-core-openid-connect-oauth-2-0-and-proxykit/>`_
+* `An alternative way to secure SPAs (with ASP.NET Core, OpenID Connect, OAuth 2.0 and ProxyKit) <https://leastprivilege.com/2019/01/18/an-alternative-way-to-secure-spas-with-asp-net-core-openid-connect-oauth-2-0-and-proxykit/>`_
 * `Automatic OAuth 2.0 Token Management in ASP.NET Core <https://leastprivilege.com/2019/01/14/automatic-oauth-2-0-token-management-in-asp-net-core/>`_
 * `Encrypting Identity Tokens in IdentityServer4 <https://www.scottbrady91.com/Identity-Server/Encrypting-Identity-Tokens-in-IdentityServer4>`_
 
@@ -27,7 +29,7 @@ Team posts
 ----
 * `IdentityServer4 Update <https://leastprivilege.com/2018/01/17/ndc-london-2018-identityserver-update/>`_ 
 * `IdentityServer and Swagger <https://www.scottbrady91.com/Identity-Server/ASPNET-Core-Swagger-UI-Authorization-using-IdentityServer4>`_
-* `https://www.scottbrady91.com/OAuth/Removing-Shared-Secrets-for-OAuth-Client-Authentication <https://www.scottbrady91.com/OAuth/Removing-Shared-Secrets-for-OAuth-Client-Authentication>`_
+* `Removing Shared Secrets for OAuth Client Authentication <https://www.scottbrady91.com/OAuth/Removing-Shared-Secrets-for-OAuth-Client-Authentication>`_
 * `Creating Your Own IdentityServer4 Storage Library <https://www.scottbrady91.com/Identity-Server/Creating-Your-Own-IdentityServer4-Storage-Library>`_
 
 2017
