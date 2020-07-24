@@ -134,7 +134,7 @@ Next, add an API to your solution.
 You can either use the ASP.NET Core Web API template from Visual Studio or use the .NET CLI to create the API project as we do here.
 Run from within the ``src`` folder the following command::
 
-    dotnet new web -n Api
+    dotnet new webapi -n Api
 
 Then add it to the solution by running the following commands::
 
