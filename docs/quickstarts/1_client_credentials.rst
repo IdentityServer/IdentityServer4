@@ -62,10 +62,10 @@ The Config.cs is already created for you. Open it, update the code to look like 
 
     public static class Config
     {
-        public static IEnumerable<ApiScope> ApiScopes =>
-            new List<ApiScope>
+        public static IEnumerable<ApiResource> ApiScopes =>
+            new List<ApiResource>
             {
-                new ApiScope("api1", "My API")
+                new ApiResource("api1", "My API")
             };
     }
 
