@@ -78,7 +78,7 @@ trigger authentication, and if successful convert the information into a standar
             
 
             await HttpContext.SignInAsync(
-                IdentityServerConstants.ExternalCookieAuthenticationScheme,
+                IdentityConstants.ExternalScheme,
                 new ClaimsPrincipal(id),
                 props);
             return Redirect(props.RedirectUri);
