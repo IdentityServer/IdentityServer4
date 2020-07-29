@@ -52,8 +52,8 @@ The following example shows a custom identity resource called *profile* that rep
         {
             new IdentityResource(
                 name: "profile",
-                claimTypes: new[] { "name", "email", "website" },
-                displayName: "Your profile data")
+                displayName: "Your profile data",
+                new List<string> { "name", "email", "website" })
         };
     }
 
