@@ -55,6 +55,7 @@ What's new posts
 
 Community posts
 ^^^^^^^^^^^^^^^
+* `Blazor WebAssembly authentication and authorization with IdentityServer4 <https://nahidfa.com/posts/blazor-webassembly-authentication-and-authorization-with-identityserver4/>`_
 * `OAuth 2.0 - OpenID Connect & IdentityServer <https://wp.me/p3mRWu-1Ag/>`_
 * `Running IdentityServer4 in a Docker Container <https://espressocoder.com/2019/01/29/running-identityserver4-in-a-docker-container/>`_
 * `Connecting Zendesk and IdentityServer 4 SAML 2.0 Identity Provider <https://lurumad.github.io/connecting-zendesk-and-identityserver-4-saml2p-identity-provider>`_
@@ -74,7 +75,4 @@ Community posts
 * `Securing a Vue.js app using OpenID Connect Code Flow with PKCE and IdentityServer4 <https://damienbod.com/2019/01/29/securing-a-vue-js-app-using-openid-connect-code-flow-with-pkce-and-identityserver4/>`_
 * `Using an OData Client with an ASP.NET Core API <https://damienbod.com/2018/10/18/using-an-odata-client-with-an-asp-net-core-api/>`_
 * `OpenID Connect back-channel logout using Azure Redis Cache and IdentityServer4 <https://damienbod.com/2018/12/18/openid-connect-back-channel-logout-using-azure-redis-cache-and-identityserver4/>`_
-* `Single Sign Out in IdentityServer4 with Back Channel Logout <https://blog.tretainfotech.com/posts/2018/august/single-sign-out-in-identityserver4-with-back-channel-logout/>`_
-
-
-
+* `Single Sign Out in IdentityServer4 with Back Channel Logout <https://blog.tretainfotech.com/posts/2018/august/single-sign-out-in-identityserver4-with-back-channel-logout>`_
