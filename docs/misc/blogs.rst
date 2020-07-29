@@ -43,19 +43,12 @@ Team posts
 * `Getting Started with IdentityServer 4 <https://www.scottbrady91.com/Identity-Server/Getting-Started-with-IdentityServer-4>`_
 * `IdentityServer 4 SharePoint Integration using WS-Federation <https://www.scottbrady91.com/Identity-Server/IdentityServer-4-SharePoint-Integration-using-WS-Federation>`_
 
-What's new posts
-^^^^^^^^^^^^^^^^
-* `New in IdentityServer4 v2: Simplified Configuration behind Load-balancers or Reverse-Proxies <https://leastprivilege.com/2017/10/09/new-in-identityserver4-v2-simplified-configuration-behind-load-balancers-or-reverse-proxies/>`_
-* `New in IdentityServer4: Clients without Secrets <https://leastprivilege.com/2016/09/13/new-in-identityserver4-clients-without-secrets/>`_
-* `New in IdentityServer4: Default Scopes <https://leastprivilege.com/2016/09/14/new-in-identityserver4-default-scopes/>`_
-* `New in IdentityServer4: Support for Extension Grants <https://leastprivilege.com/2016/09/20/new-in-identityserver4-support-for-extension-grants/>`_
-* `New in IdentityServer4: Resource Owner Password Validation <https://leastprivilege.com/2016/09/29/new-in-identityserver4-resource-owner-password-validation/>`_
-* `New in IdentityServer4: Resource-based Configuration <https://leastprivilege.com/2016/12/01/new-in-identityserver4-resource-based-configuration/>`_
-* `New in IdentityServer4: Events <https://leastprivilege.com/2017/03/30/new-in-identityserver4-events/>`_
-
 Community posts
 ^^^^^^^^^^^^^^^
 * `Blazor WebAssembly authentication and authorization with IdentityServer4 <https://nahidfa.com/posts/blazor-webassembly-authentication-and-authorization-with-identityserver4/>`_
+* `Additional API Endpoints to IdentityServer 4 <https://lurumad.github.io/aditional-api-endpoints-to-identityserver4>`_
+* `Securing Hangfire Dashboard using an OpenID Connect server (IdentityServer 4) <https://lurumad.github.io/securing-hangfire-dashboard-using-an-openid-connect-server-identityserver-4>`_
+* `IdentityServer4: Retrieving an User's email from Twitter external authentication <https://lurumad.github.io/identityserver4-retrieving-an-user-s-email-from-twitter-external-login-account>`_
 * `OAuth 2.0 - OpenID Connect & IdentityServer <https://wp.me/p3mRWu-1Ag/>`_
 * `Running IdentityServer4 in a Docker Container <https://espressocoder.com/2019/01/29/running-identityserver4-in-a-docker-container/>`_
 * `Connecting Zendesk and IdentityServer 4 SAML 2.0 Identity Provider <https://lurumad.github.io/connecting-zendesk-and-identityserver-4-saml2p-identity-provider>`_
