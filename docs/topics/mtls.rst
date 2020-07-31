@@ -43,7 +43,7 @@ If you are using Nginx (which we found is the most flexible hosting option), you
 
             if(!string.IsNullOrWhiteSpace(headerValue))
             {
-                var bytes = Encoding.UTF8.GetBytes(Uri.UnescapeDataString(headerValue));
+                var bytes = Convert.FromBase64String(Uri.UnescapeDataString(headerValue));
                 clientCertificate = new X509Certificate2(bytes);
             }
 
