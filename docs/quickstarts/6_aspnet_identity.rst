@@ -27,6 +27,14 @@ Start by creating a new IdentityServer project that will use ASP.NET Core Identi
     cd quickstart/src
     dotnet new is4aspid -n IdentityServerAspNetIdentity
 
+
+if *No templates matched the input template name is4...*, do:
+    
+    dotnet new -i identityserver4.templates
+
+and try again.
+
+
 When prompted to "seed" the user database, choose "Y" for "yes".
 This populates the user database with our "alice" and "bob" users. 
 Their passwords are "Pass123$".
