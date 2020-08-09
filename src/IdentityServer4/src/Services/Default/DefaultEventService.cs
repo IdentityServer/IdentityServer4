@@ -112,7 +112,7 @@ namespace IdentityServer4.Events
         /// <returns></returns>
         protected virtual async Task PrepareEventAsync(Event evt)
         {
-            evt.ActivityId = Context.HttpContext.TraceIdentifier;
+            evt.ActivityId = Activity.Current?.Id ?? Context.HttpContext.TraceIdentifier;
             evt.TimeStamp = Clock.UtcNow.UtcDateTime;
             evt.ProcessId = Process.GetCurrentProcess().Id;
 

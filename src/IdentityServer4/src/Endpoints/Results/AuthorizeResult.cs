@@ -16,6 +16,7 @@ using IdentityServer4.Stores;
 using IdentityServer4.ResponseHandling;
 using Microsoft.AspNetCore.Authentication;
 using System.Text.Encodings.Web;
+using System.Diagnostics;
 
 namespace IdentityServer4.Endpoints.Results
 {
@@ -177,7 +178,7 @@ namespace IdentityServer4.Endpoints.Results
         {
             var errorModel = new ErrorMessage
             {
-                RequestId = context.TraceIdentifier,
+                RequestId = Activity.Current?.Id ?? context.TraceIdentifier,
                 Error = Response.Error,
                 ErrorDescription = Response.ErrorDescription,
                 UiLocales = Response.Request?.UiLocales,
