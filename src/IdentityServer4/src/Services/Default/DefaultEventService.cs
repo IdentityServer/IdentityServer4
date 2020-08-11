@@ -4,11 +4,11 @@
 
 using System;
 using System.Diagnostics;
-using Microsoft.AspNetCore.Http;
-using IdentityServer4.Configuration;
 using System.Threading.Tasks;
+using IdentityServer4.Configuration;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 
 namespace IdentityServer4.Events
 {
