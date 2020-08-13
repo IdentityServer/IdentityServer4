@@ -4,6 +4,7 @@
 using System.Collections.Specialized;
 using System.Net;
 using System.Threading.Tasks;
+using IdentityServer4.Configuration;
 using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
@@ -20,11 +21,12 @@ namespace IdentityServer4.Endpoints
         public AuthorizeEndpoint(
            IEventService events,
            ILogger<AuthorizeEndpoint> logger,
+           IdentityServerOptions options,
            IAuthorizeRequestValidator validator,
            IAuthorizeInteractionResponseGenerator interactionGenerator,
            IAuthorizeResponseGenerator authorizeResponseGenerator,
            IUserSession userSession)
-            : base(events, logger, validator, interactionGenerator, authorizeResponseGenerator, userSession)
+            : base(events, logger, options, validator, interactionGenerator, authorizeResponseGenerator, userSession)
         {
         }
 

@@ -24,5 +24,14 @@ namespace IdentityServer4.Configuration
                 OidcConstants.TokenRequest.RefreshToken,
                 OidcConstants.TokenRequest.DeviceCode
             };
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public ICollection<string> AuthorizeRequestSensitiveValuesFilter { get; set; } = 
+            new HashSet<string>
+            {
+                OidcConstants.AuthorizeRequest.IdTokenHint
+            };
     }
 }

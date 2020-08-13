@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityServer.UnitTests.Common;
 using IdentityServer4;
+using IdentityServer4.Configuration;
 using IdentityServer4.Endpoints;
 using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Extensions;
@@ -27,6 +28,8 @@ namespace IdentityServer.UnitTests.Endpoints.Authorize
         private TestEventService _fakeEventService = new TestEventService();
 
         private ILogger<AuthorizeCallbackEndpoint> _fakeLogger = TestLogger.Create<AuthorizeCallbackEndpoint>();
+
+        private IdentityServerOptions _options = new IdentityServerOptions();
 
         private MockConsentMessageStore _mockUserConsentResponseMessageStore = new MockConsentMessageStore();
 
@@ -225,6 +228,7 @@ namespace IdentityServer.UnitTests.Endpoints.Authorize
             _subject = new AuthorizeCallbackEndpoint(
                 _fakeEventService,
                 _fakeLogger,
+                _options,
                 _stubAuthorizeRequestValidator,
                 _stubInteractionGenerator,
                 _stubAuthorizeResponseGenerator,
