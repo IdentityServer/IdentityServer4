@@ -13,7 +13,7 @@ namespace IdentityServer4.Services
     /// <summary>
     /// Models making HTTP requests for back-channel logout notification.
     /// </summary>
-    public class DefaultBackChannelLogoutHttpClient : IBackChannelLogoutHttpClient
+    public class DefaultBackChannelLogoutHttpClient : IBackChannelLogoutHttpClient, IDisposable
     {
         private readonly HttpClient _client;
         private readonly ILogger<DefaultBackChannelLogoutHttpClient> _logger;
@@ -53,6 +53,11 @@ namespace IdentityServer4.Services
             {
                 _logger.LogError(ex, "Exception invoking back-channel logout for url: {url}", url);
             }
+        }
+        
+        public void Dispose()
+        {
+            _client?.Dispose();
         }
     }
 }

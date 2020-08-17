@@ -414,7 +414,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     });
             }
             
-            builder.Services.AddTransient<IJwtRequestUriHttpClient, DefaultJwtRequestUriHttpClient>(s =>
+            builder.Services.AddTransient<IJwtRequestUriHttpClient>(s =>
             {
                 var httpClientFactory = s.GetRequiredService<IHttpClientFactory>();
                 var httpClient = httpClientFactory.CreateClient(name);

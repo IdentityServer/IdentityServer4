@@ -15,7 +15,7 @@ namespace IdentityServer4.Services
     /// <summary>
     /// Default JwtRequest client
     /// </summary>
-    public class DefaultJwtRequestUriHttpClient : IJwtRequestUriHttpClient
+    public class DefaultJwtRequestUriHttpClient : IJwtRequestUriHttpClient, IDisposable
     {
         private readonly HttpClient _client;
         private readonly IdentityServerOptions _options;
@@ -62,6 +62,11 @@ namespace IdentityServer4.Services
                 
             _logger.LogError("Invalid http status code {status} from jwt url {url}", response.StatusCode, url);
             return null;
+        }
+
+        public void Dispose()
+        {
+            _client?.Dispose();
         }
     }
 }
