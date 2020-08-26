@@ -170,7 +170,7 @@ Add this code to implement those three functions in our application::
 
     function api() {
         mgr.getUser().then(function (user) {
-            var url = "https://localhost:6001/identity";
+            var url = "https://localhost:5001/identity";
 
             var xhr = new XMLHttpRequest();
             xhr.open("GET", url);
