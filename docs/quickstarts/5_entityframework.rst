@@ -134,9 +134,9 @@ In `Startup.cs` add this method to help initialize the database::
 
             if (!context.ApiResources.Any())
             {
-                foreach (var resource in Config.Apis)
+                foreach (var resource in Config.ApiScopes)
                 {
-                    context.ApiResources.Add(resource.ToEntity());
+                    context.ApiScopes.Add(resource.ToEntity());
                 }
                 context.SaveChanges();
             }
