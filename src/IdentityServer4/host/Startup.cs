@@ -118,12 +118,13 @@ namespace IdentityServerHost
             app.UseStaticFiles();
 
             app.UseRouting();
-            app.UseIdentityServer();
+            //app.UseIdentityServer();
 
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapIdentityServer();
                 endpoints.MapDefaultControllerRoute();
             });
         }
