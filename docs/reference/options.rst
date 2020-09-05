@@ -124,7 +124,7 @@ CSP (Content Security Policy)
 IdentityServer emits CSP headers for some responses, where appropriate.
 
 * ``Level``
-    The level of CSP to use. CSP Level 2 is used by default, but if older browsers must be supported then this be changed to ``CspLevel.One`` to accomodate them.
+    The level of CSP to use. CSP Level 2 is used by default, but if older browsers must be supported then this be changed to ``CspLevel.One`` to accommodate them.
 
 * ``AddDeprecatedHeader``
     Indicates if the older ``X-Content-Security-Policy`` CSP header should also be emitted (in addition to the standards-based header value). Defaults to true.

@@ -145,7 +145,7 @@ In contrast to OAuth, scopes in OIDC don't represent APIs, but identity data lik
 name or email address.
 
 Add support for the standard ``openid`` (subject id) and ``profile`` (first name, last name etc..) scopes
-by ammending the ``IdentityResources`` property in ``Config.cs``::
+by amending the ``IdentityResources`` property in ``Config.cs``::
 
     public static IEnumerable<IdentityResource> IdentityResources =>
         new List<IdentityResource>

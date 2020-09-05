@@ -60,14 +60,14 @@ In addition it contains the hash of the code via the ``c_hash`` claim. This allo
 This solves the problem but has the following down-sides:
 
 * the ``id_token`` gets transmitted over the front-channel and might leak additional (personal identifiable) data
-* all the mitigitation steps (e.g. crypto) need to be implemented by the client. This results in more complicated client library implementations.
+* all the mitigation steps (e.g. crypto) need to be implemented by the client. This results in more complicated client library implementations.
 
 **RFC 7636 - Proof Key for Code Exchange (PKCE)**
 
 This essentially introduces a per-request secret for code flow (please read up on the details `here <https://tools.ietf.org/html/rfc7636>`_).
 All the client has to implement for this, is creating a random string and hashing it using SHA256.
 
-This also solves the substition problem, because the client can prove that it is the same client on front and back-channel, and has the following additional advantages:
+This also solves the substitution problem, because the client can prove that it is the same client on front and back-channel, and has the following additional advantages:
 
 * the client implementation is very simple compared to hybrid flow
 * it also solves the problem of the absence of a static secret for public clients

@@ -142,7 +142,7 @@ Much of the rest of the code is the same from the prior quickstarts and template
 Logging in with the MVC client
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-At this point, you should be albe to run all of the existing clients and samples.
+At this point, you should be able to run all of the existing clients and samples.
 One exception is the `ResourceOwnerClient` -- the password will need to be updated to ``Pass123$`` from ``password``.
 
 Launch the MVC client application, and you should be able to click the "Secure" link to get logged in.
