@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -387,6 +387,31 @@ namespace IdentityServer.UnitTests.ResponseHandling.AuthorizeInteractionResponse
             };
             var result = await _subject.ProcessConsentAsync(request, consent);
             AssertUpdateConsentCalled(client, user, "openid", "read");
+        }
+
+        [Fact]
+        public async Task ProcessConsentAsync_NotRememberingConsent_DoesNotSaveConsent()
+        {
+            RequiresConsent(true);
+            var client = new Client { AllowRememberConsent = true };
+            var user = new ClaimsPrincipal();
+            var request = new ValidatedAuthorizeRequest()
+            {
+                ResponseMode = OidcConstants.ResponseModes.Fragment,
+                State = "12345",
+                RedirectUri = "https://client.com/callback",
+                Client = client,
+                Subject = user,
+                RequestedScopes = new List<string> { "openid", "read", "write" },
+                ValidatedResources = GetValidatedResources("openid", "read", "write"),
+            };
+            var consent = new ConsentResponse
+            {
+                RememberConsent = false,
+                ScopesValuesConsented = new string[] { "openid", "read" }
+            };
+            var result = await _subject.ProcessConsentAsync(request, consent);
+            AssertUpdateConsentCalled(client, user);
         }
     }
 }
