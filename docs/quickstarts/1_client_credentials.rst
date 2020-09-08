@@ -89,7 +89,7 @@ For this, add a client definition::
                 ClientId = "client",
 
                 // no interactive user, use the clientid/secret for authentication
-                AllowedGrantTypes = GrantTypes.ClientCredentials,
+                AllowedGrantTypes = {GrantTypes.ClientCredentials},
 
                 // secret for authentication
                 ClientSecrets =
