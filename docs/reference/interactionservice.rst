@@ -69,6 +69,8 @@ AuthorizationRequest
     The ``ResourceValidationResult`` which represents the validated resources from the authorization request.
 ``Parameters``
     The entire parameter collection passed to the authorization request.
+``RequestObjectValues``
+    The validated contents of the request object (if present).
 
 ResourceValidationResult
 ^^^^^^^^^^^^^^^^^^^^^^^^
