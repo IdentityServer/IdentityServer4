@@ -287,7 +287,7 @@ namespace IdentityServer4.Services
 
             try
             {
-                return Properties.GetClientList();
+                return Properties?.GetClientList() ?? Enumerable.Empty<string>();
             }
             catch (Exception ex)
             {
