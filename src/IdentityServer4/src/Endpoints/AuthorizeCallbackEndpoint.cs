@@ -4,6 +4,7 @@
 using System.Collections.Specialized;
 using System.Net;
 using System.Threading.Tasks;
+using IdentityServer4.Configuration;
 using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
@@ -25,13 +26,14 @@ namespace IdentityServer4.Endpoints
         public AuthorizeCallbackEndpoint(
             IEventService events,
             ILogger<AuthorizeCallbackEndpoint> logger,
+            IdentityServerOptions options,
             IAuthorizeRequestValidator validator,
             IAuthorizeInteractionResponseGenerator interactionGenerator,
             IAuthorizeResponseGenerator authorizeResponseGenerator,
             IUserSession userSession,
             IConsentMessageStore consentResponseStore,
             IAuthorizationParametersMessageStore authorizationParametersMessageStore = null)
-            : base(events, logger, validator, interactionGenerator, authorizeResponseGenerator, userSession)
+            : base(events, logger, options, validator, interactionGenerator, authorizeResponseGenerator, userSession)
         {
             _consentResponseStore = consentResponseStore;
             _authorizationParametersMessageStore = authorizationParametersMessageStore;

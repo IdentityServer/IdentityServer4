@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityServer.UnitTests.Common;
 using IdentityServer4;
+using IdentityServer4.Configuration;
 using IdentityServer4.Endpoints;
 using IdentityServer4.Endpoints.Results;
 using IdentityServer4.Hosting;
@@ -29,6 +30,8 @@ namespace IdentityServer.UnitTests.Endpoints.Authorize
         private TestEventService _fakeEventService = new TestEventService();
 
         private ILogger<TestAuthorizeEndpoint> _fakeLogger = TestLogger.Create<TestAuthorizeEndpoint>();
+
+        private IdentityServerOptions _options = new IdentityServerOptions();
 
         private MockUserSession _mockUserSession = new MockUserSession();
 
@@ -180,6 +183,7 @@ namespace IdentityServer.UnitTests.Endpoints.Authorize
             _subject = new TestAuthorizeEndpoint(
                 _fakeEventService,
                 _fakeLogger,
+                _options,
                 _stubAuthorizeRequestValidator,
                 _stubInteractionGenerator,
                 _stubAuthorizeResponseGenerator,
@@ -191,11 +195,12 @@ namespace IdentityServer.UnitTests.Endpoints.Authorize
             public TestAuthorizeEndpoint(
               IEventService events,
               ILogger<TestAuthorizeEndpoint> logger,
+              IdentityServerOptions options,
               IAuthorizeRequestValidator validator,
               IAuthorizeInteractionResponseGenerator interactionGenerator,
               IAuthorizeResponseGenerator authorizeResponseGenerator,
               IUserSession userSession)
-            : base(events, logger, validator, interactionGenerator, authorizeResponseGenerator, userSession)
+            : base(events, logger, options, validator, interactionGenerator, authorizeResponseGenerator, userSession)
             {
             }
 

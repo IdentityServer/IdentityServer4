@@ -835,13 +835,13 @@ namespace IdentityServer4.Validation
 
         private void LogError(string message, ValidatedAuthorizeRequest request)
         {
-            var requestDetails = new AuthorizeRequestValidationLog(request);
+            var requestDetails = new AuthorizeRequestValidationLog(request, _options.Logging.AuthorizeRequestSensitiveValuesFilter);
             _logger.LogError(message + "\n{@requestDetails}", requestDetails);
         }
 
         private void LogError(string message, string detail, ValidatedAuthorizeRequest request)
         {
-            var requestDetails = new AuthorizeRequestValidationLog(request);
+            var requestDetails = new AuthorizeRequestValidationLog(request, _options.Logging.AuthorizeRequestSensitiveValuesFilter);
             _logger.LogError(message + ": {detail}\n{@requestDetails}", detail, requestDetails);
         }
     }
