@@ -308,15 +308,15 @@ namespace IdentityServer4.ResponseHandling
                             if (request.Client.AllowRememberConsent)
                             {
                                 // remember consent
-                                var scopes = Enumerable.Empty<string>();
+                                var parsedScopes = Enumerable.Empty<ParsedScopeValue>();
                                 if (consent.RememberConsent)
                                 {
                                     // remember what user actually selected
-                                    scopes = request.ValidatedResources.RawScopeValues;
-                                    Logger.LogDebug("User indicated to remember consent for scopes: {scopes}", scopes);
+                                    parsedScopes = request.ValidatedResources.ParsedScopes;
+                                    Logger.LogDebug("User indicated to remember consent for scopes: {scopes}", request.ValidatedResources.RawScopeValues);
                                 }
 
-                                await Consent.UpdateConsentAsync(request.Subject, request.Client, request.ValidatedResources.ParsedScopes);
+                                await Consent.UpdateConsentAsync(request.Subject, request.Client, parsedScopes);
                             }
                         }
                     }
