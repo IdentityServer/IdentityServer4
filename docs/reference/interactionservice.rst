@@ -65,10 +65,21 @@ AuthorizationRequest
     The prompt mode requested from the authorization request.
 ``AcrValues``
     The acr values passed from the authorization request.
-``ScopesRequested``
-    The scopes requested from the authorization request.
+``ValidatedResources``
+    The ``ResourceValidationResult`` which represents the validated resources from the authorization request.
 ``Parameters``
     The entire parameter collection passed to the authorization request.
+``RequestObjectValues``
+    The validated contents of the request object (if present).
+
+ResourceValidationResult
+^^^^^^^^^^^^^^^^^^^^^^^^
+``Resources``
+    The resources of the result.
+``ParsedScopes``
+    The parsed scopes represented by the result.
+``RawScopeValues``
+    The original (raw) scope values represented by the validated result.
 
 ErrorMessage
 ^^^^^^^^^^^^
@@ -98,12 +109,16 @@ LogoutRequest
 
 ConsentResponse
 ^^^^^^^^^^^^^^^
-``ScopesConsented``
+``ScopesValuesConsented``
     The collection of scopes the user consented to.
 ``RememberConsent``
     Flag indicating if the user's consent is to be persisted.
 ``Description``
     Optional description the user can set for the grant (e.g. the name of the device being used when consent is given). This can be presented back to the user from the :ref:`persisted grant service <refPersistedGrants>`.
+``Error``
+    Error, if any, for the consent response. This will be returned to the client in the authorization response.
+``ErrorDescription``
+    Error description. This will be returned to the client in the authorization response.
 
 Grant
 ^^^^^
