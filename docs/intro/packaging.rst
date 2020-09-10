@@ -42,6 +42,6 @@ Add the following ``nuget.config`` to your project::
         <configuration>
             <packageSources>
                 <clear />
-                <add key="IdentityServer CI" value="https://pkgs.dev.azure.com/netidentity/IdentityServer/_packaging/CI/nuget/v3/index.json" />
+                <add key="IdentityServer CI" value="https://www.myget.org/F/identity/api/v3/index.json" />
             </packageSources>
         </configuration>
