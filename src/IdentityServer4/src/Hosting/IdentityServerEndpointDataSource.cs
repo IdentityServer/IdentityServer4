@@ -129,7 +129,7 @@ namespace IdentityServer4.Hosting
             }
         }
 
-        public void Add(Action<EndpointBuilder> convention)
+        void IEndpointConventionBuilder.Add(Action<EndpointBuilder> convention)
         {
             _conventions.Add(convention);
         }
