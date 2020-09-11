@@ -1,10 +1,9 @@
 using IdentityServer4.Configuration;
 using IdentityServer4.Hosting;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace IdentityServer4.Extensions
+namespace Microsoft.AspNetCore.Builder
 {
     /// <summary>
     /// Provide extensions for IdentityServer endpoint routing.
