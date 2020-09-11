@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -27,6 +27,7 @@ namespace IdentityServer4.Hosting
         public IEndpointHandler Find(HttpContext context)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
+            if (_options.UseEndpointRouting) return null;
 
             foreach(var endpoint in _endpoints)
             {

@@ -91,6 +91,8 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.AddEndpoint<TokenEndpoint>(EndpointNames.Token, ProtocolRoutePaths.Token.EnsureLeadingSlash());
             builder.AddEndpoint<UserInfoEndpoint>(EndpointNames.UserInfo, ProtocolRoutePaths.UserInfo.EnsureLeadingSlash());
 
+            builder.Services.AddSingleton<IdentityServerEndpointDataSource>();
+
             return builder;
         }
 

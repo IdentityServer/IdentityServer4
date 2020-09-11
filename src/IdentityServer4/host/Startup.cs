@@ -124,6 +124,8 @@ namespace IdentityServerHost
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapIdentityServer();
+
                 endpoints.MapDefaultControllerRoute();
             });
         }
