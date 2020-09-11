@@ -27,7 +27,18 @@ namespace IdentityServer4.Hosting
         public IEndpointHandler Find(HttpContext context)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
+
+            // If endpoint routing for IdentityServer is used,
+            // the endpoints will be handled in previous execution,
+            // so no need to match it twice.
             if (_options.UseEndpointRouting) return null;
+
+            // If endpoint routing for IdentityServer is not used,
+            // we can skip matching when an endpoint is selected
+            // to be executed. This may cause behavior change when
+            // accessing endpoints both created by IdentityServer and
+            // user's service. In fact, this will execute user's one.
+            if (context.GetEndpoint() != null) return null;
 
             foreach(var endpoint in _endpoints)
             {
