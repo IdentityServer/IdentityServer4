@@ -1,7 +1,7 @@
 .. _refApiResource:
 API Resource
 =================
-This class model an API resource.
+This class models an API resource.
 
 ``Enabled``
     Indicates if this resource is enabled and can be requested. Defaults to true.

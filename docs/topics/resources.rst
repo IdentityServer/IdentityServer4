@@ -240,7 +240,7 @@ In IdentityServer, the ``ApiResource`` class allows some additional organization
         };
     }
 
-With ``ApiResource`` you can now create two logical APIs and their correponding scopes::
+With ``ApiResource`` you can now create two logical APIs and their corresponding scopes::
 
     public static readonly IEnumerable<ApiResource> GetApiResources()
     { 

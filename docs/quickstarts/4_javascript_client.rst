@@ -23,7 +23,7 @@ You can use Visual Studio or do this from the command line::
     cd JavaScriptClient
     dotnet new web
 
-As we have done before, with other client projects, add this project also to your solution. run this from the rootfolder which has the sln file::
+As we have done before, with other client projects, add this project also to your solution. Run this from the root folder which has the sln file::
 
     dotnet sln add .\src\JavaScriptClient\JavaScriptClient.csproj
     

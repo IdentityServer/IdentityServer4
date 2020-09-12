@@ -39,7 +39,7 @@ Grant Consumption
 Some grant types are one-time use only (either by definition or configuration).
 Once they are "used", rather than deleting the record, the ``ConsumedTime`` value is set in the database marking them as having been used.
 This "soft delete" allows for custom implementations to either have flexibility in allowing a grant to be re-used (typically within a short window of time),
-or to be used in risk assesment and threat mitigation scenarios (where suspicious activity is detected) to revoke access.
+or to be used in risk assessment and threat mitigation scenarios (where suspicious activity is detected) to revoke access.
 For refresh tokens, this sort of custom logic would be performed in the ``IRefreshTokenService``.
 
 Persisted Grant Service
