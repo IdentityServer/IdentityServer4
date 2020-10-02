@@ -1,5 +1,5 @@
 # Important update
-As of Oct 1st 2020, we started a new [company](https://duendesoftware.com/). All new feature work will hapen in our new [organization](https://github.com/duendesoftware).
+As of Oct 1st 2020, we started a new [company](https://duendesoftware.com/). All new feature work will happen in our new [organization](https://github.com/duendesoftware).
 The new Duende IdentityServer is available under both a FOSS (RPL) and a commercial license. Development and testing is always free. [Contact](https://duendesoftware.com/contact) us for more information. This repo will be maintained with bug fixes and security updates until November 2022.
 
 ## About IdentityServer4
