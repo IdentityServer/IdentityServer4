@@ -264,5 +264,16 @@ namespace IdentityServer4.Extensions
 
             return null;
         }
+        
+        public static string Obfuscate(this string value)
+        {
+            var last4Chars = "****";
+            if (value.IsPresent() && value.Length > 4)
+            {
+                last4Chars = value.Substring(value.Length - 4);
+            }
+
+            return "****" + last4Chars;
+        }
     }
 }
