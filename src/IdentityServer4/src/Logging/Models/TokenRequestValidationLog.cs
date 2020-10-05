@@ -43,8 +43,8 @@ namespace IdentityServer4.Logging.Models
             }
 
             GrantType = request.GrantType;
-            AuthorizationCode = request.AuthorizationCodeHandle;
-            RefreshToken = request.RefreshTokenHandle;
+            AuthorizationCode = request.AuthorizationCodeHandle.Obfuscate();
+            RefreshToken = request.RefreshTokenHandle.Obfuscate();
             UserName = request.UserName;
         }
 
