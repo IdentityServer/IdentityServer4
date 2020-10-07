@@ -227,7 +227,7 @@ namespace IdentityServer4.Services
                 Logger.LogDebug("Token usage is one-time only. Setting current handle as consumed, and generating new handle");
 
                 // flag as consumed
-                if (refreshToken.ConsumedTime != null)
+                if (refreshToken.ConsumedTime == null)
                 {
                     refreshToken.ConsumedTime = Clock.UtcNow.UtcDateTime;
                     await RefreshTokenStore.UpdateRefreshTokenAsync(handle, refreshToken);
