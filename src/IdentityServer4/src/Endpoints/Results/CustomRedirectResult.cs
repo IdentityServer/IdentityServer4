@@ -3,12 +3,15 @@
 
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using IdentityServer4.Hosting;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Extensions;
 using IdentityServer4.Configuration;
+using IdentityServer4.Models;
+using IdentityServer4.Stores;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace IdentityServer4.Endpoints.Results
@@ -44,17 +47,21 @@ namespace IdentityServer4.Endpoints.Results
         internal CustomRedirectResult(
             ValidatedAuthorizeRequest request,
             string url,
-            IdentityServerOptions options) 
+            IdentityServerOptions options,
+            IAuthorizationParametersMessageStore authorizationParametersMessageStore = null) 
             : this(request, url)
         {
             _options = options;
+            _authorizationParametersMessageStore = authorizationParametersMessageStore;
         }
 
         private IdentityServerOptions _options;
+        private IAuthorizationParametersMessageStore _authorizationParametersMessageStore;
 
         private void Init(HttpContext context)
         {
             _options = _options ?? context.RequestServices.GetRequiredService<IdentityServerOptions>();
+            _authorizationParametersMessageStore = _authorizationParametersMessageStore ?? context.RequestServices.GetService<IAuthorizationParametersMessageStore>();
         }
 
         /// <summary>
@@ -62,12 +69,21 @@ namespace IdentityServer4.Endpoints.Results
         /// </summary>
         /// <param name="context">The HTTP context.</param>
         /// <returns></returns>
-        public Task ExecuteAsync(HttpContext context)
+        public async Task ExecuteAsync(HttpContext context)
         {
             Init(context);
 
             var returnUrl = context.GetIdentityServerBasePath().EnsureTrailingSlash() + Constants.ProtocolRoutePaths.Authorize;
-            returnUrl = returnUrl.AddQueryString(_request.Raw.ToQueryString());
+            if (_authorizationParametersMessageStore != null)
+            {
+                var msg = new Message<IDictionary<string, string[]>>(_request.Raw.ToFullDictionary());
+                var id = await _authorizationParametersMessageStore.WriteAsync(msg);
+                returnUrl = returnUrl.AddQueryString(Constants.AuthorizationParamsStore.MessageStoreIdParameterName, id);
+            }
+            else
+            {
+                returnUrl = returnUrl.AddQueryString(_request.Raw.ToQueryString());
+            }
 
             if (!_url.IsLocalUrl())
             {
@@ -78,8 +94,6 @@ namespace IdentityServer4.Endpoints.Results
 
             var url = _url.AddQueryString(_options.UserInteraction.CustomRedirectReturnUrlParameter, returnUrl);
             context.Response.RedirectToAbsoluteUrl(url);
-
-            return Task.CompletedTask;
         }
     }
 }
