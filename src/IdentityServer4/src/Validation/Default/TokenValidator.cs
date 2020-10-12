@@ -250,7 +250,9 @@ namespace IdentityServer4.Validation
 
             var parameters = new TokenValidationParameters
             {
+                ValidateIssuer = _options.TokenValidation.ValidateIssuer,
                 ValidIssuer = _context.HttpContext.GetIdentityServerIssuerUri(),
+                ValidIssuers = _options.TokenValidation.ValidIssuers,
                 IssuerSigningKeys = validationKeys.Select(k => k.Key),
                 ValidateLifetime = validateLifetime
             };
