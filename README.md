@@ -19,7 +19,8 @@ Active development happens on the main branch. This always contains the latest v
 
 * [Install](https://www.microsoft.com/net/download/core#/current) the latest .NET Core 3.1 SDK
 * Install Git
-* Run `build.ps1` or `build.sh` in the root of the repo
+* Clone this repo
+* Run `build.ps1` or `build.sh` in the root of the cloned repo
 
 ## Documentation
 For project documentation, please visit [readthedocs](https://identityserver4.readthedocs.io).
