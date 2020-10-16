@@ -184,8 +184,8 @@ Update `Startup` to look like this::
         {
             services.AddControllers();
 
-            services.AddAuthentication("Bearer")
-                .AddJwtBearer("Bearer", options =>
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
                 {
                     options.Authority = "https://localhost:5001";
 
