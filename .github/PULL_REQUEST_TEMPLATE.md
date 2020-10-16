@@ -1,4 +1,4 @@
-**IdentityServer4 is feature complete. All new feature work is happening in our new [organization](https://github.com/duendesoftware). This means we can only accept bug fix PRs.**
+**At this point we cannot accept PRs for new features, only bugfixes. Thanks!**
 
 **What issue does this PR address?**
 
