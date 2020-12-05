@@ -118,7 +118,7 @@ namespace IdentityServer4.Services
                 {
                     match.Scopes = match.Scopes.Union(other.Scopes).Distinct();
 
-                    if (match.CreationTime > other.CreationTime)
+                    if (match.CreationTime.ToUniversalTime() > other.CreationTime.ToUniversalTime())
                     {
                         // show the earlier creation time
                         match.CreationTime = other.CreationTime;

@@ -96,7 +96,7 @@ namespace IdentityServer4.Services
             if (credential.Key is X509SecurityKey x509Key)
             {
                 var cert = x509Key.Certificate;
-                if (Clock.UtcNow.UtcDateTime > cert.NotAfter)
+                if (Clock.UtcNow.UtcDateTime > cert.NotAfter.ToUniversalTime())
                 {
                     Logger.LogWarning("Certificate {subjectName} has expired on {expiration}", cert.Subject, cert.NotAfter.ToString(CultureInfo.InvariantCulture));
                 }

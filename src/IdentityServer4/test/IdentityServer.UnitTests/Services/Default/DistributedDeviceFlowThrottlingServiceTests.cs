@@ -25,7 +25,7 @@ namespace IdentityServer.UnitTests.Services.Default
         };
 
         private const string CacheKey = "devicecode_";
-        private readonly DateTime testDate = new DateTime(2018, 06, 28, 13, 37, 42);
+        private readonly DateTime testDate = new DateTime(2018, 06, 28, 13, 37, 42, DateTimeKind.Utc);
 
         [Fact]
         public async Task First_Poll()
@@ -95,7 +95,7 @@ namespace IdentityServer.UnitTests.Services.Default
             cache.Items.TryGetValue(CacheKey + handle, out var values).Should().BeTrue();
 
             var dateTimeAsString = Encoding.UTF8.GetString(values?.Item1);
-            var dateTime = DateTime.Parse(dateTimeAsString);
+            var dateTime = DateTime.Parse(dateTimeAsString, styles:System.Globalization.DateTimeStyles.AdjustToUniversal);
             dateTime.Should().Be(testDate);
 
             values?.Item2.AbsoluteExpiration.Should().BeCloseTo(testDate.AddSeconds(deviceCode.Lifetime));
