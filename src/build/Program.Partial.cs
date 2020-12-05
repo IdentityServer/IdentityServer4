@@ -58,7 +58,7 @@ namespace build
             {
                 var project = Directory.GetFiles("./src", "*.csproj", SearchOption.TopDirectoryOnly).OrderBy(_ => _).First();
 
-                Run("dotnet", $"pack {project} -c Release -o {Directory.CreateDirectory(packOutput).FullName} --no-build --nologo", echoPrefix: Prefix);
+                Run("dotnet", $"pack {project} -c Release -o \"{Directory.CreateDirectory(packOutput).FullName}\" --no-build --nologo", echoPrefix: Prefix);
             });
 
             Target(Targets.SignPackage, DependsOn(Targets.Pack), () =>
