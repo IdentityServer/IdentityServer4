@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -76,7 +76,7 @@ namespace IdentityServer4.EntityFramework
             {
                 var expiredGrants = await _persistedGrantDbContext.PersistedGrants
                     .Where(x => x.Expiration < DateTime.UtcNow)
-                    .OrderBy(x => x.Key)
+                    .OrderBy(x => x.Expiration)
                     .Take(_options.TokenCleanupBatchSize)
                     .ToArrayAsync();
 
@@ -109,7 +109,7 @@ namespace IdentityServer4.EntityFramework
             {
                 var expiredCodes = await _persistedGrantDbContext.DeviceFlowCodes
                     .Where(x => x.Expiration < DateTime.UtcNow)
-                    .OrderBy(x => x.DeviceCode)
+                    .OrderBy(x => x.Expiration)
                     .Take(_options.TokenCleanupBatchSize)
                     .ToArrayAsync();
 
