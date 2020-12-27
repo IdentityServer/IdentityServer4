@@ -43,7 +43,7 @@ The ``GetProfileDataAsync`` method is responsible for dynamically obtaining thos
 
 The ``RequestedClaimTypes`` collection is populated based on the user claims defined on the :ref:`resources <refResources>` that model the scopes.
 If requesting an identity token and the scopes requested are an :ref:`identity resources <refIdentityResource>`, then the claims in the ``RequestedClaimTypes`` will be populated based on the user claim types defined in the ``IdentityResource``.
-If requesting an access token and the scopes requested are an :ref:`API resources <refApiResource>`, then the claims in the ``RequestedClaimTypes`` will be populated based on the user claim types defined in the ``ApiResource`` and/or the ``Scope``. This applies for both identity tokens and access tokens.
+If requesting an access token and the scopes requested are an :ref:`API resources <refApiResource>`, then the claims in the ``RequestedClaimTypes`` will be populated based on the user claim types defined in the ``ApiResource`` and/or the ``Scope``.
 
 IsActiveContext
 ^^^^^^^^^^^^^^^
