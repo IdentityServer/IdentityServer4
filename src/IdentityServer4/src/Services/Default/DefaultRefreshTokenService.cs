@@ -211,11 +211,12 @@ namespace IdentityServer4.Services
         /// <param name="handle">The handle.</param>
         /// <param name="refreshToken">The refresh token.</param>
         /// <param name="client">The client.</param>
+        /// <param name="newAccessToken">New access token to store with refresh token</param>
         /// <returns>
         /// The refresh token handle
         /// </returns>
         public virtual async Task<string> UpdateRefreshTokenAsync(string handle, RefreshToken refreshToken,
-            Client client)
+            Client client, Models.Token newAccessToken)
         {
             Logger.LogDebug("Updating refresh token");
 
@@ -266,11 +267,16 @@ namespace IdentityServer4.Services
             {
                 // set it to null so that we save non-consumed token
                 refreshToken.ConsumedTime = null;
+                if (newAccessToken != null)
+                    refreshToken.AccessToken = newAccessToken;
                 handle = await RefreshTokenStore.StoreRefreshTokenAsync(refreshToken);
                 Logger.LogDebug("Created refresh token in store");
             }
             else if (needsUpdate)
             {
+                if (newAccessToken != null)
+                    refreshToken.AccessToken = newAccessToken;
+
                 await RefreshTokenStore.UpdateRefreshTokenAsync(handle, refreshToken);
                 Logger.LogDebug("Updated refresh token in store");
             }

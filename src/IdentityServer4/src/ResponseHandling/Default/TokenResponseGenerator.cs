@@ -204,6 +204,7 @@ namespace IdentityServer4.ResponseHandling
 
             var oldAccessToken = request.ValidatedRequest.RefreshToken.AccessToken;
             string accessTokenString;
+            Models.Token newAccessToken = null;
 
             if (request.ValidatedRequest.Client.UpdateAccessTokenClaimsOnRefresh)
             {
@@ -222,7 +223,7 @@ namespace IdentityServer4.ResponseHandling
                     ValidatedResources = validatedResources
                 };
 
-                var newAccessToken = await TokenService.CreateAccessTokenAsync(creationRequest);
+                newAccessToken = await TokenService.CreateAccessTokenAsync(creationRequest);
                 accessTokenString = await TokenService.CreateSecurityTokenAsync(newAccessToken);
             }
             else
@@ -233,7 +234,7 @@ namespace IdentityServer4.ResponseHandling
                 accessTokenString = await TokenService.CreateSecurityTokenAsync(oldAccessToken);
             }
 
-            var handle = await RefreshTokenService.UpdateRefreshTokenAsync(request.ValidatedRequest.RefreshTokenHandle, request.ValidatedRequest.RefreshToken, request.ValidatedRequest.Client);
+            var handle = await RefreshTokenService.UpdateRefreshTokenAsync(request.ValidatedRequest.RefreshTokenHandle, request.ValidatedRequest.RefreshToken, request.ValidatedRequest.Client, newAccessToken);
 
             return new TokenResponse
             {
