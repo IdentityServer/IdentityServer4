@@ -216,7 +216,7 @@ namespace IdentityServer4.Services
         /// The refresh token handle
         /// </returns>
         public virtual async Task<string> UpdateRefreshTokenAsync(string handle, RefreshToken refreshToken,
-            Client client, Models.Token newAccessToken)
+            Client client, Models.Token newAccessToken = null)
         {
             Logger.LogDebug("Updating refresh token");
 
