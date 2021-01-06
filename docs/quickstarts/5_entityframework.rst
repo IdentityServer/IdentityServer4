@@ -84,6 +84,8 @@ Adding Migrations
 
 Once the IdentityServer has been configured to use Entity Framework, we’ll need to generate some migrations.
 
+Ensure you have run the project so that ``ConfigureDbContext`` in ``Startup.cs`` has configured the DbContexts we will be creating migrations for.
+
 To create migrations, you will need to install the Entity Framework Core CLI on your machine and the ``Microsoft.EntityFrameworkCore.Design`` nuget package in IdentityServer::
 
     dotnet tool install --global dotnet-ef
