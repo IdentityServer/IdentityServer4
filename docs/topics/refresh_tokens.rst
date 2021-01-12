@@ -16,7 +16,7 @@ Additional client settings
     
     ``OneTimeOnly`` the refresh token handle will be updated when refreshing tokens
 ``RefreshTokenExpiration``
-    ``Absolute`` the refresh token will expire on a fixed point in time (specified by the AbsoluteRefreshTokenLifetime)
+    ``Absolute`` the refresh token will expire on a fixed point in time (specified by the AbsoluteRefreshTokenLifetime). This is the default.
     
     ``Sliding`` when refreshing the token, the lifetime of the refresh token will be renewed (by the amount specified in SlidingRefreshTokenLifetime). The lifetime will not exceed `AbsoluteRefreshTokenLifetime`.
 ``UpdateAccessTokenClaimsOnRefresh``
