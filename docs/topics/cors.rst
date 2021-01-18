@@ -33,12 +33,11 @@ This would be configured as a singleton in DI, and hard-coded with its ``Allowed
 For example, in ``ConfigureServices``::
 
     services.AddSingleton<ICorsPolicyService>((container) => {
-    {
         var logger = container.GetRequiredService<ILogger<DefaultCorsPolicyService>>();
         return new DefaultCorsPolicyService(logger) {
             AllowedOrigins = { "https://foo", "https://bar" }
         };
-    };
+    });
 
 .. Note:: Use ``AllowAll`` with caution.
 
