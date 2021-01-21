@@ -335,7 +335,7 @@ namespace IdentityServer4.Validation
             if (isActiveCtx.IsActive == false)
             {
                 LogError("User has been disabled", new { subjectId = _validatedRequest.AuthorizationCode.Subject.GetSubjectId() });
-                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+                return Invalid(OidcConstants.TokenErrors.AccessDenied);
             }
 
             _logger.LogDebug("Validation of authorization code token request success");
@@ -485,7 +485,7 @@ namespace IdentityServer4.Validation
                 LogError("User has been disabled", new { subjectId = resourceOwnerContext.Result.Subject.GetSubjectId() });
                 await RaiseFailedResourceOwnerAuthenticationEventAsync(userName, "user is inactive", resourceOwnerContext.Request.Client.ClientId);
 
-                return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+                return Invalid(OidcConstants.TokenErrors.AccessDenied);
             }
 
             _validatedRequest.UserName = userName;
@@ -645,7 +645,7 @@ namespace IdentityServer4.Validation
                     // todo: raise event?
 
                     LogError("User has been disabled", new { subjectId = result.Subject.GetSubjectId() });
-                    return Invalid(OidcConstants.TokenErrors.InvalidGrant);
+                    return Invalid(OidcConstants.TokenErrors.AccessDenied);
                 }
 
                 _validatedRequest.Subject = result.Subject;
