@@ -262,7 +262,7 @@ Using the API resource grouping gives you the following additional features
 
 * support for the JWT *aud* claim. The value(s) of the audience claim will be the name of the API resource(s)
 * support for adding common user claims across all contained scopes
-* support for introspection by assigning a API secret to the resource
+* support for introspection by assigning an API secret to the resource
 * support for configuring the access token signing algorithm for the resource
 
 Let's have a look at some example access tokens for the above resource configuration.
@@ -309,7 +309,7 @@ Let's have a look at some example access tokens for the above resource configura
 Migration steps to v4
 ^^^^^^^^^^^^^^^^^^^^^
 As described above, starting with v4, scopes have their own definition and can optionally be referenced by resources. 
-Before v4, scopes where always contained within a resource.
+Before v4, scopes were always contained within a resource.
 
 To migrate to v4 you need to split up scope and resource registration, typically by first registering all your scopes
 (e.g. using the ``AddInMemoryApiScopes`` method), and then register the API resources (if any) afterwards.
