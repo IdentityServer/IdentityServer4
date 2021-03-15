@@ -12,6 +12,7 @@ using System.Net;
 using System;
 using IdentityServer4.Extensions;
 using IdentityServer4.Configuration;
+using System.Text.Encodings.Web;
 
 namespace IdentityServer4.Endpoints.Results
 {
@@ -79,7 +80,7 @@ namespace IdentityServer4.Endpoints.Results
 
             if (_result.FrontChannelLogoutUrls != null && _result.FrontChannelLogoutUrls.Any())
             {
-                var frameUrls = _result.FrontChannelLogoutUrls.Select(url => $"<iframe src='{url}'></iframe>");
+                var frameUrls = _result.FrontChannelLogoutUrls.Select(url => $"<iframe src='{HtmlEncoder.Default.Encode(url)}'></iframe>");
                 framesHtml = frameUrls.Aggregate((x, y) => x + y);
             }
 
