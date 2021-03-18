@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using IdentityModel;
 using IdentityServer4.Models;
@@ -67,7 +67,8 @@ namespace IdentityServer4.Stores.Default
         /// <inheritdoc/>
         public Task DeleteAsync(string id)
         {
-            return _distributedCache.RemoveAsync(id);
+            var cacheKey = $"{CacheKeyPrefix}-{id}";
+            return _distributedCache.RemoveAsync(cacheKey);
         }
     }
 }
