@@ -144,7 +144,7 @@ namespace IdentityServer4.Validation
         {
             if (value.IsMissing()) return string.Empty;
 
-            return Uri.UnescapeDataString(value.Replace("+", "%20"));
+            return Uri.UnescapeDataString(value);
         }
     }
 }
