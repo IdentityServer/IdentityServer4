@@ -46,7 +46,7 @@ This will result in a new token response containing a new access token and its e
 
 .. Note:: You can use the `IdentityModel <https://github.com/IdentityModel/IdentityModel>`_ client library to programmatically access the token endpoint from .NET code. For more information check the IdentityModel `docs <https://identitymodel.readthedocs.io/en/latest/client/token.html>`_.
 
-.. Note:: The refresh token, must be valid or an invalid_grant error is returned.
+.. Note:: The refresh token, must be valid or an invalid_grant error is returned.  By default, a refresh_token can only be used once.  Using an already used refresh_token will result in an invalid_grant error.
 
 Customizing refresh token behavior
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
