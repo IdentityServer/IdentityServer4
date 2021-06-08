@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -239,6 +239,30 @@ namespace IdentityServer.UnitTests.Validation
             var result = await validator.ValidateAccessTokenAsync(handle);
 
             result.IsError.Should().BeTrue();
+        }
+
+        [Fact]
+        [Trait("Category", Category)]
+        public async Task JWT_Token_Multiple_valid_issuers()
+        {
+            var signer = Factory.CreateDefaultTokenCreator();
+
+            var token = TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "valid", 600, "read", "write");
+            token.Issuer = "https://idsvr.com";
+            var jwt1 = await signer.CreateTokenAsync(token);
+
+            token = TokenFactory.CreateAccessToken(new Client { ClientId = "roclient" }, "valid", 600, "read", "write");
+            token.Issuer = "https://another-idsvr.com";
+            var jwt2 = await signer.CreateTokenAsync(token);
+
+            var identityServerOptions = new IdentityServerOptions();
+            identityServerOptions.TokenValidation.ValidIssuers = new[] { "https://idsvr.com", "https://another-idsvr.com" };
+            var validator = Factory.CreateTokenValidator(null, options: identityServerOptions);
+            var result1 = await validator.ValidateAccessTokenAsync(jwt1);
+            var result2 = await validator.ValidateAccessTokenAsync(jwt2);
+
+            result1.IsError.Should().BeFalse();
+            result2.IsError.Should().BeFalse();
         }
     }
 }
