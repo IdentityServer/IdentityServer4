@@ -90,7 +90,7 @@ namespace IdentityServer4.ResponseHandling
             else
             {
                 outgoingClaims.AddRange(profileClaims);
-                Logger.LogInformation("Profile service returned the following claim types: {types}", profileClaims.Select(c => c.Type).ToSpaceSeparatedString());
+                Logger.LogInformation("Profile service returned the following claim types: {types}", string.Join(" ", profileClaims.Select(c => c.Type).Distinct()));
             }
 
             var subClaim = outgoingClaims.SingleOrDefault(x => x.Type == JwtClaimTypes.Subject);
