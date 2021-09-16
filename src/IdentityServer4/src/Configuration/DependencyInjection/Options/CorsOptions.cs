@@ -11,15 +11,15 @@ using System.Linq;
 namespace IdentityServer4.Configuration
 {
     /// <summary>
-    /// Options for CORS
+    /// Options for cross-origin resource sharing (CORS).
     /// </summary>
     public class CorsOptions
     {
         /// <summary>
-        /// Gets or sets the name of the cors policy.
+        /// Gets or sets the name of the CORS policy.
         /// </summary>
         /// <value>
-        /// The name of the cors policy.
+        /// The name of the CORS policy.
         /// </value>
         public string CorsPolicyName { get; set; } = Constants.IdentityServerName;
 
@@ -29,10 +29,10 @@ namespace IdentityServer4.Configuration
         public TimeSpan? PreflightCacheDuration { get; set; }
 
         /// <summary>
-        /// Gets or sets the cors paths.
+        /// Gets or sets the CORS paths.
         /// </summary>
         /// <value>
-        /// The cors paths.
+        /// The CORS paths.
         /// </value>
         public ICollection<PathString> CorsPaths { get; set; } = Constants.ProtocolRoutePaths.CorsPaths.Select(x => new PathString(x.EnsureLeadingSlash())).ToList();
     }
