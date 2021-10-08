@@ -71,7 +71,7 @@ namespace IdentityServer4.Endpoints.Results
             }
             else
             {
-                returnUrl = returnUrl.AddQueryString(_request.Raw.ToQueryString());
+                returnUrl = returnUrl.AddQueryString(_request.Raw.ToQueryString(false));
             }
 
             var loginUrl = _options.UserInteraction.LoginUrl;

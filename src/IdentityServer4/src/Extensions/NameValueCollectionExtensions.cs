@@ -33,7 +33,7 @@ namespace IdentityServer4.Extensions
             return nvc;
         }
         
-        public static string ToQueryString(this NameValueCollection collection)
+        public static string ToQueryString(this NameValueCollection collection, bool urlEncode = true)
         {
             if (collection.Count == 0)
             {
@@ -47,13 +47,13 @@ namespace IdentityServer4.Extensions
                 var values = collection.GetValues(name);
                 if (values == null || values.Length == 0)
                 {
-                    first = AppendNameValuePair(builder, first, true, name, String.Empty);
+                    first = AppendNameValuePair(builder, first, urlEncode, name, String.Empty);
                 }
                 else
                 {
                     foreach (var value in values)
                     {
-                        first = AppendNameValuePair(builder, first, true, name, value);
+                        first = AppendNameValuePair(builder, first, urlEncode, name, value);
                     }
                 }
             }
