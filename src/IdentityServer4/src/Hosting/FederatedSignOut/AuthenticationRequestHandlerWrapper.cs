@@ -60,7 +60,6 @@ namespace IdentityServer4.Hosting.FederatedSignOut
             }
             catch
             {
-                _logger?.LogInformation((_inner as MicrosoftAccountHandler).Scheme.DisplayName);
                 return false;
             }
             return result;
