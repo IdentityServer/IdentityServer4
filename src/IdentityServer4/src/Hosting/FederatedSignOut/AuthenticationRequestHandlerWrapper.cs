@@ -35,7 +35,7 @@ namespace IdentityServer4.Hosting.FederatedSignOut
 
         public async Task<bool> HandleRequestAsync()
         {
-            var result = await _inner.HandleRequestAsync();
+            var result = await IsAuthenticated();
 
             if (result && _context.GetSignOutCalled() && _context.Response.StatusCode == 200)
             {
@@ -48,6 +48,21 @@ namespace IdentityServer4.Hosting.FederatedSignOut
                 await ProcessFederatedSignOutRequestAsync();
             }
 
+            return result;
+        }
+
+        private async Task<bool> IsAuthenticated()
+        {
+            bool result;
+            try
+            {
+                result = await _inner.HandleRequestAsync();
+            }
+            catch
+            {
+                _logger?.LogInformation((_inner as MicrosoftAccountHandler).Scheme.DisplayName);
+                return false;
+            }
             return result;
         }
 
