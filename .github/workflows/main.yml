@@ -11,7 +11,7 @@ defaults:
 env:
   GPR_USERNAME: ${{ secrets.GPR_USERNAME }}
   GPR_TOKEN: ${{ secrets.GPR_TOKEN }}
-  DOTNET_VERSION: 5.0.300
+  DOTNET_VERSION: 6.0.x
 
 jobs:
   test:
@@ -47,6 +47,11 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: Install .NET Core for Versionize
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.300
+
     - name: Install .NET Core
       uses: actions/setup-dotnet@v1
       with:
@@ -63,9 +68,8 @@ jobs:
         git config --global user.email ${{ env.BOT_EMAIL }}
         git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
         git checkout "${GITHUB_REF:11}"
-        dotnet tool install --global Versionize --version 1.6.2
+        dotnet tool install --global Versionize --version 1.8.0
         versionize --skip-dirty && git push --follow-tags origin "${GITHUB_REF:11}"
-
     - name: Pack
       if: ${{ success() }}
       run: dotnet pack --configuration Release -o output
@@ -73,6 +77,7 @@ jobs:
     - name: Publish
       if: ${{ success() }}
       run: |
+        dotnet --version
         dotnet nuget push "output/*.nupkg" \
           --source https://nuget.pkg.github.com/bornlogic/index.json \
           --api-key ${{ secrets.GITHUB_TOKEN }} \
