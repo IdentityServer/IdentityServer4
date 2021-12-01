@@ -1,0 +1,38 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - "*"
+      - "!master"
+  pull_request:
+    branches:
+      - master
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  GPR_USERNAME: ${{ secrets.GPR_USERNAME }}
+  GPR_TOKEN: ${{ secrets.GPR_TOKEN }}
+  DOTNET_VERSION: 5.0.300
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-18.04
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Install .NET Core
+      if: ${{ success() }}
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Test
+      if: ${{ success() }}
+      run: dotnet test
