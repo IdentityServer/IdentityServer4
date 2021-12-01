@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bornlogic.IdentityServer", "..\Bornlogic.IdentityServer\Bornlogic.IdentityServer.csproj", "{16D193BF-CDE9-4E1B-897F-69B9417B699C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bornlogic.IdentityServer", "Bornlogic.IdentityServer\Bornlogic.IdentityServer.csproj", "{16D193BF-CDE9-4E1B-897F-69B9417B699C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bornlogic.IdentityServer.AspNetIdentity", "..\Bornlogic.IdentityServer.AspNetIdentity\Bornlogic.IdentityServer.AspNetIdentity.csproj", "{B8DBB74B-3F5F-4E4A-94AB-B938284CDB8B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bornlogic.IdentityServer.AspNetIdentity", "Bornlogic.IdentityServer.AspNetIdentity\Bornlogic.IdentityServer.AspNetIdentity.csproj", "{B8DBB74B-3F5F-4E4A-94AB-B938284CDB8B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bornlogic.IdentityServer.Storage", "..\Bornlogic.IdentityServer.Storage\Bornlogic.IdentityServer.Storage.csproj", "{E28D252F-0BA0-4466-A7B1-A5F6848E35CA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bornlogic.IdentityServer.Storage", "Bornlogic.IdentityServer.Storage\Bornlogic.IdentityServer.Storage.csproj", "{E28D252F-0BA0-4466-A7B1-A5F6848E35CA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

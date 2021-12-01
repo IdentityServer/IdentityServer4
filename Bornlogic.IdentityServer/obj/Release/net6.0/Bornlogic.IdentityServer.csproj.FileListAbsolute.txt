@@ -1,0 +1,15 @@
+E:\Git\Bornlogic.IdentityServer\bin\Release\net6.0\Bornlogic.IdentityServer.deps.json
+E:\Git\Bornlogic.IdentityServer\bin\Release\net6.0\Bornlogic.IdentityServer.dll
+E:\Git\Bornlogic.IdentityServer\bin\Release\net6.0\ref\Bornlogic.IdentityServer.dll
+E:\Git\Bornlogic.IdentityServer\bin\Release\net6.0\Bornlogic.IdentityServer.pdb
+E:\Git\Bornlogic.IdentityServer\bin\Release\net6.0\Bornlogic.IdentityServer.Storage.dll
+E:\Git\Bornlogic.IdentityServer\bin\Release\net6.0\Bornlogic.IdentityServer.Storage.pdb
+E:\Git\Bornlogic.IdentityServer\obj\Release\net6.0\Bornlogic.IdentityServer.csproj.AssemblyReference.cache
+E:\Git\Bornlogic.IdentityServer\obj\Release\net6.0\Bornlogic.IdentityServer.GeneratedMSBuildEditorConfig.editorconfig
+E:\Git\Bornlogic.IdentityServer\obj\Release\net6.0\Bornlogic.IdentityServer.AssemblyInfoInputs.cache
+E:\Git\Bornlogic.IdentityServer\obj\Release\net6.0\Bornlogic.IdentityServer.AssemblyInfo.cs
+E:\Git\Bornlogic.IdentityServer\obj\Release\net6.0\Bornlogic.IdentityServer.csproj.CoreCompileInputs.cache
+E:\Git\Bornlogic.IdentityServer\obj\Release\net6.0\Bornlogic.IdentityServer.csproj.CopyComplete
+E:\Git\Bornlogic.IdentityServer\obj\Release\net6.0\Bornlogic.IdentityServer.dll
+E:\Git\Bornlogic.IdentityServer\obj\Release\net6.0\ref\Bornlogic.IdentityServer.dll
+E:\Git\Bornlogic.IdentityServer\obj\Release\net6.0\Bornlogic.IdentityServer.pdb
