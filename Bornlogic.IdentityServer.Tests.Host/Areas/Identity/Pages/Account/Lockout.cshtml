@@ -1,0 +1,12 @@
+﻿@page
+@using Bornlogic.IdentityServer.Tests.Host.Areas.Identity.Pages.Account
+@model LockoutModel
+@{
+    ViewData["Title"] = "Locked out";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header>
+    <h1 class="text-danger">@ViewData["Title"]</h1>
+    <p class="text-danger">This account has been locked out, please try again later.</p>
+</header>
