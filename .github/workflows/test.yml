@@ -16,7 +16,7 @@ defaults:
 env:
   GPR_USERNAME: ${{ secrets.GPR_USERNAME }}
   GPR_TOKEN: ${{ secrets.GPR_TOKEN }}
-  DOTNET_VERSION: 5.0.300
+  DOTNET_VERSION: 6.0.x
 
 jobs:
   test:
