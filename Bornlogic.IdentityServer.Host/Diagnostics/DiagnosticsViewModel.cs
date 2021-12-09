@@ -7,7 +7,7 @@ using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
 using Newtonsoft.Json;
 
-namespace Bornlogic.IdentityServer.Tests.Host.Diagnostics
+namespace Bornlogic.IdentityServer.Host.Diagnostics
 {
     public class DiagnosticsViewModel
     {

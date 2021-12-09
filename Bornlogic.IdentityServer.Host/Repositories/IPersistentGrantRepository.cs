@@ -1,7 +1,7 @@
 ﻿using Bornlogic.IdentityServer.Storage.Models;
 using Bornlogic.IdentityServer.Storage.Stores;
 
-namespace Bornlogic.IdentityServer.Tests.Host.Repositories
+namespace Bornlogic.IdentityServer.Host.Repositories
 {
     public interface IPersistentGrantRepository
     {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.UI.Services;
 
-namespace Bornlogic.IdentityServer.Tests.Host.Services
+namespace Bornlogic.IdentityServer.Host.Services
 {
     public class EmailSender : IEmailSender
     {

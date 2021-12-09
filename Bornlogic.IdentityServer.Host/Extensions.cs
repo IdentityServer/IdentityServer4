@@ -1,7 +1,7 @@
 using Bornlogic.IdentityServer.Extensions;
 using Bornlogic.IdentityServer.Storage.Stores;
 
-namespace Bornlogic.IdentityServer.Tests.Host
+namespace Bornlogic.IdentityServer.Host
 {
     public static class Extensions
     {

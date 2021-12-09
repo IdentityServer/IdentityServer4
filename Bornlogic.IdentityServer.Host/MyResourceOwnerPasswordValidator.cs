@@ -1,10 +1,10 @@
-﻿using Bornlogic.IdentityServer.Tests.Host.Stores.Contracts;
+﻿using Bornlogic.IdentityServer.Host.Stores.Contracts;
 using Bornlogic.IdentityServer.Validation;
 using Bornlogic.IdentityServer.Validation.Contexts;
 using Bornlogic.IdentityServer.Validation.Models;
 using IdentityModel;
 
-namespace Bornlogic.IdentityServer.Tests.Host
+namespace Bornlogic.IdentityServer.Host
 {
     public class MyResourceOwnerPasswordValidator : IResourceOwnerPasswordValidator
     {

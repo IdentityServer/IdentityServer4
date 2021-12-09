@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace Bornlogic.IdentityServer.Tests.Host.Areas.Identity.Pages.Account.Manage
+namespace Bornlogic.IdentityServer.Host.Areas.Identity.Pages.Account.Manage
 {
     public partial class EmailModel : PageModel
     {

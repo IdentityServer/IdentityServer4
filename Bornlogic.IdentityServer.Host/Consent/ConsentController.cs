@@ -11,7 +11,7 @@ using Bornlogic.IdentityServer.Validation.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Bornlogic.IdentityServer.Tests.Host.Consent
+namespace Bornlogic.IdentityServer.Host.Consent
 {
     /// <summary>
     /// This controller processes the consent UI

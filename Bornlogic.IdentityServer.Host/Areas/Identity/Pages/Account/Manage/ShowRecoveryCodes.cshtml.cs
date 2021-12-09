@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Bornlogic.IdentityServer.Tests.Host.Areas.Identity.Pages.Account.Manage
+namespace Bornlogic.IdentityServer.Host.Areas.Identity.Pages.Account.Manage
 {
     public class ShowRecoveryCodesModel : PageModel
     {

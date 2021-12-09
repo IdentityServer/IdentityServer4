@@ -2,7 +2,7 @@
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 
-namespace Bornlogic.IdentityServer.Tests.Host
+namespace Bornlogic.IdentityServer.Host
 {
     public class Program
     {

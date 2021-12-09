@@ -2,32 +2,23 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using Bornlogic.Common.Repository.Mongo.Extensions;
 using Bornlogic.IdentityServer.AspNetIdentity;
 using Bornlogic.IdentityServer.Configuration;
 using Bornlogic.IdentityServer.Configuration.DependencyInjection;
 using Bornlogic.IdentityServer.Configuration.DependencyInjection.BuilderExtensions;
+using Bornlogic.IdentityServer.Host.Repositories.Extensions;
+using Bornlogic.IdentityServer.Host.Services;
+using Bornlogic.IdentityServer.Host.Stores;
+using Bornlogic.IdentityServer.Host.Stores.Contracts;
 using Bornlogic.IdentityServer.Services;
-using Bornlogic.IdentityServer.Tests.Host.Repositories.Extensions;
-using Bornlogic.IdentityServer.Tests.Host.Services;
-using Bornlogic.IdentityServer.Tests.Host.Stores;
-using Bornlogic.IdentityServer.Tests.Host.Stores.Contracts;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 
-namespace Bornlogic.IdentityServer.Tests.Host
+namespace Bornlogic.IdentityServer.Host
 {
     public class Startup
     {
-        private static AuthServerEnvironmentConfiguration _environmentConfiguration;
-        
-        public Startup(IWebHostEnvironment hostingEnvironment)
-        {
-            _environmentConfiguration = new AuthServerEnvironmentConfiguration(hostingEnvironment);
-            _environmentConfiguration.Load();
-        }
-
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();

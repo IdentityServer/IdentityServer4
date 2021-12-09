@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Bornlogic.IdentityServer.Tests.Host.Diagnostics
+namespace Bornlogic.IdentityServer.Host.Diagnostics
 {
     [SecurityHeaders]
     [Authorize]

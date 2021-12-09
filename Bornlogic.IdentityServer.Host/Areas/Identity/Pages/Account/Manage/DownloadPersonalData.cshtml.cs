@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 
-namespace Bornlogic.IdentityServer.Tests.Host.Areas.Identity.Pages.Account.Manage
+namespace Bornlogic.IdentityServer.Host.Areas.Identity.Pages.Account.Manage
 {
     public class DownloadPersonalDataModel : PageModel
     {

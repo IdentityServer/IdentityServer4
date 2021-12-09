@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Bornlogic.IdentityServer.Tests.Host
+namespace Bornlogic.IdentityServer.Host
 {
     public class SecurityHeadersAttribute : ActionFilterAttribute
     {

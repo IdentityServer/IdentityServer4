@@ -4,7 +4,7 @@
 
 using Bornlogic.IdentityServer.Models.Messages;
 
-namespace Bornlogic.IdentityServer.Tests.Host.Home
+namespace Bornlogic.IdentityServer.Host.Home
 {
     public class ErrorViewModel
     {

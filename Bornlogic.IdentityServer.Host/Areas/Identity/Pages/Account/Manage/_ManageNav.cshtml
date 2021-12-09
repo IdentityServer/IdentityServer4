@@ -1,5 +1,6 @@
 ﻿@using Bornlogic.IdentityServer.Tests.Host
-@using Bornlogic.IdentityServer.Tests.Host.Areas.Identity.Pages.Account.Manage
+@using Bornlogic.IdentityServer.Host
+@using Bornlogic.IdentityServer.Host.Areas.Identity.Pages.Account.Manage
 @inject SignInManager<ApplicationUser> SignInManager
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();

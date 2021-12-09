@@ -9,7 +9,7 @@ using Bornlogic.IdentityServer.Storage.Stores;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Bornlogic.IdentityServer.Tests.Host.Grants
+namespace Bornlogic.IdentityServer.Host.Grants
 {
     /// <summary>
     /// This sample controller allows a user to revoke grants given to clients

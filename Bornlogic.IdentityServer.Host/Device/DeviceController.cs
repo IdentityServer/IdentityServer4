@@ -4,15 +4,15 @@
 
 using Bornlogic.IdentityServer.Events;
 using Bornlogic.IdentityServer.Extensions;
+using Bornlogic.IdentityServer.Host.Consent;
 using Bornlogic.IdentityServer.Models.Messages;
 using Bornlogic.IdentityServer.Services;
 using Bornlogic.IdentityServer.Storage.Models;
 using Bornlogic.IdentityServer.Storage.Stores;
-using Bornlogic.IdentityServer.Tests.Host.Consent;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Bornlogic.IdentityServer.Tests.Host.Device
+namespace Bornlogic.IdentityServer.Host.Device
 {
     [Authorize]
     [SecurityHeaders]

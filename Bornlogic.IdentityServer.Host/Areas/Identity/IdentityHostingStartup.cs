@@ -1,7 +1,7 @@
-﻿using Bornlogic.IdentityServer.Tests.Host.Areas.Identity;
+﻿using Bornlogic.IdentityServer.Host.Areas.Identity;
 
 [assembly: HostingStartup(typeof(IdentityHostingStartup))]
-namespace Bornlogic.IdentityServer.Tests.Host.Areas.Identity
+namespace Bornlogic.IdentityServer.Host.Areas.Identity
 {
     public class IdentityHostingStartup : IHostingStartup
     {

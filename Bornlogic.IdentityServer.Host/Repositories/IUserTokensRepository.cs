@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace Bornlogic.IdentityServer.Tests.Host.Repositories
+namespace Bornlogic.IdentityServer.Host.Repositories
 {
     public interface IUserTokensRepository
     {

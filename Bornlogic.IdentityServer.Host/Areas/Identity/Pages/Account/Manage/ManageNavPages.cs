@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace Bornlogic.IdentityServer.Tests.Host.Areas.Identity.Pages.Account.Manage
+namespace Bornlogic.IdentityServer.Host.Areas.Identity.Pages.Account.Manage
 {
     public static class ManageNavPages
     {

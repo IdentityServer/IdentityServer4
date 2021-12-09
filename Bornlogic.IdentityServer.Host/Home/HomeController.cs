@@ -7,7 +7,7 @@ using Bornlogic.IdentityServer.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Bornlogic.IdentityServer.Tests.Host.Home
+namespace Bornlogic.IdentityServer.Host.Home
 {
     [SecurityHeaders]
     [AllowAnonymous]

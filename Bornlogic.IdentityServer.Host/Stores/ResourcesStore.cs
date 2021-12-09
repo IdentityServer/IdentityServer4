@@ -1,8 +1,8 @@
-﻿using Bornlogic.IdentityServer.Storage.Models;
+﻿using Bornlogic.IdentityServer.Host.Repositories;
+using Bornlogic.IdentityServer.Storage.Models;
 using Bornlogic.IdentityServer.Storage.Stores;
-using Bornlogic.IdentityServer.Tests.Host.Repositories;
 
-namespace Bornlogic.IdentityServer.Tests.Host.Stores
+namespace Bornlogic.IdentityServer.Host.Stores
 {
     public class ResourcesStore : IResourceStore
     {

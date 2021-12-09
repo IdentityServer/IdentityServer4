@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace Bornlogic.IdentityServer.Tests.Host.Stores
+namespace Bornlogic.IdentityServer.Host.Stores
 {
     public class RoleStore<T> : IRoleStore<T> where T : class
     {

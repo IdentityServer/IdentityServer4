@@ -4,7 +4,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Bornlogic.IdentityServer.Tests.Host.Account
+namespace Bornlogic.IdentityServer.Host.Account
 {
     public class LoginInputModel
     {

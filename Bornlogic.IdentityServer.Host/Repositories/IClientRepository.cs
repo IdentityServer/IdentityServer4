@@ -1,6 +1,6 @@
 ﻿using Bornlogic.IdentityServer.Storage.Models;
 
-namespace Bornlogic.IdentityServer.Tests.Host.Repositories
+namespace Bornlogic.IdentityServer.Host.Repositories
 {
     public interface IClientRepository
     {

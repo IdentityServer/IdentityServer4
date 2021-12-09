@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace Bornlogic.IdentityServer.Tests.Host.Stores.Contracts
+namespace Bornlogic.IdentityServer.Host.Stores.Contracts
 {
     public interface IApplicationUserStore
     {

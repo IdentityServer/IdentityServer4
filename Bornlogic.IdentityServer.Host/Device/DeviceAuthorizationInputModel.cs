@@ -2,9 +2,9 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using Bornlogic.IdentityServer.Tests.Host.Consent;
+using Bornlogic.IdentityServer.Host.Consent;
 
-namespace Bornlogic.IdentityServer.Tests.Host.Device
+namespace Bornlogic.IdentityServer.Host.Device
 {
     public class DeviceAuthorizationInputModel : ConsentInputModel
     {

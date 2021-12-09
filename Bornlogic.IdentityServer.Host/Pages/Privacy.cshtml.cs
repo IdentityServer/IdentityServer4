@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Bornlogic.IdentityServer.Tests.Host.Pages
+namespace Bornlogic.IdentityServer.Host.Pages
 {
     public class PrivacyModel : PageModel
     {

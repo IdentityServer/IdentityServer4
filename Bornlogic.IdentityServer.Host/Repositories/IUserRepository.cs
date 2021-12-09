@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace Bornlogic.IdentityServer.Tests.Host.Repositories
+namespace Bornlogic.IdentityServer.Host.Repositories
 {
     public interface IUserRepository
     {

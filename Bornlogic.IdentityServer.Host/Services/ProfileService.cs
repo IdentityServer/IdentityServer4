@@ -4,7 +4,7 @@ using Bornlogic.IdentityServer.Models.Contexts;
 using Bornlogic.IdentityServer.Services;
 using Microsoft.AspNetCore.Identity;
 
-namespace Bornlogic.IdentityServer.Tests.Host.Services
+namespace Bornlogic.IdentityServer.Host.Services
 {
     public class ProfileService : IProfileService
     {

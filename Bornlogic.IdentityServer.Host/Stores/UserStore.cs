@@ -1,9 +1,9 @@
 ﻿using System.Security.Claims;
-using Bornlogic.IdentityServer.Tests.Host.Repositories;
-using Bornlogic.IdentityServer.Tests.Host.Stores.Contracts;
+using Bornlogic.IdentityServer.Host.Repositories;
+using Bornlogic.IdentityServer.Host.Stores.Contracts;
 using Microsoft.AspNetCore.Identity;
 
-namespace Bornlogic.IdentityServer.Tests.Host.Stores
+namespace Bornlogic.IdentityServer.Host.Stores
 {
     public class UserStore<T> : UserStoreBase<T, string, IdentityUserClaim<string>, IdentityUserLogin<string>, IdentityUserToken<string>>, IApplicationUserStore where T : IdentityUser<string>
     {
