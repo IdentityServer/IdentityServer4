@@ -73,13 +73,13 @@ namespace Bornlogic.IdentityServer.Tests.Host
             services.AddTransient<IEmailSender, EmailSender>();
 
             services
-                .AddMongoRepositoryOptions
-                (
-                    _environmentConfiguration.AuthServerMongo.ConnectionString,
-                    _environmentConfiguration.AuthServerMongo.DatabaseName,
-                    null,
-                    TimeSpan.FromSeconds(60)
-                )
+                //.AddMongoRepositoryOptions
+                //(
+                //    _environmentConfiguration.AuthServerMongo.ConnectionString,
+                //    _environmentConfiguration.AuthServerMongo.DatabaseName,
+                //    null,
+                //    TimeSpan.FromSeconds(60)
+                //)
                 .RegisterMongoStoreRepositories();
         }
 
