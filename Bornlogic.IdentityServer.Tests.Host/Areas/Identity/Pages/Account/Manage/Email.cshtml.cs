@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text;
-using System.Text.Encodings.Web;
+using Bornlogic.IdentityServer.Email.HtmlMessageProvider.Contracts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -14,15 +14,20 @@ namespace Bornlogic.IdentityServer.Tests.Host.Areas.Identity.Pages.Account.Manag
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
+        private readonly IEmailConfirmationProvider _emailConfirmationProvider;
 
-        public EmailModel(
+        public EmailModel
+        (
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IEmailConfirmationProvider emailConfirmationProvider
+        )
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
+            _emailConfirmationProvider = emailConfirmationProvider;
         }
 
         public string Username { get; set; }
@@ -94,10 +99,13 @@ namespace Bornlogic.IdentityServer.Tests.Host.Areas.Identity.Pages.Account.Manag
                     pageHandler: null,
                     values: new { userId = userId, email = Input.NewEmail, code = code },
                     protocol: Request.Scheme);
+
+                var (emailSubject, emailHtmlMessage) = await _emailConfirmationProvider.GetSubjectAndHtmlMessage(null, callbackUrl);
+
                 await _emailSender.SendEmailAsync(
                     Input.NewEmail,
-                    "Confirm your email",
-                    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    emailSubject,
+                    emailHtmlMessage);
 
                 StatusMessage = "Confirmation link to change email sent. Please check your email.";
                 return RedirectToPage();
@@ -130,10 +138,13 @@ namespace Bornlogic.IdentityServer.Tests.Host.Areas.Identity.Pages.Account.Manag
                 pageHandler: null,
                 values: new { area = "Identity", userId = userId, code = code },
                 protocol: Request.Scheme);
+
+            var (emailSubject, emailHtmlMessage) = await _emailConfirmationProvider.GetSubjectAndHtmlMessage(null, callbackUrl);
+
             await _emailSender.SendEmailAsync(
                 email,
-                "Confirm your email",
-                $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                emailSubject,
+                emailHtmlMessage);
 
             StatusMessage = "Verification email sent. Please check your email.";
             return RedirectToPage();

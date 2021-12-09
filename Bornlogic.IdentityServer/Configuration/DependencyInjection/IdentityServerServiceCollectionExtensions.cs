@@ -40,6 +40,7 @@ namespace Bornlogic.IdentityServer.Configuration.DependencyInjection
                 .AddRequiredPlatformServices()
                 .AddCookieAuthentication()
                 .AddCoreServices()
+                .AddDefaultEmailProviders()
                 .AddDefaultEndpoints()
                 .AddPluggableServices()
                 .AddValidators()
