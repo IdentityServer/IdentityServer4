@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bornlogic.IdentityServer.St
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{9D0A3589-5DCC-4B6E-A04B-EFE924775D67}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bornlogic.IdentityServer.Tests.Host", "Bornlogic.IdentityServer.Tests.Host\Bornlogic.IdentityServer.Tests.Host.csproj", "{86A06169-1161-4E30-8149-7017EDCD7944}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bornlogic.IdentityServer.Host", "Bornlogic.IdentityServer.Host\Bornlogic.IdentityServer.Host.csproj", "{86A06169-1161-4E30-8149-7017EDCD7944}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
