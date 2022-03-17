@@ -86,20 +86,11 @@ namespace IdentityServer4.EntityFramework
                 if (found > 0)
                 {
                     _persistedGrantDbContext.PersistedGrants.RemoveRange(expiredGrants);
-                    try
-                    {
-                        await _persistedGrantDbContext.SaveChangesAsync();
+                    await SaveChangesAsync();
 
-                        if (_operationalStoreNotification != null)
-                        {
-                            await _operationalStoreNotification.PersistedGrantsRemovedAsync(expiredGrants);
-                        }
-                    }
-                    catch (DbUpdateConcurrencyException ex)
+                    if (_operationalStoreNotification != null)
                     {
-                        // we get this if/when someone else already deleted the records
-                        // we want to essentially ignore this, and keep working
-                        _logger.LogDebug("Concurrency exception removing expired grants: {exception}", ex.Message);
+                        await _operationalStoreNotification.PersistedGrantsRemovedAsync(expiredGrants);
                     }
                 }
             }
@@ -127,18 +118,40 @@ namespace IdentityServer4.EntityFramework
                 if (found > 0)
                 {
                     _persistedGrantDbContext.DeviceFlowCodes.RemoveRange(expiredCodes);
-                    try
-                    {
-                        await _persistedGrantDbContext.SaveChangesAsync();
-                    }
-                    catch (DbUpdateConcurrencyException ex)
+                    await SaveChangesAsync();
+                }
+            }
+        }
+        
+        private async Task SaveChangesAsync()
+        {
+            var count = 3;
+
+            while (count > 0)
+            {
+                try
+                {
+                    await _persistedGrantDbContext.SaveChangesAsync();
+                    return;
+                }
+                catch (DbUpdateConcurrencyException ex)
+                {
+                    count--;
+
+                    // we get this if/when someone else already deleted the records
+                    // we want to essentially ignore this, and keep working
+                    _logger.LogDebug("Concurrency exception removing expired grants: {exception}", ex.Message);
+
+                    foreach (var entry in ex.Entries)
                     {
                         // we get this if/when someone else already deleted the records
-                        // we want to essentially ignore this, and keep working
-                        _logger.LogDebug("Concurrency exception removing expired grants: {exception}", ex.Message);
+                        // mark this entry as not attached anymore so we don't try to re-delete
+                        entry.State = EntityState.Detached;
                     }
                 }
             }
+
+            _logger.LogDebug("Too many concurrency exceptions. Exiting.");
         }
     }
 }
