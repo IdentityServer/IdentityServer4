@@ -41,9 +41,7 @@
 
   <ItemGroup>
     <PackageReference Include="IdentityServer4.Storage" />
-    <PackageReference Include="IdentityModel" />
-
-    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="IdentityModel" Version="6.0.0" />
     <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" />
 
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" />
