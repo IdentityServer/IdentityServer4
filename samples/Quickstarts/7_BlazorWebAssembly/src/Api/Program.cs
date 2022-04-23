@@ -47,13 +47,13 @@ builder.Services.AddAuthentication("Bearer")
     });
 
 
-// adds an authorization policy to make sure the token is for scope 'api1'
+// adds an authorization policy to make sure the token is for scope 'api'
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("ApiScope", policy =>
     {
         policy.RequireAuthenticatedUser();
-        policy.RequireClaim("scope", "api1");
+        policy.RequireClaim("scope", "api");
     });
 });
 #endregion
