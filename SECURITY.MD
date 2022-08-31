@@ -1,4 +1,6 @@
 # Reporting Security Issues
+# google policy 
+# microsoft security
 
 If you discover a security issue in IdentityServer, please report it by sending an email to contact@identityserver.io
 
